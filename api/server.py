@@ -83,7 +83,7 @@ retriever = HybridRetriever(
     enable_pubmed=True,
     enable_fda=True
 )
-generator = AnswerGenerator(model="gpt-4o-mini")
+generator = AnswerGenerator(model="gpt-4.1-mini")
 fda_client = FDAClient()   # 使用缓存版本
 
 
@@ -137,20 +137,42 @@ class Visit(BaseModel):
     notes: str
 
 consultation_system_prompt = """
-You are provided with notes written by a doctor from a patient's visit.
-Your job is to summarize the visit for the doctor and provide an email.
-Reply with exactly three sections with the headings:
-### Summary of visit for the doctor's records
-### Next steps for the doctor
-### Draft of email to patient in patient-friendly language
+You are a medical communication specialist helping doctors write patient education letters.
+
+Your ONLY job is to translate the doctor's existing notes into clear, warm, patient-friendly language.
+
+STRICT RULES:
+1. TRANSLATE ONLY — do not add any clinical information, drug dosages, specific lab thresholds,
+   or medical advice that is NOT explicitly stated in the doctor's notes.
+2. If the doctor wrote "consider adjusting Metformin", translate exactly that intent —
+   do NOT add specific clinical guidance like thresholds or dosage numbers.
+3. Replace medical jargon with plain language. Examples:
+   - "eGFR 41" becomes "your kidney filtering function has recently decreased"
+   - "HbA1c 7.8%" becomes "your average blood sugar over the past 3 months was 7.8%"
+   - "HTN" becomes "high blood pressure"
+   - "T2DM" becomes "Type 2 diabetes"
+4. Use a warm, reassuring tone — not alarming, not overly clinical.
+5. Keep it concise — maximum one page, use short paragraphs.
+6. If the doctor noted a follow-up plan, include it clearly so the patient knows what to expect next.
+
+Reply with exactly two sections:
+
+### Visit Summary
+[Translate the visit findings into plain language. Only what the doctor documented.]
+
+### What Happens Next
+[Translate the doctor's plan into patient-friendly language. Only what the doctor documented.
+Do NOT add generic advice like "eat healthy" or "exercise" unless the doctor wrote it.]
 """
 
 def user_prompt_for(visit: Visit) -> str:
-    return f"""Create the summary, next steps and draft email for:
-Patient Name: {visit.patient_name}
+    return f"""Please translate these doctor's notes into a patient education letter.
 Date of Visit: {visit.date_of_visit}
-Notes:
-{visit.notes}"""
+
+Doctor's Notes:
+{visit.notes}
+
+Remember: ONLY translate what is in the notes. Do not add clinical information not present above."""
 
 @app.post("/api/consultation")
 def consultation_summary(
@@ -181,20 +203,17 @@ def consultation_summary(
     ]
     
     stream = client.chat.completions.create(
-        model="gpt-4o-mini",
+        model="gpt-4.1-mini",
         messages=prompt,
         stream=True,
     )
     
     def event_stream():
+        # ✅ 改用 JSON 格式傳輸，保留原始換行符號，避免前端拼接時斷行
         for chunk in stream:
             text = chunk.choices[0].delta.content
             if text:
-                lines = text.split("\n")
-                for line in lines[:-1]:
-                    yield f"data: {line}\n\n"
-                    yield "data:  \n"
-                yield f"data: {lines[-1]}\n\n"
+                yield f"data: {json.dumps({'text': text})}\n\n"
     
     return StreamingResponse(event_stream(), media_type="text/event-stream")
 
@@ -216,7 +235,8 @@ async def research_query(
         full_answer = ""
         
         try:
-            documents = await retriever.retrieve(
+            # ✅ retrieve() 回傳 (documents, status) tuple
+            documents, retrieval_status = await retriever.retrieve(
                 query=request.question,
                 max_results=request.max_results or 5,
                 source_filter=request.sources
@@ -224,7 +244,9 @@ async def research_query(
             
             async for event in generator.generate_stream(
                 question=request.question,
-                documents=documents
+                documents=documents,
+                retrieval_status=retrieval_status,
+                query_type="research"
             ):
                 if event.type == StreamEventType.ANSWER:
                     content = event.content or ""
@@ -304,12 +326,69 @@ async def verify_drug_interaction(
     user_id = creds.decoded["sub"]
     
     # 1. 搜尋 FDA 藥品標籤
+    # ✅ 拼字偵測：在 Python 層處理，不依賴 LLM
+    # 原理：FDA API 用輸入的藥名搜尋，回傳的 label.drug_name 是標準名稱
+    #       若兩者不一致（忽略大小寫），代表輸入可能有拼字錯誤
     drug_labels = []
+    spelling_corrections: list[str] = []  # 記錄被修正的藥名
+
+    def levenshtein(a, b):
+        m, n = len(a), len(b)
+        dp = list(range(n + 1))
+        for i in range(1, m + 1):
+            prev = dp[0]
+            dp[0] = i
+            for j in range(1, n + 1):
+                temp = dp[j]
+                dp[j] = prev if a[i-1] == b[j-1] else 1 + min(prev, dp[j], dp[j-1])
+                prev = temp
+        return dp[n]
+
+    # 已知常見藥物名稱清單，用來處理 FDA 搜不到拼錯藥名的情況
+    KNOWN_DRUGS = [
+        "warfarin", "aspirin", "metformin", "lisinopril", "atorvastatin",
+        "amlodipine", "simvastatin", "ibuprofen", "acetaminophen", "paracetamol",
+        "fluoxetine", "tramadol", "spironolactone", "clarithromycin", "iohexol",
+        "insulin", "metoprolol", "omeprazole", "amoxicillin", "ciprofloxacin",
+        "prednisone", "levothyroxine", "gabapentin", "sertraline", "losartan",
+    ]
+
     for drug in request.drugs:
-        # 保持异步调用
         labels = await fda_client.search_drug_labels(drug, limit=1)
         if labels:
             drug_labels.append(labels[0])
+            # FDA 有找到結果：比對官方名稱是否與輸入一致
+            official_name = (labels[0].generic_name or labels[0].brand_name or '').strip()
+            if official_name:
+                drug_lower = drug.lower().strip()
+                official_lower = official_name.lower().strip()
+                # 官方名稱包含輸入名稱視為正常（如 "Aspirin" → "ASPIRIN"）
+                if drug_lower not in official_lower and official_lower not in drug_lower:
+                    dist = levenshtein(drug_lower, official_lower)
+                    length_diff = abs(len(drug_lower) - len(official_lower))
+                    if 1 <= dist <= 3 and length_diff <= 2:
+                        spelling_corrections.append(
+                            f"'{drug}' was interpreted as '{official_name.title()}'"
+                        )
+        else:
+            # ✅ FDA 找不到結果：用已知藥名清單做拼字比對
+            drug_lower = drug.lower().strip()
+            best_match = None
+            best_dist = 999
+            for known in KNOWN_DRUGS:
+                dist = levenshtein(drug_lower, known)
+                length_diff = abs(len(drug_lower) - len(known))
+                if dist < best_dist and dist <= 3 and length_diff <= 2:
+                    best_dist = dist
+                    best_match = known
+            if best_match:
+                spelling_corrections.append(
+                    f"'{drug}' was interpreted as '{best_match.title()}'"
+                )
+                # 用正確名稱重新搜尋，讓分析能繼續進行
+                corrected_labels = await fda_client.search_drug_labels(best_match, limit=1)
+                if corrected_labels:
+                    drug_labels.append(corrected_labels[0])
     
     # 2. 如果沒有找到任何藥品資料，提前返回
     if not drug_labels:
@@ -339,21 +418,51 @@ async def verify_drug_interaction(
     system_prompt = """You are a clinical pharmacist. Analyze the provided FDA drug labels for interactions.
     Identify interactions between the listed drugs.
     Classify severity as: Critical, Major, Moderate, Minor.
-    
+
+    For each interaction you MUST include ALL of the following:
+    1. Mechanism: Why this interaction occurs (pharmacokinetic or pharmacodynamic).
+    2. Dose context: Distinguish effects by dose where clinically relevant.
+       Example: low-dose aspirin (75-100mg) vs analgesic-dose (>=325mg) have very different risk profiles with anticoagulants.
+    3. Clinical warning signs: List specific observable symptoms the clinician should watch for.
+       Example for bleeding: gum bleeding, black/tarry stools, unexplained bruising, prolonged bleeding from cuts, blood in urine.
+    4. Monitoring parameters: Specific labs or clinical checks (e.g. renal function, serum potassium, CK levels).
+       IMPORTANT: NEVER state a fixed target range (e.g. "INR 2-3") without noting it varies by indication.
+       Instead write: "INR target varies by indication (typically 2-3 for AF/DVT, 2.5-3.5 for mechanical valves)."
+    5. Safer alternative: If the recommendation is to avoid or minimize one drug, ALWAYS suggest a clinically appropriate alternative.
+       Example: If avoiding NSAIDs with anticoagulants, suggest Acetaminophen/Paracetamol as the preferred analgesic.
+
     CRITICAL: You MUST return valid JSON with this EXACT structure:
     {
         "interactions": [
             {
                 "drugs": ["Drug1", "Drug2"],
                 "severity": "Major",
-                "description": "Detailed description of the interaction",
-                "recommendation": "Clinical recommendation"
+                "description": "Detailed description including mechanism and dose-dependent effects",
+                "recommendation": "Clinical recommendation including warning signs, monitoring parameters, and safer alternative if applicable"
             }
         ],
         "summary": "Brief summary of findings",
         "risk_level": "Major"
     }
     
+    DRUG NAME CORRECTION (check this FIRST before analysis):
+    - Before analyzing, check each input drug name for misspellings.
+    - If a drug name appears misspelled (e.g., "Warrfarin", "Aspirn", "Metfromin"),
+      correct it silently for the analysis, BUT you MUST put this exact format in the
+      "summary" field at the start:
+      "Note: '[original]' was interpreted as '[corrected]'. Please verify this is correct. "
+    - Example: input "Warrfarin" → summary starts with:
+      "Note: 'Warrfarin' was interpreted as 'Warfarin'. Please verify this is correct. "
+    - The "drugs" field in each interaction should use the CORRECTED name.
+
+    SEVERITY CLASSIFICATION RULES:
+    6. Do NOT classify as Major if both drugs are standard first-line combination
+       therapy for the same condition (e.g., ACE inhibitor + Metformin for T2DM with HTN,
+       Statin + Aspirin for cardiovascular prevention). Only classify as Major if the
+       FDA label explicitly states a Major or severe interaction.
+    7. Prefer Moderate over Major when the interaction is manageable with routine monitoring
+       and does not require avoiding the combination.
+
     IMPORTANT RULES:
     1. The "drugs" field MUST be an array with exactly 2 drug names (strings)
     2. NEVER use empty arrays [] for the "drugs" field
@@ -363,9 +472,15 @@ async def verify_drug_interaction(
     
     Output JSON only, no additional text."""
     
+    # ✅ 在 user prompt 明確提醒拼字檢查，讓 LLM 在看到藥物名稱時直接觸發
+    drug_list = ', '.join(request.drugs)
     user_prompt = f"""
     Patient Context: {request.patient_context or 'None'}
-    Drugs to Analyze: {', '.join(request.drugs)}
+    Drugs to Analyze: {drug_list}
+    
+    IMPORTANT: Before analyzing, carefully check if any drug name above appears misspelled
+    (e.g., extra letters, transposed letters). If so, you MUST start the "summary" field with:
+    "Note: '[original]' was interpreted as '[corrected]'. Please verify this is correct."
     
     Reference FDA Data:
     {fda_context}
@@ -384,7 +499,7 @@ async def verify_drug_interaction(
     for attempt in range(max_retries):
         try:
             completion = client.chat.completions.create(
-                model="gpt-4o-mini",
+                model="gpt-4.1-mini",
                 messages=[
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_prompt}
@@ -517,6 +632,12 @@ async def verify_drug_interaction(
         db.rollback()
 
     # 7. 返回結果
+    # ✅ 把 Python 層偵測到的拼字修正，直接加在 summary 最前面
+    #    不依賴 LLM，100% 保證出現
+    if spelling_corrections:
+        correction_note = "Note: " + "; ".join(spelling_corrections) + ". Please verify this is correct. "
+        summary = correction_note + summary
+
     return VerifyResponse(
         drugs_analyzed=request.drugs,
         interactions=interactions,

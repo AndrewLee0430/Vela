@@ -193,11 +193,18 @@ class PubMedClient:
         except httpx.TimeoutException as e:
             print(f"⚠️ PubMed fetch timeout: {e}")
             return []
-        
+
         except httpx.HTTPStatusError as e:
             print(f"⚠️ PubMed fetch HTTP error: {e.response.status_code}")
             return []
-        
+
+        except ValueError as e:
+            # Python 3.11+ httpx/asyncio 在處理某些 XML response 時可能拋出
+            # "second argument (exceptions) must be a non-empty sequence"
+            # 這是函式庫的已知邊緣情況，安全忽略並回傳空結果
+            print(f"⚠️ PubMed fetch ValueError (likely httpx/asyncio edge case): {e}")
+            return []
+
         except Exception as e:
             print(f"❌ PubMed fetch unexpected error: {type(e).__name__}: {e}")
             return []

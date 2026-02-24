@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, FormEvent, useRef, useEffect } from 'react';
+import { useState, FormEvent, useRef, useEffect, useCallback } from 'react';
 import { useAuth, SignedIn, SignedOut, RedirectToSignIn, UserButton } from '@clerk/nextjs';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -10,7 +10,6 @@ import Link from 'next/link';
 import CitationPanel, { Citation } from '../components/CitationPanel';
 import FeedbackBar from '../components/FeedbackBar';
 
-// ✅ 扩展常见问题建议（增加到 10 个）
 const defaultSuggestions = [
     "Metformin 的常見副作用有哪些？",
     "Warfarin 和哪些藥物有交互作用？",
@@ -24,10 +23,16 @@ const defaultSuggestions = [
     "Proton pump inhibitors 長期使用的風險？",
 ];
 
+// ✅ FIX 1: 自訂 FatalError
+// fetchEventSource 的 retry 機制判斷：
+//   - 若 onerror 丟出 FatalError → 停止 retry
+//   - 若 onerror 丟出其他 Error  → 繼續 retry（這會造成重複請求！）
+// 所以所有錯誤都必須包成 FatalError，才能阻止 5 個重複請求。
+class FatalError extends Error {}
+
 function ResearchForm() {
     const { getToken } = useAuth();
     
-    // 查询状态
     const [question, setQuestion] = useState('');
     const [answer, setAnswer] = useState('');
     const [citations, setCitations] = useState<Citation[]>([]);
@@ -35,16 +40,16 @@ function ResearchForm() {
     const [queryTime, setQueryTime] = useState<number | null>(null);
     const [error, setError] = useState<string>('');
     
-    // 自动滚动
     const answerRef = useRef<HTMLDivElement>(null);
-    
+    // ✅ FIX 2: ref 防止連點觸發多次請求（useState 在 async 中有 stale closure 問題）
+    const isRunningRef = useRef(false);
+
     useEffect(() => {
         if (answerRef.current && answer) {
             answerRef.current.scrollTop = answerRef.current.scrollHeight;
         }
     }, [answer]);
     
-    // ✅ 新增：Reset 功能
     const handleReset = () => {
         setQuestion('');
         setAnswer('');
@@ -52,28 +57,31 @@ function ResearchForm() {
         setQueryTime(null);
         setError('');
     };
-    
-    async function handleSubmit(e: FormEvent) {
-        e.preventDefault();
-        if (!question.trim()) return;
-        
+
+    const runSearch = useCallback(async (q: string) => {
+        if (!q.trim()) return;
+        if (isRunningRef.current) return; // 正在執行中，忽略重複觸發
+        isRunningRef.current = true;
+
         setAnswer('');
         setCitations([]);
         setQueryTime(null);
         setLoading(true);
         setError('');
-        
+
+        const controller = new AbortController();
+
         try {
-            const jwt = await getToken();
-            
+            // ✅ FIX 3: skipCache 強制取最新 token，不用快取的舊 token
+            const jwt = await getToken({ skipCache: true });
+
             if (!jwt) {
-                setError('❌ 認證失敗，請重新登入');
+                setError('認證失敗，請重新登入後再試');
                 setLoading(false);
+                isRunningRef.current = false;
                 return;
             }
-            
-            const controller = new AbortController();
-            
+
             await fetchEventSource('http://127.0.0.1:8000/api/research', {
                 signal: controller.signal,
                 method: 'POST',
@@ -81,91 +89,77 @@ function ResearchForm() {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${jwt}`,
                 },
-                body: JSON.stringify({
-                    question: question,
-                    max_results: 5
-                }),
-                
+                body: JSON.stringify({ question: q, max_results: 5 }),
+                openWhenHidden: true, // 切換 tab 時不斷線重連
+
                 async onopen(response) {
-                    if (response.ok) {
-                        return;
+                    if (response.ok) return;
+                    if (response.status === 403 || response.status === 401) {
+                        throw new FatalError('認證已過期，請重新整理頁面後再試');
                     }
-                    
-                    if (response.status === 403) {
-                        throw new Error('❌ 認證失敗 (403)，請重新整理頁面並登入');
-                    } else if (response.status === 401) {
-                        throw new Error('❌ 未授權 (401)，請重新登入');
-                    } else if (response.status >= 400) {
-                        throw new Error(`❌ 伺服器錯誤 (${response.status})`);
-                    }
+                    throw new FatalError(`伺服器錯誤 (${response.status})，請稍後再試`);
                 },
-                
+
                 onmessage(ev) {
                     try {
                         const data = JSON.parse(ev.data);
-                        
                         if (data.type === 'answer') {
                             setAnswer(prev => prev + data.content);
                         } else if (data.type === 'citations') {
                             setCitations(data.content);
                         } else if (data.type === 'error') {
                             setError(data.content);
-                            setAnswer(prev => prev + `\n\n❌ 錯誤: ${data.content}`);
                         } else if (data.type === 'done') {
                             setLoading(false);
-                            if (data.query_time_ms) {
-                                setQueryTime(data.query_time_ms);
-                            }
+                            if (data.query_time_ms) setQueryTime(data.query_time_ms);
                         }
                     } catch (e) {
                         console.error('Parse error:', e);
                     }
                 },
-                
+
                 onclose() {
                     setLoading(false);
                 },
-                
+
                 onerror(err) {
-                    console.error('SSE error:', err);
-                    controller.abort();
-                    setLoading(false);
-                    
-                    if (err instanceof Error) {
-                        setError(err.message);
-                        setAnswer(prev => prev + `\n\n${err.message}`);
-                    } else {
-                        setError('連線錯誤，請稍後再試');
-                        setAnswer(prev => prev + '\n\n❌ 連線錯誤，請稍後再試');
-                    }
-                    
-                    throw err;
+                    // ✅ 關鍵：一律包成 FatalError → fetchEventSource 不 retry
+                    if (err instanceof FatalError) throw err;
+                    throw new FatalError(
+                        err instanceof Error ? err.message : '連線中斷，請稍後再試'
+                    );
                 },
             });
+
         } catch (err: any) {
-            console.error('Request error:', err);
+            // ✅ 所有錯誤統一在這裡收口
+            // 不讓 throw 浮到 React 的 error boundary → 不會出現 Runtime Error overlay
+            controller.abort();
             setLoading(false);
-            const errorMsg = err.message || '未知錯誤';
-            setError(errorMsg);
-            setAnswer(errorMsg);
+            setError(err instanceof Error ? err.message : '發生未知錯誤，請稍後再試');
+        } finally {
+            isRunningRef.current = false;
         }
-    }
+    }, [getToken]);
     
-    function handleSuggestionClick(suggestion: string) {
+    async function handleSubmit(e: FormEvent) {
+        e.preventDefault();
+        await runSearch(question);
+    }
+
+    async function handleSuggestionClick(suggestion: string) {
         setQuestion(suggestion);
+        await runSearch(suggestion);
     }
     
     return (
         <div className="flex flex-col lg:flex-row gap-6 h-full">
-            {/* 左侧：对话区 */}
             <div className="flex-1 flex flex-col">
                 <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 flex flex-col flex-1">
                     <div className="flex justify-between items-center mb-4">
                         <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
                             💬 醫學研究助手
                         </h2>
-                        
-                        {/* ✅ 新增：Reset 按钮 */}
                         {(answer || question) && (
                             <button
                                 onClick={handleReset}
@@ -176,14 +170,12 @@ function ResearchForm() {
                         )}
                     </div>
                     
-                    {/* 错误提示 */}
                     {error && !loading && (
                         <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 rounded-lg border border-red-200 dark:border-red-800">
-                            {error}
+                            ❌ {error}
                         </div>
                     )}
                     
-                    {/* 答案显示区 */}
                     <div 
                         ref={answerRef}
                         className="flex-1 overflow-y-auto mb-4 min-h-[300px] max-h-[500px]"
@@ -193,8 +185,6 @@ function ResearchForm() {
                                 <p className="text-gray-500 dark:text-gray-400 mb-6">
                                     輸入您的醫學問題，我會根據 PubMed 文獻和 FDA 藥品資料為您解答
                                 </p>
-                                
-                                {/* 建议问题 */}
                                 <div className="space-y-2">
                                     <p className="text-sm text-gray-400 dark:text-gray-500">試試這些問題：</p>
                                     <div className="flex flex-wrap justify-center gap-2">
@@ -202,10 +192,12 @@ function ResearchForm() {
                                             <button
                                                 key={i}
                                                 onClick={() => handleSuggestionClick(suggestion)}
+                                                disabled={loading}
                                                 className="px-3 py-1.5 text-sm bg-gray-100 dark:bg-gray-700 
                                                          text-gray-700 dark:text-gray-300 rounded-full
                                                          hover:bg-blue-100 dark:hover:bg-blue-900 
                                                          hover:text-blue-700 dark:hover:text-blue-300
+                                                         disabled:opacity-50 disabled:cursor-not-allowed
                                                          transition-colors"
                                             >
                                                 {suggestion}
@@ -224,8 +216,6 @@ function ResearchForm() {
                                 {loading && (
                                     <span className="inline-block w-2 h-4 bg-blue-500 animate-pulse ml-1"></span>
                                 )}
-                                
-                                {/* Feedback Bar */}
                                 {!loading && answer && !error && (
                                     <FeedbackBar 
                                         query={question} 
@@ -237,14 +227,12 @@ function ResearchForm() {
                         )}
                     </div>
                     
-                    {/* 查询时间 */}
                     {queryTime && (
                         <div className="text-xs text-gray-400 dark:text-gray-500 mb-2">
                             查詢耗時: {(queryTime / 1000).toFixed(2)} 秒
                         </div>
                     )}
                     
-                    {/* 输入区 */}
                     <form onSubmit={handleSubmit} className="flex gap-2">
                         <input
                             type="text"
@@ -272,21 +260,17 @@ function ResearchForm() {
                                     搜尋中
                                 </>
                             ) : (
-                                <>
-                                    🔍 搜尋
-                                </>
+                                <>🔍 搜尋</>
                             )}
                         </button>
                     </form>
                     
-                    {/* 免责声明 */}
                     <p className="text-xs text-gray-400 dark:text-gray-500 mt-3 text-center">
                         ⚠️ 此資訊僅供參考，不構成醫療建議。請諮詢專業醫療人員。
                     </p>
                 </div>
             </div>
             
-            {/* 右侧：Citation 面板 */}
             <div className="lg:w-96">
                 <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 h-full max-h-[700px] overflow-hidden">
                     <CitationPanel 
@@ -302,7 +286,6 @@ function ResearchForm() {
 export default function Research() {
     return (
         <main className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
-            {/* Navigation */}
             <nav className="bg-white dark:bg-gray-800 shadow-sm">
                 <div className="container mx-auto px-4 py-3">
                     <div className="flex justify-between items-center">
@@ -311,30 +294,10 @@ export default function Research() {
                                 🏥 MediNotes
                             </Link>
                             <div className="hidden md:flex items-center gap-4">
-                                <Link 
-                                    href="/research"
-                                    className="text-blue-600 dark:text-blue-400 font-medium"
-                                >
-                                    Research
-                                </Link>
-                                <Link 
-                                    href="/verify" 
-                                    className="text-gray-600 dark:text-gray-400 hover:text-blue-600"
-                                >
-                                    Verify
-                                </Link>
-                                <Link 
-                                    href="/product"
-                                    className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
-                                >
-                                    Document
-                                </Link>
-                                <Link 
-                                    href="/history" 
-                                    className="text-gray-600 dark:text-gray-400 hover:text-blue-600"
-                                >
-                                    History
-                                </Link>
+                                <Link href="/research" className="text-blue-600 dark:text-blue-400 font-medium">Research</Link>
+                                <Link href="/verify" className="text-gray-600 dark:text-gray-400 hover:text-blue-600">Verify</Link>
+                                <Link href="/product" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100">Document</Link>
+                                <Link href="/history" className="text-gray-600 dark:text-gray-400 hover:text-blue-600">History</Link>
                             </div>
                         </div>
                         <UserButton showName={true} />
@@ -342,13 +305,11 @@ export default function Research() {
                 </div>
             </nav>
             
-            {/* Main Content */}
             <SignedIn>
                 <div className="container mx-auto px-4 py-8">
                     <ResearchForm />
                 </div>
             </SignedIn>
-            
             <SignedOut>
                 <RedirectToSignIn />
             </SignedOut>

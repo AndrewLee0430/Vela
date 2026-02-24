@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 
-// Citation 資料型別
 export interface Citation {
     id: number;
     source_type: 'pubmed' | 'fda' | 'local';
@@ -21,65 +20,25 @@ interface CitationPanelProps {
     isLoading?: boolean;
 }
 
-// 可信度標籤配置
 const credibilityConfig = {
-    'peer-reviewed': {
-        label: 'Peer Reviewed',
-        color: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-        stars: 5
-    },
-    'official': {
-        label: 'Official',
-        color: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-        stars: 5
-    },
-    'clinical-trial': {
-        label: 'Clinical Trial',
-        color: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
-        stars: 4
-    },
-    'review': {
-        label: 'Review Article',
-        color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
-        stars: 4
-    },
-    'internal': {
-        label: 'Internal',
-        color: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200',
-        stars: 3
-    }
+    'peer-reviewed': { label: 'Peer Reviewed', color: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200', stars: 5 },
+    'official':      { label: 'Official',      color: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',   stars: 5 },
+    'clinical-trial':{ label: 'Clinical Trial', color: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200', stars: 4 },
+    'review':        { label: 'Review Article', color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200', stars: 4 },
+    'internal':      { label: 'Internal',       color: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200',  stars: 3 }
 };
 
-// 來源類型配置
 const sourceTypeConfig = {
-    'pubmed': {
-        icon: '🔬',
-        label: 'PubMed',
-        color: 'text-green-600 dark:text-green-400'
-    },
-    'fda': {
-        icon: '💊',
-        label: 'FDA',
-        color: 'text-blue-600 dark:text-blue-400'
-    },
-    'local': {
-        icon: '📋',
-        label: 'Local',
-        color: 'text-gray-600 dark:text-gray-400'
-    }
+    'pubmed': { icon: '🔬', label: 'PubMed', color: 'text-green-600 dark:text-green-400' },
+    'fda':    { icon: '💊', label: 'FDA',    color: 'text-blue-600 dark:text-blue-400'   },
+    'local':  { icon: '📋', label: 'Local',  color: 'text-gray-600 dark:text-gray-400'   }
 };
 
 function StarRating({ count }: { count: number }) {
     return (
-        <span className="text-yellow-500 text-sm">
-            {/* 使用 SVG 星星代替 Unicode 字符，避免字體問題 */}
+        <span>
             {Array.from({ length: 5 }).map((_, i) => (
-                <svg
-                    key={i}
-                    className={`inline w-4 h-4 ${i < count ? 'fill-yellow-400' : 'fill-gray-300 dark:fill-gray-600'}`}
-                    viewBox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg"
-                >
+                <svg key={i} className={`inline w-4 h-4 ${i < count ? 'fill-yellow-400' : 'fill-gray-300 dark:fill-gray-600'}`} viewBox="0 0 20 20">
                     <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
                 </svg>
             ))}
@@ -87,12 +46,49 @@ function StarRating({ count }: { count: number }) {
     );
 }
 
+// ✅ 核心修復：把 snippet 裡的 raw markdown 清理成乾淨的摘要文字
+function extractAbstract(raw: string): string {
+    const lines = raw.split('\n');
+
+    // 找到 Abstract 標題行，取其後的內容
+    const abstractIdx = lines.findIndex(l =>
+        /^#{1,3}\s*abstract/i.test(l.trim())
+    );
+    
+    let text = '';
+    if (abstractIdx !== -1) {
+        text = lines.slice(abstractIdx + 1).join(' ').trim();
+    } else {
+        // 沒有 Abstract 標題：過濾掉 # 標題行和 **Key:** meta 行
+        text = lines
+            .filter(l => {
+                const t = l.trim();
+                return t.length > 0
+                    && !t.startsWith('#')
+                    && !/^\*\*(Authors?|Journal|PMID|Background|Methods?|Results?|Conclusions?|Objective)s?\*\*/i.test(t);
+            })
+            .join(' ')
+            .trim();
+    }
+
+    // ✅ 第二層清理：移除摘要內部的 **SECTION:** 標籤
+    // 例如 "**BACKGROUND:** xxx **METHODS:** yyy" → "xxx yyy"
+    text = text.replace(/\*\*[A-Z][A-Z\s\/]{1,20}:\*\*/g, '').trim();
+    // 清理多餘空白
+    text = text.replace(/\s{2,}/g, ' ').trim();
+
+    return text;
+}
+
 function CitationCard({ citation }: { citation: Citation }) {
     const [expanded, setExpanded] = useState(false);
-    
+
     const sourceConfig = sourceTypeConfig[citation.source_type];
-    const credConfig = credibilityConfig[citation.credibility];
-    
+    const credConfig   = credibilityConfig[citation.credibility];
+    const abstract     = extractAbstract(citation.snippet);
+    const isLong       = abstract.length > 200;
+    const display      = !expanded && isLong ? abstract.slice(0, 200) + '…' : abstract;
+
     return (
         <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-md transition-shadow bg-white dark:bg-gray-800">
             {/* Header */}
@@ -103,44 +99,44 @@ function CitationCard({ citation }: { citation: Citation }) {
                         [{citation.id}] {sourceConfig.label}
                     </span>
                 </div>
-                <span className={`text-xs px-2 py-1 rounded-full ${credConfig.color}`}>
+                <span className={`text-xs px-2 py-1 rounded-full flex-shrink-0 ml-2 ${credConfig.color}`}>
                     {credConfig.label}
                 </span>
             </div>
-            
+
             {/* Title */}
             <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-1 line-clamp-2">
                 {citation.title}
             </h4>
-            
-            {/* Meta info */}
+
+            {/* Authors / Journal / Year */}
             <div className="text-sm text-gray-500 dark:text-gray-400 mb-2">
                 {citation.authors && <span>{citation.authors}</span>}
                 {citation.journal && <span> • {citation.journal}</span>}
-                {citation.year && <span> ({citation.year})</span>}
+                {citation.year    && <span> ({citation.year})</span>}
             </div>
-            
-            {/* Credibility */}
-            <div className="flex items-center gap-2 mb-2">
+
+            {/* Stars */}
+            <div className="flex items-center gap-2 mb-3">
                 <span className="text-xs text-gray-500 dark:text-gray-400">可信度:</span>
                 <StarRating count={credConfig.stars} />
             </div>
-            
-            {/* Snippet (expandable) */}
-            <div className="text-sm text-gray-600 dark:text-gray-300">
-                <p className={expanded ? '' : 'line-clamp-3'}>
-                    {citation.snippet}
-                </p>
-                {citation.snippet.length > 200 && (
-                    <button
-                        onClick={() => setExpanded(!expanded)}
-                        className="text-blue-600 dark:text-blue-400 hover:underline text-xs mt-1"
-                    >
-                        {expanded ? '收起' : '展開更多'}
-                    </button>
-                )}
-            </div>
-            
+
+            {/* ✅ Abstract：純文字，不顯示任何 markdown 符號 */}
+            {display && (
+                <div className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+                    <p>{display}</p>
+                    {isLong && (
+                        <button
+                            onClick={() => setExpanded(!expanded)}
+                            className="text-blue-600 dark:text-blue-400 hover:underline text-xs mt-1"
+                        >
+                            {expanded ? '收起' : '展開更多'}
+                        </button>
+                    )}
+                </div>
+            )}
+
             {/* Link */}
             <a
                 href={citation.url}
@@ -182,15 +178,13 @@ export default function CitationPanel({ citations, isLoading }: CitationPanelPro
             <div className="h-full">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
                     📚 參考來源
-                    <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
-                        (載入中...)
-                    </span>
+                    <span className="text-sm font-normal text-gray-500 dark:text-gray-400">(載入中...)</span>
                 </h3>
                 <LoadingSkeleton />
             </div>
         );
     }
-    
+
     if (citations.length === 0) {
         return (
             <div className="h-full">
@@ -203,13 +197,12 @@ export default function CitationPanel({ citations, isLoading }: CitationPanelPro
             </div>
         );
     }
-    
-    // 統計各來源數量
+
     const sourceStats = citations.reduce((acc, c) => {
         acc[c.source_type] = (acc[c.source_type] || 0) + 1;
         return acc;
     }, {} as Record<string, number>);
-    
+
     return (
         <div className="h-full flex flex-col">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2 flex items-center gap-2">
@@ -218,27 +211,21 @@ export default function CitationPanel({ citations, isLoading }: CitationPanelPro
                     ({citations.length} 筆)
                 </span>
             </h3>
-            
-            {/* 來源統計 */}
+
             <div className="flex gap-2 mb-4 text-xs">
                 {Object.entries(sourceStats).map(([source, count]) => (
-                    <span
-                        key={source}
-                        className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-gray-600 dark:text-gray-300"
-                    >
+                    <span key={source} className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-gray-600 dark:text-gray-300">
                         {sourceTypeConfig[source as keyof typeof sourceTypeConfig]?.icon} {source}: {count}
                     </span>
                 ))}
             </div>
-            
-            {/* Citation 列表 */}
+
             <div className="flex-1 overflow-y-auto space-y-3">
                 {citations.map((citation) => (
                     <CitationCard key={citation.id} citation={citation} />
                 ))}
             </div>
-            
-            {/* Footer */}
+
             <div className="mt-4 pt-3 border-t border-gray-200 dark:border-gray-700">
                 <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
                     點擊「查看原文」可驗證來源
