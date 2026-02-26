@@ -11,37 +11,32 @@ import CitationPanel, { Citation } from '../components/CitationPanel';
 import FeedbackBar from '../components/FeedbackBar';
 
 const defaultSuggestions = [
-    "Metformin 的常見副作用有哪些？",
-    "Warfarin 和哪些藥物有交互作用？",
-    "老年患者使用 NSAIDs 需要注意什麼？",
-    "糖尿病患者的用藥注意事項？",
-    "高血壓藥物 ACE inhibitors 的禁忌症？",
-    "Statin 類藥物的肌肉副作用如何處理？",
-    "抗凝血劑 DOACs 與傳統 Warfarin 的比較？",
-    "孕婦使用抗生素的安全性？",
-    "Beta-blocker 在心衰竭的使用時機？",
-    "Proton pump inhibitors 長期使用的風險？",
+    "What are the common side effects of Metformin?",
+    "Which drugs interact with Warfarin?",
+    "What should I know about NSAIDs in elderly patients?",
+    "Medication safety for diabetic patients?",
+    "Contraindications of ACE inhibitors in hypertension?",
+    "How to manage statin-induced myopathy?",
+    "DOACs vs Warfarin — key differences?",
+    "Safety of antibiotics in pregnancy?",
+    "When to use beta-blockers in heart failure?",
+    "Long-term risks of proton pump inhibitors?",
 ];
 
-// ✅ FIX 1: 自訂 FatalError
-// fetchEventSource 的 retry 機制判斷：
-//   - 若 onerror 丟出 FatalError → 停止 retry
-//   - 若 onerror 丟出其他 Error  → 繼續 retry（這會造成重複請求！）
-// 所以所有錯誤都必須包成 FatalError，才能阻止 5 個重複請求。
+// FatalError tells fetchEventSource to stop retrying
 class FatalError extends Error {}
 
 function ResearchForm() {
     const { getToken } = useAuth();
-    
+
     const [question, setQuestion] = useState('');
     const [answer, setAnswer] = useState('');
     const [citations, setCitations] = useState<Citation[]>([]);
     const [loading, setLoading] = useState(false);
     const [queryTime, setQueryTime] = useState<number | null>(null);
     const [error, setError] = useState<string>('');
-    
+
     const answerRef = useRef<HTMLDivElement>(null);
-    // ✅ FIX 2: ref 防止連點觸發多次請求（useState 在 async 中有 stale closure 問題）
     const isRunningRef = useRef(false);
 
     useEffect(() => {
@@ -49,7 +44,7 @@ function ResearchForm() {
             answerRef.current.scrollTop = answerRef.current.scrollHeight;
         }
     }, [answer]);
-    
+
     const handleReset = () => {
         setQuestion('');
         setAnswer('');
@@ -60,7 +55,7 @@ function ResearchForm() {
 
     const runSearch = useCallback(async (q: string) => {
         if (!q.trim()) return;
-        if (isRunningRef.current) return; // 正在執行中，忽略重複觸發
+        if (isRunningRef.current) return;
         isRunningRef.current = true;
 
         setAnswer('');
@@ -72,11 +67,10 @@ function ResearchForm() {
         const controller = new AbortController();
 
         try {
-            // ✅ FIX 3: skipCache 強制取最新 token，不用快取的舊 token
             const jwt = await getToken({ skipCache: true });
 
             if (!jwt) {
-                setError('認證失敗，請重新登入後再試');
+                setError('Authentication required. Please sign in again.');
                 setLoading(false);
                 isRunningRef.current = false;
                 return;
@@ -90,14 +84,14 @@ function ResearchForm() {
                     'Authorization': `Bearer ${jwt}`,
                 },
                 body: JSON.stringify({ question: q, max_results: 5 }),
-                openWhenHidden: true, // 切換 tab 時不斷線重連
+                openWhenHidden: true,
 
                 async onopen(response) {
                     if (response.ok) return;
                     if (response.status === 403 || response.status === 401) {
-                        throw new FatalError('認證已過期，請重新整理頁面後再試');
+                        throw new FatalError('Session expired. Please refresh the page and sign in again.');
                     }
-                    throw new FatalError(`伺服器錯誤 (${response.status})，請稍後再試`);
+                    throw new FatalError(`Server error (${response.status}). Please try again.`);
                 },
 
                 onmessage(ev) {
@@ -123,25 +117,22 @@ function ResearchForm() {
                 },
 
                 onerror(err) {
-                    // ✅ 關鍵：一律包成 FatalError → fetchEventSource 不 retry
                     if (err instanceof FatalError) throw err;
                     throw new FatalError(
-                        err instanceof Error ? err.message : '連線中斷，請稍後再試'
+                        err instanceof Error ? err.message : 'Connection lost. Please try again.'
                     );
                 },
             });
 
         } catch (err: any) {
-            // ✅ 所有錯誤統一在這裡收口
-            // 不讓 throw 浮到 React 的 error boundary → 不會出現 Runtime Error overlay
             controller.abort();
             setLoading(false);
-            setError(err instanceof Error ? err.message : '發生未知錯誤，請稍後再試');
+            setError(err instanceof Error ? err.message : 'Unknown error. Please try again.');
         } finally {
             isRunningRef.current = false;
         }
     }, [getToken]);
-    
+
     async function handleSubmit(e: FormEvent) {
         e.preventDefault();
         await runSearch(question);
@@ -151,51 +142,52 @@ function ResearchForm() {
         setQuestion(suggestion);
         await runSearch(suggestion);
     }
-    
+
     return (
         <div className="flex flex-col lg:flex-row gap-6 h-full">
             <div className="flex-1 flex flex-col">
                 <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 flex flex-col flex-1">
                     <div className="flex justify-between items-center mb-4">
                         <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                            💬 醫學研究助手
+                            💬 Medical Research Assistant
                         </h2>
                         {(answer || question) && (
                             <button
                                 onClick={handleReset}
                                 className="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors flex items-center gap-1"
                             >
-                                🔄 重新查詢
+                                🔄 New Search
                             </button>
                         )}
                     </div>
-                    
+
                     {error && !loading && (
                         <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 rounded-lg border border-red-200 dark:border-red-800">
                             ❌ {error}
                         </div>
                     )}
-                    
-                    <div 
+
+                    <div
                         ref={answerRef}
                         className="flex-1 overflow-y-auto mb-4 min-h-[300px] max-h-[500px]"
                     >
                         {!answer && !loading && (
                             <div className="text-center py-12">
                                 <p className="text-gray-500 dark:text-gray-400 mb-6">
-                                    輸入您的醫學問題，我會根據 PubMed 文獻和 FDA 藥品資料為您解答
+                                    Ask a clinical question — answers are grounded in PubMed literature and FDA drug data.
+                                    Ask in any language.
                                 </p>
                                 <div className="space-y-2">
-                                    <p className="text-sm text-gray-400 dark:text-gray-500">試試這些問題：</p>
+                                    <p className="text-sm text-gray-400 dark:text-gray-500">Try these:</p>
                                     <div className="flex flex-wrap justify-center gap-2">
                                         {defaultSuggestions.map((suggestion, i) => (
                                             <button
                                                 key={i}
                                                 onClick={() => handleSuggestionClick(suggestion)}
                                                 disabled={loading}
-                                                className="px-3 py-1.5 text-sm bg-gray-100 dark:bg-gray-700 
+                                                className="px-3 py-1.5 text-sm bg-gray-100 dark:bg-gray-700
                                                          text-gray-700 dark:text-gray-300 rounded-full
-                                                         hover:bg-blue-100 dark:hover:bg-blue-900 
+                                                         hover:bg-blue-100 dark:hover:bg-blue-900
                                                          hover:text-blue-700 dark:hover:text-blue-300
                                                          disabled:opacity-50 disabled:cursor-not-allowed
                                                          transition-colors"
@@ -207,7 +199,7 @@ function ResearchForm() {
                                 </div>
                             </div>
                         )}
-                        
+
                         {(answer || loading) && (
                             <div className="prose prose-blue dark:prose-invert max-w-none">
                                 <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>
@@ -217,30 +209,30 @@ function ResearchForm() {
                                     <span className="inline-block w-2 h-4 bg-blue-500 animate-pulse ml-1"></span>
                                 )}
                                 {!loading && answer && !error && (
-                                    <FeedbackBar 
-                                        query={question} 
-                                        response={answer} 
-                                        category="research" 
+                                    <FeedbackBar
+                                        query={question}
+                                        response={answer}
+                                        category="research"
                                     />
                                 )}
                             </div>
                         )}
                     </div>
-                    
+
                     {queryTime && (
                         <div className="text-xs text-gray-400 dark:text-gray-500 mb-2">
-                            查詢耗時: {(queryTime / 1000).toFixed(2)} 秒
+                            Query time: {(queryTime / 1000).toFixed(2)}s
                         </div>
                     )}
-                    
+
                     <form onSubmit={handleSubmit} className="flex gap-2">
                         <input
                             type="text"
                             value={question}
                             onChange={(e) => setQuestion(e.target.value)}
-                            placeholder="輸入您的醫學問題..."
-                            className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 
-                                     rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent 
+                            placeholder="Ask a clinical question in any language..."
+                            className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600
+                                     rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent
                                      dark:bg-gray-700 dark:text-white"
                             disabled={loading}
                         />
@@ -257,24 +249,24 @@ function ResearchForm() {
                                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                                     </svg>
-                                    搜尋中
+                                    Searching
                                 </>
                             ) : (
-                                <>🔍 搜尋</>
+                                <>🔍 Search</>
                             )}
                         </button>
                     </form>
-                    
+
                     <p className="text-xs text-gray-400 dark:text-gray-500 mt-3 text-center">
-                        ⚠️ 此資訊僅供參考，不構成醫療建議。請諮詢專業醫療人員。
+                        ⚠️ For reference only. Not a substitute for professional clinical judgment.
                     </p>
                 </div>
             </div>
-            
+
             <div className="lg:w-96">
                 <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 h-full max-h-[700px] overflow-hidden">
-                    <CitationPanel 
-                        citations={citations} 
+                    <CitationPanel
+                        citations={citations}
                         isLoading={loading && citations.length === 0}
                     />
                 </div>
@@ -304,7 +296,7 @@ export default function Research() {
                     </div>
                 </div>
             </nav>
-            
+
             <SignedIn>
                 <div className="container mx-auto px-4 py-8">
                     <ResearchForm />

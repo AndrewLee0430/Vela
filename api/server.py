@@ -141,6 +141,8 @@ You are a medical communication specialist helping doctors write patient educati
 
 Your ONLY job is to translate the doctor's existing notes into clear, warm, patient-friendly language.
 
+LANGUAGE RULE: Always respond in the same language as the doctor's input notes. If the notes are in Chinese, respond in Chinese. If in English, respond in English. Match the input language exactly.
+
 STRICT RULES:
 1. TRANSLATE ONLY — do not add any clinical information, drug dosages, specific lab thresholds,
    or medical advice that is NOT explicitly stated in the doctor's notes.
@@ -407,7 +409,7 @@ async def verify_drug_interaction(
         return VerifyResponse(
             drugs_analyzed=request.drugs,
             interactions=[],
-            summary="無法在 FDA 資料庫中找到這些藥物的標籤資訊，請確認拼字或使用英文藥名。",
+            summary="No FDA label data found for these drugs. Please check the spelling or use the English drug name.",
             risk_level="Unknown",
             query_time_ms=int((time.time() - start_time) * 1000)
         )
@@ -418,6 +420,8 @@ async def verify_drug_interaction(
     system_prompt = """You are a clinical pharmacist. Analyze the provided FDA drug labels for interactions.
     Identify interactions between the listed drugs.
     Classify severity as: Critical, Major, Moderate, Minor.
+    
+    LANGUAGE RULE: Always respond in English regardless of input language.
 
     For each interaction you MUST include ALL of the following:
     1. Mechanism: Why this interaction occurs (pharmacokinetic or pharmacodynamic).
@@ -565,7 +569,7 @@ async def verify_drug_interaction(
                 continue
             else:
                 # 最后一次尝试也失败了
-                summary = f"分析失敗，已重試 {max_retries} 次。錯誤: {str(e)}"
+                summary = f"Analysis failed after {max_retries} retries. Error: {str(e)}"
                 risk_level = "Unknown"
     
     # ✅ 在重试循环外生成 summary
@@ -586,7 +590,7 @@ async def verify_drug_interaction(
             ):
                 summary_parts.append(f"{count} 個{severity}")
             
-            summary = f"發現 {len(interactions)} 個藥物交互作用：{', '.join(summary_parts)}。請參閱下方詳細說明並諮詢專業醫療人員。"
+            summary = f"Found {len(interactions)} drug interaction(s): {', '.join(summary_parts)}. Please review the details below and consult a healthcare professional."
             
             # 根據最高嚴重度設定 risk_level
             if any(i.severity == "Critical" for i in interactions):
@@ -599,7 +603,7 @@ async def verify_drug_interaction(
                 risk_level = "Minor"
         else:
             # 沒有找到交互作用
-            summary = "在提供的 FDA 資料中未發現顯著的藥物交互作用。但這不代表完全沒有風險，請諮詢專業醫療人員。"
+            summary = "No significant drug interactions found in the FDA data. This does not eliminate all risk — please consult a healthcare professional."
             risk_level = "Low"
 
     elapsed_ms = int((time.time() - start_time) * 1000)

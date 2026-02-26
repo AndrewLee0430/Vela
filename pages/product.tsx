@@ -70,20 +70,9 @@ function PatientLetterForm() {
                 },
 
                 onmessage(ev) {
-                    // ✅ 後端改用 JSON 格式：{ "text": "..." }
-                    //    直接 parse 後串接，保留原始換行，不會斷行
-                    try {
-                        const data = JSON.parse(ev.data);
-                        if (data.text) {
-                            accumulated += data.text;
-                            if (accumulated.trim()) setOutput(accumulated);
-                        }
-                    } catch (e) {
-                        // 非 JSON 的舊格式 fallback
-                        if (ev.data && ev.data.trim()) {
-                            accumulated += ev.data;
-                            setOutput(accumulated);
-                        }
+                    if (ev.data && ev.data.trim() !== '') {
+                        accumulated += ev.data + '\n';
+                        setOutput(accumulated);
                     }
                 },
 
@@ -127,8 +116,8 @@ function PatientLetterForm() {
                             What this tool does
                         </h3>
                         <p className="text-sm text-blue-800 dark:text-blue-200">
-                            Converts medical jargon into patient-friendly language.
-                            For example: <em>"eGFR 41, consider adjusting Metformin"</em> becomes{' '}
+                            Converts medical jargon into patient-friendly language. For example:{' '}
+                            <em>"eGFR 41, consider adjusting Metformin"</em> becomes{' '}
                             <em>"Your kidney filtering function has recently decreased, and we will review whether your current diabetes medication remains appropriate."</em>
                         </p>
                         <p className="text-sm text-blue-800 dark:text-blue-200 mt-2">
@@ -145,7 +134,7 @@ function PatientLetterForm() {
             )}
 
             <form onSubmit={handleSubmit} className="space-y-6 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
-                
+
                 <div className="space-y-2">
                     <label htmlFor="date" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                         Date of Visit
@@ -187,8 +176,8 @@ Plan to review medications and repeat renal function in 4 weeks."
                     </p>
                 </div>
 
-                <button 
-                    type="submit" 
+                <button
+                    type="submit"
                     disabled={loading || !notes.trim()}
                     className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200"
                 >
@@ -213,8 +202,7 @@ Plan to review medications and repeat renal function in 4 weeks."
                             📋 Copy to Clipboard
                         </button>
                     </div>
-                    
-                    {/* Review reminder */}
+
                     <div className="bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3 mb-6">
                         <p className="text-sm text-yellow-800 dark:text-yellow-200">
                             ⚠️ <strong>Please review before sending.</strong>{' '}
@@ -237,13 +225,13 @@ Plan to review medications and repeat renal function in 4 weeks."
 
             <div className="mt-8 text-center text-xs text-gray-500 dark:text-gray-400">
                 <p>This tool translates your notes only. It does not provide clinical recommendations.</p>
-                <p className="mt-1">🔒 Protected by authentication, audit logging, and PHI detection</p>
+                <p className="mt-1">🔒 De-identified data only · No PHI stored</p>
             </div>
-            
+
             {showToast && (
-                <Toast 
-                    message="✓ 已複製到剪貼簿" 
-                    onClose={() => setShowToast(false)} 
+                <Toast
+                    message="✓ Copied to clipboard"
+                    onClose={() => setShowToast(false)}
                 />
             )}
         </div>
@@ -264,7 +252,7 @@ export default function Product() {
                                 <Link href="/research" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100">Research</Link>
                                 <Link href="/verify" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100">Verify</Link>
                                 <Link href="/product" className="text-blue-600 dark:text-blue-400 font-medium">Document</Link>
-                                <Link href="/history" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:invoke:text-gray-100">History</Link>
+                                <Link href="/history" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100">History</Link>
                             </div>
                         </div>
                         <UserButton showName={true} />
@@ -275,7 +263,6 @@ export default function Product() {
             <SignedIn>
                 <PatientLetterForm />
             </SignedIn>
-            
             <SignedOut>
                 <RedirectToSignIn />
             </SignedOut>

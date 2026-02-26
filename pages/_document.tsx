@@ -1,16 +1,15 @@
-import { Html, Head, Main, NextScript } from 'next/document';
+import { Html, Head, Main, NextScript } from 'next/document'
 
 export default function Document() {
   return (
-    <Html lang="en">
+    <Html>
       <Head>
-        <title>Healthcare Consultation Assistant</title>
-        <meta name="description" content="AI-powered medical consultation summaries" />
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
       </Head>
       <body>
         <Main />
         <NextScript />
       </body>
     </Html>
-  );
+  )
 }
