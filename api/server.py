@@ -18,7 +18,7 @@ from contextlib import asynccontextmanager
 from typing import Optional
 
 from fastapi import FastAPI, Depends, HTTPException, Request
-from fastapi.responses import StreamingResponse, FileResponse
+from fastapi.responses import StreamingResponse, FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
@@ -62,13 +62,61 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# CORS middleware
+# ============================================================
+# Rate Limiter（Middleware 實作，避免與 FastAPI Depends 衝突）
+# 每個 IP 的請求計數存在記憶體，重啟後清空
+# ============================================================
+import time as _time
+from collections import defaultdict
+
+_rate_store: dict = defaultdict(list)  # {ip: [timestamp, ...]}
+
+RATE_LIMITS = {
+    "/api/research":     (30, 60),   # 30次/60秒
+    "/api/verify":       (30, 60),
+    "/api/consultation": (20, 60),
+    "/api/feedback":     (10, 60),
+}
+
+@app.middleware("http")
+async def rate_limit_middleware(request: Request, call_next):
+    path = request.url.path
+    if path not in RATE_LIMITS:
+        return await call_next(request)
+
+    ip = request.client.host if request.client else "unknown"
+    limit, window = RATE_LIMITS[path]
+    now = _time.time()
+
+    # 清除過期記錄
+    _rate_store[f"{ip}:{path}"] = [
+        t for t in _rate_store[f"{ip}:{path}"] if now - t < window
+    ]
+
+    if len(_rate_store[f"{ip}:{path}"]) >= limit:
+        return JSONResponse(
+            status_code=429,
+            content={"detail": f"Rate limit exceeded. Max {limit} requests per {window}s."}
+        )
+
+    _rate_store[f"{ip}:{path}"].append(now)
+    return await call_next(request)
+
+# ============================================================
+# CORS
+# 本機開發：allow_origins=["*"]
+# 正式環境：從 ALLOWED_ORIGINS 環境變數讀取，限制為實際網域
+# .env 範例：ALLOWED_ORIGINS=https://vela.yourdomain.com,https://www.vela.yourdomain.com
+# ============================================================
+_raw_origins = os.getenv("ALLOWED_ORIGINS", "")
+ALLOWED_ORIGINS = [o.strip() for o in _raw_origins.split(",") if o.strip()] or ["*"]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST"],
+    allow_headers=["Authorization", "Content-Type"],
 )
 
 # ============================================================
@@ -256,7 +304,7 @@ def consultation_summary(
 
 @app.post("/api/research")
 async def research_query(
-    request: ResearchRequest,
+    body: ResearchRequest,
     creds: Optional[HTTPAuthorizationCredentials] = Depends(optional_auth),
     db: Session = Depends(get_db)
 ):
@@ -268,7 +316,7 @@ async def research_query(
 
         try:
             # ── Guard: Prompt injection + 非醫療意圖 ──────────────
-            passed, guard_error = await run_guards(request.question)
+            passed, guard_error = await run_guards(body.question)
             if not passed:
                 yield f"data: {json.dumps({'type': 'error', 'content': guard_error}, ensure_ascii=False)}\n\n"
                 yield f"data: {json.dumps({'type': 'done'})}\n\n"
@@ -278,16 +326,16 @@ async def research_query(
             yield f"data: {json.dumps({'type': 'status', 'content': 'Searching medical literature...'}, ensure_ascii=False)}\n\n"
 
             documents, retrieval_status = await retriever.retrieve(
-                query=request.question,
-                max_results=request.max_results or 5,
-                source_filter=request.sources
+                query=body.question,
+                max_results=body.max_results or 5,
+                source_filter=body.sources
             )
 
             # ── Status 2: 開始生成 ────────────────────────────────
             yield f"data: {json.dumps({'type': 'status', 'content': 'Analyzing documents...'}, ensure_ascii=False)}\n\n"
 
             async for event in generator.generate_stream(
-                question=request.question,
+                question=body.question,
                 documents=documents,
                 retrieval_status=retrieval_status,
                 query_type="research"
@@ -308,7 +356,7 @@ async def research_query(
                             id=f"res_{int(time.time()*1000)}",
                             user_id=user_id,
                             action="research",
-                            query_content=PHIDetector.sanitize_for_log(request.question),
+                            query_content=PHIDetector.sanitize_for_log(body.question),
                             resource_ids=[c.get('source_id') for c in citations_data],
                             ip_address="0.0.0.0"
                         )
@@ -329,7 +377,7 @@ async def research_query(
                         history = ChatHistory(
                             user_id=user_id,
                             session_type="research",
-                            question=PHIDetector.sanitize_for_log(request.question),
+                            question=PHIDetector.sanitize_for_log(body.question),
                             answer=full_answer
                         )
                         db.add(history)
@@ -365,7 +413,7 @@ async def get_suggestions(
 
 @app.post("/api/verify", response_model=VerifyResponse)
 async def verify_drug_interaction(
-    request: VerifyRequest,
+    body: VerifyRequest,
     creds: Optional[HTTPAuthorizationCredentials] = Depends(optional_auth),
     db: Session = Depends(get_db)
 ):
@@ -395,7 +443,7 @@ async def verify_drug_interaction(
         "prednisone", "levothyroxine", "gabapentin", "sertraline", "losartan",
     ]
 
-    for drug in request.drugs:
+    for drug in body.drugs:
         labels = await fda_client.search_drug_labels(drug, limit=1)
         if labels:
             drug_labels.append(labels[0])
@@ -433,13 +481,13 @@ async def verify_drug_interaction(
     # 改用 LLM 根據藥理知識分析，不直接回傳空結果
     # ─────────────────────────────────────────────────────────
     if not drug_labels:
-        print(f"⚠️ No FDA labels found for {request.drugs}, falling back to LLM knowledge")
+        print(f"⚠️ No FDA labels found for {body.drugs}, falling back to LLM knowledge")
         try:
             db.add(AuditLog(
                 id=f"ver_{int(time.time()*1000)}",
                 user_id=user_id,
                 action="verify_fallback",
-                query_content=f"No FDA data, LLM fallback for: {request.drugs}",
+                query_content=f"No FDA data, LLM fallback for: {body.drugs}",
                 ip_address="0.0.0.0"
             ))
             db.commit()
@@ -470,8 +518,8 @@ CRITICAL: Return valid JSON only with this exact structure:
     "risk_level": "Major"
 }"""
 
-        fallback_user = f"""Analyze the drug interaction between: {', '.join(request.drugs)}
-Patient context: {request.patient_context or 'None'}
+        fallback_user = f"""Analyze the drug interaction between: {', '.join(body.drugs)}
+Patient context: {body.patient_context or 'None'}
 
 Note: These may be drug class names (e.g. SSRIs, NSAIDs, beta-blockers).
 If so, analyze the class interaction and note that specific drug choice within the class may affect severity."""
@@ -502,7 +550,7 @@ If so, analyze the class interaction and note that specific drug choice within t
             fb_summary = "⚠️ No FDA label data found for these drugs. " + fb_analysis.get("summary", "")
             fb_risk = fb_analysis.get("risk_level", "Unknown")
             return VerifyResponse(
-                drugs_analyzed=request.drugs,
+                drugs_analyzed=body.drugs,
                 interactions=fb_interactions,
                 summary=fb_summary,
                 risk_level=fb_risk,
@@ -511,7 +559,7 @@ If so, analyze the class interaction and note that specific drug choice within t
         except Exception as e:
             print(f"❌ Verify fallback failed: {e}")
             return VerifyResponse(
-                drugs_analyzed=request.drugs,
+                drugs_analyzed=body.drugs,
                 interactions=[],
                 summary="No FDA label data found. Unable to analyze interaction. Please use specific drug names.",
                 risk_level="Unknown",
@@ -577,9 +625,9 @@ If so, analyze the class interaction and note that specific drug choice within t
 
     Output JSON only, no additional text."""
 
-    drug_list = ', '.join(request.drugs)
+    drug_list = ', '.join(body.drugs)
     user_prompt = f"""
-    Patient Context: {request.patient_context or 'None'}
+    Patient Context: {body.patient_context or 'None'}
     Drugs to Analyze: {drug_list}
 
     IMPORTANT: Before analyzing, carefully check if any drug name above appears misspelled
@@ -689,7 +737,7 @@ If so, analyze the class interaction and note that specific drug choice within t
             id=f"ver_{int(time.time()*1000)}",
             user_id=user_id,
             action="verify",
-            query_content=f"Checked: {request.drugs}",
+            query_content=f"Checked: {body.drugs}",
             ip_address="0.0.0.0"
         )
         db.add(audit_log)
@@ -700,7 +748,7 @@ If so, analyze the class interaction and note that specific drug choice within t
         history = ChatHistory(
             user_id=user_id,
             session_type="verify",
-            question=f"Drugs: {', '.join(request.drugs)}",
+            question=f"Drugs: {', '.join(body.drugs)}",
             answer=summary
         )
         db.add(history)
@@ -714,7 +762,7 @@ If so, analyze the class interaction and note that specific drug choice within t
         summary = correction_note + summary
 
     return VerifyResponse(
-        drugs_analyzed=request.drugs,
+        drugs_analyzed=body.drugs,
         interactions=interactions,
         summary=summary,
         risk_level=risk_level,

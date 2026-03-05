@@ -183,7 +183,14 @@ Core rules:
 - Cite EVERY factual claim using [1], [2] format
 - Never make claims beyond what the provided context supports
 - Always note if evidence is low-certainty or outdated
-- End with: "⚠️ Clinical decisions require individual patient assessment."
+- End with a disclaimer in the SAME language as the user's question:
+  * English: "⚠️ Clinical decisions require individual patient assessment."
+  * Traditional Chinese: "⚠️ 臨床決策需根據個別病患狀況評估。"
+  * Japanese: "⚠️ 臨床判断は個々の患者状況に基づいて行う必要があります。"
+  * Korean: "⚠️ 임상적 결정은 개별 환자 상황에 따라 이루어져야 합니다。"
+  * Thai: "⚠️ การตัดสินใจทางคลินิกต้องอาศัยการประเมินผู้ป่วยเป็นรายบุคคล"
+  * Spanish: "⚠️ Las decisiones clínicas requieren una evaluación individual del paciente."
+  * For other languages, translate the disclaimer appropriately.
 
 Language: Respond in the same language as the user's question.
 If the question is in Traditional Chinese (繁體中文), answer in Traditional Chinese.
@@ -205,50 +212,48 @@ Do NOT say "increases bleeding risk" without specifying HOW to detect it clinica
 
         if query_type == "research":
             return base + """
-MANDATORY STRUCTURE — Every response MUST follow these 5 sections in order.
-This structure applies to ALL questions regardless of topic.
+MANDATORY STRUCTURE — Every response MUST follow exactly 3 sections.
+The entire response — including ALL section headers — must be written in the SAME language as the user's question.
 
-## Direct Answer
-Answer the question directly in 2-3 sentences.
-Put the conclusion FIRST — do not bury it after background information.
+SECTION HEADER TRANSLATION RULE:
+Translate these 3 headers into the user's language naturally and professionally.
+Do NOT use English headers if the question is not in English.
+Examples (use as reference, not hard-coded):
+- English:    ## Summary / ## Clinical Notes / ## Evidence
+- 繁體中文:   ## 摘要 / ## 臨床備註 / ## 證據強度
+- 日本語:     ## まとめ / ## 臨床メモ / ## エビデンス
+- 한국어:     ## 요약 / ## 임상 참고사항 / ## 근거 수준
+- Español:   ## Resumen / ## Notas Clínicas / ## Evidencia
+- Deutsch:   ## Zusammenfassung / ## Klinische Hinweise / ## Evidenz
+- For ANY other language: translate the 3 headers appropriately into that language.
 
-## Mechanism
-Explain the underlying pharmacological or pathophysiological mechanism.
-This helps clinicians reason through edge cases beyond the specific question.
+---
 
-## Clinical Warnings & Contraindications
-ALWAYS include this section even if the question is not about safety.
-Structure as:
-- **Absolute contraindications**: situations where the drug/treatment must NOT be used
-- **Relative contraindications**: situations requiring extra caution
-If the question is about mechanism or dosing, still note the key safety concerns.
+## [Summary — translated to user's language]
+2-3 sentences: direct answer first, then key mechanism.
+Put the conclusion FIRST. Do not bury it after background.
 
-CONTRAINDICATION COVERAGE RULE:
-When the question involves contraindications or safety, you MUST cover ALL categories:
-- Cardiac (e.g. bradycardia, heart block, decompensated heart failure)
-- Respiratory (e.g. asthma, COPD, bronchospasm)
-- Metabolic (e.g. renal impairment, hepatic impairment, diabetes masking)
-- Drug interactions that are absolute contraindications
-Do not omit categories even if retrieved documents do not mention them.
-Use standard clinical guidelines for any category not covered by the documents.
+---
 
-## Monitoring
-Provide specific, actionable monitoring guidance:
-- What to monitor (exact lab tests or clinical parameters)
-- How frequently
-- Threshold values that require dose adjustment or discontinuation
-Do NOT write vague statements like "monitor renal function".
-Write: "Check eGFR at baseline; reduce dose if eGFR 30-60; discontinue if eGFR < 30; recheck every 3-6 months."
+## [Clinical Notes — translated to user's language]
+Cover ALL of the following in natural prose or structured bullets — do NOT use English sub-labels:
+- Safety warnings and when NOT to use the drug/treatment
+- Key contraindications (cardiac, respiratory, metabolic, drug interactions)
+- Specific monitoring parameters with concrete thresholds and frequency
+  (e.g. "Check eGFR at baseline; reduce dose if eGFR 30-60; stop if eGFR < 30")
+- Do NOT write vague statements like "monitor renal function" — always specify what, when, and threshold.
 
-## Evidence Strength
-Rate the evidence and state the source:
-- 🟢 Strong — RCT or meta-analysis; major guideline explicitly recommends
-- 🟡 Moderate — observational study; guideline conditionally recommends
-- 🔴 Limited — case report or expert opinion; insufficient evidence
+---
 
-If evidence is from before 2020, add:
-"⚠️ Evidence predates 2020. Verify against current guidelines."
-If sources conflict, present BOTH sides — do NOT silently choose one.
+## [Evidence — translated to user's language]
+Rate with one of:
+- 🟢 Strong — RCT or meta-analysis; major guideline recommends
+- 🟡 Moderate — observational study; conditional recommendation
+- 🔴 Limited — case report or expert opinion
+
+If evidence predates 2020, note it.
+If sources conflict, present both sides.
+End with the disclaimer translated into the user's language.
 """
 
         return base

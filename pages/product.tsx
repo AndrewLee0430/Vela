@@ -70,9 +70,15 @@ function PatientLetterForm() {
                 },
 
                 onmessage(ev) {
-                    if (ev.data && ev.data.trim() !== '') {
-                        accumulated += ev.data + '\n';
-                        setOutput(accumulated);
+                    if (!ev.data || ev.data.trim() === '') return;
+                    try {
+                        const data = JSON.parse(ev.data);
+                        if (data.text) {
+                            accumulated += data.text;
+                            setOutput(accumulated);
+                        }
+                    } catch {
+                        // 非 JSON 格式忽略
                     }
                 },
 
