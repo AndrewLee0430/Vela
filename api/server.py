@@ -43,7 +43,7 @@ from api.models.sql_models import AuditLog, UserFeedback, ChatHistory
 
 from api.models.explain_schemas import ExplainRequest
 from api.services.explain_service import run_explain_pipeline
-
+from api.utils.language_detector import detect_language, get_language_instruction  # ← v2.5
 
 # ============================================================
 # 生命週期管理
@@ -225,11 +225,13 @@ async def research_query(
 
             yield f"data: {json.dumps({'type': 'status', 'content': 'Analyzing documents...'}, ensure_ascii=False)}\n\n"
 
+            lang = detect_language(body.question)
             async for event in generator.generate_stream(
                 question=body.question,
                 documents=documents,
                 retrieval_status=retrieval_status,
-                query_type="research"
+                query_type="research",
+                lang=lang
             ):
                 if event.type == StreamEventType.ANSWER:
                     content = event.content or ""
@@ -294,6 +296,18 @@ async def verify_drug_interaction(
 ):
     start_time = time.time()
     user_id = get_user_id(creds)
+
+    # ── Guard：藥物名稱不需要間接 injection 掃描 ──────────────────
+    verify_input = " ".join(body.drugs) + (f" {body.patient_context}" if body.patient_context else "")
+    passed, guard_error = await run_guards(verify_input, skip_indirect=True)
+    if not passed:
+        return JSONResponse(status_code=400, content={"detail": guard_error})
+
+    # ── 語言偵測：優先用 patient_context（含用戶語言），否則從藥名猜 ──
+    verify_query = body.patient_context or " ".join(body.drugs)
+    lang = detect_language(verify_query)
+    lang_instruction = get_language_instruction(lang)
+
     drug_labels = []
     spelling_corrections: list[str] = []
 
@@ -354,11 +368,14 @@ Return valid JSON only:
 
         try:
             client_fb = OpenAI()
+            fb_user_content = f"Analyze interaction between: {', '.join(body.drugs)}\nContext: {body.patient_context or 'None'}"
+            if lang_instruction:
+                fb_user_content += f"\n\n{lang_instruction}"
             fb = client_fb.chat.completions.create(
                 model="gpt-4.1-mini",
                 messages=[
                     {"role": "system", "content": fallback_system},
-                    {"role": "user", "content": f"Analyze interaction between: {', '.join(body.drugs)}\nContext: {body.patient_context or 'None'}"}
+                    {"role": "user", "content": fb_user_content}
                 ],
                 response_format={"type": "json_object"}
             )
@@ -391,10 +408,13 @@ Return valid JSON only:
 
     fda_context = "\n".join([label.to_text() for label in drug_labels])
 
+    # ── 移除 "LANGUAGE RULE: Always respond in English"，改由語言偵測控制 ──
     system_prompt = """You are a clinical pharmacist. Analyze FDA drug labels for interactions.
 Classify severity as: Critical, Major, Moderate, Minor.
-LANGUAGE RULE: Always respond in English.
 For each interaction include: mechanism, dose context, warning signs, monitoring parameters, safer alternative.
+
+Supported languages: English, 繁體中文, 日本語, 한국어, Español, Français, Deutsch, Italiano, Português, ภาษาไทย.
+IMPORTANT: Respond in the SAME language as the patient_context or question. An explicit language instruction will be appended — follow it exactly.
 
 Return valid JSON only:
 {"interactions":[{"drugs":["Drug1","Drug2"],"severity":"Major","description":"...","recommendation":"..."}],"summary":"...","risk_level":"Major"}"""
@@ -405,13 +425,18 @@ Return valid JSON only:
     risk_level = "Unknown"
     analysis_success = False
 
+    # ── user content 加入語言指令 ──────────────────────────────────
+    main_user_content = f"Patient Context: {body.patient_context or 'None'}\nDrugs: {', '.join(body.drugs)}\n\nFDA Data:\n{fda_context}"
+    if lang_instruction:
+        main_user_content += f"\n\n{lang_instruction}"
+
     for attempt in range(2):
         try:
             completion = client.chat.completions.create(
                 model="gpt-4.1-mini",
                 messages=[
                     {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": f"Patient Context: {body.patient_context or 'None'}\nDrugs: {', '.join(body.drugs)}\n\nFDA Data:\n{fda_context}"}
+                    {"role": "user", "content": main_user_content}
                 ],
                 response_format={"type": "json_object"}
             )

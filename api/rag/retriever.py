@@ -53,7 +53,7 @@ class HybridRetriever:
         self.pubmed = PubMedClient() if enable_pubmed else None
         self.fda = FDAClient() if enable_fda else None
         self.llm = OpenAI()
-        self.reranker = Reranker(top_k=5)
+        self.reranker = Reranker(top_k=8)
 
     # ─────────────────────────────────────────────
     # 公開介面
@@ -118,7 +118,7 @@ class HybridRetriever:
 
         # Step 5：排序，取候選
         unique_docs.sort(key=lambda x: x.relevance_score, reverse=True)
-        candidates = unique_docs[:max_results * 3]  # 多取供相關性驗證
+        candidates = unique_docs[:max_results * 4]  # 多取供相關性驗證
 
         # Step 6：相關性驗證
         relevant_docs = await self._filter_by_relevance(query, candidates)
