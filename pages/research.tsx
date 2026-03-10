@@ -7,6 +7,7 @@ import remarkGfm from 'remark-gfm';
 import remarkBreaks from 'remark-breaks';
 import { fetchEventSource } from '@microsoft/fetch-event-source';
 import Link from 'next/link';
+import Image from 'next/image';
 import CitationPanel, { Citation } from '../components/CitationPanel';
 import FeedbackBar from '../components/FeedbackBar';
 
@@ -16,14 +17,14 @@ const ACCENT = '#ff8e6e';
 const defaultSuggestions = [
     "What are the common side effects of Metformin?",
     "Which drugs interact with Warfarin?",
-    "What should I know about NSAIDs in elderly patients?",
-    "Medication safety for diabetic patients?",
     "Contraindications of ACE inhibitors in hypertension?",
-    "How to manage statin-induced myopathy?",
     "DOACs vs Warfarin — key differences?",
-    "Safety of antibiotics in pregnancy?",
     "When to use beta-blockers in heart failure?",
-    "Long-term risks of proton pump inhibitors?",
+    "ワルファリンの副作用は何ですか？",
+    "Metformin 腎臟不好的病人可以用嗎？",
+    "Welche Wechselwirkungen hat Aspirin mit Blutverdünnern?",
+    "Quels sont les effets secondaires des statines?",
+    "Safety of antibiotics in pregnancy?",
 ];
 
 class FatalError extends Error {}
@@ -140,115 +141,129 @@ function ResearchForm() {
     }
 
     return (
-        <div className="flex flex-col lg:flex-row gap-6 h-full">
-            <div className="flex-1 flex flex-col">
-                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 flex flex-col flex-1">
-
-                    <div className="flex justify-between items-center mb-4">
-                        <div>
-                            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                                Medical Research
-                            </h2>
-                            <p className="text-xs text-gray-400 mt-0.5">PubMed 36M+ · FDA · Ask in any language</p>
-                        </div>
-                        {(answer || question) && (
-                            <button
-                                onClick={handleReset}
-                                className="text-sm text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
-                            >
-                                New search
-                            </button>
-                        )}
-                    </div>
-
-                    {error && !loading && (
-                        <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 rounded-lg border border-red-100 dark:border-red-800 text-sm">
-                            {error}
-                        </div>
-                    )}
-
-                    <div ref={answerRef} className="flex-1 overflow-y-auto mb-4 min-h-[300px] max-h-[500px]">
-                        {!answer && !loading && (
-                            <div className="text-center py-12">
-                                <p className="text-sm text-gray-400 dark:text-gray-500 mb-6">
-                                    Ask a clinical question — answers grounded in PubMed literature and FDA drug data.
-                                </p>
-                                <div className="space-y-2">
-                                    <p className="text-xs text-gray-300 dark:text-gray-600 uppercase tracking-widest">Try these</p>
-                                    <div className="flex flex-wrap justify-center gap-2">
-                                        {defaultSuggestions.map((s, i) => (
-                                            <button
-                                                key={i}
-                                                onClick={() => { setQuestion(s); runSearch(s); }}
-                                                disabled={loading}
-                                                className="px-3 py-1.5 text-xs bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-full border border-gray-200 dark:border-gray-600 hover:border-orange-300 hover:text-orange-600 dark:hover:text-orange-400 disabled:opacity-50 transition-colors"
-                                            >
-                                                {s}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
-                        {loading && !answer && statusMsg && (
-                            <div className="flex items-center gap-3 py-8 text-gray-400">
-                                <div className="w-4 h-4 border-2 border-gray-200 border-t-orange-400 rounded-full animate-spin flex-shrink-0" />
-                                <span className="text-sm">{statusMsg}</span>
-                            </div>
-                        )}
-
-                        {(answer || loading) && (
-                            <div className="prose prose-gray dark:prose-invert max-w-none prose-sm prose-headings:font-semibold prose-h2:text-base">
-                                {isFallback && !loading && <FallbackBanner />}
-                                <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>{answer}</ReactMarkdown>
-                                {loading && answer && (
-                                    <span className="inline-block w-1.5 h-4 rounded-sm animate-pulse ml-0.5" style={{ background: ACCENT }} />
-                                )}
-                                {!loading && answer && !error && (
-                                    <FeedbackBar query={question} response={answer} category="research" />
-                                )}
-                            </div>
-                        )}
-                    </div>
-
-                    {queryTime && (
-                        <p className="text-xs text-gray-300 dark:text-gray-600 mb-2">
-                            Query time: {(queryTime / 1000).toFixed(2)}s
-                        </p>
-                    )}
-
-                    <form onSubmit={handleSubmit} className="flex gap-2">
-                        <input
-                            type="text"
-                            value={question}
-                            onChange={(e) => setQuestion(e.target.value)}
-                            placeholder="Ask a clinical question in any language..."
-                            className="flex-1 px-4 py-2.5 text-sm border border-gray-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 dark:bg-gray-700 dark:text-white transition-shadow"
-                            style={{ '--tw-ring-color': ACCENT } as any}
-                            disabled={loading}
-                        />
-                        <button
-                            type="submit"
-                            disabled={loading || !question.trim()}
-                            className="px-5 py-2.5 text-white text-sm font-medium rounded-lg transition-opacity disabled:opacity-50"
-                            style={{ background: ACCENT }}
-                        >
-                            {loading ? (
-                                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                            ) : 'Search'}
-                        </button>
-                    </form>
-
-                    <p className="text-xs text-gray-300 dark:text-gray-600 mt-3 text-center">
-                        ⚠️ For reference only. Not a substitute for professional clinical judgment.
-                    </p>
+        <div className="flex flex-col gap-4">
+            {/* Title row */}
+            <div className="flex justify-between items-start">
+                <div>
+                    <h1 className="text-2xl font-bold tracking-tight" style={{ color: "#ffffff" }}>Medical Research</h1>
+                    <p className="text-sm mt-1" style={{ color: "rgba(255,255,255,0.5)" }}>Evidence-based answers from PubMed 36M+ and official FDA drug data.</p>
                 </div>
+                {(answer || question) && (
+                    <button onClick={handleReset} className="text-sm text-gray-400 hover:text-white transition-colors mt-1">
+                        New search
+                    </button>
+                )}
             </div>
 
-            <div className="lg:w-96">
-                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 h-full max-h-[700px] overflow-hidden">
-                    <CitationPanel citations={citations} isLoading={loading && citations.length === 0} />
+            {/* Info box */}
+            <div className="rounded-xl p-4 text-sm" style={{ background: "rgba(255,142,110,0.1)", border: "1px solid rgba(255,142,110,0.35)" }}>
+                <p style={{ color: "rgba(255,142,110,0.95)" }}>
+                    <span className="font-semibold">Ask in any language</span> — we search in English and answer in yours. Grounded in peer-reviewed literature and official FDA drug data.
+                </p>
+            </div>
+
+            {/* Main layout */}
+            <div className="flex flex-col lg:flex-row gap-6">
+                {/* Left: answer area */}
+                <div className="flex-1 flex flex-col">
+                    <div className="rounded-xl p-6 flex flex-col" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}>
+
+                        {error && !loading && (
+                            <div className="mb-4 p-3 rounded-lg border text-sm" style={{ background: "rgba(239,68,68,0.1)", borderColor: "rgba(239,68,68,0.3)", color: "rgba(255,150,150,0.9)" }}>
+                                {error}
+                            </div>
+                        )}
+
+                        <div ref={answerRef} className="overflow-y-auto mb-4 min-h-[300px] max-h-[500px]">
+                            {!answer && !loading && (
+                                <div className="text-center py-12">
+                                    <div className="space-y-3">
+                                        <p className="text-xs uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.35)" }}>Try these</p>
+                                        <div className="flex flex-wrap justify-center gap-2">
+                                            {defaultSuggestions.map((s, i) => (
+                                                <button
+                                                    key={i}
+                                                    onClick={() => { setQuestion(s); runSearch(s); }}
+                                                    disabled={loading}
+                                                    className="px-3 py-1.5 text-xs rounded-full disabled:opacity-50 transition-all duration-200"
+                                                    style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.7)" }}
+                                                    onMouseEnter={e => {
+                                                        (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,142,110,0.6)";
+                                                        (e.currentTarget as HTMLElement).style.color = "#ff8e6e";
+                                                    }}
+                                                    onMouseLeave={e => {
+                                                        (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.15)";
+                                                        (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.7)";
+                                                    }}
+                                                >
+                                                    {s}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {loading && !answer && statusMsg && (
+                                <div className="flex items-center gap-3 py-8" style={{ color: "rgba(255,255,255,0.5)" }}>
+                                    <div className="w-4 h-4 border-2 border-t-orange-400 rounded-full animate-spin flex-shrink-0" style={{ borderColor: "rgba(255,255,255,0.2)", borderTopColor: "#ff8e6e" }} />
+                                    <span className="text-sm">{statusMsg}</span>
+                                </div>
+                            )}
+
+                            {(answer || loading) && (
+                                <div className="prose prose-invert max-w-none prose-sm prose-headings:font-semibold prose-h2:text-base">
+                                    {isFallback && !loading && <FallbackBanner />}
+                                    <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>{answer}</ReactMarkdown>
+                                    {loading && answer && (
+                                        <span className="inline-block w-1.5 h-4 rounded-sm animate-pulse ml-0.5" style={{ background: ACCENT }} />
+                                    )}
+                                    {!loading && answer && !error && (
+                                        <FeedbackBar query={question} response={answer} category="research" />
+                                    )}
+                                </div>
+                            )}
+                        </div>
+
+                        {queryTime && (
+                            <p className="text-xs mb-2" style={{ color: "rgba(255,255,255,0.35)" }}>
+                                Query time: {(queryTime / 1000).toFixed(2)}s
+                            </p>
+                        )}
+
+                        <form onSubmit={handleSubmit} className="flex gap-2">
+                            <input
+                                type="text"
+                                value={question}
+                                onChange={(e) => setQuestion(e.target.value)}
+                                placeholder="Ask a clinical question in any language..."
+                                className="flex-1 px-4 py-2.5 text-sm rounded-lg focus:outline-none transition-shadow"
+                                style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.15)", color: "#ffffff" }}
+                                disabled={loading}
+                            />
+                            <button
+                                type="submit"
+                                disabled={loading || !question.trim()}
+                                className="px-5 py-2.5 text-white text-sm font-medium rounded-lg transition-opacity disabled:opacity-50"
+                                style={{ background: ACCENT }}
+                            >
+                                {loading ? (
+                                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                ) : 'Search'}
+                            </button>
+                        </form>
+
+                        <p className="text-xs mt-3 text-center" style={{ color: "rgba(255,255,255,0.35)" }}>
+                            ⚠️ For reference only. Not a substitute for professional clinical judgment.
+                        </p>
+                    </div>
+                </div>
+
+                {/* Right: citations */}
+                <div className="lg:w-96">
+                    <div className="rounded-xl p-6 max-h-[700px] overflow-hidden" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}>
+                        <CitationPanel citations={citations} isLoading={loading && citations.length === 0} />
+                    </div>
                 </div>
             </div>
         </div>
@@ -257,19 +272,22 @@ function ResearchForm() {
 
 export default function Research() {
     return (
-        <main className="min-h-screen bg-gray-50 dark:from-gray-900 dark:to-gray-800">
-            <nav className="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
+        <main className="min-h-screen" style={{ background: "linear-gradient(135deg, #0a1628 0%, #0f2040 45%, #1a1035 75%, #0d1a2e 100%)" }}>
+            <nav className="border-b" style={{ background: "linear-gradient(135deg, #0a1628 0%, #0f2040 45%, #1a1035 75%, #0d1a2e 100%)", borderColor: "rgba(255,255,255,0.07)" }}>
                 <div className="container mx-auto px-4 py-3">
                     <div className="flex justify-between items-center">
                         <div className="flex items-center gap-8">
-                            <Link href="/" className="text-base font-bold text-gray-900 dark:text-gray-100 tracking-tight">
-                                Vela
-                            </Link>
+                            <Link href="/" className="group relative flex items-center" title="Homepage">
+                                <Image src="/coral_logo.png" alt="Vela" width={60} height={60} style={{ objectFit: 'contain' }} />
+                                <span className="absolute -bottom-7 left-1/2 -translate-x-1/2 text-xs bg-gray-800 text-white px-2 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-10">
+                                  Homepage
+                                </span>
+                              </Link>
                             <div className="hidden md:flex items-center gap-6 text-sm">
-                                <Link href="/research" className="font-medium transition-colors" style={{ color: ACCENT }}>Research</Link>
-                                <Link href="/verify"   className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors">Verify</Link>
-                                <Link href="/explain"  className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors">Explain</Link>
-                                <Link href="/history"  className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors">History</Link>
+                                <Link href="/research" className="font-semibold text-white transition-colors">Research</Link>
+                                <Link href="/verify"   className="text-gray-400 hover:text-white transition-colors">Verify</Link>
+                                <Link href="/explain"  className="text-gray-400 hover:text-white transition-colors">Explain</Link>
+                                <Link href="/history"  className="text-gray-400 hover:text-white transition-colors">History</Link>
                             </div>
                         </div>
                         <UserButton showName={true} />

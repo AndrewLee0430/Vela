@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth, SignedIn, SignedOut, RedirectToSignIn, UserButton } from '@clerk/nextjs';
 import Link from 'next/link';
+import Image from 'next/image';
 
 // ─── Design System ────────────────────────────────────────────────────────────
 // 顏色對應跨頁面一致，首頁 card / 功能頁 accent / History 標籤全部同色
@@ -183,18 +184,20 @@ function HistoryList() {
                 return (
                     <div
                         key={item.id}
-                        className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden transition-shadow hover:shadow-md"
-                        style={{ borderLeft: `3px solid ${f.color}` }}
+                        className="rounded-xl overflow-hidden transition-shadow"
+                        style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", borderLeft: `3px solid ${f.color}` }}
                     >
                         {/* Header */}
                         <button
                             onClick={() => handleToggle(item)}
-                            className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors text-left"
+                            className="w-full px-6 py-4 flex items-center justify-between transition-colors text-left"
+                            onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.05)"}
+                            onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = "transparent"}
                         >
                             <div className="flex items-center gap-3 min-w-0">
                                 <TypeTag type={item.session_type} />
                                 <div className="min-w-0">
-                                    <p className="font-medium text-gray-900 dark:text-gray-100 truncate text-sm">
+                                    <p className="font-medium truncate text-sm history-question" style={{ color: "rgba(255,255,255,0.85)" }}>
                                         {item.question.length > 80
                                             ? item.question.slice(0, 80) + '...'
                                             : item.question}
@@ -218,12 +221,12 @@ function HistoryList() {
 
                         {/* Expanded content */}
                         {isExpanded && (
-                            <div className="px-6 py-5 border-t border-gray-100 dark:border-gray-700">
+                            <div className="px-6 py-5 border-t" style={{ borderColor: "rgba(255,255,255,0.08)" }}>
 
                                 {/* Research */}
                                 {item.session_type === 'research' && (
                                     <div className="prose prose-sm prose-gray dark:prose-invert max-w-none">
-                                        <p className="whitespace-pre-wrap text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                                        <p className="whitespace-pre-wrap text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.75)" }}>
                                             {item.answer}
                                         </p>
                                     </div>
@@ -232,7 +235,7 @@ function HistoryList() {
                                 {/* Explain */}
                                 {item.session_type === 'explain' && (
                                     <div className="prose prose-sm prose-gray dark:prose-invert max-w-none">
-                                        <p className="whitespace-pre-wrap text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                                        <p className="whitespace-pre-wrap text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.75)" }}>
                                             {item.answer}
                                         </p>
                                     </div>
@@ -241,7 +244,7 @@ function HistoryList() {
                                 {/* Verify */}
                                 {item.session_type === 'verify' && (
                                     <div className="space-y-4">
-                                        <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
+                                        <div className="rounded-lg p-4" style={{ background: "rgba(255,255,255,0.05)" }}>
                                             <p className="text-sm text-gray-700 dark:text-gray-300">{item.answer}</p>
                                         </div>
 
@@ -290,19 +293,27 @@ function HistoryList() {
 
 export default function History() {
     return (
-        <main className="min-h-screen bg-gray-50 dark:from-gray-900 dark:to-gray-800">
-            <nav className="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
+        <>
+        <style>{`
+            .history-question::selection { background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.85); }
+            .history-question::-moz-selection { background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.85); }
+        `}</style>
+        <main className="min-h-screen" style={{ background: "linear-gradient(135deg, #0a1628 0%, #0f2040 45%, #1a1035 75%, #0d1a2e 100%)" }}>
+            <nav className="border-b" style={{ background: "linear-gradient(135deg, #0a1628 0%, #0f2040 45%, #1a1035 75%, #0d1a2e 100%)", borderColor: "rgba(255,255,255,0.07)" }}>
                 <div className="container mx-auto px-4 py-3">
                     <div className="flex justify-between items-center">
                         <div className="flex items-center gap-8">
-                            <Link href="/" className="text-base font-bold text-gray-900 dark:text-gray-100 tracking-tight">
-                                Vela
-                            </Link>
+                            <Link href="/" className="group relative flex items-center" title="Homepage">
+                                <Image src="/coral_logo.png" alt="Vela" width={60} height={60} style={{ objectFit: 'contain' }} />
+                                <span className="absolute -bottom-7 left-1/2 -translate-x-1/2 text-xs bg-gray-800 text-white px-2 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-10">
+                                  Homepage
+                                </span>
+                              </Link>
                             <div className="hidden md:flex items-center gap-6 text-sm">
-                                <Link href="/research" className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors">Research</Link>
-                                <Link href="/verify"   className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors">Verify</Link>
-                                <Link href="/explain"  className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors">Explain</Link>
-                                <Link href="/history"  className="text-gray-900 dark:text-gray-100 font-medium">History</Link>
+                                <Link href="/research" className="text-gray-400 hover:text-white transition-colors">Research</Link>
+                                <Link href="/verify"   className="text-gray-400 hover:text-white transition-colors">Verify</Link>
+                                <Link href="/explain"  className="text-gray-400 hover:text-white transition-colors">Explain</Link>
+                                <Link href="/history"  className="text-white font-medium">History</Link>
                             </div>
                         </div>
                         <UserButton showName={true} />
@@ -312,7 +323,7 @@ export default function History() {
 
             <SignedIn>
                 <div className="container mx-auto px-4 py-10 max-w-3xl">
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-8 tracking-tight">
+                    <h1 className="text-2xl font-bold mb-8 tracking-tight" style={{ color: "#ffffff" }}>
                         History
                     </h1>
                     <HistoryList />
@@ -323,5 +334,6 @@ export default function History() {
                 <RedirectToSignIn />
             </SignedOut>
         </main>
+        </>
     );
 }

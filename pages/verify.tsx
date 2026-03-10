@@ -3,6 +3,7 @@
 import { useState, FormEvent, useRef } from 'react';
 import { useAuth, SignedIn, SignedOut, RedirectToSignIn, UserButton } from '@clerk/nextjs';
 import Link from 'next/link';
+import Image from 'next/image';
 import FeedbackBar from '../components/FeedbackBar';
 
 // Verify accent color
@@ -113,13 +114,11 @@ function VerifyForm() {
         <div className="container mx-auto px-4 py-8 max-w-5xl">
             <div className="flex justify-between items-center mb-6">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 tracking-tight">
-                        Drug Interaction Checker
-                    </h1>
-                    <p className="text-sm text-gray-400 mt-1">FDA Official · Evidence-based</p>
+                    <h1 className="text-2xl font-bold tracking-tight" style={{ color: "#ffffff" }}>Drug Interaction Checker</h1>
+                    <p className="text-sm mt-1" style={{ color: "rgba(255,255,255,0.5)" }}>FDA Official · Evidence-based</p>
                 </div>
                 {(result || drugs) && !loading && (
-                    <button onClick={handleReset} className="text-sm text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors">
+                    <button onClick={handleReset} className="text-sm text-gray-400 hover:text-white transition-colors">
                         New check
                     </button>
                 )}
@@ -127,7 +126,7 @@ function VerifyForm() {
 
             {/* Privacy notice */}
             <div className="rounded-lg p-4 mb-6 border" style={{ background: 'rgba(99,179,237,0.06)', borderColor: 'rgba(99,179,237,0.3)' }}>
-                <p className="text-sm" style={{ color: '#2b6cb0' }}>
+                <p className="text-sm" style={{ color: 'rgba(99,179,237,0.95)' }}>
                     <strong>Privacy:</strong> Enter drug names only — no patient names or identifying information.
                     Queries are not stored. Example: Metformin, Aspirin, Warfarin.
                 </p>
@@ -135,23 +134,42 @@ function VerifyForm() {
 
             <div className="grid lg:grid-cols-2 gap-6">
                 {/* Input */}
-                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+                <div className="rounded-xl p-6" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}>
                     <form onSubmit={handleSubmit} className="space-y-5">
-                        <div className="space-y-2">
-                            <label htmlFor="drugs" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                Drug list <span className="text-gray-400 font-normal">(one per line)</span>
+                        <div className="space-y-3">
+                            <label className="block text-sm font-medium" style={{ color: "rgba(255,255,255,0.8)" }}>
+                                Drug list <span className="font-normal" style={{ color: "rgba(255,255,255,0.4)" }}>(one per line, or click to add)</span>
                             </label>
+                            {/* Quick-add chips */}
+                            <div className="flex flex-wrap gap-2">
+                                {["Warfarin","Aspirin","Metformin","Lisinopril","Atorvastatin",
+                                  "Amiodarone","Clopidogrel","Fluoxetine","Omeprazole","Metoprolol",
+                                  "Tramadol","Simvastatin","Clarithromycin","Ibuprofen","Digoxin"].map(drug => (
+                                    <button
+                                        key={drug}
+                                        type="button"
+                                        onClick={() => setDrugs(prev => prev ? prev + '\n' + drug : drug)}
+                                        className="px-3 py-1 text-xs rounded-full transition-all duration-200"
+                                        style={{ background: "rgba(99,179,237,0.1)", border: "1px solid rgba(99,179,237,0.3)", color: "rgba(99,179,237,0.9)" }}
+                                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(99,179,237,0.22)"; }}
+                                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "rgba(99,179,237,0.1)"; }}
+                                    >
+                                        + {drug}
+                                    </button>
+                                ))}
+                            </div>
                             <textarea
                                 id="drugs"
                                 required
-                                rows={12}
+                                rows={6}
                                 value={drugs}
                                 onChange={(e) => setDrugs(e.target.value)}
                                 disabled={loading}
-                                className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 dark:bg-gray-700 dark:text-white font-mono text-sm disabled:opacity-60 transition-shadow"
+                                className="w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 font-mono text-sm disabled:opacity-60 transition-shadow"
+                                style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.85)" }}
                                 placeholder={"Metformin\nAspirin\nWarfarin"}
                             />
-                            <p className="text-xs text-gray-400">At least 2 drug names in English.</p>
+                            <p className="text-xs" style={{ color: "rgba(255,255,255,0.4)" }}>At least 2 drug names in English.</p>
                         </div>
 
                         <button
@@ -172,9 +190,9 @@ function VerifyForm() {
                 </div>
 
                 {/* Results */}
-                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+                <div className="rounded-xl p-6" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}>
                     {!result && !loading && (
-                        <div className="text-center py-16 text-sm text-gray-400">
+                        <div className="text-center py-16 text-sm" style={{ color: "rgba(255,255,255,0.4)" }}>
                             Results will appear here after analysis.
                         </div>
                     )}
@@ -191,7 +209,7 @@ function VerifyForm() {
                             {/* Summary */}
                             <div>
                                 <div className="flex justify-between items-start mb-3">
-                                    <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">
+                                    <h2 className="text-base font-semibold" style={{ color: "#ffffff" }}>
                                         Analysis Summary
                                     </h2>
                                     <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium border ${getRiskBadge(result.risk_level)}`}>
@@ -221,7 +239,7 @@ function VerifyForm() {
                                         {result.interactions.map((interaction, idx) => (
                                             <div key={idx} className={`border-l-4 rounded-lg p-4 ${getSeverityStyle(interaction.severity)}`}>
                                                 <div className="flex justify-between items-start mb-2">
-                                                    <p className="font-semibold text-sm text-gray-900 dark:text-gray-100">
+                                                    <p className="font-semibold text-sm" style={{ color: "#ffffff" }}>
                                                         {interaction.drug_pair[0]} ↔ {interaction.drug_pair[1]}
                                                     </p>
                                                     <span className={`px-2 py-0.5 rounded text-xs font-medium ml-2 flex-shrink-0 ${getSeverityBadge(interaction.severity)}`}>
@@ -264,19 +282,22 @@ function VerifyForm() {
 
 export default function Verify() {
     return (
-        <main className="min-h-screen bg-gray-50 dark:from-gray-900 dark:to-gray-800">
-            <nav className="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
+        <main className="min-h-screen" style={{ background: "linear-gradient(135deg, #0a1628 0%, #0f2040 45%, #1a1035 75%, #0d1a2e 100%)" }}>
+            <nav className="border-b" style={{ background: "linear-gradient(135deg, #0a1628 0%, #0f2040 45%, #1a1035 75%, #0d1a2e 100%)", borderColor: "rgba(255,255,255,0.07)" }}>
                 <div className="container mx-auto px-4 py-3">
                     <div className="flex justify-between items-center">
                         <div className="flex items-center gap-8">
-                            <Link href="/" className="text-base font-bold text-gray-900 dark:text-gray-100 tracking-tight">
-                                Vela
-                            </Link>
+                            <Link href="/" className="group relative flex items-center" title="Homepage">
+                                <Image src="/coral_logo.png" alt="Vela" width={60} height={60} style={{ objectFit: 'contain' }} />
+                                <span className="absolute -bottom-7 left-1/2 -translate-x-1/2 text-xs bg-gray-800 text-white px-2 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-10">
+                                  Homepage
+                                </span>
+                              </Link>
                             <div className="hidden md:flex items-center gap-6 text-sm">
-                                <Link href="/research" className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors">Research</Link>
+                                <Link href="/research" className="text-gray-400 hover:text-white transition-colors">Research</Link>
                                 <Link href="/verify"   className="font-medium transition-colors" style={{ color: ACCENT }}>Verify</Link>
-                                <Link href="/explain"  className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors">Explain</Link>
-                                <Link href="/history"  className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors">History</Link>
+                                <Link href="/explain"  className="text-gray-400 hover:text-white transition-colors">Explain</Link>
+                                <Link href="/history"  className="text-gray-400 hover:text-white transition-colors">History</Link>
                             </div>
                         </div>
                         <UserButton showName={true} />

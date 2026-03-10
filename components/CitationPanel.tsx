@@ -99,12 +99,12 @@ function CitationCard({ citation }: { citation: Citation }) {
             </div>
 
             {/* Title */}
-            <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-1 line-clamp-2">
+            <h4 className="font-medium mb-1 line-clamp-2" style={{ color: "#ffffff" }}>
                 {citation.title}
             </h4>
 
             {/* Authors / Journal / Year */}
-            <div className="text-sm text-gray-500 dark:text-gray-400 mb-2">
+            <div className="text-sm mb-2" style={{ color: "rgba(255,255,255,0.5)" }}>
                 {citation.authors && <span>{citation.authors}</span>}
                 {citation.journal && <span> • {citation.journal}</span>}
                 {citation.year    && <span> ({citation.year})</span>}
@@ -112,13 +112,13 @@ function CitationCard({ citation }: { citation: Citation }) {
 
             {/* Credibility stars */}
             <div className="flex items-center gap-2 mb-3">
-                <span className="text-xs text-gray-500 dark:text-gray-400">Credibility:</span>
+                <span className="text-xs" style={{ color: "rgba(255,255,255,0.4)" }}>Credibility:</span>
                 <StarRating count={credConfig.stars} />
             </div>
 
             {/* Abstract */}
             {display && (
-                <div className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+                <div className="text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.7)" }}>
                     <p>{display}</p>
                     {isLong && (
                         <button
@@ -171,9 +171,9 @@ export default function CitationPanel({ citations, isLoading }: CitationPanelPro
     if (isLoading) {
         return (
             <div className="h-full">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2" style={{ color: "#ffffff" }}>
                     📚 References
-                    <span className="text-sm font-normal text-gray-500 dark:text-gray-400">(Loading...)</span>
+                    <span className="text-sm font-normal" style={{ color: "rgba(255,255,255,0.5)" }}>(Loading...)</span>
                 </h3>
                 <LoadingSkeleton />
             </div>
@@ -183,12 +183,8 @@ export default function CitationPanel({ citations, isLoading }: CitationPanelPro
     if (citations.length === 0) {
         return (
             <div className="h-full">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-                    📚 References
-                </h3>
-                <p className="text-gray-500 dark:text-gray-400 text-center py-8">
-                    References will appear here after your search.
-                </p>
+                <h3 className="text-lg font-semibold mb-4" style={{ color: "#ffffff" }}>📚 References</h3>
+                <p className="text-center py-8" style={{ color: "rgba(255,255,255,0.5)" }}>References will appear here after your search.</p>
             </div>
         );
     }

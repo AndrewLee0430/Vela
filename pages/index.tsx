@@ -109,15 +109,15 @@ export default function Home() {
         </nav>
 
         {/* Hero */}
-        <div className="flex-1 flex flex-col items-center justify-center px-10 text-center py-8">
-          <div className="flex flex-col items-center mb-5">
+        <div className="flex-1 flex flex-col items-center justify-start px-10 text-center pt-3 pb-4">
+          <div className="flex flex-col items-center mb-2">
             <div className="logo-float">
-              <Image src="/coral_logo.png" alt="Vela logo" width={180} height={180} style={{ objectFit: 'contain' }} priority />
+              <Image src="/coral_logo.png" alt="Vela logo" width={120} height={120} style={{ objectFit: 'contain' }} priority />
             </div>
             <h1
               className="mt-1 font-black"
               style={{
-                fontSize: 'clamp(2.8rem, 7vw, 5rem)',
+                fontSize: 'clamp(2.2rem, 5vw, 3.5rem)',
                 background: 'linear-gradient(90deg, #ff6b6b, #ff8e6e, #ffb347)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
@@ -129,16 +129,16 @@ export default function Home() {
             </h1>
           </div>
 
-          <p className="text-2xl font-semibold text-white mb-2 tracking-tight">
+          <p className="text-xl font-semibold text-white mb-1 tracking-tight">
             Medical Research, Simplified.
           </p>
-          <p className="text-sm mb-10" style={{ color: 'rgba(255,255,255,0.35)' }}>
-            ✦ Ask in any language — we search in English, answer in yours
+          <p className="text-sm mb-4" style={{ color: 'rgba(255,255,255,0.35)' }}>
+            ✦ Ask in any language — we search in English, answer in yours &nbsp;·&nbsp; 🔒 No PHI stored
           </p>
 
           {/* Typewriter */}
           <div
-            className="w-full rounded-2xl px-7 py-5 mb-10 text-left"
+            className="w-full rounded-2xl px-7 py-5 mb-5 text-left"
             style={{
               maxWidth: '680px',
               background: 'rgba(255,255,255,0.06)',
@@ -155,11 +155,11 @@ export default function Home() {
           </div>
 
           {/* CTA */}
-          <div className="flex gap-3 mb-12">
+          <div className="flex gap-3 mb-5">
             <SignedOut>
               <SignInButton mode="modal">
                 <button
-                  className="group px-8 py-3.5 text-white text-sm font-semibold rounded-xl transition-all duration-300 hover:scale-105 flex items-center gap-2"
+                  className="group px-6 py-2.5 text-white text-sm font-semibold rounded-xl transition-all duration-300 hover:scale-105 flex items-center gap-2"
                   style={{ background: 'linear-gradient(135deg, #ff6b6b, #ff8e6e)', boxShadow: '0 0 28px rgba(255,107,107,0.4)' }}
                 >
                   Get Started Free
@@ -170,7 +170,7 @@ export default function Home() {
             <SignedIn>
               <Link href="/research">
                 <button
-                  className="group px-8 py-3.5 text-white text-sm font-semibold rounded-xl transition-all duration-300 hover:scale-105 flex items-center gap-2"
+                  className="group px-6 py-2.5 text-white text-sm font-semibold rounded-xl transition-all duration-300 hover:scale-105 flex items-center gap-2"
                   style={{ background: 'linear-gradient(135deg, #ff6b6b, #ff8e6e)', boxShadow: '0 0 28px rgba(255,107,107,0.4)' }}
                 >
                   Open App
@@ -180,7 +180,7 @@ export default function Home() {
             </SignedIn>
             <Link href="/research">
               <button
-                className="px-8 py-3.5 text-sm font-medium rounded-xl transition-all duration-200"
+                className="px-6 py-2.5 text-sm font-medium rounded-xl transition-all duration-200"
                 style={{ color: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.15)' }}
                 onMouseEnter={e => {
                   (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.08)';
@@ -197,11 +197,11 @@ export default function Home() {
           </div>
 
           {/* Feature cards — no emoji, color accent via left border on hover */}
-          <div className="flex flex-col sm:flex-row gap-4 w-full" style={{ maxWidth: '780px' }}>
+          <div className="flex flex-col sm:flex-row gap-3 w-full" style={{ maxWidth: '780px' }}>
             {featureCards.map((f) => (
               <Link key={f.label} href={f.href} className="flex-1">
                 <div
-                  className="h-full rounded-2xl px-6 py-5 text-left cursor-pointer transition-all duration-300"
+                  className="h-full rounded-2xl px-5 py-4 text-left cursor-pointer transition-all duration-300"
                   style={{
                     background: 'rgba(255,255,255,0.05)',
                     border: '1px solid rgba(255,255,255,0.1)',
@@ -231,7 +231,6 @@ export default function Home() {
                     </span>
                   </div>
                   <p className="text-sm mb-4 leading-relaxed" style={{ color: 'rgba(255,255,255,0.45)' }}>{f.desc}</p>
-                  <p className="text-xs" style={{ color: 'rgba(255,255,255,0.2)' }}>🔒 No PHI stored</p>
                 </div>
               </Link>
             ))}
