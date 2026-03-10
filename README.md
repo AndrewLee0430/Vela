@@ -1,233 +1,243 @@
-# MediNotes 🏥
+# 🪸 Vela — Medical Research, Simplified.
 
-AI-powered medical knowledge assistant for healthcare professionals.
+> Evidence-based clinical answers from PubMed 36M+ literature and official FDA drug data.  
+> Ask in any language — we search in English, answer in yours.
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
-[![Next.js 14](https://img.shields.io/badge/Next.js-14-black)](https://nextjs.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-14-black?logo=next.js)](https://nextjs.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.111-009688?logo=fastapi)](https://fastapi.tiangolo.com/)
+[![OpenAI](https://img.shields.io/badge/OpenAI-GPT--4.1-412991?logo=openai)](https://openai.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-## 🎯 Overview
+---
 
-MediNotes helps healthcare professionals quickly access accurate medical information by integrating authoritative data sources (PubMed, FDA) with advanced AI technology.
+## ✨ Features
 
-**Core Features:**
-- 🔍 **Research**: Fast medical knowledge queries (saves 90% time)
-- ⚠️ **Verify**: Drug interaction checking (1-second analysis)
-- 📄 **Document**: Consultation summary generation
-- 📚 **History**: Query history tracking
+### 🔬 Research
+Ask any clinical question in any language. Vela retrieves from PubMed 36M+ articles and FDA drug data, then streams a cited, evidence-based answer back in the user's language.
 
-## 🚀 Quick Start
+### ✅ Verify
+Check drug interaction safety for any combination of medications. Powered by FDA OpenFDA with structured severity ratings (Critical / Major / Moderate / Minor).
+
+### 📋 Explain
+Paste lab results, medical reports, or prescription data in any language. Vela identifies each entity, looks it up via LOINC, RxNorm, and MedlinePlus, then generates a plain-language explanation with source badges.
+
+---
+
+## 🏗️ Architecture
+
+Three independent linear pipelines — not a multi-agent system:
+
+```
+Research:  User Query → Language Detect → HybridRetriever → Chroma/PubMed/FDA → GPT-4.1 → SSE Stream
+Verify:    Drug List  → FDA OpenFDA API → Structured Interaction Data → Response
+Explain:   Lab Report → Entity Extractor → LOINC / RxNorm / MedlinePlus → GPT-4.1 → SSE Stream
+```
+
+### Security Layers
+
+| Layer | Protection |
+|-------|-----------|
+| PHI Detection | Multi-country patterns (TW/JP/US) — ID, phone, SSN, MRN |
+| Prompt Injection | Regex pattern scan + Base64 decode + multilingual heuristics |
+| Indirect Injection | LLM scan on retrieved content before generation |
+| Intent Guard | GPT-4.1-mini classifies non-medical queries and blocks them |
+| Input Length | 5,000 character hard limit |
+| Auth | Clerk JWT on every API call |
+| Rate Limiting | Per-IP per-endpoint throttling |
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Frontend | Next.js 14, TypeScript, Tailwind CSS |
+| Auth | Clerk |
+| Backend | FastAPI, Python 3.11 |
+| AI | OpenAI GPT-4.1 / GPT-4.1-mini |
+| RAG | LangChain, Chroma Vector DB |
+| Data Sources | PubMed API, FDA OpenFDA, LOINC, RxNorm, MedlinePlus |
+| Database | PostgreSQL (history) |
+| Streaming | SSE (Server-Sent Events) |
+
+---
+
+## 📁 Project Structure
+
+```
+Vela/
+├── api/                          # FastAPI backend
+│   ├── server.py                 # Main server + all endpoints
+│   ├── middleware/
+│   │   ├── guards.py             # Prompt injection + intent detection (v2.0)
+│   │   └── phi_handler.py        # PHI detection (TW/JP/US)
+│   ├── rag/
+│   │   ├── generator.py          # Answer generation + language injection (v2.5)
+│   │   └── retriever.py          # HybridRetriever — Chroma + PubMed + FDA (v2.3)
+│   ├── data_sources/
+│   │   ├── fda_client.py
+│   │   ├── loinc_client.py
+│   │   ├── rxnorm_client.py
+│   │   └── medlineplus_client.py
+│   ├── services/
+│   │   ├── entity_extractor.py   # Lab/drug entity extraction
+│   │   └── explain_service.py    # 3-stage Explain pipeline
+│   ├── models/
+│   │   ├── schemas.py
+│   │   └── explain_schemas.py
+│   ├── cache/
+│   │   └── simple_cache.py       # 3-layer cache (memory → local DB → live API)
+│   └── utils/
+│       └── language_detector.py  # Unicode CJK + keyword heuristics
+├── pages/                        # Next.js pages
+│   ├── index.tsx                 # Homepage
+│   ├── research.tsx
+│   ├── verify.tsx
+│   ├── explain.tsx
+│   └── history.tsx
+├── components/
+│   ├── CitationPanel.tsx
+│   └── FeedbackBar.tsx
+├── scripts/
+│   ├── build_drug_vectordb.py
+│   └── build_explain_cache.py    # Pre-warm LOINC + RxNorm + MedlinePlus
+├── tests/
+│   ├── golden_dataset.json       # 17 golden test cases (G01–G17)
+│   └── run_golden_tests.py       # --smoke flag for fast daily testing
+└── data/                         # gitignored
+    ├── drug_database/            # Drug JSON files
+    └── drug_vectordb/            # Chroma vector store
+```
+
+---
+
+## 🚀 Getting Started
 
 ### Prerequisites
 
 - Python 3.11+
 - Node.js 18+
+- PostgreSQL
 - OpenAI API key
 - Clerk account
 
-### Installation
+### 1. Clone
 
-1. **Clone the repository**
 ```bash
-git clone https://github.com/AndrewLee0430/MediNotes.git
-cd MediNotes
+git clone https://github.com/AndrewLee0430/Vela.git
+cd Vela
 ```
 
-2. **Set up environment variables**
+### 2. Environment Variables
+
 ```bash
 cp .env.example .env
-# Edit .env and add your API keys
 ```
 
-3. **Install dependencies**
+```env
+# OpenAI
+OPENAI_API_KEY=sk-...
+
+# Clerk
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_...
+CLERK_SECRET_KEY=sk_...
+CLERK_JWKS_URL=https://...clerk.accounts.dev/.well-known/jwks.json
+
+# Database
+DATABASE_URL=postgresql://user:password@localhost:5432/vela
+
+# CORS
+ALLOWED_ORIGINS=http://localhost:3000
+```
+
+### 3. Backend
+
 ```bash
-# Python
 pip install -r requirements.txt
 
-# Node.js
-npm install
-```
-
-4. **Build drug vector database**
-```bash
+# Build vector database (first time only)
 python scripts/build_drug_vectordb.py
+
+# Pre-warm explain cache (optional, recommended)
+python scripts/build_explain_cache.py
+
+# Start server
+uvicorn api.server:app --reload
 ```
 
-5. **Start the application**
-```bash
-# Terminal 1: Backend
-uvicorn api.server:app --reload
+### 4. Frontend
 
-# Terminal 2: Frontend
+```bash
+npm install
 npm run dev
 ```
 
-6. **Open** http://localhost:3000
-
-## 📊 Tech Stack
-
-**Frontend:**
-- Next.js 14
-- TypeScript
-- Tailwind CSS
-- Clerk Auth
-
-**Backend:**
-- FastAPI
-- Python 3.11
-- PostgreSQL
-
-**AI & Data:**
-- OpenAI GPT-4o-mini
-- LangChain
-- RAG (Retrieval-Augmented Generation)
-- Chroma Vector DB
-- 191 drug knowledge base
-
-## 🏗️ Architecture
-
-### System Architecture
-```mermaid
-graph TB
-    subgraph "User Interface"
-        A[Next.js Frontend]
-    end
-    
-    subgraph "API Layer"
-        B[FastAPI Server]
-        C[Cache Layer]
-    end
-    
-    subgraph "Data Sources"
-        D[Local Vector DB<br/>191 drugs, 690 docs]
-        E[PubMed API]
-        F[FDA OpenFDA]
-    end
-    
-    subgraph "AI Engine"
-        G[OpenAI GPT-4o-mini]
-        H[LangChain RAG]
-    end
-    
-    A --> B
-    B --> C
-    C --> D
-    C --> E
-    C --> F
-    B --> H
-    H --> G
-    H --> D
-    
-    style D fill:#d4edda
-    style C fill:#ffe1e1
-```
-
-### 3-Layer Caching Strategy
-```mermaid
-graph LR
-    A[User Query] --> B{Layer 1: Cache}
-    
-    B -->|Hit 60%<br/>~10ms| C[Return Cached]
-    B -->|Miss| D{Layer 2: Local DB}
-    
-    D -->|Hit 25%<br/>~100ms| E[Return Local Data]
-    D -->|Miss| F{Layer 3: Live API}
-    
-    F -->|15%<br/>2-3s| G[PubMed/FDA API]
-    G --> H[Cache & Return]
-    
-    style C fill:#d4edda
-    style E fill:#fff3cd
-    style G fill:#f8d7da
-```
-
-**Key Features:**
-- Memory cache (24h TTL) for hot queries
-- Local vector database for 191 common drugs
-- Real-time API calls for rare drugs or latest research
-
-## 📈 Performance
-
-- Research queries: 2-3s → 0.5s (85% faster)
-- Drug interaction: 15min → 1s (93% faster)
-- Database coverage: 191 common drugs (85% queries)
-
-## 🎯 Use Cases
-
-### 1. Clinical Research
-Quickly find latest treatment guidelines and research evidence.
-
-### 2. Drug Safety
-Check drug interactions before prescribing medications.
-
-### 3. Documentation
-Generate consultation summaries and clinical notes.
-
-## 📁 Project Structure
-```
-MediNotes/
-├── api/                    # Backend (FastAPI)
-│   ├── server.py          # Main API server
-│   ├── cache/             # Caching layer
-│   ├── data_sources/      # FDA, PubMed clients
-│   └── rag/               # RAG pipeline
-├── pages/                 # Frontend (Next.js)
-├── components/            # React components
-├── scripts/               # Data collection & processing
-│   ├── collect_drug_data.py
-│   ├── build_drug_vectordb.py
-│   └── top_200_drugs.py
-├── data/                  # Local data (gitignored)
-│   ├── drug_database/    # 191 drug JSON files
-│   └── drug_vectordb/    # Vector database
-└── docs/                  # Documentation
-    ├── ARCHITECTURE_DIAGRAMS.md
-    ├── USE_CASES_GUIDE.md
-    ├── PRODUCT_DEEP_ANALYSIS.md
-    └── DEMO_PREPARATION_CHECKLIST.md
-```
-
-## 📚 Documentation
-
-For detailed documentation, see the [docs](./docs) folder:
-
-- [Architecture Diagrams](./docs/ARCHITECTURE_DIAGRAMS.md) - System architecture and data flow
-- [Use Cases Guide](./docs/USE_CASES_GUIDE.md) - Detailed usage scenarios
-- [Product Deep Analysis](./docs/PRODUCT_DEEP_ANALYSIS.md) - Technical and business analysis
-- [Demo Preparation](./docs/DEMO_PREPARATION_CHECKLIST.md) - Demo checklist and materials
-
-## 🔒 Security & Privacy
-
-- PHI detection and filtering
-- Environment variable protection
-- HTTPS/TLS encryption
-- Access control and audit logging
-
-## 📄 License
-
-MIT License - see [LICENSE](LICENSE) file
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## 📧 Contact
-
-Andrew Lee - [@AndrewLee0430](https://github.com/AndrewLee0430)
-
-Project Link: [https://github.com/AndrewLee0430/MediNotes](https://github.com/AndrewLee0430/MediNotes)
-
-## ⚠️ Disclaimer
-
-MediNotes is an educational tool and reference assistant. It does not replace professional medical judgment. All clinical decisions should be based on comprehensive clinical assessment.
-
-## 🙏 Acknowledgments
-
-- OpenAI for GPT-4 API
-- PubMed for medical literature access
-- FDA OpenFDA for drug label data
-- LangChain for RAG framework
+Open [http://localhost:3000](http://localhost:3000)
 
 ---
 
-Built with ❤️ for healthcare professionals
+## 🧪 Testing
+
+```bash
+# Fast daily smoke test (15 cases, ~80% less cost)
+uv run python tests/run_golden_tests.py --smoke
+
+# Full regression (17 cases, run before deploy)
+uv run python tests/run_golden_tests.py
+```
+
+Test mode (skip Clerk auth):
+```bash
+$env:TEST_MODE="true"; uvicorn api.server:app --reload   # PowerShell
+TEST_MODE=true uvicorn api.server:app --reload            # bash
+```
+
+### Golden Dataset Coverage
+
+| Category | Cases | Scope |
+|----------|-------|-------|
+| Guards | G01–G17 | Injection, non-medical, false positives, multilingual |
+| Research | R01, R10, R11 | RAG quality, long-tail queries |
+| Verify | V01, V05 | Drug interaction accuracy |
+| Multilingual | M01, M02, M04 | ZH/JA/DE response language |
+| Explain | E22, E23 | Lab report parsing |
+
+---
+
+## 🔒 Security & Privacy
+
+- **No PHI stored** — inputs are processed in memory only
+- **Multi-country PHI detection** — Taiwan ID, Japan My Number, US SSN/MRN
+- **Prompt injection protection** — pattern scan + Base64 decode + LLM classification
+- **For educational purposes only** — not a substitute for professional clinical judgment
+
+---
+
+## 📄 License
+
+MIT License — see [LICENSE](LICENSE)
+
+---
+
+## 📧 Contact
+
+Andrew Lee · [@AndrewLee0430](https://github.com/AndrewLee0430)  
+Project: [https://github.com/AndrewLee0430/Vela](https://github.com/AndrewLee0430/Vela)
+
+---
+
+## 🙏 Acknowledgments
+
+- [OpenAI](https://openai.com) — GPT-4.1
+- [PubMed / NLM](https://pubmed.ncbi.nlm.nih.gov) — Medical literature (36M+ articles)
+- [FDA OpenFDA](https://open.fda.gov) — Drug label data
+- [LOINC®](https://loinc.org) — Lab test terminology (Regenstrief Institute, Inc.)
+- [MedlinePlus](https://medlineplus.gov) — Consumer health information (NLM)
+- [RxNorm](https://www.nlm.nih.gov/research/umls/rxnorm) — Drug name standardization (NLM)
+- [LangChain](https://langchain.com) — RAG framework
+
+> ⚠️ Vela is an educational tool for reference only. It does not replace professional medical judgment. All clinical decisions should be based on comprehensive clinical assessment by a qualified healthcare professional.
+
+---
+
+*Built with ❤️ for healthcare professionals*

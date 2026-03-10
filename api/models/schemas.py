@@ -2,7 +2,10 @@
 Pydantic 模型定義
 用於 API Request/Response 驗證
 """
+from pydantic import BaseModel, Field, field_validator
+from typing import Optional
 
+MAX_DRUG_NAME_CHARS = 100  # 最長藥名 (品牌名 + 學名) 不超過此值
 from pydantic import BaseModel, Field
 from typing import Optional
 from enum import Enum
@@ -163,7 +166,7 @@ class VerifyRequest(BaseModel):
     """藥物交互作用驗證請求"""
     drugs: list[str] = Field(
         ...,
-        description="藥物清單 (支援中英文)",
+        description="藥物清單 (支援中英文)，最多 10 個，每個藥名不超過 100 字元",
         min_length=1,
         max_length=10,
         examples=[["Metformin", "Warfarin"]]
@@ -173,6 +176,22 @@ class VerifyRequest(BaseModel):
         description="患者背景 (年齡範圍、性別、共病)，請勿輸入個資",
         max_length=200
     )
+
+    @field_validator("drugs")
+    @classmethod
+    def validate_drug_name_length(cls, drug_list: list[str]) -> list[str]:
+        """
+        確保每個藥名不超過 MAX_DRUG_NAME_CHARS 字元。
+        Pydantic 的 list max_length 只限制「幾個元素」，
+        不限制「每個元素多長」，這裡補上這個檢查。
+        """
+        for drug in drug_list:
+            if len(drug) > MAX_DRUG_NAME_CHARS:
+                raise ValueError(
+                    f"Drug name too long ({len(drug)} chars). "
+                    f"Please keep each drug name under {MAX_DRUG_NAME_CHARS} characters."
+                )
+        return drug_list
 
 
 class DrugInteraction(BaseModel):

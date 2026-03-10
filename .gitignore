@@ -38,6 +38,7 @@ venv/
 ENV/
 env/
 .venv
+.uv/
 
 # ==========================================
 # Node.js / Next.js
@@ -49,6 +50,9 @@ out/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+.vercel/
+*.tsbuildinfo
+next-env.d.ts
 
 # ==========================================
 # 資料庫
@@ -63,6 +67,8 @@ chroma.sqlite3
 # Chroma 向量資料庫
 data/chroma/
 chroma_db/
+drug_vectordb/
+*.chroma
 
 # ==========================================
 # IDE / 編輯器
@@ -101,6 +107,7 @@ nosetests.xml
 coverage.xml
 *.cover
 tests/results/
+.hypothesis/
 
 # ==========================================
 # OS 特定
@@ -108,15 +115,20 @@ tests/results/
 Thumbs.db
 Desktop.ini
 $RECYCLE.BIN/
+desktop.ini
 
 # ==========================================
-# 專案特定
+# 專案特定 (Vela)
 # ==========================================
 # 大型數據文件
 data/raw/
 data/processed/
+data/drug_database/
 *.csv
 *.json.gz
+
+# 向量資料庫 & 藥物知識庫 (由 scripts 重建)
+data/
 
 # 用戶上傳的文件
 uploads/
@@ -125,3 +137,4 @@ media/
 # 備份文件
 *.bak
 *.backup
+*.orig
