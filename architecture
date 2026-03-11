@@ -1,0 +1,120 @@
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#1a1a2e', 'primaryTextColor': '#e0e0e0', 'primaryBorderColor': '#3a3a5c', 'lineColor': '#6c63ff', 'secondaryColor': '#16213e', 'tertiaryColor': '#0f3460', 'background': '#0a0a1a', 'mainBkg': '#1a1a2e', 'nodeBorder': '#3a3a5c', 'clusterBkg': '#16213e22', 'clusterBorder': '#3a3a5c', 'titleColor': '#e0e0e0', 'edgeLabelBackground': '#1a1a2e'}, 'flowchart': {'curve': 'basis', 'padding': 12}}}%%
+
+graph LR
+    %% ── CLIENT ──────────────────────────────────────────
+    subgraph FE ["🖥️ Frontend · Next.js 14 + TS + Tailwind"]
+        R_PAGE["🔬 Research"]
+        V_PAGE["✅ Verify"]
+        E_PAGE["📋 Explain"]
+        H_PAGE["📜 History"]
+    end
+
+    %% ── AUTH + RATE ─────────────────────────────────────
+    AUTH["🔐 Clerk JWT"]
+    RATE["⏱️ Rate Limiter<br/>per-IP · per-endpoint"]
+
+    %% ── GUARD CHAIN ─────────────────────────────────────
+    subgraph GUARD ["🛡️ Guard Chain · cheapest → expensive"]
+        direction TB
+        G1["① Length<br/>5k char · instant"]
+        G2["② Injection<br/>Regex+Base64 · instant"]
+        G3["③ Indirect Inject<br/>LLM scan · ~0.1s"]
+        G4["④ Intent<br/>Medical? · ~0.1s"]
+        G5["⑤ PHI Detect<br/>TW/JP/US patterns"]
+        G1 --> G2 --> G3 --> G4
+        G4 -.- G5
+    end
+
+    %% ── RESEARCH PIPELINE ───────────────────────────────
+    subgraph PIPE_R ["🔬 Research Pipeline"]
+        direction TB
+        LANG["Lang Detect<br/>Unicode CJK"]
+        QR["Query Rewrite<br/>→ Medical English"]
+        
+        subgraph HYBRID ["HybridRetriever · 3 sources parallel"]
+            direction LR
+            CHROMA["🗄️ ChromaDB<br/>191 drugs<br/>~100ms"]
+            PM["📚 PubMed<br/>36M+ articles<br/>~2s"]
+            FDA_R["💊 FDA<br/>Drug labels<br/>~2s"]
+        end
+        
+        RERANK["Reranker<br/>score + year boost<br/>top_k = 8"]
+        GEN_R["GPT-4.1<br/>Generate + Cite"]
+        SSE_R["SSE Stream"]
+
+        LANG --> QR --> HYBRID --> RERANK --> GEN_R --> SSE_R
+    end
+
+    %% ── VERIFY PIPELINE ─────────────────────────────────
+    subgraph PIPE_V ["✅ Verify Pipeline"]
+        direction TB
+        PARSE["Drug Parser<br/>max 10 drugs"]
+        LEV["Levenshtein<br/>spell correct"]
+        
+        subgraph CACHE_V ["3-Layer Cache"]
+            direction LR
+            C1["L1 Memory<br/>~10ms · 24h"]
+            C2["L2 Local DB<br/>~100ms"]
+            C3["L3 FDA API<br/>~2-3s"]
+        end
+        
+        ANALYZE["GPT-4.1<br/>Interaction Analysis<br/>Critical→Minor"]
+
+        PARSE --> LEV --> CACHE_V --> ANALYZE
+    end
+
+    %% ── EXPLAIN PIPELINE ────────────────────────────────
+    subgraph PIPE_E ["📋 Explain Pipeline · 3 Stages"]
+        direction TB
+        EXTRACT["Stage 1<br/>Entity Extractor<br/>GPT-4.1-mini → JSON"]
+        
+        subgraph LOOKUP ["Stage 2 · Parallel Lookup"]
+            direction LR
+            LOINC["🔬 LOINC<br/>Lab definitions"]
+            RXNORM["💊 RxNorm<br/>Drug resolution"]
+            MEDLINE["📖 MedlinePlus<br/>Health info"]
+        end
+        
+        GEN_E["Stage 3<br/>GPT-4.1 Generate<br/>+ Source Badges"]
+        SSE_E["SSE Stream"]
+
+        EXTRACT --> LOOKUP --> GEN_E --> SSE_E
+    end
+
+    %% ── DATABASE ────────────────────────────────────────
+    DB["🐘 PostgreSQL<br/>History · Audit · Feedback"]
+
+    %% ── CONNECTIONS ─────────────────────────────────────
+    FE --> AUTH --> RATE --> GUARD
+
+    GUARD -->|"research"| PIPE_R
+    GUARD -->|"verify<br/>(skip indirect)"| PIPE_V
+    GUARD -->|"explain"| PIPE_E
+
+    PIPE_R --> DB
+    PIPE_V --> DB
+    PIPE_E --> DB
+
+    %% ── STYLES ──────────────────────────────────────────
+    classDef fe fill:#3b82f6,stroke:#60a5fa,color:#fff,stroke-width:2px
+    classDef auth fill:#ec4899,stroke:#f472b6,color:#fff,stroke-width:2px
+    classDef guard fill:#ef4444,stroke:#f87171,color:#fff,stroke-width:2px
+    classDef research fill:#06b6d4,stroke:#22d3ee,color:#fff,stroke-width:2px
+    classDef verify fill:#f59e0b,stroke:#fbbf24,color:#000,stroke-width:2px
+    classDef explain fill:#10b981,stroke:#34d399,color:#fff,stroke-width:2px
+    classDef ext fill:#64748b,stroke:#94a3b8,color:#fff,stroke-width:2px
+    classDef db fill:#6366f1,stroke:#818cf8,color:#fff,stroke-width:2px
+
+    class R_PAGE,V_PAGE,E_PAGE,H_PAGE fe
+    class AUTH,RATE auth
+    class G1,G2,G3,G4,G5 guard
+    class LANG,QR,RERANK,GEN_R,SSE_R research
+    class CHROMA,PM,FDA_R ext
+    class PARSE,LEV,ANALYZE verify
+    class C1,C2,C3 verify
+    class EXTRACT,GEN_E,SSE_E explain
+    class LOINC,RXNORM,MEDLINE ext
+    class DB db
+
+```
