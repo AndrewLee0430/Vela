@@ -1,3 +1,4 @@
+```
 graph TD
     %% 樣式定義
     classDef research fill:#ff8e6e22,stroke:#ff8e6e,stroke-width:2px,color:#ff8e6e
@@ -52,3 +53,4 @@ graph TD
     class Auth infra
     class R_DB,V3 db
     class R_Pub,R_FDA,V4 ext
+```
