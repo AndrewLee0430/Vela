@@ -1,54 +1,55 @@
 # ============================================================
-# Vela — Backend Dependencies
+# Vela �X Backend Dependencies
 # Python 3.11+
 # Install: pip install -r requirements.txt
 # ============================================================
 
-# ── Web Framework ────────────────────────────────────────────
+# �w�w Web Framework �w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w
 fastapi==0.111.0
 uvicorn[standard]==0.29.0
 python-multipart==0.0.9
 
-# ── Auth ─────────────────────────────────────────────────────
+# �w�w Auth �w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w
 clerk-backend-api==1.1.0
+fastapi-clerk-auth
 python-jose[cryptography]==3.3.0
 httpx==0.27.0
 
-# ── AI / LLM ─────────────────────────────────────────────────
+# �w�w AI / LLM �w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w
 openai==1.30.1
 langchain==0.2.5
 langchain-openai==0.1.8
 langchain-community==0.2.5
 langchain-chroma==0.1.1
 
-# ── Vector DB ────────────────────────────────────────────────
+# �w�w Vector DB �w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w
 chromadb==0.5.0
 
-# ── Database ─────────────────────────────────────────────────
+# �w�w Database �w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w
 asyncpg==0.29.0
 psycopg2-binary==2.9.9
 sqlalchemy==2.0.30
 
-# ── Data Sources / APIs ──────────────────────────────────────
+# �w�w Data Sources / APIs �w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w
 biopython==1.83
 requests==2.32.2
 
-# ── Streaming ────────────────────────────────────────────────
+# �w�w Streaming �w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w
 sse-starlette==2.1.0
 
-# ── NLP / Text Processing ────────────────────────────────────
+# �w�w NLP / Text Processing �w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w
 tiktoken==0.7.0
 
-# ── Utilities ────────────────────────────────────────────────
+# �w�w Utilities �w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w
 python-dotenv==1.0.1
-pydantic==2.7.1
+pydantic==2.8.2
 pydantic-settings==2.3.0
 tenacity==8.3.0
 cachetools==5.3.3
 
-# ── Security ─────────────────────────────────────────────────
-cryptography==42.0.8
+# �w�w Security �w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w
+cryptography==43.0.1
 
-# ── Testing ──────────────────────────────────────────────────
+# �w�w Testing �w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w
 pytest==8.2.2
 pytest-asyncio==0.23.7

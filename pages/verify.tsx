@@ -190,9 +190,9 @@ function VerifyForm() {
                 </div>
 
                 {/* Results */}
-                <div className="rounded-xl p-6" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}>
+                <div className="rounded-xl p-6 flex flex-col" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}>
                     {!result && !loading && (
-                        <div className="text-center py-16 text-sm" style={{ color: "rgba(255,255,255,0.4)" }}>
+                        <div className="flex items-center justify-center h-full text-sm" style={{ color: "rgba(255,255,255,0.4)" }}>
                             Results will appear here after analysis.
                         </div>
                     )}

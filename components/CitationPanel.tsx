@@ -179,10 +179,6 @@ export default function CitationPanel({ citations, isLoading }: CitationPanelPro
     if (isLoading) {
         return (
             <div className="h-full">
-                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2" style={{ color: "#ffffff" }}>
-                    📚 References
-                    <span className="text-sm font-normal" style={{ color: "rgba(255,255,255,0.5)" }}>(Loading...)</span>
-                </h3>
                 <LoadingSkeleton />
             </div>
         );
@@ -190,9 +186,8 @@ export default function CitationPanel({ citations, isLoading }: CitationPanelPro
 
     if (citations.length === 0) {
         return (
-            <div className="h-full">
-                <h3 className="text-lg font-semibold mb-4" style={{ color: "#ffffff" }}>📚 References</h3>
-                <p className="text-center py-8" style={{ color: "rgba(255,255,255,0.5)" }}>References will appear here after your search.</p>
+            <div className="h-full flex items-center justify-center">
+                <p className="text-center text-sm" style={{ color: "rgba(255,255,255,0.4)" }}>References will appear here after your search.</p>
             </div>
         );
     }
@@ -204,12 +199,9 @@ export default function CitationPanel({ citations, isLoading }: CitationPanelPro
 
     return (
         <div className="h-full flex flex-col">
-            <h3 className="text-lg font-semibold mb-2 flex items-center gap-2" style={{ color: "#ff8e6e" }}>
-                📚 References
-                <span className="text-sm font-normal" style={{ color: "rgba(255,255,255,0.45)" }}>
-                    ({citations.length})
-                </span>
-            </h3>
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+                References ({citations.length})
+            </p>
 
             <div className="flex gap-2 mb-4 text-xs">
                 {Object.entries(sourceStats).map(([source, count]) => (

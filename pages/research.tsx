@@ -272,8 +272,8 @@ function ResearchForm() {
                 </div>
 
                 {/* Right: citations */}
-                <div className="lg:w-96">
-                    <div className="rounded-xl p-6 max-h-[700px] overflow-hidden" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}>
+                <div className="lg:w-96 flex flex-col">
+                    <div className="rounded-xl p-6 flex-1 overflow-hidden" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}>
                         <CitationPanel citations={citations} isLoading={loading && citations.length === 0} />
                     </div>
                 </div>
