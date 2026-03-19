@@ -697,6 +697,148 @@ async def get_user_history(
 
 
 # ============================================================
+# Phase 4：Lemon Squeezy 金流
+# ============================================================
+import hmac
+import hashlib
+
+class CheckoutRequest(BaseModel):
+    variant_id: str
+
+@app.post("/api/checkout")
+async def create_checkout(
+    body: CheckoutRequest,
+    creds: Optional[HTTPAuthorizationCredentials] = Depends(optional_auth),
+    db: Session = Depends(get_db)
+):
+    user_id = get_user_id(creds)
+    try:
+        from api.services.lemonsqueezy_service import create_checkout as ls_checkout
+        url = await ls_checkout(
+            variant_id=body.variant_id,
+            clerk_user_id=user_id
+        )
+        return {"url": url}
+    except Exception as e:
+        print(f"❌ Checkout error: {e}")
+        return JSONResponse(status_code=500, content={"detail": "Checkout failed"})
+
+
+@app.post("/api/webhooks/lemonsqueezy")
+async def lemonsqueezy_webhook(request: Request, db: Session = Depends(get_db)):
+    # 驗證 webhook signature
+    signing_secret = os.getenv("LEMON_SQUEEZY_SIGNING_SECRET", "")
+    body_bytes = await request.body()
+    signature = request.headers.get("X-Signature", "")
+
+    expected = hmac.new(
+        signing_secret.encode(),
+        body_bytes,
+        hashlib.sha256
+    ).hexdigest()
+
+    if not hmac.compare_digest(expected, signature):
+        return JSONResponse(status_code=401, content={"detail": "Invalid signature"})
+
+    payload = await request.json()
+    event_name = payload.get("meta", {}).get("event_name", "")
+    event_id = payload.get("meta", {}).get("uuid", "")
+    custom_data = payload.get("meta", {}).get("custom_data", {})
+    clerk_user_id = custom_data.get("clerk_user_id", "")
+    attrs = payload.get("data", {}).get("attributes", {})
+
+    if not clerk_user_id:
+        return {"status": "ignored", "reason": "no clerk_user_id"}
+
+    # Idempotency 檢查
+    from api.models.sql_models import WebhookEvent, UserUsage
+    existing = db.query(WebhookEvent).filter(
+        WebhookEvent.event_id == event_id
+    ).first()
+    if existing:
+        return {"status": "already_processed"}
+
+    # 處理事件
+    usage = db.query(UserUsage).filter(
+        UserUsage.clerk_user_id == clerk_user_id
+    ).first()
+    if not usage:
+        usage = UserUsage(clerk_user_id=clerk_user_id)
+        db.add(usage)
+
+    from datetime import datetime, timezone
+
+    if event_name == "subscription_created":
+        usage.plan_type = "pro"
+        usage.lemon_subscription_id = str(payload.get("data", {}).get("id", ""))
+        usage.lemon_variant_id = attrs.get("variant_id", "")
+        ends_at = attrs.get("renews_at") or attrs.get("ends_at")
+        if ends_at:
+            usage.current_period_end = datetime.fromisoformat(ends_at.replace("Z", "+00:00"))
+
+    elif event_name == "subscription_updated":
+        ends_at = attrs.get("renews_at") or attrs.get("ends_at")
+        if ends_at:
+            usage.current_period_end = datetime.fromisoformat(ends_at.replace("Z", "+00:00"))
+
+    elif event_name in ["subscription_cancelled", "subscription_expired"]:
+        usage.plan_type = "free"
+
+    elif event_name == "subscription_payment_refunded":
+        usage.plan_type = "free"
+
+    elif event_name == "subscription_payment_failed":
+        # 給寬限期，不立即降級
+        pass
+
+    # 記錄已處理的 event
+    db.add(WebhookEvent(event_id=event_id, event_type=event_name))
+    db.commit()
+
+    return {"status": "ok", "event": event_name}
+
+
+@app.get("/api/user/status")
+async def user_status(
+    creds: Optional[HTTPAuthorizationCredentials] = Depends(optional_auth),
+    db: Session = Depends(get_db)
+):
+    user_id = get_user_id(creds)
+    from api.models.sql_models import UserUsage
+    usage = db.query(UserUsage).filter(
+        UserUsage.clerk_user_id == user_id
+    ).first()
+
+    if not usage:
+        return {"plan_type": "free"}
+
+    return {"plan_type": usage.plan_type}
+
+
+@app.get("/api/user/portal")
+async def user_portal(
+    creds: Optional[HTTPAuthorizationCredentials] = Depends(optional_auth),
+    db: Session = Depends(get_db)
+):
+    user_id = get_user_id(creds)
+    from api.models.sql_models import UserUsage
+    usage = db.query(UserUsage).filter(
+        UserUsage.clerk_user_id == user_id
+    ).first()
+
+    if not usage or not usage.lemon_subscription_id:
+        return JSONResponse(status_code=404, content={"detail": "No subscription found"})
+
+    try:
+        from api.services.lemonsqueezy_service import get_customer_portal_url
+        url = await get_customer_portal_url(usage.lemon_subscription_id)
+        return {"url": url}
+    except Exception as e:
+        print(f"❌ Portal error: {e}")
+        return JSONResponse(status_code=500, content={"detail": "Portal URL failed"})
+
+
+# ============================================================
 # 管理員：Cost Dashboard
 # ============================================================
 @app.get("/api/admin/costs")
