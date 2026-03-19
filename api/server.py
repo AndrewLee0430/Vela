@@ -697,6 +697,68 @@ async def get_user_history(
 
 
 # ============================================================
+# 管理員：Cost Dashboard
+# ============================================================
+@app.get("/api/admin/costs")
+async def admin_costs(
+    creds: Optional[HTTPAuthorizationCredentials] = Depends(optional_auth),
+    db: Session = Depends(get_db)
+):
+    user_id = get_user_id(creds)
+
+    # 僅限管理員
+    ADMIN_USER_ID = "user_3B939OrkarbJWpfTT8nCi9kDJ1B"
+    if user_id != ADMIN_USER_ID:
+        return JSONResponse(status_code=403, content={"detail": "Forbidden"})
+
+    from sqlalchemy import func, cast, Date
+    from datetime import datetime, timezone
+    from api.models.sql_models import ApiCostLog
+
+    today = datetime.now(timezone.utc).date()
+
+    # 今日總成本
+    daily = db.query(
+        func.sum(ApiCostLog.estimated_cost_usd)
+    ).filter(
+        cast(ApiCostLog.created_at, Date) == today
+    ).scalar() or 0.0
+
+    # 按功能分類
+    by_feature = db.query(
+        ApiCostLog.feature,
+        func.sum(ApiCostLog.estimated_cost_usd)
+    ).filter(
+        cast(ApiCostLog.created_at, Date) == today
+    ).group_by(ApiCostLog.feature).all()
+
+    # 平均成本
+    avg_costs = db.query(
+        ApiCostLog.feature,
+        func.avg(ApiCostLog.estimated_cost_usd)
+    ).group_by(ApiCostLog.feature).all()
+
+    # 總用戶數
+    from api.models.sql_models import UserUsage
+    total_users = db.query(func.count(UserUsage.clerk_user_id)).scalar() or 0
+
+    # 今日總 API calls
+    total_calls_today = db.query(
+        func.count(ApiCostLog.id)
+    ).filter(
+        cast(ApiCostLog.created_at, Date) == today
+    ).scalar() or 0
+
+    return {
+        "daily_total_usd": round(float(daily), 6),
+        "by_feature": {row[0]: round(float(row[1]), 6) for row in by_feature},
+        "avg_cost_per_feature": {row[0]: round(float(row[1]), 6) for row in avg_costs},
+        "total_users": total_users,
+        "total_api_calls_today": total_calls_today
+    }
+
+
+# ============================================================
 # 健康檢查
 # ============================================================
 @app.get("/health")
