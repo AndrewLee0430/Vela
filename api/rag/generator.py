@@ -98,7 +98,8 @@ class AnswerGenerator:
         documents: List[RetrievedDocument],
         retrieval_status: str = "ok",
         query_type: str = "research",
-        lang: str = ""      # 從 server.py 傳入；空字串代表自行偵測
+        lang: str = "",
+        usage_out: list = None  # 用來回傳 token 使用量給 server.py
     ) -> AsyncGenerator[StreamEvent, None]:
 
         if retrieval_status == "error":
@@ -109,7 +110,7 @@ class AnswerGenerator:
         resolved_lang = lang or detect_language(question)
 
         if not documents:
-            async for event in self._generate_fallback_stream(question, query_type, resolved_lang):
+            async for event in self._generate_fallback_stream(question, query_type, resolved_lang, usage_out):
                 yield event
             return
 
@@ -126,15 +127,24 @@ class AnswerGenerator:
                     {"role": "user",   "content": user_prompt}
                 ],
                 stream=True,
+                stream_options={"include_usage": True},
                 temperature=0.2,
                 max_tokens=2500
             )
             for chunk in stream:
-                if chunk.choices[0].delta.content:
+                # 最後一個 chunk choices 可能是空的（usage chunk）
+                if chunk.choices and chunk.choices[0].delta.content:
                     yield StreamEvent(
                         type=StreamEventType.ANSWER,
                         content=chunk.choices[0].delta.content
                     )
+                # 最後一個 chunk 包含 usage
+                if chunk.usage and usage_out is not None:
+                    usage_out.append({
+                        "model": self.model,
+                        "prompt_tokens": chunk.usage.prompt_tokens,
+                        "completion_tokens": chunk.usage.completion_tokens
+                    })
             yield StreamEvent(type=StreamEventType.CITATIONS, content=citations)
             yield StreamEvent(type=StreamEventType.DONE)
 
@@ -205,7 +215,8 @@ class AnswerGenerator:
         self,
         question: str,
         query_type: str = "research",
-        lang: str = "en"
+        lang: str = "en",
+        usage_out: list = None
     ) -> AsyncGenerator[StreamEvent, None]:
 
         system_prompt    = FALLBACK_PROMPTS.get(query_type, FALLBACK_PROMPTS["research"])
@@ -222,15 +233,22 @@ class AnswerGenerator:
                     {"role": "user",   "content": user_content}
                 ],
                 stream=True,
+                stream_options={"include_usage": True},
                 temperature=0.2,
                 max_tokens=2500
             )
             for chunk in stream:
-                if chunk.choices[0].delta.content:
+                if chunk.choices and chunk.choices[0].delta.content:
                     yield StreamEvent(
                         type=StreamEventType.ANSWER,
                         content=chunk.choices[0].delta.content
                     )
+                if chunk.usage and usage_out is not None:
+                    usage_out.append({
+                        "model": FALLBACK_MODEL,
+                        "prompt_tokens": chunk.usage.prompt_tokens,
+                        "completion_tokens": chunk.usage.completion_tokens
+                    })
             yield StreamEvent(type=StreamEventType.CITATIONS, content=[])
             yield StreamEvent(type=StreamEventType.DONE)
 

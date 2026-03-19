@@ -271,12 +271,14 @@ async def research_query(
             yield f"data: {json.dumps({'type': 'status', 'content': 'Analyzing documents...'}, ensure_ascii=False)}\n\n"
 
             lang = detect_language(body.question)
+            usage_out = []
             async for event in generator.generate_stream(
                 question=body.question,
                 documents=documents,
                 retrieval_status=retrieval_status,
                 query_type="research",
-                lang=lang
+                lang=lang,
+                usage_out=usage_out
             ):
                 if event.type == StreamEventType.ANSWER:
                     content = event.content or ""
@@ -315,6 +317,11 @@ async def research_query(
                         print(f"History Save Error: {e}")
                     # 成功後扣減 credits
                     await deduct_credits(db, user_id, "research")
+                    # Cost logging
+                    if usage_out:
+                        from api.services.cost_tracker import log_api_cost
+                        u = usage_out[0]
+                        await log_api_cost(db, user_id, "research", u["model"], u["prompt_tokens"], u["completion_tokens"])
                     yield f"data: {json.dumps({'type': 'done', 'query_time_ms': elapsed_ms}, ensure_ascii=False)}\n\n"
 
         except Exception as e:
@@ -549,6 +556,18 @@ Return valid JSON only:
     # 成功後扣減 credits
     await deduct_credits(db, user_id, "verify")
 
+    # Cost logging（Verify 用 gpt-4.1-mini，從 completion 取得 usage）
+    try:
+        from api.services.cost_tracker import log_api_cost
+        if analysis_success and 'completion' in locals():
+            await log_api_cost(
+                db, user_id, "verify", "gpt-4.1-mini",
+                completion.usage.prompt_tokens,
+                completion.usage.completion_tokens
+            )
+    except Exception as e:
+        print(f"Cost log error: {e}")
+
     return VerifyResponse(
         drugs_analyzed=body.drugs, interactions=interactions,
         summary=summary, risk_level=risk_level, query_time_ms=elapsed_ms
@@ -604,6 +623,19 @@ async def explain_report(
                         print(f"History Save Error: {e}")
                     # 成功後扣減 credits
                     await deduct_credits(db, user_id, "explain")
+                    # Cost logging
+                    try:
+                        from api.services.cost_tracker import log_api_cost
+                        usage = event.get("usage")
+                        if usage:
+                            await log_api_cost(
+                                db, user_id, "explain",
+                                usage.get("model", "gpt-4.1"),
+                                usage.get("prompt_tokens", 0),
+                                usage.get("completion_tokens", 0)
+                            )
+                    except Exception as e:
+                        print(f"Cost log error: {e}")
                 yield f"data: {json.dumps(event, ensure_ascii=False)}\n\n"
         except Exception as e:
             yield f"data: {json.dumps({'type': 'error', 'content': str(e)})}\n\n"
