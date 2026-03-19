@@ -9,6 +9,8 @@ import { fetchEventSource } from '@microsoft/fetch-event-source';
 import Link from 'next/link';
 import Image from 'next/image';
 import Toast from '../components/Toast';
+import UpgradeModal from '../components/UpgradeModal';
+import PlanBadge from '../components/PlanBadge';
 
 const ACCENT = '#68d391';
 
@@ -70,7 +72,9 @@ function ExplainForm() {
     const [loading, setLoading]       = useState(false);
     const [statusMsg, setStatusMsg]   = useState('');
     const [error, setError]           = useState('');
-    const [showToast, setShowToast]   = useState(false);
+    const [showToast, setShowToast]       = useState(false);
+    const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+    const [showDailyCapToast, setShowDailyCapToast] = useState(false);
     const isRunningRef = useRef(false);
 
     async function handleSubmit(e: FormEvent) {
@@ -90,8 +94,18 @@ function ExplainForm() {
                 openWhenHidden: true,
                 async onopen(response) {
                     if (response.ok) return;
-                    if (response.status === 403 || response.status === 401) throw new FatalError('Session expired.');
-                    if (response.status === 429) throw new FatalError('Too many requests. Please wait.');
+                    if (response.status === 403) {
+                        const data = await response.json().catch(() => ({}));
+                        if (data.error === 'limit_reached') {
+                            setShowUpgradeModal(true);
+                            throw new FatalError('');
+                        }
+                        throw new FatalError('Session expired.');
+                    }
+                    if (response.status === 429) {
+                        setShowDailyCapToast(true);
+                        throw new FatalError('');
+                    }
                     throw new FatalError(`Server error (${response.status}).`);
                 },
                 onmessage(ev) {
@@ -102,7 +116,16 @@ function ExplainForm() {
                         else if (data.type === 'sources') setSources(data.content ?? []);
                         else if (data.type === 'answer')  { accumulated += data.content; setOutput(accumulated); }
                         else if (data.type === 'done')    { setLoading(false); setStatusMsg(''); }
-                        else if (data.type === 'error')   { setError(data.content); setLoading(false); }
+                        else if (data.type === 'error') {
+                            if (data.error === 'limit_reached') {
+                                setShowUpgradeModal(true);
+                            } else if (data.error === 'daily_cap_reached') {
+                                setShowDailyCapToast(true);
+                            } else {
+                                setError(data.content || data.error || 'An error occurred.');
+                            }
+                            setLoading(false);
+                        }
                     } catch {}
                 },
                 onclose() { setLoading(false); setStatusMsg(''); },
@@ -221,6 +244,15 @@ function ExplainForm() {
             </div>
 
             {showToast && <Toast message="Copied to clipboard" onClose={() => setShowToast(false)} />}
+            <UpgradeModal isOpen={showUpgradeModal} onClose={() => setShowUpgradeModal(false)} />
+            {showDailyCapToast && (
+                <Toast
+                    message="You've reached today's usage limit. Resets at midnight UTC."
+                    type="warning"
+                    onClose={() => setShowDailyCapToast(false)}
+                    duration={5000}
+                />
+            )}
         </div>
     );
 }
@@ -245,7 +277,10 @@ export default function Explain() {
                                 <Link href="/history"  className="text-gray-400 hover:text-white transition-colors">History</Link>
                             </div>
                         </div>
-                        <UserButton showName={true} />
+                        <div className="flex items-center gap-0">
+                            <PlanBadge />
+                            <UserButton showName={true} />
+                        </div>
                     </div>
                 </div>
             </nav>

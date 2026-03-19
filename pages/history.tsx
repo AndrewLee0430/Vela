@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useAuth, SignedIn, SignedOut, RedirectToSignIn, UserButton } from '@clerk/nextjs';
 import Link from 'next/link';
 import Image from 'next/image';
+import PlanBadge from '../components/PlanBadge';
 
 // ─── Design System ────────────────────────────────────────────────────────────
 // 顏色對應跨頁面一致，首頁 card / 功能頁 accent / History 標籤全部同色
@@ -347,7 +348,10 @@ export default function History() {
                                 <Link href="/history"  className="text-white font-medium">History</Link>
                             </div>
                         </div>
-                        <UserButton showName={true} />
+                        <div className="flex items-center gap-0">
+                            <PlanBadge />
+                            <UserButton showName={true} />
+                        </div>
                     </div>
                 </div>
             </nav>

@@ -5,6 +5,9 @@ import { useAuth, SignedIn, SignedOut, RedirectToSignIn, UserButton } from '@cle
 import Link from 'next/link';
 import Image from 'next/image';
 import FeedbackBar from '../components/FeedbackBar';
+import UpgradeModal from '../components/UpgradeModal';
+import Toast from '../components/Toast';
+import PlanBadge from '../components/PlanBadge';
 
 // Verify accent color
 const ACCENT = '#63b3ed';
@@ -36,6 +39,8 @@ function VerifyForm() {
     const [error, setError]   = useState('');
 
     const isRunningRef = useRef(false);
+    const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+    const [showDailyCapToast, setShowDailyCapToast] = useState(false);
 
     const handleReset = () => { setDrugs(''); setResult(null); setError(''); };
 
@@ -62,7 +67,20 @@ function VerifyForm() {
                 body: JSON.stringify({ drugs: drugList, patient_context: null }),
             });
 
-            if (res.status === 403 || res.status === 401) {
+            if (res.status === 403) {
+                const data = await res.json().catch(() => ({}));
+                if (data.error === 'limit_reached') {
+                    setShowUpgradeModal(true);
+                    return;
+                }
+                setError('Session expired. Please refresh and sign in again.');
+                return;
+            }
+            if (res.status === 429) {
+                setShowDailyCapToast(true);
+                return;
+            }
+            if (res.status === 401) {
                 setError('Session expired. Please refresh and sign in again.');
                 return;
             }
@@ -276,6 +294,15 @@ function VerifyForm() {
                     )}
                 </div>
             </div>
+        <UpgradeModal isOpen={showUpgradeModal} onClose={() => setShowUpgradeModal(false)} />
+            {showDailyCapToast && (
+                <Toast
+                    message="You've reached today's usage limit. Resets at midnight UTC."
+                    type="warning"
+                    onClose={() => setShowDailyCapToast(false)}
+                    duration={5000}
+                />
+            )}
         </div>
     );
 }
@@ -300,7 +327,10 @@ export default function Verify() {
                                 <Link href="/history"  className="text-gray-400 hover:text-white transition-colors">History</Link>
                             </div>
                         </div>
-                        <UserButton showName={true} />
+                        <div className="flex items-center gap-0">
+                            <PlanBadge />
+                            <UserButton showName={true} />
+                        </div>
                     </div>
                 </div>
             </nav>

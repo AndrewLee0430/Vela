@@ -10,6 +10,9 @@ import Link from 'next/link';
 import Image from 'next/image';
 import CitationPanel, { Citation } from '../components/CitationPanel';
 import FeedbackBar from '../components/FeedbackBar';
+import UpgradeModal from '../components/UpgradeModal';
+import Toast from '../components/Toast';
+import PlanBadge from '../components/PlanBadge';
 
 // Research accent color
 const ACCENT = '#ff8e6e';
@@ -57,6 +60,8 @@ function ResearchForm() {
     const [error, setError]         = useState<string>('');
     const [isFallback, setIsFallback] = useState(false);
     const [statusMsg, setStatusMsg] = useState<string>('');
+    const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+    const [showDailyCapToast, setShowDailyCapToast] = useState(false);
 
     const answerRef    = useRef<HTMLDivElement>(null);
     const isRunningRef = useRef(false);
@@ -99,8 +104,15 @@ function ResearchForm() {
 
                 async onopen(response) {
                     if (response.ok) return;
-                    if (response.status === 403 || response.status === 401)
+                    if (response.status === 403) {
+                        // 可能是 limit_reached 或 session expired
+                        const data = await response.json().catch(() => ({}));
+                        if (data.error === 'limit_reached') {
+                            setShowUpgradeModal(true);
+                            throw new FatalError('');
+                        }
                         throw new FatalError('Session expired. Please refresh and sign in again.');
+                    }
                     if (response.status === 429)
                         throw new FatalError('Too many requests. Please wait a moment and try again.');
                     throw new FatalError(`Server error (${response.status}). Please try again.`);
@@ -113,7 +125,15 @@ function ResearchForm() {
                         else if (data.type === 'answer')   { setStatusMsg(''); setAnswer(prev => prev + data.content); }
                         else if (data.type === 'fallback') setIsFallback(true);
                         else if (data.type === 'citations') setCitations(data.content);
-                        else if (data.type === 'error')    setError(data.content);
+                        else if (data.type === 'error') {
+                            if (data.error === 'limit_reached') {
+                                setShowUpgradeModal(true);
+                            } else if (data.error === 'daily_cap_reached') {
+                                setShowDailyCapToast(true);
+                            } else {
+                                setError(data.content || data.error || 'An error occurred.');
+                            }
+                        }
                         else if (data.type === 'done')     { setLoading(false); if (data.query_time_ms) setQueryTime(data.query_time_ms); }
                     } catch {}
                 },
@@ -278,6 +298,15 @@ function ResearchForm() {
                     </div>
                 </div>
             </div>
+        <UpgradeModal isOpen={showUpgradeModal} onClose={() => setShowUpgradeModal(false)} />
+            {showDailyCapToast && (
+                <Toast
+                    message="You've reached today's usage limit. Resets at midnight UTC."
+                    type="warning"
+                    onClose={() => setShowDailyCapToast(false)}
+                    duration={5000}
+                />
+            )}
         </div>
     );
 }
@@ -302,7 +331,10 @@ export default function Research() {
                                 <Link href="/history"  className="text-gray-400 hover:text-white transition-colors">History</Link>
                             </div>
                         </div>
-                        <UserButton showName={true} />
+                        <div className="flex items-center gap-0">
+                            <PlanBadge />
+                            <UserButton showName={true} />
+                        </div>
                     </div>
                 </div>
             </nav>
