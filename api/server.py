@@ -40,6 +40,7 @@ from api.middleware.phi_handler import PHIDetector
 from api.middleware.guards import run_guards
 from api.database.sql_db import get_db, engine, Base
 from api.models.sql_models import AuditLog, UserFeedback, ChatHistory
+from api.services.usage_service import check_credits, deduct_credits
 
 from api.models.explain_schemas import ExplainRequest
 from api.services.explain_service import run_explain_pipeline
@@ -123,18 +124,54 @@ app.add_middleware(
 TEST_MODE = os.getenv("TEST_MODE", "false").lower() == "true"
 print(f"🔑 TEST_MODE = {TEST_MODE}")
 
+import httpx
+from jose import jwt as jose_jwt
+from jose.exceptions import JWTError
+
+_jwks_cache = None
+
+async def get_jwks():
+    global _jwks_cache
+    if _jwks_cache is None:
+        async with httpx.AsyncClient() as client:
+            r = await client.get(os.getenv("CLERK_JWKS_URL"))
+            _jwks_cache = r.json()
+    return _jwks_cache
+
 if not TEST_MODE:
-    clerk_config = ClerkConfig(jwks_url=os.getenv("CLERK_JWKS_URL"))
-    clerk_guard = ClerkHTTPBearer(clerk_config)
+    clerk_guard = None  # 不再用 fastapi-clerk-auth
 else:
     clerk_guard = None
     print("⚠️  TEST_MODE: Clerk authentication disabled")
 
 
 async def optional_auth(request: Request) -> Optional[HTTPAuthorizationCredentials]:
-    if TEST_MODE or clerk_guard is None:
+    if TEST_MODE:
         return None
-    return await clerk_guard(request)
+
+    auth_header = request.headers.get("Authorization", "")
+    if not auth_header.startswith("Bearer "):
+        from fastapi import HTTPException
+        raise HTTPException(status_code=403, detail="Missing token")
+
+    token = auth_header.split(" ", 1)[1]
+
+    try:
+        jwks = await get_jwks()
+        payload = jose_jwt.decode(
+            token,
+            jwks,
+            algorithms=["RS256"],
+            options={"verify_aud": False}
+        )
+        # 模擬 HTTPAuthorizationCredentials
+        class FakeCreds:
+            decoded = payload
+        return FakeCreds()
+    except JWTError as e:
+        print(f"❌ JWT decode error: {e}")
+        from fastapi import HTTPException
+        raise HTTPException(status_code=403, detail="Invalid token")
 
 
 def get_user_id(creds: Optional[HTTPAuthorizationCredentials]) -> str:
@@ -206,6 +243,14 @@ async def research_query(
     user_id = get_user_id(creds)
     start_time = time.time()
 
+    # Credit 檢查（在 streaming 開始前）
+    allowed, reason = await check_credits(db, user_id, "research")
+    if not allowed:
+        if reason == "limit_reached":
+            return JSONResponse(status_code=403, content={"error": "limit_reached", "upgrade_url": "/pricing"})
+        elif reason == "daily_cap_reached":
+            return JSONResponse(status_code=429, content={"error": "daily_cap_reached", "message": "You've reached today's usage limit. Resets at midnight UTC."})
+
     async def event_stream():
         full_answer = ""
         try:
@@ -268,6 +313,8 @@ async def research_query(
                         db.commit()
                     except Exception as e:
                         print(f"History Save Error: {e}")
+                    # 成功後扣減 credits
+                    await deduct_credits(db, user_id, "research")
                     yield f"data: {json.dumps({'type': 'done', 'query_time_ms': elapsed_ms}, ensure_ascii=False)}\n\n"
 
         except Exception as e:
@@ -288,7 +335,7 @@ async def get_suggestions(creds: Optional[HTTPAuthorizationCredentials] = Depend
 # ============================================================
 # 功能 3：Verify
 # ============================================================
-@app.post("/api/verify", response_model=VerifyResponse)
+@app.post("/api/verify")
 async def verify_drug_interaction(
     body: VerifyRequest,
     creds: Optional[HTTPAuthorizationCredentials] = Depends(optional_auth),
@@ -296,6 +343,14 @@ async def verify_drug_interaction(
 ):
     start_time = time.time()
     user_id = get_user_id(creds)
+
+    # Credit 檢查
+    allowed, reason = await check_credits(db, user_id, "verify")
+    if not allowed:
+        if reason == "limit_reached":
+            return JSONResponse(status_code=403, content={"error": "limit_reached", "upgrade_url": "/pricing"})
+        elif reason == "daily_cap_reached":
+            return JSONResponse(status_code=429, content={"error": "daily_cap_reached", "message": "You've reached today's usage limit. Resets at midnight UTC."})
 
     # ── Guard：藥物名稱不需要間接 injection 掃描 ──────────────────
     verify_input = " ".join(body.drugs) + (f" {body.patient_context}" if body.patient_context else "")
@@ -491,6 +546,9 @@ Return valid JSON only:
     if spelling_corrections:
         summary = "Note: " + "; ".join(spelling_corrections) + ". Please verify. " + summary
 
+    # 成功後扣減 credits
+    await deduct_credits(db, user_id, "verify")
+
     return VerifyResponse(
         drugs_analyzed=body.drugs, interactions=interactions,
         summary=summary, risk_level=risk_level, query_time_ms=elapsed_ms
@@ -514,6 +572,14 @@ async def explain_report(
     """
     user_id = get_user_id(creds)
 
+    # Credit 檢查
+    allowed, reason = await check_credits(db, user_id, "explain")
+    if not allowed:
+        if reason == "limit_reached":
+            return JSONResponse(status_code=403, content={"error": "limit_reached", "upgrade_url": "/pricing"})
+        elif reason == "daily_cap_reached":
+            return JSONResponse(status_code=429, content={"error": "daily_cap_reached", "message": "You've reached today's usage limit. Resets at midnight UTC."})
+
     async def event_stream():
         full_answer = ""
         try:
@@ -536,6 +602,8 @@ async def explain_report(
                         db.commit()
                     except Exception as e:
                         print(f"History Save Error: {e}")
+                    # 成功後扣減 credits
+                    await deduct_credits(db, user_id, "explain")
                 yield f"data: {json.dumps(event, ensure_ascii=False)}\n\n"
         except Exception as e:
             yield f"data: {json.dumps({'type': 'error', 'content': str(e)})}\n\n"

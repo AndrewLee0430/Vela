@@ -121,12 +121,12 @@ def detect_language(text: str) -> str:
 
 
 def get_language_instruction(lang_code: str) -> str:
-    """
-    Returns an explicit language instruction string for system prompts.
-    Example: 'LANGUAGE: Respond entirely in French (Français).'
-    """
-    lang_name = LANGUAGE_NAMES.get(lang_code, f"the same language as the input ({lang_code})")
-    return f"LANGUAGE: Respond entirely in {lang_name}. Do NOT switch to English."
+    if lang_code == "en":
+        return ""  # 英文不需要額外指令
+    lang_name = LANGUAGE_NAMES.get(lang_code)
+    if lang_name:
+        return f"LANGUAGE: Respond entirely in {lang_name}. Do NOT switch to English."
+    return ""  # 未知語言：不注入指令，讓模型自行匹配用戶語言
 
 
 def get_language_name(lang_code: str) -> str:
