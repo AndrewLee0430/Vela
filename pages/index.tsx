@@ -239,10 +239,16 @@ export default function Home() {
 
         {/* Footer */}
         <div
-          className="flex-shrink-0 flex justify-center items-center px-10 py-5 text-sm"
+          className="flex-shrink-0 flex flex-col items-center gap-2 px-10 py-5 text-sm"
           style={{ borderTop: '1px solid rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.3)' }}
         >
-          © {new Date().getFullYear()} Vela. All rights reserved. · Hosted on secure infrastructure · De-identified data only
+          <div>© {new Date().getFullYear()} Vela. All rights reserved. · Hosted on secure infrastructure · De-identified data only</div>
+          <div className="flex gap-4 text-xs">
+            <Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
+            <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
+            <Link href="/refund" className="hover:text-white transition-colors">Refund Policy</Link>
+            <a href="mailto:support@an-tho.com" className="hover:text-white transition-colors">support@an-tho.com</a>
+          </div>
         </div>
       </div>
     </>
