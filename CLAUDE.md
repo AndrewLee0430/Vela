@@ -28,7 +28,7 @@ TEST_MODE=true uvicorn api.server:app --reload           # Skip Clerk auth for l
 
 ### First-Time Setup
 ```bash
-python scripts/build_drug_vectordb.py    # Build ChromaDB vector store (required)
+python scripts/build_drug_vectordb.py    # Build NumPy vector index (required)
 python scripts/build_explain_cache.py   # Pre-warm LOINC/RxNorm/MedlinePlus cache
 ```
 
@@ -60,7 +60,7 @@ The guard chain (`api/middleware/guards.py`) orders checks cheapest-first:
 
 **Research** (`api/rag/`):
 - Query → language detection → rewrite to 3 medical English queries
-- Parallel retrieval: ChromaDB (191 drugs) + PubMed API + FDA drug labels
+- Parallel retrieval: NumPy vector store (191 drugs) + PubMed API + FDA drug labels
 - Deduplication + year-weighted scoring → reranking (top_k=8)
 - GPT-4.1 generation with streaming SSE + citations
 

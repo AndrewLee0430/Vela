@@ -1,0 +1,22 @@
+app = "vela-ai-medical"
+primary_region = "nrt"   # 東京，離台灣最近
+
+[build]
+  dockerfile = "Dockerfile"
+
+[build.args]
+  NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = "pk_test_am9pbnQtZ3VwcHktMjMuY2xlcmsuYWNjb3VudHMuZGV2JA"
+  NEXT_PUBLIC_POSTHOG_KEY = "phc_b9toDT6nkPhQxRpabYsT6vSUEAWGha8HQbVxkaaNthW"
+  NEXT_PUBLIC_POSTHOG_HOST = "https://app.posthog.com"
+
+[http_service]
+  internal_port = 8000
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 1
+
+[[vm]]
+  memory = "1gb"
+  cpu_kind = "shared"
+  cpus = 1

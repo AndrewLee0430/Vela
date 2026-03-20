@@ -20,10 +20,10 @@ openai==1.30.1
 langchain==0.2.5
 langchain-openai==0.1.8
 langchain-community==0.2.5
-langchain-chroma==0.1.1
 
-# �w�w Vector DB �w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w
-chromadb==0.5.0
+
+# �w�w Vector Search �w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w
+numpy>=1.24.0
 
 # �w�w Database �w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w
 asyncpg==0.29.0

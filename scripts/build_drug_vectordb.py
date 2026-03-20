@@ -1,130 +1,66 @@
 """
-Build Drug Vector Database
-将收集的药物数据向量化并存储到 Chroma DB
+Build Drug Vector Database (NumPy JSON index)
+將收集的藥物資料向量化並存為 JSON，供 VectorStore 載入
 
 使用方法:
     python scripts/build_drug_vectordb.py
 """
 
-# ✅ 第一步：加载环境变量（必须在最开头）
 import os
+import sys
+import json
 from pathlib import Path
+from typing import List, Dict
 from dotenv import load_dotenv
 
-# 加载项目根目录的 .env 文件
+# 載入環境變數
 project_root = Path(__file__).parent.parent
 env_path = project_root / '.env'
 load_dotenv(dotenv_path=env_path)
 
-# 验证 API key
 if not os.getenv('OPENAI_API_KEY'):
     print(f"❌ Error: OPENAI_API_KEY not found")
     print(f"   Checked: {env_path}")
-    print(f"   Please add OPENAI_API_KEY to .env file")
-    import sys
     sys.exit(1)
 else:
     print(f"✅ API Key loaded from {env_path}")
 
-# ✅ 第二步：其他导入
-import sys
-import json
-from typing import List, Dict
+from openai import OpenAI
 
-# 添加项目根目录到路径
-sys.path.insert(0, str(project_root))
-
-try:
-    # 尝试新版本导入（LangChain >= 0.1.0）
-    from langchain_openai import OpenAIEmbeddings
-    from langchain_chroma import Chroma
-except ImportError:
-    # 回退到旧版本导入
-    from langchain.embeddings import OpenAIEmbeddings
-    from langchain.vectorstores import Chroma
-
-# Document 的新导入路径
-try:
-    from langchain_core.documents import Document
-except ImportError:
-    from langchain.docstore.document import Document
+client = OpenAI()
+EMBEDDING_MODEL = "text-embedding-3-small"
 
 
-class DrugVectorDBBuilder:
-    """药物向量数据库构建器"""
-    
-    def __init__(
-        self, 
-        data_dir: str = "data/drug_database",
-        vector_db_dir: str = "data/drug_vectordb"
-    ):
-        self.data_dir = Path(data_dir)
-        self.vector_db_dir = Path(vector_db_dir)
-        self.embeddings = OpenAIEmbeddings()
-        
-        # 确保目录存在
-        self.vector_db_dir.mkdir(parents=True, exist_ok=True)
-        
-        self.stats = {
-            'total_files': 0,
-            'processed': 0,
-            'failed': 0
-        }
-    
-    def load_drug_data(self) -> List[Dict]:
-        """
-        加载所有药物数据
-        
-        Returns:
-            药物数据列表
-        """
-        drug_data = []
-        
-        if not self.data_dir.exists():
-            print(f"❌ Data directory not found: {self.data_dir}")
-            print(f"   Please run collect_drug_data.py first!")
-            return drug_data
-        
-        json_files = list(self.data_dir.glob("*.json"))
-        self.stats['total_files'] = len(json_files)
-        
-        print(f"📂 Found {len(json_files)} drug data files")
-        
-        for filepath in json_files:
-            try:
-                with open(filepath, 'r', encoding='utf-8') as f:
-                    data = json.load(f)
-                    drug_data.append(data)
-                    self.stats['processed'] += 1
-            except Exception as e:
-                print(f"❌ Error loading {filepath}: {e}")
-                self.stats['failed'] += 1
-        
-        print(f"✅ Loaded {len(drug_data)} drug data files")
-        return drug_data
-    
-    def create_documents(self, drug_data: List[Dict]) -> List[Document]:
-        """
-        将药物数据转换为 LangChain Documents
-        
-        Args:
-            drug_data: 药物数据列表
-            
-        Returns:
-            Document 列表
-        """
-        documents = []
-        
-        print("📝 Creating documents...")
-        
-        for data in drug_data:
-            drug_name = data.get('drug_name', 'Unknown')
-            
-            # 创建多个文档片段，提高检索准确性
-            
-            # 1. 基本信息文档
-            basic_info = f"""
-Drug: {drug_name}
+def load_drug_data(data_dir: Path) -> List[Dict]:
+    """載入所有藥物 JSON 檔案"""
+    if not data_dir.exists():
+        print(f"❌ Data directory not found: {data_dir}")
+        return []
+
+    json_files = list(data_dir.glob("*.json"))
+    print(f"📂 Found {len(json_files)} drug data files")
+
+    drug_data = []
+    for filepath in json_files:
+        try:
+            with open(filepath, 'r', encoding='utf-8') as f:
+                drug_data.append(json.load(f))
+        except Exception as e:
+            print(f"❌ Error loading {filepath}: {e}")
+
+    print(f"✅ Loaded {len(drug_data)} drug data files")
+    return drug_data
+
+
+def create_documents(drug_data: List[Dict]) -> List[Dict]:
+    """將藥物資料轉為 document metadata dicts"""
+    documents = []
+
+    for data in drug_data:
+        drug_name = data.get('drug_name', 'Unknown')
+
+        # 1. 基本資訊
+        basic_info = f"""Drug: {drug_name}
 Generic Name: {data.get('generic_name', '')}
 Brand Names: {', '.join(data.get('brand_names', []))}
 
@@ -132,209 +68,164 @@ Indications and Usage:
 {data.get('indications', '')}
 
 Dosage and Administration:
-{data.get('dosage', '')}
-""".strip()
-            
-            documents.append(Document(
-                page_content=basic_info,
-                metadata={
-                    'drug_name': drug_name,
-                    'doc_type': 'basic_info',
-                    'source': 'FDA'
-                }
-            ))
-            
-            # 2. 禁忌症和警告文档
-            if data.get('contraindications') or data.get('warnings'):
-                safety_info = f"""
-Drug: {drug_name}
+{data.get('dosage', '')}""".strip()
+
+        documents.append({
+            "content": basic_info,
+            "source_type": "fda_label",
+            "source_id": f"fda-{drug_name.lower().replace(' ', '-')}-basic",
+            "title": f"{drug_name} - Basic Info",
+            "url": "",
+            "credibility": "official",
+            "drug_name": drug_name,
+            "doc_type": "basic_info",
+        })
+
+        # 2. 禁忌症和警告
+        if data.get('contraindications') or data.get('warnings'):
+            safety_info = f"""Drug: {drug_name}
 
 Contraindications:
 {data.get('contraindications', '')}
 
 Warnings and Precautions:
-{data.get('warnings', '')}
-""".strip()
-                
-                documents.append(Document(
-                    page_content=safety_info,
-                    metadata={
-                        'drug_name': drug_name,
-                        'doc_type': 'safety',
-                        'source': 'FDA'
-                    }
-                ))
-            
-            # 3. 不良反应文档
-            if data.get('adverse_reactions'):
-                adverse_info = f"""
-Drug: {drug_name}
+{data.get('warnings', '')}""".strip()
+
+            documents.append({
+                "content": safety_info,
+                "source_type": "fda_label",
+                "source_id": f"fda-{drug_name.lower().replace(' ', '-')}-safety",
+                "title": f"{drug_name} - Safety",
+                "url": "",
+                "credibility": "official",
+                "drug_name": drug_name,
+                "doc_type": "safety",
+            })
+
+        # 3. 不良反應
+        if data.get('adverse_reactions'):
+            adverse_info = f"""Drug: {drug_name}
 
 Adverse Reactions:
-{data.get('adverse_reactions', '')}
-""".strip()
-                
-                documents.append(Document(
-                    page_content=adverse_info,
-                    metadata={
-                        'drug_name': drug_name,
-                        'doc_type': 'adverse_reactions',
-                        'source': 'FDA'
-                    }
-                ))
-            
-            # 4. 药物交互作用文档
-            if data.get('drug_interactions'):
-                interaction_info = f"""
-Drug: {drug_name}
+{data.get('adverse_reactions', '')}""".strip()
+
+            documents.append({
+                "content": adverse_info,
+                "source_type": "fda_label",
+                "source_id": f"fda-{drug_name.lower().replace(' ', '-')}-adverse",
+                "title": f"{drug_name} - Adverse Reactions",
+                "url": "",
+                "credibility": "official",
+                "drug_name": drug_name,
+                "doc_type": "adverse_reactions",
+            })
+
+        # 4. 藥物交互作用
+        if data.get('drug_interactions'):
+            interaction_info = f"""Drug: {drug_name}
 
 Drug Interactions:
-{data.get('drug_interactions', '')}
-""".strip()
-                
-                documents.append(Document(
-                    page_content=interaction_info,
-                    metadata={
-                        'drug_name': drug_name,
-                        'doc_type': 'interactions',
-                        'source': 'FDA'
-                    }
-                ))
-            
-            # 5. 药理学文档
-            if data.get('pharmacology'):
-                pharm_info = f"""
-Drug: {drug_name}
+{data.get('drug_interactions', '')}""".strip()
+
+            documents.append({
+                "content": interaction_info,
+                "source_type": "fda_label",
+                "source_id": f"fda-{drug_name.lower().replace(' ', '-')}-interactions",
+                "title": f"{drug_name} - Interactions",
+                "url": "",
+                "credibility": "official",
+                "drug_name": drug_name,
+                "doc_type": "interactions",
+            })
+
+        # 5. 藥理學
+        if data.get('pharmacology'):
+            pharm_info = f"""Drug: {drug_name}
 
 Clinical Pharmacology:
-{data.get('pharmacology', '')}
-""".strip()
-                
-                documents.append(Document(
-                    page_content=pharm_info,
-                    metadata={
-                        'drug_name': drug_name,
-                        'doc_type': 'pharmacology',
-                        'source': 'FDA'
-                    }
-                ))
-        
-        print(f"✅ Created {len(documents)} documents from {len(drug_data)} drugs")
-        return documents
-    
-    def build_vector_db(self, documents: List[Document]) -> Chroma:
-        """
-        构建向量数据库
-        
-        Args:
-            documents: Document 列表
-            
-        Returns:
-            Chroma 向量数据库
-        """
-        print(f"🔨 Building vector database...")
-        print(f"   This may take a while (embedding {len(documents)} documents)...")
-        
-        # 批量处理，避免一次处理太多
-        batch_size = 100
-        vector_db = None
-        
-        for i in range(0, len(documents), batch_size):
-            batch = documents[i:i+batch_size]
-            print(f"   Processing batch {i//batch_size + 1}/{(len(documents)-1)//batch_size + 1}...")
-            
-            if vector_db is None:
-                # 第一批：创建新数据库
-                vector_db = Chroma.from_documents(
-                    documents=batch,
-                    embedding=self.embeddings,
-                    persist_directory=str(self.vector_db_dir)
-                )
-            else:
-                # 后续批次：添加到现有数据库
-                vector_db.add_documents(batch)
-        
-        # 持久化
-        # 持久化（新版本自动持久化，不需要手动调用）
-        print("💾 Vector database persisted automatically")
-        # vector_db.persist()  # 新版本已移除此方法
-        
-        print(f"✅ Vector database built successfully!")
-        print(f"   Location: {self.vector_db_dir}")
-        print(f"   Total documents: {len(documents)}")
-        
-        return vector_db
-    
-    def build(self) -> None:
-        """执行完整的构建流程"""
-        print("="*60)
-        print("🚀 Building Drug Vector Database")
-        print("="*60)
-        
-        # 1. 加载数据
-        drug_data = self.load_drug_data()
-        
-        if not drug_data:
-            print("❌ No drug data found. Please run collect_drug_data.py first!")
-            return
-        
-        # 2. 创建文档
-        documents = self.create_documents(drug_data)
-        
-        # 3. 构建向量数据库
-        vector_db = self.build_vector_db(documents)
-        
-        # 4. 测试查询
-        print("\n" + "="*60)
-        print("🧪 Testing vector database...")
-        print("="*60)
-        
-        test_queries = [
-            "What are the side effects of Metformin?",
-            "Warfarin drug interactions",
-            "Aspirin contraindications"
-        ]
-        
-        for query in test_queries:
-            print(f"\nQuery: {query}")
-            results = vector_db.similarity_search(query, k=2)
-            for i, doc in enumerate(results, 1):
-                print(f"  Result {i}: {doc.metadata['drug_name']} ({doc.metadata['doc_type']})")
-                print(f"    Preview: {doc.page_content[:100]}...")
-        
-        # 5. 最终统计
-        print("\n" + "="*60)
-        print("✅ Build completed!")
-        print("="*60)
-        print(f"""
-📊 Statistics:
-  Total drug data files: {self.stats['total_files']}
-  Successfully processed: {self.stats['processed']}
-  Failed: {self.stats['failed']}
-  Total documents created: {len(documents)}
-  Vector database location: {self.vector_db_dir}
-""")
+{data.get('pharmacology', '')}""".strip()
+
+            documents.append({
+                "content": pharm_info,
+                "source_type": "fda_label",
+                "source_id": f"fda-{drug_name.lower().replace(' ', '-')}-pharm",
+                "title": f"{drug_name} - Pharmacology",
+                "url": "",
+                "credibility": "official",
+                "drug_name": drug_name,
+                "doc_type": "pharmacology",
+            })
+
+    print(f"✅ Created {len(documents)} documents from {len(drug_data)} drugs")
+    return documents
+
+
+def embed_documents(documents: List[Dict], batch_size: int = 100) -> List[List[float]]:
+    """批次產生 embeddings"""
+    all_embeddings = []
+    texts = [doc["content"] for doc in documents]
+
+    for i in range(0, len(texts), batch_size):
+        batch = texts[i:i + batch_size]
+        print(f"   Embedding batch {i // batch_size + 1}/{(len(texts) - 1) // batch_size + 1} ({len(batch)} docs)...")
+        response = client.embeddings.create(model=EMBEDDING_MODEL, input=batch)
+        all_embeddings.extend([item.embedding for item in response.data])
+
+    return all_embeddings
 
 
 def main():
     import argparse
-    
-    parser = argparse.ArgumentParser(description='Build drug vector database')
+
+    parser = argparse.ArgumentParser(description='Build drug vector database (NumPy JSON)')
     parser.add_argument('--data-dir', type=str, default='data/drug_database',
-                       help='Drug data directory (default: data/drug_database)')
+                        help='Drug data directory')
     parser.add_argument('--output-dir', type=str, default='data/drug_vectordb',
-                       help='Vector database output directory (default: data/drug_vectordb)')
-    
+                        help='Output directory for index.json')
     args = parser.parse_args()
-    
-    # 创建构建器
-    builder = DrugVectorDBBuilder(
-        data_dir=args.data_dir,
-        vector_db_dir=args.output_dir
-    )
-    
-    # 开始构建
-    builder.build()
+
+    data_dir = Path(args.data_dir)
+    output_dir = Path(args.output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    print("=" * 60)
+    print("🚀 Building Drug Vector Database (NumPy JSON)")
+    print("=" * 60)
+
+    # 1. 載入資料
+    drug_data = load_drug_data(data_dir)
+    if not drug_data:
+        print("❌ No drug data found. Run collect_drug_data.py first!")
+        return
+
+    # 2. 建立 documents
+    documents = create_documents(drug_data)
+
+    # 3. 產生 embeddings
+    print(f"🔨 Embedding {len(documents)} documents with {EMBEDDING_MODEL}...")
+    embeddings = embed_documents(documents)
+
+    # 4. 寫入 index.json
+    index_path = output_dir / "index.json"
+    index_data = {
+        "model": EMBEDDING_MODEL,
+        "documents": documents,
+        "embeddings": embeddings,
+    }
+
+    with open(index_path, "w", encoding="utf-8") as f:
+        json.dump(index_data, f, ensure_ascii=False)
+
+    size_mb = index_path.stat().st_size / (1024 * 1024)
+    print(f"💾 Saved: {index_path} ({size_mb:.1f} MB)")
+
+    # 5. 驗證
+    import numpy as np
+    emb_array = np.array(embeddings, dtype=np.float32)
+    print(f"\n✅ Build completed!")
+    print(f"   Documents: {len(documents)}")
+    print(f"   Embedding dim: {emb_array.shape[1]}")
+    print(f"   Index: {index_path}")
 
 
 if __name__ == "__main__":

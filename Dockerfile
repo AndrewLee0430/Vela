@@ -3,52 +3,43 @@ FROM node:22-alpine AS frontend-builder
 
 WORKDIR /app
 
-# Copy package files first (for better caching)
 COPY package*.json ./
 RUN npm ci
-
-# Copy all frontend files
 COPY . .
 
-# Build argument for Clerk public key
+# ⚠️ 所有 NEXT_PUBLIC_* 必須是 build args（不能用 runtime env）
 ARG NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
 ENV NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=$NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+ARG NEXT_PUBLIC_POSTHOG_KEY
+ENV NEXT_PUBLIC_POSTHOG_KEY=$NEXT_PUBLIC_POSTHOG_KEY
+ARG NEXT_PUBLIC_POSTHOG_HOST
+ENV NEXT_PUBLIC_POSTHOG_HOST=$NEXT_PUBLIC_POSTHOG_HOST
 
-# Note: Docker may warn about "secrets in ARG/ENV" - this is OK!
-# The NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY is meant to be public (it starts with pk_)
-# It's safe to include in the build as it's designed for client-side use
-
-# Build the Next.js app (creates 'out' directory with static files)
 RUN npm run build
 
-# Stage 2: Create the final Python container
+# Stage 2: Python container
 FROM python:3.12-slim
 
 WORKDIR /app
 
-# Install Python dependencies
 COPY requirements.txt .
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    gcc \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
 RUN pip install --no-cache-dir -r requirements.txt
 
-# 🔄 修改：複製整個 api 資料夾（不只是 server.py）
 COPY api/ ./api/
+COPY scripts/ ./scripts/
+COPY data/ ./data/
 
-# 🆕 新增：複製 data 資料夾（如果有預建的向量庫）
-# 如果還沒有預建向量庫，這行會失敗，可以先註解掉
-# COPY data/ ./data/
-
-# 🆕 新增：建立 data 資料夾
-RUN mkdir -p data/chroma_db
-
-# Copy the Next.js static export from builder stage
+# Copy frontend static files
 COPY --from=frontend-builder /app/out ./static
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"
 
-# Expose port 8000 (FastAPI will serve everything)
 EXPOSE 8000
-
-# 🔄 修改：啟動指令，使用模組路徑
 CMD ["uvicorn", "api.server:app", "--host", "0.0.0.0", "--port", "8000"]
