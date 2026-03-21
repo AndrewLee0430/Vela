@@ -201,10 +201,10 @@ openai_async_client = AsyncOpenAI()
 async def audit_middleware(request: Request, call_next):
     path = request.url.path
 
-    if path in ["/api/research", "/api/consultation", "/api/explain"]:
+    if path in ["/api/research", "/api/consultation", "/api/explain", "/api/verify"]:
         return await call_next(request)
 
-    if path in ["/api/verify", "/api/feedback"] and request.method == "POST":
+    if path in ["/api/feedback"] and request.method == "POST":
         try:
             body_bytes = await request.body()
             body_str = body_bytes.decode("utf-8")
@@ -579,7 +579,7 @@ Return valid JSON only:
 # ============================================================
 @app.post("/api/explain")
 async def explain_report(
-    request: ExplainRequest,
+    body: ExplainRequest,
     creds: Optional[HTTPAuthorizationCredentials] = Depends(optional_auth),
     db: Session = Depends(get_db),
 ):
@@ -603,7 +603,7 @@ async def explain_report(
         full_answer = ""
         try:
             async for event in run_explain_pipeline(
-                report_text=request.report_text,
+                report_text=body.report_text,
                 openai_client=openai_async_client,
             ):
                 # Accumulate answer for history
@@ -615,7 +615,7 @@ async def explain_report(
                         db.add(ChatHistory(
                             user_id=user_id,
                             session_type="explain",
-                            question=request.report_text[:500],
+                            question=body.report_text[:500],
                             answer=full_answer
                         ))
                         db.commit()
