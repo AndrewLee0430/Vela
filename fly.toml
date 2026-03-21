@@ -8,6 +8,7 @@ primary_region = "nrt"   # 東京，離台灣最近
   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = "pk_test_am9pbnQtZ3VwcHktMjMuY2xlcmsuYWNjb3VudHMuZGV2JA"
   NEXT_PUBLIC_POSTHOG_KEY = "phc_b9toDT6nkPhQxRpabYsT6vSUEAWGha8HQbVxkaaNthW"
   NEXT_PUBLIC_POSTHOG_HOST = "https://app.posthog.com"
+  NEXT_PUBLIC_API_URL = "https://vela-ai-medical.fly.dev"
 
 [http_service]
   internal_port = 8000

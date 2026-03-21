@@ -14,7 +14,7 @@ export default function PlanBadge() {
             try {
                 const token = await getToken({ skipCache: true });
                 if (!token) return;
-                const res = await fetch('http://127.0.0.1:8000/api/user/status', {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user/status`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 const data = await res.json();

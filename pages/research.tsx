@@ -95,7 +95,7 @@ function ResearchForm() {
                 return;
             }
 
-            await fetchEventSource('http://127.0.0.1:8000/api/research', {
+            await fetchEventSource(`${process.env.NEXT_PUBLIC_API_URL}/api/research`, {
                 signal: controller.signal,
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${jwt}` },

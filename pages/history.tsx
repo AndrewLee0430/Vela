@@ -91,7 +91,7 @@ function HistoryList() {
     async function loadHistory() {
         try {
             const token = await getToken({ skipCache: true });
-            const res = await fetch('http://127.0.0.1:8000/api/history', {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/history`, {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
             if (!res.ok) throw new Error('Failed to load history');
@@ -116,7 +116,7 @@ function HistoryList() {
 
         try {
             const token = await getToken({ skipCache: true });
-            const res = await fetch('http://127.0.0.1:8000/api/verify', {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/verify`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify({ drugs, patient_context: null }),

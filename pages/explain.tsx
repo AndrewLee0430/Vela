@@ -87,7 +87,7 @@ function ExplainForm() {
             const jwt = await getToken({ skipCache: true });
             if (!jwt) { setError('Authentication required.'); setLoading(false); isRunningRef.current = false; return; }
             let accumulated = '';
-            await fetchEventSource('http://127.0.0.1:8000/api/explain', {
+            await fetchEventSource(`${process.env.NEXT_PUBLIC_API_URL}/api/explain`, {
                 signal: controller.signal, method: 'POST',
                 headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${jwt}` },
                 body: JSON.stringify({ report_text: reportText }),
