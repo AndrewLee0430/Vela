@@ -63,6 +63,7 @@ app = FastAPI(
 )
 
 
+
 # ============================================================
 # Rate Limiter
 # ============================================================
@@ -589,6 +590,7 @@ async def explain_report(
     Stage 2: Parallel API lookups (LOINC, RxNorm, MedlinePlus)
     Stage 3: Plain-language explanation (GPT-4.1, streaming)
     """
+
     user_id = get_user_id(creds)
 
     # Credit 檢查
@@ -933,4 +935,23 @@ if static_path.exists():
     @app.get("/")
     async def serve_root():
         return FileResponse(static_path / "index.html")
+
+    # Catch-all: serve Next.js static export pages (e.g. /explain → static/explain.html)
+    @app.get("/{path:path}")
+    async def serve_nextjs_pages(path: str):
+        # Try exact file (CSS/JS/images/etc.)
+        file = static_path / path
+        if file.is_file():
+            return FileResponse(file)
+        # Try .html (Next.js static export: pages/explain.tsx → out/explain.html)
+        html_file = static_path / f"{path}.html"
+        if html_file.is_file():
+            return FileResponse(html_file)
+        # Try directory index
+        index_file = static_path / path / "index.html"
+        if index_file.is_file():
+            return FileResponse(index_file)
+        # Fallback to index.html for client-side routing
+        return FileResponse(static_path / "index.html")
+
     app.mount("/", StaticFiles(directory="static", html=True), name="static")

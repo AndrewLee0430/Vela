@@ -319,7 +319,7 @@ export default function Research() {
                     <div className="flex justify-between items-center">
                         <div className="flex items-center gap-8">
                             <Link href="/" className="group relative flex items-center" title="Homepage">
-                                <Image src="/coral_logo.png" alt="Vela" width={40} height={40} style={{ objectFit: 'contain' }} />
+                                <Image src="/coral_logo.png" alt="Vela" width={60} height={60} style={{ objectFit: 'contain' }} />
                                 <span className="absolute -bottom-7 left-1/2 -translate-x-1/2 text-xs bg-gray-800 text-white px-2 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-10">
                                   Homepage
                                 </span>
