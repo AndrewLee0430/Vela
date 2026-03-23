@@ -1,11 +1,15 @@
 "use client"
 
+import { useUser, SignInButton, UserButton } from '@clerk/nextjs';
+import { SignedIn, SignedOut } from '@clerk/nextjs';
 import Link from 'next/link';
-import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs';
-import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { useState, useEffect } from 'react';
+import MobileNav from '../components/MobileNav';
 
-// ─── Design System ────────────────────────────────────────────────────────────
+// ─── Design tokens ────────────────────────────────────────────────────────────
+const BG = 'linear-gradient(135deg, #0a1628 0%, #0f2040 45%, #1a1035 75%, #0d1a2e 100%)';
+
 const PROMPTS = [
   { text: 'Research Metformin interactions in renal impairment', color: '#ff8e6e' },
   { text: 'Verify Warfarin + Aspirin — is it safe?',            color: '#63b3ed' },
@@ -14,31 +18,29 @@ const PROMPTS = [
 
 const featureCards = [
   {
-    href: '/research',
-    label: 'Research',
-    sub: 'PubMed 36M+',
+    href: '/research', label: 'Research', sub: 'PubMed 36M+',
     desc: 'Evidence-based answers grounded in peer-reviewed literature.',
-    accentColor: '#ff8e6e',
-    hoverBg: 'rgba(255,142,110,0.12)',
-    hoverBorder: 'rgba(255,142,110,0.45)',
+    accentColor: '#ff8e6e', hoverBg: 'rgba(255,142,110,0.12)', hoverBorder: 'rgba(255,142,110,0.45)',
   },
   {
-    href: '/verify',
-    label: 'Verify',
-    sub: 'FDA Official',
+    href: '/verify', label: 'Verify', sub: 'FDA Official',
     desc: 'Check drug interactions against official FDA label data.',
-    accentColor: '#63b3ed',
-    hoverBg: 'rgba(99,179,237,0.12)',
-    hoverBorder: 'rgba(99,179,237,0.45)',
+    accentColor: '#63b3ed', hoverBg: 'rgba(99,179,237,0.12)', hoverBorder: 'rgba(99,179,237,0.45)',
   },
   {
-    href: '/explain',
-    label: 'Explain',
-    sub: 'LOINC + FDA + NLM',
+    href: '/explain', label: 'Explain', sub: 'LOINC + FDA + NLM',
     desc: 'Understand any medical report in plain language, backed by official sources.',
-    accentColor: '#68d391',
-    hoverBg: 'rgba(104,211,145,0.12)',
-    hoverBorder: 'rgba(104,211,145,0.45)',
+    accentColor: '#68d391', hoverBg: 'rgba(104,211,145,0.12)', hoverBorder: 'rgba(104,211,145,0.45)',
+  },
+];
+
+const DASHBOARD_CARDS = [
+  ...featureCards.map(f => ({ ...f, color: f.accentColor })),
+  {
+    href: '/history', label: 'History', sub: 'All queries',
+    desc: 'Browse your past research, verifications, and explanations.',
+    accentColor: '#b794f4', color: '#b794f4',
+    hoverBg: 'rgba(183,148,244,0.12)', hoverBorder: 'rgba(183,148,244,0.45)',
   },
 ];
 // ─────────────────────────────────────────────────────────────────────────────
@@ -75,7 +77,8 @@ function TypewriterPrompt() {
   );
 }
 
-export default function Home() {
+// ─── Landing Page (unauthenticated) ──────────────────────────────────────────
+function LandingPage() {
   return (
     <>
       <style>{`
@@ -89,18 +92,18 @@ export default function Home() {
 
       <div
         className="min-h-screen flex flex-col"
-        style={{ background: 'linear-gradient(135deg, #0a1628 0%, #0f2040 45%, #1a1035 75%, #0d1a2e 100%)' }}
+        style={{ background: BG }}
       >
         {/* Nav */}
-        <nav className="flex-shrink-0 flex justify-end items-center px-10 py-5">
+        <nav className="flex-shrink-0 flex justify-end items-center px-4 md:px-10 py-5">
           <SignedIn><UserButton /></SignedIn>
           <SignedOut>
             <SignInButton mode="modal">
               <button
                 className="px-5 py-2 text-sm font-medium text-white rounded-lg transition-all duration-200"
                 style={{ border: '1px solid rgba(255,255,255,0.2)' }}
-                onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.1)')}
-                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.1)')}
+                onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
               >
                 Sign In
               </button>
@@ -109,7 +112,7 @@ export default function Home() {
         </nav>
 
         {/* Hero */}
-        <div className="flex-1 flex flex-col items-center justify-start px-10 text-center pt-3 pb-4">
+        <div className="flex-1 flex flex-col items-center justify-start px-4 md:px-10 text-center pt-3 pb-4">
           <div className="flex flex-col items-center mb-2">
             <div className="logo-float">
               <Image src="/coral_logo.png" alt="Vela logo" width={120} height={120} style={{ objectFit: 'contain' }} priority />
@@ -196,16 +199,13 @@ export default function Home() {
             </Link>
           </div>
 
-          {/* Feature cards — no emoji, color accent via left border on hover */}
+          {/* Feature cards */}
           <div className="flex flex-col sm:flex-row gap-3 w-full" style={{ maxWidth: '780px' }}>
             {featureCards.map((f) => (
               <Link key={f.label} href={f.href} className="flex-1">
                 <div
                   className="h-full rounded-2xl px-5 py-4 text-left cursor-pointer transition-all duration-300"
-                  style={{
-                    background: 'rgba(255,255,255,0.05)',
-                    border: '1px solid rgba(255,255,255,0.1)',
-                  }}
+                  style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}
                   onMouseEnter={e => {
                     const el = e.currentTarget as HTMLElement;
                     el.style.background = f.hoverBg;
@@ -239,11 +239,11 @@ export default function Home() {
 
         {/* Footer */}
         <div
-          className="flex-shrink-0 flex flex-col items-center gap-2 px-10 py-5 text-sm"
+          className="flex-shrink-0 flex flex-col items-center gap-2 px-4 md:px-10 py-5 text-sm"
           style={{ borderTop: '1px solid rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.3)' }}
         >
           <div>© {new Date().getFullYear()} Vela. All rights reserved. · Hosted on secure infrastructure · De-identified data only</div>
-          <div className="flex gap-4 text-xs">
+          <div className="flex flex-wrap justify-center gap-4 text-xs">
             <Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
             <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
             <Link href="/refund" className="hover:text-white transition-colors">Refund Policy</Link>
@@ -253,4 +253,104 @@ export default function Home() {
       </div>
     </>
   );
+}
+
+// ─── Dashboard (authenticated) ────────────────────────────────────────────────
+function Dashboard() {
+  return (
+    <main className="min-h-screen pb-20 md:pb-0" style={{ background: BG }}>
+      <nav className="border-b" style={{ background: BG, borderColor: 'rgba(255,255,255,0.07)' }}>
+        <div className="container mx-auto px-4 md:px-10 py-3">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-8">
+              <Link href="/" className="flex items-center gap-2">
+                <Image src="/coral_logo.png" alt="Vela" width={40} height={40} style={{ objectFit: 'contain' }} />
+                <span
+                  className="hidden sm:block font-black text-lg"
+                  style={{
+                    background: 'linear-gradient(90deg, #ff6b6b, #ff8e6e, #ffb347)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    letterSpacing: '0.06em',
+                  }}
+                >
+                  Vela
+                </span>
+              </Link>
+              <div className="hidden md:flex items-center gap-6 text-sm">
+                <Link href="/research" className="text-gray-400 hover:text-white transition-colors">Research</Link>
+                <Link href="/verify"   className="text-gray-400 hover:text-white transition-colors">Verify</Link>
+                <Link href="/explain"  className="text-gray-400 hover:text-white transition-colors">Explain</Link>
+                <Link href="/history"  className="text-gray-400 hover:text-white transition-colors">History</Link>
+              </div>
+            </div>
+            <UserButton showName={false} />
+          </div>
+        </div>
+      </nav>
+
+      <div className="container mx-auto px-4 md:px-10 py-8 max-w-4xl">
+        <h1 className="text-2xl font-bold tracking-tight mb-1">Welcome back</h1>
+        <p className="text-sm mb-8" style={{ color: 'rgba(255,255,255,0.45)' }}>
+          What would you like to research today?
+        </p>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {DASHBOARD_CARDS.map((f) => (
+            <Link key={f.label} href={f.href}>
+              <div
+                className="h-full rounded-2xl px-6 py-5 cursor-pointer transition-all duration-300"
+                style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}
+                onMouseEnter={e => {
+                  const el = e.currentTarget as HTMLElement;
+                  el.style.background = f.hoverBg;
+                  el.style.border = `1px solid ${f.hoverBorder}`;
+                  el.style.transform = 'translateY(-4px)';
+                  el.style.boxShadow = `0 12px 40px ${f.hoverBg}`;
+                }}
+                onMouseLeave={e => {
+                  const el = e.currentTarget as HTMLElement;
+                  el.style.background = 'rgba(255,255,255,0.05)';
+                  el.style.border = '1px solid rgba(255,255,255,0.1)';
+                  el.style.transform = 'translateY(0)';
+                  el.style.boxShadow = 'none';
+                }}
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <p className="text-base font-semibold">{f.label}</p>
+                  <span
+                    className="text-xs font-medium px-2.5 py-1 rounded-full"
+                    style={{ background: f.hoverBg, color: f.color, border: `1px solid ${f.hoverBorder}` }}
+                  >
+                    {f.sub}
+                  </span>
+                </div>
+                <p className="text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.45)' }}>{f.desc}</p>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      <MobileNav />
+    </main>
+  );
+}
+
+// ─── Entry point ──────────────────────────────────────────────────────────────
+export default function Home() {
+  const { isSignedIn, isLoaded } = useUser();
+
+  if (!isLoaded) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ background: BG }}>
+        <div
+          className="w-6 h-6 border-2 rounded-full animate-spin"
+          style={{ borderColor: 'rgba(255,255,255,0.15)', borderTopColor: '#ff8e6e' }}
+        />
+      </div>
+    );
+  }
+
+  return isSignedIn ? <Dashboard /> : <LandingPage />;
 }

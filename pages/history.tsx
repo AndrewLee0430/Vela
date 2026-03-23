@@ -5,6 +5,7 @@ import { useAuth, SignedIn, SignedOut, RedirectToSignIn, UserButton } from '@cle
 import Link from 'next/link';
 import Image from 'next/image';
 import PlanBadge from '../components/PlanBadge';
+import MobileNav from '../components/MobileNav';
 
 // ─── Design System ────────────────────────────────────────────────────────────
 // 顏色對應跨頁面一致，首頁 card / 功能頁 accent / History 標籤全部同色
@@ -330,7 +331,7 @@ export default function History() {
             .history-question::selection { background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.85); }
             .history-question::-moz-selection { background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.85); }
         `}</style>
-        <main className="min-h-screen" style={{ background: "linear-gradient(135deg, #0a1628 0%, #0f2040 45%, #1a1035 75%, #0d1a2e 100%)" }}>
+        <main className="min-h-screen pb-20 md:pb-0" style={{ background: "linear-gradient(135deg, #0a1628 0%, #0f2040 45%, #1a1035 75%, #0d1a2e 100%)" }}>
             <nav className="border-b" style={{ background: "linear-gradient(135deg, #0a1628 0%, #0f2040 45%, #1a1035 75%, #0d1a2e 100%)", borderColor: "rgba(255,255,255,0.07)" }}>
                 <div className="container mx-auto px-4 py-3">
                     <div className="flex justify-between items-center">
@@ -368,6 +369,7 @@ export default function History() {
             <SignedOut>
                 <RedirectToSignIn />
             </SignedOut>
+            <MobileNav />
         </main>
         </>
     );
