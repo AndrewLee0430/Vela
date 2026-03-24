@@ -211,5 +211,5 @@ class VerifyResponse(BaseModel):
     interactions: list[DrugInteraction]
     summary: str
     risk_level: str  # High, Moderate, Low
-    disclaimer: str = "此資訊僅供參考，不構成醫療建議。請諮詢專業醫療人員。"
+    disclaimer: str = "For reference only. Does not constitute medical advice. Please consult a qualified healthcare professional."
     query_time_ms: int

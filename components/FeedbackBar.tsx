@@ -42,17 +42,17 @@ export default function FeedbackBar({ query, response, category }: FeedbackBarPr
     };
 
     return (
-        <div className="flex items-center gap-1 mt-4 pt-3 border-t select-none" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
-            <span className="text-xs mr-1" style={{ color: 'rgba(255,255,255,0.3)' }}>Helpful?</span>
+        <div className="flex items-center gap-2 mt-4 pt-3 border-t select-none" style={{ borderColor: 'rgba(255,255,255,0.12)' }}>
+            <span className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>Was this helpful?</span>
             <button
                 onClick={handleLike}
                 disabled={status !== 'idle'}
                 title="Helpful"
-                className="w-7 h-7 flex items-center justify-center rounded-md transition-all text-sm disabled:cursor-default"
+                className="w-8 h-8 flex items-center justify-center rounded-lg transition-all text-base disabled:cursor-default"
                 style={{
-                    background: status === 'liked' ? 'rgba(104,211,145,0.15)' : 'transparent',
-                    color: status === 'liked' ? '#68d391' : 'rgba(255,255,255,0.3)',
-                    opacity: status === 'disliked' ? 0.3 : 1,
+                    background: status === 'liked' ? 'rgba(104,211,145,0.2)' : 'rgba(255,255,255,0.06)',
+                    border: `1px solid ${status === 'liked' ? 'rgba(104,211,145,0.5)' : 'rgba(255,255,255,0.12)'}`,
+                    opacity: status === 'disliked' ? 0.35 : 1,
                 }}
             >
                 👍
@@ -61,15 +61,18 @@ export default function FeedbackBar({ query, response, category }: FeedbackBarPr
                 onClick={handleDislike}
                 disabled={status !== 'idle'}
                 title="Not helpful"
-                className="w-7 h-7 flex items-center justify-center rounded-md transition-all text-sm disabled:cursor-default"
+                className="w-8 h-8 flex items-center justify-center rounded-lg transition-all text-base disabled:cursor-default"
                 style={{
-                    background: status === 'disliked' ? 'rgba(252,129,129,0.15)' : 'transparent',
-                    color: status === 'disliked' ? '#fc8181' : 'rgba(255,255,255,0.3)',
-                    opacity: status === 'liked' ? 0.3 : 1,
+                    background: status === 'disliked' ? 'rgba(252,129,129,0.2)' : 'rgba(255,255,255,0.06)',
+                    border: `1px solid ${status === 'disliked' ? 'rgba(252,129,129,0.5)' : 'rgba(255,255,255,0.12)'}`,
+                    opacity: status === 'liked' ? 0.35 : 1,
                 }}
             >
                 👎
             </button>
+            {status !== 'idle' && (
+                <span className="text-xs ml-1" style={{ color: 'rgba(255,255,255,0.4)' }}>Thanks!</span>
+            )}
         </div>
     );
 }

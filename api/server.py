@@ -454,18 +454,32 @@ Return valid JSON only:
                 )
                 for item in fb_data.get("interactions",[]) if len(item.get("drugs",[])) >= 2
             ]
+            fb_summary = "⚠️ No FDA label data found. " + fb_data.get("summary","")
+            try:
+                db.add(ChatHistory(user_id=user_id, session_type="verify",
+                    question=f"Drugs: {', '.join(body.drugs)}", answer=fb_summary))
+                db.commit()
+            except Exception as e:
+                print(f"DB Error: {e}"); db.rollback()
             return VerifyResponse(
                 drugs_analyzed=body.drugs,
                 interactions=fb_interactions,
-                summary="⚠️ No FDA label data found. " + fb_data.get("summary",""),
+                summary=fb_summary,
                 risk_level=fb_data.get("risk_level","Unknown"),
                 query_time_ms=int((time.time()-start_time)*1000)
             )
         except Exception as e:
             print(f"❌ Verify fallback failed: {e}")
+            fallback_summary = "No FDA label data found. Please use specific drug names."
+            try:
+                db.add(ChatHistory(user_id=user_id, session_type="verify",
+                    question=f"Drugs: {', '.join(body.drugs)}", answer=fallback_summary))
+                db.commit()
+            except Exception as e2:
+                print(f"DB Error: {e2}"); db.rollback()
             return VerifyResponse(
                 drugs_analyzed=body.drugs, interactions=[],
-                summary="No FDA label data found. Please use specific drug names.",
+                summary=fallback_summary,
                 risk_level="Unknown", query_time_ms=int((time.time()-start_time)*1000)
             )
 
