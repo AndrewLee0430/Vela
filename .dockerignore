@@ -1,0 +1,13 @@
+.env
+.env.*
+.env.local
+.git
+.gitignore
+node_modules
+out
+__pycache__
+*.pyc
+.next
+.vscode
+*.md
+tests

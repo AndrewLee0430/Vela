@@ -4,7 +4,13 @@
       "Bash(find /c/Users/andre/projects/Vela -type f \\\\\\(-name *.tsx -o -name *.ts -o -name *.jsx -o -name *.js \\\\\\))",
       "Bash(find /c/Users/andre/projects/Vela/api -type f -name *.py)",
       "Bash(fly.exe deploy:*)",
-      "Bash(/c/Users/andre/.fly/bin/fly.exe deploy:*)"
+      "Bash(/c/Users/andre/.fly/bin/fly.exe deploy:*)",
+      "Bash(npm run:*)",
+      "Bash(fly deploy:*)",
+      "Read(//c/Users/andre/AppData/Local/fly/**)",
+      "Read(//c/Users/andre/.fly/bin//**)",
+      "Read(//c/Users/andre/**)",
+      "Bash(/c/Users/andre/.fly/bin/fly deploy:*)"
     ]
   }
 }

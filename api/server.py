@@ -939,6 +939,14 @@ if static_path.exists():
     # Catch-all: serve Next.js static export pages (e.g. /explain → static/explain.html)
     @app.get("/{path:path}")
     async def serve_nextjs_pages(path: str):
+        # Block sensitive dotfiles and directories
+        BLOCKED = {'.env', '.env.local', '.env.production', '.env.development',
+                   '.git', '.git/config', '.git/HEAD', '.gitignore',
+                   '.dockerignore', '.DS_Store', 'CLAUDE.md'}
+        path_lower = path.lower().strip('/')
+        if path_lower in BLOCKED or path_lower.startswith(('.env', '.git/')):
+            return JSONResponse(status_code=404, content={"detail": "Not found"})
+
         # Try exact file (CSS/JS/images/etc.)
         file = static_path / path
         if file.is_file():

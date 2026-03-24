@@ -8,6 +8,7 @@ import remarkBreaks from 'remark-breaks';
 import { fetchEventSource } from '@microsoft/fetch-event-source';
 import Link from 'next/link';
 import Image from 'next/image';
+import FeedbackBar from '../components/FeedbackBar';
 import Toast from '../components/Toast';
 import UpgradeModal from '../components/UpgradeModal';
 import PlanBadge from '../components/PlanBadge';
@@ -217,6 +218,9 @@ function ExplainForm() {
                         <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>{output}</ReactMarkdown>
                     </div>
                     {loading && <span className="inline-block w-1.5 h-4 rounded-sm animate-pulse ml-0.5 mt-2" style={{ background: ACCENT }} />}
+                    {!loading && !error && (
+                        <FeedbackBar query={reportText} response={output} category="explain" />
+                    )}
                 </section>
             )}
 
