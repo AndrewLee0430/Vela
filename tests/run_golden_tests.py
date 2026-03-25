@@ -31,6 +31,26 @@ DATASET_PATH = Path(__file__).parent / "golden_dataset.json"
 RESULTS_DIR  = Path(__file__).parent / "results"
 RESULTS_DIR.mkdir(exist_ok=True)
 
+
+def reset_test_user_credits() -> None:
+    """TEST_MODE 下自動將 test_user 設為 pro plan 並重置 credits，避免每次測試都手動處理。"""
+    db_url = os.getenv("DATABASE_URL", "")
+    if not db_url:
+        print(f"{YELLOW}⚠️  DATABASE_URL not set — skipping test_user credit reset{RESET}")
+        return
+    try:
+        from sqlalchemy import create_engine, text
+        engine = create_engine(db_url)
+        with engine.connect() as conn:
+            conn.execute(text(
+                "UPDATE user_usage SET plan_type='pro', credits_used=0, credits_used_today=0 "
+                "WHERE clerk_user_id='test_user'"
+            ))
+            conn.commit()
+        print(f"  test_user credits reset (pro plan, 0/0)")
+    except Exception as e:
+        print(f"{YELLOW}  Warning: could not reset test_user credits: {e}{RESET}")
+
 # Deprecated endpoint → successor mapping
 # When an endpoint is removed, add it here so multilingual tests auto-migrate
 DEPRECATED_ENDPOINT_MAP: dict[str, str] = {
@@ -522,6 +542,10 @@ async def run_tests(smoke_only: bool = False):
         sys.exit(1)
     else:
         print(f"✅ Token loaded: {TOKEN[:20]}...")
+
+    # TEST_MODE: 自動重置 test_user 為 pro plan，避免 credit limit 阻擋測試
+    if os.getenv("TEST_MODE", "false").lower() == "true":
+        reset_test_user_credits()
 
     with open(DATASET_PATH, "r", encoding="utf-8") as f:
         cases = json.load(f)

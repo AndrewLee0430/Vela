@@ -82,6 +82,8 @@ RATE_LIMITS = {
 
 @app.middleware("http")
 async def rate_limit_middleware(request: Request, call_next):
+    if TEST_MODE:
+        return await call_next(request)
     path = request.url.path
     if path not in RATE_LIMITS:
         return await call_next(request)
@@ -245,12 +247,13 @@ async def research_query(
     start_time = time.time()
 
     # Credit 檢查（在 streaming 開始前）
-    allowed, reason = await check_credits(db, user_id, "research")
-    if not allowed:
-        if reason == "limit_reached":
-            return JSONResponse(status_code=403, content={"error": "limit_reached", "upgrade_url": "/pricing"})
-        elif reason == "daily_cap_reached":
-            return JSONResponse(status_code=429, content={"error": "daily_cap_reached", "message": "You've reached today's usage limit. Resets at midnight UTC."})
+    if not TEST_MODE:
+        allowed, reason = await check_credits(db, user_id, "research")
+        if not allowed:
+            if reason == "limit_reached":
+                return JSONResponse(status_code=403, content={"error": "limit_reached", "upgrade_url": "/pricing"})
+            elif reason == "daily_cap_reached":
+                return JSONResponse(status_code=429, content={"error": "daily_cap_reached", "message": "You've reached today's usage limit. Resets at midnight UTC."})
 
     async def event_stream():
         full_answer = ""
@@ -353,12 +356,13 @@ async def verify_drug_interaction(
     user_id = get_user_id(creds)
 
     # Credit 檢查
-    allowed, reason = await check_credits(db, user_id, "verify")
-    if not allowed:
-        if reason == "limit_reached":
-            return JSONResponse(status_code=403, content={"error": "limit_reached", "upgrade_url": "/pricing"})
-        elif reason == "daily_cap_reached":
-            return JSONResponse(status_code=429, content={"error": "daily_cap_reached", "message": "You've reached today's usage limit. Resets at midnight UTC."})
+    if not TEST_MODE:
+        allowed, reason = await check_credits(db, user_id, "verify")
+        if not allowed:
+            if reason == "limit_reached":
+                return JSONResponse(status_code=403, content={"error": "limit_reached", "upgrade_url": "/pricing"})
+            elif reason == "daily_cap_reached":
+                return JSONResponse(status_code=429, content={"error": "daily_cap_reached", "message": "You've reached today's usage limit. Resets at midnight UTC."})
 
     # ── Guard：藥物名稱不需要間接 injection 掃描 ──────────────────
     verify_input = " ".join(body.drugs) + (f" {body.patient_context}" if body.patient_context else "")
@@ -450,7 +454,7 @@ Return valid JSON only:
                     description=item.get("description",""),
                     clinical_recommendation=item.get("recommendation",""),
                     source="Clinical Knowledge (No FDA label available)",
-                    source_url=""
+                    source_url=f"https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=BasicSearch.process&query={body.drugs[0].replace(' ', '+')}"
                 )
                 for item in fb_data.get("interactions",[]) if len(item.get("drugs",[])) >= 2
             ]
@@ -608,12 +612,13 @@ async def explain_report(
     user_id = get_user_id(creds)
 
     # Credit 檢查
-    allowed, reason = await check_credits(db, user_id, "explain")
-    if not allowed:
-        if reason == "limit_reached":
-            return JSONResponse(status_code=403, content={"error": "limit_reached", "upgrade_url": "/pricing"})
-        elif reason == "daily_cap_reached":
-            return JSONResponse(status_code=429, content={"error": "daily_cap_reached", "message": "You've reached today's usage limit. Resets at midnight UTC."})
+    if not TEST_MODE:
+        allowed, reason = await check_credits(db, user_id, "explain")
+        if not allowed:
+            if reason == "limit_reached":
+                return JSONResponse(status_code=403, content={"error": "limit_reached", "upgrade_url": "/pricing"})
+            elif reason == "daily_cap_reached":
+                return JSONResponse(status_code=429, content={"error": "daily_cap_reached", "message": "You've reached today's usage limit. Resets at midnight UTC."})
 
     async def event_stream():
         full_answer = ""

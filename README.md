@@ -6,7 +6,9 @@
 [![Next.js](https://img.shields.io/badge/Next.js-14-black?logo=next.js)](https://nextjs.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.111-009688?logo=fastapi)](https://fastapi.tiangolo.com/)
 [![OpenAI](https://img.shields.io/badge/OpenAI-GPT--4.1-412991?logo=openai)](https://openai.com/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![License:Business Source License 1.1]]
+
+🌐 **Live:** [https://vela.an-tho.com](https://vela.an-tho.com)
 
 ---
 
@@ -28,8 +30,8 @@ Paste lab results, medical reports, or prescription data in any language. Vela i
 Three independent linear pipelines — not a multi-agent system:
 
 ```
-Research:  User Query → Language Detect → HybridRetriever → Chroma/PubMed/FDA → GPT-4.1 → SSE Stream
-Verify:    Drug List  → FDA OpenFDA API → Structured Interaction Data → Response
+Research:  User Query → Language Detect → HybridRetriever → NumPy Vector Search / PubMed / FDA → GPT-4.1 → SSE Stream
+Verify:    Drug List  → FDA OpenFDA API → Structured Interaction Data → GPT-4.1-mini → Response
 Explain:   Lab Report → Entity Extractor → LOINC / RxNorm / MedlinePlus → GPT-4.1 → SSE Stream
 ```
 
@@ -44,6 +46,7 @@ Explain:   Lab Report → Entity Extractor → LOINC / RxNorm / MedlinePlus → 
 | Input Length | 5,000 character hard limit |
 | Auth | Clerk JWT on every API call |
 | Rate Limiting | Per-IP per-endpoint throttling |
+| Sensitive Files | `.env`, `.git`, `.gitignore` return 404 (blocked in catch-all route) |
 
 ---
 
@@ -52,13 +55,16 @@ Explain:   Lab Report → Entity Extractor → LOINC / RxNorm / MedlinePlus → 
 | Layer | Technology |
 |-------|-----------|
 | Frontend | Next.js 14, TypeScript, Tailwind CSS |
-| Auth | Clerk |
+| Auth | Clerk (Production instance) |
 | Backend | FastAPI, Python 3.11 |
 | AI | OpenAI GPT-4.1 / GPT-4.1-mini |
-| RAG | LangChain, Chroma Vector DB |
+| Vector Search | NumPy (in-memory, 690 documents) |
 | Data Sources | PubMed API, FDA OpenFDA, LOINC, RxNorm, MedlinePlus |
-| Database | PostgreSQL (history) |
+| Database | PostgreSQL via Neon (history + user usage) |
+| Payments | Lemon Squeezy (Freemium: 15 free credits, Pro $8.99/mo) |
+| Analytics | PostHog |
 | Streaming | SSE (Server-Sent Events) |
+| Hosting | Fly.io (Tokyo region) |
 
 ---
 
@@ -69,20 +75,23 @@ Vela/
 ├── api/                          # FastAPI backend
 │   ├── server.py                 # Main server + all endpoints
 │   ├── middleware/
-│   │   ├── guards.py             # Prompt injection + intent detection (v2.0)
+│   │   ├── guards.py             # Prompt injection + intent detection
 │   │   └── phi_handler.py        # PHI detection (TW/JP/US)
 │   ├── rag/
-│   │   ├── generator.py          # Answer generation + language injection (v2.5)
-│   │   └── retriever.py          # HybridRetriever — Chroma + PubMed + FDA (v2.3)
+│   │   ├── generator.py          # Answer generation + language injection
+│   │   └── retriever.py          # HybridRetriever — NumPy + PubMed + FDA
 │   ├── data_sources/
 │   │   ├── fda_client.py
 │   │   ├── loinc_client.py
 │   │   ├── rxnorm_client.py
 │   │   └── medlineplus_client.py
 │   ├── services/
+│   │   ├── usage_service.py      # Credit system (Free: 15 credits, Pro: unlimited*)
+│   │   ├── cost_tracker.py       # API cost monitoring
 │   │   ├── entity_extractor.py   # Lab/drug entity extraction
 │   │   └── explain_service.py    # 3-stage Explain pipeline
 │   ├── models/
+│   │   ├── sql_models.py         # UserUsage, ChatHistory, ApiCostLog, WebhookEvent
 │   │   ├── schemas.py
 │   │   └── explain_schemas.py
 │   ├── cache/
@@ -90,23 +99,28 @@ Vela/
 │   └── utils/
 │       └── language_detector.py  # Unicode CJK + keyword heuristics
 ├── pages/                        # Next.js pages
-│   ├── index.tsx                 # Homepage
+│   ├── index.tsx                 # Landing Page (logged-out) + Dashboard (logged-in)
 │   ├── research.tsx
 │   ├── verify.tsx
 │   ├── explain.tsx
-│   └── history.tsx
+│   ├── history.tsx
+│   ├── terms.tsx                 # Terms of Service (incl. Fair Use Policy)
+│   ├── privacy.tsx
+│   └── refund.tsx
 ├── components/
 │   ├── CitationPanel.tsx
-│   └── FeedbackBar.tsx
+│   ├── FeedbackBar.tsx           # 👍👎 per-response feedback (Research/Verify/Explain)
+│   ├── MobileNav.tsx             # Bottom tab bar (mobile)
+│   └── UpgradeModal.tsx          # Paywall modal with ToS consent
 ├── scripts/
 │   ├── build_drug_vectordb.py
 │   └── build_explain_cache.py    # Pre-warm LOINC + RxNorm + MedlinePlus
 ├── tests/
-│   ├── golden_dataset.json       # 17 golden test cases (G01–G17)
-│   └── run_golden_tests.py       # --smoke flag for fast daily testing
+│   ├── golden_dataset.json       # 89 test cases (74 active, 15 deprecated)
+│   └── run_golden_tests.py       # LLM-as-Judge test runner v3.0
 └── data/                         # gitignored
     ├── drug_database/            # Drug JSON files
-    └── drug_vectordb/            # Chroma vector store
+    └── vector_store/             # NumPy vector store (.npy + metadata)
 ```
 
 ---
@@ -117,7 +131,7 @@ Vela/
 
 - Python 3.11+
 - Node.js 18+
-- PostgreSQL
+- PostgreSQL (or Neon cloud)
 - OpenAI API key
 - Clerk account
 
@@ -138,16 +152,30 @@ cp .env.example .env
 # OpenAI
 OPENAI_API_KEY=sk-...
 
-# Clerk
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_...
-CLERK_SECRET_KEY=sk_...
-CLERK_JWKS_URL=https://...clerk.accounts.dev/.well-known/jwks.json
+# Clerk (Production)
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_...
+CLERK_SECRET_KEY=sk_live_...
+CLERK_JWKS_URL=https://clerk.vela.an-tho.com/.well-known/jwks.json
 
-# Database
-DATABASE_URL=postgresql://user:password@localhost:5432/vela
+# Database (Neon PostgreSQL)
+DATABASE_URL=postgresql://user:password@ep-xxx.ap-southeast-1.aws.neon.tech/vela?sslmode=require
 
 # CORS
-ALLOWED_ORIGINS=http://localhost:3000
+ALLOWED_ORIGINS=https://vela.an-tho.com
+
+# Lemon Squeezy
+LEMON_SQUEEZY_API_KEY=...
+LEMON_SQUEEZY_SIGNING_SECRET=...
+LEMON_SQUEEZY_STORE_ID=318315
+
+# PostHog Analytics
+NEXT_PUBLIC_POSTHOG_KEY=phc_...
+NEXT_PUBLIC_POSTHOG_HOST=https://app.posthog.com
+
+# PubMed / FDA
+PUBMED_API_KEY=...
+FDA_API_KEY=...
+NCBI_EMAIL=your@email.com
 ```
 
 ### 3. Backend
@@ -155,10 +183,7 @@ ALLOWED_ORIGINS=http://localhost:3000
 ```bash
 pip install -r requirements.txt
 
-# Build vector database (first time only)
-python scripts/build_drug_vectordb.py
-
-# Pre-warm explain cache (optional, recommended)
+# Pre-warm explain cache (recommended)
 python scripts/build_explain_cache.py
 
 # Start server
@@ -178,29 +203,127 @@ Open [http://localhost:3000](http://localhost:3000)
 
 ## 🧪 Testing
 
-```bash
-# Fast daily smoke test (15 cases, ~80% less cost)
-uv run python tests/run_golden_tests.py --smoke
+### Prerequisites
 
-# Full regression (17 cases, run before deploy)
-uv run python tests/run_golden_tests.py
+Ensure your `.env` has `DATABASE_URL` and `OPENAI_API_KEY` set.
+
+### Running Tests (Windows PowerShell)
+
+**Step 1 — Start backend in TEST_MODE** (skips Clerk JWT + rate limiting, auto-resets test_user credits):
+
+```powershell
+$env:TEST_MODE="true"; $env:PYTHONIOENCODING="utf-8"; uvicorn api.server:app --port 8000
 ```
 
-Test mode (skip Clerk auth):
-```bash
-$env:TEST_MODE="true"; uvicorn api.server:app --reload   # PowerShell
-TEST_MODE=true uvicorn api.server:app --reload            # bash
+**Step 2 — In a new terminal, run tests:**
+
+```powershell
+# Smoke test — fast, ~20 cases, daily use
+$env:PYTHONIOENCODING="utf-8"; $env:TEST_MODE="true"; uv run python tests/run_golden_tests.py --smoke
+
+# Full regression — 74 active cases, run before every deploy
+$env:PYTHONIOENCODING="utf-8"; $env:TEST_MODE="true"; uv run python tests/run_golden_tests.py
 ```
 
-### Golden Dataset Coverage
+**bash / Linux / macOS:**
 
-| Category | Cases | Scope |
-|----------|-------|-------|
-| Guards | G01–G17 | Injection, non-medical, false positives, multilingual |
-| Research | R01, R10, R11 | RAG quality, long-tail queries |
-| Verify | V01, V05 | Drug interaction accuracy |
-| Multilingual | M01, M02, M04 | ZH/JA/DE response language |
-| Explain | E22, E23 | Lab report parsing |
+```bash
+# Start backend
+TEST_MODE=true PYTHONIOENCODING=utf-8 uvicorn api.server:app --port 8000
+
+# Smoke test
+PYTHONIOENCODING=utf-8 TEST_MODE=true uv run python tests/run_golden_tests.py --smoke
+
+# Full regression
+PYTHONIOENCODING=utf-8 TEST_MODE=true uv run python tests/run_golden_tests.py
+```
+
+### Common Issues & Fixes
+
+| Error | Cause | Fix |
+|-------|-------|-----|
+| `403` on all requests after a few tests | `test_user` hit free credit limit | TEST_MODE now auto-resets credits on start |
+| `429` rate limit errors | Rate limiter firing in test mode | TEST_MODE now bypasses rate limiting |
+| `Python-dotenv could not parse...` | Windows `.env` encoding issue | Safe to ignore — dotenv warning only, not an error |
+| `Exit code 127: fly: command not found` | Fly CLI not in PATH | Use full path: `& "C:\Users\<you>\.fly\bin\fly.exe" deploy` |
+| `PYTHONIOENCODING` emoji errors | Windows CP950 terminal encoding | Always set `PYTHONIOENCODING=utf-8` |
+
+### Test Coverage
+
+| Category | Active Cases | Scope |
+|----------|-------------|-------|
+| Research | 20 | English/Chinese/mixed clinical queries, edge cases |
+| Verify | 15 | Drug interaction accuracy, severity ratings |
+| Explain | 22 | Lab reports, multilingual (JA/KO/ES/FR/DE/IT/PT), edge cases |
+| Guard | 17 | Injection attacks, non-medical queries, false positive check |
+| Multilingual | 7 | JA/TH/KO/ES/ZH response language verification |
+| ~~Document~~ | ~~15~~ | Deprecated endpoint — auto-skipped |
+
+Pass threshold: **≥ 70%** overall. Exit code `1` if below threshold.
+
+Results saved to `tests/results/golden_results_YYYYMMDD_HHMMSS.json` + HTML report.
+
+---
+
+## 🚢 Deployment
+
+### Deploy to Fly.io
+
+```powershell
+# Windows
+& "C:\Users\<you>\.fly\bin\fly.exe" deploy
+
+# bash
+fly deploy
+```
+
+### Environment Variables on Fly.io
+
+`NEXT_PUBLIC_*` variables must go in `fly.toml` `[build.args]` (build-time):
+
+```toml
+[build.args]
+  NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = "pk_live_..."
+  NEXT_PUBLIC_POSTHOG_KEY = "phc_..."
+  NEXT_PUBLIC_POSTHOG_HOST = "https://app.posthog.com"
+  NEXT_PUBLIC_API_URL = "https://vela.an-tho.com"
+```
+
+All other secrets via `fly secrets set`:
+
+```bash
+fly secrets set \
+  DATABASE_URL="postgresql://..." \
+  OPENAI_API_KEY="sk-..." \
+  CLERK_SECRET_KEY="sk_live_..." \
+  CLERK_JWKS_URL="https://clerk.vela.an-tho.com/.well-known/jwks.json" \
+  ALLOWED_ORIGINS="https://vela.an-tho.com" \
+  LEMON_SQUEEZY_API_KEY="..." \
+  LEMON_SQUEEZY_SIGNING_SECRET="..." \
+  LEMON_SQUEEZY_STORE_ID="318315"
+```
+
+### Recommended Deploy Flow
+
+```
+1. Make changes locally
+2. npm run build  (verify no build errors)
+3. Run smoke test (optional but recommended)
+4. git add . && git commit -m "..." && git push origin main
+5. fly deploy
+6. Verify: curl https://vela.an-tho.com/health
+```
+
+---
+
+## 💰 Pricing Model
+
+| Plan | Price | Credits | Usage |
+|------|-------|---------|-------|
+| Free | $0 | 15 one-time credits | Research (3 credits), Explain (2), Verify (1) |
+| Pro | $8.99/mo or $89.99/yr | Unlimited* | All features |
+
+*Subject to fair use policy. Daily limit of 50 credits applies to prevent automated abuse. See [Terms of Service](https://vela.an-tho.com/terms).
 
 ---
 
@@ -209,7 +332,8 @@ TEST_MODE=true uvicorn api.server:app --reload            # bash
 - **No PHI stored** — inputs are processed in memory only
 - **Multi-country PHI detection** — Taiwan ID, Japan My Number, US SSN/MRN
 - **Prompt injection protection** — pattern scan + Base64 decode + LLM classification
-- **For educational purposes only** — not a substitute for professional clinical judgment
+- **Sensitive file blocking** — `.env`, `.git`, `.gitignore` blocked at server level
+- **For reference only** — not a substitute for professional clinical judgment
 
 ---
 
@@ -222,6 +346,7 @@ MIT License — see [LICENSE](LICENSE)
 ## 📧 Contact
 
 Andrew Lee · [@AndrewLee0430](https://github.com/AndrewLee0430)  
+Support: support@an-tho.com  
 Project: [https://github.com/AndrewLee0430/Vela](https://github.com/AndrewLee0430/Vela)
 
 ---
@@ -234,9 +359,13 @@ Project: [https://github.com/AndrewLee0430/Vela](https://github.com/AndrewLee043
 - [LOINC®](https://loinc.org) — Lab test terminology (Regenstrief Institute, Inc.)
 - [MedlinePlus](https://medlineplus.gov) — Consumer health information (NLM)
 - [RxNorm](https://www.nlm.nih.gov/research/umls/rxnorm) — Drug name standardization (NLM)
-- [LangChain](https://langchain.com) — RAG framework
+- [Clerk](https://clerk.com) — Authentication
+- [Neon](https://neon.tech) — Serverless PostgreSQL
+- [Fly.io](https://fly.io) — Hosting (Tokyo region)
+- [Lemon Squeezy](https://lemonsqueezy.com) — Payments & subscriptions
+- [PostHog](https://posthog.com) — Product analytics
 
-> ⚠️ Vela is an educational tool for reference only. It does not replace professional medical judgment. All clinical decisions should be based on comprehensive clinical assessment by a qualified healthcare professional.
+> ⚠️ Vela is a clinical decision support tool for reference only. It does not replace professional medical judgment. All clinical decisions should be based on comprehensive clinical assessment by a qualified healthcare professional.
 
 ---
 

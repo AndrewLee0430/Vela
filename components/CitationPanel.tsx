@@ -9,7 +9,7 @@ export interface Citation {
     title: string;
     snippet: string;
     url: string;
-    credibility: 'peer-reviewed' | 'official' | 'clinical-trial' | 'review' | 'internal';
+    credibility: 'peer-reviewed' | 'official' | 'internal';
     year?: string;
     authors?: string;
     journal?: string;
@@ -21,11 +21,9 @@ interface CitationPanelProps {
 }
 
 const credibilityConfig = {
-    'peer-reviewed':  { label: 'Peer Reviewed',  bg: 'rgba(104,211,145,0.15)', color: '#68d391', stars: 5 },
-    'official':       { label: 'Official',        bg: 'rgba(99,179,237,0.15)',  color: '#63b3ed', stars: 5 },
-    'clinical-trial': { label: 'Clinical Trial',  bg: 'rgba(183,148,244,0.15)', color: '#b794f4', stars: 4 },
-    'review':         { label: 'Review Article',  bg: 'rgba(246,224,94,0.15)',  color: '#f6e05e', stars: 4 },
-    'internal':       { label: 'Internal',        bg: 'rgba(160,174,192,0.15)', color: '#a0aec0', stars: 3 },
+    'peer-reviewed': { label: 'Peer Reviewed', bg: 'rgba(104,211,145,0.15)', color: '#68d391', stars: 5, tooltip: 'Published in peer-reviewed journals and indexed in PubMed' },
+    'official':      { label: 'Official',       bg: 'rgba(99,179,237,0.15)',  color: '#63b3ed', stars: 5, tooltip: 'From official FDA drug labeling data' },
+    'internal':      { label: 'Internal',       bg: 'rgba(160,174,192,0.15)', color: '#a0aec0', stars: 3, tooltip: 'From internal drug reference database' },
 };
 
 const sourceTypeConfig = {
@@ -96,9 +94,10 @@ function CitationCard({ citation }: { citation: Citation }) {
                         [{citation.id}] {sourceConfig.label}
                     </span>
                 </div>
-                <span 
-                    className="text-xs px-2 py-1 rounded-full flex-shrink-0 ml-2 font-medium"
+                <span
+                    className="text-xs px-2 py-1 rounded-full flex-shrink-0 ml-2 font-medium cursor-help"
                     style={{ background: credConfig.bg, color: credConfig.color }}
+                    title={credConfig.tooltip}
                 >
                     {credConfig.label}
                 </span>

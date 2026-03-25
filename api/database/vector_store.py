@@ -98,7 +98,7 @@ class VectorStore:
 
             results.append(RetrievedDocument(
                 content=meta["content"],
-                source_type=SourceType(meta.get("source_type", "fda_label")),
+                source_type=SourceType(meta.get("source_type", "local")),
                 source_id=meta.get("source_id", ""),
                 title=meta.get("title", ""),
                 url=meta.get("url", ""),

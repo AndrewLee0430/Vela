@@ -10,7 +10,16 @@
       "Read(//c/Users/andre/AppData/Local/fly/**)",
       "Read(//c/Users/andre/.fly/bin//**)",
       "Read(//c/Users/andre/**)",
-      "Bash(/c/Users/andre/.fly/bin/fly deploy:*)"
+      "Bash(/c/Users/andre/.fly/bin/fly deploy:*)",
+      "Bash(PYTHONIOENCODING=utf-8 uv run python tests/run_golden_tests.py 2>&1)",
+      "Bash(PYTHONIOENCODING=utf-8 TEST_MODE=true uv run python tests/run_golden_tests.py 2>&1)",
+      "Bash(curl -s http://localhost:8000/health)",
+      "Bash(python -m json.tool)",
+      "Bash(python:*)",
+      "Bash(~/.fly/bin/fly deploy:*)",
+      "Bash(\"C:\\\\Users\\\\andre\\\\.fly\\\\bin\\\\fly.exe\" secrets:*)",
+      "Bash(\"C:\\\\Users\\\\andre\\\\.fly\\\\bin\\\\fly.exe\" logs:*)",
+      "Bash(\"C:\\\\Users\\\\andre\\\\.fly\\\\bin\\\\fly.exe\" deploy:*)"
     ]
   }
 }

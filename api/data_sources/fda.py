@@ -142,9 +142,11 @@ class FDAClient:
             await asyncio.sleep(self.rate_limit_delay)
             return self._parse_labels(data.get("results", []))
             
-        except httpx.HTTPStatusError:
+        except httpx.HTTPStatusError as e:
+            print(f"⚠️ FDA API HTTP error for '{query}': {e.response.status_code}")
             return []
-        except Exception:
+        except Exception as e:
+            print(f"⚠️ FDA API error for '{query}': {type(e).__name__}: {e}")
             return []
     
     # ✅ 新增：同步版本的 get_drug_label
