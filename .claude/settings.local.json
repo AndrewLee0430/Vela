@@ -29,7 +29,8 @@
       "Bash(git push:*)",
       "Bash(curl:*)",
       "Bash(CustomerRequest\" 422. Now fetches first/last name from Clerk and falls:*)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(node:*)"
     ]
   }
 }
