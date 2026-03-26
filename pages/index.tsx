@@ -10,6 +10,7 @@ import MobileNav from '../components/MobileNav';
 import PlanBadge from '../components/PlanBadge';
 import UpgradeModal from '../components/UpgradeModal';
 import Navbar from '../components/Navbar';
+import OnboardingOverlay from '../components/OnboardingOverlay';
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
 const BG = 'linear-gradient(135deg, #0a1628 0%, #0f2040 45%, #1a1035 75%, #0d1a2e 100%)';
@@ -288,6 +289,7 @@ function Dashboard() {
           {DASHBOARD_CARDS.map((f) => (
             <Link key={f.label} href={f.href}>
               <div
+                data-onboarding={f.label.toLowerCase()}
                 className="h-full rounded-2xl px-6 py-5 cursor-pointer transition-all duration-300"
                 style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}
                 onMouseEnter={e => {
@@ -321,6 +323,7 @@ function Dashboard() {
         </div>
       </div>
 
+      <OnboardingOverlay />
       <MobileNav />
     </main>
   );
