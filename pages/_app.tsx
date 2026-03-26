@@ -1,6 +1,6 @@
 import { ClerkProvider } from '@clerk/nextjs';
 import type { AppProps } from 'next/app';
-import { DefaultSeo } from 'next-seo';
+import Head from 'next/head';
 import posthog from 'posthog-js';
 import { PostHogProvider } from 'posthog-js/react';
 import { useEffect } from 'react';
@@ -26,18 +26,17 @@ export default function MyApp({ Component, pageProps }: AppProps) {
 
   return (
     <PostHogProvider client={posthog}>
-      <DefaultSeo
-        titleTemplate="%s | Vela"
-        defaultTitle="Vela — Clinical AI for Healthcare Professionals"
-        description="Research PubMed 36M+, verify drug interactions against FDA, and explain lab results in any language."
-        canonical="https://vela.an-tho.com"
-        openGraph={{
-          type: 'website',
-          url: 'https://vela.an-tho.com',
-          siteName: 'Vela',
-          images: [{ url: 'https://vela.an-tho.com/og-image.png', width: 1200, height: 630 }],
-        }}
-      />
+      <Head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="description" content="Research PubMed 36M+, verify drug interactions against FDA, and explain lab results in any language." />
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="Vela" />
+        <meta property="og:image" content="https://vela.an-tho.com/og-image.png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:image" content="https://vela.an-tho.com/og-image.png" />
+      </Head>
       <ClerkProvider
         {...pageProps}
         publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}

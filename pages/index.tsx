@@ -1,6 +1,6 @@
 "use client"
 
-import { NextSeo } from 'next-seo';
+import Head from 'next/head';
 import { useUser, SignInButton, UserButton } from '@clerk/nextjs';
 import { SignedIn, SignedOut } from '@clerk/nextjs';
 import Link from 'next/link';
@@ -86,17 +86,16 @@ function LandingPage() {
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   return (
     <>
-      <NextSeo
-        title="Vela — Clinical AI for Healthcare Professionals"
-        description="Research PubMed 36M+, verify drug interactions against FDA, and explain lab results in any language."
-        canonical="https://vela.an-tho.com"
-        openGraph={{
-          url: 'https://vela.an-tho.com',
-          title: 'Vela — Clinical AI for Healthcare Professionals',
-          description: 'Research PubMed 36M+, verify drug interactions against FDA, and explain lab results in any language.',
-          images: [{ url: 'https://vela.an-tho.com/og-image.png', width: 1200, height: 630, alt: 'Vela' }],
-        }}
-      />
+      <Head>
+        <title>Vela — Clinical AI for Healthcare Professionals</title>
+        <meta name="description" content="Research PubMed 36M+, verify drug interactions against FDA, and explain lab results in any language." />
+        <link rel="canonical" href="https://vela.an-tho.com" />
+        <meta property="og:url" content="https://vela.an-tho.com" />
+        <meta property="og:title" content="Vela — Clinical AI for Healthcare Professionals" />
+        <meta property="og:description" content="Research PubMed 36M+, verify drug interactions against FDA, and explain lab results in any language." />
+        <meta name="twitter:title" content="Vela — Clinical AI for Healthcare Professionals" />
+        <meta name="twitter:description" content="Research PubMed 36M+, verify drug interactions against FDA, and explain lab results in any language." />
+      </Head>
       <style>{`
         @keyframes float {
           0%   { transform: translateY(0px); }
