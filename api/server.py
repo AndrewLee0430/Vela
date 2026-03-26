@@ -745,6 +745,82 @@ async def create_checkout(
         return JSONResponse(status_code=500, content={"detail": "Checkout failed"})
 
 
+class DodoCheckoutRequest(BaseModel):
+    product_id: str
+
+@app.post("/api/checkout/dodo")
+async def create_dodo_checkout(
+    body: DodoCheckoutRequest,
+    creds: Optional[HTTPAuthorizationCredentials] = Depends(optional_auth),
+    db: Session = Depends(get_db)
+):
+    user_id = get_user_id(creds)
+    dodo_api_key = os.getenv("DODO_API_KEY", "")
+    clerk_secret = os.getenv("CLERK_SECRET_KEY", "")
+
+    # Fetch user email from Clerk
+    user_email = ""
+    try:
+        import httpx as _httpx
+        async with _httpx.AsyncClient() as hc:
+            resp = await hc.get(
+                f"https://api.clerk.com/v1/users/{user_id}",
+                headers={"Authorization": f"Bearer {clerk_secret}"},
+                timeout=10.0,
+            )
+            if resp.status_code == 200:
+                clerk_user = resp.json()
+                primary_email_id = clerk_user.get("primary_email_address_id", "")
+                for ea in clerk_user.get("email_addresses", []):
+                    if ea.get("id") == primary_email_id:
+                        user_email = ea.get("email_address", "")
+                        break
+    except Exception as e:
+        print(f"⚠️ Clerk user lookup error: {e}")
+
+    if not user_email:
+        return JSONResponse(status_code=422, content={"detail": "Could not retrieve user email"})
+
+    # Call Dodo Payments API
+    payload = {
+        "product_id": body.product_id,
+        "quantity": 1,
+        "customer": {"email": user_email},
+        "billing": {"country": "US"},
+        "payment_link": True,
+        "return_url": "https://vela.an-tho.com/dashboard",
+        "metadata": {"clerk_user_id": user_id},
+    }
+    print(f"[Dodo] POST /subscriptions payload: {payload}")
+    print(f"[Dodo] API key present: {bool(dodo_api_key)}, length: {len(dodo_api_key)}")
+    try:
+        import httpx as _httpx
+        async with _httpx.AsyncClient() as hc:
+            resp = await hc.post(
+                "https://live.dodopayments.com/subscriptions",
+                headers={
+                    "Authorization": f"Bearer {dodo_api_key}",
+                    "Content-Type": "application/json",
+                },
+                json=payload,
+                timeout=15.0,
+            )
+            print(f"[Dodo] Response status: {resp.status_code}")
+            print(f"[Dodo] Response body: {resp.text}")
+            if resp.status_code not in (200, 201):
+                return JSONResponse(status_code=502, content={"detail": "Payment provider error"})
+            data = resp.json()
+            payment_link = data.get("payment_link") or data.get("url") or ""
+            if not payment_link:
+                print(f"[Dodo] ❌ Missing payment_link in response: {data}")
+                return JSONResponse(status_code=502, content={"detail": "No payment link returned"})
+            print(f"[Dodo] ✅ payment_link: {payment_link}")
+            return {"payment_link": payment_link}
+    except Exception as e:
+        print(f"[Dodo] ❌ Exception: {type(e).__name__}: {e}")
+        return JSONResponse(status_code=500, content={"detail": "Checkout failed"})
+
+
 @app.post("/api/webhooks/lemonsqueezy")
 async def lemonsqueezy_webhook(request: Request, db: Session = Depends(get_db)):
     # 驗證 webhook signature
@@ -817,6 +893,102 @@ async def lemonsqueezy_webhook(request: Request, db: Session = Depends(get_db)):
     db.commit()
 
     return {"status": "ok", "event": event_name}
+
+
+# ============================================================
+# Dodo Payments webhook
+# ============================================================
+@app.post("/api/webhook/dodo")
+async def dodo_webhook(request: Request, db: Session = Depends(get_db)):
+    body_bytes = await request.body()
+
+    # Signature verification
+    # Header format: "t=<timestamp>,v1=<hex_signature>"
+    dodo_secret = os.getenv("DODO_WEBHOOK_SECRET", "")
+    sig_header = request.headers.get("webhook-signature", "")
+    timestamp = ""
+    received_sig = ""
+    for part in sig_header.split(","):
+        if part.startswith("t="):
+            timestamp = part[2:]
+        elif part.startswith("v1="):
+            received_sig = part[3:]
+
+    if dodo_secret and (not timestamp or not received_sig):
+        return JSONResponse(status_code=401, content={"detail": "Missing signature"})
+
+    if dodo_secret:
+        signed_payload = f"{timestamp}.".encode() + body_bytes
+        expected_sig = hmac.new(
+            dodo_secret.encode(), signed_payload, hashlib.sha256
+        ).hexdigest()
+        if not hmac.compare_digest(expected_sig, received_sig):
+            return JSONResponse(status_code=401, content={"detail": "Invalid signature"})
+
+    payload = await request.json()
+    event_type = payload.get("type", "")
+    event_id = payload.get("data", {}).get("id") or payload.get("id", "")
+    if not event_id:
+        event_id = f"dodo_{int(time.time()*1000)}"
+
+    # Idempotency check
+    from api.models.sql_models import WebhookEvent, UserUsage
+    existing = db.query(WebhookEvent).filter(WebhookEvent.event_id == f"dodo_{event_id}").first()
+    if existing:
+        return {"status": "already_processed"}
+
+    # Only handle subscription events we care about
+    if event_type not in ("subscription.active", "subscription.cancelled", "subscription.expired"):
+        db.add(WebhookEvent(event_id=f"dodo_{event_id}", event_type=event_type))
+        db.commit()
+        return {"status": "ignored", "event": event_type}
+
+    # Locate customer email from payload
+    customer = payload.get("data", {}).get("customer") or payload.get("customer", {})
+    customer_email = customer.get("email", "") if isinstance(customer, dict) else ""
+    if not customer_email:
+        print(f"⚠️ Dodo webhook {event_type}: no customer email in payload")
+        return JSONResponse(status_code=422, content={"detail": "No customer email"})
+
+    # Look up Clerk user by email
+    clerk_secret = os.getenv("CLERK_SECRET_KEY", "")
+    clerk_user_id = None
+    try:
+        import httpx as _httpx
+        async with _httpx.AsyncClient() as hc:
+            resp = await hc.get(
+                "https://api.clerk.com/v1/users",
+                params={"email_address": customer_email, "limit": 1},
+                headers={"Authorization": f"Bearer {clerk_secret}"},
+                timeout=10.0,
+            )
+            if resp.status_code == 200:
+                users = resp.json()
+                if users:
+                    clerk_user_id = users[0].get("id")
+    except Exception as e:
+        print(f"⚠️ Clerk lookup error for {customer_email}: {e}")
+
+    if not clerk_user_id:
+        print(f"⚠️ Dodo webhook {event_type}: no Clerk user for email {customer_email}")
+        return JSONResponse(status_code=422, content={"detail": "Clerk user not found"})
+
+    # Update UserUsage
+    usage = db.query(UserUsage).filter(UserUsage.clerk_user_id == clerk_user_id).first()
+    if not usage:
+        usage = UserUsage(clerk_user_id=clerk_user_id)
+        db.add(usage)
+
+    if event_type == "subscription.active":
+        usage.plan_type = "pro"
+        print(f"✅ Dodo: upgraded {clerk_user_id} to pro")
+    elif event_type in ("subscription.cancelled", "subscription.expired"):
+        usage.plan_type = "free"
+        print(f"✅ Dodo: downgraded {clerk_user_id} to free ({event_type})")
+
+    db.add(WebhookEvent(event_id=f"dodo_{event_id}", event_type=event_type))
+    db.commit()
+    return {"status": "ok", "event": event_type}
 
 
 @app.get("/api/user/status")
