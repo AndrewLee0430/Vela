@@ -105,15 +105,22 @@ export default function OnboardingOverlay() {
   const isLast = step === steps.length - 1;
   const PAD = 12;
 
-  // ── popover position ─────────────────────────────────────────────────────
+  // ── popover position (horizontally centered on spotlight) ────────────────
   let popoverStyle: React.CSSProperties = {};
   if (rect) {
+    const POPOVER_W = 420;
+    const centerX = rect.left + rect.width / 2;
+    const rawLeft = centerX - POPOVER_W / 2;
+    // clamp so popover stays within viewport with 12px margin
+    const margin = 12;
+    const clampedLeft = Math.max(margin, Math.min(rawLeft, window.innerWidth - POPOVER_W - margin));
+
     const spaceBelow = window.innerHeight - rect.bottom;
-    if (spaceBelow > 240) {
-      popoverStyle = { top: rect.bottom + PAD + 10, left: rect.left, maxWidth: Math.max(rect.width, 420) };
-    } else {
-      popoverStyle = { bottom: window.innerHeight - rect.top + PAD + 10, left: rect.left, maxWidth: Math.max(rect.width, 420) };
-    }
+    const vertPos = spaceBelow > 240
+      ? { top: rect.bottom + PAD + 10 }
+      : { bottom: window.innerHeight - rect.top + PAD + 10 };
+
+    popoverStyle = { ...vertPos, left: clampedLeft, width: POPOVER_W };
   }
 
   return (
