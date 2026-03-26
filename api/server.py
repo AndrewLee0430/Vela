@@ -758,8 +758,9 @@ async def create_dodo_checkout(
     dodo_api_key = os.getenv("DODO_API_KEY", "")
     clerk_secret = os.getenv("CLERK_SECRET_KEY", "")
 
-    # Fetch user email from Clerk
+    # Fetch user email + name from Clerk
     user_email = ""
+    user_name = ""
     try:
         import httpx as _httpx
         async with _httpx.AsyncClient() as hc:
@@ -775,6 +776,9 @@ async def create_dodo_checkout(
                     if ea.get("id") == primary_email_id:
                         user_email = ea.get("email_address", "")
                         break
+                first = clerk_user.get("first_name") or ""
+                last = clerk_user.get("last_name") or ""
+                user_name = f"{first} {last}".strip() or user_email.split("@")[0]
     except Exception as e:
         print(f"⚠️ Clerk user lookup error: {e}")
 
@@ -785,8 +789,8 @@ async def create_dodo_checkout(
     payload = {
         "product_id": body.product_id,
         "quantity": 1,
-        "customer": {"email": user_email},
-        "billing": {"country": "US"},
+        "customer": {"email": user_email, "name": user_name},
+        "billing": {"country": "TW"},
         "payment_link": True,
         "return_url": "https://vela.an-tho.com/dashboard",
         "metadata": {"clerk_user_id": user_id},
