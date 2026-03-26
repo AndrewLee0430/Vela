@@ -1,5 +1,6 @@
 import { ClerkProvider } from '@clerk/nextjs';
 import type { AppProps } from 'next/app';
+import { DefaultSeo } from 'next-seo';
 import posthog from 'posthog-js';
 import { PostHogProvider } from 'posthog-js/react';
 import { useEffect } from 'react';
@@ -25,6 +26,18 @@ export default function MyApp({ Component, pageProps }: AppProps) {
 
   return (
     <PostHogProvider client={posthog}>
+      <DefaultSeo
+        titleTemplate="%s | Vela"
+        defaultTitle="Vela — Clinical AI for Healthcare Professionals"
+        description="Research PubMed 36M+, verify drug interactions against FDA, and explain lab results in any language."
+        canonical="https://vela.an-tho.com"
+        openGraph={{
+          type: 'website',
+          url: 'https://vela.an-tho.com',
+          siteName: 'Vela',
+          images: [{ url: 'https://vela.an-tho.com/og-image.png', width: 1200, height: 630 }],
+        }}
+      />
       <ClerkProvider
         {...pageProps}
         publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
