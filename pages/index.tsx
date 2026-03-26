@@ -280,9 +280,9 @@ function Dashboard() {
       <Navbar />
 
       <div className="container mx-auto px-4 md:px-10 py-8 max-w-4xl">
-        <h1 className="text-2xl font-bold tracking-tight mb-1">Welcome back</h1>
+        <h1 className="text-4xl font-bold tracking-tight mb-2 text-center text-white">Welcome back</h1>
         <p
-          className="text-sm mb-8 font-medium"
+          className="text-xl mb-8 font-medium text-center"
           style={{
             background: 'linear-gradient(90deg, #ff8e6e, #a78bfa)',
             WebkitBackgroundClip: 'text',
@@ -315,7 +315,7 @@ function Dashboard() {
                 }}
               >
                 <div className="flex items-center justify-between mb-3">
-                  <p className="text-xl font-semibold">{f.label}</p>
+                  <p className="text-xl font-semibold text-white">{f.label}</p>
                   <span
                     className="text-sm font-medium px-3 py-1 rounded-full"
                     style={{ background: f.hoverBg, color: f.color, border: `1px solid ${f.hoverBorder}` }}

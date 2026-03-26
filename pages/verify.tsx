@@ -256,7 +256,7 @@ function VerifyForm() {
                                         {result.interactions.map((interaction, idx) => (
                                             <div key={idx} className={`border-l-4 rounded-lg p-4 ${getSeverityStyle(interaction.severity)}`}>
                                                 <div className="flex justify-between items-start mb-2">
-                                                    <p className="font-semibold text-sm" style={{ color: "#ffffff" }}>
+                                                    <p className="font-semibold text-sm text-slate-400">
                                                         {interaction.drug_pair[0]} ↔ {interaction.drug_pair[1]}
                                                     </p>
                                                     <span className={`px-2 py-0.5 rounded text-xs font-medium ml-2 flex-shrink-0 ${getSeverityBadge(interaction.severity)}`}>

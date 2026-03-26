@@ -21,7 +21,7 @@ interface CitationPanelProps {
 }
 
 const credibilityConfig = {
-    'peer-reviewed': { label: 'Peer Reviewed', bg: 'rgba(104,211,145,0.15)', color: '#68d391', stars: 5, tooltip: 'Published in peer-reviewed journals and indexed in PubMed' },
+    'peer-reviewed': { label: 'Peer Reviewed', bg: 'rgba(255,142,110,0.15)', color: '#ff8e6e', stars: 5, tooltip: 'Published in peer-reviewed journals and indexed in PubMed' },
     'official':      { label: 'Official',       bg: 'rgba(99,179,237,0.15)',  color: '#63b3ed', stars: 5, tooltip: 'From official FDA drug labeling data' },
     'internal':      { label: 'Internal',       bg: 'rgba(160,174,192,0.15)', color: '#a0aec0', stars: 3, tooltip: 'From internal drug reference database' },
 };

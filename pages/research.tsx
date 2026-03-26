@@ -160,7 +160,7 @@ function ResearchForm() {
     }
 
     return (
-        <div className="flex flex-col gap-4 max-w-[60%] mx-auto">
+        <div className="flex flex-col gap-4 max-w-[80%] mx-auto">
             {/* Title row */}
             <div className="flex justify-between items-start">
                 <div>
