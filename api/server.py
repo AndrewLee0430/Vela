@@ -906,30 +906,45 @@ async def lemonsqueezy_webhook(request: Request, db: Session = Depends(get_db)):
 async def dodo_webhook(request: Request, db: Session = Depends(get_db)):
     body_bytes = await request.body()
 
-    # Signature verification
-    # Header format: "t=<timestamp>,v1=<hex_signature>"
+    # Signature verification — Standard Webhooks spec
+    # https://www.standardwebhooks.com/
     dodo_secret = os.getenv("DODO_WEBHOOK_SECRET", "")
-    sig_header = request.headers.get("webhook-signature", "")
-    timestamp = ""
-    received_sig = ""
-    for part in sig_header.split(","):
-        if part.startswith("t="):
-            timestamp = part[2:]
-        elif part.startswith("v1="):
-            received_sig = part[3:]
+    webhook_id        = request.headers.get("webhook-id", "")
+    webhook_timestamp = request.headers.get("webhook-timestamp", "")
+    webhook_signature = request.headers.get("webhook-signature", "")
 
-    if dodo_secret and (not timestamp or not received_sig):
+    print(f"[Dodo Webhook] secret_present={bool(dodo_secret)} headers={list(request.headers.keys())}")
+
+    if dodo_secret and (not webhook_id or not webhook_timestamp or not webhook_signature):
+        print(f"[Dodo Webhook] ❌ Missing sig headers: id={bool(webhook_id)} ts={bool(webhook_timestamp)} sig={bool(webhook_signature)}")
         return JSONResponse(status_code=401, content={"detail": "Missing signature"})
 
     if dodo_secret:
-        signed_payload = f"{timestamp}.".encode() + body_bytes
-        expected_sig = hmac.new(
-            dodo_secret.encode(), signed_payload, hashlib.sha256
-        ).hexdigest()
-        if not hmac.compare_digest(expected_sig, received_sig):
+        import base64
+        # Strip "whsec_" prefix and base64-decode the secret
+        raw_secret = dodo_secret[len("whsec_"):] if dodo_secret.startswith("whsec_") else dodo_secret
+        secret_bytes = base64.b64decode(raw_secret)
+
+        # Signed payload: {webhook-id}.{webhook-timestamp}.{raw_body}
+        signed_payload = f"{webhook_id}.{webhook_timestamp}.".encode() + body_bytes
+
+        # HMAC-SHA256, base64-encoded
+        expected_sig = base64.b64encode(
+            hmac.new(secret_bytes, signed_payload, hashlib.sha256).digest()
+        ).decode()
+
+        # webhook-signature may be space-separated "v1,<sig>" entries
+        received_sigs = [
+            part.split(",", 1)[1]
+            for part in webhook_signature.split(" ")
+            if part.startswith("v1,")
+        ]
+        if not received_sigs or not any(hmac.compare_digest(expected_sig, s) for s in received_sigs):
+            print(f"[Dodo Webhook] ❌ Signature mismatch. expected={expected_sig[:16]}…")
             return JSONResponse(status_code=401, content={"detail": "Invalid signature"})
 
-    payload = await request.json()
+    import json as _json
+    payload = _json.loads(body_bytes)
     event_type = payload.get("type", "")
     event_id = payload.get("data", {}).get("id") or payload.get("id", "")
     if not event_id:
