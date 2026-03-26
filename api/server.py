@@ -7,6 +7,26 @@ from dotenv import load_dotenv
 import os
 load_dotenv()
 
+import sentry_sdk
+from sentry_sdk.integrations.fastapi import FastApiIntegration
+from sentry_sdk.integrations.starlette import StarletteIntegration
+
+_SENTRY_DSN = os.getenv("SENTRY_DSN")
+if _SENTRY_DSN:
+    sentry_sdk.init(
+        dsn=_SENTRY_DSN,
+        integrations=[
+            StarletteIntegration(transaction_style="endpoint"),
+            FastApiIntegration(transaction_style="endpoint"),
+        ],
+        traces_sample_rate=0.2,
+        environment=os.getenv("FLY_APP_NAME", "development"),
+        send_default_pii=False,
+    )
+    print("✅ Sentry initialized")
+else:
+    print("⚠️  SENTRY_DSN not set, Sentry disabled")
+
 import json
 import time
 from pathlib import Path
