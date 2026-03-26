@@ -1,32 +1,39 @@
 // components/UpgradeModal.tsx
 
 import { useState } from 'react';
+import { useAuth } from '@clerk/nextjs';
+import { clearPlanCache } from './PlanBadge';
 
 interface UpgradeModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-const MONTHLY_VARIANT_ID = "待填入";  // Lemon Squeezy variant ID
-const YEARLY_VARIANT_ID = "待填入";   // Lemon Squeezy variant ID
+const MONTHLY_PRODUCT_ID = "pdt_0NbELHXiGodgawGwVaZ3t";
+const YEARLY_PRODUCT_ID  = "pdt_0NbELkno040P4wQSaQaam";
 
 export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
   const [loading, setLoading] = useState<string | null>(null);
+  const { getToken } = useAuth();
 
   if (!isOpen) return null;
 
-  const handleUpgrade = async (variantId: string, plan: string) => {
+  const handleUpgrade = async (productId: string, plan: string) => {
     setLoading(plan);
     try {
-      const res = await fetch('/api/checkout', {
+      const token = await getToken({ skipCache: true });
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/checkout/dodo`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ variant_id: variantId }),
-        credentials: 'include'
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ product_id: productId }),
       });
       const data = await res.json();
-      if (data.url) {
-        window.location.href = data.url;
+      if (data.payment_link) {
+        clearPlanCache();
+        window.location.href = data.payment_link;
       }
     } catch (err) {
       console.error('Checkout error:', err);
@@ -87,7 +94,7 @@ export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
         {/* Pricing buttons */}
         <div className="space-y-3">
           <button
-            onClick={() => handleUpgrade(MONTHLY_VARIANT_ID, 'monthly')}
+            onClick={() => handleUpgrade(MONTHLY_PRODUCT_ID, 'monthly')}
             disabled={!!loading}
             className="w-full py-3 rounded-xl font-semibold text-white transition-all"
             style={{ background: loading === 'monthly' ? '#cc5533' : '#ff6b4a' }}
@@ -96,7 +103,7 @@ export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
           </button>
 
           <button
-            onClick={() => handleUpgrade(YEARLY_VARIANT_ID, 'yearly')}
+            onClick={() => handleUpgrade(YEARLY_PRODUCT_ID, 'yearly')}
             disabled={!!loading}
             className="w-full py-3 rounded-xl font-semibold text-white transition-all"
             style={{ background: loading === 'yearly' ? '#1a3a6a' : '#1e4a8a' }}

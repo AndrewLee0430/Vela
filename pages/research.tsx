@@ -1,19 +1,17 @@
 "use client"
 
 import { useState, FormEvent, useRef, useEffect, useCallback } from 'react';
-import { useAuth, SignedIn, SignedOut, RedirectToSignIn, UserButton } from '@clerk/nextjs';
+import { useAuth, SignedIn, SignedOut, RedirectToSignIn } from '@clerk/nextjs';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkBreaks from 'remark-breaks';
 import { fetchEventSource } from '@microsoft/fetch-event-source';
-import Link from 'next/link';
-import Image from 'next/image';
 import CitationPanel, { Citation } from '../components/CitationPanel';
 import FeedbackBar from '../components/FeedbackBar';
 import UpgradeModal from '../components/UpgradeModal';
 import Toast from '../components/Toast';
-import PlanBadge from '../components/PlanBadge';
 import MobileNav from '../components/MobileNav';
+import Navbar from '../components/Navbar';
 
 // Research accent color
 const ACCENT = '#ff8e6e';
@@ -315,31 +313,7 @@ function ResearchForm() {
 export default function Research() {
     return (
         <main className="min-h-screen pb-20 md:pb-0" style={{ background: "linear-gradient(135deg, #0a1628 0%, #0f2040 45%, #1a1035 75%, #0d1a2e 100%)" }}>
-            <nav className="border-b" style={{ background: "linear-gradient(135deg, #0a1628 0%, #0f2040 45%, #1a1035 75%, #0d1a2e 100%)", borderColor: "rgba(255,255,255,0.07)" }}>
-                <div className="container mx-auto px-4 py-3">
-                    <div className="flex justify-between items-center">
-                        <div className="flex items-center gap-8">
-                            <Link href="/" className="group relative flex items-center" title="Homepage">
-                                <Image src="/coral_logo.png" alt="Vela" width={60} height={60} style={{ objectFit: 'contain' }} />
-                                <span className="absolute -bottom-7 left-1/2 -translate-x-1/2 text-xs bg-gray-800 text-white px-2 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-10">
-                                  Homepage
-                                </span>
-                              </Link>
-                            <div className="hidden md:flex items-center gap-6 text-sm">
-                                <Link href="/research" className="font-semibold text-white transition-colors">Research</Link>
-                                <Link href="/verify"   className="text-gray-400 hover:text-white transition-colors">Verify</Link>
-                                <Link href="/explain"  className="text-gray-400 hover:text-white transition-colors">Explain</Link>
-                                <Link href="/history"  className="text-gray-400 hover:text-white transition-colors">History</Link>
-                            </div>
-                        </div>
-                        <div className="flex items-center gap-0">
-                            <PlanBadge />
-                            <UserButton showName={true} />
-                        </div>
-                    </div>
-                </div>
-            </nav>
-
+            <Navbar activePage="research" />
             <SignedIn>
                 <div className="container mx-auto px-4 py-8">
                     <ResearchForm />

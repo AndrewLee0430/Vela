@@ -19,7 +19,16 @@
       "Bash(~/.fly/bin/fly deploy:*)",
       "Bash(\"C:\\\\Users\\\\andre\\\\.fly\\\\bin\\\\fly.exe\" secrets:*)",
       "Bash(\"C:\\\\Users\\\\andre\\\\.fly\\\\bin\\\\fly.exe\" logs:*)",
-      "Bash(\"C:\\\\Users\\\\andre\\\\.fly\\\\bin\\\\fly.exe\" deploy:*)"
+      "Bash(\"C:\\\\Users\\\\andre\\\\.fly\\\\bin\\\\fly.exe\" deploy:*)",
+      "WebFetch(domain:docs.dodopayments.com)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(enum\" 422 error. The customer format {\"email\": \"...\"} was already correct.:*)",
+      "Bash(git push:*)",
+      "Bash(curl:*)",
+      "Bash(CustomerRequest\" 422. Now fetches first/last name from Clerk and falls:*)"
     ]
   }
 }

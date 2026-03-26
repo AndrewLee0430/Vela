@@ -1,13 +1,54 @@
+# ?°å?è®Šæ•¸
 .env
 .env.*
 .env.local
+
+# Git
 .git
 .gitignore
+.github
+
+# Node
 node_modules
+.next
 out
+npm-debug.log*
+
+# Python
 __pycache__
 *.pyc
-.next
-.vscode
+*.pyo
+*.pyd
+venv/
+.venv/
+.uv/
+*.egg-info/
+
+# è³‡æ?åº?& ?‘é?åº«ï???scripts ?å»ºï¼Œä??€è¦æ??…é€?imageï¼?data/
+chroma_db/
+drug_vectordb/
+*.db
+*.sqlite
+*.sqlite3
+*.chroma
+*.parquet
+*.bin
+
+# IDE
+.vscode/
+.idea/
+.claude/
+
+# æ¸¬è©¦
+tests/
+htmlcov/
+.pytest_cache/
+.coverage
+
+# ?¶ä?
 *.md
-tests
+*.log
+logs/
+tmp/
+.DS_Store
+Thumbs.db

@@ -6,6 +6,9 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import MobileNav from '../components/MobileNav';
+import PlanBadge from '../components/PlanBadge';
+import UpgradeModal from '../components/UpgradeModal';
+import Navbar from '../components/Navbar';
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
 const BG = 'linear-gradient(135deg, #0a1628 0%, #0f2040 45%, #1a1035 75%, #0d1a2e 100%)';
@@ -79,6 +82,7 @@ function TypewriterPrompt() {
 
 // ─── Landing Page (unauthenticated) ──────────────────────────────────────────
 function LandingPage() {
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   return (
     <>
       <style>{`
@@ -95,7 +99,8 @@ function LandingPage() {
         style={{ background: BG }}
       >
         {/* Nav */}
-        <nav className="flex-shrink-0 flex justify-end items-center px-4 md:px-10 py-5">
+        <nav className="flex-shrink-0 flex justify-end items-center gap-2 px-4 md:px-10 py-5">
+          <PlanBadge onUpgrade={() => setShowUpgradeModal(true)} />
           <SignedIn><UserButton /></SignedIn>
           <SignedOut>
             <SignInButton mode="modal">
@@ -110,6 +115,7 @@ function LandingPage() {
             </SignInButton>
           </SignedOut>
         </nav>
+        <UpgradeModal isOpen={showUpgradeModal} onClose={() => setShowUpgradeModal(false)} />
 
         {/* Hero */}
         <div className="flex-1 flex flex-col items-center justify-start px-4 md:px-10 text-center pt-3 pb-4">
@@ -259,35 +265,7 @@ function LandingPage() {
 function Dashboard() {
   return (
     <main className="min-h-screen pb-20 md:pb-0" style={{ background: BG }}>
-      <nav className="border-b" style={{ background: BG, borderColor: 'rgba(255,255,255,0.07)' }}>
-        <div className="container mx-auto px-4 md:px-10 py-3">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-8">
-              <Link href="/" className="flex items-center gap-2">
-                <Image src="/coral_logo.png" alt="Vela" width={40} height={40} style={{ objectFit: 'contain' }} />
-                <span
-                  className="hidden sm:block font-black text-lg"
-                  style={{
-                    background: 'linear-gradient(90deg, #ff6b6b, #ff8e6e, #ffb347)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    letterSpacing: '0.06em',
-                  }}
-                >
-                  Vela
-                </span>
-              </Link>
-              <div className="hidden md:flex items-center gap-6 text-sm">
-                <Link href="/research" className="text-gray-400 hover:text-white transition-colors">Research</Link>
-                <Link href="/verify"   className="text-gray-400 hover:text-white transition-colors">Verify</Link>
-                <Link href="/explain"  className="text-gray-400 hover:text-white transition-colors">Explain</Link>
-                <Link href="/history"  className="text-gray-400 hover:text-white transition-colors">History</Link>
-              </div>
-            </div>
-            <UserButton showName={false} />
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
       <div className="container mx-auto px-4 md:px-10 py-8 max-w-4xl">
         <h1 className="text-2xl font-bold tracking-tight mb-1">Welcome back</h1>
