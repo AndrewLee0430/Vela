@@ -138,7 +138,7 @@ function LandingPage() {
             <h1
               className="mt-1 font-black"
               style={{
-                fontSize: 'clamp(2.2rem, 5vw, 3.5rem)',
+                fontSize: 'clamp(3rem, 7vw, 5rem)',
                 background: 'linear-gradient(90deg, #ff6b6b, #ff8e6e, #ffb347)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
@@ -176,7 +176,7 @@ function LandingPage() {
           </div>
 
           {/* CTA */}
-          <div className="flex gap-3 mb-5">
+          <div className="flex gap-3 my-8">
             <SignedOut>
               <SignInButton mode="modal">
                 <button
@@ -222,7 +222,7 @@ function LandingPage() {
             {featureCards.map((f) => (
               <Link key={f.label} href={f.href} className="flex-1">
                 <div
-                  className="h-full rounded-2xl px-5 py-4 text-left cursor-pointer transition-all duration-300"
+                  className="h-full rounded-2xl px-6 py-5 text-left cursor-pointer transition-all duration-300"
                   style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}
                   onMouseEnter={e => {
                     const el = e.currentTarget as HTMLElement;
@@ -240,7 +240,7 @@ function LandingPage() {
                   }}
                 >
                   <div className="flex items-center justify-between mb-3">
-                    <p className="text-white text-base font-semibold tracking-tight">{f.label}</p>
+                    <p className="text-white text-lg font-semibold tracking-tight">{f.label}</p>
                     <span
                       className="text-xs font-medium px-2 py-0.5 rounded-full"
                       style={{ background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.45)' }}
@@ -248,7 +248,7 @@ function LandingPage() {
                       {f.sub}
                     </span>
                   </div>
-                  <p className="text-sm mb-4 leading-relaxed" style={{ color: 'rgba(255,255,255,0.45)' }}>{f.desc}</p>
+                  <p className="text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.45)' }}>{f.desc}</p>
                 </div>
               </Link>
             ))}
@@ -280,15 +280,8 @@ function Dashboard() {
       <Navbar />
 
       <div className="container mx-auto px-4 md:px-10 py-8 max-w-4xl">
-        <h1 className="text-4xl font-bold tracking-tight mb-2 text-center text-white">Welcome back</h1>
-        <p
-          className="text-xl mb-8 font-medium text-center"
-          style={{
-            background: 'linear-gradient(90deg, #ff8e6e, #a78bfa)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-          }}
-        >
+        <h1 className="text-3xl font-bold tracking-tight mb-2 text-center text-white">Welcome back</h1>
+        <p className="text-xl mb-8 font-medium text-center bg-gradient-to-r from-[#ff6b6b] via-[#ff8e6e] to-[#ffb347] bg-clip-text text-transparent">
           What would you like to research today?
         </p>
 
