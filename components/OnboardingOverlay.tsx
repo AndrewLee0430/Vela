@@ -1,46 +1,80 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { useAuth } from '@clerk/nextjs';
 
-const STEPS = [
-  {
-    target: null as string | null,           // full-screen welcome, no spotlight
-    title: 'Welcome to Vela!',
-    body: 'You have 15 free credits to get started.\nLet\u2019s take a quick look at what you can do.',
-  },
-  {
-    target: '[data-onboarding="research"]',
-    title: 'Research',
-    body: 'Ask any clinical question in any language \u2014 powered by PubMed 36M+ articles.',
-  },
-  {
-    target: '[data-onboarding="verify"]',
-    title: 'Verify',
-    body: 'Check drug interactions against official FDA data with severity ratings.',
-  },
-];
+interface Step {
+  target: string | null;
+  title: string;
+  body: string;
+}
+
+function buildSteps(plan: 'free' | 'pro'): Step[] {
+  return [
+    {
+      target: null,
+      title: 'Welcome to Vela!',
+      body: plan === 'pro'
+        ? 'You have unlimited* access to all features.\nLet\u2019s take a quick look at what you can do.'
+        : 'You have 15 free credits to get started.\nLet\u2019s take a quick look at what you can do.',
+    },
+    {
+      target: '[data-onboarding="research"]',
+      title: 'Research',
+      body: 'Ask any clinical question in any language \u2014 powered by official medical resources.',
+    },
+    {
+      target: '[data-onboarding="verify"]',
+      title: 'Verify',
+      body: 'Check drug interactions against official FDA data to identify risks.',
+    },
+    {
+      target: '[data-onboarding="explain"]',
+      title: 'Explain Medical Reports',
+      body: 'Understand any lab result or medical report in plain language, backed by official sources.',
+    },
+  ];
+}
 
 export default function OnboardingOverlay() {
+  const { getToken } = useAuth();
   const [step, setStep] = useState(0);
   const [visible, setVisible] = useState(false);
   const [rect, setRect] = useState<DOMRect | null>(null);
+  const [plan, setPlan] = useState<'free' | 'pro'>('pro'); // optimistic default
   const popoverRef = useRef<HTMLDivElement>(null);
 
-  // ── show only once ──────────────────────────────────────────────────────────
+  const steps = buildSteps(plan);
+
+  // ── fetch plan ────────────────────────────────────────────────────────────
+  useEffect(() => {
+    (async () => {
+      try {
+        const token = await getToken({ skipCache: true });
+        if (!token) return;
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user/status`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+        setPlan(data.plan_type === 'pro' ? 'pro' : 'free');
+      } catch { /* keep optimistic default */ }
+    })();
+  }, [getToken]);
+
+  // ── show only once ────────────────────────────────────────────────────────
   useEffect(() => {
     if (typeof window === 'undefined') return;
     if (localStorage.getItem('hasSeenOnboarding')) return;
-    // small delay so the dashboard cards are rendered & measurable
     const t = setTimeout(() => setVisible(true), 400);
     return () => clearTimeout(t);
   }, []);
 
-  // ── measure spotlight target ────────────────────────────────────────────────
+  // ── measure spotlight target ──────────────────────────────────────────────
   const measure = useCallback(() => {
-    const sel = STEPS[step]?.target;
+    const sel = steps[step]?.target;
     if (!sel) { setRect(null); return; }
     const el = document.querySelector(sel) as HTMLElement | null;
     if (!el) { setRect(null); return; }
     setRect(el.getBoundingClientRect());
-  }, [step]);
+  }, [step, steps]);
 
   useEffect(() => {
     if (!visible) return;
@@ -53,32 +87,32 @@ export default function OnboardingOverlay() {
     };
   }, [visible, measure]);
 
-  // ── handlers ────────────────────────────────────────────────────────────────
+  // ── handlers ──────────────────────────────────────────────────────────────
   const finish = () => {
     localStorage.setItem('hasSeenOnboarding', '1');
     setVisible(false);
   };
 
   const next = () => {
-    if (step >= STEPS.length - 1) { finish(); return; }
+    if (step >= steps.length - 1) { finish(); return; }
     setStep(s => s + 1);
   };
 
   if (!visible) return null;
 
-  const current = STEPS[step];
+  const current = steps[step];
   const isFirst = step === 0;
-  const isLast = step === STEPS.length - 1;
-  const PAD = 10; // spotlight padding around the card
+  const isLast = step === steps.length - 1;
+  const PAD = 12;
 
-  // ── popover position (below or above the spotlight rect) ────────────────────
+  // ── popover position ─────────────────────────────────────────────────────
   let popoverStyle: React.CSSProperties = {};
   if (rect) {
     const spaceBelow = window.innerHeight - rect.bottom;
-    if (spaceBelow > 200) {
-      popoverStyle = { top: rect.bottom + PAD + 8, left: rect.left, maxWidth: rect.width };
+    if (spaceBelow > 240) {
+      popoverStyle = { top: rect.bottom + PAD + 10, left: rect.left, maxWidth: Math.max(rect.width, 420) };
     } else {
-      popoverStyle = { bottom: window.innerHeight - rect.top + PAD + 8, left: rect.left, maxWidth: rect.width };
+      popoverStyle = { bottom: window.innerHeight - rect.top + PAD + 10, left: rect.left, maxWidth: Math.max(rect.width, 420) };
     }
   }
 
@@ -123,41 +157,41 @@ export default function OnboardingOverlay() {
       {/* ── popover ── */}
       <div
         ref={popoverRef}
-        className="absolute rounded-xl px-5 py-4 shadow-2xl"
+        className="absolute rounded-2xl px-8 py-6 shadow-2xl min-w-[420px]"
         style={{
           background: 'linear-gradient(135deg, #1a2744 0%, #1e2a45 100%)',
           border: '1px solid rgba(255,255,255,0.12)',
           ...(rect
             ? popoverStyle
-            : { top: '50%', left: '50%', transform: 'translate(-50%,-50%)', maxWidth: 380 }),
+            : { top: '50%', left: '50%', transform: 'translate(-50%,-50%)', maxWidth: 480 }),
           transition: 'all 0.35s cubic-bezier(.4,0,.2,1)',
         }}
       >
-        {/* step counter */}
-        <div className="flex items-center gap-1.5 mb-2">
-          {STEPS.map((_, i) => (
+        {/* step indicator */}
+        <div className="flex items-center gap-2 mb-3">
+          {steps.map((_, i) => (
             <div
               key={i}
-              className="h-1 rounded-full transition-all duration-300"
+              className="h-1.5 rounded-full transition-all duration-300"
               style={{
-                width: i === step ? 24 : 8,
+                width: i === step ? 28 : 10,
                 background: i === step ? '#ff8e6e' : 'rgba(255,255,255,0.2)',
               }}
             />
           ))}
         </div>
 
-        <p className="text-sm font-semibold text-white mb-1">{current.title}</p>
-        <p className="text-xs leading-relaxed whitespace-pre-line" style={{ color: 'rgba(255,255,255,0.6)' }}>
+        <p className="text-2xl font-semibold text-white mb-2">{current.title}</p>
+        <p className="text-base leading-relaxed whitespace-pre-line" style={{ color: 'rgba(255,255,255,0.6)' }}>
           {current.body}
         </p>
 
         {/* buttons */}
-        <div className="flex items-center justify-between mt-4">
+        <div className="flex items-center justify-between mt-6">
           {!isFirst ? (
             <button
               onClick={() => setStep(s => s - 1)}
-              className="text-xs px-3 py-1.5 rounded-lg transition-colors"
+              className="text-sm px-4 py-2 rounded-lg transition-colors"
               style={{ color: 'rgba(255,255,255,0.5)' }}
             >
               Back
@@ -165,7 +199,7 @@ export default function OnboardingOverlay() {
           ) : (
             <button
               onClick={finish}
-              className="text-xs px-3 py-1.5 rounded-lg transition-colors"
+              className="text-sm px-4 py-2 rounded-lg transition-colors"
               style={{ color: 'rgba(255,255,255,0.5)' }}
             >
               Skip
@@ -173,11 +207,8 @@ export default function OnboardingOverlay() {
           )}
           <button
             onClick={next}
-            className="text-xs font-medium px-4 py-1.5 rounded-lg transition-all"
-            style={{
-              background: '#ff8e6e',
-              color: '#0a1628',
-            }}
+            className="text-sm font-semibold px-6 py-2 rounded-lg transition-all"
+            style={{ background: '#ff8e6e', color: '#0a1628' }}
           >
             {isLast ? 'Done' : 'Next'}
           </button>

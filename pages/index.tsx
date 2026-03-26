@@ -285,12 +285,12 @@ function Dashboard() {
           What would you like to research today?
         </p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           {DASHBOARD_CARDS.map((f) => (
             <Link key={f.label} href={f.href}>
               <div
                 data-onboarding={f.label.toLowerCase()}
-                className="h-full rounded-2xl px-6 py-5 cursor-pointer transition-all duration-300"
+                className="h-full min-h-[140px] rounded-2xl px-7 py-6 cursor-pointer transition-all duration-300"
                 style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}
                 onMouseEnter={e => {
                   const el = e.currentTarget as HTMLElement;
@@ -308,15 +308,15 @@ function Dashboard() {
                 }}
               >
                 <div className="flex items-center justify-between mb-3">
-                  <p className="text-base font-semibold">{f.label}</p>
+                  <p className="text-xl font-semibold">{f.label}</p>
                   <span
-                    className="text-xs font-medium px-2.5 py-1 rounded-full"
+                    className="text-sm font-medium px-3 py-1 rounded-full"
                     style={{ background: f.hoverBg, color: f.color, border: `1px solid ${f.hoverBorder}` }}
                   >
                     {f.sub}
                   </span>
                 </div>
-                <p className="text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.45)' }}>{f.desc}</p>
+                <p className="text-base leading-relaxed" style={{ color: 'rgba(255,255,255,0.45)' }}>{f.desc}</p>
               </div>
             </Link>
           ))}
