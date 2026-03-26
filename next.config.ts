@@ -10,6 +10,6 @@ const nextConfig: NextConfig = {
 
 export default withSentryConfig(nextConfig, {
   silent: true,
-  hideSourceMaps: true,
+  sourcemaps: { disable: true },
   // tunnelRoute omitted: requires a Next.js server, incompatible with static export
 });
