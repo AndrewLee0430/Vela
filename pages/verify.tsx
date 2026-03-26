@@ -249,7 +249,7 @@ function VerifyForm() {
                             {/* Interactions */}
                             {result.interactions.length > 0 && (
                                 <div>
-                                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
+                                    <p className="text-xs font-semibold text-slate-200 uppercase tracking-wider mb-3">
                                         Interactions ({result.interactions.length})
                                     </p>
                                     <div className="space-y-3">

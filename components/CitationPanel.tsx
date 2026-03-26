@@ -94,12 +94,20 @@ function CitationCard({ citation }: { citation: Citation }) {
                         [{citation.id}] {sourceConfig.label}
                     </span>
                 </div>
-                <span
-                    className="text-xs px-2 py-1 rounded-full flex-shrink-0 ml-2 font-medium cursor-help"
-                    style={{ background: credConfig.bg, color: credConfig.color }}
-                    title={credConfig.tooltip}
-                >
-                    {credConfig.label}
+                <span className="relative group flex-shrink-0 ml-2">
+                    <span
+                        className="text-xs px-2 py-1 rounded-full font-medium cursor-help"
+                        style={{ background: credConfig.bg, color: credConfig.color }}
+                    >
+                        {credConfig.label}
+                    </span>
+                    <span className="absolute right-0 top-full mt-2 w-64 bg-white rounded-lg shadow-lg px-4 py-3 z-50 hidden group-hover:block">
+                        <span className="flex items-center gap-2 mb-1">
+                            <svg className="w-4 h-4 text-green-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                            <span className="text-sm font-semibold text-gray-800">{credConfig.label}</span>
+                        </span>
+                        <span className="text-xs text-gray-500 leading-relaxed block">{credConfig.tooltip}</span>
+                    </span>
                 </span>
             </div>
 

@@ -281,7 +281,14 @@ function Dashboard() {
 
       <div className="container mx-auto px-4 md:px-10 py-8 max-w-4xl">
         <h1 className="text-2xl font-bold tracking-tight mb-1">Welcome back</h1>
-        <p className="text-sm mb-8" style={{ color: 'rgba(255,255,255,0.45)' }}>
+        <p
+          className="text-sm mb-8 font-medium"
+          style={{
+            background: 'linear-gradient(90deg, #ff8e6e, #a78bfa)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+          }}
+        >
           What would you like to research today?
         </p>
 
@@ -320,6 +327,20 @@ function Dashboard() {
               </div>
             </Link>
           ))}
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div
+        className="mt-12 flex flex-col items-center gap-2 px-4 md:px-10 py-6 text-sm"
+        style={{ borderTop: '1px solid rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.3)' }}
+      >
+        <div>&copy; {new Date().getFullYear()} Vela. All rights reserved.</div>
+        <div className="flex flex-wrap justify-center gap-4 text-xs">
+          <Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
+          <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
+          <Link href="/refund" className="hover:text-white transition-colors">Refund Policy</Link>
+          <a href="mailto:support@an-tho.com" className="hover:text-white transition-colors">support@an-tho.com</a>
         </div>
       </div>
 

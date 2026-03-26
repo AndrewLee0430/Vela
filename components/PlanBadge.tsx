@@ -38,17 +38,20 @@ const upgradeStyle = {
 export default function PlanBadge({ onUpgrade }: PlanBadgeProps) {
     const { getToken } = useAuth();
     const { isSignedIn, isLoaded } = useUser();
-    // Start optimistic: assume free so button renders immediately
-    const [plan, setPlan] = useState<'free' | 'pro'>('free');
+    // Synchronously read cache to avoid flash on navigation
+    const [plan, setPlan] = useState<'free' | 'pro' | null>(() => {
+        if (typeof window === 'undefined') return null;
+        return readCache();
+    });
 
     useEffect(() => {
         if (!isLoaded || !isSignedIn) return;
 
-        // Try cache first
+        // If cache already provided a value, only background-refresh
         const cached = readCache();
-        if (cached) { setPlan(cached); return; }
+        if (cached && !plan) setPlan(cached);
 
-        // Fetch from API
+        // Always fetch from API to keep cache fresh
         (async () => {
             try {
                 const token = await getToken({ skipCache: true });
@@ -76,6 +79,9 @@ export default function PlanBadge({ onUpgrade }: PlanBadgeProps) {
             </SignInButton>
         );
     }
+
+    // Still loading plan (no cache) — hide to prevent flash
+    if (plan === null) return null;
 
     if (plan === 'pro') {
         return (
