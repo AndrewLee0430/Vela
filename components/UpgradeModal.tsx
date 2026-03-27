@@ -99,7 +99,7 @@ export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
             className="w-full py-3 rounded-xl font-semibold text-white transition-all"
             style={{ background: loading === 'monthly' ? '#cc5533' : '#ff6b4a' }}
           >
-            {loading === 'monthly' ? 'Redirecting...' : 'Monthly — $8.99 / month'}
+            {loading === 'monthly' ? 'Redirecting...' : 'Monthly — $9.99 / month'}
           </button>
 
           <button
@@ -108,7 +108,7 @@ export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
             className="w-full py-3 rounded-xl font-semibold text-white transition-all"
             style={{ background: loading === 'yearly' ? '#1a3a6a' : '#1e4a8a' }}
           >
-            {loading === 'yearly' ? 'Redirecting...' : 'Yearly — $89.99 / year (save 17%)'}
+            {loading === 'yearly' ? 'Redirecting...' : 'Yearly — $89.99 / year (save 25%)'}
           </button>
         </div>
 

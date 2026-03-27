@@ -46,7 +46,7 @@ export default function Terms() {
 
                     <section>
                         <h2 className="text-lg font-semibold text-white mb-3">5. Fair Use Policy</h2>
-                        <p>Pro subscribers enjoy unlimited access to all features subject to our fair use policy. To prevent automated abuse, a daily usage limit of 50 credits applies (approximately 16 Research queries, 50 Verify queries, or 25 Explain queries per day). This limit is designed to prevent scripted or automated use and will not affect normal clinical workflows. Users who reach this limit will be notified and can resume usage the following day.</p>
+                        <p>Pro subscribers enjoy unlimited access to all features subject to our fair use policy. To prevent automated abuse, a daily usage limit of 100 credits applies (approximately 33 Research queries, 100 Verify queries, or 50 Explain queries per day). This limit is designed to prevent scripted or automated use and will not affect normal clinical workflows. Users who reach this limit will be notified and can resume usage the following day.</p>
                     </section>
 
                     <section>

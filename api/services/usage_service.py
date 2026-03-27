@@ -5,8 +5,8 @@ from sqlalchemy.orm import Session
 from api.models.sql_models import UserUsage
 
 # Credit 設定（僅後端，不暴露給前端）
-FREE_CREDIT_LIMIT = 15
-PRO_DAILY_SAFETY_CAP = 50
+FREE_CREDIT_LIMIT = 25
+PRO_DAILY_SAFETY_CAP = 100
 
 CREDIT_COSTS = {
     "research": 3,
