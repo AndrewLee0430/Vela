@@ -23,11 +23,12 @@ if _SENTRY_DSN:
         environment=os.getenv("FLY_APP_NAME", "development"),
         send_default_pii=False,
     )
-    print("✅ Sentry initialized")
+    logging.getLogger("vela").info("Sentry initialized")
 else:
-    print("⚠️  SENTRY_DSN not set, Sentry disabled")
+    logging.getLogger("vela").warning("SENTRY_DSN not set, Sentry disabled")
 
 import json
+import logging
 import time
 import uuid
 from pathlib import Path
@@ -43,6 +44,8 @@ from fastapi_clerk_auth import ClerkConfig, ClerkHTTPBearer, HTTPAuthorizationCr
 from openai import OpenAI, AsyncOpenAI
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
+
+logger = logging.getLogger("vela")
 
 from api.models.schemas import (
     ResearchRequest,
@@ -92,17 +95,24 @@ import time as _time
 from collections import defaultdict
 
 _rate_store: dict = defaultdict(list)
+_rate_store_last_cleanup = 0.0
 
 RATE_LIMITS = {
-    "/api/research":     (30, 60),
-    "/api/verify":       (30, 60),
-    "/api/consultation": (20, 60),
-    "/api/explain":      (20, 60),
-    "/api/feedback":     (10, 60),
+    "/api/research":              (30, 60),
+    "/api/verify":                (30, 60),
+    "/api/consultation":          (20, 60),
+    "/api/explain":               (20, 60),
+    "/api/feedback":              (10, 60),
+    "/api/checkout":              (5,  60),
+    "/api/checkout/dodo":         (5,  60),
+    "/api/webhook/dodo":          (30, 60),
+    "/api/webhooks/lemonsqueezy": (30, 60),
+    "/api/admin/costs":           (10, 60),
 }
 
 @app.middleware("http")
 async def rate_limit_middleware(request: Request, call_next):
+    global _rate_store_last_cleanup
     # TEST_MODE only skips auth, never rate limiting
     path = request.url.path
     if path not in RATE_LIMITS:
@@ -112,17 +122,24 @@ async def rate_limit_middleware(request: Request, call_next):
     limit, window = RATE_LIMITS[path]
     now = _time.time()
 
-    _rate_store[f"{ip}:{path}"] = [
-        t for t in _rate_store[f"{ip}:{path}"] if now - t < window
-    ]
+    # Purge stale keys every 5 minutes to prevent unbounded growth
+    if now - _rate_store_last_cleanup > 300:
+        max_window = max(w for _, w in RATE_LIMITS.values())
+        stale_keys = [k for k, v in _rate_store.items() if not v or now - v[-1] > max_window]
+        for k in stale_keys:
+            del _rate_store[k]
+        _rate_store_last_cleanup = now
 
-    if len(_rate_store[f"{ip}:{path}"]) >= limit:
+    key = f"{ip}:{path}"
+    _rate_store[key] = [t for t in _rate_store[key] if now - t < window]
+
+    if len(_rate_store[key]) >= limit:
         return JSONResponse(
             status_code=429,
             content={"detail": f"Rate limit exceeded. Max {limit} requests per {window}s."}
         )
 
-    _rate_store[f"{ip}:{path}"].append(now)
+    _rate_store[key].append(now)
     return await call_next(request)
 
 
@@ -130,7 +147,7 @@ async def rate_limit_middleware(request: Request, call_next):
 # CORS
 # ============================================================
 _raw_origins = os.getenv("ALLOWED_ORIGINS", "")
-ALLOWED_ORIGINS = [o.strip() for o in _raw_origins.split(",") if o.strip()] or ["*"]
+ALLOWED_ORIGINS = [o.strip() for o in _raw_origins.split(",") if o.strip()] or ["http://localhost:3000"]
 
 app.add_middleware(
     CORSMiddleware,
@@ -145,7 +162,7 @@ app.add_middleware(
 # Auth
 # ============================================================
 TEST_MODE = os.getenv("TEST_MODE", "false").lower() == "true"
-print(f"🔑 TEST_MODE = {TEST_MODE}")
+logger.info("TEST_MODE = %s", TEST_MODE)
 
 import httpx
 from jose import jwt as jose_jwt
@@ -168,7 +185,7 @@ if not TEST_MODE:
     clerk_guard = None  # 不再用 fastapi-clerk-auth
 else:
     clerk_guard = None
-    print("⚠️  TEST_MODE: Clerk authentication disabled")
+    logger.warning("TEST_MODE: Clerk authentication disabled")
 
 
 async def optional_auth(request: Request) -> Optional[HTTPAuthorizationCredentials]:
@@ -195,7 +212,7 @@ async def optional_auth(request: Request) -> Optional[HTTPAuthorizationCredentia
             decoded = payload
         return FakeCreds()
     except JWTError as e:
-        print(f"❌ JWT decode error: {e}")
+        logger.error("JWT decode error: %s", e)
         from fastapi import HTTPException
         raise HTTPException(status_code=403, detail="Invalid token")
 
@@ -251,7 +268,7 @@ async def audit_middleware(request: Request, call_next):
             request._receive = receive
 
         except Exception as e:
-            print(f"Middleware Error: {e}")
+            logger.error("Middleware Error: %s", e)
 
     response = await call_next(request)
     return response
@@ -326,7 +343,7 @@ async def research_query(
                         ))
                         db.commit()
                     except Exception as e:
-                        print(f"Audit Log Error: {e}")
+                        logger.error("Audit Log Error: %s", e)
                     yield f"data: {json.dumps({'type': 'citations', 'content': citations_data}, ensure_ascii=False)}\n\n"
                 elif event.type == StreamEventType.ERROR:
                     yield f"data: {json.dumps({'type': 'error', 'content': event.content}, ensure_ascii=False)}\n\n"
@@ -341,7 +358,7 @@ async def research_query(
                         ))
                         db.commit()
                     except Exception as e:
-                        print(f"History Save Error: {e}")
+                        logger.error("History Save Error: %s", e)
                     # 成功後扣減 credits
                     await deduct_credits(db, user_id, "research")
                     # Cost logging
@@ -352,7 +369,7 @@ async def research_query(
                     yield f"data: {json.dumps({'type': 'done', 'query_time_ms': elapsed_ms}, ensure_ascii=False)}\n\n"
 
         except Exception as e:
-            print(f"Research stream error: {type(e).__name__}")
+            logger.error("Research stream error: %s", type(e).__name__)
             yield f"data: {json.dumps({'type': 'error', 'content': 'An error occurred. Please try again.'}, ensure_ascii=False)}\n\n"
             yield f"data: {json.dumps({'type': 'done'}, ensure_ascii=False)}\n\n"
 
@@ -446,7 +463,7 @@ async def verify_drug_interaction(
                     drug_labels.append(corrected_labels[0])
 
     if not drug_labels:
-        print(f"⚠️ No FDA labels found for {body.drugs}, falling back to LLM")
+        logger.warning("No FDA labels found for %s, falling back to LLM", body.drugs)
         try:
             db.add(AuditLog(id=f"ver_{uuid.uuid4().hex[:16]}", user_id=user_id,
                 action="verify_fallback", query_content=f"LLM fallback: {body.drugs}", ip_address="0.0.0.0"))
@@ -459,11 +476,10 @@ Return valid JSON only:
 {"interactions":[{"drugs":["Drug1","Drug2"],"severity":"Major","description":"...","recommendation":"..."}],"summary":"...","risk_level":"Major"}"""
 
         try:
-            client_fb = AsyncOpenAI()
             fb_user_content = f"Analyze interaction between: {', '.join(body.drugs)}\nContext: {body.patient_context or 'None'}"
             if lang_instruction:
                 fb_user_content += f"\n\n{lang_instruction}"
-            fb = await client_fb.chat.completions.create(
+            fb = await openai_async_client.chat.completions.create(
                 model="gpt-4.1-mini",
                 messages=[
                     {"role": "system", "content": fallback_system},
@@ -489,7 +505,7 @@ Return valid JSON only:
                     question=f"Drugs: {', '.join(body.drugs)}", answer=fb_summary))
                 db.commit()
             except Exception as e:
-                print(f"DB Error: {e}"); db.rollback()
+                logger.error("DB Error: %s", e); db.rollback()
             return VerifyResponse(
                 drugs_analyzed=body.drugs,
                 interactions=fb_interactions,
@@ -498,14 +514,14 @@ Return valid JSON only:
                 query_time_ms=int((time.time()-start_time)*1000)
             )
         except Exception as e:
-            print(f"❌ Verify fallback failed: {e}")
+            logger.error("Verify fallback failed: %s", e)
             fallback_summary = "No FDA label data found. Please use specific drug names."
             try:
                 db.add(ChatHistory(user_id=user_id, session_type="verify",
                     question=f"Drugs: {', '.join(body.drugs)}", answer=fallback_summary))
                 db.commit()
             except Exception as e2:
-                print(f"DB Error: {e2}"); db.rollback()
+                logger.error("DB Error: %s", e2); db.rollback()
             return VerifyResponse(
                 drugs_analyzed=body.drugs, interactions=[],
                 summary=fallback_summary,
@@ -525,7 +541,6 @@ IMPORTANT: Respond in the SAME language as the patient_context or question. An e
 Return valid JSON only:
 {"interactions":[{"drugs":["Drug1","Drug2"],"severity":"Major","description":"...","recommendation":"..."}],"summary":"...","risk_level":"Major"}"""
 
-    client = AsyncOpenAI()
     interactions = []
     summary = ""
     risk_level = "Unknown"
@@ -538,7 +553,7 @@ Return valid JSON only:
 
     for attempt in range(2):
         try:
-            completion = await client.chat.completions.create(
+            completion = await openai_async_client.chat.completions.create(
                 model="gpt-4.1-mini",
                 messages=[
                     {"role": "system", "content": system_prompt},
@@ -564,7 +579,7 @@ Return valid JSON only:
             analysis_success = True
             break
         except Exception as e:
-            print(f"❌ LLM attempt {attempt+1} failed: {e}")
+            logger.error("LLM attempt %d failed: %s", attempt+1, e)
 
     if analysis_success:
         if interactions:
@@ -592,7 +607,7 @@ Return valid JSON only:
             question=f"Drugs: {', '.join(body.drugs)}", answer=summary))
         db.commit()
     except Exception as e:
-        print(f"DB Error: {e}"); db.rollback()
+        logger.error("DB Error: %s", e); db.rollback()
 
     if spelling_corrections:
         summary = "Note: " + "; ".join(spelling_corrections) + ". Please verify. " + summary
@@ -610,7 +625,7 @@ Return valid JSON only:
                 completion.usage.completion_tokens
             )
     except Exception as e:
-        print(f"Cost log error: {e}")
+        logger.error("Cost log error: %s", e)
 
     return VerifyResponse(
         drugs_analyzed=body.drugs, interactions=interactions,
@@ -666,7 +681,7 @@ async def explain_report(
                         ))
                         db.commit()
                     except Exception as e:
-                        print(f"History Save Error: {e}")
+                        logger.error("History Save Error: %s", e)
                     # 成功後扣減 credits
                     await deduct_credits(db, user_id, "explain")
                     # Cost logging
@@ -681,10 +696,10 @@ async def explain_report(
                                 usage.get("completion_tokens", 0)
                             )
                     except Exception as e:
-                        print(f"Cost log error: {e}")
+                        logger.error("Cost log error: %s", e)
                 yield f"data: {json.dumps(event, ensure_ascii=False)}\n\n"
         except Exception as e:
-            print(f"Explain stream error: {type(e).__name__}")
+            logger.error("Explain stream error: %s", type(e).__name__)
             yield f"data: {json.dumps({'type': 'error', 'content': 'An error occurred. Please try again.'})}\n\n"
 
     return StreamingResponse(
@@ -724,7 +739,7 @@ async def create_feedback(
         db.commit()
         return {"status": "success", "message": "Feedback recorded"}
     except Exception as e:
-        print(f"Feedback error: {type(e).__name__}")
+        logger.error("Feedback error: %s", type(e).__name__)
         return {"status": "error", "message": "Failed to save feedback. Please try again."}
 
 
@@ -767,7 +782,7 @@ async def create_checkout(
         )
         return {"url": url}
     except Exception as e:
-        print(f"❌ Checkout error: {e}")
+        logger.error("Checkout error: %s", type(e).__name__)
         return JSONResponse(status_code=500, content={"detail": "Checkout failed"})
 
 
@@ -806,7 +821,7 @@ async def create_dodo_checkout(
                 last = clerk_user.get("last_name") or ""
                 user_name = f"{first} {last}".strip() or user_email.split("@")[0]
     except Exception as e:
-        print(f"⚠️ Clerk user lookup error: {e}")
+        logger.warning("Clerk user lookup error: %s", type(e).__name__)
 
     if not user_email:
         return JSONResponse(status_code=422, content={"detail": "Could not retrieve user email"})
@@ -821,7 +836,7 @@ async def create_dodo_checkout(
         "return_url": "https://vela.an-tho.com/dashboard",
         "metadata": {"clerk_user_id": user_id},
     }
-    print(f"[Dodo] POST /subscriptions for product={body.product_id}")
+    logger.info("[Dodo] POST /subscriptions for product=%s", body.product_id)
     try:
         import httpx as _httpx
         async with _httpx.AsyncClient() as hc:
@@ -834,18 +849,18 @@ async def create_dodo_checkout(
                 json=payload,
                 timeout=15.0,
             )
-            print(f"[Dodo] Response status: {resp.status_code}")
+            logger.info("[Dodo] Response status: %d", resp.status_code)
             if resp.status_code not in (200, 201):
                 return JSONResponse(status_code=502, content={"detail": "Payment provider error"})
             data = resp.json()
             payment_link = data.get("payment_link") or data.get("url") or ""
             if not payment_link:
-                print("[Dodo] ❌ Missing payment_link in response")
+                logger.error("[Dodo] Missing payment_link in response")
                 return JSONResponse(status_code=502, content={"detail": "No payment link returned"})
-            print("[Dodo] ✅ payment_link generated")
+            logger.info("[Dodo] payment_link generated")
             return {"payment_link": payment_link}
     except Exception as e:
-        print(f"[Dodo] ❌ Exception: {type(e).__name__}")
+        logger.error("[Dodo] Exception: %s", type(e).__name__)
         return JSONResponse(status_code=500, content={"detail": "Checkout failed"})
 
 
@@ -853,6 +868,9 @@ async def create_dodo_checkout(
 async def lemonsqueezy_webhook(request: Request, db: Session = Depends(get_db)):
     # 驗證 webhook signature
     signing_secret = os.getenv("LEMON_SQUEEZY_SIGNING_SECRET", "")
+    if not signing_secret:
+        return JSONResponse(status_code=500, content={"detail": "Webhook signing secret not configured"})
+
     body_bytes = await request.body()
     signature = request.headers.get("X-Signature", "")
 
@@ -865,7 +883,7 @@ async def lemonsqueezy_webhook(request: Request, db: Session = Depends(get_db)):
     if not hmac.compare_digest(expected, signature):
         return JSONResponse(status_code=401, content={"detail": "Invalid signature"})
 
-    payload = await request.json()
+    payload = json.loads(body_bytes)
     event_name = payload.get("meta", {}).get("event_name", "")
     event_id = payload.get("meta", {}).get("uuid", "")
     custom_data = payload.get("meta", {}).get("custom_data", {})
@@ -934,7 +952,7 @@ async def dodo_webhook(request: Request, db: Session = Depends(get_db)):
     # https://www.standardwebhooks.com/
     dodo_secret = os.getenv("DODO_WEBHOOK_SECRET", "")
     if not dodo_secret:
-        print("[Dodo Webhook] ❌ DODO_WEBHOOK_SECRET not configured, rejecting")
+        logger.error("[Dodo Webhook] DODO_WEBHOOK_SECRET not configured, rejecting")
         return JSONResponse(status_code=500, content={"detail": "Webhook not configured"})
 
     webhook_id        = request.headers.get("webhook-id", "")
@@ -997,7 +1015,7 @@ async def dodo_webhook(request: Request, db: Session = Depends(get_db)):
     customer = payload.get("data", {}).get("customer") or payload.get("customer", {})
     customer_email = customer.get("email", "") if isinstance(customer, dict) else ""
     if not customer_email:
-        print(f"⚠️ Dodo webhook {event_type}: no customer email in payload")
+        logger.warning("Dodo webhook %s: no customer email in payload", event_type)
         return JSONResponse(status_code=422, content={"detail": "No customer email"})
 
     # Look up Clerk user by email
@@ -1017,10 +1035,10 @@ async def dodo_webhook(request: Request, db: Session = Depends(get_db)):
                 if users:
                     clerk_user_id = users[0].get("id")
     except Exception as e:
-        print(f"⚠️ Clerk lookup error: {type(e).__name__}")
+        logger.warning("Clerk lookup error: %s", type(e).__name__)
 
     if not clerk_user_id:
-        print(f"⚠️ Dodo webhook {event_type}: Clerk user not found")
+        logger.warning("Dodo webhook %s: Clerk user not found", event_type)
         return JSONResponse(status_code=422, content={"detail": "Clerk user not found"})
 
     # Update UserUsage
@@ -1031,10 +1049,10 @@ async def dodo_webhook(request: Request, db: Session = Depends(get_db)):
 
     if event_type == "subscription.active":
         usage.plan_type = "pro"
-        print(f"✅ Dodo: upgraded to pro")
+        logger.info("Dodo: upgraded to pro")
     elif event_type in ("subscription.cancelled", "subscription.expired"):
         usage.plan_type = "free"
-        print(f"✅ Dodo: downgraded to free ({event_type})")
+        logger.info("Dodo: downgraded to free (%s)", event_type)
 
     db.add(WebhookEvent(event_id=f"dodo_{event_id}", event_type=event_type))
     db.commit()
@@ -1077,7 +1095,7 @@ async def user_portal(
         url = await get_customer_portal_url(usage.lemon_subscription_id)
         return {"url": url}
     except Exception as e:
-        print(f"❌ Portal error: {e}")
+        logger.error("Portal error: %s", e)
         return JSONResponse(status_code=500, content={"detail": "Portal URL failed"})
 
 
@@ -1180,25 +1198,26 @@ if static_path.exists():
     # Catch-all: serve Next.js static export pages (e.g. /explain → static/explain.html)
     @app.get("/{path:path}")
     async def serve_nextjs_pages(path: str):
-        # Block sensitive dotfiles and directories
-        BLOCKED = {'.env', '.env.local', '.env.production', '.env.development',
-                   '.git', '.git/config', '.git/HEAD', '.gitignore',
-                   '.dockerignore', '.DS_Store', 'CLAUDE.md'}
-        path_lower = path.lower().strip('/')
-        if path_lower in BLOCKED or path_lower.startswith(('.env', '.git/')):
-            return JSONResponse(status_code=404, content={"detail": "Not found"})
+        resolved_root = static_path.resolve()
+
+        def _safe(p: Path) -> bool:
+            """Reject any path that escapes the static directory."""
+            try:
+                return str(p.resolve()).startswith(str(resolved_root))
+            except (OSError, ValueError):
+                return False
 
         # Try exact file (CSS/JS/images/etc.)
         file = static_path / path
-        if file.is_file():
+        if _safe(file) and file.is_file():
             return FileResponse(file)
         # Try .html (Next.js static export: pages/explain.tsx → out/explain.html)
         html_file = static_path / f"{path}.html"
-        if html_file.is_file():
+        if _safe(html_file) and html_file.is_file():
             return FileResponse(html_file)
         # Try directory index
         index_file = static_path / path / "index.html"
-        if index_file.is_file():
+        if _safe(index_file) and index_file.is_file():
             return FileResponse(index_file)
         # Fallback to index.html for client-side routing
         return FileResponse(static_path / "index.html")
