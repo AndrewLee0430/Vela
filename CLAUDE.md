@@ -108,6 +108,75 @@ The guard chain (`api/middleware/guards.py`) orders checks cheapest-first:
 - **TEST_MODE**: Set `TEST_MODE=true` to bypass Clerk JWT validation during development. Does NOT bypass rate limiting.
 - **Data flywheel**: `UserFeedback` table (PostgreSQL) collects ratings for future fine-tuning; `is_vectorized` flag tracks which feedback has been incorporated
 - **Audit log IDs**: Use `uuid4().hex[:16]` prefix format (e.g., `res_<hex>`, `ver_<hex>`, `fb_<hex>`)
+- **Logging**: All server-side output uses `logging.getLogger("vela")` — never `print()`. Levels: `logger.info` (normal flow), `logger.warning` (degraded but non-fatal), `logger.error` (failures).
+- **Shared AsyncOpenAI client**: One module-level `openai_async_client = AsyncOpenAI()` instance reused across all endpoints — never instantiate per-request.
+
+### Security Hardening Patterns
+
+This section documents every hardening decision applied to Vela. Reuse these patterns in future products.
+
+#### Rate Limiting (in-memory, per-IP)
+`api/server.py` — `RATE_LIMITS` dict maps path → `(limit, window_seconds)`. The middleware:
+- Covers **all** sensitive endpoints: feature APIs, checkout, webhooks, admin
+- Defaults: feature endpoints 20–30 req/min, checkout 5/min, webhooks 30/min, admin 10/min
+- Uses `defaultdict(list)` storing timestamps; slides the window each request
+- **Cleanup**: every 5 minutes, keys whose last timestamp is older than `max_window` are deleted to prevent unbounded memory growth
+- `TEST_MODE` never bypasses rate limiting (auth-only bypass)
+
+#### CORS
+- `ALLOWED_ORIGINS` env var — comma-separated list (e.g., `https://vela.an-tho.com`)
+- Fallback when unset: `["http://localhost:3000"]` — **never `["*"]`** (wildcard + `allow_credentials=True` is a security violation)
+- Methods: `GET`, `POST` only. Headers: `Authorization`, `Content-Type` only.
+
+#### Webhook Signature Verification
+
+**Dodo Payments (Standard Webhooks spec)**:
+- Reject immediately if `DODO_WEBHOOK_SECRET` is unset (500, not silently accept)
+- Three headers: `webhook-id`, `webhook-timestamp`, `webhook-signature`
+- Signed payload: `f"{webhook_id}.{webhook_timestamp}.{raw_body}"`
+- HMAC-SHA256 with base64-decoded secret (strip `whsec_` prefix first), digest is base64-encoded
+- Replay protection: reject if `webhook-timestamp` is older than 5 minutes
+- Idempotency: check `WebhookEvent` table before processing, insert after
+
+**LemonSqueezy**:
+- Reject immediately if `LEMON_SQUEEZY_SIGNING_SECRET` is empty
+- Single `X-Signature` header, HMAC-SHA256 hex digest
+- Parse body from already-read `body_bytes` (not `await request.json()` again — body stream is consumed)
+
+#### Path Traversal Prevention
+When serving static files via FastAPI `FileResponse`, always validate the resolved path:
+```python
+resolved_root = Path("./static").resolve()
+
+def _safe(p: Path) -> bool:
+    try:
+        return str(p.resolve()).startswith(str(resolved_root))
+    except (OSError, ValueError):
+        return False
+```
+Blocklist approaches (checking for `..`) are insufficient — always use `resolve()` + `startswith`.
+
+#### Error Message Sanitization
+- Never expose `str(e)` in API responses — leak internal details
+- Return generic messages: `{"detail": "Internal server error"}`
+- Log full error internally with `logger.error()`
+
+#### JWT / JWKS
+- Cache JWKS with a 6-hour TTL (`_jwks_cache_ts`) — prevents hammering Clerk on every request, handles key rotation without restart
+- Verify with `python-jose`, `algorithms=["RS256"]`, `verify_aud=False` (Clerk doesn't set aud)
+
+#### Input Guard Chain (`api/middleware/guards.py`)
+Ordered cheapest-first to minimize LLM cost:
+1. Input length check (5k char limit)
+2. Regex injection scan (EN/ZH/JA/AR + Base64 decode)
+3. LLM indirect injection scan on retrieved content
+4. Intent classification via GPT-4.1-mini (blocks non-medical)
+5. PHI detection (Taiwan ID, Japan My Number, US SSN/MRN)
+
+#### Admin Endpoint Protection
+- `ADMIN_USER_ID` from env var — never hardcoded
+- Rate-limited to 10 req/min
+- Returns 403 if caller's `sub` ≠ `ADMIN_USER_ID`
 
 ### Database Schema (`api/database/sql_models.py`)
 - `AuditLog`: Every API call logged (user_id, action, query, IP)
@@ -144,6 +213,15 @@ See `.env.example`. Required:
 - `FDA_API_KEY`, `PUBMED_API_KEY`, `NCBI_EMAIL` — Data source APIs
 - `NEXT_PUBLIC_POSTHOG_KEY` + `NEXT_PUBLIC_POSTHOG_HOST` — Analytics
 
+### Deployment — Fly.io
+
+- Two machines, rolling deploy strategy (`flyctl deploy`)
+- Frontend built at Docker build time: `npm run build` → `/app/out` → `COPY --from=frontend-builder /app/out ./static`
+- `NEXT_PUBLIC_*` vars are **build-time** → go in `fly.toml [build.args]`, not `[env]`
+- Runtime secrets (`OPENAI_API_KEY`, `SENTRY_DSN`, etc.) → `fly secrets set KEY=value`
+- FastAPI serves the Next.js static export via a catch-all file handler (`serve_nextjs_pages`)
+- `FLY_APP_NAME` env var is injected automatically — used as Sentry `environment`
+
 ## Frontend Notes
 
 Pages live in `pages/` (Next.js pages router). Components in `components/`. The `@/` path alias maps to the project root.
@@ -161,3 +239,68 @@ Streaming responses use `@microsoft/fetch-event-source` on the frontend, `sse-st
 | `components/MarkdownRenderer.tsx` | Renders streamed LLM output with syntax highlighting. |
 | `components/UpgradeModal.tsx` | Upgrade CTA modal with plan comparison and Dodo Payments checkout integration. |
 | `components/FeedbackBar.tsx` | Thumbs up/down + text feedback, posts to `/api/feedback`. |
+
+### Frontend Anti-Flash Patterns
+
+**PlanBadge (plan state)**: Read `localStorage` synchronously in `useState` initializer to avoid "Upgrade" flash on navigation:
+```typescript
+const [plan, setPlan] = useState<'free' | 'pro' | null>(() => {
+    if (typeof window === 'undefined') return null;
+    return readCache(); // localStorage read
+});
+```
+Return `null` while loading — render nothing until state is known.
+
+**OnboardingOverlay (spotlight)**: SVG mask with a transparent cutout over the highlighted element:
+```svg
+<mask id="spotlight-mask">
+  <rect width="100%" height="100%" fill="white" />
+  <rect x={...} y={...} width={...} height={...} rx="12" fill="black" />
+</mask>
+```
+Track `hasSeenOnboarding` in `localStorage` so it shows only once.
+
+### SEO Baseline
+
+- `public/robots.txt` — allow all crawlers, points to `/sitemap.xml`
+- `public/sitemap.xml` — static pages: `/`, `/terms`, `/privacy`, `/refund`
+- Meta tags in `pages/_app.tsx` via `next/head` — **not** next-seo (v7 removed `DefaultSeo`/`NextSeo`, now JSON-LD only)
+- `og:image` at `public/og-image.png` (1200×630)
+
+## Reusable Stack for New Products
+
+This is the full proven stack from Vela. Copy as a starting point:
+
+| Layer | Choice | Notes |
+|---|---|---|
+| Frontend | Next.js 15 (pages router, `output: 'export'`) | Static export — no SSR needed for most SaaS |
+| Backend | FastAPI + uvicorn | Python async, easy streaming with `sse-starlette` |
+| Auth | Clerk | JWT via JWKS, `TEST_MODE` for local dev |
+| Database | PostgreSQL + SQLAlchemy | Fly Postgres or Supabase |
+| Payments | Dodo Payments | Standard Webhooks spec, `whsec_` HMAC-SHA256 |
+| Error Monitoring | Sentry | `FastApiIntegration` backend, `withSentryConfig` frontend |
+| Analytics | PostHog | `NEXT_PUBLIC_POSTHOG_KEY` env var |
+| Hosting | Fly.io | 2 machines, rolling deploy, `fly secrets` for runtime env |
+| AI | OpenAI GPT-4.1 + GPT-4.1-mini | 4.1 for generation, 4.1-mini for classification/extraction |
+| Streaming | `@microsoft/fetch-event-source` (FE) + `sse-starlette` (BE) | Token-by-token SSE |
+
+### Checklist When Starting a New Product
+
+Security baseline (copy from Vela):
+- [ ] Rate limiting middleware covering all endpoints
+- [ ] CORS with explicit `ALLOWED_ORIGINS` env var (fallback to localhost only)
+- [ ] Webhook signature verification with mandatory secret check
+- [ ] Path traversal prevention for any file serving
+- [ ] Generic error messages (never expose `str(e)`)
+- [ ] `logging` module instead of `print()`
+- [ ] JWKS cache with TTL
+- [ ] Audit log table (user_id, action, query, IP)
+- [ ] `WebhookEvent` idempotency table
+- [ ] `ADMIN_USER_ID` from env var
+
+Frontend baseline:
+- [ ] `PlanBadge` with synchronous localStorage read to prevent flash
+- [ ] SEO: robots.txt + sitemap.xml + meta tags in `_app.tsx`
+- [ ] `OnboardingOverlay` shown once via localStorage flag
+- [ ] `Navbar` with active page highlight
+- [ ] `UpgradeModal` wired to checkout endpoint
