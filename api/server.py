@@ -102,8 +102,7 @@ RATE_LIMITS = {
 
 @app.middleware("http")
 async def rate_limit_middleware(request: Request, call_next):
-    if TEST_MODE:
-        return await call_next(request)
+    # TEST_MODE only skips auth, never rate limiting
     path = request.url.path
     if path not in RATE_LIMITS:
         return await call_next(request)
@@ -926,42 +925,49 @@ async def lemonsqueezy_webhook(request: Request, db: Session = Depends(get_db)):
 async def dodo_webhook(request: Request, db: Session = Depends(get_db)):
     body_bytes = await request.body()
 
-    # Signature verification — Standard Webhooks spec
+    # Signature verification — Standard Webhooks spec (MANDATORY)
     # https://www.standardwebhooks.com/
     dodo_secret = os.getenv("DODO_WEBHOOK_SECRET", "")
+    if not dodo_secret:
+        print("[Dodo Webhook] ❌ DODO_WEBHOOK_SECRET not configured, rejecting")
+        return JSONResponse(status_code=500, content={"detail": "Webhook not configured"})
+
     webhook_id        = request.headers.get("webhook-id", "")
     webhook_timestamp = request.headers.get("webhook-timestamp", "")
     webhook_signature = request.headers.get("webhook-signature", "")
 
-    print(f"[Dodo Webhook] secret_present={bool(dodo_secret)} headers={list(request.headers.keys())}")
+    if not webhook_id or not webhook_timestamp or not webhook_signature:
+        return JSONResponse(status_code=401, content={"detail": "Missing signature headers"})
 
-    if dodo_secret and (not webhook_id or not webhook_timestamp or not webhook_signature):
-        print(f"[Dodo Webhook] ❌ Missing sig headers: id={bool(webhook_id)} ts={bool(webhook_timestamp)} sig={bool(webhook_signature)}")
-        return JSONResponse(status_code=401, content={"detail": "Missing signature"})
+    # Replay protection: reject timestamps older than 5 minutes
+    try:
+        ts = int(webhook_timestamp)
+        if abs(time.time() - ts) > 300:
+            return JSONResponse(status_code=401, content={"detail": "Timestamp too old"})
+    except ValueError:
+        return JSONResponse(status_code=401, content={"detail": "Invalid timestamp"})
 
-    if dodo_secret:
-        import base64
-        # Strip "whsec_" prefix and base64-decode the secret
-        raw_secret = dodo_secret[len("whsec_"):] if dodo_secret.startswith("whsec_") else dodo_secret
-        secret_bytes = base64.b64decode(raw_secret)
+    import base64
+    # Strip "whsec_" prefix and base64-decode the secret
+    raw_secret = dodo_secret[len("whsec_"):] if dodo_secret.startswith("whsec_") else dodo_secret
+    secret_bytes = base64.b64decode(raw_secret)
 
-        # Signed payload: {webhook-id}.{webhook-timestamp}.{raw_body}
-        signed_payload = f"{webhook_id}.{webhook_timestamp}.".encode() + body_bytes
+    # Signed payload: {webhook-id}.{webhook-timestamp}.{raw_body}
+    signed_payload = f"{webhook_id}.{webhook_timestamp}.".encode() + body_bytes
 
-        # HMAC-SHA256, base64-encoded
-        expected_sig = base64.b64encode(
-            hmac.new(secret_bytes, signed_payload, hashlib.sha256).digest()
-        ).decode()
+    # HMAC-SHA256, base64-encoded
+    expected_sig = base64.b64encode(
+        hmac.new(secret_bytes, signed_payload, hashlib.sha256).digest()
+    ).decode()
 
-        # webhook-signature may be space-separated "v1,<sig>" entries
-        received_sigs = [
-            part.split(",", 1)[1]
-            for part in webhook_signature.split(" ")
-            if part.startswith("v1,")
-        ]
-        if not received_sigs or not any(hmac.compare_digest(expected_sig, s) for s in received_sigs):
-            print(f"[Dodo Webhook] ❌ Signature mismatch. expected={expected_sig[:16]}…")
-            return JSONResponse(status_code=401, content={"detail": "Invalid signature"})
+    # webhook-signature may be space-separated "v1,<sig>" entries
+    received_sigs = [
+        part.split(",", 1)[1]
+        for part in webhook_signature.split(" ")
+        if part.startswith("v1,")
+    ]
+    if not received_sigs or not any(hmac.compare_digest(expected_sig, s) for s in received_sigs):
+        return JSONResponse(status_code=401, content={"detail": "Invalid signature"})
 
     import json as _json
     payload = _json.loads(body_bytes)
