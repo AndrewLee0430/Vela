@@ -4,6 +4,7 @@ FastAPI 後端，整合 Research、Verify、Explain、合規防護與數據飛�
 """
 
 from dotenv import load_dotenv
+import logging
 import os
 load_dotenv()
 
@@ -28,7 +29,6 @@ else:
     logging.getLogger("vela").warning("SENTRY_DSN not set, Sentry disabled")
 
 import json
-import logging
 import time
 import uuid
 from pathlib import Path
