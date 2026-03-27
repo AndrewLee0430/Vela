@@ -29,6 +29,7 @@ else:
 
 import json
 import time
+import uuid
 from pathlib import Path
 from contextlib import asynccontextmanager
 from typing import Optional
@@ -151,13 +152,16 @@ from jose import jwt as jose_jwt
 from jose.exceptions import JWTError
 
 _jwks_cache = None
+_jwks_cache_ts: float = 0
+_JWKS_TTL = 6 * 3600  # 6 hours
 
 async def get_jwks():
-    global _jwks_cache
-    if _jwks_cache is None:
+    global _jwks_cache, _jwks_cache_ts
+    if _jwks_cache is None or (time.time() - _jwks_cache_ts) > _JWKS_TTL:
         async with httpx.AsyncClient() as client:
             r = await client.get(os.getenv("CLERK_JWKS_URL"))
             _jwks_cache = r.json()
+            _jwks_cache_ts = time.time()
     return _jwks_cache
 
 if not TEST_MODE:
@@ -313,7 +317,7 @@ async def research_query(
                     citations_data = [c.model_dump() for c in event.content]
                     try:
                         db.add(AuditLog(
-                            id=f"res_{int(time.time()*1000)}",
+                            id=f"res_{uuid.uuid4().hex[:16]}",
                             user_id=user_id,
                             action="research",
                             query_content=PHIDetector.sanitize_for_log(body.question),
@@ -348,7 +352,8 @@ async def research_query(
                     yield f"data: {json.dumps({'type': 'done', 'query_time_ms': elapsed_ms}, ensure_ascii=False)}\n\n"
 
         except Exception as e:
-            yield f"data: {json.dumps({'type': 'error', 'content': str(e)}, ensure_ascii=False)}\n\n"
+            print(f"Research stream error: {type(e).__name__}")
+            yield f"data: {json.dumps({'type': 'error', 'content': 'An error occurred. Please try again.'}, ensure_ascii=False)}\n\n"
             yield f"data: {json.dumps({'type': 'done'}, ensure_ascii=False)}\n\n"
 
     return StreamingResponse(
@@ -443,21 +448,22 @@ async def verify_drug_interaction(
     if not drug_labels:
         print(f"⚠️ No FDA labels found for {body.drugs}, falling back to LLM")
         try:
-            db.add(AuditLog(id=f"ver_{int(time.time()*1000)}", user_id=user_id,
+            db.add(AuditLog(id=f"ver_{uuid.uuid4().hex[:16]}", user_id=user_id,
                 action="verify_fallback", query_content=f"LLM fallback: {body.drugs}", ip_address="0.0.0.0"))
             db.commit()
-        except: pass
+        except Exception:
+            pass
 
         fallback_system = """You are a clinical pharmacologist. Analyze drug interactions based on pharmacological knowledge.
 Return valid JSON only:
 {"interactions":[{"drugs":["Drug1","Drug2"],"severity":"Major","description":"...","recommendation":"..."}],"summary":"...","risk_level":"Major"}"""
 
         try:
-            client_fb = OpenAI()
+            client_fb = AsyncOpenAI()
             fb_user_content = f"Analyze interaction between: {', '.join(body.drugs)}\nContext: {body.patient_context or 'None'}"
             if lang_instruction:
                 fb_user_content += f"\n\n{lang_instruction}"
-            fb = client_fb.chat.completions.create(
+            fb = await client_fb.chat.completions.create(
                 model="gpt-4.1-mini",
                 messages=[
                     {"role": "system", "content": fallback_system},
@@ -519,7 +525,7 @@ IMPORTANT: Respond in the SAME language as the patient_context or question. An e
 Return valid JSON only:
 {"interactions":[{"drugs":["Drug1","Drug2"],"severity":"Major","description":"...","recommendation":"..."}],"summary":"...","risk_level":"Major"}"""
 
-    client = OpenAI()
+    client = AsyncOpenAI()
     interactions = []
     summary = ""
     risk_level = "Unknown"
@@ -532,7 +538,7 @@ Return valid JSON only:
 
     for attempt in range(2):
         try:
-            completion = client.chat.completions.create(
+            completion = await client.chat.completions.create(
                 model="gpt-4.1-mini",
                 messages=[
                     {"role": "system", "content": system_prompt},
@@ -580,7 +586,7 @@ Return valid JSON only:
     elapsed_ms = int((time.time()-start_time)*1000)
 
     try:
-        db.add(AuditLog(id=f"ver_{int(time.time()*1000)}", user_id=user_id,
+        db.add(AuditLog(id=f"ver_{uuid.uuid4().hex[:16]}", user_id=user_id,
             action="verify", query_content=f"Checked: {body.drugs}", ip_address="0.0.0.0"))
         db.add(ChatHistory(user_id=user_id, session_type="verify",
             question=f"Drugs: {', '.join(body.drugs)}", answer=summary))
@@ -678,7 +684,8 @@ async def explain_report(
                         print(f"Cost log error: {e}")
                 yield f"data: {json.dumps(event, ensure_ascii=False)}\n\n"
         except Exception as e:
-            yield f"data: {json.dumps({'type': 'error', 'content': str(e)})}\n\n"
+            print(f"Explain stream error: {type(e).__name__}")
+            yield f"data: {json.dumps({'type': 'error', 'content': 'An error occurred. Please try again.'})}\n\n"
 
     return StreamingResponse(
         event_stream(),
@@ -706,7 +713,7 @@ async def create_feedback(
     user_id = get_user_id(creds)
     try:
         db.add(UserFeedback(
-            id=f"fb_{int(time.time()*1000)}",
+            id=f"fb_{uuid.uuid4().hex[:16]}",
             user_id=user_id,
             query=feedback.query,
             response=feedback.response,
@@ -717,8 +724,8 @@ async def create_feedback(
         db.commit()
         return {"status": "success", "message": "Feedback recorded"}
     except Exception as e:
-        print(f"Feedback Error: {e}")
-        return {"status": "error", "message": str(e)}
+        print(f"Feedback error: {type(e).__name__}")
+        return {"status": "error", "message": "Failed to save feedback. Please try again."}
 
 
 # ============================================================
@@ -814,8 +821,7 @@ async def create_dodo_checkout(
         "return_url": "https://vela.an-tho.com/dashboard",
         "metadata": {"clerk_user_id": user_id},
     }
-    print(f"[Dodo] POST /subscriptions payload: {payload}")
-    print(f"[Dodo] API key present: {bool(dodo_api_key)}, length: {len(dodo_api_key)}")
+    print(f"[Dodo] POST /subscriptions for product={body.product_id}")
     try:
         import httpx as _httpx
         async with _httpx.AsyncClient() as hc:
@@ -829,18 +835,17 @@ async def create_dodo_checkout(
                 timeout=15.0,
             )
             print(f"[Dodo] Response status: {resp.status_code}")
-            print(f"[Dodo] Response body: {resp.text}")
             if resp.status_code not in (200, 201):
                 return JSONResponse(status_code=502, content={"detail": "Payment provider error"})
             data = resp.json()
             payment_link = data.get("payment_link") or data.get("url") or ""
             if not payment_link:
-                print(f"[Dodo] ❌ Missing payment_link in response: {data}")
+                print("[Dodo] ❌ Missing payment_link in response")
                 return JSONResponse(status_code=502, content={"detail": "No payment link returned"})
-            print(f"[Dodo] ✅ payment_link: {payment_link}")
+            print("[Dodo] ✅ payment_link generated")
             return {"payment_link": payment_link}
     except Exception as e:
-        print(f"[Dodo] ❌ Exception: {type(e).__name__}: {e}")
+        print(f"[Dodo] ❌ Exception: {type(e).__name__}")
         return JSONResponse(status_code=500, content={"detail": "Checkout failed"})
 
 
@@ -974,7 +979,7 @@ async def dodo_webhook(request: Request, db: Session = Depends(get_db)):
     event_type = payload.get("type", "")
     event_id = payload.get("data", {}).get("id") or payload.get("id", "")
     if not event_id:
-        event_id = f"dodo_{int(time.time()*1000)}"
+        event_id = f"dodo_{uuid.uuid4().hex[:16]}"
 
     # Idempotency check
     from api.models.sql_models import WebhookEvent, UserUsage
@@ -1012,10 +1017,10 @@ async def dodo_webhook(request: Request, db: Session = Depends(get_db)):
                 if users:
                     clerk_user_id = users[0].get("id")
     except Exception as e:
-        print(f"⚠️ Clerk lookup error for {customer_email}: {e}")
+        print(f"⚠️ Clerk lookup error: {type(e).__name__}")
 
     if not clerk_user_id:
-        print(f"⚠️ Dodo webhook {event_type}: no Clerk user for email {customer_email}")
+        print(f"⚠️ Dodo webhook {event_type}: Clerk user not found")
         return JSONResponse(status_code=422, content={"detail": "Clerk user not found"})
 
     # Update UserUsage
@@ -1026,10 +1031,10 @@ async def dodo_webhook(request: Request, db: Session = Depends(get_db)):
 
     if event_type == "subscription.active":
         usage.plan_type = "pro"
-        print(f"✅ Dodo: upgraded {clerk_user_id} to pro")
+        print(f"✅ Dodo: upgraded to pro")
     elif event_type in ("subscription.cancelled", "subscription.expired"):
         usage.plan_type = "free"
-        print(f"✅ Dodo: downgraded {clerk_user_id} to free ({event_type})")
+        print(f"✅ Dodo: downgraded to free ({event_type})")
 
     db.add(WebhookEvent(event_id=f"dodo_{event_id}", event_type=event_type))
     db.commit()
@@ -1087,8 +1092,8 @@ async def admin_costs(
     user_id = get_user_id(creds)
 
     # 僅限管理員
-    ADMIN_USER_ID = "user_3B939OrkarbJWpfTT8nCi9kDJ1B"
-    if user_id != ADMIN_USER_ID:
+    admin_id = os.getenv("ADMIN_USER_ID", "")
+    if not admin_id or user_id != admin_id:
         return JSONResponse(status_code=403, content={"detail": "Forbidden"})
 
     from sqlalchemy import func, cast, Date
@@ -1151,7 +1156,7 @@ async def api_status(creds: Optional[HTTPAuthorizationCredentials] = Depends(opt
         from api.database.vector_store import get_vector_store
         vector_store_status = get_vector_store().get_stats()
     except Exception as e:
-        vector_store_status = {"error": str(e)}
+        vector_store_status = {"error": "unavailable"}
 
     return {
         "status": "healthy",
