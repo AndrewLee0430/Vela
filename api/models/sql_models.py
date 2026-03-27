@@ -7,11 +7,12 @@ class AuditLog(Base):
     
     id = Column(String, primary_key=True)
     timestamp = Column(DateTime, default=datetime.utcnow)
-    user_id = Column(String, index=True) 
-    action = Column(String) 
+    user_id = Column(String, index=True)
+    action = Column(String)
     query_content = Column(Text)
-    resource_ids = Column(JSON) 
+    resource_ids = Column(JSON)
     ip_address = Column(String)
+    extra_data = Column(JSON, nullable=True)  # LLM Judge scores + other metadata
 
 class ChatHistory(Base):
     __tablename__ = "chat_history"

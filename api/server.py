@@ -28,6 +28,7 @@ if _SENTRY_DSN:
 else:
     logging.getLogger("vela").warning("SENTRY_DSN not set, Sentry disabled")
 
+import asyncio
 import json
 import time
 import uuid
@@ -62,9 +63,10 @@ from api.data_sources.fda import FDAClient
 from api.data_sources.fda_cached import fda_client_cached
 from api.middleware.phi_handler import PHIDetector
 from api.middleware.guards import run_guards
-from api.database.sql_db import get_db, engine, Base
+from api.database.sql_db import get_db, engine, Base, SessionLocal
 from api.models.sql_models import AuditLog, UserFeedback, ChatHistory
 from api.services.usage_service import check_credits, deduct_credits
+from api.utils.llm_judge import LLMJudge, Source as JudgeSource
 
 from api.models.explain_schemas import ExplainRequest
 from api.services.explain_service import run_explain_pipeline
@@ -235,6 +237,34 @@ retriever = HybridRetriever(
 generator = AnswerGenerator(model="gpt-4.1")
 fda_client = FDAClient()
 openai_async_client = AsyncOpenAI()
+_judge = LLMJudge(client=openai_async_client)
+
+
+async def _run_judge_background(audit_id: str, query: str, answer: str, documents: list):
+    """Background task: evaluate answer quality and write scores to AuditLog.extra_data."""
+    try:
+        sources = [
+            JudgeSource(source_id=getattr(d, "source_id", str(i)), content=getattr(d, "content", ""))
+            for i, d in enumerate(documents)
+        ]
+        evaluation = await _judge.evaluate(query, answer, sources)
+        db = SessionLocal()
+        try:
+            log = db.query(AuditLog).filter(AuditLog.id == audit_id).first()
+            if log:
+                log.extra_data = {
+                    "llm_judge": {
+                        "scores":          evaluation["scores"],
+                        "weighted_score":  evaluation["weighted_score"],
+                        "quality_level":   evaluation["quality_level"],
+                        "has_hallucination": evaluation.get("has_hallucination", False),
+                    }
+                }
+                db.commit()
+        finally:
+            db.close()
+    except Exception as e:
+        logger.error("[LLMJudge] background task failed: %s", e)
 
 
 # ============================================================
@@ -297,6 +327,7 @@ async def research_query(
 
     async def event_stream():
         full_answer = ""
+        audit_id = None
         try:
             passed, guard_error = await run_guards(body.question)
             if not passed:
@@ -332,9 +363,10 @@ async def research_query(
                     yield f"data: {json.dumps({'type': 'fallback', 'content': event.content}, ensure_ascii=False)}\n\n"
                 elif event.type == StreamEventType.CITATIONS:
                     citations_data = [c.model_dump() for c in event.content]
+                    audit_id = f"res_{uuid.uuid4().hex[:16]}"
                     try:
                         db.add(AuditLog(
-                            id=f"res_{uuid.uuid4().hex[:16]}",
+                            id=audit_id,
                             user_id=user_id,
                             action="research",
                             query_content=PHIDetector.sanitize_for_log(body.question),
@@ -366,6 +398,11 @@ async def research_query(
                         from api.services.cost_tracker import log_api_cost
                         u = usage_out[0]
                         await log_api_cost(db, user_id, "research", u["model"], u["prompt_tokens"], u["completion_tokens"])
+                    # Fire LLM Judge in background — does not block SSE stream
+                    if audit_id and full_answer:
+                        asyncio.create_task(
+                            _run_judge_background(audit_id, body.question, full_answer, documents)
+                        )
                     yield f"data: {json.dumps({'type': 'done', 'query_time_ms': elapsed_ms}, ensure_ascii=False)}\n\n"
 
         except Exception as e:
