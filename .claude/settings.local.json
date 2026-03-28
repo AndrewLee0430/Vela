@@ -43,7 +43,13 @@
       "Bash(where flyctl:*)",
       "Bash(where fly:*)",
       "Read(//c/Users/andre/projects/Vela/$HOME/.fly/**)",
-      "Bash(\"$HOME/.fly/bin/flyctl\" deploy:*)"
+      "Bash(\"$HOME/.fly/bin/flyctl\" deploy:*)",
+      "Bash(PYTHONIOENCODING=utf-8 python -c \"import ast; ast.parse\\(open\\('api/server.py', encoding='utf-8'\\).read\\(\\)\\); print\\('OK'\\)\")",
+      "Bash(PYTHONIOENCODING=utf-8 python -c \"import ast; ast.parse\\(open\\(''api/server.py'', encoding=''utf-8''\\).read\\(\\)\\); print\\(''server.py OK''\\)\")",
+      "Bash(PYTHONIOENCODING=utf-8 python -c \"import ast; ast.parse\\(open\\(''api/utils/llm_judge.py'', encoding=''utf-8''\\).read\\(\\)\\); print\\(''llm_judge.py OK''\\)\")",
+      "Bash(PYTHONIOENCODING=utf-8 python -c \"import ast; ast.parse\\(open\\(''api/models/sql_models.py'', encoding=''utf-8''\\).read\\(\\)\\); print\\(''sql_models.py OK''\\)\")",
+      "Bash(wait:*)",
+      "Bash(PYTHONIOENCODING=utf-8 python -c \"import ast; ast.parse\\(open\\('api/server.py', encoding='utf-8'\\).read\\(\\)\\); ast.parse\\(open\\('api/database/vector_store.py', encoding='utf-8'\\).read\\(\\)\\); print\\('OK'\\)\")"
     ]
   }
 }
