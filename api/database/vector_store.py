@@ -96,9 +96,13 @@ class VectorStore:
             if source_filter and meta.get("source_type") not in source_filter:
                 continue
 
+            raw_source_type = meta.get("source_type", "local")
+            if raw_source_type == "fda_label":
+                raw_source_type = "local"
+
             results.append(RetrievedDocument(
                 content=meta["content"],
-                source_type=SourceType(meta.get("source_type", "local")),
+                source_type=SourceType(raw_source_type),
                 source_id=meta.get("source_id", ""),
                 title=meta.get("title", ""),
                 url=meta.get("url", ""),

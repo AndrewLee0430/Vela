@@ -261,6 +261,8 @@ async def _run_judge_background(audit_id: str, query: str, answer: str, document
                     }
                 }
                 db.commit()
+                logger.info("[LLMJudge] completed: audit_id=%s score=%.1f quality=%s",
+                            audit_id, evaluation["weighted_score"], evaluation["quality_level"])
         finally:
             db.close()
     except Exception as e:
