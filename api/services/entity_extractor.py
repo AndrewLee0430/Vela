@@ -17,7 +17,7 @@ ENTITY_EXTRACTION_PROMPT = """Extract medical entities from the user input. Retu
 
 Output format:
 {
-  "input_language": "<ISO 639-1 code, e.g. en, zh, ja, ko, es, de>",
+  "input_language": "<language code, e.g. en, zh-TW, zh-CN, ja, ko, es, de>",
   "lab_tests": [
     {"original": "<name as in input>", "english": "<English name>", "value": "<number or null>", "unit": "<unit or null>", "reference_range": "<range or null>"}
   ],

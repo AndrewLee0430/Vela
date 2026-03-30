@@ -163,6 +163,36 @@ async def call_explain(client: httpx.AsyncClient, report_text: str) -> str:
     return full_answer.strip()
 
 
+async def call_explain_identified(client: httpx.AsyncClient, report_text: str) -> list[dict]:
+    """Call /api/explain and return the 'identified' event items."""
+    identified_items = []
+    try:
+        response = await client.post(
+            f"{BASE_URL}/api/explain",
+            json={"report_text": report_text},
+            headers=HEADERS,
+            timeout=90.0
+        )
+        response.raise_for_status()
+        for line in response.text.split("\n"):
+            line = line.strip()
+            if not line.startswith("data:"):
+                continue
+            raw = line[5:].strip()
+            if not raw or raw == "[DONE]":
+                continue
+            try:
+                event = json.loads(raw)
+                if event.get("type") == "identified":
+                    identified_items = event.get("items", [])
+                    break
+            except json.JSONDecodeError:
+                pass
+    except Exception as e:
+        return [{"error": str(e)}]
+    return identified_items
+
+
 # ─────────────────────────────────────────────
 # LLM Judge
 # ─────────────────────────────────────────────
@@ -564,9 +594,9 @@ async def run_tests(smoke_only: bool = False):
     stats       = {"PASS": 0, "WARN": 0, "FAIL": 0, "ERROR": 0}
     by_category: dict[str, list] = {
         "research": [], "verify": [], "explain": [],
-        "guard": [], "multilingual": [], "document": []
+        "guard": [], "multilingual": [], "document": [], "identify": []
     }
-    ALL_CATEGORIES = {"research", "verify", "explain", "guard", "multilingual", "document"}
+    ALL_CATEGORIES = {"research", "verify", "explain", "guard", "multilingual", "document", "identify"}
 
     total_start = time.time()
 
@@ -586,6 +616,64 @@ async def run_tests(smoke_only: bool = False):
                 answer = await call_explain(client, case["report_text"])
             elif cat == "document":
                 answer = "[SKIPPED] document endpoint removed"
+            elif cat == "identify":
+                drug = case["input_drug"]
+                report = f"Patient is taking {drug} 100mg daily."
+                items = await call_explain_identified(client, report)
+                # Check if any identified item matches expected_standard
+                expected = case["expected_standard"].lower()
+                alt = case.get("alt_standard", "").lower()
+                matched = False
+                for item in items:
+                    std = item.get("standard", "").lower()
+                    if std == expected or (alt and std == alt):
+                        matched = True
+                        break
+                answer = json.dumps(items, ensure_ascii=False) if items else "[]"
+                # Build eval_result for identify
+                if any("error" in item for item in items):
+                    eval_result = {
+                        "passed_concepts": [], "missing_concepts": [f"identify {drug} as {case['expected_standard']}"],
+                        "forbidden_found": [], "all_pass": False, "score": 0,
+                        "reasoning": f"API error: {items}"
+                    }
+                elif matched:
+                    eval_result = {
+                        "passed_concepts": [f"identified {drug} as {case['expected_standard']}"],
+                        "missing_concepts": [], "forbidden_found": [], "all_pass": True, "score": 100,
+                        "reasoning": f"Correctly identified {drug}"
+                    }
+                else:
+                    found_standards = [item.get("standard", "?") for item in items]
+                    eval_result = {
+                        "passed_concepts": [], "missing_concepts": [f"identify {drug} as {case['expected_standard']}"],
+                        "forbidden_found": [], "all_pass": False, "score": 30,
+                        "reasoning": f"Expected {case['expected_standard']}, got {found_standards}"
+                    }
+
+                api_elapsed = round(time.time() - start, 1)
+                status = "PASS" if matched else "FAIL"
+                stats[status] += 1
+                if cat not in by_category:
+                    by_category[cat] = []
+                by_category[cat].append(status)
+
+                color = GREEN if status == "PASS" else RED
+                print(f"{color}{status}{RESET}  ({api_elapsed}s)")
+                if status == "FAIL":
+                    print(f"     ❌ Expected: {case['expected_standard']}, Got: {[item.get('standard', '?') for item in items]}")
+
+                results.append({
+                    "id":             case_id,
+                    "category":       cat,
+                    "status":         status,
+                    "api_elapsed_s":  api_elapsed,
+                    "total_elapsed_s": api_elapsed,
+                    "eval":           eval_result,
+                    "answer_preview": answer[:400]
+                })
+                await asyncio.sleep(1.0)
+                continue
             elif cat == "guard":
                 answer = await call_research(client, case["query"])
             elif cat == "multilingual":
@@ -699,6 +787,27 @@ async def run_tests(smoke_only: bool = False):
         cat_total = len(statuses)
         cat_rate  = round(cat_pass / cat_total * 100, 1) if cat_total else 0
         print(f"  {cat.capitalize():12s} {cat_pass}/{cat_total} ({cat_rate}%)")
+
+    # Identify sub-group summary (when identify tests are present)
+    identify_results = [r for r in results if r["category"] == "identify"]
+    if identify_results:
+        print(f"\n{BOLD}  Identify Sub-Groups:{RESET}")
+        groups = {
+            "English typos (I01-I03)":  {"ids": {"I01","I02","I03"}, "target": "100%"},
+            "Japanese (I04-I06)":       {"ids": {"I04","I05","I06"}, "target": "80%+"},
+            "Thai (I07-I09)":           {"ids": {"I07","I08","I09"}, "target": "80%+"},
+            "Korean (I10-I12)":         {"ids": {"I10","I11","I12"}, "target": "80%+"},
+            "Chinese (I13-I15)":        {"ids": {"I13","I14","I15"}, "target": "80%+"},
+            "Stress tests (I16-I18)":   {"ids": {"I16","I17","I18"}, "target": "known limitation"},
+        }
+        for label, info in groups.items():
+            group_results = [r for r in identify_results if r["id"] in info["ids"]]
+            g_pass = sum(1 for r in group_results if r["status"] == "PASS")
+            g_total = len(group_results)
+            g_rate = round(g_pass / g_total * 100, 1) if g_total else 0
+            color = GREEN if g_pass == g_total else (YELLOW if g_rate >= 60 else RED)
+            note = f" (target: {info['target']})" if info["target"] == "known limitation" else ""
+            print(f"  {label:28s} {color}{g_pass}/{g_total} ({g_rate}%){RESET}{note}")
 
     # Save JSON results
     timestamp   = datetime.now().strftime("%Y%m%d_%H%M%S")

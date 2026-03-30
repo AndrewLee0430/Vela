@@ -107,6 +107,7 @@ RATE_LIMITS = {
     "/api/consultation":          (20, 60),
     "/api/explain":               (20, 60),
     "/api/feedback":              (10, 60),
+    "/api/explain/feedback":      (10, 60),
     "/api/checkout":              (5,  60),
     "/api/checkout/dodo":         (5,  60),
     "/api/webhook/dodo":          (30, 60),
@@ -576,7 +577,7 @@ Return valid JSON only:
 Classify severity as: Critical, Major, Moderate, Minor.
 For each interaction include: mechanism, dose context, warning signs, monitoring parameters, safer alternative.
 
-Supported languages: English, 繁體中文, 日本語, 한국어, Español, Français, Deutsch, Italiano, Português, ภาษาไทย.
+Supported languages: English, 繁體中文 (zh-TW), 简体中文 (zh-CN), 日本語, 한국어, Español, Français, Deutsch, Italiano, Português, ภาษาไทย.
 IMPORTANT: Respond in the SAME language as the patient_context or question. An explicit language instruction will be appended — follow it exactly.
 
 Return valid JSON only:
@@ -748,6 +749,36 @@ async def explain_report(
         media_type="text/event-stream",
         headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
     )
+
+
+# ── Explain: identification correction feedback ───────────────
+class IdentifyCorrectionRequest(BaseModel):
+    original_input: str
+    identified_as: str
+    correct_name: str
+
+@app.post("/api/explain/feedback")
+async def explain_identify_feedback(
+    body: IdentifyCorrectionRequest,
+    creds: Optional[HTTPAuthorizationCredentials] = Depends(optional_auth),
+    db: Session = Depends(get_db),
+):
+    user_id = get_user_id(creds)
+    try:
+        db.add(UserFeedback(
+            id=f"fb_{uuid.uuid4().hex[:16]}",
+            user_id=user_id,
+            query=body.original_input,
+            response=body.identified_as,
+            rating=2,
+            feedback_text=body.correct_name,
+            category="identify_correction",
+        ))
+        db.commit()
+        return {"status": "success", "message": "Correction recorded"}
+    except Exception as e:
+        logger.error("Explain identify feedback error: %s", type(e).__name__)
+        return {"status": "error", "message": "Failed to save correction. Please try again."}
 
 
 # ============================================================

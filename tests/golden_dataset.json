@@ -1135,5 +1135,133 @@
       "responds entirely in English when input is Portuguese"
     ],
     "min_score": 75
+  },
+  {
+    "id": "I01",
+    "category": "identify",
+    "input_drug": "Aspirn",
+    "expected_standard": "Aspirin",
+    "smoke": true
+  },
+  {
+    "id": "I02",
+    "category": "identify",
+    "input_drug": "Metformine",
+    "expected_standard": "Metformin",
+    "smoke": true
+  },
+  {
+    "id": "I03",
+    "category": "identify",
+    "input_drug": "Wafrarin",
+    "expected_standard": "Warfarin",
+    "smoke": true
+  },
+  {
+    "id": "I04",
+    "category": "identify",
+    "input_drug": "アスピリン",
+    "expected_standard": "Aspirin",
+    "smoke": true
+  },
+  {
+    "id": "I05",
+    "category": "identify",
+    "input_drug": "メトホルミン",
+    "expected_standard": "Metformin",
+    "smoke": true
+  },
+  {
+    "id": "I06",
+    "category": "identify",
+    "input_drug": "ワルファリン",
+    "expected_standard": "Warfarin",
+    "smoke": true
+  },
+  {
+    "id": "I07",
+    "category": "identify",
+    "input_drug": "แอสไพริน",
+    "expected_standard": "Aspirin",
+    "smoke": true
+  },
+  {
+    "id": "I08",
+    "category": "identify",
+    "input_drug": "เมทฟอร์มิน",
+    "expected_standard": "Metformin",
+    "smoke": true
+  },
+  {
+    "id": "I09",
+    "category": "identify",
+    "input_drug": "วาร์ฟาริน",
+    "expected_standard": "Warfarin",
+    "smoke": true
+  },
+  {
+    "id": "I10",
+    "category": "identify",
+    "input_drug": "아스피린",
+    "expected_standard": "Aspirin",
+    "smoke": true
+  },
+  {
+    "id": "I11",
+    "category": "identify",
+    "input_drug": "메트포르민",
+    "expected_standard": "Metformin",
+    "smoke": true
+  },
+  {
+    "id": "I12",
+    "category": "identify",
+    "input_drug": "와파린",
+    "expected_standard": "Warfarin",
+    "smoke": true
+  },
+  {
+    "id": "I13",
+    "category": "identify",
+    "input_drug": "阿斯匹靈",
+    "expected_standard": "Aspirin",
+    "smoke": true
+  },
+  {
+    "id": "I14",
+    "category": "identify",
+    "input_drug": "二甲雙胍",
+    "expected_standard": "Metformin",
+    "smoke": true
+  },
+  {
+    "id": "I15",
+    "category": "identify",
+    "input_drug": "華法林",
+    "expected_standard": "Warfarin",
+    "smoke": true
+  },
+  {
+    "id": "I16",
+    "category": "identify",
+    "input_drug": "Acetylsalicylic acid",
+    "expected_standard": "Aspirin",
+    "smoke": false
+  },
+  {
+    "id": "I17",
+    "category": "identify",
+    "input_drug": "普拿疼",
+    "expected_standard": "Acetaminophen",
+    "alt_standard": "Paracetamol",
+    "smoke": true
+  },
+  {
+    "id": "I18",
+    "category": "identify",
+    "input_drug": "タイレノール",
+    "expected_standard": "Acetaminophen",
+    "alt_standard": "Paracetamol",
+    "smoke": true
   }
 ]

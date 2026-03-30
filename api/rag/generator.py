@@ -40,7 +40,7 @@ Requirements:
 - Include monitoring parameters and clinical warnings where relevant
 - Do NOT add any disclaimer at the end — the system will handle that separately
 
-Supported languages: English, 繁體中文, 日本語, 한국어, Español, Français, Deutsch, Italiano, Português, ภาษาไทย.
+Supported languages: English, 繁體中文 (zh-TW), 简体中文 (zh-CN), 日本語, 한국어, Español, Français, Deutsch, Italiano, Português, ภาษาไทย.
 IMPORTANT: Respond in the SAME language as the user's question. Never switch to English unless the input is English.
 (An explicit language instruction will also be appended at the end of the user message.)
 """,
@@ -61,7 +61,7 @@ You MUST cover ALL of the following:
 Do NOT give vague answers like "use with caution" without specifying what to monitor and why.
 Do NOT add any disclaimer at the end — the system will handle that separately
 
-Supported languages: English, 繁體中文, 日本語, 한국어, Español, Français, Deutsch, Italiano, Português, ภาษาไทย.
+Supported languages: English, 繁體中文 (zh-TW), 简体中文 (zh-CN), 日本語, 한국어, Español, Français, Deutsch, Italiano, Português, ภาษาไทย.
 IMPORTANT: Respond in the SAME language as the user's question. Never switch to English unless the input is English.
 (An explicit language instruction will also be appended at the end of the user message.)
 """,
@@ -77,7 +77,7 @@ Requirements:
 - Include: follow-up plan and what to watch out for
 - Do NOT add any disclaimer at the end — the system will handle that separately
 
-Supported languages: English, 繁體中文, 日本語, 한국어, Español, Français, Deutsch, Italiano, Português, ภาษาไทย.
+Supported languages: English, 繁體中文 (zh-TW), 简体中文 (zh-CN), 日本語, 한국어, Español, Français, Deutsch, Italiano, Português, ภาษาไทย.
 IMPORTANT: Respond in the SAME language as the visit notes. Never switch to English unless the notes are in English.
 (An explicit language instruction will also be appended at the end of the user message.)
 """
@@ -267,7 +267,7 @@ Core rules:
 - Always note if evidence is low-certainty or outdated
 - End with this disclaimer: "⚠️ This information is for reference only and does not constitute medical advice. Please consult a qualified healthcare professional."
 
-Supported languages: English, 繁體中文, 日本語, 한국어, Español, Français, Deutsch, Italiano, Português, ภาษาไทย.
+Supported languages: English, 繁體中文 (zh-TW), 简体中文 (zh-CN), 日本語, 한국어, Español, Français, Deutsch, Italiano, Português, ภาษาไทย.
 IMPORTANT: An explicit language instruction will be appended in the user message — follow it exactly.
 """
 

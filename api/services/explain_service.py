@@ -18,6 +18,7 @@ from api.services.entity_extractor import extract_entities
 from api.data_sources.loinc_client import loinc_client
 from api.data_sources.rxnorm_client import rxnorm_client
 from api.data_sources.medlineplus_client import medlineplus_client
+from api.utils.language_detector import detect_language
 
 logger = logging.getLogger(__name__)
 
@@ -30,7 +31,7 @@ STRICT RULES:
 2. When reference data is provided in the context, cite it inline: [Source: LOINC], [Source: MedlinePlus], [Source: FDA]
 3. If the report includes reference ranges, use them to explain whether values are normal, low, or high.
 4. If reference ranges are NOT provided, note: "Reference ranges may vary by laboratory and region."
-5. LANGUAGE RULE: Always respond in the SAME language as the user's input. If input is Chinese, respond in Chinese. If English, respond in English. If mixed, use the dominant language.
+5. LANGUAGE RULE: Always respond in the SAME language as the user's input. If input is Traditional Chinese (繁體中文), respond in Traditional Chinese. If input is Simplified Chinese (简体中文), respond in Simplified Chinese. If English, respond in English. If mixed, use the dominant language.
 6. Use a warm, reassuring tone. Explain what the numbers mean, not what the patient should do.
 7. Structure your response with clear sections for: Lab Results, Medications (if any), Diagnoses (if any).
 8. Do NOT reproduce full article text from MedlinePlus. Use only brief summaries.
@@ -244,6 +245,55 @@ async def run_explain_pipeline(
     yield {
         "type": "sources",
         "content": [s.model_dump() for s in sources]
+    }
+
+    # ── Identification confirmation events ────────────────────────────
+    detected_lang = detect_language(report_text)
+
+    # Build "identified" items from entities (medications + lab tests)
+    identified_items = []
+    for med in entities.medications:
+        identified_items.append({
+            "input": med.original,
+            "standard": med.english,
+            "source": "RxNorm",
+        })
+    for lab in entities.lab_tests:
+        identified_items.append({
+            "input": lab.original,
+            "standard": lab.english,
+            "source": "LOINC",
+        })
+    for vs in entities.vital_signs:
+        identified_items.append({
+            "input": vs.original,
+            "standard": vs.english,
+            "source": "LOINC",
+        })
+
+    yield {
+        "type": "identified",
+        "language": detected_lang,
+        "items": identified_items,
+    }
+
+    # Build "checking" items from actual Stage 2 source lookups
+    checking_items = []
+    for s in sources:
+        # Extract a clean name from the label (strip prefix like "RxNorm ", "LOINC ", "MedlinePlus: ")
+        name = s.label
+        for prefix in ("RxNorm ", "LOINC ", "MedlinePlus: "):
+            if name.startswith(prefix):
+                name = name[len(prefix):]
+                break
+        checking_items.append({
+            "name": name,
+            "source": s.source_type.value,
+        })
+
+    yield {
+        "type": "checking",
+        "items": checking_items,
     }
 
     # Stage 3: Stream explanation
