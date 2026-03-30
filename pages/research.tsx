@@ -168,8 +168,10 @@ function ResearchForm() {
                     <p className="text-sm mt-1" style={{ color: "rgba(255,255,255,0.5)" }}>Evidence-based answers from PubMed 36M+ and official FDA drug data.</p>
                 </div>
                 {(answer || question) && (
-                    <button onClick={handleReset} className="text-sm text-gray-400 hover:text-white transition-colors mt-1">
-                        New search
+                    <button onClick={handleReset} className="text-sm font-medium transition-colors mt-1" style={{ color: '#ff8e6e' }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#ffffff'; }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = '#ff8e6e'; }}>
+                        New Research
                     </button>
                 )}
             </div>
@@ -285,7 +287,7 @@ function ResearchForm() {
                         </form>
 
                         <p className="text-xs mt-3 text-center" style={{ color: "rgba(255,255,255,0.35)" }}>
-                            ⚠️ For reference only. Not a substitute for professional clinical judgment.
+                            ⚠️ For informational purposes only. Always verify with clinical guidelines and consult a qualified professional.
                         </p>
                     </div>
                 </div>

@@ -140,11 +140,31 @@ function ExplainForm() {
         } finally { isRunningRef.current = false; }
     }
 
+    const handleReset = () => {
+        setReportText(''); setOutput(''); setSources([]); setError(''); setStatusMsg('');
+    };
+
+    const sampleQueries = [
+        "eGFR 45 mL/min (ref >60), HbA1c 7.8%, Metformin 1000mg BID",
+        "Sodium 138, Potassium 3.3 (LOW), Creatinine 1.5 (HIGH), Glucose 142 (HIGH)",
+        "TSH 12.5 mIU/L (ref 0.4-4.0)",
+        "Atorvastatin 40mg, Metoprolol 25mg, Aspirin 81mg, Ramipril 5mg",
+    ];
+
     return (
         <div className="container mx-auto px-4 py-8 max-w-3xl">
-            <div className="mb-6">
-                <h1 className="text-2xl font-bold tracking-tight mb-1" style={{ color: "#ffffff" }}>Understand Your Medical Report</h1>
-                <p className="text-sm" style={{ color: "rgba(255,255,255,0.5)" }}>Paste any lab results, diagnosis, or medical document — explained in plain language with verified sources.</p>
+            <div className="flex justify-between items-start mb-6">
+                <div>
+                    <h1 className="text-2xl font-bold tracking-tight mb-1" style={{ color: "#ffffff" }}>Understand Your Medical Report</h1>
+                    <p className="text-sm" style={{ color: "rgba(255,255,255,0.5)" }}>Paste any lab results, diagnosis, or medical document — explained in plain language with verified sources.</p>
+                </div>
+                {(output || reportText) && (
+                    <button onClick={handleReset} className="text-sm font-medium transition-colors mt-1" style={{ color: '#4ade80' }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#ffffff'; }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = '#4ade80'; }}>
+                        New Explanation
+                    </button>
+                )}
             </div>
             {error && (
                 <div className="mb-5 p-3 rounded-lg border text-sm" style={{ background: "rgba(252,129,129,0.12)", borderColor: "rgba(252,129,129,0.3)", color: "#fc8181" }}>{error}</div>
@@ -155,6 +175,33 @@ function ExplainForm() {
                     <label htmlFor="report" className="block text-sm font-medium" style={{ color: "rgba(255,255,255,0.8)" }}>
                         Medical Report / Lab Results
                     </label>
+
+                    {/* Sample query tags */}
+                    {!output && (
+                        <div className="flex flex-wrap gap-2 pb-1">
+                            {sampleQueries.map((s, i) => (
+                                <button
+                                    key={i}
+                                    type="button"
+                                    onClick={() => setReportText(s)}
+                                    disabled={loading}
+                                    className="px-3 py-1.5 text-xs rounded-full disabled:opacity-50 transition-all duration-200"
+                                    style={{ background: "rgba(104,211,145,0.08)", border: "1px solid rgba(104,211,145,0.3)", color: "rgba(104,211,145,0.85)" }}
+                                    onMouseEnter={e => {
+                                        (e.currentTarget as HTMLElement).style.borderColor = "rgba(104,211,145,0.6)";
+                                        (e.currentTarget as HTMLElement).style.background = "rgba(104,211,145,0.18)";
+                                    }}
+                                    onMouseLeave={e => {
+                                        (e.currentTarget as HTMLElement).style.borderColor = "rgba(104,211,145,0.3)";
+                                        (e.currentTarget as HTMLElement).style.background = "rgba(104,211,145,0.08)";
+                                    }}
+                                >
+                                    {s}
+                                </button>
+                            ))}
+                        </div>
+                    )}
+
                     <textarea
                         id="report" required rows={12} value={reportText}
                         onChange={(e) => setReportText(e.target.value)} disabled={loading}
@@ -177,6 +224,10 @@ function ExplainForm() {
                 </button>
             </form>
 
+            <p className="text-xs mt-3 text-center" style={{ color: "rgba(255,255,255,0.35)" }}>
+                ⚠️ Explanations may contain errors. Always consult your doctor for medical advice.
+            </p>
+
             {sources.length > 0 && (
                 <div className="mt-5 rounded-xl p-5" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}>
                     <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Verified Sources</p>
@@ -197,7 +248,7 @@ function ExplainForm() {
                     </div>
                     <div className="rounded-lg p-3 mb-5 border text-sm" style={{ background: 'rgba(251,191,36,0.06)', borderColor: 'rgba(251,191,36,0.3)' }}>
                         <p style={{ color: "rgba(251,191,36,0.85)" }}>
-                            ⚠️ <strong>For reference only.</strong> This explanation does not replace professional medical advice.
+                            ⚠️ Explanations may contain errors. Always consult your doctor for medical advice.
                         </p>
                     </div>
                     <div 

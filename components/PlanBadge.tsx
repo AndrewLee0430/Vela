@@ -86,8 +86,8 @@ export default function PlanBadge({ onUpgrade }: PlanBadgeProps) {
     if (plan === 'pro') {
         return (
             <span
-                className="text-base font-bold px-2 py-0.5 rounded mr-2"
-                style={{ color: '#ffb347', letterSpacing: '0.12em' }}
+                className="text-base font-bold px-2 py-0.5 rounded mr-2 bg-gradient-to-r from-[#ff8e6e] to-[#fbbf24] bg-clip-text text-transparent"
+                style={{ letterSpacing: '0.12em' }}
             >
                 PRO
             </span>

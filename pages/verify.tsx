@@ -135,8 +135,10 @@ function VerifyForm() {
                     <p className="text-sm mt-1" style={{ color: "rgba(255,255,255,0.5)" }}>FDA Official · Evidence-based</p>
                 </div>
                 {(result || drugs) && !loading && (
-                    <button onClick={handleReset} className="text-sm text-gray-400 hover:text-white transition-colors">
-                        New check
+                    <button onClick={handleReset} className="text-sm font-medium transition-colors" style={{ color: '#38bdf8' }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#ffffff'; }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = '#38bdf8'; }}>
+                        New Check
                     </button>
                 )}
             </div>
@@ -155,7 +157,7 @@ function VerifyForm() {
                     <form onSubmit={handleSubmit} className="space-y-5">
                         <div className="space-y-3">
                             <label className="block text-sm font-medium" style={{ color: "rgba(255,255,255,0.8)" }}>
-                                Drug list <span className="font-normal" style={{ color: "rgba(255,255,255,0.4)" }}>(one per line, or click to add)</span>
+                                Drug list <span className="font-normal" style={{ color: "rgba(255,255,255,0.5)" }}>(one per line, or click to add)</span>
                             </label>
                             {/* Quick-add chips */}
                             <div className="flex flex-wrap gap-2">
@@ -249,14 +251,14 @@ function VerifyForm() {
                             {/* Interactions */}
                             {result.interactions.length > 0 && (
                                 <div>
-                                    <p className="text-xs font-semibold text-slate-200 uppercase tracking-wider mb-3">
+                                    <p className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: "rgba(255,255,255,0.5)" }}>
                                         Interactions ({result.interactions.length})
                                     </p>
                                     <div className="space-y-3">
                                         {result.interactions.map((interaction, idx) => (
                                             <div key={idx} className={`border-l-4 rounded-lg p-4 ${getSeverityStyle(interaction.severity)}`}>
                                                 <div className="flex justify-between items-start mb-2">
-                                                    <p className="font-semibold text-sm text-slate-400">
+                                                    <p className="font-semibold text-sm" style={{ color: "rgba(255,255,255,0.5)" }}>
                                                         {interaction.drug_pair[0]} ↔ {interaction.drug_pair[1]}
                                                     </p>
                                                     <span className={`px-2 py-0.5 rounded text-xs font-medium ml-2 flex-shrink-0 ${getSeverityBadge(interaction.severity)}`}>
@@ -293,6 +295,10 @@ function VerifyForm() {
                     )}
                 </div>
             </div>
+
+            <p className="text-xs mt-4 text-center" style={{ color: "rgba(255,255,255,0.35)" }}>
+                ⚠️ For reference only. Drug interaction data is from FDA labels — consult a pharmacist or physician before acting.
+            </p>
         <UpgradeModal isOpen={showUpgradeModal} onClose={() => setShowUpgradeModal(false)} />
             {showDailyCapToast && (
                 <Toast

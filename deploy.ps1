@@ -19,7 +19,7 @@ $status | ForEach-Object { Write-Host $_ }
 
 $stopped = $status |
     Where-Object { $_ -match "\bstopped\b" } |
-    ForEach-Object { if ($_ -match "^(\S+)") { $Matches[1] } }
+    ForEach-Object { if ($_ -match "^\S+\s+(\S+)") { $Matches[1] } }
 
 if (-not $stopped) {
     Write-Host "`nAll machines running." -ForegroundColor Green
