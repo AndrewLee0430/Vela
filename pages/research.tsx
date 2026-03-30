@@ -168,10 +168,11 @@ function ResearchForm() {
                     <p className="text-sm mt-1" style={{ color: "rgba(255,255,255,0.5)" }}>Evidence-based answers from PubMed 36M+ and official FDA drug data.</p>
                 </div>
                 {(answer || question) && (
-                    <button onClick={handleReset} className="text-sm font-medium transition-colors mt-1" style={{ color: '#ff8e6e' }}
-                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#ffffff'; }}
-                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = '#ff8e6e'; }}>
-                        New Research
+                    <button onClick={handleReset} className="text-sm font-medium px-3 py-1 rounded-lg transition-all mt-1"
+                        style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.3)', color: 'rgba(255,255,255,0.7)' }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.1)'; }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}>
+                        + New
                     </button>
                 )}
             </div>
@@ -286,9 +287,6 @@ function ResearchForm() {
                             </button>
                         </form>
 
-                        <p className="text-xs mt-3 text-center" style={{ color: "rgba(255,255,255,0.35)" }}>
-                            ⚠️ For informational purposes only. Always verify with clinical guidelines and consult a qualified professional.
-                        </p>
                     </div>
                 </div>
 
@@ -299,6 +297,28 @@ function ResearchForm() {
                     </div>
                 </div>
             </div>
+
+            <p className="text-xs mt-4 text-center" style={{ color: "rgba(255,255,255,0.35)" }}>
+                ⚠️ For informational purposes only. Always verify with clinical guidelines and consult a qualified professional.
+            </p>
+
+            <div className="mt-8 border-t pt-6 space-y-2 text-xs" style={{ borderColor: "rgba(255,142,110,0.35)", color: "rgba(255,255,255,0.4)" }}>
+                <p className="font-medium" style={{ color: "rgba(255,255,255,0.6)" }}>Data Sources & Attribution</p>
+                <p>
+                    Research results powered by{' '}
+                    <a href="https://pubmed.ncbi.nlm.nih.gov" target="_blank" rel="noopener noreferrer" className="underline opacity-70 hover:opacity-100">PubMed®</a>
+                    {' '}(National Library of Medicine).
+                </p>
+                <p>
+                    Drug data from FDA official drug labels via{' '}
+                    <a href="https://dailymed.nlm.nih.gov" target="_blank" rel="noopener noreferrer" className="underline opacity-70 hover:opacity-100">DailyMed</a>
+                    {' '}(FDA/NLM).
+                </p>
+                <p>
+                    Vela is not affiliated with or endorsed by NLM, FDA, or any U.S. government agency.
+                </p>
+            </div>
+
         <UpgradeModal isOpen={showUpgradeModal} onClose={() => setShowUpgradeModal(false)} />
             {showDailyCapToast && (
                 <Toast

@@ -50,7 +50,8 @@
       "Bash(PYTHONIOENCODING=utf-8 python -c \"import ast; ast.parse\\(open\\(''api/models/sql_models.py'', encoding=''utf-8''\\).read\\(\\)\\); print\\(''sql_models.py OK''\\)\")",
       "Bash(wait:*)",
       "Bash(PYTHONIOENCODING=utf-8 python -c \"import ast; ast.parse\\(open\\('api/server.py', encoding='utf-8'\\).read\\(\\)\\); ast.parse\\(open\\('api/database/vector_store.py', encoding='utf-8'\\).read\\(\\)\\); print\\('OK'\\)\")",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(powershell -ExecutionPolicy Bypass -File deploy.ps1)"
     ]
   }
 }

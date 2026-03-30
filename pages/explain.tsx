@@ -156,16 +156,25 @@ function ExplainForm() {
             <div className="flex justify-between items-start mb-6">
                 <div>
                     <h1 className="text-2xl font-bold tracking-tight mb-1" style={{ color: "#ffffff" }}>Understand Your Medical Report</h1>
-                    <p className="text-sm" style={{ color: "rgba(255,255,255,0.5)" }}>Paste any lab results, diagnosis, or medical document — explained in plain language with verified sources.</p>
+                    <p className="text-sm mt-1" style={{ color: "rgba(255,255,255,0.5)" }}>Evidence-based · Verified Sources</p>
                 </div>
                 {(output || reportText) && (
-                    <button onClick={handleReset} className="text-sm font-medium transition-colors mt-1" style={{ color: '#4ade80' }}
-                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#ffffff'; }}
-                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = '#4ade80'; }}>
-                        New Explanation
+                    <button onClick={handleReset} className="text-sm font-medium px-3 py-1 rounded-lg transition-all mt-1"
+                        style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.3)', color: 'rgba(255,255,255,0.7)' }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.1)'; }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}>
+                        + New
                     </button>
                 )}
             </div>
+
+            {/* Privacy notice */}
+            <div className="rounded-lg p-4 mb-6 border" style={{ background: 'rgba(74,222,128,0.05)', borderColor: 'rgba(74,222,128,0.3)' }}>
+                <p className="text-sm" style={{ color: 'rgba(74,222,128,0.9)' }}>
+                    <strong>Privacy:</strong> Paste lab results or medical documents only — no personal names or identifying information. Your report is processed securely and not stored.
+                </p>
+            </div>
+
             {error && (
                 <div className="mb-5 p-3 rounded-lg border text-sm" style={{ background: "rgba(252,129,129,0.12)", borderColor: "rgba(252,129,129,0.3)", color: "#fc8181" }}>{error}</div>
             )}

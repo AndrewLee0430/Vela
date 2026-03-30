@@ -135,10 +135,11 @@ function VerifyForm() {
                     <p className="text-sm mt-1" style={{ color: "rgba(255,255,255,0.5)" }}>FDA Official · Evidence-based</p>
                 </div>
                 {(result || drugs) && !loading && (
-                    <button onClick={handleReset} className="text-sm font-medium transition-colors" style={{ color: '#38bdf8' }}
-                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#ffffff'; }}
-                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = '#38bdf8'; }}>
-                        New Check
+                    <button onClick={handleReset} className="text-sm font-medium px-3 py-1 rounded-lg transition-all"
+                        style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.3)', color: 'rgba(255,255,255,0.7)' }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.1)'; }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}>
+                        + New
                     </button>
                 )}
             </div>
@@ -299,6 +300,24 @@ function VerifyForm() {
             <p className="text-xs mt-4 text-center" style={{ color: "rgba(255,255,255,0.35)" }}>
                 ⚠️ For reference only. Drug interaction data is from FDA labels — consult a pharmacist or physician before acting.
             </p>
+
+            <div className="mt-8 border-t pt-6 space-y-2 text-xs" style={{ borderColor: "rgba(99,179,237,0.35)", color: "rgba(255,255,255,0.4)" }}>
+                <p className="font-medium" style={{ color: "rgba(255,255,255,0.6)" }}>Data Sources & Attribution</p>
+                <p>
+                    Drug interaction data sourced from FDA official drug labels via{' '}
+                    <a href="https://dailymed.nlm.nih.gov" target="_blank" rel="noopener noreferrer" className="underline opacity-70 hover:opacity-100">DailyMed</a>
+                    {' '}(FDA/NLM).
+                </p>
+                <p>
+                    Drug name standardization powered by{' '}
+                    <a href="https://www.nlm.nih.gov/research/umls/rxnorm" target="_blank" rel="noopener noreferrer" className="underline opacity-70 hover:opacity-100">RxNorm</a>
+                    {' '}(NLM).
+                </p>
+                <p>
+                    Vela is not affiliated with or endorsed by NLM, FDA, or any U.S. government agency.
+                </p>
+            </div>
+
         <UpgradeModal isOpen={showUpgradeModal} onClose={() => setShowUpgradeModal(false)} />
             {showDailyCapToast && (
                 <Toast
