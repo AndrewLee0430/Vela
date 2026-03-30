@@ -38,6 +38,14 @@ uv run python tests/run_golden_tests.py --smoke   # Smoke test (15 of 17 cases, 
 uv run python tests/run_golden_tests.py           # Full regression (17 golden cases)
 ```
 
+### Deployment
+Always use `.\deploy.ps1` instead of `fly deploy` directly.
+This script automatically restarts any stopped machines after deployment.
+
+```powershell
+.\deploy.ps1
+```
+
 ### Docker
 ```bash
 docker build -t vela .
