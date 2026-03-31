@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, DateTime, JSON, Integer, Text, Boolean, Float
+from sqlalchemy import Column, String, DateTime, JSON, Integer, Text, Boolean, Float, Date
 from datetime import datetime
 from api.database.sql_db import Base
 
@@ -50,9 +50,12 @@ class UserUsage(Base):
     credits_used = Column(Integer, default=0)
     credits_used_today = Column(Integer, default=0)
     last_daily_reset = Column(DateTime, default=datetime.utcnow)
+    last_free_reset = Column(Date, nullable=True)
     lemon_customer_id = Column(String, nullable=True)
     lemon_subscription_id = Column(String, nullable=True)
     lemon_variant_id = Column(String, nullable=True)
+    dodo_customer_id = Column(String, nullable=True)
+    dodo_subscription_id = Column(String, nullable=True)
     current_period_end = Column(DateTime, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

@@ -127,6 +127,29 @@ function VerifyForm() {
         return map[severity] ?? 'bg-gray-100 text-gray-800';
     };
 
+    const getInteractionSummary = (interactions: DrugInteraction[]) => {
+        if (interactions.length === 0) {
+            return { text: 'No interactions found', color: 'rgba(255,255,255,0.5)' };
+        }
+        const severityOrder = ['Critical', 'Major', 'Moderate', 'Minor'];
+        const counts: Record<string, number> = {};
+        let highestIdx = severityOrder.length;
+        for (const i of interactions) {
+            counts[i.severity] = (counts[i.severity] || 0) + 1;
+            const idx = severityOrder.indexOf(i.severity);
+            if (idx !== -1 && idx < highestIdx) highestIdx = idx;
+        }
+        const parts = severityOrder.filter(s => counts[s]).map(s => `${counts[s]} ${s}`);
+        const colorMap: Record<string, string> = {
+            Critical: '#f87171', Major: '#f87171', Moderate: '#f59e0b', Minor: '#60a5fa',
+        };
+        const highest = highestIdx < severityOrder.length ? severityOrder[highestIdx] : 'Minor';
+        return {
+            text: `Found ${interactions.length} interaction${interactions.length > 1 ? 's' : ''}: ${parts.join(', ')}`,
+            color: colorMap[highest] || 'rgba(255,255,255,0.5)',
+        };
+    };
+
     return (
         <div className="container mx-auto px-4 py-8 max-w-5xl">
             <div className="flex justify-between items-center mb-6">
@@ -236,6 +259,14 @@ function VerifyForm() {
                                         {result.risk_level}
                                     </span>
                                 </div>
+                                {(() => {
+                                    const summary = getInteractionSummary(result.interactions);
+                                    return (
+                                        <p className="text-sm font-medium mb-3" style={{ color: summary.color }}>
+                                            {summary.text}
+                                        </p>
+                                    );
+                                })()}
                                 <p className="text-sm text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
                                     {result.summary}
                                 </p>
@@ -296,10 +327,6 @@ function VerifyForm() {
                     )}
                 </div>
             </div>
-
-            <p className="text-xs mt-4 text-center" style={{ color: "rgba(255,255,255,0.35)" }}>
-                ⚠️ For reference only. Drug interaction data is from FDA labels — consult a pharmacist or physician before acting.
-            </p>
 
             <div className="mt-8 border-t pt-6 space-y-2 text-xs" style={{ borderColor: "rgba(99,179,237,0.35)", color: "rgba(255,255,255,0.4)" }}>
                 <p className="font-medium" style={{ color: "rgba(255,255,255,0.6)" }}>Data Sources & Attribution</p>

@@ -27,6 +27,7 @@ function writeCache(plan: 'free' | 'pro') {
 
 export function clearPlanCache() {
     try { localStorage.removeItem(CACHE_KEY); } catch {}
+    try { localStorage.removeItem('vela_status_cache'); } catch {}
 }
 
 const upgradeStyle = {

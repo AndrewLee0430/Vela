@@ -25,7 +25,7 @@ export default function Privacy() {
                             <li><strong className="text-white">Account data:</strong> Name, email address (via Clerk authentication)</li>
                             <li><strong className="text-white">Usage data:</strong> Feature usage counts, subscription status</li>
                             <li><strong className="text-white">Query logs:</strong> Anonymized and sanitized query content for audit purposes</li>
-                            <li><strong className="text-white">Payment data:</strong> Processed exclusively by Lemon Squeezy — we never store card details</li>
+                            <li><strong className="text-white">Payment data:</strong> Processed exclusively by Dodo Payments — we never store card details</li>
                         </ul>
                     </section>
 
@@ -45,7 +45,7 @@ export default function Privacy() {
                         <ul className="list-disc list-inside space-y-1">
                             <li><strong className="text-white">OpenAI</strong> — AI language model processing</li>
                             <li><strong className="text-white">Clerk</strong> — User authentication</li>
-                            <li><strong className="text-white">Lemon Squeezy</strong> — Payment processing</li>
+                            <li><strong className="text-white">Dodo Payments</strong> — Payment processing (Merchant of Record)</li>
                             <li><strong className="text-white">PostHog</strong> — Anonymous product analytics</li>
                             <li><strong className="text-white">Neon</strong> — Database hosting</li>
                             <li><strong className="text-white">Fly.io</strong> — Application hosting</li>

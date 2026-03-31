@@ -113,6 +113,8 @@ RATE_LIMITS = {
     "/api/webhook/dodo":          (30, 60),
     "/api/webhooks/lemonsqueezy": (30, 60),
     "/api/admin/costs":           (10, 60),
+    "/api/user/portal":           (5,  60),
+    "/api/subscription/cancel":   (3,  60),
 }
 
 @app.middleware("http")
@@ -224,7 +226,8 @@ async def optional_auth(request: Request) -> Optional[HTTPAuthorizationCredentia
 
 def get_user_id(creds: Optional[HTTPAuthorizationCredentials]) -> str:
     if creds is None:
-        return "test_user"
+        # TEST_MODE: use TEST_USER_ID env var if set, otherwise fallback
+        return os.getenv("TEST_USER_ID", "test_user")
     return creds.decoded["sub"]
 
 
@@ -1078,36 +1081,53 @@ async def dodo_webhook(request: Request, db: Session = Depends(get_db)):
         return {"status": "already_processed"}
 
     # Only handle subscription events we care about
-    if event_type not in ("subscription.active", "subscription.cancelled", "subscription.expired"):
+    handled_events = ("subscription.active", "subscription.cancelled", "subscription.expired", "subscription.failed")
+    if event_type not in handled_events:
         db.add(WebhookEvent(event_id=f"dodo_{event_id}", event_type=event_type))
         db.commit()
         return {"status": "ignored", "event": event_type}
 
-    # Locate customer email from payload
+    # Locate customer from payload
     customer = payload.get("data", {}).get("customer") or payload.get("customer", {})
     customer_email = customer.get("email", "") if isinstance(customer, dict) else ""
-    if not customer_email:
-        logger.warning("Dodo webhook %s: no customer email in payload", event_type)
-        return JSONResponse(status_code=422, content={"detail": "No customer email"})
 
-    # Look up Clerk user by email
-    clerk_secret = os.getenv("CLERK_SECRET_KEY", "")
+    # TEST_MODE: accept clerk_user_id directly from payload to bypass Clerk lookup
     clerk_user_id = None
-    try:
-        import httpx as _httpx
-        async with _httpx.AsyncClient() as hc:
-            resp = await hc.get(
-                "https://api.clerk.com/v1/users",
-                params={"email_address": customer_email, "limit": 1},
-                headers={"Authorization": f"Bearer {clerk_secret}"},
-                timeout=10.0,
-            )
-            if resp.status_code == 200:
-                users = resp.json()
-                if users:
-                    clerk_user_id = users[0].get("id")
-    except Exception as e:
-        logger.warning("Clerk lookup error: %s", type(e).__name__)
+    if TEST_MODE:
+        clerk_user_id = (
+            payload.get("data", {}).get("clerk_user_id")
+            or payload.get("clerk_user_id")
+            or (customer.get("clerk_user_id") if isinstance(customer, dict) else None)
+        )
+        if clerk_user_id:
+            logger.info("TEST_MODE: using clerk_user_id=%s from payload", clerk_user_id)
+        else:
+            logger.warning("TEST_MODE: no clerk_user_id in payload, falling back to Clerk lookup")
+    else:
+        logger.debug("Webhook: TEST_MODE=false, using Clerk lookup for %s", customer_email)
+
+    if not clerk_user_id:
+        if not customer_email:
+            logger.warning("Dodo webhook %s: no customer email in payload", event_type)
+            return JSONResponse(status_code=422, content={"detail": "No customer email"})
+
+        # Look up Clerk user by email
+        clerk_secret = os.getenv("CLERK_SECRET_KEY", "")
+        try:
+            import httpx as _httpx
+            async with _httpx.AsyncClient() as hc:
+                resp = await hc.get(
+                    "https://api.clerk.com/v1/users",
+                    params={"email_address": customer_email, "limit": 1},
+                    headers={"Authorization": f"Bearer {clerk_secret}"},
+                    timeout=10.0,
+                )
+                if resp.status_code == 200:
+                    users = resp.json()
+                    if users:
+                        clerk_user_id = users[0].get("id")
+        except Exception as e:
+            logger.warning("Clerk lookup error: %s", type(e).__name__)
 
     if not clerk_user_id:
         logger.warning("Dodo webhook %s: Clerk user not found", event_type)
@@ -1119,12 +1139,32 @@ async def dodo_webhook(request: Request, db: Session = Depends(get_db)):
         usage = UserUsage(clerk_user_id=clerk_user_id)
         db.add(usage)
 
+    # Store Dodo customer/subscription IDs
+    dodo_customer_id = customer.get("customer_id", "") if isinstance(customer, dict) else ""
+    dodo_subscription_id = payload.get("data", {}).get("subscription_id") or payload.get("data", {}).get("id", "")
+    if dodo_customer_id:
+        usage.dodo_customer_id = dodo_customer_id
+    if dodo_subscription_id:
+        usage.dodo_subscription_id = dodo_subscription_id
+
     if event_type == "subscription.active":
         usage.plan_type = "pro"
-        logger.info("Dodo: upgraded to pro")
-    elif event_type in ("subscription.cancelled", "subscription.expired"):
+        logger.info("Dodo: upgraded to pro (customer=%s, sub=%s)", dodo_customer_id, dodo_subscription_id)
+    elif event_type in ("subscription.cancelled", "subscription.expired", "subscription.failed"):
         usage.plan_type = "free"
-        logger.info("Dodo: downgraded to free (%s)", event_type)
+        usage.dodo_subscription_id = None  # Clear subscription, keep customer_id for re-subscribe
+        logger.info("Dodo: downgraded to free (%s) — plan_type=%s, user=%s", event_type, usage.plan_type, clerk_user_id)
+
+    # Audit log
+    from api.models.sql_models import AuditLog
+    audit_id = f"wh_{uuid.uuid4().hex[:16]}"
+    db.add(AuditLog(
+        id=audit_id,
+        user_id=clerk_user_id,
+        action=f"dodo_webhook:{event_type}",
+        query_content=f"customer={dodo_customer_id}, sub={dodo_subscription_id}",
+        ip_address=request.client.host if request.client else "unknown",
+    ))
 
     db.add(WebhookEvent(event_id=f"dodo_{event_id}", event_type=event_type))
     db.commit()
@@ -1143,9 +1183,16 @@ async def user_status(
     ).first()
 
     if not usage:
-        return {"plan_type": "free"}
+        return {"plan_type": "free", "credits_used_today": 0, "daily_limit": 10}
 
-    return {"plan_type": usage.plan_type}
+    from api.services.usage_service import reset_daily_if_needed, FREE_DAILY_LIMIT, PRO_DAILY_SAFETY_CAP
+    usage = await reset_daily_if_needed(db, usage)
+    daily_limit = PRO_DAILY_SAFETY_CAP if usage.plan_type == "pro" else FREE_DAILY_LIMIT
+    return {
+        "plan_type": usage.plan_type,
+        "credits_used_today": usage.credits_used_today,
+        "daily_limit": daily_limit,
+    }
 
 
 @app.get("/api/user/portal")
@@ -1159,16 +1206,50 @@ async def user_portal(
         UserUsage.clerk_user_id == user_id
     ).first()
 
-    if not usage or not usage.lemon_subscription_id:
-        return JSONResponse(status_code=404, content={"detail": "No subscription found"})
+    if not usage or usage.plan_type != "pro":
+        return JSONResponse(status_code=404, content={"detail": "No active subscription"})
+
+    # Dodo Payments uses a universal customer portal
+    return {"url": "https://customer.dodopayments.com"}
+
+
+@app.post("/api/subscription/cancel")
+async def cancel_subscription(
+    creds: Optional[HTTPAuthorizationCredentials] = Depends(optional_auth),
+    db: Session = Depends(get_db)
+):
+    user_id = get_user_id(creds)
+    from api.models.sql_models import UserUsage
+    usage = db.query(UserUsage).filter(
+        UserUsage.clerk_user_id == user_id
+    ).first()
+
+    if not usage or not usage.dodo_subscription_id:
+        return JSONResponse(status_code=404, content={"error": "No active subscription found"})
+
+    dodo_api_key = os.getenv("DODO_API_KEY", "")
+    if not dodo_api_key:
+        logger.error("DODO_API_KEY not configured")
+        return JSONResponse(status_code=500, content={"error": "Service configuration error"})
 
     try:
-        from api.services.lemonsqueezy_service import get_customer_portal_url
-        url = await get_customer_portal_url(usage.lemon_subscription_id)
-        return {"url": url}
+        import httpx as _httpx
+        async with _httpx.AsyncClient() as hc:
+            resp = await hc.patch(
+                f"https://live.dodopayments.com/subscriptions/{usage.dodo_subscription_id}",
+                json={"status": "cancelled"},
+                headers={"Authorization": f"Bearer {dodo_api_key}", "Content-Type": "application/json"},
+                timeout=15.0,
+            )
+            if resp.status_code not in (200, 204):
+                logger.error("Dodo cancel failed: %s %s", resp.status_code, resp.text)
+                return JSONResponse(status_code=500, content={"error": "Unable to cancel subscription"})
     except Exception as e:
-        logger.error("Portal error: %s", e)
-        return JSONResponse(status_code=500, content={"detail": "Portal URL failed"})
+        logger.error("Dodo cancel error: %s", type(e).__name__)
+        return JSONResponse(status_code=500, content={"error": "Unable to cancel subscription"})
+
+    logger.info("Subscription cancel requested: user=%s, sub=%s", user_id, usage.dodo_subscription_id)
+    return {"status": "success", "message": "Subscription cancelled"}
 
 
 # ============================================================

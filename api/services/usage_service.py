@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from api.models.sql_models import UserUsage
 
 # Credit 設定（僅後端，不暴露給前端）
-FREE_CREDIT_LIMIT = 25
+FREE_DAILY_LIMIT = 10
 PRO_DAILY_SAFETY_CAP = 100
 
 CREDIT_COSTS = {
@@ -31,7 +31,7 @@ async def get_or_create_usage(db: Session, user_id: str) -> UserUsage:
 
 
 async def reset_daily_if_needed(db: Session, usage: UserUsage) -> UserUsage:
-    """如果已經是新的一天，重置每日計數"""
+    """如果已經是新的一天，重置每日計數（Free + Pro 都重置）"""
     now = datetime.now(timezone.utc)
     last_reset = usage.last_daily_reset
 
@@ -42,6 +42,9 @@ async def reset_daily_if_needed(db: Session, usage: UserUsage) -> UserUsage:
     if now.date() > last_reset.date():
         usage.credits_used_today = 0
         usage.last_daily_reset = now
+        # Also track free reset date separately
+        if usage.plan_type == "free":
+            usage.last_free_reset = now.date()
         db.commit()
         db.refresh(usage)
 
@@ -53,7 +56,7 @@ async def check_and_deduct_credits(
 ) -> tuple[bool, str]:
     """
     檢查並扣減 credits。返回 (allowed, reason)
-    - Free 用戶：credits_used >= FREE_CREDIT_LIMIT → 拒絕
+    - Free 用戶：credits_used_today >= FREE_DAILY_LIMIT → 拒絕
     - Pro 用戶：credits_used_today >= PRO_DAILY_SAFETY_CAP → 拒絕
     """
     usage = await get_or_create_usage(db, user_id)
@@ -61,7 +64,7 @@ async def check_and_deduct_credits(
     cost = CREDIT_COSTS.get(feature, 1)
 
     if usage.plan_type == "free":
-        if usage.credits_used >= FREE_CREDIT_LIMIT:
+        if usage.credits_used_today >= FREE_DAILY_LIMIT:
             return False, "limit_reached"
 
     elif usage.plan_type == "pro":
@@ -69,9 +72,9 @@ async def check_and_deduct_credits(
             return False, "daily_cap_reached"
 
     # 扣減 credits（atomic update）
-    if usage.plan_type == "free":
-        usage.credits_used += cost
     usage.credits_used_today += cost
+    if usage.plan_type == "free":
+        usage.credits_used += cost  # Keep lifetime counter for analytics
     usage.updated_at = datetime.now(timezone.utc)
     db.commit()
 
@@ -86,7 +89,7 @@ async def check_credits(
     usage = await reset_daily_if_needed(db, usage)
 
     if usage.plan_type == "free":
-        if usage.credits_used >= FREE_CREDIT_LIMIT:
+        if usage.credits_used_today >= FREE_DAILY_LIMIT:
             return False, "limit_reached"
     elif usage.plan_type == "pro":
         if usage.credits_used_today >= PRO_DAILY_SAFETY_CAP:
@@ -102,8 +105,8 @@ async def deduct_credits(
     usage = await get_or_create_usage(db, user_id)
     cost = CREDIT_COSTS.get(feature, 1)
 
-    if usage.plan_type == "free":
-        usage.credits_used += cost
     usage.credits_used_today += cost
+    if usage.plan_type == "free":
+        usage.credits_used += cost  # Keep lifetime counter for analytics
     usage.updated_at = datetime.now(timezone.utc)
     db.commit()

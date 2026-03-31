@@ -41,12 +41,12 @@ export default function Terms() {
 
                     <section>
                         <h2 className="text-lg font-semibold text-white mb-3">4. Subscription & Payment</h2>
-                        <p>Paid subscriptions are processed by Lemon Squeezy. By subscribing, you agree to Lemon Squeezy's terms of service. Subscription fees are billed in advance on a monthly or annual basis. All payments are in USD.</p>
+                        <p>Paid subscriptions are processed by Dodo Payments, our Merchant of Record. By subscribing, you agree to Dodo Payments' terms of service. Subscription fees are billed in advance on a monthly or annual basis. Subscription fees may be displayed in local currency based on your location.</p>
                     </section>
 
                     <section>
                         <h2 className="text-lg font-semibold text-white mb-3">5. Fair Use Policy</h2>
-                        <p>Pro subscribers enjoy unlimited access to all features subject to our fair use policy. To prevent automated abuse, a daily usage limit of 100 credits applies (approximately 33 Research queries, 100 Verify queries, or 50 Explain queries per day). This limit is designed to prevent scripted or automated use and will not affect normal clinical workflows. Users who reach this limit will be notified and can resume usage the following day.</p>
+                        <p>Pro subscribers enjoy unlimited access to all features subject to our fair use policy. To prevent automated abuse, a daily usage limit of <strong className="text-white">100 credits</strong> applies (approximately 33 Research queries, 100 Verify queries, or 50 Explain queries per day). This limit is designed to prevent scripted or automated use and will not affect normal clinical workflows. Free plan users receive <strong className="text-white">10 credits per day</strong>, resetting at midnight UTC. Users who reach their daily limit will be notified and can resume usage the following day.</p>
                     </section>
 
                     <section>
