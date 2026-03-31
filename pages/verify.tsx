@@ -141,7 +141,7 @@ function VerifyForm() {
         }
         const parts = severityOrder.filter(s => counts[s]).map(s => `${counts[s]} ${s}`);
         const colorMap: Record<string, string> = {
-            Critical: '#f87171', Major: '#f87171', Moderate: '#f59e0b', Minor: '#60a5fa',
+            Critical: '#f87171', Major: '#f87171', Moderate: '#fbbf24', Minor: '#60a5fa',
         };
         const highest = highestIdx < severityOrder.length ? severityOrder[highestIdx] : 'Minor';
         return {
@@ -283,9 +283,6 @@ function VerifyForm() {
                             {/* Interactions */}
                             {result.interactions.length > 0 && (
                                 <div>
-                                    <p className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: "rgba(255,255,255,0.5)" }}>
-                                        Interactions ({result.interactions.length})
-                                    </p>
                                     <div className="space-y-3">
                                         {result.interactions.map((interaction, idx) => (
                                             <div key={idx} className={`border-l-4 rounded-lg p-4 ${getSeverityStyle(interaction.severity)}`}>

@@ -217,7 +217,7 @@ function ExplainForm() {
                         className="w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 disabled:opacity-60 font-mono text-sm" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.85)" }}
                         placeholder={"Paste your lab results or medical report here.\n\nExamples:\neGFR 45 mL/min (ref >60), HbA1c 7.8%, Metformin 1000mg BID\n\n腎絲球過濾率 45，糖化血色素 7.8%，Metformin 1000mg 每日兩次"}
                     />
-                    <p className="text-xs text-gray-400">Supports English, Traditional Chinese, Japanese, Korean, Spanish, and more.</p>
+                    <p className="text-xs text-gray-400">Ask in any language — we explain in yours.</p>
                 </div>
                 <button
                     type="submit" disabled={loading || !reportText.trim()}

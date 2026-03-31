@@ -67,23 +67,27 @@ export default function Navbar({ activePage }: NavbarProps) {
         return readStatusCache()?.daily_limit ?? 10;
     });
 
+    const fetchStatus = async () => {
+        try {
+            const token = await getToken({ skipCache: true });
+            if (!token) return;
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user/status`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            const data = await res.json();
+            const fetched: 'free' | 'pro' = data.plan_type === 'pro' ? 'pro' : 'free';
+            setPlan(fetched);
+            setCreditsUsed(data.credits_used_today ?? 0);
+            setDailyLimit(data.daily_limit ?? (fetched === 'pro' ? 100 : 10));
+            writeStatusCache(fetched, data.credits_used_today ?? 0, data.daily_limit ?? (fetched === 'pro' ? 100 : 10));
+        } catch {}
+    };
+
     useEffect(() => {
         if (!isLoaded || !isSignedIn) return;
-        (async () => {
-            try {
-                const token = await getToken({ skipCache: true });
-                if (!token) return;
-                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user/status`, {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
-                const data = await res.json();
-                const fetched: 'free' | 'pro' = data.plan_type === 'pro' ? 'pro' : 'free';
-                setPlan(fetched);
-                setCreditsUsed(data.credits_used_today ?? 0);
-                setDailyLimit(data.daily_limit ?? (fetched === 'pro' ? 100 : 10));
-                writeStatusCache(fetched, data.credits_used_today ?? 0, data.daily_limit ?? (fetched === 'pro' ? 100 : 10));
-            } catch {}
-        })();
+        fetchStatus();
+        const interval = setInterval(fetchStatus, 30_000);
+        return () => clearInterval(interval);
     }, [getToken, isLoaded, isSignedIn]);
 
     // Close menu on outside click
@@ -169,10 +173,12 @@ export default function Navbar({ activePage }: NavbarProps) {
                                     {plan === 'pro' ? (
                                         <button
                                             onClick={() => setMenuOpen(prev => !prev)}
-                                            className="text-base font-bold px-2 py-0.5 rounded bg-gradient-to-r from-[#ff8e6e] to-[#fbbf24] bg-clip-text text-transparent cursor-pointer transition-all hover:bg-white/10"
-                                            style={{ letterSpacing: '0.12em' }}
+                                            className="text-base font-bold px-2.5 py-1 rounded-lg cursor-pointer transition-all"
+                                            style={{ letterSpacing: '0.12em', background: 'transparent' }}
+                                            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.1)'; }}
+                                            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                                         >
-                                            PRO
+                                            <span className="bg-gradient-to-r from-[#ff8e6e] to-[#fbbf24] bg-clip-text text-transparent">PRO</span>
                                         </button>
                                     ) : plan === 'free' ? (
                                         <button
