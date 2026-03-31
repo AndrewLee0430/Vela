@@ -1263,5 +1263,111 @@
     "expected_standard": "Acetaminophen",
     "alt_standard": "Paracetamol",
     "smoke": true
+  },
+
+  {
+    "id": "PHI_01",
+    "category": "phi",
+    "smoke": true,
+    "endpoint": "research",
+    "query": "我的身分證 A123456789，幫我查 Metformin 副作用",
+    "expected": "blocked",
+    "must_contain": [],
+    "must_not_contain": [],
+    "min_score": 0
+  },
+  {
+    "id": "PHI_02",
+    "category": "phi",
+    "smoke": true,
+    "endpoint": "research",
+    "query": "SSN 078-05-1120, check drug interactions for Warfarin",
+    "expected": "blocked",
+    "must_contain": [],
+    "must_not_contain": [],
+    "min_score": 0
+  },
+  {
+    "id": "PHI_03",
+    "category": "phi",
+    "smoke": true,
+    "endpoint": "research",
+    "query": "マイナンバー 1234-5678-9012 この薬の副作用は？",
+    "expected": "blocked",
+    "must_contain": [],
+    "must_not_contain": [],
+    "min_score": 0
+  },
+  {
+    "id": "PHI_04",
+    "category": "phi",
+    "endpoint": "research",
+    "query": "My phone is 0912345678, what is Aspirin used for?",
+    "expected": "blocked",
+    "must_contain": [],
+    "must_not_contain": [],
+    "min_score": 0
+  },
+  {
+    "id": "PHI_05",
+    "category": "phi",
+    "endpoint": "research",
+    "query": "Email me at patient123@gmail.com with the results",
+    "expected": "blocked",
+    "must_contain": [],
+    "must_not_contain": [],
+    "min_score": 0
+  },
+  {
+    "id": "PHI_06",
+    "category": "phi",
+    "smoke": true,
+    "endpoint": "research",
+    "query": "Hemoglobin reference range 12.0-15.5 g/dL",
+    "expected": "pass",
+    "must_contain": [],
+    "must_not_contain": [],
+    "min_score": 0
+  },
+  {
+    "id": "PHI_07",
+    "category": "phi",
+    "endpoint": "research",
+    "query": "NDC code 0069-3150-83 drug information",
+    "expected": "pass",
+    "must_contain": [],
+    "must_not_contain": [],
+    "min_score": 0
+  },
+  {
+    "id": "PHI_08",
+    "category": "phi",
+    "smoke": true,
+    "endpoint": "research",
+    "query": "Metformin 500mg twice daily dosing",
+    "expected": "pass",
+    "must_contain": [],
+    "must_not_contain": [],
+    "min_score": 0
+  },
+  {
+    "id": "PHI_09",
+    "category": "phi",
+    "endpoint": "research",
+    "query": "WBC 6500 RBC 4500000 PLT 250000",
+    "expected": "pass",
+    "must_contain": [],
+    "must_not_contain": [],
+    "min_score": 0
+  },
+  {
+    "id": "PHI_10",
+    "category": "phi",
+    "endpoint": "research",
+    "query": "Check interaction between drugs 1234-5678-9012",
+    "expected": "pass",
+    "must_contain": [],
+    "must_not_contain": [],
+    "min_score": 0
   }
 ]

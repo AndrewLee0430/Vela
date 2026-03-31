@@ -62,7 +62,12 @@
       "Bash(/c/Users/andre/.fly/bin/flyctl ssh console -C \"python -c \"\":*)",
       "Bash(xargs grep:*)",
       "Bash(powershell.exe -File deploy.ps1 2>&1)",
-      "Bash(/c/Users/andre/.fly/bin/flyctl.exe logs:*)"
+      "Bash(/c/Users/andre/.fly/bin/flyctl.exe logs:*)",
+      "Bash(python3:*)",
+      "Bash(jq -r \".[] | \"\"\\\\\\(.id\\),\\\\\\(.category\\),\\\\\\(.smoke // false\\),\\\\\\(.query // .drugs | tostring | .[0:60]\\)\"\"\" /c/Users/andre/projects/Vela/tests/golden_dataset.json)",
+      "Bash(npx next:*)",
+      "Bash(powershell -File deploy.ps1)",
+      "Bash(PYTHONIOENCODING=utf-8 TEST_MODE=true uv run python tests/run_golden_tests.py --smoke)"
     ]
   }
 }

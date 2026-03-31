@@ -9,209 +9,223 @@ PHI (Protected Health Information) Detection Middleware
 """
 
 import re
+import logging
 from typing import Optional
+
+logger = logging.getLogger(__name__)
+
+# Medical units — used to exclude false positives from numeric patterns
+_MEDICAL_UNIT_AFTER = re.compile(
+    r'\s*(?:mg|mL|mmol|dL|g/dL|kg|IU|mcg|µg|units?|mmHg|%|mEq|ng|pg|fL|cells?|copies)',
+    re.IGNORECASE
+)
+_MEDICAL_UNIT_BEFORE = re.compile(
+    r'(?:ref|range|value|level|count|result|dose|concentration)\s*[:=]?\s*$',
+    re.IGNORECASE
+)
 
 
 class PHIDetector:
     """
     多國 PHI 偵測器
-    
+
     支援格式：
-    - 台灣：身分證、健保卡、手機號碼
-    - 日本：My Number、手機號碼、保險證號
-    - 美國：SSN、電話號碼、MRN (Medical Record Number)
+    - 台灣：身分證、手機號碼
+    - 日本：My Number（需關鍵字）、手機號碼
+    - 美國：SSN（需分隔符或關鍵字）、電話號碼、MRN
     - 通用：Email、信用卡號
     """
-    
+
     # ============ 台灣 Taiwan ============
     TAIWAN_ID_PATTERN = re.compile(
         r'\b[A-Z][12]\d{8}\b',  # 身分證：A123456789
         re.IGNORECASE
     )
-    
-    TAIWAN_HEALTH_INSURANCE_PATTERN = re.compile(
-        r'\b\d{10}\b'  # 健保卡號：10位數字
-    )
-    
+
     TAIWAN_PHONE_PATTERN = re.compile(
         r'\b09\d{8}\b'  # 手機：09xxxxxxxx
     )
-    
+
     # ============ 日本 Japan ============
-    JAPAN_MY_NUMBER_PATTERN = re.compile(
-        r'\b\d{4}[-\s]?\d{4}[-\s]?\d{4}\b'  # My Number: 1234-5678-9012
+    # My Number requires keyword prefix to avoid false positives on arbitrary 12-digit numbers
+    JAPAN_MY_NUMBER_KEYWORD = re.compile(
+        r'(?:マイナンバー|個人番号|my\s*number)\s*[:：]?\s*',
+        re.IGNORECASE
     )
-    
+    JAPAN_MY_NUMBER_FORMAT = re.compile(
+        r'\d{4}[-\s]?\d{4}[-\s]?\d{4}'
+    )
+
     JAPAN_PHONE_PATTERN = re.compile(
         r'\b0[789]0[-\s]?\d{4}[-\s]?\d{4}\b'  # 手機：090-1234-5678
     )
-    
-    JAPAN_INSURANCE_PATTERN = re.compile(
-        r'\b\d{8}\b'  # 保險證號：8位數字
-    )
-    
+
     # ============ 美國 USA ============
-    USA_SSN_PATTERN = re.compile(
-        r'\b\d{3}[-\s]?\d{2}[-\s]?\d{4}\b'  # SSN: 123-45-6789
+    # SSN: require dash separators (123-45-6789) OR keyword prefix (SSN/Social Security)
+    USA_SSN_WITH_DASH = re.compile(
+        r'\b(?!000|666|9\d{2})\d{3}-\d{2}-\d{4}\b'  # Exclude invalid: 000, 666, 9xx
     )
-    
+    USA_SSN_KEYWORD = re.compile(
+        r'(?:SSN|Social\s+Security(?:\s+Number)?)\s*[:：#]?\s*',
+        re.IGNORECASE
+    )
+    USA_SSN_PLAIN = re.compile(
+        r'(?!000|666|9\d{2})\d{3}[-\s]?\d{2}[-\s]?\d{4}'
+    )
+
     USA_PHONE_PATTERN = re.compile(
         r'\b\(?\d{3}\)?[-\s]?\d{3}[-\s]?\d{4}\b'  # 電話：(123) 456-7890
     )
-    
+
     USA_MRN_PATTERN = re.compile(
         r'\bMRN[-:\s]?\d{6,10}\b',  # Medical Record Number
         re.IGNORECASE
     )
-    
+
     # ============ 通用 Universal ============
     EMAIL_PATTERN = re.compile(
         r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
     )
-    
+
     CREDIT_CARD_PATTERN = re.compile(
         r'\b\d{4}[-\s]?\d{4}[-\s]?\d{4}[-\s]?\d{4}\b'  # 信用卡：1234-5678-9012-3456
     )
-    
-    # 常見的病歷號格式
+
+    # 病歷號格式 — only used in sanitize_for_log(), NOT in detect().
+    # Reason: patterns like \b[A-Z]{2,3}\d{6,10}\b and \b\d{8,12}\b are too broad
+    # for blocking (would false-positive on NDC codes, lab reference numbers, etc.),
+    # but useful for masking in audit logs as a defense-in-depth measure.
     MEDICAL_RECORD_PATTERNS = [
         re.compile(r'\b[A-Z]{2,3}\d{6,10}\b'),  # AB123456789
         re.compile(r'\b\d{8,12}\b'),            # 純數字病歷號
     ]
-    
+
+    @classmethod
+    def _has_medical_context(cls, text: str, match_start: int, match_end: int) -> bool:
+        """Check if a numeric match is surrounded by medical units/context."""
+        after_text = text[match_end:match_end + 20]
+        if _MEDICAL_UNIT_AFTER.match(after_text):
+            return True
+        before_text = text[max(0, match_start - 30):match_start]
+        if _MEDICAL_UNIT_BEFORE.search(before_text):
+            return True
+        return False
+
     @classmethod
     def detect(cls, text: str) -> Optional[str]:
         """
         偵測文字中是否包含 PHI
-        
+
         Args:
             text: 要檢查的文字
-            
+
         Returns:
             偵測到的 PHI 類型，若無則返回 None
         """
         if not text or len(text.strip()) == 0:
             return None
-        
-        # 台灣格式
+
+        # 台灣身分證
         if cls.TAIWAN_ID_PATTERN.search(text):
             return "Taiwan ID (台灣身分證)"
+
+        # 台灣手機
         if cls.TAIWAN_PHONE_PATTERN.search(text):
             return "Taiwan Phone (台灣手機號碼)"
-        
-        # 日本格式
-        if cls.JAPAN_MY_NUMBER_PATTERN.search(text):
-            return "Japan My Number (日本個人番號)"
+
+        # 日本 My Number — requires keyword prefix
+        kw_match = cls.JAPAN_MY_NUMBER_KEYWORD.search(text)
+        if kw_match:
+            after_kw = text[kw_match.end():]
+            if cls.JAPAN_MY_NUMBER_FORMAT.match(after_kw):
+                return "Japan My Number (日本個人番號)"
+
+        # 日本手機
         if cls.JAPAN_PHONE_PATTERN.search(text):
             return "Japan Phone (日本手機號碼)"
-        
-        # 美國格式
-        if cls.USA_SSN_PATTERN.search(text):
+
+        # 美國 SSN — with dash separators (most reliable)
+        m = cls.USA_SSN_WITH_DASH.search(text)
+        if m and not cls._has_medical_context(text, m.start(), m.end()):
             return "US SSN (美國社會安全號碼)"
+
+        # 美國 SSN — with keyword prefix (no dash required)
+        kw_match = cls.USA_SSN_KEYWORD.search(text)
+        if kw_match:
+            after_kw = text[kw_match.end():]
+            if cls.USA_SSN_PLAIN.match(after_kw):
+                return "US SSN (美國社會安全號碼)"
+
+        # 美國 MRN
         if cls.USA_MRN_PATTERN.search(text):
             return "US MRN (美國病歷號)"
-        
-        # 通用格式
+
+        # 美國電話 — area code format provides reasonable specificity
+        m = cls.USA_PHONE_PATTERN.search(text)
+        if m and not cls._has_medical_context(text, m.start(), m.end()):
+            # Only flag if it looks like a phone (has parentheses or dashes)
+            matched = m.group(0)
+            if '(' in matched or '-' in matched:
+                return "US Phone (美國電話號碼)"
+
+        # Email — only flag personal-looking emails
         if cls.EMAIL_PATTERN.search(text):
-            # 允許常見的機構 email (如 @hospital.org)
-            # 但攔截看起來像個人 email 的
             email_match = cls.EMAIL_PATTERN.search(text)
             email = email_match.group(0)
-            # 簡單啟發式：如果包含數字 + 名字模式，可能是個人 email
             if re.search(r'\d+[a-z]+|\b(john|mary|patient)\d*\b', email, re.IGNORECASE):
                 return "Email (個人電子郵件)"
-        
+
+        # 信用卡
         if cls.CREDIT_CARD_PATTERN.search(text):
-            # 排除一些常見的誤判（如日期 2024-01-01-1234）
             cc_match = cls.CREDIT_CARD_PATTERN.search(text)
             if cc_match and not re.search(r'20\d{2}', cc_match.group(0)):
                 return "Credit Card (信用卡號)"
-        
+
         return None
-    
+
     @classmethod
     def sanitize_for_log(cls, text: Optional[str], mask_char: str = "***") -> Optional[str]:
         """
         對文字進行脫敏處理，用於 Audit Log
-        
+
         Args:
             text: 要處理的文字
             mask_char: 遮罩字符
-            
+
         Returns:
             脫敏後的文字
         """
         if not text:
             return text
-        
+
         sanitized = text
-        
-        # 遮罩各種格式
+
+        # Mask known patterns
         sanitized = cls.TAIWAN_ID_PATTERN.sub(mask_char, sanitized)
         sanitized = cls.TAIWAN_PHONE_PATTERN.sub(mask_char, sanitized)
-        sanitized = cls.JAPAN_MY_NUMBER_PATTERN.sub(mask_char, sanitized)
+        sanitized = cls.JAPAN_MY_NUMBER_FORMAT.sub(mask_char, sanitized)
         sanitized = cls.JAPAN_PHONE_PATTERN.sub(mask_char, sanitized)
-        sanitized = cls.USA_SSN_PATTERN.sub(mask_char, sanitized)
+        sanitized = cls.USA_SSN_WITH_DASH.sub(mask_char, sanitized)
         sanitized = cls.USA_MRN_PATTERN.sub(mask_char, sanitized)
+        sanitized = cls.USA_PHONE_PATTERN.sub(mask_char, sanitized)
         sanitized = cls.EMAIL_PATTERN.sub(mask_char, sanitized)
         sanitized = cls.CREDIT_CARD_PATTERN.sub(mask_char, sanitized)
-        
+
+        # Defense-in-depth: also mask broad patterns in logs
         for pattern in cls.MEDICAL_RECORD_PATTERNS:
             sanitized = pattern.sub(mask_char, sanitized)
-        
+
         return sanitized
-    
+
     @classmethod
     def is_safe(cls, text: str) -> bool:
         """
         快速檢查文字是否安全（不含 PHI）
-        
+
         Args:
             text: 要檢查的文字
-            
+
         Returns:
             True 如果安全，False 如果包含 PHI
         """
         return cls.detect(text) is None
-
-
-# ============ 使用範例 ============
-if __name__ == "__main__":
-    # 測試案例
-    test_cases = [
-        # 台灣
-        ("病人資料：A123456789", "Taiwan ID"),
-        ("請聯絡 0912345678", "Taiwan Phone"),
-        
-        # 日本
-        ("マイナンバー: 1234-5678-9012", "Japan My Number"),
-        ("連絡先: 090-1234-5678", "Japan Phone"),
-        
-        # 美國
-        ("SSN: 123-45-6789", "US SSN"),
-        ("MRN: 12345678", "US MRN"),
-        
-        # 通用
-        ("Email: patient123@gmail.com", "Email"),
-        ("信用卡: 1234-5678-9012-3456", "Credit Card"),
-        
-        # 安全案例
-        ("Metformin 和 Warfarin 的交互作用", None),
-        ("糖尿病患者的用藥建議", None),
-    ]
-    
-    print("=== PHI Detection 測試 ===\n")
-    for text, expected in test_cases:
-        result = PHIDetector.detect(text)
-        status = "✅" if (result is not None) == (expected is not None) else "❌"
-        print(f"{status} Text: {text}")
-        print(f"   偵測: {result or 'None'}")
-        print(f"   預期: {expected or 'None'}")
-        print()
-    
-    # 測試脫敏
-    print("\n=== 脫敏測試 ===")
-    sensitive_text = "病人 A123456789 的電話是 0912345678"
-    sanitized = PHIDetector.sanitize_for_log(sensitive_text)
-    print(f"原文: {sensitive_text}")
-    print(f"脫敏: {sanitized}")

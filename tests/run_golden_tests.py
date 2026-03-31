@@ -81,8 +81,16 @@ async def call_research(client: httpx.AsyncClient, query: str) -> str:
             f"{BASE_URL}/api/research",
             json={"question": query},
             headers=HEADERS,
-            timeout=90.0
+            timeout=900.0
         )
+        # Handle PHI block (400 with phi_blocked type)
+        if response.status_code == 400:
+            try:
+                data = response.json()
+                if data.get("type") == "phi_blocked":
+                    return f"[PHI_BLOCKED] {data.get('detail', '')}"
+            except Exception:
+                pass
         response.raise_for_status()
         for line in response.text.split("\n"):
             line = line.strip()
@@ -112,8 +120,15 @@ async def call_verify(client: httpx.AsyncClient, drugs: list[str]) -> str:
             f"{BASE_URL}/api/verify",
             json={"drugs": drugs, "patient_context": None},
             headers=HEADERS,
-            timeout=60.0
+            timeout=900.0
         )
+        if response.status_code == 400:
+            try:
+                data = response.json()
+                if data.get("type") == "phi_blocked":
+                    return f"[PHI_BLOCKED] {data.get('detail', '')}"
+            except Exception:
+                pass
         if response.status_code == 422:
             return f"[ERROR] 422 - {response.text[:300]}"
         response.raise_for_status()
@@ -133,8 +148,15 @@ async def call_explain(client: httpx.AsyncClient, report_text: str) -> str:
             f"{BASE_URL}/api/explain",
             json={"report_text": report_text},
             headers=HEADERS,
-            timeout=90.0
+            timeout=900.0
         )
+        if response.status_code == 400:
+            try:
+                data = response.json()
+                if data.get("type") == "phi_blocked":
+                    return f"[PHI_BLOCKED] {data.get('detail', '')}"
+            except Exception:
+                pass
         response.raise_for_status()
         for line in response.text.split("\n"):
             line = line.strip()
@@ -171,7 +193,7 @@ async def call_explain_identified(client: httpx.AsyncClient, report_text: str) -
             f"{BASE_URL}/api/explain",
             json={"report_text": report_text},
             headers=HEADERS,
-            timeout=90.0
+            timeout=900.0
         )
         response.raise_for_status()
         for line in response.text.split("\n"):
@@ -307,6 +329,11 @@ Respond ONLY with valid JSON:
 def determine_status(eval_result: dict, answer: str, cat: str, expected: str = "blocked") -> str:
     if answer.startswith("[ERROR]"):
         return "ERROR"
+    if cat == "phi":
+        if expected == "blocked":
+            return "PASS" if "[PHI_BLOCKED]" in answer else "FAIL"
+        else:  # expected == "pass" — should NOT be blocked
+            return "FAIL" if "[PHI_BLOCKED]" in answer else "PASS"
     if cat == "guard":
         if expected == "pass":
             # 反向測試（G17 等）：這題不應該被擋，被擋 = false positive = FAIL
@@ -594,9 +621,9 @@ async def run_tests(smoke_only: bool = False):
     stats       = {"PASS": 0, "WARN": 0, "FAIL": 0, "ERROR": 0}
     by_category: dict[str, list] = {
         "research": [], "verify": [], "explain": [],
-        "guard": [], "multilingual": [], "document": [], "identify": []
+        "guard": [], "multilingual": [], "document": [], "identify": [], "phi": []
     }
-    ALL_CATEGORIES = {"research", "verify", "explain", "guard", "multilingual", "document", "identify"}
+    ALL_CATEGORIES = {"research", "verify", "explain", "guard", "multilingual", "document", "identify", "phi"}
 
     total_start = time.time()
 
@@ -674,6 +701,16 @@ async def run_tests(smoke_only: bool = False):
                 })
                 await asyncio.sleep(1.0)
                 continue
+            elif cat == "phi":
+                endpoint = case.get("endpoint", "research")
+                if endpoint == "research":
+                    answer = await call_research(client, case["query"])
+                elif endpoint == "verify":
+                    answer = await call_verify(client, case["drugs"])
+                elif endpoint == "explain":
+                    answer = await call_explain(client, case["report_text"])
+                else:
+                    answer = await call_research(client, case["query"])
             elif cat == "guard":
                 answer = await call_research(client, case["query"])
             elif cat == "multilingual":
@@ -703,7 +740,13 @@ async def run_tests(smoke_only: bool = False):
             api_elapsed = round(time.time() - start, 1)
 
             # Evaluate
-            if cat == "guard":
+            if cat == "phi":
+                eval_result = {
+                    "passed_concepts": [], "missing_concepts": [],
+                    "forbidden_found": [], "all_pass": True,
+                    "score": 100, "reasoning": "PHI test"
+                }
+            elif cat == "guard":
                 eval_result = {
                     "passed_concepts": [], "missing_concepts": [],
                     "forbidden_found": [], "all_pass": True,

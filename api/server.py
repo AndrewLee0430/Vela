@@ -279,35 +279,74 @@ async def _run_judge_background(audit_id: str, query: str, answer: str, document
 # ============================================================
 # Middleware: PHI 防護
 # ============================================================
+# Endpoints where PHI detection applies to user input fields
+_PHI_PROTECTED_ENDPOINTS = {
+    "/api/research", "/api/consultation", "/api/explain", "/api/verify", "/api/feedback"
+}
+
+# Map endpoint → JSON field(s) containing user input to scan
+_PHI_INPUT_FIELDS = {
+    "/api/research": ["question"],
+    "/api/consultation": ["question"],
+    "/api/explain": ["report_text"],
+    "/api/verify": ["drugs"],       # list[str] — join for scanning
+    "/api/feedback": ["feedback_text"],
+}
+
+
+def _extract_user_text(body_dict: dict, path: str) -> str:
+    """Extract user-input text from parsed request body for PHI scanning."""
+    fields = _PHI_INPUT_FIELDS.get(path, [])
+    parts = []
+    for field in fields:
+        val = body_dict.get(field)
+        if isinstance(val, str):
+            parts.append(val)
+        elif isinstance(val, list):
+            parts.extend(str(v) for v in val)
+    return " ".join(parts)
+
+
+def _phi_blocked_response(phi_type: str) -> JSONResponse:
+    """Return a standardized PHI-blocked error response."""
+    return JSONResponse(
+        status_code=400,
+        content={
+            "type": "phi_blocked",
+            "content": "Personal information detected",
+            "detail": f"We detected what appears to be a {phi_type} in your input. To protect your privacy, Vela does not process queries containing personal identifiable information.",
+            "suggestion": "Please remove any personal information (ID numbers, phone numbers, SSN, etc.) and try again."
+        }
+    )
+
+
 @app.middleware("http")
 async def audit_middleware(request: Request, call_next):
     path = request.url.path
 
-    if path in ["/api/research", "/api/consultation", "/api/explain", "/api/verify"]:
-        return await call_next(request)
-
-    if path in ["/api/feedback"] and request.method == "POST":
+    if path in _PHI_PROTECTED_ENDPOINTS and request.method == "POST":
         try:
             body_bytes = await request.body()
             body_str = body_bytes.decode("utf-8")
+            body_dict = json.loads(body_str) if body_str.strip() else {}
 
-            phi_type = PHIDetector.detect(body_str)
+            user_text = _extract_user_text(body_dict, path)
+            phi_type = PHIDetector.detect(user_text) if user_text else None
+
             if phi_type:
-                return StreamingResponse(
-                    iter([json.dumps({
-                        "type": "error",
-                        "content": f"⚠️ 安全攔截：偵測到潛在的個人資訊 ({phi_type})。為符合隱私規範，請移除後再試。"
-                    })]),
-                    media_type="application/json",
-                    status_code=400
-                )
+                client_ip = request.client.host if request.client else "unknown"
+                logger.warning("[PHI] Blocked: type=%s, endpoint=%s, ip=%s", phi_type, path, client_ip)
+                return _phi_blocked_response(phi_type)
 
+            # Re-inject body so downstream handlers can read it
             async def receive():
                 return {"type": "http.request", "body": body_bytes}
             request._receive = receive
 
+        except json.JSONDecodeError:
+            pass  # Let the endpoint handle malformed JSON
         except Exception as e:
-            logger.error("Middleware Error: %s", e)
+            logger.error("PHI middleware error: %s", e)
 
     response = await call_next(request)
     return response

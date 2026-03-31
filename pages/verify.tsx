@@ -5,6 +5,7 @@ import { useAuth, SignedIn, SignedOut, RedirectToSignIn } from '@clerk/nextjs';
 import FeedbackBar from '../components/FeedbackBar';
 import UpgradeModal from '../components/UpgradeModal';
 import Toast from '../components/Toast';
+import PHIWarning from '../components/PHIWarning';
 import MobileNav from '../components/MobileNav';
 import Navbar from '../components/Navbar';
 
@@ -40,8 +41,9 @@ function VerifyForm() {
     const isRunningRef = useRef(false);
     const [showUpgradeModal, setShowUpgradeModal] = useState(false);
     const [showDailyCapToast, setShowDailyCapToast] = useState(false);
+    const [phiError, setPhiError] = useState<{detail: string; suggestion: string} | null>(null);
 
-    const handleReset = () => { setDrugs(''); setResult(null); setError(''); };
+    const handleReset = () => { setDrugs(''); setResult(null); setError(''); setPhiError(null); };
 
     async function handleSubmit(e: FormEvent) {
         e.preventDefault();
@@ -54,7 +56,7 @@ function VerifyForm() {
         }
 
         isRunningRef.current = true;
-        setLoading(true); setError(''); setResult(null);
+        setLoading(true); setError(''); setResult(null); setPhiError(null);
 
         try {
             const token = await getToken({ skipCache: true });
@@ -66,6 +68,13 @@ function VerifyForm() {
                 body: JSON.stringify({ drugs: drugList, patient_context: null }),
             });
 
+            if (res.status === 400) {
+                const data = await res.json().catch(() => ({}));
+                if (data.type === 'phi_blocked') {
+                    setPhiError({ detail: data.detail, suggestion: data.suggestion });
+                    return;
+                }
+            }
             if (res.status === 403) {
                 const data = await res.json().catch(() => ({}));
                 if (data.error === 'limit_reached') {
@@ -222,6 +231,12 @@ function VerifyForm() {
                             {loading ? 'Analyzing...' : 'Analyze Interactions'}
                         </button>
                     </form>
+
+                    {phiError && !loading && (
+                        <div className="mt-4">
+                            <PHIWarning detail={phiError.detail} suggestion={phiError.suggestion} onDismiss={() => setPhiError(null)} />
+                        </div>
+                    )}
 
                     {error && (
                         <div className="mt-4 p-3 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 rounded-lg border border-red-100 text-sm">

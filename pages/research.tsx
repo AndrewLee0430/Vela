@@ -10,6 +10,7 @@ import CitationPanel, { Citation } from '../components/CitationPanel';
 import FeedbackBar from '../components/FeedbackBar';
 import UpgradeModal from '../components/UpgradeModal';
 import Toast from '../components/Toast';
+import PHIWarning from '../components/PHIWarning';
 import MobileNav from '../components/MobileNav';
 import Navbar from '../components/Navbar';
 
@@ -61,6 +62,7 @@ function ResearchForm() {
     const [statusMsg, setStatusMsg] = useState<string>('');
     const [showUpgradeModal, setShowUpgradeModal] = useState(false);
     const [showDailyCapToast, setShowDailyCapToast] = useState(false);
+    const [phiError, setPhiError] = useState<{detail: string; suggestion: string} | null>(null);
 
     const answerRef    = useRef<HTMLDivElement>(null);
     const isRunningRef = useRef(false);
@@ -73,7 +75,7 @@ function ResearchForm() {
 
     const handleReset = () => {
         setQuestion(''); setAnswer(''); setCitations([]);
-        setQueryTime(null); setError(''); setIsFallback(false); setStatusMsg('');
+        setQueryTime(null); setError(''); setIsFallback(false); setStatusMsg(''); setPhiError(null);
     };
 
     const runSearch = useCallback(async (q: string) => {
@@ -81,7 +83,7 @@ function ResearchForm() {
         isRunningRef.current = true;
 
         setAnswer(''); setCitations([]); setQueryTime(null);
-        setLoading(true); setError(''); setIsFallback(false); setStatusMsg('');
+        setLoading(true); setError(''); setIsFallback(false); setStatusMsg(''); setPhiError(null);
 
         const controller = new AbortController();
 
@@ -103,8 +105,14 @@ function ResearchForm() {
 
                 async onopen(response) {
                     if (response.ok) return;
+                    if (response.status === 400) {
+                        const data = await response.json().catch(() => ({}));
+                        if (data.type === 'phi_blocked') {
+                            setPhiError({ detail: data.detail, suggestion: data.suggestion });
+                            throw new FatalError('');
+                        }
+                    }
                     if (response.status === 403) {
-                        // 可能是 limit_reached 或 session expired
                         const data = await response.json().catch(() => ({}));
                         if (data.error === 'limit_reached') {
                             setShowUpgradeModal(true);
@@ -160,7 +168,7 @@ function ResearchForm() {
     }
 
     return (
-        <div className="flex flex-col gap-4 max-w-[80%] mx-auto">
+        <div className="flex flex-col gap-4 max-w-5xl mx-auto">
             {/* Title row */}
             <div className="flex justify-between items-start">
                 <div>
@@ -189,6 +197,10 @@ function ResearchForm() {
                 {/* Left: answer area */}
                 <div className="flex-1 flex flex-col">
                     <div className="rounded-xl p-6 flex flex-col" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}>
+
+                        {phiError && !loading && (
+                            <PHIWarning detail={phiError.detail} suggestion={phiError.suggestion} onDismiss={() => setPhiError(null)} />
+                        )}
 
                         {error && !loading && (
                             <div className="mb-4 p-3 rounded-lg border text-sm" style={{ background: "rgba(239,68,68,0.1)", borderColor: "rgba(239,68,68,0.3)", color: "rgba(255,150,150,0.9)" }}>
@@ -265,7 +277,7 @@ function ResearchForm() {
                             </p>
                         )}
 
-                        <form onSubmit={handleSubmit} className="flex gap-2">
+                        <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2">
                             <input
                                 type="text"
                                 value={question}
@@ -291,7 +303,7 @@ function ResearchForm() {
                 </div>
 
                 {/* Right: citations */}
-                <div className="lg:w-96 flex flex-col">
+                <div className="w-full lg:w-96 flex flex-col">
                     <div className="rounded-xl p-6 flex-1 overflow-hidden" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}>
                         <CitationPanel citations={citations} isLoading={loading && citations.length === 0} />
                     </div>

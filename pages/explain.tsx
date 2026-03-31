@@ -8,6 +8,7 @@ import remarkBreaks from 'remark-breaks';
 import { fetchEventSource } from '@microsoft/fetch-event-source';
 import FeedbackBar from '../components/FeedbackBar';
 import Toast from '../components/Toast';
+import PHIWarning from '../components/PHIWarning';
 import UpgradeModal from '../components/UpgradeModal';
 import MobileNav from '../components/MobileNav';
 import Navbar from '../components/Navbar';
@@ -55,6 +56,7 @@ function ExplainForm() {
     const [showToast, setShowToast]       = useState(false);
     const [showUpgradeModal, setShowUpgradeModal] = useState(false);
     const [showDailyCapToast, setShowDailyCapToast] = useState(false);
+    const [phiError, setPhiError] = useState<{detail: string; suggestion: string} | null>(null);
     const isRunningRef = useRef(false);
 
     // Upload state
@@ -165,7 +167,7 @@ function ExplainForm() {
         e.preventDefault();
         if (isRunningRef.current) return;
         isRunningRef.current = true;
-        setOutput(''); setSources([]); setError(''); setStatusMsg(''); setLoading(true);
+        setOutput(''); setSources([]); setError(''); setStatusMsg(''); setLoading(true); setPhiError(null);
         const controller = new AbortController();
         try {
             const jwt = await getToken({ skipCache: true });
@@ -178,6 +180,13 @@ function ExplainForm() {
                 openWhenHidden: true,
                 async onopen(response) {
                     if (response.ok) return;
+                    if (response.status === 400) {
+                        const data = await response.json().catch(() => ({}));
+                        if (data.type === 'phi_blocked') {
+                            setPhiError({ detail: data.detail, suggestion: data.suggestion });
+                            throw new FatalError('');
+                        }
+                    }
                     if (response.status === 403) {
                         const data = await response.json().catch(() => ({}));
                         if (data.error === 'limit_reached') {
@@ -225,7 +234,7 @@ function ExplainForm() {
     }
 
     const handleReset = () => {
-        setReportText(''); setOutput(''); setSources([]); setError(''); setStatusMsg('');
+        setReportText(''); setOutput(''); setSources([]); setError(''); setStatusMsg(''); setPhiError(null);
         handleUploadReset();
     };
 
@@ -259,6 +268,10 @@ function ExplainForm() {
                     <span className="font-semibold">Ask in any language</span> — explained with LOINC, RxNorm &amp; MedlinePlus.
                 </p>
             </div>
+
+            {phiError && !loading && (
+                <PHIWarning detail={phiError.detail} suggestion={phiError.suggestion} onDismiss={() => setPhiError(null)} />
+            )}
 
             {error && (
                 <div className="mb-5 p-3 rounded-lg border text-sm" style={{ background: "rgba(252,129,129,0.12)", borderColor: "rgba(252,129,129,0.3)", color: "#fc8181" }}>{error}</div>
