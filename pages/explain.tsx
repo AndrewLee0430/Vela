@@ -32,7 +32,7 @@ const SOURCE_STYLES: Record<string, { bg: string; text: string; border: string }
 
 function SourceBadge({ source }: { source: ExplainSource }) {
     const s = SOURCE_STYLES[source.source_type] ?? SOURCE_STYLES['MedlinePlus'];
-    const badge = (
+    return (
         <span
             className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium"
             style={{ background: s.bg, color: s.text, border: `1px solid ${s.border}` }}
@@ -40,16 +40,6 @@ function SourceBadge({ source }: { source: ExplainSource }) {
             {source.label}
         </span>
     );
-
-    if (source.url) {
-        return (
-            <a href={source.url} target="_blank" rel="noopener noreferrer" className="hover:opacity-75 transition-opacity">
-                {badge}
-            </a>
-        );
-    }
-
-    return badge;
 }
 
 type UploadState = 'idle' | 'uploading' | 'preview' | 'error';
