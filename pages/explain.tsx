@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, FormEvent, useRef } from 'react';
+import { useState, FormEvent, useRef, useCallback, DragEvent } from 'react';
 import { useAuth, SignedIn, SignedOut, RedirectToSignIn } from '@clerk/nextjs';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -33,7 +33,7 @@ const SOURCE_STYLES: Record<string, { bg: string; text: string; border: string }
 function SourceBadge({ source }: { source: ExplainSource }) {
     const s = SOURCE_STYLES[source.source_type] ?? SOURCE_STYLES['MedlinePlus'];
     const badge = (
-        <span 
+        <span
             className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium"
             style={{ background: s.bg, color: s.text, border: `1px solid ${s.border}` }}
         >
@@ -49,20 +49,10 @@ function SourceBadge({ source }: { source: ExplainSource }) {
         );
     }
 
-    // Non-clickable badge with tooltip explaining why
-    return (
-        <span
-            className="relative group cursor-default"
-            title="LOINC is the international standard for lab test terminology. Full records require a free LOINC account at loinc.org"
-        >
-            {badge}
-            <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 px-3 py-2 text-xs text-white bg-gray-800 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 text-center leading-relaxed">
-                LOINC is the international standard for lab terminology.
-                Full records require a free account at loinc.org.
-            </span>
-        </span>
-    );
+    return badge;
 }
+
+type UploadState = 'idle' | 'uploading' | 'preview' | 'error';
 
 function ExplainForm() {
     const { getToken } = useAuth();
@@ -76,6 +66,110 @@ function ExplainForm() {
     const [showUpgradeModal, setShowUpgradeModal] = useState(false);
     const [showDailyCapToast, setShowDailyCapToast] = useState(false);
     const isRunningRef = useRef(false);
+
+    // Upload state
+    const [uploadState, setUploadState] = useState<UploadState>('idle');
+    const [uploadError, setUploadError] = useState('');
+    const [extractedText, setExtractedText] = useState('');
+    const [extractedFileName, setExtractedFileName] = useState('');
+    const [dragOver, setDragOver] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const MAX_FILE_SIZE = 10 * 1024 * 1024;
+    const ALLOWED_TYPES = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp'];
+
+    const extractFromPdf = useCallback(async (file: File): Promise<string> => {
+        const pdfjsLib = await import('pdfjs-dist');
+        pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        const pages: string[] = [];
+        for (let i = 1; i <= pdf.numPages; i++) {
+            const page = await pdf.getPage(i);
+            const content = await page.getTextContent();
+            const text = content.items.map((item: any) => item.str).join(' ');
+            if (text.trim()) pages.push(text);
+        }
+        return pages.join('\n\n');
+    }, []);
+
+    const extractFromImage = useCallback(async (file: File): Promise<string> => {
+        const token = await getToken({ skipCache: true });
+        const formData = new FormData();
+        formData.append('file', file);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/explain/extract-image`, {
+            method: 'POST',
+            headers: token ? { Authorization: `Bearer ${token}` } : {},
+            body: formData,
+        });
+        if (!res.ok) {
+            const data = await res.json().catch(() => ({}));
+            throw new Error(data.detail || 'Extraction failed');
+        }
+        const data = await res.json();
+        return data.text || '';
+    }, [getToken]);
+
+    const handleFile = useCallback(async (file: File) => {
+        setUploadError('');
+
+        if (!ALLOWED_TYPES.includes(file.type)) {
+            setUploadState('error');
+            setUploadError('Please upload a PDF or image file (JPG, PNG).');
+            return;
+        }
+        if (file.size > MAX_FILE_SIZE) {
+            setUploadState('error');
+            setUploadError('File too large. Maximum size is 10MB.');
+            return;
+        }
+
+        setUploadState('uploading');
+        setExtractedFileName(file.name);
+
+        try {
+            let text: string;
+            if (file.type === 'application/pdf') {
+                text = await extractFromPdf(file);
+            } else {
+                text = await extractFromImage(file);
+            }
+
+            if (!text.trim()) {
+                setUploadState('error');
+                setUploadError('Could not extract text. Please paste your report manually.');
+                return;
+            }
+
+            setExtractedText(text);
+            setUploadState('preview');
+        } catch {
+            setUploadState('error');
+            setUploadError('Could not extract text. Please paste your report manually.');
+        }
+    }, [extractFromPdf, extractFromImage]);
+
+    const handleDrop = useCallback((e: DragEvent) => {
+        e.preventDefault();
+        setDragOver(false);
+        const file = e.dataTransfer.files[0];
+        if (file) handleFile(file);
+    }, [handleFile]);
+
+    const handleUseText = () => {
+        setReportText(extractedText);
+        setUploadState('idle');
+        setExtractedText('');
+        setExtractedFileName('');
+    };
+
+    const handleUploadReset = () => {
+        setUploadState('idle');
+        setExtractedText('');
+        setExtractedFileName('');
+        setUploadError('');
+        if (fileInputRef.current) fileInputRef.current.value = '';
+    };
 
     async function handleSubmit(e: FormEvent) {
         e.preventDefault();
@@ -142,6 +236,7 @@ function ExplainForm() {
 
     const handleReset = () => {
         setReportText(''); setOutput(''); setSources([]); setError(''); setStatusMsg('');
+        handleUploadReset();
     };
 
     const sampleQueries = [
@@ -168,10 +263,10 @@ function ExplainForm() {
                 )}
             </div>
 
-            {/* Privacy notice */}
-            <div className="rounded-lg p-4 mb-6 border" style={{ background: 'rgba(74,222,128,0.05)', borderColor: 'rgba(74,222,128,0.3)' }}>
-                <p className="text-sm" style={{ color: 'rgba(74,222,128,0.9)' }}>
-                    <strong>Privacy:</strong> Paste lab results or medical documents only — no personal names or identifying information. Your report is processed securely and not stored.
+            {/* Language box */}
+            <div className="rounded-xl p-4 text-sm mb-6" style={{ background: 'rgba(74,222,128,0.05)', border: '1px solid rgba(74,222,128,0.3)' }}>
+                <p style={{ color: 'rgba(74,222,128,0.9)' }}>
+                    <span className="font-semibold">Ask in any language</span> — explained with LOINC, RxNorm &amp; MedlinePlus.
                 </p>
             </div>
 
@@ -184,6 +279,105 @@ function ExplainForm() {
                     <label htmlFor="report" className="block text-sm font-medium" style={{ color: "rgba(255,255,255,0.8)" }}>
                         Medical Report / Lab Results
                     </label>
+
+                    {/* Upload area */}
+                    {!output && (
+                        <>
+                            {uploadState === 'idle' && (
+                                <>
+                                    <div
+                                        className="rounded-lg p-6 text-center cursor-pointer transition-all"
+                                        style={{
+                                            border: `2px dashed ${dragOver ? 'rgba(74,222,128,0.7)' : 'rgba(74,222,128,0.4)'}`,
+                                            background: dragOver ? 'rgba(74,222,128,0.1)' : 'rgba(74,222,128,0.05)',
+                                        }}
+                                        onClick={() => fileInputRef.current?.click()}
+                                        onDragOver={e => { e.preventDefault(); setDragOver(true); }}
+                                        onDragLeave={() => setDragOver(false)}
+                                        onDrop={handleDrop}
+                                    >
+                                        <input
+                                            ref={fileInputRef}
+                                            type="file"
+                                            accept=".pdf,image/jpeg,image/png,image/webp"
+                                            className="hidden"
+                                            onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f); }}
+                                        />
+                                        <div className="text-2xl mb-2" style={{ opacity: 0.7 }}>📄</div>
+                                        <p className="text-sm font-medium" style={{ color: 'rgba(74,222,128,0.9)' }}>Upload Report</p>
+                                        <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.4)' }}>PDF or image (JPG, PNG) · Max 10MB</p>
+                                    </div>
+                                    <p className="text-xs text-center py-1" style={{ color: 'rgba(255,255,255,0.3)' }}>
+                                        ─── or paste text below ───
+                                    </p>
+                                </>
+                            )}
+
+                            {uploadState === 'uploading' && (
+                                <div className="rounded-lg p-6 text-center" style={{ border: '2px dashed rgba(74,222,128,0.4)', background: 'rgba(74,222,128,0.05)' }}>
+                                    <div className="w-6 h-6 border-2 border-t-transparent rounded-full animate-spin mx-auto mb-2" style={{ borderColor: 'rgba(74,222,128,0.6)', borderTopColor: 'transparent' }} />
+                                    <p className="text-sm" style={{ color: 'rgba(74,222,128,0.9)' }}>Extracting text...</p>
+                                </div>
+                            )}
+
+                            {uploadState === 'error' && (
+                                <div className="rounded-lg p-4 text-center" style={{ border: '2px dashed rgba(252,129,129,0.4)', background: 'rgba(252,129,129,0.05)' }}>
+                                    <p className="text-sm mb-3" style={{ color: '#fc8181' }}>{uploadError}</p>
+                                    <button
+                                        type="button"
+                                        onClick={handleUploadReset}
+                                        className="text-xs px-3 py-1 rounded-lg transition-all"
+                                        style={{ border: '1px solid rgba(255,255,255,0.3)', color: 'rgba(255,255,255,0.7)' }}
+                                    >
+                                        Try Again
+                                    </button>
+                                </div>
+                            )}
+
+                            {uploadState === 'preview' && (
+                                <div className="rounded-lg p-4 space-y-3" style={{ border: '1px solid rgba(74,222,128,0.3)', background: 'rgba(74,222,128,0.05)' }}>
+                                    <div>
+                                        <p className="text-sm font-medium" style={{ color: 'rgba(74,222,128,0.9)' }}>
+                                            ✅ Text extracted from {extractedFileName}
+                                        </p>
+                                        <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                                            Please review before submitting — check numbers carefully.
+                                        </p>
+                                    </div>
+                                    <textarea
+                                        rows={6}
+                                        value={extractedText}
+                                        onChange={e => setExtractedText(e.target.value)}
+                                        className="w-full px-3 py-2 rounded-lg font-mono text-xs focus:outline-none focus:ring-2"
+                                        style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.85)', minHeight: '120px' }}
+                                    />
+                                    <p className="text-xs" style={{ color: 'rgba(251,191,36,0.7)' }}>
+                                        ⚠️ Image quality may affect accuracy. Verify all numbers before submitting.
+                                    </p>
+                                    <div className="flex gap-3">
+                                        <button
+                                            type="button"
+                                            onClick={handleUseText}
+                                            className="px-4 py-2 text-sm font-medium rounded-lg transition-opacity text-white"
+                                            style={{ background: ACCENT }}
+                                        >
+                                            Use This Text
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={handleUploadReset}
+                                            className="px-4 py-2 text-sm rounded-lg transition-all"
+                                            style={{ border: '1px solid rgba(255,255,255,0.3)', color: 'rgba(255,255,255,0.7)', background: 'transparent' }}
+                                            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.1)'; }}
+                                            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
+                                        >
+                                            Upload Different File
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                        </>
+                    )}
 
                     {/* Sample query tags */}
                     {!output && (
@@ -217,7 +411,6 @@ function ExplainForm() {
                         className="w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 disabled:opacity-60 font-mono text-sm" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.85)" }}
                         placeholder={"Paste your lab results or medical report here.\n\nExamples:\neGFR 45 mL/min (ref >60), HbA1c 7.8%, Metformin 1000mg BID\n\n腎絲球過濾率 45，糖化血色素 7.8%，Metformin 1000mg 每日兩次"}
                     />
-                    <p className="text-xs text-gray-400">Ask in any language — we explain in yours.</p>
                 </div>
                 <button
                     type="submit" disabled={loading || !reportText.trim()}
@@ -234,7 +427,7 @@ function ExplainForm() {
             </form>
 
             <p className="text-xs mt-3 text-center" style={{ color: "rgba(255,255,255,0.35)" }}>
-                ⚠️ Explanations may contain errors. Always consult your doctor for medical advice.
+                ⚠️ Explanations are for reference only. Always consult your doctor for medical advice.
             </p>
 
             {sources.length > 0 && (
@@ -255,12 +448,7 @@ function ExplainForm() {
                             Copy to clipboard
                         </button>
                     </div>
-                    <div className="rounded-lg p-3 mb-5 border text-sm" style={{ background: 'rgba(251,191,36,0.06)', borderColor: 'rgba(251,191,36,0.3)' }}>
-                        <p style={{ color: "rgba(251,191,36,0.85)" }}>
-                            ⚠️ Explanations may contain errors. Always consult your doctor for medical advice.
-                        </p>
-                    </div>
-                    <div 
+                    <div
                         className="prose max-w-none prose-sm prose-headings:font-semibold prose-h2:text-base prose-h2:pb-1 prose-p:leading-relaxed prose-li:leading-relaxed"
                         style={{
                             color: "rgba(255,255,255,0.85)",

@@ -18,9 +18,12 @@ from api.services.entity_extractor import extract_entities
 from api.data_sources.loinc_client import loinc_client
 from api.data_sources.rxnorm_client import rxnorm_client
 from api.data_sources.medlineplus_client import medlineplus_client
-from api.utils.language_detector import detect_language
+from api.utils.language_detector import detect_language, get_language_instruction
 
 logger = logging.getLogger(__name__)
+
+# Startup self-test for language detection
+logger.info(f"Lang detector test: {detect_language('W.B.C. Count 白血球計數 6.5 血液檢查')}")
 
 # ─── Stage 3 system prompt ──────────────────────────────────────────────────
 
@@ -234,12 +237,24 @@ async def run_explain_pipeline(
     start = time.time()
 
     # Stage 1: Extract entities
+    detected_lang_early = detect_language(report_text)
+    lang_instruction = get_language_instruction(detected_lang_early)
+    logger.info(f"[Explain] Detected language: {detected_lang_early} | input preview: {report_text[:200]}")
+    logger.info(f"[Explain] Language instruction for GPT: {lang_instruction or '(none - English default)'}")
     yield {"type": "status", "content": "Analyzing your report..."}
     entities = await extract_entities(report_text, openai_client)
+    logger.info(f"[Explain] entities.input_language = {entities.input_language}")
+
+    # Override GPT's language detection with ours when they disagree
+    if entities.input_language == "en" and detected_lang_early != "en":
+        logger.info(f"[Explain] Overriding GPT language '{entities.input_language}' → '{detected_lang_early}'")
+        entities.input_language = detected_lang_early
 
     # Stage 2: Parallel API lookups
+    logger.info(f"[Explain] Entities extracted — meds: {[m.english for m in entities.medications]}, labs: {[l.english for l in entities.lab_tests]}, vitals: {[v.english for v in entities.vital_signs]}")
     yield {"type": "status", "content": "Looking up verified sources..."}
     sources, context = await retrieve_context(entities)
+    logger.info(f"[Explain] Sources found: {len(sources)} — {[s.label for s in sources]}")
 
     # Emit sources for frontend badge rendering
     yield {

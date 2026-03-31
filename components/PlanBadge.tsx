@@ -70,10 +70,10 @@ export default function PlanBadge({ onUpgrade }: PlanBadgeProps) {
 
     if (!isLoaded) return null;
 
-    // Not signed in → Upgrade button opens sign-in flow
+    // Not signed in → Upgrade button opens sign-in flow, then redirects with ?upgrade=true
     if (!isSignedIn) {
         return (
-            <SignInButton mode="modal">
+            <SignInButton mode="modal" forceRedirectUrl="/?upgrade=true">
                 <button className="text-base font-semibold px-3 py-1 rounded-lg transition-all mr-2" style={upgradeStyle}>
                     Upgrade
                 </button>

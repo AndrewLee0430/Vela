@@ -275,6 +275,25 @@ function LandingPage() {
 
 // ─── Dashboard (authenticated) ────────────────────────────────────────────────
 function Dashboard() {
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('upgrade') === 'true') {
+      // Remove ?upgrade=true from URL without adding to history
+      window.history.replaceState({}, '', '/');
+      // Only show modal for free users; pro users just clear the param
+      const cached = localStorage.getItem('vela_status_cache');
+      const cachedPlan = cached ? JSON.parse(cached).plan : null;
+      const planCache = localStorage.getItem('vela_plan_cache');
+      const planCachePlan = planCache ? JSON.parse(planCache).plan : null;
+      const knownPlan = cachedPlan || planCachePlan;
+      if (knownPlan !== 'pro') {
+        setShowUpgradeModal(true);
+      }
+    }
+  }, []);
+
   return (
     <main className="min-h-screen pb-20 md:pb-0" style={{ background: BG }}>
       <Navbar />
@@ -337,6 +356,7 @@ function Dashboard() {
         </div>
       </div>
 
+      <UpgradeModal isOpen={showUpgradeModal} onClose={() => setShowUpgradeModal(false)} />
       <OnboardingOverlay />
       <MobileNav />
     </main>

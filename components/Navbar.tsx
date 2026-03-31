@@ -182,13 +182,15 @@ export default function Navbar({ activePage }: NavbarProps) {
                                         </button>
                                     ) : plan === 'free' ? (
                                         <button
-                                            onClick={() => setShowUpgradeModal(true)}
-                                            className="text-sm font-semibold px-3 py-1 rounded-lg transition-all"
+                                            onClick={() => setMenuOpen(prev => !prev)}
+                                            className="text-sm font-semibold px-3 py-1 rounded-lg cursor-pointer transition-all"
                                             style={{
                                                 background: 'rgba(255,107,74,0.15)',
                                                 border: '1px solid rgba(255,107,74,0.4)',
                                                 color: '#ff8e6e',
                                             }}
+                                            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,107,74,0.25)'; }}
+                                            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,107,74,0.15)'; }}
                                         >
                                             Upgrade
                                         </button>
@@ -203,6 +205,13 @@ export default function Navbar({ activePage }: NavbarProps) {
                                                 backdropFilter: 'blur(20px)',
                                             }}
                                         >
+                                            {/* Plan label */}
+                                            <div className="px-4 py-2 border-b" style={{ borderColor: 'rgba(255,255,255,0.07)' }}>
+                                                <p className="text-xs font-semibold" style={{ color: plan === 'pro' ? '#fbbf24' : 'rgba(255,255,255,0.5)' }}>
+                                                    {plan === 'pro' ? 'Pro Plan' : 'Free Plan'}
+                                                </p>
+                                            </div>
+
                                             {/* Usage today */}
                                             <div className="px-4 py-3 border-b" style={{ borderColor: 'rgba(255,255,255,0.07)' }}>
                                                 <p className="text-xs mb-2" style={{ color: 'rgba(255,255,255,0.7)' }}>
@@ -248,7 +257,7 @@ export default function Navbar({ activePage }: NavbarProps) {
                                                     className="w-full text-left px-4 py-2 text-sm font-medium transition-colors hover:bg-white/5"
                                                     style={{ color: '#ff8e6e' }}
                                                 >
-                                                    Upgrade to Pro
+                                                    Upgrade to Pro →
                                                 </button>
                                             )}
                                         </div>

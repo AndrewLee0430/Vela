@@ -49,7 +49,7 @@ async def extract_entities(report_text: str, openai_client: AsyncOpenAI) -> Extr
     try:
         response = await openai_client.chat.completions.create(
             model="gpt-4.1-mini",
-            max_tokens=1000,
+            max_tokens=2000,
             temperature=0,
             messages=[
                 {"role": "system", "content": ENTITY_EXTRACTION_PROMPT},
@@ -58,6 +58,7 @@ async def extract_entities(report_text: str, openai_client: AsyncOpenAI) -> Extr
         )
 
         raw = response.choices[0].message.content.strip()
+        logger.info(f"[EntityExtractor] Raw GPT response (first 500 chars): {raw[:500]}")
 
         # Strip markdown fences if LLM adds them despite instruction
         if raw.startswith("```"):
@@ -67,6 +68,7 @@ async def extract_entities(report_text: str, openai_client: AsyncOpenAI) -> Extr
         raw = raw.strip()
 
         data = json.loads(raw)
+        logger.info(f"[EntityExtractor] Parsed — labs: {len(data.get('lab_tests', []))}, meds: {len(data.get('medications', []))}, vitals: {len(data.get('vital_signs', []))}")
 
         return ExtractedEntities(
             input_language=data.get("input_language", "en"),

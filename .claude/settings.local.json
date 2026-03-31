@@ -59,7 +59,10 @@
       "Bash(cmd.exe /c \"where flyctl\")",
       "Bash(cmd.exe /c \"where fly\")",
       "Bash(/c/Users/andre/.fly/bin/flyctl ssh:*)",
-      "Bash(/c/Users/andre/.fly/bin/flyctl ssh console -C \"python -c \"\":*)"
+      "Bash(/c/Users/andre/.fly/bin/flyctl ssh console -C \"python -c \"\":*)",
+      "Bash(xargs grep:*)",
+      "Bash(powershell.exe -File deploy.ps1 2>&1)",
+      "Bash(/c/Users/andre/.fly/bin/flyctl.exe logs:*)"
     ]
   }
 }

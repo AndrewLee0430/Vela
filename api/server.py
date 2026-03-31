@@ -115,6 +115,7 @@ RATE_LIMITS = {
     "/api/admin/costs":           (10, 60),
     "/api/user/portal":           (5,  60),
     "/api/subscription/cancel":   (3,  60),
+    "/api/explain/extract-image": (10, 60),
 }
 
 @app.middleware("http")
@@ -782,6 +783,60 @@ async def explain_identify_feedback(
     except Exception as e:
         logger.error("Explain identify feedback error: %s", type(e).__name__)
         return {"status": "error", "message": "Failed to save correction. Please try again."}
+
+
+# ============================================================
+# 功能 4b：Explain — Image text extraction
+# ============================================================
+from fastapi import File, UploadFile
+
+@app.post("/api/explain/extract-image")
+async def explain_extract_image(
+    file: UploadFile = File(...),
+    creds: Optional[HTTPAuthorizationCredentials] = Depends(optional_auth),
+):
+    get_user_id(creds)  # Auth check
+
+    # Validate content type
+    allowed_types = {"image/jpeg", "image/png", "image/webp"}
+    if file.content_type not in allowed_types:
+        return JSONResponse(status_code=400, content={"detail": "Unsupported file type. Use JPG, PNG, or WebP."})
+
+    # Read and validate size (10MB)
+    contents = await file.read()
+    if len(contents) > 10 * 1024 * 1024:
+        return JSONResponse(status_code=400, content={"detail": "File too large. Maximum size is 10MB."})
+
+    import base64 as _b64
+    b64_image = _b64.b64encode(contents).decode("utf-8")
+    media_type = file.content_type or "image/jpeg"
+
+    try:
+        response = await openai_async_client.chat.completions.create(
+            model="gpt-4o",
+            messages=[
+                {
+                    "role": "system",
+                    "content": "You are a medical document reader. Extract all text from this medical report image exactly as written in the original language. Do not translate. Preserve all original characters, numbers, units, symbols and formatting. Output only the extracted text, nothing else.",
+                },
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "image_url",
+                            "image_url": {"url": f"data:{media_type};base64,{b64_image}"},
+                        }
+                    ],
+                },
+            ],
+            max_tokens=4000,
+            temperature=0,
+        )
+        extracted = response.choices[0].message.content or ""
+        return {"text": extracted.strip()}
+    except Exception as e:
+        logger.error("Image extraction error: %s", type(e).__name__)
+        return JSONResponse(status_code=500, content={"detail": "Could not extract text from image."})
 
 
 # ============================================================

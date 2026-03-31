@@ -180,7 +180,7 @@ function ResearchForm() {
             {/* Info box */}
             <div className="rounded-xl p-4 text-sm" style={{ background: "rgba(255,142,110,0.1)", border: "1px solid rgba(255,142,110,0.35)" }}>
                 <p style={{ color: "rgba(255,142,110,0.95)" }}>
-                    <span className="font-semibold">Ask in any language</span> — we search in English and answer in yours. Grounded in peer-reviewed literature and official FDA drug data.
+                    <span className="font-semibold">Ask in any language</span> — answered from PubMed 36M+ and FDA official data.
                 </p>
             </div>
 

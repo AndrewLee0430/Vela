@@ -95,14 +95,16 @@ def _detect_by_script(text: str) -> str | None:
         elif 0x0E00 <= cp <= 0x0E7F:
             th_count += 5
 
-    # CJK disambiguation: if Hiragana/Katakana found, it's Japanese
-    if ja_count > 3 and ja_count > cjk_count:
+    # CJK/Japanese/Korean/Thai take priority over Latin characters.
+    # Medical reports often mix local language with English terminology,
+    # so even a single non-Latin character should trigger detection.
+    if ja_count > 0 and ja_count > cjk_count:
         return "ja"
-    if ko_count > 3:
+    if ko_count > 0:
         return "ko"
-    if th_count > 3:
+    if th_count > 0:
         return "th"
-    if cjk_count > 3:
+    if cjk_count > 0:
         return _classify_zh_variant(text)
 
     return None  # Latin-script languages need keyword heuristics

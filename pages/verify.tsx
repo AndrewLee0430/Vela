@@ -167,11 +167,10 @@ function VerifyForm() {
                 )}
             </div>
 
-            {/* Privacy notice */}
-            <div className="rounded-lg p-4 mb-6 border" style={{ background: 'rgba(99,179,237,0.06)', borderColor: 'rgba(99,179,237,0.3)' }}>
-                <p className="text-sm" style={{ color: 'rgba(99,179,237,0.95)' }}>
-                    <strong>Privacy:</strong> Enter drug names only — no patient names or identifying information.
-                    Queries are not stored. Example: Metformin, Aspirin, Warfarin.
+            {/* Language box */}
+            <div className="rounded-xl p-4 text-sm mb-6" style={{ background: 'rgba(56,189,248,0.05)', border: '1px solid rgba(56,189,248,0.3)' }}>
+                <p style={{ color: 'rgba(56,189,248,0.9)' }}>
+                    <span className="font-semibold">Any drug name, any language</span> — checked against FDA official labels.
                 </p>
             </div>
 
@@ -212,7 +211,6 @@ function VerifyForm() {
                                 style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.85)" }}
                                 placeholder={"Metformin\nAspirin\nWarfarin"}
                             />
-                            <p className="text-xs" style={{ color: "rgba(255,255,255,0.4)" }}>At least 2 drug names in English.</p>
                         </div>
 
                         <button
@@ -267,9 +265,6 @@ function VerifyForm() {
                                         </p>
                                     );
                                 })()}
-                                <p className="text-sm text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
-                                    {result.summary}
-                                </p>
                                 <FeedbackBar
                                     query={`Drugs: ${result.drugs_analyzed.join(', ')}`}
                                     response={result.summary}
