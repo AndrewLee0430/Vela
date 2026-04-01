@@ -5,7 +5,6 @@ import posthog from 'posthog-js';
 import { PostHogProvider } from 'posthog-js/react';
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
-import 'react-datepicker/dist/react-datepicker.css';
 import '../styles/globals.css';
 
 if (typeof window !== 'undefined') {

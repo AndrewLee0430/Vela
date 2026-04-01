@@ -1,56 +1,40 @@
 # ============================================================
-# Vela �X Backend Dependencies
+# Vela Backend Dependencies
 # Python 3.11+
 # Install: pip install -r requirements.txt
 # ============================================================
 
-# �w�w Web Framework �w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w
+# -- Web Framework ------------------------------------------------
 fastapi==0.111.0
 uvicorn[standard]==0.29.0
 python-multipart==0.0.9
-sentry-sdk[fastapi]
+sentry-sdk[fastapi]==2.56.0
 
-# �w�w Auth �w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w
-clerk-backend-api==1.1.0
-fastapi-clerk-auth
+# -- Auth ---------------------------------------------------------
+fastapi-clerk-auth==0.0.9
 python-jose[cryptography]==3.3.0
 httpx==0.27.0
 
-# �w�w AI / LLM �w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w
+# -- AI / LLM ----------------------------------------------------
 openai==1.30.1
-langchain==0.2.5
-langchain-openai==0.1.8
-langchain-community==0.2.5
 
-
-# �w�w Vector Search �w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w
+# -- Vector Search ------------------------------------------------
 numpy>=1.24.0
 
-# �w�w Database �w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w
-asyncpg==0.29.0
+# -- Database -----------------------------------------------------
 psycopg2-binary==2.9.9
 sqlalchemy==2.0.30
 
-# �w�w Data Sources / APIs �w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w
-biopython==1.83
+# -- Data Sources / APIs ------------------------------------------
 requests==2.32.2
 
-# �w�w Streaming �w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w
+# -- Streaming ----------------------------------------------------
 sse-starlette==2.1.0
 
-# �w�w NLP / Text Processing �w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w
-tiktoken==0.7.0
-
-# �w�w Utilities �w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w
+# -- Utilities ----------------------------------------------------
 python-dotenv==1.0.1
 pydantic==2.8.2
-pydantic-settings==2.3.0
-tenacity==8.3.0
-cachetools==5.3.3
 
-# �w�w Security �w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w
-cryptography==43.0.1
-
-# �w�w Testing �w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w�w
+# -- Testing ------------------------------------------------------
 pytest==8.2.2
 pytest-asyncio==0.23.7
