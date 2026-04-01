@@ -61,7 +61,7 @@ Explain:   Lab Report → Entity Extractor → LOINC / RxNorm / MedlinePlus → 
 | Vector Search | NumPy (in-memory, 690 documents) |
 | Data Sources | PubMed API, FDA OpenFDA, LOINC, RxNorm, MedlinePlus |
 | Database | PostgreSQL via Neon (history + user usage) |
-| Payments | Lemon Squeezy (Freemium: 15 free credits, Pro $8.99/mo) |
+| Payments | Dodo Payments (Free: 10 credits/day, Pro $9.99/mo) |
 | Analytics | PostHog |
 | Streaming | SSE (Server-Sent Events) |
 | Hosting | Fly.io (Tokyo region) |
@@ -86,7 +86,7 @@ Vela/
 │   │   ├── rxnorm_client.py
 │   │   └── medlineplus_client.py
 │   ├── services/
-│   │   ├── usage_service.py      # Credit system (Free: 15 credits, Pro: unlimited*)
+│   │   ├── usage_service.py      # Credit system (Free: 10/day, Pro: 100/day)
 │   │   ├── cost_tracker.py       # API cost monitoring
 │   │   ├── entity_extractor.py   # Lab/drug entity extraction
 │   │   └── explain_service.py    # 3-stage Explain pipeline
@@ -320,10 +320,10 @@ fly secrets set \
 
 | Plan | Price | Credits | Usage |
 |------|-------|---------|-------|
-| Free | $0 | 15 one-time credits | Research (3 credits), Explain (2), Verify (1) |
-| Pro | $8.99/mo or $89.99/yr | Unlimited* | All features |
+| Free | $0 | 10 credits/day | Research (3 credits), Explain (2), Verify (1) |
+| Pro | $9.99/mo or $89.99/yr (save 25%) | 100 credits/day | All features |
 
-*Subject to fair use policy. Daily limit of 50 credits applies to prevent automated abuse. See [Terms of Service](https://vela.an-tho.com/terms).
+*Subject to fair use policy. Daily limit of 100 credits applies to prevent automated abuse. Credit costs: Research (3), Verify (1), Explain (2). See [Terms of Service](https://vela.an-tho.com/terms).
 
 ---
 

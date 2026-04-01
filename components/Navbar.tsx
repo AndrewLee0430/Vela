@@ -214,8 +214,11 @@ export default function Navbar({ activePage }: NavbarProps) {
 
                                             {/* Usage today */}
                                             <div className="px-4 py-3 border-b" style={{ borderColor: 'rgba(255,255,255,0.07)' }}>
-                                                <p className="text-xs mb-2" style={{ color: 'rgba(255,255,255,0.7)' }}>
+                                                <p className="text-xs mb-1" style={{ color: 'rgba(255,255,255,0.7)' }}>
                                                     Today: <span className="font-medium text-white">{creditsUsed}</span> / {dailyLimit} credits used
+                                                </p>
+                                                <p className="text-xs mb-2" style={{ color: 'rgba(255,255,255,0.4)' }}>
+                                                    Research: 3 · Verify: 1 · Explain: 2
                                                 </p>
                                                 <div className="w-full h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.1)' }}>
                                                     <div
@@ -292,7 +295,7 @@ export default function Navbar({ activePage }: NavbarProps) {
                         {cancelMessage === 'success' ? (
                             <div className="text-center py-4">
                                 <p className="text-sm" style={{ color: 'rgba(255,255,255,0.8)' }}>
-                                    Subscription cancelled. You'll retain access until your billing period ends.
+                                    Subscription cancelled. Your Pro access has ended.
                                 </p>
                             </div>
                         ) : cancelMessage === 'error' ? (
@@ -312,7 +315,7 @@ export default function Navbar({ activePage }: NavbarProps) {
                             <>
                                 <h3 className="text-lg font-semibold text-white mb-3">Cancel Subscription</h3>
                                 <p className="text-sm mb-6" style={{ color: 'rgba(255,255,255,0.6)' }}>
-                                    Are you sure you want to cancel your subscription? You will retain Pro access until the end of your current billing period.
+                                    Are you sure you want to cancel your subscription? Your Pro access will end immediately upon cancellation.
                                 </p>
                                 <div className="flex gap-3 justify-end">
                                     <button

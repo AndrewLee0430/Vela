@@ -65,22 +65,22 @@ export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
         <div className="text-center mb-6">
           <div className="text-4xl mb-2">🪸</div>
           <h2 className="text-2xl font-bold text-white mb-1">Upgrade to Vela Pro</h2>
-          <p className="text-gray-400 text-sm">Unlimited* access to all features</p>
+          <p className="text-gray-400 text-sm">Up to 100 queries per day*</p>
         </div>
 
         {/* Features */}
         <ul className="space-y-2 mb-2">
           {[
-            '✅ Unlimited* Research queries',
-            '✅ Unlimited* Drug Verification',
-            '✅ Unlimited* Report Explanation',
+            '✅ Up to 100 credits / day*',
+            '✅ Research (3 credits), Verify (1), Explain (2)',
+            '✅ All features unlocked',
             '✅ Priority support',
           ].map((f, i) => (
             <li key={i} className="text-gray-300 text-sm">{f}</li>
           ))}
         </ul>
         <p className="text-xs mb-4" style={{ color: 'rgba(255,255,255,0.4)' }}>
-          *Subject to fair use policy. See <a href="/terms" target="_blank" className="underline hover:opacity-80">Terms of Service</a>.
+          *Daily credit limit resets at midnight UTC. See <a href="/terms" target="_blank" className="underline hover:opacity-80">Terms of Service</a>.
         </p>
 
         {/* ToS consent */}

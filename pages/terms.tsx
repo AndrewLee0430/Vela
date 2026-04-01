@@ -45,22 +45,27 @@ export default function Terms() {
                     </section>
 
                     <section>
-                        <h2 className="text-lg font-semibold text-white mb-3">5. Fair Use Policy</h2>
+                        <h2 className="text-lg font-semibold text-white mb-3">5. Refund Policy</h2>
+                        <p>We offer a <strong className="text-white">7-day money-back guarantee</strong> from the date of your first subscription payment. To request a refund, email <a href="mailto:support@an-tho.com" className="underline" style={{ color: "#ff8e6e" }}>support@an-tho.com</a> within 7 days of purchase. Refunds are processed by Dodo Payments and typically appear within 5–10 business days. After the 7-day window, subscription payments are non-refundable. For full details, see our <a href="/refund" className="underline" style={{ color: "#ff8e6e" }}>Refund Policy</a>.</p>
+                    </section>
+
+                    <section>
+                        <h2 className="text-lg font-semibold text-white mb-3">6. Fair Use Policy</h2>
                         <p>Pro subscribers enjoy unlimited access to all features subject to our fair use policy. To prevent automated abuse, a daily usage limit of <strong className="text-white">100 credits</strong> applies (approximately 33 Research queries, 100 Verify queries, or 50 Explain queries per day). This limit is designed to prevent scripted or automated use and will not affect normal clinical workflows. Free plan users receive <strong className="text-white">10 credits per day</strong>, resetting at midnight UTC. Users who reach their daily limit will be notified and can resume usage the following day.</p>
                     </section>
 
                     <section>
-                        <h2 className="text-lg font-semibold text-white mb-3">6. Account Termination</h2>
+                        <h2 className="text-lg font-semibold text-white mb-3">7. Account Termination</h2>
                         <p>We reserve the right to suspend or terminate accounts that violate these terms, engage in abuse, or use the service for unlawful purposes. You may cancel your subscription at any time through the Customer Portal.</p>
                     </section>
 
                     <section>
-                        <h2 className="text-lg font-semibold text-white mb-3">7. Governing Law</h2>
+                        <h2 className="text-lg font-semibold text-white mb-3">8. Governing Law</h2>
                         <p>These terms are governed by the laws of Taiwan (R.O.C.), without regard to conflict of law principles.</p>
                     </section>
 
                     <section>
-                        <h2 className="text-lg font-semibold text-white mb-3">8. Contact</h2>
+                        <h2 className="text-lg font-semibold text-white mb-3">9. Contact</h2>
                         <p>For questions about these terms, contact us at <a href="mailto:support@an-tho.com" className="underline" style={{ color: "#ff8e6e" }}>support@an-tho.com</a>.</p>
                     </section>
                 </div>

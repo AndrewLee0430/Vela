@@ -31,7 +31,7 @@ export default function Privacy() {
 
                     <section>
                         <h2 className="text-lg font-semibold text-white mb-3">2. No PHI Storage</h2>
-                        <p>Vela is designed to process queries <strong className="text-white">in memory only</strong>. We do not store patient health information (PHI). Our PHI detection system actively blocks inputs containing identifiable patient data such as national IDs, passport numbers, or medical record numbers.</p>
+                        <p>We do not store patient health information (PHI). Our PHI detection system actively blocks inputs containing identifiable patient data such as national IDs, passport numbers, or medical record numbers. Anonymized query logs are retained for audit and service improvement purposes (see §4 Data Retention below).</p>
                     </section>
 
                     <section>
@@ -40,12 +40,18 @@ export default function Privacy() {
                     </section>
 
                     <section>
-                        <h2 className="text-lg font-semibold text-white mb-3">4. Third-Party Services</h2>
+                        <h2 className="text-lg font-semibold text-white mb-3">4. Data Retention</h2>
+                        <p className="mb-2">Anonymized audit logs and chat history are retained for <strong className="text-white">up to 6 months</strong> for service improvement and compliance purposes. After 6 months, records are automatically deleted. You may request earlier deletion at any time (see §6 Data Deletion).</p>
+                    </section>
+
+                    <section>
+                        <h2 className="text-lg font-semibold text-white mb-3">5. Third-Party Services</h2>
                         <p className="mb-2">We use the following third-party services to operate Vela:</p>
                         <ul className="list-disc list-inside space-y-1">
                             <li><strong className="text-white">OpenAI</strong> — AI language model processing</li>
                             <li><strong className="text-white">Clerk</strong> — User authentication</li>
                             <li><strong className="text-white">Dodo Payments</strong> — Payment processing (Merchant of Record)</li>
+                            <li><strong className="text-white">Sentry</strong> — Error monitoring and performance tracking (no PII collected)</li>
                             <li><strong className="text-white">PostHog</strong> — Anonymous product analytics</li>
                             <li><strong className="text-white">Neon</strong> — Database hosting</li>
                             <li><strong className="text-white">Fly.io</strong> — Application hosting</li>
@@ -53,17 +59,17 @@ export default function Privacy() {
                     </section>
 
                     <section>
-                        <h2 className="text-lg font-semibold text-white mb-3">5. Cookies</h2>
+                        <h2 className="text-lg font-semibold text-white mb-3">6. Cookies</h2>
                         <p>We use essential cookies for authentication session management (via Clerk). We do not use advertising or tracking cookies.</p>
                     </section>
 
                     <section>
-                        <h2 className="text-lg font-semibold text-white mb-3">6. Data Deletion</h2>
+                        <h2 className="text-lg font-semibold text-white mb-3">7. Data Deletion</h2>
                         <p>To request deletion of your account and associated data, email us at <a href="mailto:support@an-tho.com" className="underline" style={{ color: "#ff8e6e" }}>support@an-tho.com</a>. We will process your request within 30 days.</p>
                     </section>
 
                     <section>
-                        <h2 className="text-lg font-semibold text-white mb-3">7. Contact</h2>
+                        <h2 className="text-lg font-semibold text-white mb-3">8. Contact</h2>
                         <p>For privacy-related inquiries: <a href="mailto:support@an-tho.com" className="underline" style={{ color: "#ff8e6e" }}>support@an-tho.com</a></p>
                     </section>
                 </div>

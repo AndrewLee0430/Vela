@@ -77,10 +77,33 @@ from api.utils.language_detector import detect_language, get_language_instructio
 # ============================================================
 # 生命週期管理
 # ============================================================
+async def _cleanup_old_records():
+    """Delete AuditLog and ChatHistory records older than 6 months. Runs daily."""
+    from datetime import datetime, timedelta
+    while True:
+        await asyncio.sleep(86400)  # Run once per day
+        try:
+            cutoff = datetime.utcnow() - timedelta(days=180)
+            db = SessionLocal()
+            try:
+                deleted_audit = db.query(AuditLog).filter(AuditLog.created_at < cutoff).delete()
+                deleted_chat = db.query(ChatHistory).filter(ChatHistory.created_at < cutoff).delete()
+                db.commit()
+                if deleted_audit or deleted_chat:
+                    logger.info("Data cleanup: deleted %d audit logs, %d chat history records older than 6 months",
+                                deleted_audit, deleted_chat)
+            finally:
+                db.close()
+        except Exception as e:
+            logger.error("Data cleanup error: %s", e)
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     Base.metadata.create_all(bind=engine)
+    cleanup_task = asyncio.create_task(_cleanup_old_records())
     yield
+    cleanup_task.cancel()
 
 
 app = FastAPI(
