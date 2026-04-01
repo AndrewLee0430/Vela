@@ -74,6 +74,23 @@ from api.services.explain_service import run_explain_pipeline
 from api.utils.language_detector import detect_language, get_language_instruction  # ← v2.5
 
 # ============================================================
+# DB write helper
+# ============================================================
+
+def _safe_db_write(db: Session, *records, label: str = "DB") -> bool:
+    """Add one or more records and commit. Returns True on success."""
+    try:
+        for rec in records:
+            db.add(rec)
+        db.commit()
+        return True
+    except Exception as e:
+        logger.error("%s Error: %s", label, e)
+        db.rollback()
+        return False
+
+
+# ============================================================
 # 生命週期管理
 # ============================================================
 async def _cleanup_old_records():
@@ -429,33 +446,25 @@ async def research_query(
                 elif event.type == StreamEventType.CITATIONS:
                     citations_data = [c.model_dump() for c in event.content]
                     audit_id = f"res_{uuid.uuid4().hex[:16]}"
-                    try:
-                        db.add(AuditLog(
+                    _safe_db_write(db, AuditLog(
                             id=audit_id,
                             user_id=user_id,
                             action="research",
                             query_content=PHIDetector.sanitize_for_log(body.question),
                             resource_ids=[c.get('source_id') for c in citations_data],
                             ip_address="0.0.0.0"
-                        ))
-                        db.commit()
-                    except Exception as e:
-                        logger.error("Audit Log Error: %s", e)
+                        ), label="Audit Log")
                     yield f"data: {json.dumps({'type': 'citations', 'content': citations_data}, ensure_ascii=False)}\n\n"
                 elif event.type == StreamEventType.ERROR:
                     yield f"data: {json.dumps({'type': 'error', 'content': event.content}, ensure_ascii=False)}\n\n"
                 elif event.type == StreamEventType.DONE:
                     elapsed_ms = int((time.time() - start_time) * 1000)
-                    try:
-                        db.add(ChatHistory(
+                    _safe_db_write(db, ChatHistory(
                             user_id=user_id,
                             session_type="research",
                             question=PHIDetector.sanitize_for_log(body.question),
                             answer=full_answer
-                        ))
-                        db.commit()
-                    except Exception as e:
-                        logger.error("History Save Error: %s", e)
+                        ), label="History Save")
                     # 成功後扣減 credits
                     await deduct_credits(db, user_id, "research")
                     # Cost logging
@@ -591,12 +600,9 @@ async def verify_drug_interaction(
 
     if not drug_labels:
         logger.warning("No FDA labels found for %s, falling back to LLM", body.drugs)
-        try:
-            db.add(AuditLog(id=f"ver_{uuid.uuid4().hex[:16]}", user_id=user_id,
-                action="verify_fallback", query_content=f"LLM fallback: {body.drugs}", ip_address="0.0.0.0"))
-            db.commit()
-        except Exception:
-            pass
+        _safe_db_write(db, AuditLog(id=f"ver_{uuid.uuid4().hex[:16]}", user_id=user_id,
+                action="verify_fallback", query_content=f"LLM fallback: {body.drugs}", ip_address="0.0.0.0"),
+                label="Verify Audit")
 
         fallback_system = """You are a clinical pharmacologist. Analyze drug interactions based on pharmacological knowledge.
 Return valid JSON only:
@@ -627,12 +633,8 @@ Return valid JSON only:
                 for item in fb_data.get("interactions",[]) if len(item.get("drugs",[])) >= 2
             ]
             fb_summary = "⚠️ No FDA label data found. " + fb_data.get("summary","")
-            try:
-                db.add(ChatHistory(user_id=user_id, session_type="verify",
-                    question=f"Drugs: {', '.join(body.drugs)}", answer=fb_summary))
-                db.commit()
-            except Exception as e:
-                logger.error("DB Error: %s", e); db.rollback()
+            _safe_db_write(db, ChatHistory(user_id=user_id, session_type="verify",
+                    question=f"Drugs: {', '.join(body.drugs)}", answer=fb_summary), label="Verify History")
             return VerifyResponse(
                 drugs_analyzed=body.drugs,
                 interactions=fb_interactions,
@@ -643,12 +645,8 @@ Return valid JSON only:
         except Exception as e:
             logger.error("Verify fallback failed: %s", e)
             fallback_summary = "No FDA label data found. Please use specific drug names."
-            try:
-                db.add(ChatHistory(user_id=user_id, session_type="verify",
-                    question=f"Drugs: {', '.join(body.drugs)}", answer=fallback_summary))
-                db.commit()
-            except Exception as e2:
-                logger.error("DB Error: %s", e2); db.rollback()
+            _safe_db_write(db, ChatHistory(user_id=user_id, session_type="verify",
+                    question=f"Drugs: {', '.join(body.drugs)}", answer=fallback_summary), label="Verify History")
             return VerifyResponse(
                 drugs_analyzed=body.drugs, interactions=[],
                 summary=fallback_summary,
@@ -727,14 +725,12 @@ Return valid JSON only:
 
     elapsed_ms = int((time.time()-start_time)*1000)
 
-    try:
-        db.add(AuditLog(id=f"ver_{uuid.uuid4().hex[:16]}", user_id=user_id,
-            action="verify", query_content=f"Checked: {body.drugs}", ip_address="0.0.0.0"))
-        db.add(ChatHistory(user_id=user_id, session_type="verify",
-            question=f"Drugs: {', '.join(body.drugs)}", answer=summary))
-        db.commit()
-    except Exception as e:
-        logger.error("DB Error: %s", e); db.rollback()
+    _safe_db_write(db,
+        AuditLog(id=f"ver_{uuid.uuid4().hex[:16]}", user_id=user_id,
+            action="verify", query_content=f"Checked: {body.drugs}", ip_address="0.0.0.0"),
+        ChatHistory(user_id=user_id, session_type="verify",
+            question=f"Drugs: {', '.join(body.drugs)}", answer=summary),
+        label="Verify")
 
     if spelling_corrections:
         summary = "Note: " + "; ".join(spelling_corrections) + ". Please verify. " + summary
@@ -805,16 +801,12 @@ async def explain_report(
                     full_answer += event.get("content", "")
                 # Save to history when done
                 if isinstance(event, dict) and event.get("type") == "done":
-                    try:
-                        db.add(ChatHistory(
+                    _safe_db_write(db, ChatHistory(
                             user_id=user_id,
                             session_type="explain",
                             question=body.report_text[:500],
                             answer=full_answer
-                        ))
-                        db.commit()
-                    except Exception as e:
-                        logger.error("History Save Error: %s", e)
+                        ), label="Explain History")
                     # 成功後扣減 credits
                     await deduct_credits(db, user_id, "explain")
                     # Cost logging

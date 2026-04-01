@@ -1,13 +1,12 @@
 "use client"
 
 import { useState, FormEvent, useRef } from 'react';
-import { useAuth, SignedIn, SignedOut, RedirectToSignIn } from '@clerk/nextjs';
+import { useAuth } from '@clerk/nextjs';
 import FeedbackBar from '../components/FeedbackBar';
 import UpgradeModal from '../components/UpgradeModal';
 import Toast from '../components/Toast';
 import PHIWarning from '../components/PHIWarning';
-import MobileNav from '../components/MobileNav';
-import Navbar from '../components/Navbar';
+import PageShell from '../components/PageShell';
 
 // Verify accent color
 const ACCENT = '#63b3ed';
@@ -367,11 +366,8 @@ function VerifyForm() {
 
 export default function Verify() {
     return (
-        <main className="min-h-screen pb-20 md:pb-0" style={{ background: "linear-gradient(135deg, #0a1628 0%, #0f2040 45%, #1a1035 75%, #0d1a2e 100%)" }}>
-            <Navbar activePage="verify" />
-            <SignedIn><VerifyForm /></SignedIn>
-            <SignedOut><RedirectToSignIn /></SignedOut>
-            <MobileNav />
-        </main>
+        <PageShell activePage="verify">
+            <VerifyForm />
+        </PageShell>
     );
 }

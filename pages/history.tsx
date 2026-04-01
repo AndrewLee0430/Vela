@@ -1,11 +1,10 @@
 "use client"
 
 import { useState, useEffect } from 'react';
-import { useAuth, SignedIn, SignedOut, RedirectToSignIn } from '@clerk/nextjs';
+import { useAuth } from '@clerk/nextjs';
 import Link from 'next/link';
-import MobileNav from '../components/MobileNav';
 import UpgradeModal from '../components/UpgradeModal';
-import Navbar from '../components/Navbar';
+import PageShell from '../components/PageShell';
 
 // ─── Design System ────────────────────────────────────────────────────────────
 // 顏色對應跨頁面一致，首頁 card / 功能頁 accent / History 標籤全部同色
@@ -326,24 +325,21 @@ function HistoryList() {
 
 export default function History() {
     return (
-        <>
-        <style>{`
-            .history-question::selection { background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.85); }
-            .history-question::-moz-selection { background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.85); }
-        `}</style>
-        <main className="min-h-screen pb-20 md:pb-0" style={{ background: "linear-gradient(135deg, #0a1628 0%, #0f2040 45%, #1a1035 75%, #0d1a2e 100%)" }}>
-            <Navbar activePage="history" />
-            <SignedIn>
-                <div className="container mx-auto px-4 py-10 max-w-3xl">
-                    <h1 className="text-2xl font-bold mb-8 tracking-tight" style={{ color: "#ffffff" }}>
-                        History
-                    </h1>
-                    <HistoryList />
-                </div>
-            </SignedIn>
-            <SignedOut><RedirectToSignIn /></SignedOut>
-            <MobileNav />
-        </main>
-        </>
+        <PageShell
+            activePage="history"
+            extraHead={
+                <style>{`
+                    .history-question::selection { background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.85); }
+                    .history-question::-moz-selection { background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.85); }
+                `}</style>
+            }
+        >
+            <div className="container mx-auto px-4 py-10 max-w-3xl">
+                <h1 className="text-2xl font-bold mb-8 tracking-tight" style={{ color: "#ffffff" }}>
+                    History
+                </h1>
+                <HistoryList />
+            </div>
+        </PageShell>
     );
 }

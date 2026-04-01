@@ -1,21 +1,19 @@
 "use client"
 
 import { useState, FormEvent, useRef, useCallback, DragEvent } from 'react';
-import { useAuth, SignedIn, SignedOut, RedirectToSignIn } from '@clerk/nextjs';
+import { useAuth } from '@clerk/nextjs';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkBreaks from 'remark-breaks';
 import { fetchEventSource } from '@microsoft/fetch-event-source';
+import { FatalError, makeOnOpen, sseOnError } from '../utils/sse';
 import FeedbackBar from '../components/FeedbackBar';
 import Toast from '../components/Toast';
 import PHIWarning from '../components/PHIWarning';
 import UpgradeModal from '../components/UpgradeModal';
-import MobileNav from '../components/MobileNav';
-import Navbar from '../components/Navbar';
+import PageShell from '../components/PageShell';
 
 const ACCENT = '#68d391';
-
-class FatalError extends Error {}
 
 interface ExplainSource {
     source_type: string;
@@ -178,29 +176,10 @@ function ExplainForm() {
                 headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${jwt}` },
                 body: JSON.stringify({ report_text: reportText }),
                 openWhenHidden: true,
-                async onopen(response) {
-                    if (response.ok) return;
-                    if (response.status === 400) {
-                        const data = await response.json().catch(() => ({}));
-                        if (data.type === 'phi_blocked') {
-                            setPhiError({ detail: data.detail, suggestion: data.suggestion });
-                            throw new FatalError('');
-                        }
-                    }
-                    if (response.status === 403) {
-                        const data = await response.json().catch(() => ({}));
-                        if (data.error === 'limit_reached') {
-                            setShowUpgradeModal(true);
-                            throw new FatalError('');
-                        }
-                        throw new FatalError('Session expired.');
-                    }
-                    if (response.status === 429) {
-                        setShowDailyCapToast(true);
-                        throw new FatalError('');
-                    }
-                    throw new FatalError(`Server error (${response.status}).`);
-                },
+                onopen: makeOnOpen({
+                    onPhiBlocked: (detail, suggestion) => setPhiError({ detail, suggestion }),
+                    onLimitReached: () => setShowUpgradeModal(true),
+                }),
                 onmessage(ev) {
                     if (!ev.data || ev.data.trim() === '') return;
                     try {
@@ -222,10 +201,7 @@ function ExplainForm() {
                     } catch {}
                 },
                 onclose() { setLoading(false); setStatusMsg(''); },
-                onerror(err) {
-                    if (err instanceof FatalError) throw err;
-                    throw new FatalError(err instanceof Error ? err.message : 'Connection lost.');
-                },
+                onerror: sseOnError,
             });
         } catch (err: any) {
             controller.abort(); setLoading(false); setStatusMsg('');
@@ -513,11 +489,8 @@ function ExplainForm() {
 
 export default function Explain() {
     return (
-        <main className="min-h-screen pb-20 md:pb-0" style={{ background: "linear-gradient(135deg, #0a1628 0%, #0f2040 45%, #1a1035 75%, #0d1a2e 100%)" }}>
-            <Navbar activePage="explain" />
-            <SignedIn><ExplainForm /></SignedIn>
-            <SignedOut><RedirectToSignIn /></SignedOut>
-            <MobileNav />
-        </main>
+        <PageShell activePage="explain">
+            <ExplainForm />
+        </PageShell>
     );
 }

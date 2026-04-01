@@ -1,20 +1,19 @@
 "use client"
 
 import { useState, FormEvent, useRef, useEffect, useCallback } from 'react';
-import { useAuth, SignedIn, SignedOut, RedirectToSignIn } from '@clerk/nextjs';
+import { useAuth } from '@clerk/nextjs';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkBreaks from 'remark-breaks';
 import { fetchEventSource } from '@microsoft/fetch-event-source';
+import { FatalError, makeOnOpen, sseOnError } from '../utils/sse';
 import CitationPanel, { Citation } from '../components/CitationPanel';
 import FeedbackBar from '../components/FeedbackBar';
 import UpgradeModal from '../components/UpgradeModal';
 import Toast from '../components/Toast';
 import PHIWarning from '../components/PHIWarning';
-import MobileNav from '../components/MobileNav';
-import Navbar from '../components/Navbar';
+import PageShell from '../components/PageShell';
 
-// Research accent color
 const ACCENT = '#ff8e6e';
 
 const defaultSuggestions = [
@@ -29,8 +28,6 @@ const defaultSuggestions = [
     "Quels sont les effets secondaires des statines?",
     "Safety of antibiotics in pregnancy?",
 ];
-
-class FatalError extends Error {}
 
 function FallbackBanner() {
     return (
@@ -103,27 +100,10 @@ function ResearchForm() {
                 body: JSON.stringify({ question: q, max_results: 5 }),
                 openWhenHidden: true,
 
-                async onopen(response) {
-                    if (response.ok) return;
-                    if (response.status === 400) {
-                        const data = await response.json().catch(() => ({}));
-                        if (data.type === 'phi_blocked') {
-                            setPhiError({ detail: data.detail, suggestion: data.suggestion });
-                            throw new FatalError('');
-                        }
-                    }
-                    if (response.status === 403) {
-                        const data = await response.json().catch(() => ({}));
-                        if (data.error === 'limit_reached') {
-                            setShowUpgradeModal(true);
-                            throw new FatalError('');
-                        }
-                        throw new FatalError('Session expired. Please refresh and sign in again.');
-                    }
-                    if (response.status === 429)
-                        throw new FatalError('Too many requests. Please wait a moment and try again.');
-                    throw new FatalError(`Server error (${response.status}). Please try again.`);
-                },
+                onopen: makeOnOpen({
+                    onPhiBlocked: (detail, suggestion) => setPhiError({ detail, suggestion }),
+                    onLimitReached: () => setShowUpgradeModal(true),
+                }),
 
                 onmessage(ev) {
                     try {
@@ -147,10 +127,7 @@ function ResearchForm() {
 
                 onclose() { setLoading(false); },
 
-                onerror(err) {
-                    if (err instanceof FatalError) throw err;
-                    throw new FatalError(err instanceof Error ? err.message : 'Connection lost. Please try again.');
-                },
+                onerror: sseOnError,
             });
 
         } catch (err: any) {
@@ -346,15 +323,10 @@ function ResearchForm() {
 
 export default function Research() {
     return (
-        <main className="min-h-screen pb-20 md:pb-0" style={{ background: "linear-gradient(135deg, #0a1628 0%, #0f2040 45%, #1a1035 75%, #0d1a2e 100%)" }}>
-            <Navbar activePage="research" />
-            <SignedIn>
-                <div className="container mx-auto px-4 py-8">
-                    <ResearchForm />
-                </div>
-            </SignedIn>
-            <SignedOut><RedirectToSignIn /></SignedOut>
-            <MobileNav />
-        </main>
+        <PageShell activePage="research">
+            <div className="container mx-auto px-4 py-8">
+                <ResearchForm />
+            </div>
+        </PageShell>
     );
 }
