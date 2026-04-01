@@ -9,6 +9,7 @@ v2.2 新增：
 
 import asyncio
 import json
+import logging
 from typing import Optional
 from openai import OpenAI
 from api.models.schemas import RetrievedDocument, SourceType, CredibilityLevel
@@ -16,6 +17,8 @@ from api.database.vector_store import get_vector_store
 from api.data_sources.pubmed import PubMedClient
 from api.data_sources.fda import FDAClient
 from api.rag.reranker import Reranker
+
+logger = logging.getLogger(__name__)
 
 # 相關性過濾門檻
 RELEVANCE_THRESHOLD = 0.45
@@ -74,9 +77,9 @@ class HybridRetriever:
         """
         # Step 1：Query Rewriting（生成 3 個標準化查詢）
         rewritten_queries = await self._rewrite_query(query)
-        print(f"🔤 Query rewritten: '{query}'")
+        logger.info("Query rewritten: '%s'", query)
         for i, q in enumerate(rewritten_queries, 1):
-            print(f"   [{i}] {q}")
+            logger.debug("  [%d] %s", i, q)
 
         # Step 2：對每個 rewritten query 並行檢索所有來源
         all_tasks = []
@@ -96,7 +99,7 @@ class HybridRetriever:
             if isinstance(result, list):
                 all_documents.extend(result)
             elif isinstance(result, Exception):
-                print(f"⚠️ Retrieval error: {result}")
+                logger.warning("Retrieval error: %s", result)
                 has_api_error = True
 
         if not all_documents:
@@ -111,7 +114,7 @@ class HybridRetriever:
                 seen.add(doc.source_id)
                 unique_docs.append(doc)
 
-        print(f"📚 Retrieved {len(all_documents)} docs → {len(unique_docs)} unique after dedup")
+        logger.info("Retrieved %d docs, %d unique after dedup", len(all_documents), len(unique_docs))
 
         # Step 4：年份加權
         unique_docs = self._apply_year_boost(unique_docs)
@@ -124,17 +127,17 @@ class HybridRetriever:
         relevant_docs = await self._filter_by_relevance(query, candidates)
 
         if not relevant_docs:
-            print(f"⚠️ Relevance check: all documents filtered out for query '{query}'")
+            logger.warning("Relevance check: all documents filtered out for query '%s'", query)
             return [], "irrelevant"
 
         # Step 7：Rerank
         try:
             documents = await self.reranker.rerank(query, relevant_docs)
         except Exception as e:
-            print(f"⚠️ Rerank failed: {e}, using relevance order")
+            logger.warning("Rerank failed: %s, using relevance order", e)
             documents = relevant_docs
 
-        print(f"✅ Final: {len(documents)} documents returned")
+        logger.info("Final: %d documents returned", len(documents))
         return documents[:max_results], "ok"
 
     # ─────────────────────────────────────────────
@@ -214,7 +217,7 @@ class HybridRetriever:
                 return queries
 
         except Exception as e:
-            print(f"⚠️ Query rewriting failed: {e}, falling back to translation")
+            logger.warning("Query rewriting failed: %s, falling back to translation", e)
 
         # Fallback：退回原本的翻譯邏輯
         fallback = await self._translate_to_medical_english(query)
@@ -252,7 +255,7 @@ class HybridRetriever:
             return translated if translated else query
 
         except Exception as e:
-            print(f"⚠️ Translation failed: {e}, using original query")
+            logger.warning("Translation failed: %s, using original query", e)
             return query
 
     # ─────────────────────────────────────────────
@@ -316,11 +319,11 @@ class HybridRetriever:
                 documents[i] for i in relevant_indices
                 if isinstance(i, int) and 0 <= i < len(documents)
             ]
-            print(f"✅ Relevance filter: {len(documents)} → {len(filtered)} documents kept")
+            logger.info("Relevance filter: %d -> %d documents kept", len(documents), len(filtered))
             return filtered
 
         except Exception as e:
-            print(f"⚠️ Relevance filter failed: {e}, returning all documents")
+            logger.warning("Relevance filter failed: %s, returning all documents", e)
             return [doc for doc in documents if doc.relevance_score >= RELEVANCE_THRESHOLD]
 
     # ─────────────────────────────────────────────
@@ -362,7 +365,7 @@ class HybridRetriever:
             )
             return documents
         except Exception as e:
-            print(f"⚠️ Local search error: {e}")
+            logger.warning("Local search error: %s", e)
             return []
 
     async def _search_pubmed(self, query: str, max_results: int) -> list[RetrievedDocument]:
@@ -391,7 +394,7 @@ class HybridRetriever:
             return documents
 
         except Exception as e:
-            print(f"⚠️ PubMed search error: {e}")
+            logger.warning("PubMed search error: %s", e)
             return []
 
     async def _search_fda(self, query: str, max_results: int) -> list[RetrievedDocument]:
@@ -415,5 +418,5 @@ class HybridRetriever:
             return documents
 
         except Exception as e:
-            print(f"⚠️ FDA search error: {e}")
+            logger.warning("FDA search error: %s", e)
             return []

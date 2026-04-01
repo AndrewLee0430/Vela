@@ -13,10 +13,13 @@ FDA Client with Caching
 """
 
 import json
+import logging
 import requests
 from typing import Optional, Dict, Any, List
 from dataclasses import dataclass, asdict
 from api.cache.simple_cache import fda_cache
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -120,17 +123,17 @@ class FDAClientCached:
         # 1. 尝试从缓存获取
         cached_data = self.cache.get(cache_key)
         if cached_data is not None:
-            print(f"✅ Cache hit for FDA label: {drug_name}")
+            logger.debug("Cache hit for FDA label: %s", drug_name)
             try:
                 # 尝试解析 JSON（如果是字符串）
                 if isinstance(cached_data, str):
                     return json.loads(cached_data)
                 return cached_data
             except json.JSONDecodeError:
-                print(f"⚠️ Cache data corrupted for {drug_name}, fetching fresh...")
+                logger.warning("Cache data corrupted for %s, fetching fresh", drug_name)
         
         # 2. 缓存未命中，调用 API
-        print(f"❌ Cache miss for FDA label: {drug_name}, calling FDA API...")
+        logger.debug("Cache miss for FDA label: %s, calling FDA API", drug_name)
         
         try:
             # 构建搜索查询（尝试多种搜索方式）
@@ -156,7 +159,7 @@ class FDAClientCached:
                         
                         # 3. 存入缓存（24 小时）
                         self.cache.set(cache_key, json.dumps(result), ttl=86400)
-                        print(f"💾 Cached FDA label for {drug_name}")
+                        logger.debug("Cached FDA label for %s", drug_name)
                         
                         return result
                 
@@ -165,23 +168,23 @@ class FDAClientCached:
                     continue
                 
                 else:
-                    print(f"⚠️ FDA API returned status {response.status_code}")
+                    logger.warning("FDA API returned status %d", response.status_code)
                     break
-            
+
             # 所有搜索词都未找到
-            print(f"⚠️ No FDA label found for {drug_name}")
+            logger.warning("No FDA label found for %s", drug_name)
             return None
             
         except requests.exceptions.Timeout:
-            print(f"⚠️ FDA API timeout for {drug_name}")
+            logger.warning("FDA API timeout for %s", drug_name)
             return None
-        
+
         except requests.exceptions.RequestException as e:
-            print(f"⚠️ FDA API request error for {drug_name}: {e}")
+            logger.warning("FDA API request error for %s: %s", drug_name, e)
             return None
-        
+
         except Exception as e:
-            print(f"❌ Unexpected error fetching FDA label for {drug_name}: {e}")
+            logger.error("Unexpected error fetching FDA label for %s: %s", drug_name, e)
             return None
     
     def search_drug_labels_sync(self, query: str, limit: int = 5) -> List[FDADrugLabel]:
@@ -201,17 +204,17 @@ class FDAClientCached:
         # 1. 尝试从缓存获取
         cached_data = self.cache.get(cache_key)
         if cached_data is not None:
-            print(f"✅ Cache hit for FDA search: {query}")
+            logger.debug("Cache hit for FDA search: %s", query)
             try:
                 # 从缓存恢复 FDADrugLabel 对象
                 data = json.loads(cached_data) if isinstance(cached_data, str) else cached_data
                 return [FDADrugLabel(**item) for item in data]
             except (json.JSONDecodeError, TypeError, KeyError) as e:
-                print(f"⚠️ Cache data error for {query}: {e}, fetching fresh data...")
+                logger.warning("Cache data error for %s: %s, fetching fresh data", query, e)
                 # 缓存数据损坏，继续调用 API
         
         # 2. 缓存未命中，调用 API
-        print(f"❌ Cache miss for FDA search: {query}, calling FDA API...")
+        logger.debug("Cache miss for FDA search: %s, calling FDA API", query)
         
         try:
             # 构建搜索查询
@@ -247,31 +250,31 @@ class FDAClientCached:
                     continue  # 尝试下一个搜索词
                 
                 else:
-                    print(f"⚠️ FDA API returned status {response.status_code}")
+                    logger.warning("FDA API returned status %d", response.status_code)
                     break
-            
+
             # 3. 存入缓存（1 小时）
             if all_results:
                 cache_data = [label.to_dict() for label in all_results]
                 self.cache.set(cache_key, json.dumps(cache_data), ttl=3600)
-                print(f"💾 Cached {len(all_results)} FDA search results for {query}")
+                logger.debug("Cached %d FDA search results for %s", len(all_results), query)
             else:
-                print(f"⚠️ No FDA labels found for {query}")
+                logger.warning("No FDA labels found for %s", query)
                 # 缓存空结果（10分钟），避免重复查询
                 self.cache.set(cache_key, json.dumps([]), ttl=600)
             
             return all_results
         
         except requests.exceptions.Timeout:
-            print(f"⚠️ FDA API timeout for {query}")
+            logger.warning("FDA API timeout for %s", query)
             return []
-        
+
         except requests.exceptions.RequestException as e:
-            print(f"⚠️ FDA API request error for {query}: {e}")
+            logger.warning("FDA API request error for %s: %s", query, e)
             return []
-        
+
         except Exception as e:
-            print(f"❌ Unexpected error searching FDA for {query}: {e}")
+            logger.error("Unexpected error searching FDA for %s: %s", query, e)
             return []
     
     def search_drugs(self, query: str, limit: int = 5) -> list:
@@ -290,14 +293,14 @@ class FDAClientCached:
         # 尝试从缓存获取
         cached_data = self.cache.get(cache_key)
         if cached_data is not None:
-            print(f"✅ Cache hit for FDA raw search: {query}")
+            logger.debug("Cache hit for FDA raw search: %s", query)
             try:
                 return json.loads(cached_data) if isinstance(cached_data, str) else cached_data
             except json.JSONDecodeError:
-                print(f"⚠️ Cache data corrupted, fetching fresh...")
+                logger.warning("Cache data corrupted, fetching fresh")
         
         # 调用 API
-        print(f"❌ Cache miss for FDA raw search: {query}, calling FDA API...")
+        logger.debug("Cache miss for FDA raw search: %s, calling FDA API", query)
         
         try:
             params = {
@@ -317,11 +320,11 @@ class FDAClientCached:
                 return results
             
             else:
-                print(f"⚠️ FDA API returned status {response.status_code}")
+                logger.warning("FDA API returned status %d", response.status_code)
                 return []
-        
+
         except Exception as e:
-            print(f"❌ Error searching FDA: {e}")
+            logger.error("Error searching FDA: %s", e)
             return []
     
     def get_cache_stats(self) -> dict:

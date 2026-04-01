@@ -12,7 +12,10 @@ v2.0 新增：
 import re
 import base64
 import json
+import logging
 from openai import OpenAI
+
+logger = logging.getLogger(__name__)
 
 # ============================================================
 # 1. Prompt Injection patterns
@@ -159,8 +162,8 @@ async def check_indirect_injection(text: str) -> tuple[bool, str]:
             return True, result.get("reason", "indirect injection detected")
         return False, ""
     except Exception as e:
-        print(f"⚠️ Indirect injection check failed (allowing through): {e}")
-        return False, ""
+        logger.error("Indirect injection check failed (blocking request): %s", e)
+        return True, "Security check temporarily unavailable. Please try again."
 
 
 # ============================================================
@@ -247,8 +250,8 @@ async def check_medical_intent(text: str) -> tuple[bool, str]:
             return True, ""
         return False, result.get("reason", "non-medical query")
     except Exception as e:
-        print(f"⚠️ Intent check failed (allowing through): {e}")
-        return True, ""
+        logger.error("Intent check failed (blocking request): %s", e)
+        return False, "Security check temporarily unavailable. Please try again."
 
 
 # ============================================================

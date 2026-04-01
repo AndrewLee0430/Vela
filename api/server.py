@@ -62,7 +62,6 @@ from api.models.schemas import (
 from api.rag.retriever import HybridRetriever
 from api.rag.generator import AnswerGenerator
 from api.data_sources.fda import FDAClient
-from api.data_sources.fda_cached import fda_client_cached
 from api.middleware.phi_handler import PHIDetector
 from api.middleware.guards import run_guards
 from api.database.sql_db import get_db, engine, Base, SessionLocal
@@ -127,7 +126,6 @@ _rate_store_last_cleanup = 0.0
 RATE_LIMITS = {
     "/api/research":              (30, 60),
     "/api/verify":                (30, 60),
-    "/api/consultation":          (20, 60),
     "/api/explain":               (20, 60),
     "/api/feedback":              (10, 60),
     "/api/explain/feedback":      (10, 60),
@@ -336,7 +334,7 @@ async def audit_middleware(request: Request, call_next):
 
     # SSE endpoints skip middleware body read (causes chunked read errors).
     # PHI detection for those is done inline in each route handler.
-    if path in ["/api/research", "/api/consultation", "/api/explain", "/api/verify"]:
+    if path in ["/api/research", "/api/explain", "/api/verify"]:
         return await call_next(request)
 
     if path == "/api/feedback" and request.method == "POST":
@@ -381,6 +379,7 @@ async def research_query(
 
     user_id = get_user_id(creds)
     start_time = time.time()
+    logger.info("[Research] user=%s query_length=%d", user_id, len(body.question))
 
     # Credit 檢查（在 streaming 開始前）
     if not TEST_MODE:
@@ -505,6 +504,7 @@ async def verify_drug_interaction(
 
     start_time = time.time()
     user_id = get_user_id(creds)
+    logger.info("[Verify] user=%s drugs=%s", user_id, body.drugs)
 
     # Credit 檢查
     if not TEST_MODE:
@@ -765,6 +765,7 @@ async def explain_report(
         return phi_resp
 
     user_id = get_user_id(creds)
+    logger.info("[Explain] user=%s report_length=%d", user_id, len(body.report_text))
 
     # Credit 檢查
     if not TEST_MODE:
@@ -1457,7 +1458,7 @@ async def api_status(creds: Optional[HTTPAuthorizationCredentials] = Depends(opt
         "status": "healthy",
         "version": "2.2.0",
         "features": {
-            "consultation": True, "research": True, "pubmed": True,
+            "research": True, "pubmed": True,
             "fda": True, "verify": True, "explain": True,
             "feedback": True, "history": True
         },

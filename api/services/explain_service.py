@@ -239,7 +239,7 @@ async def run_explain_pipeline(
     # Stage 1: Extract entities
     detected_lang_early = detect_language(report_text)
     lang_instruction = get_language_instruction(detected_lang_early)
-    logger.info(f"[Explain] Detected language: {detected_lang_early} | input preview: {report_text[:200]}")
+    logger.info("[Explain] Processing report, length=%d, language=%s", len(report_text), detected_lang_early)
     logger.info(f"[Explain] Language instruction for GPT: {lang_instruction or '(none - English default)'}")
     yield {"type": "status", "content": "Analyzing your report..."}
     entities = await extract_entities(report_text, openai_client)

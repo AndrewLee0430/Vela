@@ -14,12 +14,14 @@ const YEARLY_PRODUCT_ID  = "pdt_0NbELkno040P4wQSaQaam";
 
 export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
   const [loading, setLoading] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const { getToken } = useAuth();
 
   if (!isOpen) return null;
 
   const handleUpgrade = async (productId: string, plan: string) => {
     setLoading(plan);
+    setError(null);
     try {
       const token = await getToken({ skipCache: true });
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/checkout/dodo`, {
@@ -34,9 +36,11 @@ export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
       if (data.payment_link) {
         clearPlanCache();
         window.location.href = data.payment_link;
+      } else {
+        setError('Unable to start checkout. Please try again.');
       }
-    } catch (err) {
-      console.error('Checkout error:', err);
+    } catch {
+      setError('Payment failed. Please try again or contact support@an-tho.com');
     } finally {
       setLoading(null);
     }
@@ -82,6 +86,13 @@ export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
         <p className="text-xs mb-4" style={{ color: 'rgba(255,255,255,0.4)' }}>
           *Daily credit limit resets at midnight UTC. See <a href="/terms" target="_blank" className="underline hover:opacity-80">Terms of Service</a>.
         </p>
+
+        {/* Error message */}
+        {error && (
+          <p className="text-xs text-center mb-3 px-2 py-2 rounded-lg" style={{ background: 'rgba(239,68,68,0.1)', color: '#ef4444' }}>
+            {error}
+          </p>
+        )}
 
         {/* ToS consent */}
         <p className="text-xs text-center mb-3" style={{ color: 'rgba(255,255,255,0.45)' }}>

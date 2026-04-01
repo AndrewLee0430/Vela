@@ -6,10 +6,13 @@ API 文件：https://open.fda.gov/apis/
 """
 
 import os
+import logging
 import httpx
 from typing import Optional
 from dataclasses import dataclass
 import asyncio
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -250,9 +253,10 @@ class FDAClient:
             await asyncio.sleep(self.rate_limit_delay)
             return data.get("results", [])
             
-        except Exception:
+        except Exception as e:
+            logger.error("[FDA] API error for search_drug_labels: %s: %s", type(e).__name__, e)
             return []
-    
+
     def _parse_labels(self, results: list[dict]) -> list[FDADrugLabel]:
         """解析 FDA Label API 回應"""
         labels = []

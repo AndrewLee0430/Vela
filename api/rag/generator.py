@@ -7,6 +7,7 @@ v2.5 改進：
 4. 偵測不到語言時，不強制注入，讓 system prompt 自然處理
 """
 
+import logging
 from typing import List, AsyncGenerator
 from openai import OpenAI
 from api.models.schemas import (
@@ -16,6 +17,8 @@ from api.models.schemas import (
     StreamEventType
 )
 from api.utils.language_detector import detect_language, get_language_instruction
+
+logger = logging.getLogger(__name__)
 
 # 模型設定
 RAG_MODEL      = "gpt-4.1"
@@ -150,7 +153,7 @@ class AnswerGenerator:
 
         except Exception as e:
             yield StreamEvent(type=StreamEventType.ERROR, content=ERROR_MESSAGES["error"])
-            print(f"❌ Generation error: {e}")
+            logger.error("Generation error: %s", e, exc_info=True)
             yield StreamEvent(type=StreamEventType.DONE)
 
     # ─── Public: non-streaming ───────────────────────────────────────────────
@@ -186,7 +189,7 @@ class AnswerGenerator:
                 )
                 return completion.choices[0].message.content, []
             except Exception as e:
-                print(f"❌ Fallback error: {e}")
+                logger.error("Fallback generation error (non-stream): %s", e, exc_info=True)
                 return ERROR_MESSAGES["error"], []
 
         context       = self._build_context(documents)
@@ -206,7 +209,7 @@ class AnswerGenerator:
             )
             return completion.choices[0].message.content, citations
         except Exception as e:
-            print(f"❌ Generation error: {e}")
+            logger.error("Generation error (non-stream): %s", e, exc_info=True)
             return ERROR_MESSAGES["error"], citations
 
     # ─── Private helpers ─────────────────────────────────────────────────────
@@ -254,7 +257,7 @@ class AnswerGenerator:
 
         except Exception as e:
             yield StreamEvent(type=StreamEventType.ERROR, content=ERROR_MESSAGES["error"])
-            print(f"❌ Fallback generation error: {e}")
+            logger.error("Fallback generation error: %s", e, exc_info=True)
             yield StreamEvent(type=StreamEventType.DONE)
 
     def _get_system_prompt(self, query_type: str = "research") -> str:

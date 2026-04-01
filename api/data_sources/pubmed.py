@@ -6,11 +6,14 @@ API 文件：https://www.ncbi.nlm.nih.gov/books/NBK25501/
 """
 
 import os
+import logging
 import httpx
 from typing import Optional, List
 from dataclasses import dataclass
 from xml.etree import ElementTree as ET
 import asyncio
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -100,11 +103,11 @@ class PubMedClient:
         """
         # 參數驗證
         if not query or not query.strip():
-            print("⚠️ PubMed: Empty query")
+            logger.warning("PubMed: Empty query")
             return []
-        
+
         if max_results < 1:
-            print("⚠️ PubMed: Invalid max_results")
+            logger.warning("PubMed: Invalid max_results")
             return []
         
         try:
@@ -116,7 +119,7 @@ class PubMedClient:
                 sort=sort
             )
             
-            print(f"🔍 Searching PubMed for: {query}")
+            logger.debug("Searching PubMed for: %s", query)
             
             async with httpx.AsyncClient() as client:
                 response = await client.get(
@@ -130,24 +133,24 @@ class PubMedClient:
             await asyncio.sleep(self.rate_limit_delay)
             
             pmids = data.get("esearchresult", {}).get("idlist", [])
-            print(f"✅ PubMed: Found {len(pmids)} articles")
+            logger.info("PubMed: Found %d articles", len(pmids))
             
             return pmids
         
         except httpx.TimeoutException as e:
-            print(f"⚠️ PubMed timeout: {e}")
+            logger.warning("PubMed timeout: %s", e)
             return []
-        
+
         except httpx.HTTPStatusError as e:
-            print(f"⚠️ PubMed HTTP error: {e.response.status_code}")
+            logger.warning("PubMed HTTP error: %d", e.response.status_code)
             return []
-        
+
         except ValueError as e:
-            print(f"⚠️ PubMed JSON parse error: {e}")
+            logger.warning("PubMed JSON parse error: %s", e)
             return []
-        
+
         except Exception as e:
-            print(f"❌ PubMed unexpected error: {type(e).__name__}: {e}")
+            logger.error("PubMed unexpected error: %s: %s", type(e).__name__, e)
             return []
     
     async def fetch_details(self, pmids: List[str]) -> List[PubMedArticle]:
@@ -161,7 +164,7 @@ class PubMedClient:
             PubMedArticle 列表
         """
         if not pmids:
-            print("⚠️ PubMed: No PMIDs to fetch")
+            logger.warning("PubMed: No PMIDs to fetch")
             return []
         
         try:
@@ -172,7 +175,7 @@ class PubMedClient:
                 rettype="abstract"
             )
             
-            print(f"📥 Fetching details for {len(pmids)} PubMed articles")
+            logger.debug("Fetching details for %d PubMed articles", len(pmids))
             
             async with httpx.AsyncClient() as client:
                 response = await client.get(
@@ -186,27 +189,27 @@ class PubMedClient:
             await asyncio.sleep(self.rate_limit_delay)
             
             articles = self._parse_xml(xml_text)
-            print(f"✅ PubMed: Parsed {len(articles)} articles")
+            logger.info("PubMed: Parsed %d articles", len(articles))
             
             return articles
         
         except httpx.TimeoutException as e:
-            print(f"⚠️ PubMed fetch timeout: {e}")
+            logger.warning("PubMed fetch timeout: %s", e)
             return []
 
         except httpx.HTTPStatusError as e:
-            print(f"⚠️ PubMed fetch HTTP error: {e.response.status_code}")
+            logger.warning("PubMed fetch HTTP error: %d", e.response.status_code)
             return []
 
         except ValueError as e:
             # Python 3.11+ httpx/asyncio 在處理某些 XML response 時可能拋出
             # "second argument (exceptions) must be a non-empty sequence"
             # 這是函式庫的已知邊緣情況，安全忽略並回傳空結果
-            print(f"⚠️ PubMed fetch ValueError (likely httpx/asyncio edge case): {e}")
+            logger.warning("PubMed fetch ValueError (likely httpx/asyncio edge case): %s", e)
             return []
 
         except Exception as e:
-            print(f"❌ PubMed fetch unexpected error: {type(e).__name__}: {e}")
+            logger.error("PubMed fetch unexpected error: %s: %s", type(e).__name__, e)
             return []
     
     def _parse_xml(self, xml_text: str) -> List[PubMedArticle]:
@@ -214,16 +217,16 @@ class PubMedClient:
         articles = []
         
         if not xml_text or not xml_text.strip():
-            print("⚠️ PubMed: Empty XML response")
+            logger.warning("PubMed: Empty XML response")
             return articles
         
         try:
             root = ET.fromstring(xml_text)
         except ET.ParseError as e:
-            print(f"❌ PubMed XML parse error: {e}")
+            logger.error("PubMed XML parse error: %s", e)
             return articles
         except Exception as e:
-            print(f"❌ PubMed XML unexpected error: {type(e).__name__}: {e}")
+            logger.error("PubMed XML unexpected error: %s: %s", type(e).__name__, e)
             return articles
         
         for article_elem in root.findall(".//PubmedArticle"):
@@ -302,13 +305,13 @@ class PubMedClient:
                 ))
                 
             except KeyError as e:
-                print(f"⚠️ PubMed: Missing required field in article: {e}")
+                logger.warning("PubMed: Missing required field in article: %s", e)
                 continue
             except TypeError as e:
-                print(f"⚠️ PubMed: Type error in article parsing: {e}")
+                logger.warning("PubMed: Type error in article parsing: %s", e)
                 continue
             except Exception as e:
-                print(f"⚠️ PubMed: Unexpected error parsing article: {type(e).__name__}: {e}")
+                logger.warning("PubMed: Unexpected error parsing article: %s: %s", type(e).__name__, e)
                 continue
         
         return articles
@@ -331,14 +334,14 @@ class PubMedClient:
         try:
             pmids = await self.search(query, max_results)
             if not pmids:
-                print(f"⚠️ PubMed: No results found for '{query}'")
+                logger.warning("PubMed: No results found for '%s'", query)
                 return []
             
             articles = await self.fetch_details(pmids)
             return articles
         
         except Exception as e:
-            print(f"❌ PubMed search_and_fetch error: {type(e).__name__}: {e}")
+            logger.error("PubMed search_and_fetch error: %s: %s", type(e).__name__, e)
             return []
 
 
@@ -358,7 +361,7 @@ def search_pubmed_sync(query: str, max_results: int = 10) -> List[PubMedArticle]
         client = PubMedClient()
         return asyncio.run(client.search_and_fetch(query, max_results))
     except Exception as e:
-        print(f"❌ PubMed sync search error: {type(e).__name__}: {e}")
+        logger.error("PubMed sync search error: %s: %s", type(e).__name__, e)
         return []
 
 

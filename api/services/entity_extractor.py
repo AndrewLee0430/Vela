@@ -58,7 +58,7 @@ async def extract_entities(report_text: str, openai_client: AsyncOpenAI) -> Extr
         )
 
         raw = response.choices[0].message.content.strip()
-        logger.info(f"[EntityExtractor] Raw GPT response (first 500 chars): {raw[:500]}")
+        logger.info("[EntityExtractor] Raw GPT response length: %d chars", len(raw))
 
         # Strip markdown fences if LLM adds them despite instruction
         if raw.startswith("```"):
