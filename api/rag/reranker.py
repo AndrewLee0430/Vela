@@ -10,10 +10,12 @@ Reranker 讓 LLM 直接判斷每份文件對這個 query 的有用程度 (0-100)
 位置：在 _filter_by_relevance 之後、Generator 之前
 """
 
-import asyncio
-from openai import OpenAI
+import logging
+from openai import AsyncOpenAI
 from api.models.schemas import RetrievedDocument
 import json
+
+logger = logging.getLogger(__name__)
 
 
 class Reranker:
@@ -27,7 +29,7 @@ class Reranker:
     """
 
     def __init__(self, model: str = "gpt-4o-mini", top_k: int = 5):
-        self.llm = OpenAI()
+        self.llm = AsyncOpenAI()
         self.model = model
         self.top_k = top_k
 
@@ -81,21 +83,17 @@ Output ONLY a JSON array with scores in order, e.g.: [85, 40, 92, 60, 75]
 One score per document, same order as input."""
 
         try:
-            loop = asyncio.get_event_loop()
-            response = await loop.run_in_executor(
-                None,
-                lambda: self.llm.chat.completions.create(
-                    model=self.model,
-                    messages=[
-                        {
-                            "role": "system",
-                            "content": "You are a medical evidence evaluator. Output ONLY valid JSON arrays."
-                        },
-                        {"role": "user", "content": prompt}
-                    ],
-                    temperature=0,
-                    max_tokens=200
-                )
+            response = await self.llm.chat.completions.create(
+                model=self.model,
+                messages=[
+                    {
+                        "role": "system",
+                        "content": "You are a medical evidence evaluator. Output ONLY valid JSON arrays."
+                    },
+                    {"role": "user", "content": prompt}
+                ],
+                temperature=0,
+                max_tokens=200
             )
 
             raw = response.choices[0].message.content.strip()
@@ -103,7 +101,7 @@ One score per document, same order as input."""
             scores = json.loads(raw)
 
             if not isinstance(scores, list) or len(scores) != len(documents):
-                print(f"⚠️ Reranker: unexpected scores format, skipping rerank")
+                logger.warning("Reranker: unexpected scores format, skipping rerank")
                 return documents[:self.top_k]
 
             # 把分數寫回文件的 relevance_score，然後排序
@@ -113,11 +111,11 @@ One score per document, same order as input."""
             reranked = sorted(documents, key=lambda d: d.relevance_score, reverse=True)
             result = reranked[:self.top_k]
 
-            print(f"✅ Reranker: {len(documents)} → top {len(result)} docs "
-                  f"(scores: {[round(s) for s in scores]})")
+            logger.info("Reranker: %d -> top %d docs (scores: %s)",
+                        len(documents), len(result), [round(s) for s in scores])
 
             return result
 
         except Exception as e:
-            print(f"⚠️ Reranker failed: {e}, returning original order")
+            logger.warning("Reranker failed: %s, returning original order", e)
             return documents[:self.top_k]

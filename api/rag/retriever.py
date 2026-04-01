@@ -11,7 +11,7 @@ import asyncio
 import json
 import logging
 from typing import Optional
-from openai import OpenAI
+from openai import AsyncOpenAI
 from api.models.schemas import RetrievedDocument, SourceType, CredibilityLevel
 from api.database.vector_store import get_vector_store
 from api.data_sources.pubmed import PubMedClient
@@ -55,7 +55,7 @@ class HybridRetriever:
         self.vector_store = get_vector_store() if enable_local else None
         self.pubmed = PubMedClient() if enable_pubmed else None
         self.fda = FDAClient() if enable_fda else None
-        self.llm = OpenAI()
+        self.llm = AsyncOpenAI()
         self.reranker = Reranker(top_k=8)
 
     # ─────────────────────────────────────────────
@@ -165,38 +165,34 @@ class HybridRetriever:
              "antithrombotic combination therapy clinical guidelines"]
         """
         try:
-            loop = asyncio.get_event_loop()
-            response = await loop.run_in_executor(
-                None,
-                lambda: self.llm.chat.completions.create(
-                    model="gpt-4.1-mini",
-                    messages=[
-                        {
-                            "role": "system",
-                            "content": (
-                                "You are a medical search query optimizer. "
-                                "Given a user question in ANY language or writing style, "
-                                "generate exactly 3 different English search queries for PubMed/medical databases.\n\n"
-                                "Each query should approach the topic from a different angle:\n"
-                                "1. Mechanism/pharmacology angle (how/why)\n"
-                                "2. Clinical management angle (symptoms/treatment/dosing)\n"
-                                "3. Precise medical terminology angle (official drug names, MeSH terms)\n\n"
-                                "Rules:\n"
-                                "- Output ONLY valid JSON array with exactly 3 strings\n"
-                                "- Each query: 4-8 words, English only, no punctuation\n"
-                                "- Use standard medical terminology and drug names\n"
-                                "- NO explanations, NO extra text\n\n"
-                                'Example output: ["warfarin aspirin bleeding risk mechanism", '
-                                '"anticoagulant antiplatelet combination INR monitoring", '
-                                '"warfarin aspirin hemorrhage pharmacodynamic interaction"]'
-                            )
-                        },
-                        {"role": "user", "content": query}
-                    ],
-                    temperature=0,
-                    max_tokens=150,
-                    response_format={"type": "json_object"}
-                )
+            response = await self.llm.chat.completions.create(
+                model="gpt-4.1-mini",
+                messages=[
+                    {
+                        "role": "system",
+                        "content": (
+                            "You are a medical search query optimizer. "
+                            "Given a user question in ANY language or writing style, "
+                            "generate exactly 3 different English search queries for PubMed/medical databases.\n\n"
+                            "Each query should approach the topic from a different angle:\n"
+                            "1. Mechanism/pharmacology angle (how/why)\n"
+                            "2. Clinical management angle (symptoms/treatment/dosing)\n"
+                            "3. Precise medical terminology angle (official drug names, MeSH terms)\n\n"
+                            "Rules:\n"
+                            "- Output ONLY valid JSON array with exactly 3 strings\n"
+                            "- Each query: 4-8 words, English only, no punctuation\n"
+                            "- Use standard medical terminology and drug names\n"
+                            "- NO explanations, NO extra text\n\n"
+                            'Example output: ["warfarin aspirin bleeding risk mechanism", '
+                            '"anticoagulant antiplatelet combination INR monitoring", '
+                            '"warfarin aspirin hemorrhage pharmacodynamic interaction"]'
+                        )
+                    },
+                    {"role": "user", "content": query}
+                ],
+                temperature=0,
+                max_tokens=150,
+                response_format={"type": "json_object"}
             )
 
             raw = response.choices[0].message.content.strip()
@@ -230,26 +226,22 @@ class HybridRetriever:
             return query.strip()
 
         try:
-            loop = asyncio.get_event_loop()
-            response = await loop.run_in_executor(
-                None,
-                lambda: self.llm.chat.completions.create(
-                    model="gpt-4.1-mini",
-                    messages=[
-                        {
-                            "role": "system",
-                            "content": (
-                                "You are a medical terminology translator. "
-                                "Convert the given query into concise English medical search terms "
-                                "suitable for PubMed. Output ONLY the English search terms, "
-                                "no explanations. Keep it under 10 words."
-                            )
-                        },
-                        {"role": "user", "content": query}
-                    ],
-                    temperature=0,
-                    max_tokens=50
-                )
+            response = await self.llm.chat.completions.create(
+                model="gpt-4.1-mini",
+                messages=[
+                    {
+                        "role": "system",
+                        "content": (
+                            "You are a medical terminology translator. "
+                            "Convert the given query into concise English medical search terms "
+                            "suitable for PubMed. Output ONLY the English search terms, "
+                            "no explanations. Keep it under 10 words."
+                        )
+                    },
+                    {"role": "user", "content": query}
+                ],
+                temperature=0,
+                max_tokens=50
             )
             translated = response.choices[0].message.content.strip()
             return translated if translated else query
@@ -279,36 +271,32 @@ class HybridRetriever:
         docs_text = "\n".join(doc_summaries)
 
         try:
-            loop = asyncio.get_event_loop()
-            response = await loop.run_in_executor(
-                None,
-                lambda: self.llm.chat.completions.create(
-                    model="gpt-4.1-mini",
-                    messages=[
-                        {
-                            "role": "system",
-                            "content": (
-                                "You are a medical relevance judge. "
-                                "Given a user question and a list of retrieved documents, "
-                                "determine which documents actually contain information "
-                                "relevant to answering the question. "
-                                "Output ONLY a JSON array of indices (0-based) of relevant documents. "
-                                "Example output: [0, 2, 3]  "
-                                "If none are relevant, output: []"
-                            )
-                        },
-                        {
-                            "role": "user",
-                            "content": (
-                                f"User question: {original_query}\n\n"
-                                f"Retrieved documents:\n{docs_text}\n\n"
-                                f"Which document indices are relevant? Output JSON array only."
-                            )
-                        }
-                    ],
-                    temperature=0,
-                    max_tokens=100
-                )
+            response = await self.llm.chat.completions.create(
+                model="gpt-4.1-mini",
+                messages=[
+                    {
+                        "role": "system",
+                        "content": (
+                            "You are a medical relevance judge. "
+                            "Given a user question and a list of retrieved documents, "
+                            "determine which documents actually contain information "
+                            "relevant to answering the question. "
+                            "Output ONLY a JSON array of indices (0-based) of relevant documents. "
+                            "Example output: [0, 2, 3]  "
+                            "If none are relevant, output: []"
+                        )
+                    },
+                    {
+                        "role": "user",
+                        "content": (
+                            f"User question: {original_query}\n\n"
+                            f"Retrieved documents:\n{docs_text}\n\n"
+                            f"Which document indices are relevant? Output JSON array only."
+                        )
+                    }
+                ],
+                temperature=0,
+                max_tokens=100
             )
 
             raw = response.choices[0].message.content.strip()

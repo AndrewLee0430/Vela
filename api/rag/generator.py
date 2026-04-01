@@ -9,7 +9,7 @@ v2.5 改進：
 
 import logging
 from typing import List, AsyncGenerator
-from openai import OpenAI
+from openai import AsyncOpenAI
 from api.models.schemas import (
     RetrievedDocument,
     Citation,
@@ -91,7 +91,7 @@ class AnswerGenerator:
 
     def __init__(self, model: str = RAG_MODEL):
         self.model  = model
-        self.client = OpenAI()
+        self.client = AsyncOpenAI()
 
     # ─── Public: streaming ──────────────────────────────────────────────────
 
@@ -123,7 +123,7 @@ class AnswerGenerator:
         citations     = [doc.to_citation(citation_id=i + 1) for i, doc in enumerate(documents)]
 
         try:
-            stream = self.client.chat.completions.create(
+            stream = await self.client.chat.completions.create(
                 model=self.model,
                 messages=[
                     {"role": "system", "content": system_prompt},
@@ -134,7 +134,7 @@ class AnswerGenerator:
                 temperature=0.2,
                 max_tokens=2500
             )
-            for chunk in stream:
+            async for chunk in stream:
                 # 最後一個 chunk choices 可能是空的（usage chunk）
                 if chunk.choices and chunk.choices[0].delta.content:
                     yield StreamEvent(
@@ -178,7 +178,7 @@ class AnswerGenerator:
                 lang_instruction = get_language_instruction(resolved_lang)
                 user_content     = f"{question}\n\n{lang_instruction}" if lang_instruction else question
 
-                completion = self.client.chat.completions.create(
+                completion = await self.client.chat.completions.create(
                     model=FALLBACK_MODEL,
                     messages=[
                         {"role": "system", "content": system_prompt},
@@ -198,7 +198,7 @@ class AnswerGenerator:
         citations     = [doc.to_citation(citation_id=i + 1) for i, doc in enumerate(documents)]
 
         try:
-            completion = self.client.chat.completions.create(
+            completion = await self.client.chat.completions.create(
                 model=self.model,
                 messages=[
                     {"role": "system", "content": system_prompt},
@@ -229,7 +229,7 @@ class AnswerGenerator:
         try:
             yield StreamEvent(type=StreamEventType.FALLBACK, content="no_literature")
 
-            stream = self.client.chat.completions.create(
+            stream = await self.client.chat.completions.create(
                 model=FALLBACK_MODEL,
                 messages=[
                     {"role": "system", "content": system_prompt},
@@ -240,7 +240,7 @@ class AnswerGenerator:
                 temperature=0.2,
                 max_tokens=2500
             )
-            for chunk in stream:
+            async for chunk in stream:
                 if chunk.choices and chunk.choices[0].delta.content:
                     yield StreamEvent(
                         type=StreamEventType.ANSWER,

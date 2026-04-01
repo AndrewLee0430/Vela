@@ -548,11 +548,20 @@ async def verify_drug_interaction(
         "sertraline","losartan",
     ]
 
-    for drug in body.drugs:
-        labels = await fda_client.search_drug_labels(drug, limit=1)
-        if labels:
-            drug_labels.append(labels[0])
-            official_name = (labels[0].generic_name or labels[0].brand_name or '').strip()
+    # Parallel FDA lookups for all drugs
+    fda_results = await asyncio.gather(
+        *[fda_client.search_drug_labels(drug, limit=1) for drug in body.drugs],
+        return_exceptions=True
+    )
+
+    # Process results and apply spell correction for misses
+    correction_tasks = []  # (index, drug_name, best_match)
+    for i, (drug, result) in enumerate(zip(body.drugs, fda_results)):
+        if isinstance(result, Exception):
+            result = []
+        if result:
+            drug_labels.append(result[0])
+            official_name = (result[0].generic_name or result[0].brand_name or '').strip()
             if official_name:
                 drug_lower, official_lower = drug.lower().strip(), official_name.lower().strip()
                 if drug_lower not in official_lower and official_lower not in drug_lower:
@@ -568,9 +577,17 @@ async def verify_drug_interaction(
                     best_dist = dist; best_match = known
             if best_match:
                 spelling_corrections.append(f"'{drug}' was interpreted as '{best_match.title()}'")
-                corrected_labels = await fda_client.search_drug_labels(best_match, limit=1)
-                if corrected_labels:
-                    drug_labels.append(corrected_labels[0])
+                correction_tasks.append((i, drug, best_match))
+
+    # Parallel FDA lookups for spell-corrected drugs
+    if correction_tasks:
+        corrected_results = await asyncio.gather(
+            *[fda_client.search_drug_labels(match, limit=1) for _, _, match in correction_tasks],
+            return_exceptions=True
+        )
+        for (_, _, _), corrected in zip(correction_tasks, corrected_results):
+            if not isinstance(corrected, Exception) and corrected:
+                drug_labels.append(corrected[0])
 
     if not drug_labels:
         logger.warning("No FDA labels found for %s, falling back to LLM", body.drugs)
