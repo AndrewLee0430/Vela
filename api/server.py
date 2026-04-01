@@ -873,8 +873,20 @@ from fastapi import File, UploadFile
 async def explain_extract_image(
     file: UploadFile = File(...),
     creds: Optional[HTTPAuthorizationCredentials] = Depends(optional_auth),
+    db: Session = Depends(get_db),
 ):
-    get_user_id(creds)  # Auth check
+    user_id = get_user_id(creds)
+
+    # Pro-only gate: file upload requires Pro plan
+    if not TEST_MODE:
+        from api.models.sql_models import UserUsage
+        usage = db.query(UserUsage).filter(UserUsage.clerk_user_id == user_id).first()
+        if not usage or usage.plan_type != "pro":
+            return JSONResponse(status_code=403, content={
+                "type": "pro_required",
+                "detail": "PDF and image upload requires Pro plan",
+                "suggestion": "Upgrade to Pro to upload and analyze medical reports, lab results, and images."
+            })
 
     # Validate content type
     allowed_types = {"image/jpeg", "image/png", "image/webp"}
@@ -961,10 +973,26 @@ async def get_user_history(
     db: Session = Depends(get_db)
 ):
     user_id = get_user_id(creds)
-    return db.query(ChatHistory)\
-        .filter(ChatHistory.user_id == user_id)\
-        .order_by(desc(ChatHistory.created_at))\
-        .limit(50).all()
+
+    # Determine plan type
+    from api.models.sql_models import UserUsage
+    usage = db.query(UserUsage).filter(UserUsage.clerk_user_id == user_id).first()
+    is_pro = usage and usage.plan_type == "pro"
+
+    query = db.query(ChatHistory).filter(ChatHistory.user_id == user_id)
+
+    if is_pro:
+        # Pro: full history (last 365 days)
+        from datetime import datetime, timedelta, timezone
+        cutoff = datetime.now(timezone.utc) - timedelta(days=365)
+        query = query.filter(ChatHistory.created_at >= cutoff)
+    else:
+        # Free: last 7 days only
+        from datetime import datetime, timedelta, timezone
+        cutoff = datetime.now(timezone.utc) - timedelta(days=7)
+        query = query.filter(ChatHistory.created_at >= cutoff)
+
+    return query.order_by(desc(ChatHistory.created_at)).limit(200).all()
 
 
 # ============================================================

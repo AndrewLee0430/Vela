@@ -96,6 +96,17 @@ One score per document, same order as input."""
                 max_tokens=200
             )
 
+            # Cost tracking
+            try:
+                from api.services.cost_tracker import log_api_cost_standalone
+                if response.usage:
+                    await log_api_cost_standalone(
+                        "system", "research/rerank", self.model,
+                        response.usage.prompt_tokens, response.usage.completion_tokens
+                    )
+            except Exception:
+                pass
+
             raw = response.choices[0].message.content.strip()
             raw = raw.replace("```json", "").replace("```", "").strip()
             scores = json.loads(raw)

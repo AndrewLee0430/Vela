@@ -87,6 +87,17 @@ Return ONLY valid JSON (no markdown):
                 temperature=0.3,
                 max_tokens=600,
             )
+            # Cost tracking
+            try:
+                from api.services.cost_tracker import log_api_cost_standalone
+                if response.usage:
+                    await log_api_cost_standalone(
+                        "system", "research/llm_judge", "gpt-4.1-mini",
+                        response.usage.prompt_tokens, response.usage.completion_tokens
+                    )
+            except Exception:
+                pass
+
             content = response.choices[0].message.content.strip()
             # Strip optional markdown fences
             if content.startswith("```"):

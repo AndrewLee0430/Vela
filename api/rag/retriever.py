@@ -195,6 +195,17 @@ class HybridRetriever:
                 response_format={"type": "json_object"}
             )
 
+            # Cost tracking
+            try:
+                from api.services.cost_tracker import log_api_cost_standalone
+                if response.usage:
+                    await log_api_cost_standalone(
+                        "system", "research/rewrite_query", "gpt-4.1-mini",
+                        response.usage.prompt_tokens, response.usage.completion_tokens
+                    )
+            except Exception:
+                pass
+
             raw = response.choices[0].message.content.strip()
             parsed = json.loads(raw)
 
@@ -298,6 +309,17 @@ class HybridRetriever:
                 temperature=0,
                 max_tokens=100
             )
+
+            # Cost tracking
+            try:
+                from api.services.cost_tracker import log_api_cost_standalone
+                if response.usage:
+                    await log_api_cost_standalone(
+                        "system", "research/relevance_filter", "gpt-4.1-mini",
+                        response.usage.prompt_tokens, response.usage.completion_tokens
+                    )
+            except Exception:
+                pass
 
             raw = response.choices[0].message.content.strip()
             raw = raw.replace("```json", "").replace("```", "").strip()

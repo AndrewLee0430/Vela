@@ -10,15 +10,15 @@ const FREE_FEATURES = [
     'PubMed 36M+ literature search',
     'FDA drug label data',
     '10 languages supported',
-    'Cited sources for every answer',
+    'Last 7 days query history',
 ];
 
 const PRO_FEATURES = [
     'Up to 100 credits per day*',
     'Everything in Free, plus:',
-    'Extended research depth',
-    'Full citation details',
+    'PDF & image upload (Explain)',
     'Export with citations (PDF)',
+    'Full history with search',
     '7-day money-back guarantee',
 ];
 

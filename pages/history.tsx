@@ -79,6 +79,18 @@ function HistoryList() {
     const [history, setHistory] = useState<HistoryItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [expandedId, setExpandedId] = useState<number | null>(null);
+    const [plan, setPlan] = useState<'free' | 'pro'>(() => {
+        if (typeof window === 'undefined') return 'free';
+        try {
+            const raw = localStorage.getItem('vela_plan_cache');
+            if (raw) {
+                const { plan: p, ts } = JSON.parse(raw);
+                if (Date.now() - ts < 5 * 60 * 1000) return p;
+            }
+        } catch {}
+        return 'free';
+    });
+    const [searchQuery, setSearchQuery] = useState('');
 
     const [verifyDetails, setVerifyDetails] = useState<{[key: number]: {
         interactions: DrugInteraction[];
@@ -86,11 +98,23 @@ function HistoryList() {
         loading: boolean;
     }}>({});
 
-    useEffect(() => { loadHistory(); }, []);
+    useEffect(() => { loadPlanAndHistory(); }, []);
 
-    async function loadHistory() {
+    async function loadPlanAndHistory() {
         try {
             const token = await getToken({ skipCache: true });
+            // Fetch plan status
+            try {
+                const statusRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user/status`, {
+                    headers: { 'Authorization': `Bearer ${token}` },
+                });
+                if (statusRes.ok) {
+                    const statusData = await statusRes.json();
+                    const fetched = statusData.plan_type === 'pro' ? 'pro' : 'free' as const;
+                    setPlan(fetched);
+                }
+            } catch {}
+            // Fetch history
             const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/history`, {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
@@ -176,9 +200,43 @@ function HistoryList() {
         );
     }
 
+    const filteredHistory = searchQuery && plan === 'pro'
+        ? history.filter(item => item.question.toLowerCase().includes(searchQuery.toLowerCase()))
+        : history;
+
     return (
         <div className="space-y-3">
-            {history.map(item => {
+            {/* Free plan banner */}
+            {plan === 'free' && (
+                <div className="rounded-xl p-4 text-sm mb-2" style={{ background: 'rgba(255,142,110,0.08)', border: '1px solid rgba(255,142,110,0.25)' }}>
+                    <p style={{ color: 'rgba(255,255,255,0.7)' }}>
+                        Free plan shows last 7 days.{' '}
+                        <Link href="/pricing" className="font-medium underline underline-offset-2" style={{ color: '#ff8e6e' }}>
+                            Upgrade to Pro
+                        </Link>{' '}
+                        for full history and search.
+                    </p>
+                </div>
+            )}
+
+            {/* Search box */}
+            <div className="relative">
+                <input
+                    type="text"
+                    placeholder={plan === 'pro' ? 'Search history...' : 'Search (Pro feature)'}
+                    value={searchQuery}
+                    onChange={e => setSearchQuery(e.target.value)}
+                    disabled={plan !== 'pro'}
+                    className="w-full px-4 py-2.5 rounded-lg text-sm focus:outline-none focus:ring-2 disabled:opacity-40 disabled:cursor-not-allowed"
+                    style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.85)' }}
+                    title={plan !== 'pro' ? 'Search is a Pro feature' : undefined}
+                />
+                <svg className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: 'rgba(255,255,255,0.3)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+            </div>
+
+            {filteredHistory.map(item => {
                 const f = getFeature(item.session_type);
                 const isExpanded = expandedId === item.id;
 

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, FormEvent, useRef, useCallback, DragEvent } from 'react';
+import { useState, useEffect, FormEvent, useRef, useCallback, DragEvent } from 'react';
 import { useAuth } from '@clerk/nextjs';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -56,6 +56,33 @@ function ExplainForm() {
     const [showDailyCapToast, setShowDailyCapToast] = useState(false);
     const [phiError, setPhiError] = useState<{detail: string; suggestion: string} | null>(null);
     const isRunningRef = useRef(false);
+    const [plan, setPlan] = useState<'free' | 'pro'>(() => {
+        if (typeof window === 'undefined') return 'free';
+        try {
+            const raw = localStorage.getItem('vela_plan_cache');
+            if (raw) {
+                const { plan: p, ts } = JSON.parse(raw);
+                if (Date.now() - ts < 5 * 60 * 1000) return p;
+            }
+        } catch {}
+        return 'free';
+    });
+
+    useEffect(() => {
+        (async () => {
+            try {
+                const token = await getToken({ skipCache: true });
+                if (!token) return;
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user/status`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    setPlan(data.plan_type === 'pro' ? 'pro' : 'free');
+                }
+            } catch {}
+        })();
+    }, [getToken]);
 
     // Upload state
     const [uploadState, setUploadState] = useState<UploadState>('idle');
@@ -103,6 +130,12 @@ function ExplainForm() {
     const handleFile = useCallback(async (file: File) => {
         setUploadError('');
 
+        // Double-check Pro gate (frontend)
+        if (plan !== 'pro') {
+            setShowUpgradeModal(true);
+            return;
+        }
+
         if (!ALLOWED_TYPES.includes(file.type)) {
             setUploadState('error');
             setUploadError('Please upload a PDF or image file (JPG, PNG).');
@@ -137,7 +170,7 @@ function ExplainForm() {
             setUploadState('error');
             setUploadError('Could not extract text. Please paste your report manually.');
         }
-    }, [extractFromPdf, extractFromImage]);
+    }, [extractFromPdf, extractFromImage, plan]);
 
     const handleDrop = useCallback((e: DragEvent) => {
         e.preventDefault();
@@ -264,28 +297,46 @@ function ExplainForm() {
                         <>
                             {uploadState === 'idle' && (
                                 <>
-                                    <div
-                                        className="rounded-lg p-6 text-center cursor-pointer transition-all"
-                                        style={{
-                                            border: `2px dashed ${dragOver ? 'rgba(74,222,128,0.7)' : 'rgba(74,222,128,0.4)'}`,
-                                            background: dragOver ? 'rgba(74,222,128,0.1)' : 'rgba(74,222,128,0.05)',
-                                        }}
-                                        onClick={() => fileInputRef.current?.click()}
-                                        onDragOver={e => { e.preventDefault(); setDragOver(true); }}
-                                        onDragLeave={() => setDragOver(false)}
-                                        onDrop={handleDrop}
-                                    >
-                                        <input
-                                            ref={fileInputRef}
-                                            type="file"
-                                            accept=".pdf,image/jpeg,image/png,image/webp"
-                                            className="hidden"
-                                            onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f); }}
-                                        />
-                                        <div className="text-2xl mb-2" style={{ opacity: 0.7 }}>📄</div>
-                                        <p className="text-sm font-medium" style={{ color: 'rgba(74,222,128,0.9)' }}>Upload Report</p>
-                                        <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.4)' }}>PDF or image (JPG, PNG) · Max 10MB</p>
-                                    </div>
+                                    {plan === 'pro' ? (
+                                        <div
+                                            className="rounded-lg p-6 text-center cursor-pointer transition-all"
+                                            style={{
+                                                border: `2px dashed ${dragOver ? 'rgba(74,222,128,0.7)' : 'rgba(74,222,128,0.4)'}`,
+                                                background: dragOver ? 'rgba(74,222,128,0.1)' : 'rgba(74,222,128,0.05)',
+                                            }}
+                                            onClick={() => fileInputRef.current?.click()}
+                                            onDragOver={e => { e.preventDefault(); setDragOver(true); }}
+                                            onDragLeave={() => setDragOver(false)}
+                                            onDrop={handleDrop}
+                                        >
+                                            <input
+                                                ref={fileInputRef}
+                                                type="file"
+                                                accept=".pdf,image/jpeg,image/png,image/webp"
+                                                className="hidden"
+                                                onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f); }}
+                                            />
+                                            <div className="text-2xl mb-2" style={{ opacity: 0.7 }}>📄</div>
+                                            <p className="text-sm font-medium" style={{ color: 'rgba(74,222,128,0.9)' }}>Upload Report</p>
+                                            <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.4)' }}>PDF or image (JPG, PNG) · Max 10MB</p>
+                                        </div>
+                                    ) : (
+                                        <div
+                                            className="rounded-lg p-6 text-center transition-all cursor-not-allowed"
+                                            style={{
+                                                border: '2px dashed rgba(255,255,255,0.15)',
+                                                background: 'rgba(255,255,255,0.03)',
+                                                opacity: 0.6,
+                                            }}
+                                            onClick={() => setShowUpgradeModal(true)}
+                                        >
+                                            <div className="text-2xl mb-2" style={{ opacity: 0.4 }}>📄</div>
+                                            <p className="text-sm font-medium" style={{ color: 'rgba(255,255,255,0.5)' }}>Upload Report</p>
+                                            <p className="text-xs mt-1" style={{ color: '#ff8e6e' }}>
+                                                PDF &amp; image upload is a Pro feature. Upgrade to unlock.
+                                            </p>
+                                        </div>
+                                    )}
                                     <p className="text-xs text-center py-1" style={{ color: 'rgba(255,255,255,0.3)' }}>
                                         ─── or paste text below ───
                                     </p>

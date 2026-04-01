@@ -57,6 +57,17 @@ async def extract_entities(report_text: str, openai_client: AsyncOpenAI) -> Extr
             ]
         )
 
+        # Cost tracking
+        try:
+            from api.services.cost_tracker import log_api_cost_standalone
+            if response.usage:
+                await log_api_cost_standalone(
+                    "system", "explain/entity_extraction", "gpt-4.1-mini",
+                    response.usage.prompt_tokens, response.usage.completion_tokens
+                )
+        except Exception:
+            pass
+
         raw = response.choices[0].message.content.strip()
         logger.info("[EntityExtractor] Raw GPT response length: %d chars", len(raw))
 
