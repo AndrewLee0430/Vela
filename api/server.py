@@ -277,36 +277,8 @@ async def _run_judge_background(audit_id: str, query: str, answer: str, document
 
 
 # ============================================================
-# Middleware: PHI 防護
+# Middleware: PHI 防護 (feedback only — SSE endpoints use inline checks)
 # ============================================================
-# Endpoints where PHI detection applies to user input fields
-_PHI_PROTECTED_ENDPOINTS = {
-    "/api/research", "/api/consultation", "/api/explain", "/api/verify", "/api/feedback"
-}
-
-# Map endpoint → JSON field(s) containing user input to scan
-_PHI_INPUT_FIELDS = {
-    "/api/research": ["question"],
-    "/api/consultation": ["question"],
-    "/api/explain": ["report_text"],
-    "/api/verify": ["drugs"],       # list[str] — join for scanning
-    "/api/feedback": ["feedback_text"],
-}
-
-
-def _extract_user_text(body_dict: dict, path: str) -> str:
-    """Extract user-input text from parsed request body for PHI scanning."""
-    fields = _PHI_INPUT_FIELDS.get(path, [])
-    parts = []
-    for field in fields:
-        val = body_dict.get(field)
-        if isinstance(val, str):
-            parts.append(val)
-        elif isinstance(val, list):
-            parts.extend(str(v) for v in val)
-    return " ".join(parts)
-
-
 def _phi_blocked_response(phi_type: str) -> JSONResponse:
     """Return a standardized PHI-blocked error response."""
     return JSONResponse(
@@ -320,31 +292,46 @@ def _phi_blocked_response(phi_type: str) -> JSONResponse:
     )
 
 
+def _check_phi(text: str, endpoint: str, request: Request) -> JSONResponse | None:
+    """Check text for PHI. Returns a 400 JSONResponse if detected, else None."""
+    try:
+        phi_type = PHIDetector.detect(text)
+        if phi_type:
+            client_ip = request.client.host if request.client else "unknown"
+            logger.warning("[PHI] Blocked: type=%s, endpoint=%s, ip=%s", phi_type, endpoint, client_ip)
+            return _phi_blocked_response(phi_type)
+    except Exception as e:
+        logger.error("PHI check error: %s", e)
+    return None
+
+
 @app.middleware("http")
 async def audit_middleware(request: Request, call_next):
     path = request.url.path
 
-    if path in _PHI_PROTECTED_ENDPOINTS and request.method == "POST":
+    # SSE endpoints skip middleware body read (causes chunked read errors).
+    # PHI detection for those is done inline in each route handler.
+    if path in ["/api/research", "/api/consultation", "/api/explain", "/api/verify"]:
+        return await call_next(request)
+
+    if path == "/api/feedback" and request.method == "POST":
         try:
             body_bytes = await request.body()
             body_str = body_bytes.decode("utf-8")
             body_dict = json.loads(body_str) if body_str.strip() else {}
 
-            user_text = _extract_user_text(body_dict, path)
-            phi_type = PHIDetector.detect(user_text) if user_text else None
+            feedback_text = body_dict.get("feedback_text", "")
+            if feedback_text:
+                phi_resp = _check_phi(feedback_text, "/api/feedback", request)
+                if phi_resp:
+                    return phi_resp
 
-            if phi_type:
-                client_ip = request.client.host if request.client else "unknown"
-                logger.warning("[PHI] Blocked: type=%s, endpoint=%s, ip=%s", phi_type, path, client_ip)
-                return _phi_blocked_response(phi_type)
-
-            # Re-inject body so downstream handlers can read it
             async def receive():
                 return {"type": "http.request", "body": body_bytes}
             request._receive = receive
 
         except json.JSONDecodeError:
-            pass  # Let the endpoint handle malformed JSON
+            pass
         except Exception as e:
             logger.error("PHI middleware error: %s", e)
 
@@ -358,9 +345,15 @@ async def audit_middleware(request: Request, call_next):
 @app.post("/api/research")
 async def research_query(
     body: ResearchRequest,
+    request: Request,
     creds: Optional[HTTPAuthorizationCredentials] = Depends(optional_auth),
     db: Session = Depends(get_db)
 ):
+    # PHI 偵測（在 streaming 開始前）
+    phi_resp = _check_phi(body.question, "/api/research", request)
+    if phi_resp:
+        return phi_resp
+
     user_id = get_user_id(creds)
     start_time = time.time()
 
@@ -475,9 +468,16 @@ async def get_suggestions(creds: Optional[HTTPAuthorizationCredentials] = Depend
 @app.post("/api/verify")
 async def verify_drug_interaction(
     body: VerifyRequest,
+    request: Request,
     creds: Optional[HTTPAuthorizationCredentials] = Depends(optional_auth),
     db: Session = Depends(get_db)
 ):
+    # PHI 偵測
+    drugs_text = " ".join(body.drugs)
+    phi_resp = _check_phi(drugs_text, "/api/verify", request)
+    if phi_resp:
+        return phi_resp
+
     start_time = time.time()
     user_id = get_user_id(creds)
 
@@ -724,6 +724,7 @@ Return valid JSON only:
 @app.post("/api/explain")
 async def explain_report(
     body: ExplainRequest,
+    request: Request,
     creds: Optional[HTTPAuthorizationCredentials] = Depends(optional_auth),
     db: Session = Depends(get_db),
 ):
@@ -733,6 +734,10 @@ async def explain_report(
     Stage 2: Parallel API lookups (LOINC, RxNorm, MedlinePlus)
     Stage 3: Plain-language explanation (GPT-4.1, streaming)
     """
+    # PHI 偵測
+    phi_resp = _check_phi(body.report_text, "/api/explain", request)
+    if phi_resp:
+        return phi_resp
 
     user_id = get_user_id(creds)
 
