@@ -6,19 +6,19 @@ const ACCENT = '#ff8e6e';
 
 const FREE_FEATURES = [
     '10 credits per day (resets daily)',
-    'Research: 3 credits per query',
-    'Verify: 1 credit per query',
-    'Explain: 2 credits per query',
+    'Research: 3 credits · Verify: 1 · Explain: 2',
     'PubMed 36M+ literature search',
     'FDA drug label data',
     '10 languages supported',
+    'Cited sources for every answer',
 ];
 
 const PRO_FEATURES = [
     'Up to 100 credits per day*',
     'Everything in Free, plus:',
-    'Unlimited research depth',
-    'Priority response time',
+    'Extended research depth',
+    'Full citation details',
+    'Export with citations (PDF)',
     '7-day money-back guarantee',
 ];
 
@@ -88,8 +88,10 @@ export default function Pricing() {
 
                             <Link
                                 href="/sign-up"
-                                className="mt-8 block text-center text-sm font-medium py-2.5 rounded-lg transition-all"
+                                className="mt-8 block text-center text-sm font-medium py-2.5 rounded-lg transition-all cursor-pointer"
                                 style={{ border: '1px solid rgba(255,255,255,0.2)', color: 'rgba(255,255,255,0.8)', background: 'transparent' }}
+                                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.1)'; }}
+                                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                             >
                                 Get Started Free
                             </Link>

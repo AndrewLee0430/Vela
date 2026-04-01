@@ -215,6 +215,15 @@ function LandingPage() {
                 Try it now
               </button>
             </Link>
+            <Link
+              href="/pricing"
+              className="text-sm font-medium rounded-full px-4 py-2 transition-all duration-200"
+              style={{ background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.1)' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.15)'; (e.currentTarget as HTMLElement).style.color = 'white'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.08)'; (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.55)'; }}
+            >
+              See pricing →
+            </Link>
           </div>
 
           {/* Feature cards */}

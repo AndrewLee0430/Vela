@@ -13,6 +13,7 @@ import UpgradeModal from '../components/UpgradeModal';
 import Toast from '../components/Toast';
 import PHIWarning from '../components/PHIWarning';
 import PageShell from '../components/PageShell';
+import { exportResearchPdf } from '../utils/exportPdf';
 
 const ACCENT = '#ff8e6e';
 
@@ -60,6 +61,17 @@ function ResearchForm() {
     const [showUpgradeModal, setShowUpgradeModal] = useState(false);
     const [showDailyCapToast, setShowDailyCapToast] = useState(false);
     const [phiError, setPhiError] = useState<{detail: string; suggestion: string} | null>(null);
+
+    const plan = (() => {
+        if (typeof window === 'undefined') return null;
+        try {
+            const raw = localStorage.getItem('vela_plan_cache');
+            if (!raw) return 'free';
+            const { plan, ts } = JSON.parse(raw);
+            if (Date.now() - ts > 5 * 60 * 1000) return 'free';
+            return plan as string;
+        } catch { return 'free'; }
+    })();
 
     const answerRef    = useRef<HTMLDivElement>(null);
     const isRunningRef = useRef(false);
@@ -242,7 +254,22 @@ function ResearchForm() {
                                         <span className="inline-block w-1.5 h-4 rounded-sm animate-pulse ml-0.5" style={{ background: ACCENT }} />
                                     )}
                                     {!loading && answer && !error && (
-                                        <FeedbackBar query={question} response={answer} category="research" />
+                                        <>
+                                            <FeedbackBar query={question} response={answer} category="research" />
+                                            <button
+                                                onClick={() => {
+                                                    if (plan !== 'pro') { setShowUpgradeModal(true); return; }
+                                                    exportResearchPdf(question, answer, citations);
+                                                }}
+                                                className="mt-3 inline-flex items-center gap-2 text-xs font-medium px-3 py-1.5 rounded-lg transition-all cursor-pointer"
+                                                style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.55)' }}
+                                                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.12)'; (e.currentTarget as HTMLElement).style.color = 'white'; }}
+                                                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.06)'; (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.55)'; }}
+                                            >
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                                Export with Citations
+                                            </button>
+                                        </>
                                     )}
                                 </div>
                             )}
