@@ -34,7 +34,7 @@ const featureCards = [
   },
   {
     href: '/explain', label: 'Explain', sub: 'LOINC + FDA + NLM',
-    desc: 'Understand any medical report in plain language, backed by official sources.',
+    desc: 'Summarize medical reports in plain language, backed by official sources.',
     accentColor: '#68d391', hoverBg: 'rgba(104,211,145,0.12)', hoverBorder: 'rgba(104,211,145,0.45)',
   },
 ];
@@ -261,6 +261,7 @@ function LandingPage() {
           style={{ borderTop: '1px solid rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.3)' }}
         >
           <div>© {new Date().getFullYear()} Vela. All rights reserved. · Hosted on secure infrastructure · De-identified data only</div>
+          <div>Vela is a research tool, not a medical device. It does not provide medical advice.</div>
           <div className="flex flex-wrap justify-center gap-4 text-xs">
             <Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
             <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
