@@ -42,7 +42,7 @@ from fastapi import FastAPI, Depends, Request
 from fastapi.responses import StreamingResponse, FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from fastapi_clerk_auth import ClerkConfig, ClerkHTTPBearer, HTTPAuthorizationCredentials
 from openai import OpenAI, AsyncOpenAI
 from sqlalchemy.orm import Session
@@ -170,6 +170,8 @@ app.add_middleware(
 # Auth
 # ============================================================
 TEST_MODE = os.getenv("TEST_MODE", "false").lower() == "true"
+if TEST_MODE and os.getenv("FLY_APP_NAME"):
+    raise RuntimeError("TEST_MODE cannot be enabled in production (FLY_APP_NAME detected)")
 logger.info("TEST_MODE = %s", TEST_MODE)
 
 import httpx
@@ -887,11 +889,11 @@ async def explain_extract_image(
 # 功能 5：Feedback
 # ============================================================
 class FeedbackCreate(BaseModel):
-    query: str
-    response: str
+    query: str = Field(..., max_length=5000)
+    response: str = Field(..., max_length=20000)
     rating: int
-    feedback_text: Optional[str] = None
-    category: str
+    feedback_text: Optional[str] = Field(None, max_length=2000)
+    category: str = Field(..., max_length=100)
 
 @app.post("/api/feedback")
 async def create_feedback(

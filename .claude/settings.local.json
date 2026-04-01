@@ -67,7 +67,9 @@
       "Bash(jq -r \".[] | \"\"\\\\\\(.id\\),\\\\\\(.category\\),\\\\\\(.smoke // false\\),\\\\\\(.query // .drugs | tostring | .[0:60]\\)\"\"\" /c/Users/andre/projects/Vela/tests/golden_dataset.json)",
       "Bash(npx next:*)",
       "Bash(powershell -File deploy.ps1)",
-      "Bash(PYTHONIOENCODING=utf-8 TEST_MODE=true uv run python tests/run_golden_tests.py --smoke)"
+      "Bash(PYTHONIOENCODING=utf-8 TEST_MODE=true uv run python tests/run_golden_tests.py --smoke)",
+      "Bash(grep -r \"pickle\\\\|eval\\\\|exec\" C:UsersandreprojectsVelaapi --include=*.py)",
+      "Bash(npm audit:*)"
     ]
   }
 }
