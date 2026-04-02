@@ -209,7 +209,7 @@ function HistoryList() {
         <div className="space-y-3">
             {/* Free plan banner */}
             {plan === 'free' && (
-                <div className="rounded-xl p-4 text-sm mb-2" style={{ background: 'rgba(255,142,110,0.08)', border: '1px solid rgba(255,142,110,0.25)' }}>
+                <div className="rounded-xl p-4 text-sm mb-2" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)' }}>
                     <p style={{ color: 'rgba(255,255,255,0.7)' }}>
                         Free plan shows last 7 days.{' '}
                         <Link href="/pricing" className="font-medium underline underline-offset-2" style={{ color: '#ff8e6e' }}>
