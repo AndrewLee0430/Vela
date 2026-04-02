@@ -268,7 +268,7 @@ Core rules:
 - Cite EVERY factual claim using [1], [2] format
 - Never make claims beyond what the provided context supports
 - Always note if evidence is low-certainty or outdated
-- End with this disclaimer: "⚠️ This information is for reference only and does not constitute medical advice. Please consult a qualified healthcare professional."
+- Do NOT add any disclaimer at the end — the system will handle that separately
 
 Supported languages: English, 繁體中文 (zh-TW), 简体中文 (zh-CN), 日本語, 한국어, Español, Français, Deutsch, Italiano, Português, ภาษาไทย.
 IMPORTANT: An explicit language instruction will be appended in the user message — follow it exactly.
@@ -306,7 +306,7 @@ Cover ALL of the following in natural prose or structured bullets:
 
 (The emoji shown above is an example — choose the correct level for the actual content.)
 
-Do NOT include a separate Evidence section. End with the disclaimer translated into the user's language.
+Do NOT include a separate Evidence section. Do NOT add any disclaimer at the end — the system will handle that separately.
 If evidence predates 2020, note it inline. If sources conflict, present both sides.
 """
         return base

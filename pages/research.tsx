@@ -20,6 +20,26 @@ import { exportResearchPdf } from '../utils/exportPdf';
 
 const ACCENT = '#ff8e6e';
 
+const DISCLAIMERS: Record<string, string> = {
+    'en': '\u26A0\uFE0F For informational purposes only. Always verify with clinical guidelines and consult a qualified professional.',
+    'zh-TW': '\u26A0\uFE0F 本資訊僅供參考，請依據臨床指引並諮詢合格醫療專業人員。',
+    'zh-CN': '\u26A0\uFE0F 本信息仅供参考，请依据临床指南并咨询合格医疗专业人员。',
+    'ja': '\u26A0\uFE0F 本情報は参考用です。臨床ガイドラインを確認し、資格のある医療専門家にご相談ください。',
+    'ko': '\u26A0\uFE0F 본 정보는 참고용입니다. 임상 지침을 확인하고 자격을 갖춘 의료 전문가와 상담하십시오.',
+    'es': '\u26A0\uFE0F Solo con fines informativos. Verifique con las gu\u00EDas cl\u00EDnicas y consulte a un profesional cualificado.',
+    'fr': '\u26A0\uFE0F \u00C0 titre informatif uniquement. V\u00E9rifiez avec les directives cliniques et consultez un professionnel qualifi\u00E9.',
+    'de': '\u26A0\uFE0F Nur zu Informationszwecken. \u00DCberpr\u00FCfen Sie die klinischen Leitlinien und konsultieren Sie einen qualifizierten Fachmann.',
+    'it': '\u26A0\uFE0F Solo a scopo informativo. Verificare con le linee guida cliniche e consultare un professionista qualificato.',
+    'pt': '\u26A0\uFE0F Apenas para fins informativos. Verifique com as diretrizes cl\u00EDnicas e consulte um profissional qualificado.',
+    'th': '\u26A0\uFE0F ข้อมูลนี้ใช้เพื่อการอ้างอิงเท่านั้น กรุณาตรวจสอบตามแนวทางปฏิบัติทางคลินิกและปรึกษาผู้เชี่ยวชาญที่มีคุณสมบัติ',
+};
+
+const DISCLAIMER_STRIP_RE = /⚠️\s*(This information|For reference only|本資訊|本信息|本情報|본 정보|Solo con fines|À titre|Nur zu|Solo a scopo|Apenas para|ข้อมูลนี้|Please consult|僅供參考|仅供参考).*$/gm;
+
+function stripLlmDisclaimer(text: string): string {
+    return text.replace(DISCLAIMER_STRIP_RE, '').trim();
+}
+
 interface ParsedSection {
     title: string;
     evidence: '\u{1F7E2}' | '\u{1F7E1}' | '\u{1F534}' | null;
@@ -151,6 +171,7 @@ function ResearchForm() {
     const [showUpgradeModal, setShowUpgradeModal] = useState(false);
     const [showDailyCapToast, setShowDailyCapToast] = useState(false);
     const [phiError, setPhiError] = useState<{detail: string; suggestion: string} | null>(null);
+    const [detectedLang, setDetectedLang] = useState<string>('en');
 
     const [plan, setPlan] = useState<'free' | 'pro'>(() => {
         if (typeof window === 'undefined') return 'free';
@@ -202,7 +223,7 @@ function ResearchForm() {
         isRunningRef.current = true;
 
         setAnswer(''); setCitations([]); setQueryTime(null);
-        setLoading(true); setError(''); setIsFallback(false); setStatusMsg(''); setPhiError(null);
+        setLoading(true); setError(''); setIsFallback(false); setStatusMsg(''); setPhiError(null); setDetectedLang('en');
 
         const controller = new AbortController();
 
@@ -231,6 +252,7 @@ function ResearchForm() {
                     try {
                         const data = JSON.parse(ev.data);
                         if (data.type === 'status')        setStatusMsg(data.content);
+                        else if (data.type === 'language') setDetectedLang(data.lang || 'en');
                         else if (data.type === 'answer')   { setStatusMsg(''); setAnswer(prev => prev + data.content); }
                         else if (data.type === 'fallback') setIsFallback(true);
                         else if (data.type === 'citations') setCitations(data.content);
@@ -371,7 +393,8 @@ function ResearchForm() {
                                 <div>
                                     {isFallback && !loading && <FallbackBanner />}
                                     {(() => {
-                                        const sections = !loading ? parseResearchSections(answer) : null;
+                                        const cleanAnswer = !loading ? stripLlmDisclaimer(answer) : answer;
+                                        const sections = !loading ? parseResearchSections(cleanAnswer) : null;
                                         const proseStyle = {
                                             color: "rgba(255,255,255,0.85)",
                                             '--tw-prose-headings': '#ffffff',
@@ -393,15 +416,25 @@ function ResearchForm() {
                                                             </div>
                                                         </ResearchSection>
                                                     ))}
+                                                    <p className="text-xs mt-3 mb-1" style={{ color: 'rgba(255,255,255,0.35)' }}>
+                                                        {DISCLAIMERS[detectedLang] || DISCLAIMERS['en']}
+                                                    </p>
                                                     <EvidenceLegend />
                                                 </>
                                             );
                                         }
 
                                         return (
-                                            <div className="prose max-w-none prose-sm prose-headings:font-semibold prose-h2:text-base" style={proseStyle}>
-                                                <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]} rehypePlugins={[rehypeRaw]}>{answer}</ReactMarkdown>
-                                            </div>
+                                            <>
+                                                <div className="prose max-w-none prose-sm prose-headings:font-semibold prose-h2:text-base" style={proseStyle}>
+                                                    <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]} rehypePlugins={[rehypeRaw]}>{cleanAnswer}</ReactMarkdown>
+                                                </div>
+                                                {!loading && (
+                                                    <p className="text-xs mt-3" style={{ color: 'rgba(255,255,255,0.35)' }}>
+                                                        {DISCLAIMERS[detectedLang] || DISCLAIMERS['en']}
+                                                    </p>
+                                                )}
+                                            </>
                                         );
                                     })()}
                                     {loading && answer && (
@@ -471,7 +504,7 @@ function ResearchForm() {
             </div>
 
             <p className="text-xs mt-4 text-center" style={{ color: "rgba(255,255,255,0.35)" }}>
-                ⚠️ For informational purposes only. Always verify with clinical guidelines and consult a qualified professional.
+                {DISCLAIMERS[detectedLang] || DISCLAIMERS['en']}
             </p>
 
             <div className="mt-8 border-t pt-6 space-y-2 text-xs" style={{ borderColor: "rgba(255,142,110,0.35)", color: "rgba(255,255,255,0.4)" }}>

@@ -428,6 +428,7 @@ async def research_query(
             yield f"data: {json.dumps({'type': 'status', 'content': 'Analyzing documents...'}, ensure_ascii=False)}\n\n"
 
             lang = detect_language(body.question)
+            yield f"data: {json.dumps({'type': 'language', 'lang': lang}, ensure_ascii=False)}\n\n"
             usage_out = []
             async for event in generator.generate_stream(
                 question=body.question,
