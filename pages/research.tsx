@@ -77,7 +77,7 @@ function ResearchForm() {
     const answerRef    = useRef<HTMLDivElement>(null);
     const inputRef     = useRef<HTMLInputElement>(null);
     const isRunningRef = useRef(false);
-    const [clickedSuggestion, setClickedSuggestion] = useState<number | null>(null);
+    const [selectedSuggestion, setSelectedSuggestion] = useState<string | null>(null);
 
     useEffect(() => {
         if (answerRef.current && answer) {
@@ -88,6 +88,7 @@ function ResearchForm() {
     const handleReset = () => {
         setQuestion(''); setAnswer(''); setCitations([]);
         setQueryTime(null); setError(''); setIsFallback(false); setStatusMsg(''); setPhiError(null);
+        setSelectedSuggestion(null);
     };
 
     const runSearch = useCallback(async (q: string) => {
@@ -205,38 +206,49 @@ function ResearchForm() {
                                 <div className="text-center py-12">
                                     <div className="space-y-3">
                                         <p className="text-xs uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.35)" }}>Try these</p>
+                                        <p className="text-xs mb-2" style={{ color: "rgba(148,163,184,0.8)" }}>
+                                            Ask one question at a time for the most accurate, evidence-based results.
+                                        </p>
                                         <div className="flex flex-wrap justify-center gap-2">
-                                            {defaultSuggestions.map((s, i) => (
-                                                <button
-                                                    key={i}
-                                                    onClick={() => {
-                                                        setQuestion(prev => prev.trim() ? `${prev.trim()} ${s}` : s);
-                                                        setClickedSuggestion(i);
-                                                        setTimeout(() => setClickedSuggestion(null), 300);
-                                                        setTimeout(() => inputRef.current?.focus(), 0);
-                                                    }}
-                                                    disabled={loading}
-                                                    className="px-3 py-1.5 text-xs rounded-full disabled:opacity-50 transition-all duration-200"
-                                                    style={{
-                                                        background: clickedSuggestion === i ? "rgba(255,142,110,0.2)" : "rgba(255,255,255,0.06)",
-                                                        border: `1px solid ${clickedSuggestion === i ? "rgba(255,142,110,0.6)" : "rgba(255,255,255,0.15)"}`,
-                                                        color: clickedSuggestion === i ? "#ff8e6e" : "rgba(255,255,255,0.7)",
-                                                        transform: clickedSuggestion === i ? "scale(0.95)" : "scale(1)",
-                                                    }}
-                                                    onMouseEnter={e => {
-                                                        (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,142,110,0.6)";
-                                                        (e.currentTarget as HTMLElement).style.color = "#ff8e6e";
-                                                    }}
-                                                    onMouseLeave={e => {
-                                                        if (clickedSuggestion !== i) {
-                                                            (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.15)";
-                                                            (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.7)";
-                                                        }
-                                                    }}
-                                                >
-                                                    {s}
-                                                </button>
-                                            ))}
+                                            {defaultSuggestions.map((s) => {
+                                                const isSelected = selectedSuggestion === s;
+                                                const hasSel = selectedSuggestion !== null;
+                                                return (
+                                                    <button
+                                                        key={s}
+                                                        onClick={() => {
+                                                            setQuestion(s);
+                                                            setSelectedSuggestion(s);
+                                                            setTimeout(() => inputRef.current?.focus(), 0);
+                                                        }}
+                                                        disabled={loading}
+                                                        className="px-3 py-1.5 text-xs rounded-full disabled:opacity-50 transition-all duration-200"
+                                                        style={{
+                                                            background: isSelected ? "rgba(255,142,110,0.15)" : "rgba(255,255,255,0.06)",
+                                                            border: `1px solid ${isSelected ? "#ff8e6e" : "rgba(255,255,255,0.15)"}`,
+                                                            color: isSelected ? "#ff8e6e" : "rgba(255,255,255,0.7)",
+                                                            transform: isSelected ? "scale(1.05)" : "scale(1)",
+                                                            opacity: hasSel && !isSelected ? 0.5 : 1,
+                                                        }}
+                                                        onMouseEnter={e => {
+                                                            if (!isSelected) {
+                                                                (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,142,110,0.6)";
+                                                                (e.currentTarget as HTMLElement).style.color = "#ff8e6e";
+                                                                (e.currentTarget as HTMLElement).style.opacity = "1";
+                                                            }
+                                                        }}
+                                                        onMouseLeave={e => {
+                                                            if (!isSelected) {
+                                                                (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.15)";
+                                                                (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.7)";
+                                                                (e.currentTarget as HTMLElement).style.opacity = hasSel ? "0.5" : "1";
+                                                            }
+                                                        }}
+                                                    >
+                                                        {s}
+                                                    </button>
+                                                );
+                                            })}
                                         </div>
                                     </div>
                                 </div>
@@ -302,7 +314,7 @@ function ResearchForm() {
                                 ref={inputRef}
                                 type="text"
                                 value={question}
-                                onChange={(e) => setQuestion(e.target.value)}
+                                onChange={(e) => { setQuestion(e.target.value); setSelectedSuggestion(null); }}
                                 placeholder="Ask a clinical question in any language..."
                                 className="flex-1 px-4 py-2.5 text-sm rounded-lg focus:outline-none transition-shadow"
                                 style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.15)", color: "#ffffff" }}

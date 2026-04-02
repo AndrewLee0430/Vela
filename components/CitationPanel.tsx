@@ -27,9 +27,9 @@ const credibilityConfig = {
 };
 
 const sourceTypeConfig = {
-    'pubmed': { icon: '🔬', label: 'PubMed', color: '#68d391' },
-    'fda':    { icon: '💊', label: 'FDA',    color: '#63b3ed' },
-    'local':  { icon: '📋', label: 'Local',  color: '#a0aec0' },
+    'pubmed': { label: 'PubMed', color: '#68d391' },
+    'fda':    { label: 'FDA',    color: '#63b3ed' },
+    'local':  { label: 'Local',  color: '#a0aec0' },
 };
 
 function StarRating({ count }: { count: number }) {
@@ -89,7 +89,6 @@ function CitationCard({ citation }: { citation: Citation }) {
             {/* Header */}
             <div className="flex items-start justify-between mb-2">
                 <div className="flex items-center gap-2">
-                    <span className="text-xl">{sourceConfig.icon}</span>
                     <span className="font-semibold" style={{ color: sourceConfig.color }}>
                         [{citation.id}] {sourceConfig.label}
                     </span>
@@ -153,7 +152,7 @@ function CitationCard({ citation }: { citation: Citation }) {
                 className="inline-flex items-center gap-1 text-sm hover:underline mt-3"
                 style={{ color: "#ff8e6e" }}
             >
-                🔗 View source
+                View source
                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                         d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -217,7 +216,7 @@ export default function CitationPanel({ citations, isLoading }: CitationPanelPro
                         className="px-2 py-1 rounded-full"
                         style={{ background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.65)" }}
                     >
-                        {sourceTypeConfig[source as keyof typeof sourceTypeConfig]?.icon} {source}: {count}
+                        {source}: {count}
                     </span>
                 ))}
             </div>
