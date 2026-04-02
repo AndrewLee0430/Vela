@@ -61,6 +61,65 @@ const defaultSuggestions = [
     "Safety of antibiotics in pregnancy?",
 ];
 
+const EVIDENCE_LEVELS = [
+    { emoji: '🟢', label: 'Strong evidence', tip: 'Supported by systematic reviews, RCTs, or major guidelines' },
+    { emoji: '🟡', label: 'Moderate', tip: 'Based on observational studies or conditional recommendations' },
+    { emoji: '🔴', label: 'Limited', tip: 'Limited evidence found in retrieved sources — consider searching this topic separately' },
+];
+
+function EvidenceLegend() {
+    const [expanded, setExpanded] = useState(false);
+    return (
+        <div className="mt-4 text-center">
+            <div className="inline-flex items-center gap-4 text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>
+                {EVIDENCE_LEVELS.map(({ emoji, label, tip }) => (
+                    <span key={emoji} className="relative group">
+                        <span className="cursor-default">{emoji} {label}</span>
+                        {/* Desktop hover tooltip */}
+                        <span
+                            className="absolute bottom-full left-1/2 mb-2 hidden group-hover:block z-50"
+                            style={{ transform: 'translateX(-50%)' }}
+                        >
+                            <span
+                                className="block rounded-lg shadow-lg p-2 text-xs text-left whitespace-normal w-56"
+                                style={{ background: '#1e293b', border: '1px solid #475569', color: '#cbd5e1' }}
+                            >
+                                {tip}
+                            </span>
+                            <span
+                                className="block mx-auto"
+                                style={{ width: 0, height: 0, borderLeft: '5px solid transparent', borderRight: '5px solid transparent', borderTop: '5px solid #475569' }}
+                            />
+                        </span>
+                    </span>
+                ))}
+                {/* Mobile info toggle */}
+                <button
+                    className="md:hidden ml-1 rounded-full"
+                    style={{ color: 'rgba(255,255,255,0.35)' }}
+                    onClick={() => setExpanded(e => !e)}
+                    aria-label="Evidence level info"
+                >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+                    </svg>
+                </button>
+            </div>
+            {/* Mobile expanded panel */}
+            {expanded && (
+                <div
+                    className="md:hidden mt-2 rounded-lg p-3 text-left text-xs space-y-1.5 mx-auto max-w-sm"
+                    style={{ background: '#1e293b', border: '1px solid #475569', color: '#cbd5e1' }}
+                >
+                    {EVIDENCE_LEVELS.map(({ emoji, label, tip }) => (
+                        <p key={emoji}>{emoji} <span className="font-medium">{label}</span> — {tip}</p>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+}
+
 function FallbackBanner() {
     return (
         <div className="mb-4 flex items-start gap-3 p-4 rounded-lg" style={{ background: "rgba(245,158,11,0.12)", border: "1px solid rgba(245,158,11,0.3)" }}>
@@ -93,16 +152,33 @@ function ResearchForm() {
     const [showDailyCapToast, setShowDailyCapToast] = useState(false);
     const [phiError, setPhiError] = useState<{detail: string; suggestion: string} | null>(null);
 
-    const plan = (() => {
-        if (typeof window === 'undefined') return null;
+    const [plan, setPlan] = useState<'free' | 'pro'>(() => {
+        if (typeof window === 'undefined') return 'free';
         try {
             const raw = localStorage.getItem('vela_plan_cache');
-            if (!raw) return 'free';
-            const { plan, ts } = JSON.parse(raw);
-            if (Date.now() - ts > 5 * 60 * 1000) return 'free';
-            return plan as string;
-        } catch { return 'free'; }
-    })();
+            if (raw) {
+                const { plan: p, ts } = JSON.parse(raw);
+                if (Date.now() - ts < 5 * 60 * 1000) return p;
+            }
+        } catch {}
+        return 'free';
+    });
+
+    useEffect(() => {
+        (async () => {
+            try {
+                const token = await getToken({ skipCache: true });
+                if (!token) return;
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user/status`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    setPlan(data.plan_type === 'pro' ? 'pro' : 'free');
+                }
+            } catch {}
+        })();
+    }, [getToken]);
 
     const answerRef    = useRef<HTMLDivElement>(null);
     const inputRef     = useRef<HTMLInputElement>(null);
@@ -317,9 +393,7 @@ function ResearchForm() {
                                                             </div>
                                                         </ResearchSection>
                                                     ))}
-                                                    <p className="text-xs text-center mt-4" style={{ color: 'rgba(255,255,255,0.35)' }}>
-                                                        🟢 Strong evidence &nbsp; 🟡 Moderate &nbsp; 🔴 Limited
-                                                    </p>
+                                                    <EvidenceLegend />
                                                 </>
                                             );
                                         }
