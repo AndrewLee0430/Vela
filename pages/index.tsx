@@ -44,8 +44,8 @@ const DASHBOARD_CARDS = [
   {
     href: '/history', label: 'History', sub: 'All queries',
     desc: 'Browse your past research, verifications, and explanations.',
-    accentColor: '#b794f4', color: '#b794f4',
-    hoverBg: 'rgba(183,148,244,0.12)', hoverBorder: 'rgba(183,148,244,0.45)',
+    accentColor: '#94a3b8', color: '#94a3b8',
+    hoverBg: 'rgba(148,163,184,0.12)', hoverBorder: 'rgba(148,163,184,0.45)',
   },
 ];
 // ─────────────────────────────────────────────────────────────────────────────

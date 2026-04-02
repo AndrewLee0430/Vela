@@ -40,7 +40,7 @@ const TABS = [
   {
     href: '/history',
     label: 'History',
-    color: '#b794f4',
+    color: '#94a3b8',
     icon: (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <polyline points="12 8 12 12 14 14" />

@@ -285,29 +285,29 @@ Drug Interaction Analysis Rules:
 """
         elif query_type == "research":
             base += """
-## [Summary — translated to user's language]
+Place an evidence strength emoji (🟢, 🟡, or 🔴) directly in EACH section header after the section name.
+Judge each section independently:
+- 🟢 Strong — supported by RCT, meta-analysis, or major guideline
+- 🟡 Moderate — supported by observational study or conditional recommendation
+- 🔴 Limited — based on case report, expert opinion, or insufficient retrieved evidence
+
+## [Summary 🟢 — translated to user's language]
 2-3 sentences: direct answer first, then key mechanism.
 Put the conclusion FIRST. Do not bury it after background.
 
 ---
 
-## [Clinical Notes — translated to user's language]
+## [Clinical Notes 🟡 — translated to user's language]
 Cover ALL of the following in natural prose or structured bullets:
 - Safety warnings and when NOT to use the drug/treatment
 - Key contraindications (cardiac, respiratory, metabolic, drug interactions)
 - Specific monitoring parameters with concrete thresholds and frequency
   (e.g. "Check eGFR at baseline; reduce dose if eGFR 30-60; stop if eGFR < 30")
 
----
+(The emoji shown above is an example — choose the correct level for the actual content.)
 
-## [Evidence — translated to user's language]
-Rate with one of:
-- 🟢 Strong — RCT or meta-analysis; major guideline recommends
-- 🟡 Moderate — observational study; conditional recommendation
-- 🔴 Limited — case report or expert opinion
-
-If evidence predates 2020, note it. If sources conflict, present both sides.
-End with the disclaimer translated into the user's language.
+Do NOT include a separate Evidence section. End with the disclaimer translated into the user's language.
+If evidence predates 2020, note it inline. If sources conflict, present both sides.
 """
         return base
 
@@ -336,9 +336,10 @@ End with the disclaimer translated into the user's language.
             )
         elif query_type == "research":
             extra_instruction = (
-                "\n\nIMPORTANT: Follow the mandatory 5-section structure: "
-                "Direct Answer → Mechanism → Clinical Warnings & Contraindications → Monitoring → Evidence Strength. "
-                "Every section is required."
+                "\n\nIMPORTANT: Follow the mandatory 2-section structure: "
+                "Summary → Clinical Notes. "
+                "Place evidence strength emoji (🟢/🟡/🔴) in each section header. "
+                "Do NOT include a separate Evidence section."
             )
 
         lang_instruction = get_language_instruction(lang)

@@ -5,6 +5,7 @@ import { useAuth } from '@clerk/nextjs';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkBreaks from 'remark-breaks';
+import rehypeRaw from 'rehype-raw';
 import { fetchEventSource } from '@microsoft/fetch-event-source';
 import { FatalError, makeOnOpen, sseOnError } from '../utils/sse';
 import CitationPanel, { Citation } from '../components/CitationPanel';
@@ -14,9 +15,38 @@ import Toast from '../components/Toast';
 import PHIWarning from '../components/PHIWarning';
 import PageShell from '../components/PageShell';
 import ProFeatureOverlay from '../components/ProFeatureOverlay';
+import ResearchSection from '../components/ResearchSection';
 import { exportResearchPdf } from '../utils/exportPdf';
 
 const ACCENT = '#ff8e6e';
+
+interface ParsedSection {
+    title: string;
+    evidence: '\u{1F7E2}' | '\u{1F7E1}' | '\u{1F534}' | null;
+    content: string;
+}
+
+function parseResearchSections(text: string): ParsedSection[] | null {
+    // Match headers like: ## Summary 🟢 — English   or   ## 摘要 🟡 — 繁體中文
+    const headerRegex = /^##\s+(.+?)(?:\s+(🟢|🟡|🔴))?\s*(?:—\s*.+)?$/gm;
+    const matches = [...text.matchAll(headerRegex)];
+    if (matches.length === 0) return null;
+
+    const sections: ParsedSection[] = [];
+    for (let i = 0; i < matches.length; i++) {
+        const match = matches[i];
+        const title = match[1].trim();
+        const evidence = (match[2] as ParsedSection['evidence']) || null;
+        const start = match.index! + match[0].length;
+        const end = i + 1 < matches.length ? matches[i + 1].index! : text.length;
+        // Remove leading --- separator
+        const content = text.slice(start, end).replace(/^\s*---\s*/g, '').trim();
+        if (content) {
+            sections.push({ title, evidence, content });
+        }
+    }
+    return sections.length > 0 ? sections : null;
+}
 
 const defaultSuggestions = [
     "What are the common side effects of Metformin?",
@@ -262,21 +292,44 @@ function ResearchForm() {
                             )}
 
                             {(answer || loading) && (
-                                <div 
-                                    className="prose max-w-none prose-sm prose-headings:font-semibold prose-h2:text-base"
-                                    style={{
-                                        color: "rgba(255,255,255,0.85)",
-                                        '--tw-prose-headings': '#ffffff',
-                                        '--tw-prose-bold': '#ffffff',
-                                        '--tw-prose-links': '#ff8e6e',
-                                        '--tw-prose-bullets': 'rgba(255,255,255,0.5)',
-                                        '--tw-prose-counters': 'rgba(255,255,255,0.5)',
-                                        '--tw-prose-code': '#ff8e6e',
-                                        '--tw-prose-hr': 'rgba(255,255,255,0.15)',
-                                    } as React.CSSProperties}
-                                >
+                                <div>
                                     {isFallback && !loading && <FallbackBanner />}
-                                    <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>{answer}</ReactMarkdown>
+                                    {(() => {
+                                        const sections = !loading ? parseResearchSections(answer) : null;
+                                        const proseStyle = {
+                                            color: "rgba(255,255,255,0.85)",
+                                            '--tw-prose-headings': '#ffffff',
+                                            '--tw-prose-bold': '#ffffff',
+                                            '--tw-prose-links': '#ff8e6e',
+                                            '--tw-prose-bullets': 'rgba(255,255,255,0.5)',
+                                            '--tw-prose-counters': 'rgba(255,255,255,0.5)',
+                                            '--tw-prose-code': '#ff8e6e',
+                                            '--tw-prose-hr': 'rgba(255,255,255,0.15)',
+                                        } as React.CSSProperties;
+
+                                        if (sections && !loading) {
+                                            return (
+                                                <>
+                                                    {sections.map((sec, i) => (
+                                                        <ResearchSection key={i} title={sec.title} evidence={sec.evidence}>
+                                                            <div className="prose max-w-none prose-sm prose-headings:font-semibold prose-h2:text-base" style={proseStyle}>
+                                                                <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]} rehypePlugins={[rehypeRaw]}>{sec.content}</ReactMarkdown>
+                                                            </div>
+                                                        </ResearchSection>
+                                                    ))}
+                                                    <p className="text-xs text-center mt-4" style={{ color: 'rgba(255,255,255,0.35)' }}>
+                                                        🟢 Strong evidence &nbsp; 🟡 Moderate &nbsp; 🔴 Limited
+                                                    </p>
+                                                </>
+                                            );
+                                        }
+
+                                        return (
+                                            <div className="prose max-w-none prose-sm prose-headings:font-semibold prose-h2:text-base" style={proseStyle}>
+                                                <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]} rehypePlugins={[rehypeRaw]}>{answer}</ReactMarkdown>
+                                            </div>
+                                        );
+                                    })()}
                                     {loading && answer && (
                                         <span className="inline-block w-1.5 h-4 rounded-sm animate-pulse ml-0.5" style={{ background: ACCENT }} />
                                     )}
