@@ -122,6 +122,9 @@ function ExplainForm() {
         });
         if (!res.ok) {
             const data = await res.json().catch(() => ({}));
+            if (data.type === 'pro_required') {
+                throw Object.assign(new Error('pro_required'), { proRequired: true });
+            }
             throw new Error(data.detail || 'Extraction failed');
         }
         const data = await res.json();
@@ -167,9 +170,14 @@ function ExplainForm() {
 
             setExtractedText(text);
             setUploadState('preview');
-        } catch {
-            setUploadState('error');
-            setUploadError('Could not extract text. Please paste your report manually.');
+        } catch (err: any) {
+            if (err?.proRequired) {
+                setUploadState('idle');
+                setShowUpgradeModal(true);
+            } else {
+                setUploadState('error');
+                setUploadError('Could not extract text. Please paste your report manually.');
+            }
         }
     }, [extractFromPdf, extractFromImage, plan]);
 

@@ -34,7 +34,7 @@ const DISCLAIMERS: Record<string, string> = {
     'th': '\u26A0\uFE0F ข้อมูลนี้ใช้เพื่อการอ้างอิงเท่านั้น กรุณาตรวจสอบตามแนวทางปฏิบัติทางคลินิกและปรึกษาผู้เชี่ยวชาญที่มีคุณสมบัติ',
 };
 
-const DISCLAIMER_STRIP_RE = /⚠️\s*(This information|For reference only|本資訊|本信息|本情報|본 정보|Solo con fines|À titre|Nur zu|Solo a scopo|Apenas para|ข้อมูลนี้|Please consult|僅供參考|仅供参考).*$/gm;
+const DISCLAIMER_STRIP_RE = /⚠️\s*(This information|For informational purposes|For reference only|本資訊|本信息|本情報|본 정보|Solo con fines|À titre|Nur zu|Solo a scopo|Apenas para|ข้อมูลนี้|Please consult|僅供參考|仅供参考).*$/gm;
 
 function stripLlmDisclaimer(text: string): string {
     return text.replace(DISCLAIMER_STRIP_RE, '').trim();
