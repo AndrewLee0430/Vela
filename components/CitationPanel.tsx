@@ -124,7 +124,7 @@ function CitationCard({ citation }: { citation: Citation }) {
 
             {/* Credibility stars */}
             <div className="flex items-center gap-2 mb-3">
-                <span className="text-xs" style={{ color: "rgba(255,255,255,0.4)" }}>Credibility:</span>
+                <span className="text-xs" style={{ color: "rgba(255,255,255,0.7)" }}>Credibility:</span>
                 <StarRating count={credConfig.stars} />
             </div>
 
@@ -135,8 +135,10 @@ function CitationCard({ citation }: { citation: Citation }) {
                     {isLong && (
                         <button
                             onClick={() => setExpanded(!expanded)}
-                            className="hover:underline text-xs mt-1"
-                            style={{ color: "#ff8e6e" }}
+                            className="text-xs mt-1 transition-colors"
+                            style={{ color: "rgba(148,163,184,1)" }}
+                            onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = '#e2e8f0'}
+                            onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = 'rgba(148,163,184,1)'}
                         >
                             {expanded ? 'Show less' : 'Show more'}
                         </button>

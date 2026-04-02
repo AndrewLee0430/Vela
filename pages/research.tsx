@@ -71,10 +71,10 @@ function EvidenceLegend() {
     const [expanded, setExpanded] = useState(false);
     return (
         <div className="mt-4 text-center">
-            <div className="inline-flex items-center gap-4 text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>
+            <div className="inline-flex items-center gap-4 text-xs" style={{ color: 'rgba(255,255,255,0.45)' }}>
                 {EVIDENCE_LEVELS.map(({ emoji, label, tip }) => (
                     <span key={emoji} className="relative group">
-                        <span className="cursor-default">{emoji} {label}</span>
+                        <span className="cursor-help transition-colors hover:text-slate-200">{emoji} {label}</span>
                         {/* Desktop hover tooltip */}
                         <span
                             className="absolute bottom-full left-1/2 mb-2 hidden group-hover:block z-50"

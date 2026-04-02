@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef, useEffect, ReactNode } from 'react';
+import { useState, useRef, useEffect, useCallback, ReactNode } from 'react';
 import UpgradeModal from './UpgradeModal';
 
 interface ProFeatureOverlayProps {
@@ -14,15 +14,13 @@ export default function ProFeatureOverlay({ children, featureName, isLocked }: P
     const [showModal, setShowModal] = useState(false);
     const [above, setAbove] = useState(true);
     const wrapperRef = useRef<HTMLDivElement>(null);
-    const popoverRef = useRef<HTMLDivElement>(null);
+    const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    // Close on outside click
+    // Close on outside click (mobile fallback)
     useEffect(() => {
         if (!showPopover) return;
         function handleClick(e: MouseEvent) {
-            if (
-                wrapperRef.current && !wrapperRef.current.contains(e.target as Node)
-            ) {
+            if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
                 setShowPopover(false);
             }
         }
@@ -30,23 +28,46 @@ export default function ProFeatureOverlay({ children, featureName, isLocked }: P
         return () => document.removeEventListener('mousedown', handleClick);
     }, [showPopover]);
 
-    if (!isLocked) return <>{children}</>;
-
-    function handleChildClick(e: React.MouseEvent) {
-        e.preventDefault();
-        e.stopPropagation();
-
-        // Decide popover direction
+    const updateDirection = useCallback(() => {
         if (wrapperRef.current) {
             const rect = wrapperRef.current.getBoundingClientRect();
             setAbove(rect.top > 120);
         }
+    }, []);
+
+    if (!isLocked) return <>{children}</>;
+
+    function handleMouseEnter() {
+        if (hoverTimer.current) clearTimeout(hoverTimer.current);
+        hoverTimer.current = setTimeout(() => {
+            updateDirection();
+            setShowPopover(true);
+        }, 200);
+    }
+
+    function handleMouseLeave() {
+        if (hoverTimer.current) clearTimeout(hoverTimer.current);
+        hoverTimer.current = setTimeout(() => {
+            setShowPopover(false);
+        }, 150);
+    }
+
+    // Mobile: click to toggle (no hover on touch devices)
+    function handleChildClick(e: React.MouseEvent) {
+        e.preventDefault();
+        e.stopPropagation();
+        updateDirection();
         setShowPopover(prev => !prev);
     }
 
     return (
         <>
-            <div ref={wrapperRef} className="relative inline-block">
+            <div
+                ref={wrapperRef}
+                className="relative w-full"
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
+            >
                 {/* Children rendered with dimmed + blocked style */}
                 <div
                     className="opacity-50 cursor-not-allowed"
@@ -61,7 +82,6 @@ export default function ProFeatureOverlay({ children, featureName, isLocked }: P
 
                 {/* Popover */}
                 <div
-                    ref={popoverRef}
                     className="absolute left-1/2 z-50"
                     style={{
                         transform: `translateX(-50%) translateY(${showPopover ? '0' : '4px'})`,
