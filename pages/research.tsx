@@ -13,6 +13,7 @@ import UpgradeModal from '../components/UpgradeModal';
 import Toast from '../components/Toast';
 import PHIWarning from '../components/PHIWarning';
 import PageShell from '../components/PageShell';
+import ProFeatureOverlay from '../components/ProFeatureOverlay';
 import { exportResearchPdf } from '../utils/exportPdf';
 
 const ACCENT = '#ff8e6e';
@@ -74,7 +75,9 @@ function ResearchForm() {
     })();
 
     const answerRef    = useRef<HTMLDivElement>(null);
+    const inputRef     = useRef<HTMLInputElement>(null);
     const isRunningRef = useRef(false);
+    const [clickedSuggestion, setClickedSuggestion] = useState<number | null>(null);
 
     useEffect(() => {
         if (answerRef.current && answer) {
@@ -206,17 +209,29 @@ function ResearchForm() {
                                             {defaultSuggestions.map((s, i) => (
                                                 <button
                                                     key={i}
-                                                    onClick={() => { setQuestion(s); runSearch(s); }}
+                                                    onClick={() => {
+                                                        setQuestion(prev => prev.trim() ? `${prev.trim()} ${s}` : s);
+                                                        setClickedSuggestion(i);
+                                                        setTimeout(() => setClickedSuggestion(null), 300);
+                                                        setTimeout(() => inputRef.current?.focus(), 0);
+                                                    }}
                                                     disabled={loading}
                                                     className="px-3 py-1.5 text-xs rounded-full disabled:opacity-50 transition-all duration-200"
-                                                    style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.7)" }}
+                                                    style={{
+                                                        background: clickedSuggestion === i ? "rgba(255,142,110,0.2)" : "rgba(255,255,255,0.06)",
+                                                        border: `1px solid ${clickedSuggestion === i ? "rgba(255,142,110,0.6)" : "rgba(255,255,255,0.15)"}`,
+                                                        color: clickedSuggestion === i ? "#ff8e6e" : "rgba(255,255,255,0.7)",
+                                                        transform: clickedSuggestion === i ? "scale(0.95)" : "scale(1)",
+                                                    }}
                                                     onMouseEnter={e => {
                                                         (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,142,110,0.6)";
                                                         (e.currentTarget as HTMLElement).style.color = "#ff8e6e";
                                                     }}
                                                     onMouseLeave={e => {
-                                                        (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.15)";
-                                                        (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.7)";
+                                                        if (clickedSuggestion !== i) {
+                                                            (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.15)";
+                                                            (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.7)";
+                                                        }
                                                     }}
                                                 >
                                                     {s}
@@ -256,19 +271,20 @@ function ResearchForm() {
                                     {!loading && answer && !error && (
                                         <>
                                             <FeedbackBar query={question} response={answer} category="research" />
-                                            <button
-                                                onClick={() => {
-                                                    if (plan !== 'pro') { setShowUpgradeModal(true); return; }
-                                                    exportResearchPdf(question, answer, citations);
-                                                }}
-                                                className="mt-3 inline-flex items-center gap-2 text-xs font-medium px-3 py-1.5 rounded-lg transition-all cursor-pointer"
-                                                style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.55)' }}
-                                                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.12)'; (e.currentTarget as HTMLElement).style.color = 'white'; }}
-                                                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.06)'; (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.55)'; }}
-                                            >
-                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                                                Export with Citations
-                                            </button>
+                                            <div className="mt-3 inline-block">
+                                                <ProFeatureOverlay isLocked={plan !== 'pro'} featureName="Export">
+                                                    <button
+                                                        onClick={() => exportResearchPdf(question, answer, citations)}
+                                                        className="inline-flex items-center gap-2 text-xs font-medium px-3 py-1.5 rounded-lg transition-all cursor-pointer"
+                                                        style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.55)' }}
+                                                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.12)'; (e.currentTarget as HTMLElement).style.color = 'white'; }}
+                                                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.06)'; (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.55)'; }}
+                                                    >
+                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                                        Export with Citations
+                                                    </button>
+                                                </ProFeatureOverlay>
+                                            </div>
                                         </>
                                     )}
                                 </div>
@@ -283,6 +299,7 @@ function ResearchForm() {
 
                         <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2">
                             <input
+                                ref={inputRef}
                                 type="text"
                                 value={question}
                                 onChange={(e) => setQuestion(e.target.value)}

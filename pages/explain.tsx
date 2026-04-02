@@ -11,6 +11,7 @@ import FeedbackBar from '../components/FeedbackBar';
 import Toast from '../components/Toast';
 import PHIWarning from '../components/PHIWarning';
 import UpgradeModal from '../components/UpgradeModal';
+import ProFeatureOverlay from '../components/ProFeatureOverlay';
 import PageShell from '../components/PageShell';
 
 const ACCENT = '#68d391';
@@ -297,17 +298,17 @@ function ExplainForm() {
                         <>
                             {uploadState === 'idle' && (
                                 <>
-                                    {plan === 'pro' ? (
+                                    <ProFeatureOverlay isLocked={plan !== 'pro'} featureName="PDF Upload">
                                         <div
                                             className="rounded-lg p-6 text-center cursor-pointer transition-all"
                                             style={{
                                                 border: `2px dashed ${dragOver ? 'rgba(74,222,128,0.7)' : 'rgba(74,222,128,0.4)'}`,
                                                 background: dragOver ? 'rgba(74,222,128,0.1)' : 'rgba(74,222,128,0.05)',
                                             }}
-                                            onClick={() => fileInputRef.current?.click()}
-                                            onDragOver={e => { e.preventDefault(); setDragOver(true); }}
+                                            onClick={() => plan === 'pro' && fileInputRef.current?.click()}
+                                            onDragOver={e => { if (plan === 'pro') { e.preventDefault(); setDragOver(true); } }}
                                             onDragLeave={() => setDragOver(false)}
-                                            onDrop={handleDrop}
+                                            onDrop={plan === 'pro' ? handleDrop : undefined}
                                         >
                                             <input
                                                 ref={fileInputRef}
@@ -320,23 +321,7 @@ function ExplainForm() {
                                             <p className="text-sm font-medium" style={{ color: 'rgba(74,222,128,0.9)' }}>Upload Report</p>
                                             <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.4)' }}>PDF or image (JPG, PNG) · Max 10MB</p>
                                         </div>
-                                    ) : (
-                                        <div
-                                            className="rounded-lg p-6 text-center transition-all cursor-not-allowed"
-                                            style={{
-                                                border: '2px dashed rgba(255,255,255,0.15)',
-                                                background: 'rgba(255,255,255,0.03)',
-                                                opacity: 0.6,
-                                            }}
-                                            onClick={() => setShowUpgradeModal(true)}
-                                        >
-                                            <div className="text-2xl mb-2" style={{ opacity: 0.4 }}>📄</div>
-                                            <p className="text-sm font-medium" style={{ color: 'rgba(255,255,255,0.5)' }}>Upload Report</p>
-                                            <p className="text-xs mt-1" style={{ color: '#ff8e6e' }}>
-                                                PDF &amp; image upload is a Pro feature. Upgrade to unlock.
-                                            </p>
-                                        </div>
-                                    )}
+                                    </ProFeatureOverlay>
                                     <p className="text-xs text-center py-1" style={{ color: 'rgba(255,255,255,0.3)' }}>
                                         ─── or paste text below ───
                                     </p>

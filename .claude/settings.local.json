@@ -69,7 +69,13 @@
       "Bash(powershell -File deploy.ps1)",
       "Bash(PYTHONIOENCODING=utf-8 TEST_MODE=true uv run python tests/run_golden_tests.py --smoke)",
       "Bash(grep -r \"pickle\\\\|eval\\\\|exec\" C:UsersandreprojectsVelaapi --include=*.py)",
-      "Bash(npm audit:*)"
+      "Bash(npm audit:*)",
+      "WebSearch",
+      "WebFetch(domain:openai.com)",
+      "WebFetch(domain:platform.openai.com)",
+      "WebFetch(domain:developers.openai.com)",
+      "WebFetch(domain:pricepertoken.com)",
+      "Bash(npm ls:*)"
     ]
   }
 }
