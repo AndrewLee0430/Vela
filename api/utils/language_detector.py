@@ -21,6 +21,11 @@ LANGUAGE_NAMES: dict[str, str] = {
     "it": "Italian (Italiano)",
     "pt": "Portuguese (Português)",
     "th": "Thai (ภาษาไทย)",
+    "ar": "Arabic (العربية)",
+    "hi": "Hindi (हिन्दी)",
+    "bn": "Bengali (বাংলা)",
+    "he": "Hebrew (עברית)",
+    "vi": "Vietnamese (Tiếng Việt)",
     "en": "English",
 }
 
@@ -77,6 +82,11 @@ def _detect_by_script(text: str) -> str | None:
     ja_count = 0
     ko_count = 0
     th_count = 0
+    ar_count = 0
+    hi_count = 0
+    bn_count = 0
+    he_count = 0
+    vi_count = 0
 
     for ch in text:
         cp = ord(ch)
@@ -94,8 +104,21 @@ def _detect_by_script(text: str) -> str | None:
         # Thai
         elif 0x0E00 <= cp <= 0x0E7F:
             th_count += 5
+        # Arabic (+ supplement)
+        elif (0x0600 <= cp <= 0x06FF) or (0x0750 <= cp <= 0x077F):
+            ar_count += 5
+        # Devanagari → Hindi
+        elif 0x0900 <= cp <= 0x097F:
+            hi_count += 5
+        # Bengali
+        elif 0x0980 <= cp <= 0x09FF:
+            bn_count += 5
+        # Hebrew
+        elif 0x0590 <= cp <= 0x05FF:
+            he_count += 5
+        # Vietnamese diacritics (Latin-script, detected below)
 
-    # CJK/Japanese/Korean/Thai take priority over Latin characters.
+    # CJK/Japanese/Korean/Thai/Arabic/Devanagari/Bengali/Hebrew take priority.
     # Medical reports often mix local language with English terminology,
     # so even a single non-Latin character should trigger detection.
     if ja_count > 0 and ja_count > cjk_count:
@@ -104,8 +127,22 @@ def _detect_by_script(text: str) -> str | None:
         return "ko"
     if th_count > 0:
         return "th"
+    if ar_count > 0:
+        return "ar"
+    if hi_count > 0:
+        return "hi"
+    if bn_count > 0:
+        return "bn"
+    if he_count > 0:
+        return "he"
     if cjk_count > 0:
         return _classify_zh_variant(text)
+
+    # Vietnamese: Latin script with unique diacritics
+    _VI_CHARS = set("ăắằẳẵặâấầẩẫậđêếềểễệôốồổỗộơớờởỡợưứừửữựảạẻẹỉịỏọủụỷỹỵ")
+    vi_count = sum(1 for ch in text.lower() if ch in _VI_CHARS)
+    if vi_count >= 2:
+        return "vi"
 
     return None  # Latin-script languages need keyword heuristics
 

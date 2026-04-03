@@ -1,0 +1,25 @@
+graph LR
+    Input["User Input"] --> G1["1. Input Length<br/>5k char limit<br/>~0ms, $0"]
+    G1 -->|Pass| G2["2. Regex Injection<br/>39+ patterns<br/>EN/ZH/JA/AR + Base64<br/>~1ms, $0"]
+    G2 -->|Pass| G3["3. LLM Indirect Injection<br/>GPT-4.1-mini<br/>~100ms, ~$0.001"]
+    G3 -->|Pass| G4["4. Medical Intent<br/>GPT-4.1-mini<br/>~100ms, ~$0.001"]
+    G4 -->|Pass| G5["5. PHI Detection<br/>Regex: TW/JP/US IDs<br/>email, phone, MRN<br/>~5ms, $0"]
+    G5 -->|"Pass"| Pipeline["Feature Pipeline<br/>(Research / Verify / Explain)"]
+
+    G1 -->|Block| Reject["400 / 403 Error"]
+    G2 -->|Block| Reject
+    G3 -->|Block| Reject
+    G4 -->|Block| Reject
+    G5 -->|Block| PHI["PHI Warning<br/>(localized, 11 langs)"]
+
+    Reject -.->|"fail-close: guard error = block"| Reject
+
+    style Input fill:#334155,stroke:#94a3b8,color:#fff
+    style G1 fill:#1a3a2a,stroke:#68d391,color:#fff
+    style G2 fill:#1a3a2a,stroke:#68d391,color:#fff
+    style G3 fill:#2d2d1a,stroke:#fbbf24,color:#fff
+    style G4 fill:#2d2d1a,stroke:#fbbf24,color:#fff
+    style G5 fill:#1a3a2a,stroke:#68d391,color:#fff
+    style Pipeline fill:#1e3a5f,stroke:#63b3ed,color:#fff
+    style Reject fill:#3b1a1a,stroke:#f87171,color:#fff
+    style PHI fill:#3b1a1a,stroke:#f87171,color:#fff

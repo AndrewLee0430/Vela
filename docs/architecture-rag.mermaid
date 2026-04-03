@@ -1,0 +1,27 @@
+graph TD
+    Input["User Query"] --> LangDetect["Language Detect<br/>11 langs, ~1ms, $0"]
+    LangDetect --> Rewrite["Query Rewrite<br/>GPT-4.1-mini<br/>~200ms, ~$0.001"]
+    Rewrite -->|"3 queries x 3 sources = 9 parallel tasks"| R1["Local Vector Store<br/>191 drugs, NumPy<br/>~5ms, $0"]
+    Rewrite --> R2["PubMed E-utilities<br/>36M+ articles<br/>~500ms, $0"]
+    Rewrite --> R3["FDA OpenFDA<br/>Drug labels<br/>~300ms, $0"]
+    R1 --> Merge["Merge + Deduplicate<br/>Year-weighted scoring"]
+    R2 --> Merge
+    R3 --> Merge
+    Merge --> Filter["Relevance Filter<br/>GPT-4.1-mini<br/>~300ms, ~$0.001"]
+    Filter --> Rerank["Cross-encoder Reranker<br/>GPT-4.1-mini<br/>top_k=8 → top 5<br/>~400ms, ~$0.002"]
+    Rerank --> Generate["Generator<br/>GPT-4.1, SSE streaming<br/>~3-8s, ~$0.01"]
+    Generate --> Output["Answer + Citations<br/>+ Evidence 🟢🟡🔴"]
+    Generate -.->|"background"| Judge["LLM Judge<br/>GPT-4.1-mini<br/>quality check<br/>~$0.001"]
+
+    style Input fill:#334155,stroke:#94a3b8,color:#fff
+    style LangDetect fill:#1a3a2a,stroke:#68d391,color:#fff
+    style Rewrite fill:#2d2d1a,stroke:#fbbf24,color:#fff
+    style R1 fill:#1a2a3a,stroke:#63b3ed,color:#fff
+    style R2 fill:#1a2a3a,stroke:#63b3ed,color:#fff
+    style R3 fill:#1a2a3a,stroke:#63b3ed,color:#fff
+    style Merge fill:#1e3a5f,stroke:#63b3ed,color:#fff
+    style Filter fill:#2d2d1a,stroke:#fbbf24,color:#fff
+    style Rerank fill:#2d2d1a,stroke:#fbbf24,color:#fff
+    style Generate fill:#2d2d1a,stroke:#ff8e6e,color:#fff
+    style Output fill:#1a3a2a,stroke:#68d391,color:#fff
+    style Judge fill:#1a1a2e,stroke:#94a3b8,color:#fff

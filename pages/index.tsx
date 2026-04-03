@@ -5,12 +5,13 @@ import { useUser, SignInButton, UserButton } from '@clerk/nextjs';
 import { SignedIn, SignedOut } from '@clerk/nextjs';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import MobileNav from '../components/MobileNav';
 import PlanBadge from '../components/PlanBadge';
 import UpgradeModal from '../components/UpgradeModal';
 import Navbar from '../components/Navbar';
 import OnboardingOverlay from '../components/OnboardingOverlay';
+import { translations, LANGUAGES, RTL_LANGS, type LangCode } from '../utils/i18n';
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
 const BG = 'linear-gradient(135deg, #0a1628 0%, #0f2040 45%, #1a1035 75%, #0d1a2e 100%)';
@@ -21,33 +22,6 @@ const PROMPTS = [
   { text: 'Explain my blood test results in plain language',    color: '#68d391' },
 ];
 
-const featureCards = [
-  {
-    href: '/research', label: 'Research', sub: 'PubMed 36M+',
-    desc: 'Evidence-based answers grounded in peer-reviewed literature.',
-    accentColor: '#ff8e6e', hoverBg: 'rgba(255,142,110,0.12)', hoverBorder: 'rgba(255,142,110,0.45)',
-  },
-  {
-    href: '/verify', label: 'Verify', sub: 'FDA Official',
-    desc: 'Check drug interactions against official FDA label data.',
-    accentColor: '#63b3ed', hoverBg: 'rgba(99,179,237,0.12)', hoverBorder: 'rgba(99,179,237,0.45)',
-  },
-  {
-    href: '/explain', label: 'Explain', sub: 'LOINC + FDA + NLM',
-    desc: 'Summarize medical reports in plain language, backed by official sources.',
-    accentColor: '#68d391', hoverBg: 'rgba(104,211,145,0.12)', hoverBorder: 'rgba(104,211,145,0.45)',
-  },
-];
-
-const DASHBOARD_CARDS = [
-  ...featureCards.map(f => ({ ...f, color: f.accentColor })),
-  {
-    href: '/history', label: 'History', sub: 'All queries',
-    desc: 'Browse your past research, verifications, and explanations.',
-    accentColor: '#94a3b8', color: '#94a3b8',
-    hoverBg: 'rgba(148,163,184,0.12)', hoverBorder: 'rgba(148,163,184,0.45)',
-  },
-];
 // ─────────────────────────────────────────────────────────────────────────────
 
 function TypewriterPrompt() {
@@ -82,9 +56,215 @@ function TypewriterPrompt() {
   );
 }
 
+// ─── Language Switcher ──────────────────────────────────────────────────────
+function LanguageSwitcher({ lang, setLang }: { lang: LangCode; setLang: (l: LangCode) => void }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const current = LANGUAGES.find(l => l.code === lang)!;
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    }
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, []);
+
+  return (
+    <div ref={ref} className="relative inline-block">
+      <button
+        onClick={() => setOpen(o => !o)}
+        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs transition-colors"
+        style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.5)' }}
+        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = 'white'; }}
+        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.5)'; }}
+      >
+        <span>🌐</span>
+        <span className="font-medium">{current.short}</span>
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+          <polyline points="6 15 12 9 18 15" />
+        </svg>
+      </button>
+
+      {open && (
+        <div
+          className="absolute bottom-full left-1/2 mb-2 rounded-xl p-3 z-50"
+          style={{
+            transform: 'translateX(-50%)',
+            background: '#0f1a2e',
+            border: '1px solid rgba(255,255,255,0.12)',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
+            minWidth: '320px',
+          }}
+        >
+          <div className="grid grid-cols-2 gap-1">
+            {LANGUAGES.map(l => (
+              <button
+                key={l.code}
+                onClick={() => { setLang(l.code); setOpen(false); }}
+                className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-left transition-colors"
+                style={{
+                  background: l.code === lang ? 'rgba(255,142,110,0.12)' : 'transparent',
+                  color: l.code === lang ? '#ff8e6e' : 'rgba(255,255,255,0.6)',
+                }}
+                onMouseEnter={e => {
+                  if (l.code !== lang) (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.06)';
+                }}
+                onMouseLeave={e => {
+                  if (l.code !== lang) (e.currentTarget as HTMLElement).style.background = 'transparent';
+                }}
+              >
+                <span className="font-semibold w-8 text-right" style={{ opacity: 0.6 }}>{l.short}</span>
+                <span>{l.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Product Showcase Cards ─────────────────────────────────────────────────
+function ProductShowcase({ t }: { t: typeof translations['en'] }) {
+  const cards = [
+    {
+      href: '/research',
+      color: '#ff8e6e',
+      borderColor: 'rgba(255,142,110,0.3)',
+      hoverBorder: 'rgba(255,142,110,0.6)',
+      topLabel: t.research,
+      question: t.mockupResearchQuery,
+      body: t.mockupResearchAnswer,
+      evidenceColor: '#4ade80',
+      footer: `📄 ${t.mockupResearchSource}`,
+    },
+    {
+      href: '/verify',
+      color: '#63b3ed',
+      borderColor: 'rgba(99,179,237,0.3)',
+      hoverBorder: 'rgba(99,179,237,0.6)',
+      topLabel: t.verify,
+      question: t.mockupVerifyDrugs,
+      badge: `⚠️ ${t.mockupVerifyBadge}`,
+      badgeBg: 'rgba(239,68,68,0.15)',
+      badgeColor: '#f87171',
+      footer: t.mockupVerifyDesc,
+    },
+    {
+      href: '/explain',
+      color: '#4ade80',
+      borderColor: 'rgba(74,222,128,0.3)',
+      hoverBorder: 'rgba(74,222,128,0.6)',
+      topLabel: t.explain,
+      question: t.mockupExplainValue,
+      highlight: `↑ ${t.mockupExplainStatus}`,
+      highlightColor: '#f87171',
+      footer: t.mockupExplainDesc,
+    },
+  ];
+
+  return (
+    <div className="w-full" style={{ maxWidth: '780px' }}>
+      <p className="text-center text-sm font-medium mb-5" style={{ color: 'rgba(255,255,255,0.4)' }}>
+        {t.seeHow}
+      </p>
+      <div className="flex flex-col sm:flex-row gap-3">
+        {cards.map(c => (
+          <Link key={c.href} href={c.href} className="flex-1">
+            <div
+              className="h-full rounded-xl overflow-hidden cursor-pointer transition-all duration-300"
+              style={{ background: 'rgba(15,23,42,0.6)', border: `1px solid ${c.borderColor}` }}
+              onMouseEnter={e => {
+                const el = e.currentTarget as HTMLElement;
+                el.style.transform = 'scale(1.03)';
+                el.style.borderColor = c.hoverBorder;
+                el.style.boxShadow = `0 8px 24px rgba(0,0,0,0.3)`;
+              }}
+              onMouseLeave={e => {
+                const el = e.currentTarget as HTMLElement;
+                el.style.transform = 'scale(1)';
+                el.style.borderColor = c.borderColor;
+                el.style.boxShadow = 'none';
+              }}
+            >
+              <div className="flex h-full">
+                {/* Left color bar */}
+                <div className="w-1 flex-shrink-0" style={{ background: c.color }} />
+                <div className="flex flex-col p-4 gap-2.5 flex-1 min-w-0">
+                  {/* Top label */}
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: c.color }}>{c.topLabel}</span>
+                  </div>
+                  {/* Question */}
+                  <p className="text-xs font-mono font-medium text-white leading-snug">{c.question}</p>
+                  {/* Body — varies per card */}
+                  {'body' in c && (
+                    <p className="text-[11px] font-mono leading-relaxed" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                      {c.body}
+                    </p>
+                  )}
+                  {'badge' in c && (
+                    <span
+                      className="inline-block self-start text-xs font-semibold px-2.5 py-1 rounded-md"
+                      style={{ background: c.badgeBg, color: c.badgeColor }}
+                    >
+                      {c.badge}
+                    </span>
+                  )}
+                  {'highlight' in c && (
+                    <p className="text-xs font-mono font-semibold" style={{ color: c.highlightColor }}>
+                      {c.highlight}
+                    </p>
+                  )}
+                  {/* Footer */}
+                  <p className="text-[10px] font-mono mt-auto" style={{ color: 'rgba(255,255,255,0.3)' }}>
+                    {c.footer}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </Link>
+        ))}
+      </div>
+      {/* Tags */}
+      <div className="flex flex-wrap justify-center gap-1 mt-4 text-[11px]" style={{ color: 'rgba(255,255,255,0.3)' }}>
+        <span>{t.tagEvidenceGraded}</span>
+        <span>·</span>
+        <span>{t.tagCitedSources}</span>
+        <span>·</span>
+        <span>{t.tagAskAnyLang}</span>
+      </div>
+    </div>
+  );
+}
+
 // ─── Landing Page (unauthenticated) ──────────────────────────────────────────
 function LandingPage() {
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [lang, setLang] = useState<LangCode>('en');
+  const t = translations[lang];
+  const isRtl = RTL_LANGS.includes(lang);
+  const arrow = isRtl ? t.arrowLeft : t.arrowRight;
+
+  const featureCards = [
+    {
+      href: '/research', label: t.research, sub: t.researchSub,
+      desc: t.researchDesc,
+      accentColor: '#ff8e6e', hoverBg: 'rgba(255,142,110,0.12)', hoverBorder: 'rgba(255,142,110,0.45)',
+    },
+    {
+      href: '/verify', label: t.verify, sub: t.verifySub,
+      desc: t.verifyDesc,
+      accentColor: '#63b3ed', hoverBg: 'rgba(99,179,237,0.12)', hoverBorder: 'rgba(99,179,237,0.45)',
+    },
+    {
+      href: '/explain', label: t.explain, sub: t.explainSub,
+      desc: t.explainDesc,
+      accentColor: '#68d391', hoverBg: 'rgba(104,211,145,0.12)', hoverBorder: 'rgba(104,211,145,0.45)',
+    },
+  ];
+
   return (
     <>
       <Head>
@@ -109,6 +289,7 @@ function LandingPage() {
       <div
         className="min-h-screen flex flex-col"
         style={{ background: BG }}
+        dir={isRtl ? 'rtl' : undefined}
       >
         {/* Nav */}
         <nav className="flex-shrink-0 flex justify-end items-center gap-2 px-4 md:px-10 py-5">
@@ -122,7 +303,7 @@ function LandingPage() {
                 onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.1)')}
                 onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
               >
-                Sign In
+                {t.signIn}
               </button>
             </SignInButton>
           </SignedOut>
@@ -151,15 +332,16 @@ function LandingPage() {
           </div>
 
           <p className="text-xl font-semibold text-white mb-1 tracking-tight">
-            Medical Research, Simplified.
+            {t.heroTitle}
           </p>
           <p className="text-sm mb-4" style={{ color: 'rgba(255,255,255,0.35)' }}>
-            ✦ Ask in any language — we search in English, answer in yours &nbsp;·&nbsp; 🔒 No PHI stored
+            ✦ {t.heroSub} &nbsp;·&nbsp; 🔒 {t.noPhi}
           </p>
 
           {/* Typewriter */}
           <div
             className="w-full rounded-2xl px-7 py-5 mb-5 text-left"
+            dir="ltr"
             style={{
               maxWidth: '680px',
               background: 'rgba(255,255,255,0.06)',
@@ -168,7 +350,7 @@ function LandingPage() {
             }}
           >
             <p className="text-xs uppercase tracking-widest mb-2 font-medium" style={{ color: 'rgba(255,255,255,0.35)' }}>
-              Ask Vela to
+              {t.askVelaTo}
             </p>
             <p className="text-lg leading-relaxed min-h-[1.8rem] text-white">
               <TypewriterPrompt />
@@ -183,8 +365,8 @@ function LandingPage() {
                   className="group px-6 py-2.5 text-white text-sm font-semibold rounded-xl transition-all duration-300 hover:scale-105 flex items-center gap-2"
                   style={{ background: 'linear-gradient(135deg, #ff6b6b, #ff8e6e)', boxShadow: '0 0 28px rgba(255,107,107,0.4)' }}
                 >
-                  Get Started Free
-                  <span className="group-hover:translate-x-1 transition-transform">→</span>
+                  {t.getStarted}
+                  <span className="group-hover:translate-x-1 transition-transform">{arrow}</span>
                 </button>
               </SignInButton>
             </SignedOut>
@@ -194,27 +376,11 @@ function LandingPage() {
                   className="group px-6 py-2.5 text-white text-sm font-semibold rounded-xl transition-all duration-300 hover:scale-105 flex items-center gap-2"
                   style={{ background: 'linear-gradient(135deg, #ff6b6b, #ff8e6e)', boxShadow: '0 0 28px rgba(255,107,107,0.4)' }}
                 >
-                  Open App
-                  <span className="group-hover:translate-x-1 transition-transform">→</span>
+                  {t.openApp}
+                  <span className="group-hover:translate-x-1 transition-transform">{arrow}</span>
                 </button>
               </Link>
             </SignedIn>
-            <Link href="/research">
-              <button
-                className="px-6 py-2.5 text-sm font-medium rounded-xl transition-all duration-200"
-                style={{ color: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.15)' }}
-                onMouseEnter={e => {
-                  (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.08)';
-                  (e.currentTarget as HTMLElement).style.color = 'white';
-                }}
-                onMouseLeave={e => {
-                  (e.currentTarget as HTMLElement).style.background = 'transparent';
-                  (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.55)';
-                }}
-              >
-                Try it now
-              </button>
-            </Link>
             <Link
               href="/pricing"
               className="text-sm font-medium rounded-full px-4 py-2 transition-all duration-200"
@@ -222,9 +388,20 @@ function LandingPage() {
               onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.15)'; (e.currentTarget as HTMLElement).style.color = 'white'; }}
               onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.08)'; (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.55)'; }}
             >
-              See pricing →
+              {t.seePricing} {arrow}
             </Link>
           </div>
+
+          {/* Social proof */}
+          <p className="text-sm mb-6" style={{ color: 'rgba(148,163,184,0.7)' }}>
+            {t.socialProof}
+          </p>
+
+          {/* Product showcase */}
+          <ProductShowcase t={t} />
+
+          {/* Spacer */}
+          <div className="my-6" />
 
           {/* Feature cards */}
           <div className="flex flex-col sm:flex-row gap-3 w-full" style={{ maxWidth: '780px' }}>
@@ -269,8 +446,11 @@ function LandingPage() {
           className="flex-shrink-0 flex flex-col items-center gap-2 px-4 md:px-10 py-5 text-sm"
           style={{ borderTop: '1px solid rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.3)' }}
         >
-          <div>© {new Date().getFullYear()} Vela. All rights reserved. · Hosted on secure infrastructure · De-identified data only</div>
-          <div>Vela is a research tool, not a medical device. It does not provide medical advice.</div>
+          <div className="flex items-center gap-3">
+            <span>© {new Date().getFullYear()} Vela. {t.footerCopy}</span>
+            <LanguageSwitcher lang={lang} setLang={setLang} />
+          </div>
+          <div>{t.footerDisclaimer}</div>
           <div className="flex flex-wrap justify-center gap-4 text-xs">
             <Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
             <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
@@ -303,6 +483,33 @@ function Dashboard() {
       }
     }
   }, []);
+
+  const DASHBOARD_CARDS = [
+    {
+      href: '/research', label: 'Research', sub: 'PubMed 36M+',
+      desc: 'Evidence-based answers grounded in peer-reviewed literature.',
+      accentColor: '#ff8e6e', color: '#ff8e6e',
+      hoverBg: 'rgba(255,142,110,0.12)', hoverBorder: 'rgba(255,142,110,0.45)',
+    },
+    {
+      href: '/verify', label: 'Verify', sub: 'FDA Official',
+      desc: 'Check drug interactions against official FDA label data.',
+      accentColor: '#63b3ed', color: '#63b3ed',
+      hoverBg: 'rgba(99,179,237,0.12)', hoverBorder: 'rgba(99,179,237,0.45)',
+    },
+    {
+      href: '/explain', label: 'Explain', sub: 'LOINC + FDA + NLM',
+      desc: 'Summarize medical reports in plain language, backed by official sources.',
+      accentColor: '#68d391', color: '#68d391',
+      hoverBg: 'rgba(104,211,145,0.12)', hoverBorder: 'rgba(104,211,145,0.45)',
+    },
+    {
+      href: '/history', label: 'History', sub: 'All queries',
+      desc: 'Browse your past research, verifications, and explanations.',
+      accentColor: '#94a3b8', color: '#94a3b8',
+      hoverBg: 'rgba(148,163,184,0.12)', hoverBorder: 'rgba(148,163,184,0.45)',
+    },
+  ];
 
   return (
     <main className="min-h-screen pb-20 md:pb-0" style={{ background: BG }}>

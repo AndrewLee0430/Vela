@@ -1,0 +1,36 @@
+graph LR
+    Landing["Landing Page"] --> SignUp["Sign Up / Sign In"]
+    SignUp --> Dashboard["Welcome Dashboard"]
+    Dashboard --> Research["Research"]
+    Dashboard --> Verify["Verify"]
+    Dashboard --> Explain["Explain"]
+    Dashboard --> History["History"]
+
+    Research --> R_Input["Enter Query or<br/>Select Suggestion"]
+    R_Input --> Guards{"Guard Chain"}
+    Guards -->|Block| Error["Error Message"]
+    Guards -->|Pass| Credits{"Credits?"}
+    Credits -->|No| Paywall["Upgrade Modal"]
+    Credits -->|Yes| RAG["RAG Pipeline"]
+    RAG --> Answer["Answer + Citations<br/>+ Evidence 🟢🟡🔴"]
+    Answer --> ExportCheck{"Pro?"}
+    ExportCheck -->|Yes| PDF["Export PDF"]
+    ExportCheck -->|No| ProPopover["Pro Feature Popover"]
+
+    Verify --> V_Input["Enter Drug Names"]
+    V_Input --> Guards
+
+    Explain --> E_Input{"Pro?"}
+    E_Input -->|Pro| Upload["Upload PDF / Image"]
+    E_Input -->|Free| TextOnly["Paste Text Only"]
+    Upload --> Guards
+    TextOnly --> Guards
+
+    Paywall --> Dodo["Dodo Checkout"]
+    Dodo --> Pro["Pro Plan Active"]
+
+    style Error fill:#3b1a1a,stroke:#f87171,color:#fff
+    style Paywall fill:#3b1a1a,stroke:#fbbf24,color:#fff
+    style ProPopover fill:#3b1a1a,stroke:#fbbf24,color:#fff
+    style Pro fill:#14532d,stroke:#68d391,color:#fff
+    style PDF fill:#14532d,stroke:#68d391,color:#fff

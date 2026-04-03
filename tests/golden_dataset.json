@@ -1369,5 +1369,101 @@
     "must_contain": [],
     "must_not_contain": [],
     "min_score": 0
+  },
+  {
+    "id": "LANG_AR_01",
+    "category": "multilingual",
+    "endpoint": "research",
+    "query": "ما هي الآثار الجانبية للميتفورمين؟",
+    "must_contain": [
+      "response is written in Arabic",
+      "mentions gastrointestinal side effects or lactic acidosis"
+    ],
+    "must_not_contain": [],
+    "min_score": 70,
+    "note": "Arabic input → Arabic output"
+  },
+  {
+    "id": "LANG_AR_02",
+    "category": "identify",
+    "input_drug": "أسبرين",
+    "expected_standard": "Aspirin"
+  },
+  {
+    "id": "LANG_HI_01",
+    "category": "multilingual",
+    "endpoint": "research",
+    "query": "मेटफॉर्मिन के दुष्प्रभाव क्या हैं?",
+    "must_contain": [
+      "response is written in Hindi",
+      "mentions gastrointestinal side effects or lactic acidosis"
+    ],
+    "must_not_contain": [],
+    "min_score": 70,
+    "note": "Hindi input → Hindi output"
+  },
+  {
+    "id": "LANG_HI_02",
+    "category": "identify",
+    "input_drug": "एस्पिरिन",
+    "expected_standard": "Aspirin"
+  },
+  {
+    "id": "LANG_BN_01",
+    "category": "multilingual",
+    "endpoint": "research",
+    "query": "মেটফর্মিনের পার্শ্বপ্রতিক্রিয়া কী?",
+    "must_contain": [
+      "response is written in Bengali",
+      "mentions gastrointestinal side effects or lactic acidosis"
+    ],
+    "must_not_contain": [],
+    "min_score": 70,
+    "note": "Bengali input → Bengali output"
+  },
+  {
+    "id": "LANG_BN_02",
+    "category": "identify",
+    "input_drug": "অ্যাসপিরিন",
+    "expected_standard": "Aspirin"
+  },
+  {
+    "id": "LANG_HE_01",
+    "category": "multilingual",
+    "endpoint": "research",
+    "query": "מהן תופעות הלוואי של מטפורמין?",
+    "must_contain": [
+      "response is written in Hebrew",
+      "mentions gastrointestinal side effects or lactic acidosis"
+    ],
+    "must_not_contain": [],
+    "min_score": 70,
+    "note": "Hebrew input → Hebrew output"
+  },
+  {
+    "id": "LANG_HE_02",
+    "category": "identify",
+    "input_drug": "אספירין",
+    "expected_standard": "Aspirin"
+  },
+  {
+    "id": "LANG_VI_01",
+    "category": "multilingual",
+    "endpoint": "research",
+    "query": "Tác dụng phụ của Metformin là gì?",
+    "must_contain": [
+      "response is written in Vietnamese",
+      "mentions gastrointestinal side effects or lactic acidosis"
+    ],
+    "must_not_contain": [],
+    "min_score": 70,
+    "note": "Vietnamese input → Vietnamese output"
+  },
+  {
+    "id": "LANG_VI_02",
+    "category": "identify",
+    "input_drug": "Aspirin",
+    "expected_standard": "Aspirin",
+    "note": "Vietnamese uses Latin script with diacritics - drug names often stay in English"
   }
 ]

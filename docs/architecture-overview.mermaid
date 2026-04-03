@@ -1,0 +1,32 @@
+graph LR
+    User((User)) --> Frontend["Next.js + Clerk"]
+    Frontend -->|"HTTPS + SSE"| Backend["FastAPI"]
+    Backend --> Guards["5-Layer Guard Chain"]
+    Guards --> Research["Research RAG"]
+    Guards --> Verify["Verify Pipeline"]
+    Guards --> Explain["Explain Pipeline"]
+    Research --> OpenAI["OpenAI API<br/>GPT-4.1 / 4.1-mini"]
+    Research --> PubMed["PubMed API<br/>36M+ articles"]
+    Research --> FDA["FDA OpenFDA API"]
+    Verify --> FDA
+    Verify --> OpenAI
+    Explain --> OpenAI
+    Backend --> DB[("Neon PostgreSQL")]
+    Backend --> Dodo["Dodo Payments"]
+    Frontend --> PostHog["PostHog"]
+    Backend --> Sentry["Sentry"]
+
+    style User fill:#334155,stroke:#94a3b8,color:#fff
+    style Frontend fill:#1e3a5f,stroke:#ff8e6e,color:#fff
+    style Backend fill:#1e3a5f,stroke:#63b3ed,color:#fff
+    style Guards fill:#3b1a1a,stroke:#f87171,color:#fff
+    style Research fill:#1a3a2a,stroke:#68d391,color:#fff
+    style Verify fill:#1a2a3a,stroke:#63b3ed,color:#fff
+    style Explain fill:#1a3a2a,stroke:#68d391,color:#fff
+    style OpenAI fill:#2d2d1a,stroke:#fbbf24,color:#fff
+    style PubMed fill:#1a2a3a,stroke:#63b3ed,color:#fff
+    style FDA fill:#1a2a3a,stroke:#63b3ed,color:#fff
+    style DB fill:#2a1a3a,stroke:#a78bfa,color:#fff
+    style Dodo fill:#2d2d1a,stroke:#fbbf24,color:#fff
+    style PostHog fill:#1a1a2e,stroke:#94a3b8,color:#fff
+    style Sentry fill:#1a1a2e,stroke:#94a3b8,color:#fff

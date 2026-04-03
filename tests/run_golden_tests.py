@@ -593,7 +593,7 @@ def generate_html_report(
 # 主流程
 # ─────────────────────────────────────────────
 
-async def run_tests(smoke_only: bool = False):
+async def run_tests(smoke_only: bool = False, filter_prefix: str | None = None):
     if not TOKEN:
         print(f"{RED}⚠️  TEST_AUTH_TOKEN not found in .env{RESET}")
         sys.exit(1)
@@ -606,6 +606,10 @@ async def run_tests(smoke_only: bool = False):
 
     with open(DATASET_PATH, "r", encoding="utf-8") as f:
         cases = json.load(f)
+
+    if filter_prefix:
+        cases = [c for c in cases if c["id"].startswith(filter_prefix)]
+        print(f"🔍 Filter mode: {len(cases)} cases matching '{filter_prefix}'")
 
     if smoke_only:
         original_count = len(cases)
@@ -911,5 +915,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Vela Golden Dataset Test Runner")
     parser.add_argument("--smoke", action="store_true",
                         help="只跑 smoke=true 的代表性題目（約 15 題，節省 ~80%% token 成本）")
+    parser.add_argument("--filter", type=str, default=None,
+                        help="只跑 ID 以此前綴開頭的 case（例如 --filter LANG）")
     args = parser.parse_args()
-    asyncio.run(run_tests(smoke_only=args.smoke))
+    asyncio.run(run_tests(smoke_only=args.smoke, filter_prefix=args.filter))
