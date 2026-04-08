@@ -134,10 +134,10 @@ function ProductShowcase({ t }: { t: typeof translations['en'] }) {
       borderColor: 'rgba(255,142,110,0.3)',
       hoverBorder: 'rgba(255,142,110,0.6)',
       topLabel: t.research,
+      sub: t.researchSub,
       question: t.mockupResearchQuery,
-      body: t.mockupResearchAnswer,
-      evidenceColor: '#4ade80',
       footer: `📄 ${t.mockupResearchSource}`,
+      cta: t.tryResearch,
     },
     {
       href: '/verify',
@@ -145,11 +145,13 @@ function ProductShowcase({ t }: { t: typeof translations['en'] }) {
       borderColor: 'rgba(99,179,237,0.3)',
       hoverBorder: 'rgba(99,179,237,0.6)',
       topLabel: t.verify,
+      sub: t.verifySub,
       question: t.mockupVerifyDrugs,
       badge: `⚠️ ${t.mockupVerifyBadge}`,
       badgeBg: 'rgba(239,68,68,0.15)',
       badgeColor: '#f87171',
-      footer: t.mockupVerifyDesc,
+      footer: `📄 ${t.mockupVerifySource}`,
+      cta: t.tryVerify,
     },
     {
       href: '/explain',
@@ -157,10 +159,12 @@ function ProductShowcase({ t }: { t: typeof translations['en'] }) {
       borderColor: 'rgba(74,222,128,0.3)',
       hoverBorder: 'rgba(74,222,128,0.6)',
       topLabel: t.explain,
+      sub: t.explainSub,
       question: t.mockupExplainValue,
       highlight: `↑ ${t.mockupExplainStatus}`,
       highlightColor: '#f87171',
-      footer: t.mockupExplainDesc,
+      footer: `📄 ${t.mockupExplainSource}`,
+      cta: t.tryExplain,
     },
   ];
 
@@ -192,18 +196,19 @@ function ProductShowcase({ t }: { t: typeof translations['en'] }) {
                 {/* Left color bar */}
                 <div className="w-1 flex-shrink-0" style={{ background: c.color }} />
                 <div className="flex flex-col p-4 gap-2.5 flex-1 min-w-0">
-                  {/* Top label */}
-                  <div className="flex items-center justify-between">
+                  {/* Top label + source badge */}
+                  <div className="flex items-center gap-2">
                     <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: c.color }}>{c.topLabel}</span>
+                    <span
+                      className="text-[9px] font-medium px-1.5 py-0.5 rounded-full"
+                      style={{ background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.45)' }}
+                    >
+                      {c.sub}
+                    </span>
                   </div>
                   {/* Question */}
                   <p className="text-xs font-mono font-medium text-white leading-snug">{c.question}</p>
-                  {/* Body — varies per card */}
-                  {'body' in c && (
-                    <p className="text-[11px] font-mono leading-relaxed" style={{ color: 'rgba(255,255,255,0.5)' }}>
-                      {c.body}
-                    </p>
-                  )}
+                  {/* Status badge / highlight */}
                   {'badge' in c && (
                     <span
                       className="inline-block self-start text-xs font-semibold px-2.5 py-1 rounded-md"
@@ -221,19 +226,18 @@ function ProductShowcase({ t }: { t: typeof translations['en'] }) {
                   <p className="text-[10px] font-mono mt-auto" style={{ color: 'rgba(255,255,255,0.3)' }}>
                     {c.footer}
                   </p>
+                  {/* CTA */}
+                  <span
+                    className="text-[11px] font-semibold mt-1 inline-flex items-center gap-1 transition-all duration-200 hover:gap-2"
+                    style={{ color: c.color }}
+                  >
+                    {c.cta}
+                  </span>
                 </div>
               </div>
             </div>
           </Link>
         ))}
-      </div>
-      {/* Tags */}
-      <div className="flex flex-wrap justify-center gap-1 mt-4 text-[11px]" style={{ color: 'rgba(255,255,255,0.3)' }}>
-        <span>{t.tagEvidenceGraded}</span>
-        <span>·</span>
-        <span>{t.tagCitedSources}</span>
-        <span>·</span>
-        <span>{t.tagAskAnyLang}</span>
       </div>
     </div>
   );
@@ -246,24 +250,6 @@ function LandingPage() {
   const t = translations[lang];
   const isRtl = RTL_LANGS.includes(lang);
   const arrow = isRtl ? t.arrowLeft : t.arrowRight;
-
-  const featureCards = [
-    {
-      href: '/research', label: t.research, sub: t.researchSub,
-      desc: t.researchDesc,
-      accentColor: '#ff8e6e', hoverBg: 'rgba(255,142,110,0.12)', hoverBorder: 'rgba(255,142,110,0.45)',
-    },
-    {
-      href: '/verify', label: t.verify, sub: t.verifySub,
-      desc: t.verifyDesc,
-      accentColor: '#63b3ed', hoverBg: 'rgba(99,179,237,0.12)', hoverBorder: 'rgba(99,179,237,0.45)',
-    },
-    {
-      href: '/explain', label: t.explain, sub: t.explainSub,
-      desc: t.explainDesc,
-      accentColor: '#68d391', hoverBg: 'rgba(104,211,145,0.12)', hoverBorder: 'rgba(104,211,145,0.45)',
-    },
-  ];
 
   return (
     <>
@@ -335,7 +321,7 @@ function LandingPage() {
             {t.heroTitle}
           </p>
           <p className="text-sm mb-4" style={{ color: 'rgba(255,255,255,0.35)' }}>
-            ✦ {t.heroSub} &nbsp;·&nbsp; 🔒 {t.noPhi}
+            ✦ {t.heroSub} &nbsp;·&nbsp; ✓ {t.everyCited}
           </p>
 
           {/* Typewriter */}
@@ -399,46 +385,6 @@ function LandingPage() {
 
           {/* Product showcase */}
           <ProductShowcase t={t} />
-
-          {/* Spacer */}
-          <div className="my-6" />
-
-          {/* Feature cards */}
-          <div className="flex flex-col sm:flex-row gap-3 w-full" style={{ maxWidth: '780px' }}>
-            {featureCards.map((f) => (
-              <Link key={f.label} href={f.href} className="flex-1">
-                <div
-                  className="h-full rounded-2xl px-6 py-5 text-left cursor-pointer transition-all duration-300"
-                  style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}
-                  onMouseEnter={e => {
-                    const el = e.currentTarget as HTMLElement;
-                    el.style.background = f.hoverBg;
-                    el.style.border = `1px solid ${f.hoverBorder}`;
-                    el.style.transform = 'translateY(-3px)';
-                    el.style.boxShadow = `0 8px 32px ${f.hoverBg}`;
-                  }}
-                  onMouseLeave={e => {
-                    const el = e.currentTarget as HTMLElement;
-                    el.style.background = 'rgba(255,255,255,0.05)';
-                    el.style.border = '1px solid rgba(255,255,255,0.1)';
-                    el.style.transform = 'translateY(0)';
-                    el.style.boxShadow = 'none';
-                  }}
-                >
-                  <div className="flex items-center justify-between mb-3">
-                    <p className="text-white text-lg font-semibold tracking-tight">{f.label}</p>
-                    <span
-                      className="text-xs font-medium px-2 py-0.5 rounded-full"
-                      style={{ background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.45)' }}
-                    >
-                      {f.sub}
-                    </span>
-                  </div>
-                  <p className="text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.45)' }}>{f.desc}</p>
-                </div>
-              </Link>
-            ))}
-          </div>
         </div>
 
         {/* Footer */}
@@ -447,7 +393,7 @@ function LandingPage() {
           style={{ borderTop: '1px solid rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.3)' }}
         >
           <div className="flex items-center gap-3">
-            <span>© {new Date().getFullYear()} Vela. {t.footerCopy}</span>
+            <span>© {new Date().getFullYear()} Vela. {t.footerCopy} · <a href="https://an-tho.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">an-tho.com</a></span>
             <LanguageSwitcher lang={lang} setLang={setLang} />
           </div>
           <div>{t.footerDisclaimer}</div>
@@ -455,6 +401,7 @@ function LandingPage() {
             <Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
             <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
             <Link href="/refund" className="hover:text-white transition-colors">Refund Policy</Link>
+            <Link href="/faq" className="hover:text-white transition-colors">FAQ</Link>
             <a href="mailto:support@an-tho.com" className="hover:text-white transition-colors">support@an-tho.com</a>
           </div>
         </div>
@@ -569,6 +516,7 @@ function Dashboard() {
           <Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
           <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
           <Link href="/refund" className="hover:text-white transition-colors">Refund Policy</Link>
+          <Link href="/faq" className="hover:text-white transition-colors">FAQ</Link>
           <a href="mailto:support@an-tho.com" className="hover:text-white transition-colors">support@an-tho.com</a>
         </div>
       </div>

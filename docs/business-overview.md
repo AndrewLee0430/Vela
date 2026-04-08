@@ -26,7 +26,7 @@ Three core features:
 ## Solution
 
 - **PubMed 36M+ articles + FDA official drug labels** as retrieval sources (not just LLM knowledge)
-- **11 language support** — English, Traditional Chinese, Simplified Chinese, Japanese, Korean, Spanish, French, German, Italian, Portuguese, Thai
+- **16 language support** — English, Traditional Chinese, Simplified Chinese, Japanese, Korean, Spanish, French, German, Italian, Portuguese, Thai, Arabic, Hindi, Bengali, Hebrew, Vietnamese
 - **Every answer includes citations** with clickable source links (PubMed PMID, FDA DailyMed)
 - **Evidence strength assessment** per section, judged by the LLM against retrieval quality
 - **5-layer safety guard chain** — input validation, injection detection, medical intent classification, PHI detection
@@ -46,7 +46,7 @@ Three core features:
 | Segment | Size | Basis |
 |---|---|---|
 | TAM | ~15M clinicians globally who search literature regularly | WHO workforce data |
-| SAM | ~5M non-English clinicians in target language regions | Focus on 11 supported languages |
+| SAM | ~5M non-English clinicians in target language regions | Focus on 16 supported languages |
 | SOM (Year 1) | ~5,000 active users | Organic + Product Hunt + community |
 
 ---
@@ -85,7 +85,7 @@ Three core features:
 
 | Dimension | Vela | UpToDate | ChatGPT/Perplexity | Google Scholar |
 |---|---|---|---|---|
-| Multilingual | 11 languages | English only | Any (no medical focus) | English-centric |
+| Multilingual | 16 languages | English only | Any (no medical focus) | English-centric |
 | Sources | PubMed + FDA (cited) | Curated editorial | No citations / hallucination risk | Raw papers |
 | Evidence grading | 🟢🟡🔴 per section | Editorial assessment | None | None |
 | Drug interactions | FDA-backed severity | Included | Unreliable | Not available |

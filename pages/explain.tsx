@@ -30,8 +30,151 @@ const SOURCE_STYLES: Record<string, { bg: string; text: string; border: string }
     RxNorm:      { bg: 'rgba(183,148,244,0.12)', text: '#b794f4', border: 'rgba(183,148,244,0.3)' },
 };
 
-function SourceBadge({ source }: { source: ExplainSource }) {
+function getSourceUrl(source: ExplainSource): string | null {
+    // Use backend-provided URL if available (MedlinePlus articles, DailyMed)
+    if (source.url) return source.url;
+
+    // LOINC: no clickable link (public pages require login)
+    if (source.source_type === 'LOINC') return null;
+
+    if (source.source_type === 'RxNorm') {
+        const match = source.label.match(/RxNorm\s+(.+)/i);
+        if (match) return `https://mor.nlm.nih.gov/RxNav/search?searchBy=String&searchTerm=${encodeURIComponent(match[1].trim())}`;
+    }
+    return null;
+}
+
+const LOINC_TOOLTIPS: Record<string, string> = {
+    'egfr': 'Estimated Glomerular Filtration Rate — measures how well your kidneys filter waste.',
+    'gfr': 'Glomerular Filtration Rate — measures kidney filtering function.',
+    'hba1c': 'Hemoglobin A1c — reflects average blood sugar over 2-3 months.',
+    'tsh': 'Thyroid Stimulating Hormone — evaluates thyroid gland function.',
+    'sodium': 'Sodium — an electrolyte essential for fluid balance and nerve function.',
+    'potassium': 'Potassium — an electrolyte critical for heart and muscle function.',
+    'creatinine': 'Creatinine — a waste product used to assess kidney function.',
+    'glucose': 'Blood Glucose — measures current blood sugar level.',
+    'cholesterol': 'Cholesterol — measures fats in the blood linked to heart health.',
+    'alt': 'Alanine Aminotransferase — a liver enzyme indicating liver health.',
+    'ast': 'Aspartate Aminotransferase — an enzyme used to detect liver damage.',
+    'bun': 'Blood Urea Nitrogen — measures kidney function and hydration.',
+    'wbc': 'White Blood Cell Count — indicates immune system activity.',
+    'rbc': 'Red Blood Cell Count — measures oxygen-carrying cells.',
+    'hemoglobin': 'Hemoglobin — the protein in red blood cells that carries oxygen.',
+    'platelet': 'Platelet Count — measures blood clotting ability.',
+    'albumin': 'Albumin — a protein reflecting liver function and nutrition.',
+    'bilirubin': 'Bilirubin — a byproduct of red blood cell breakdown, assessed for liver function.',
+    'calcium': 'Calcium — essential for bones, muscles, and nerve signaling.',
+    'iron': 'Iron — measures iron levels important for oxygen transport.',
+    'uric acid': 'Uric Acid — a waste product, elevated levels may indicate gout risk.',
+    'triglycerides': 'Triglycerides — a type of fat in the blood linked to heart disease risk.',
+    'mcv': 'Mean Corpuscular Volume — measures the average size of red blood cells.',
+    'mch': 'Mean Corpuscular Hemoglobin — average hemoglobin per red blood cell.',
+    'mchc': 'Mean Corpuscular Hemoglobin Concentration — hemoglobin concentration in red blood cells.',
+};
+
+function getLoincTooltip(label: string): string {
+    const term = label.replace(/^LOINC\s+/i, '').trim().toLowerCase();
+    return LOINC_TOOLTIPS[term] ?? 'LOINC — verified lab test standard (loinc.org)';
+}
+
+function LoincBadge({ source, index = 0 }: { source: ExplainSource; index?: number }) {
+    const s = SOURCE_STYLES['LOINC'];
+    const [show, setShow] = useState(false);
+    const wrapperRef = useRef<HTMLSpanElement>(null);
+    const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const tip = getLoincTooltip(source.label);
+
+    useEffect(() => {
+        if (!show) return;
+        function handleClick(e: MouseEvent) {
+            if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
+                setShow(false);
+            }
+        }
+        document.addEventListener('mousedown', handleClick);
+        return () => document.removeEventListener('mousedown', handleClick);
+    }, [show]);
+
+    return (
+        <span
+            ref={wrapperRef}
+            className="relative inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium cursor-default"
+            style={{ background: s.bg, color: s.text, border: `1px solid ${s.border}` }}
+            onMouseEnter={() => {
+                if (timerRef.current) clearTimeout(timerRef.current);
+                timerRef.current = setTimeout(() => setShow(true), 200);
+            }}
+            onMouseLeave={() => {
+                if (timerRef.current) clearTimeout(timerRef.current);
+                timerRef.current = setTimeout(() => setShow(false), 150);
+            }}
+            onClick={(e) => { e.stopPropagation(); setShow(prev => !prev); }}
+        >
+            {source.label}
+            {/* Popover */}
+            <span
+                className={`absolute bottom-full z-50 ${index === 0 ? 'left-0' : 'left-1/2'}`}
+                style={{
+                    transform: `${index === 0 ? '' : 'translateX(-50%) '}translateY(${show ? '0' : '4px'})`,
+                    opacity: show ? 1 : 0,
+                    pointerEvents: show ? 'auto' : 'none',
+                    transition: 'opacity 200ms, transform 200ms',
+                    marginBottom: '8px',
+                }}
+            >
+                <span
+                    className="block rounded-lg shadow-lg px-3 py-2 text-xs leading-relaxed min-w-[250px] max-w-[300px]"
+                    style={{ background: '#1e293b', border: '1px solid #475569', color: '#e2e8f0', whiteSpace: 'normal' }}
+                >
+                    {tip}
+                </span>
+                {/* Arrow */}
+                <span
+                    className={`absolute ${index === 0 ? 'left-4' : 'left-1/2'}`}
+                    style={{ transform: index === 0 ? '' : 'translateX(-50%)', top: '100%', marginTop: '-1px' }}
+                >
+                    <span style={{
+                        display: 'block', width: 0, height: 0,
+                        borderLeft: '6px solid transparent',
+                        borderRight: '6px solid transparent',
+                        borderTop: '6px solid #475569',
+                    }} />
+                    <span className="absolute left-1/2" style={{
+                        transform: 'translateX(-50%)', top: '-7px',
+                        width: 0, height: 0,
+                        borderLeft: '5px solid transparent',
+                        borderRight: '5px solid transparent',
+                        borderTop: '5px solid #1e293b',
+                    }} />
+                </span>
+            </span>
+        </span>
+    );
+}
+
+function SourceBadge({ source, index = 0 }: { source: ExplainSource; index?: number }) {
     const s = SOURCE_STYLES[source.source_type] ?? SOURCE_STYLES['MedlinePlus'];
+    const url = getSourceUrl(source);
+
+    if (source.source_type === 'LOINC') {
+        return <LoincBadge source={source} index={index} />;
+    }
+
+    if (url) {
+        return (
+            <a
+                href={url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium transition-opacity hover:opacity-80"
+                style={{ background: s.bg, color: s.text, border: `1px solid ${s.border}` }}
+            >
+                {source.label}
+                <span className="text-[10px] opacity-60">↗</span>
+            </a>
+        );
+    }
+
     return (
         <span
             className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium"
@@ -457,7 +600,7 @@ function ExplainForm() {
                 <div className="mt-5 rounded-xl p-5" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}>
                     <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Verified Sources</p>
                     <div className="flex flex-wrap gap-2">
-                        {sources.map((src, i) => <SourceBadge key={i} source={src} />)}
+                        {sources.map((src, i) => <SourceBadge key={i} source={src} index={i} />)}
                     </div>
                 </div>
             )}
