@@ -508,9 +508,11 @@ function ResearchForm() {
                 </div>
             </div>
 
+            {answer && (
             <p className="text-xs mt-4 text-center" style={{ color: "rgba(255,255,255,0.35)" }}>
                 {DISCLAIMERS[detectedLang] || DISCLAIMERS['en']}
             </p>
+            )}
 
             <div className="mt-8 border-t pt-6 space-y-2 text-xs" style={{ borderColor: "rgba(255,142,110,0.35)", color: "rgba(255,255,255,0.4)" }}>
                 <p className="font-medium" style={{ color: "rgba(255,255,255,0.6)" }}>Data Sources & Attribution</p>

@@ -16,6 +16,12 @@ import PageShell from '../components/PageShell';
 
 const ACCENT = '#68d391';
 
+const EXPLAIN_DISCLAIMER_RE = /\n*⚠️?\s*(This explanation|For reference purposes|本說明|本解释|この説明|이 설명|Esta explicación|Cette explication|Diese Erklärung|Questa spiegazione|Esta explicação|คำอธิบายนี้|هذا الشرح|यह व्याख्या|এই ব্যাখ্যা|הסבר זה|Giải thích này|Please consult|does not replace|僅供參考|仅供参考).*$/gm;
+
+function stripExplainDisclaimer(text: string): string {
+    return text.replace(EXPLAIN_DISCLAIMER_RE, '').trim();
+}
+
 interface ExplainSource {
     source_type: string;
     label: string;
@@ -592,9 +598,11 @@ function ExplainForm() {
                 </button>
             </form>
 
+            {output && (
             <p className="text-xs mt-3 text-center" style={{ color: "rgba(255,255,255,0.35)" }}>
                 ⚠️ Explanations are for reference only. Always consult your doctor for medical advice.
             </p>
+            )}
 
             {sources.length > 0 && (
                 <div className="mt-5 rounded-xl p-5" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}>
@@ -627,7 +635,7 @@ function ExplainForm() {
                             '--tw-prose-hr': 'rgba(255,255,255,0.15)',
                         } as React.CSSProperties}
                     >
-                        <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>{output}</ReactMarkdown>
+                        <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>{loading ? output : stripExplainDisclaimer(output)}</ReactMarkdown>
                     </div>
                     {loading && <span className="inline-block w-1.5 h-4 rounded-sm animate-pulse ml-0.5 mt-2" style={{ background: ACCENT }} />}
                     {!loading && !error && (
