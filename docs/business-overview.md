@@ -7,7 +7,8 @@
 Three core features:
 - **Research** — Ask clinical questions in any language, get cited answers with evidence strength ratings (🟢 Strong / 🟡 Moderate / 🔴 Limited)
 - **Verify** — Check drug interactions against official FDA label data with severity badges (Critical / Major / Moderate / Minor)
-- **Explain** — Upload medical reports (PDF/image) or paste text, get plain-language summaries backed by LOINC, RxNorm, and MedlinePlus
+- **Explain** — Upload medical reports (PDF/image) or paste text, get plain-language summaries backed by LOINC (tooltip popover on hover), RxNorm (clickable links to DailyMed), and MedlinePlus
+- **FAQ** — Public FAQ page (`/faq`) with 15 Q&A items in accordion format
 
 ---
 
@@ -82,6 +83,8 @@ Three core features:
 ---
 
 ## Competitive Advantage
+
+**Landing page**: Three product mockup cards (Research/Verify/Explain) with unified structure — query + badge + source label + CTA. "Every answer cited" social proof tagline. Footer: "© 2026 Vela. All rights reserved. · an-tho.com" (an-tho.com is the parent brand page, now live).
 
 | Dimension | Vela | UpToDate | ChatGPT/Perplexity | Google Scholar |
 |---|---|---|---|---|

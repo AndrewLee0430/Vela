@@ -15,7 +15,7 @@
 ## ✨ Features
 
 ### 🔬 Research
-Ask any clinical question in any language. Vela retrieves from PubMed 36M+ articles and FDA drug data, then streams a cited, evidence-based answer back in the user's language.
+Ask any clinical question in 16 languages. Vela retrieves from PubMed 36M+ articles and FDA drug data, then streams a cited, evidence-based answer back in the user's language.
 
 ### ✅ Verify
 Check drug interaction safety for any combination of medications. Powered by FDA OpenFDA with structured severity ratings (Critical / Major / Moderate / Minor).
@@ -104,6 +104,7 @@ Vela/
 │   ├── verify.tsx
 │   ├── explain.tsx
 │   ├── history.tsx
+│   ├── faq.tsx                   # Public FAQ (15 Q&A, accordion)
 │   ├── terms.tsx                 # Terms of Service (incl. Fair Use Policy)
 │   ├── privacy.tsx
 │   └── refund.tsx
@@ -362,7 +363,7 @@ Project: [https://github.com/AndrewLee0430/Vela](https://github.com/AndrewLee043
 - [Clerk](https://clerk.com) — Authentication
 - [Neon](https://neon.tech) — Serverless PostgreSQL
 - [Fly.io](https://fly.io) — Hosting (Tokyo region)
-- [Lemon Squeezy](https://lemonsqueezy.com) — Payments & subscriptions
+- [Dodo Payments](https://dodopayments.com) — Payments & subscriptions
 - [PostHog](https://posthog.com) — Product analytics
 
 > ⚠️ Vela is a clinical decision support tool for reference only. It does not replace professional medical judgment. All clinical decisions should be based on comprehensive clinical assessment by a qualified healthcare professional.
