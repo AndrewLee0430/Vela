@@ -75,7 +75,9 @@
       "WebFetch(domain:platform.openai.com)",
       "WebFetch(domain:developers.openai.com)",
       "WebFetch(domain:pricepertoken.com)",
-      "Bash(npm ls:*)"
+      "Bash(npm ls:*)",
+      "Bash(uv run:*)",
+      "Bash(PYTHONIOENCODING=utf-8 TEST_MODE=true uv run python tests/run_golden_tests.py)"
     ]
   }
 }

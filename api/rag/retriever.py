@@ -106,13 +106,13 @@ class HybridRetriever:
             status = "error" if has_api_error else "no_results"
             return [], status
 
-        # Step 3：去重（source_id 唯一）
-        seen = set()
-        unique_docs = []
-        for doc in all_documents:
-            if doc.source_id not in seen:
-                seen.add(doc.source_id)
-                unique_docs.append(doc)
+        # Step 3：去重（source_id 唯一，保留 relevance_score 最高的那筆）
+        best: dict[str, int] = {}  # source_id -> index in all_documents
+        for i, doc in enumerate(all_documents):
+            prev = best.get(doc.source_id)
+            if prev is None or doc.relevance_score > all_documents[prev].relevance_score:
+                best[doc.source_id] = i
+        unique_docs = [all_documents[i] for i in sorted(best.values())]
 
         logger.info("Retrieved %d docs, %d unique after dedup", len(all_documents), len(unique_docs))
 
