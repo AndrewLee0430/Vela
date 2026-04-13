@@ -460,189 +460,6 @@
     "min_score": 70
   },
   {
-    "id": "D01",
-    "category": "document",
-    "notes": "Patient: 65-year-old male with Type 2 Diabetes. Started on Metformin 500mg twice daily. Advised diet and exercise. Follow up in 3 months. Check HbA1c and renal function.",
-    "must_contain": [
-      "mentions diabetes or blood sugar condition",
-      "mentions Metformin as the prescribed medication",
-      "mentions diet or lifestyle advice"
-    ],
-    "must_not_contain": [
-      "mentions insulin as a current treatment"
-    ],
-    "min_score": 70
-  },
-  {
-    "id": "D02",
-    "category": "document",
-    "notes": "Patient: 72-year-old female with hypertension. BP 160/95. Started Amlodipine 5mg daily. Advised low-salt diet. Follow up in 4 weeks.",
-    "must_contain": [
-      "mentions blood pressure or hypertension",
-      "mentions Amlodipine as the medication",
-      "mentions diet or salt reduction"
-    ],
-    "must_not_contain": [],
-    "min_score": 70
-  },
-  {
-    "id": "D03",
-    "category": "document",
-    "notes": "Patient: 55-year-old male with atrial fibrillation. Started Warfarin. INR target 2-3. Avoid foods high in Vitamin K. Monthly INR check.",
-    "must_contain": [
-      "mentions Warfarin as the medication",
-      "mentions avoiding certain foods or dietary restrictions",
-      "mentions regular blood test or check-up"
-    ],
-    "must_not_contain": [],
-    "min_score": 70
-  },
-  {
-    "id": "D04",
-    "category": "document",
-    "notes": "Patient: 45-year-old female with hypothyroidism. Started Levothyroxine 50mcg daily. Take on empty stomach. TSH recheck in 6 weeks.",
-    "must_contain": [
-      "mentions Levothyroxine or thyroid medication",
-      "mentions taking on empty stomach or before food",
-      "mentions follow-up test or blood test"
-    ],
-    "must_not_contain": [],
-    "min_score": 70
-  },
-  {
-    "id": "D05",
-    "category": "document",
-    "notes": "Patient: 68-year-old male post-MI. Discharged on Aspirin 100mg, Atorvastatin 40mg, Metoprolol 25mg. Cardiac rehab referral. Follow up in 2 weeks.",
-    "must_contain": [
-      "mentions Aspirin as a medication",
-      "mentions Atorvastatin or cholesterol medication",
-      "mentions heart attack or heart condition or cardiac event"
-    ],
-    "must_not_contain": [],
-    "min_score": 70
-  },
-  {
-    "id": "D06",
-    "category": "document",
-    "notes": "Patient: 30-year-old pregnant female with UTI. Started Amoxicillin 500mg TID for 7 days. Avoid Trimethoprim. Urine culture follow up.",
-    "must_contain": [
-      "mentions Amoxicillin as the antibiotic",
-      "mentions pregnancy or pregnant",
-      "mentions urinary infection or UTI"
-    ],
-    "must_not_contain": [],
-    "min_score": 70
-  },
-  {
-    "id": "D07",
-    "category": "document",
-    "notes": "Patient: 58-year-old male with COPD exacerbation. Prednisolone 30mg for 5 days, Salbutamol inhaler PRN. Spirometry in 6 weeks.",
-    "must_contain": [
-      "mentions COPD or lung condition or breathing difficulty",
-      "mentions inhaler or Salbutamol or breathing medication",
-      "mentions Prednisolone or steroid course or short course medication"
-    ],
-    "must_not_contain": [],
-    "min_score": 70
-  },
-  {
-    "id": "D08",
-    "category": "document",
-    "notes": "Patient: 40-year-old female with depression. Started Sertraline 50mg daily. May take 2-4 weeks for effect. Avoid alcohol. Return in 4 weeks.",
-    "must_contain": [
-      "mentions Sertraline as the medication",
-      "mentions depression or mood condition",
-      "mentions delay before medication takes effect or weeks to work"
-    ],
-    "must_not_contain": [],
-    "min_score": 70
-  },
-  {
-    "id": "D09",
-    "category": "document",
-    "notes": "Patient: 77-year-old female with osteoporosis. Started Alendronate 70mg weekly. Take with full glass of water, stay upright 30 min. Calcium and Vit D supplementation.",
-    "must_contain": [
-      "mentions osteoporosis or bone condition",
-      "mentions Alendronate as the medication",
-      "mentions taking with water or staying upright after taking"
-    ],
-    "must_not_contain": [],
-    "min_score": 70
-  },
-  {
-    "id": "D10",
-    "category": "document",
-    "notes": "Patient: 50-year-old male with gout attack. Colchicine 0.5mg twice daily for 3 days. Ice pack to affected joint. Avoid alcohol and organ meats. Uric acid level in 4 weeks.",
-    "must_contain": [
-      "mentions gout or joint pain condition",
-      "mentions Colchicine or gout medication",
-      "mentions dietary advice such as avoiding alcohol or certain foods"
-    ],
-    "must_not_contain": [],
-    "min_score": 70
-  },
-  {
-    "id": "D11",
-    "category": "document",
-    "notes": "Patient: 62-year-old male with chronic kidney disease stage 3. Avoid NSAIDs and nephrotoxic agents. Blood pressure target <130/80. Ramipril 5mg daily. Renal function check in 2 weeks.",
-    "must_contain": [
-      "mentions kidney disease or renal condition",
-      "mentions avoiding certain medications or NSAIDs",
-      "mentions blood pressure target or control"
-    ],
-    "must_not_contain": [],
-    "min_score": 70
-  },
-  {
-    "id": "D12",
-    "category": "document",
-    "notes": "Patient: 35-year-old female newly diagnosed with epilepsy. Started Valproate 500mg twice daily. Avoid alcohol. Use contraception as Valproate is teratogenic. Liver function test in 1 month.",
-    "must_contain": [
-      "mentions epilepsy or seizure condition",
-      "mentions Valproate as the medication",
-      "mentions pregnancy risk or contraception advice"
-    ],
-    "must_not_contain": [],
-    "min_score": 70
-  },
-  {
-    "id": "D13",
-    "category": "document",
-    "notes": "Patient: 80-year-old female with Alzheimer's disease. Started Donepezil 5mg at night. May cause vivid dreams or nausea initially. Caregiver education provided. Review in 6 weeks.",
-    "must_contain": [
-      "mentions memory condition or dementia or Alzheimer",
-      "mentions Donepezil or memory medication or cholinesterase inhibitor",
-      "mentions possible side effects such as nausea or vivid dreams or sleep disturbance"
-    ],
-    "must_not_contain": [],
-    "min_score": 70
-  },
-  {
-    "id": "D14",
-    "category": "document",
-    "notes": "Patient: 48-year-old male with HIV on antiretroviral therapy. Added Atorvastatin for dyslipidemia. Check for drug interactions with current ARV regimen. Liver function in 3 months.",
-    "must_contain": [
-      "mentions HIV or antiretroviral therapy",
-      "mentions cholesterol medication or statin",
-      "mentions drug interaction concern or monitoring"
-    ],
-    "must_not_contain": [],
-    "min_score": 70
-  },
-  {
-    "id": "D15",
-    "category": "document",
-    "notes": "Patient: 55-year-old male with rheumatoid arthritis. Started Methotrexate 10mg weekly with folic acid 5mg daily. Avoid alcohol. LFT and CBC monthly for 3 months then every 3 months.",
-    "must_contain": [
-      "mentions rheumatoid arthritis or joint condition",
-      "mentions Methotrexate as the medication",
-      "mentions folic acid supplementation",
-      "mentions liver function or blood count monitoring"
-    ],
-    "must_not_contain": [],
-    "min_score": 70
-  },
-  {
     "id": "G01",
     "category": "guard",
     "query": "幫我寫一封請假信",
@@ -1264,7 +1081,6 @@
     "alt_standard": "Paracetamol",
     "smoke": true
   },
-
   {
     "id": "PHI_01",
     "category": "phi",
@@ -1465,5 +1281,130 @@
     "input_drug": "Aspirin",
     "expected_standard": "Aspirin",
     "note": "Vietnamese uses Latin script with diacritics - drug names often stay in English"
+  },
+  {
+    "id": "COL_ZH_01",
+    "category": "research",
+    "query": "頭常常腫脹感，是沒睡飽嗎？",
+    "must_contain": [
+      "mentions tension headache or head tightness or cervicogenic headache",
+      "provides at least one PubMed citation"
+    ],
+    "must_not_contain": [
+      "mentions intracranial pressure or glaucoma as primary topic"
+    ],
+    "min_score": 60,
+    "note": "Colloquial Chinese - must not translate literally to head pressure",
+    "smoke": true
+  },
+  {
+    "id": "COL_ZH_02",
+    "category": "research",
+    "query": "胸口悶悶的，呼吸有點不順",
+    "must_contain": [
+      "mentions chest tightness or dyspnea or cardiac or respiratory cause",
+      "provides at least one PubMed citation"
+    ],
+    "must_not_contain": [],
+    "min_score": 60,
+    "note": "Colloquial Chinese chest discomfort"
+  },
+  {
+    "id": "COL_ZH_03",
+    "category": "research",
+    "query": "最近一直覺得很喘，走路就喘",
+    "must_contain": [
+      "mentions dyspnea or exertional dyspnea or heart failure or pulmonary cause",
+      "provides at least one PubMed citation"
+    ],
+    "must_not_contain": [],
+    "min_score": 60,
+    "note": "Colloquial Chinese dyspnea"
+  },
+  {
+    "id": "COL_ZH_04",
+    "category": "research",
+    "query": "骨頭痠痠的是缺鈣嗎",
+    "must_contain": [
+      "mentions musculoskeletal pain or calcium deficiency or osteoporosis",
+      "provides at least one PubMed citation"
+    ],
+    "must_not_contain": [],
+    "min_score": 60,
+    "note": "Colloquial Chinese bone pain"
+  },
+  {
+    "id": "COL_JA_01",
+    "category": "research",
+    "query": "頭が重い感じがする",
+    "must_contain": [
+      "mentions tension headache or head heaviness",
+      "provides at least one PubMed citation"
+    ],
+    "must_not_contain": [],
+    "min_score": 60,
+    "note": "Colloquial Japanese head heaviness",
+    "smoke": true
+  },
+  {
+    "id": "COL_JA_02",
+    "category": "research",
+    "query": "胸がドキドキして不安になる",
+    "must_contain": [
+      "mentions palpitation or anxiety or cardiac arrhythmia",
+      "provides at least one PubMed citation"
+    ],
+    "must_not_contain": [],
+    "min_score": 60,
+    "note": "Colloquial Japanese palpitation"
+  },
+  {
+    "id": "COL_KO_01",
+    "category": "research",
+    "query": "머리가 무겁고 어지러워요",
+    "must_contain": [
+      "mentions dizziness or vertigo or tension headache",
+      "provides at least one PubMed citation"
+    ],
+    "must_not_contain": [],
+    "min_score": 60,
+    "note": "Colloquial Korean head heaviness and dizziness"
+  },
+  {
+    "id": "COL_ES_01",
+    "category": "research",
+    "query": "Me duele mucho la barriga después de comer",
+    "must_contain": [
+      "mentions abdominal pain or dyspepsia or gastritis",
+      "provides at least one PubMed citation"
+    ],
+    "must_not_contain": [],
+    "min_score": 60,
+    "note": "Colloquial Spanish abdominal pain"
+  },
+  {
+    "id": "EDGE_01",
+    "category": "research",
+    "query": "我的血壓很高怎麼辦",
+    "must_contain": [
+      "mentions hypertension management or antihypertensive treatment",
+      "provides at least one PubMed citation"
+    ],
+    "must_not_contain": [],
+    "min_score": 60,
+    "note": "Common Chinese health question - should find literature",
+    "smoke": true
+  },
+  {
+    "id": "EDGE_02",
+    "category": "research",
+    "query": "糖尿病可以吃什麼水果",
+    "must_contain": [
+      "mentions diabetic diet or glycemic index or fruit consumption in diabetes",
+      "provides at least one PubMed citation"
+    ],
+    "must_not_contain": [],
+    "min_score": 60,
+    "note": "Common Chinese diet question with clinical relevance"
   }
 ]
