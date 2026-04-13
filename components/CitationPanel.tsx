@@ -1,6 +1,8 @@
 "use client"
 
 import { useState } from 'react';
+import { useLang } from '../utils/LangContext';
+import { getUI } from '../utils/i18n-ui';
 
 export interface Citation {
     id: number;
@@ -20,11 +22,15 @@ interface CitationPanelProps {
     isLoading?: boolean;
 }
 
-const credibilityConfig = {
-    'peer-reviewed': { label: 'Peer Reviewed', bg: 'rgba(255,142,110,0.15)', color: '#ff8e6e', stars: 5, tooltip: 'Published in peer-reviewed journals and indexed in PubMed' },
-    'official':      { label: 'Official',       bg: 'rgba(99,179,237,0.15)',  color: '#63b3ed', stars: 5, tooltip: 'From official FDA drug labeling data' },
-    'internal':      { label: 'Internal',       bg: 'rgba(160,174,192,0.15)', color: '#a0aec0', stars: 3, tooltip: 'From internal drug reference database' },
-};
+function useCredibilityConfig() {
+    const { lang } = useLang();
+    const ui = getUI(lang);
+    return {
+        'peer-reviewed': { label: ui.peerReviewed, bg: 'rgba(255,142,110,0.15)', color: '#ff8e6e', stars: 5, tooltip: ui.peerReviewedTip },
+        'official':      { label: ui.official,       bg: 'rgba(99,179,237,0.15)',  color: '#63b3ed', stars: 5, tooltip: ui.officialTip },
+        'internal':      { label: ui.internal,       bg: 'rgba(160,174,192,0.15)', color: '#a0aec0', stars: 3, tooltip: ui.internalTip },
+    };
+}
 
 const sourceTypeConfig = {
     'pubmed': { label: 'PubMed', color: '#68d391' },
@@ -74,6 +80,9 @@ function extractAbstract(raw: string): string {
 
 function CitationCard({ citation }: { citation: Citation }) {
     const [expanded, setExpanded] = useState(false);
+    const { lang } = useLang();
+    const ui = getUI(lang);
+    const credibilityConfig = useCredibilityConfig();
 
     const sourceConfig = sourceTypeConfig[citation.source_type];
     const credConfig   = credibilityConfig[citation.credibility];
@@ -124,7 +133,7 @@ function CitationCard({ citation }: { citation: Citation }) {
 
             {/* Credibility stars */}
             <div className="flex items-center gap-2 mb-3">
-                <span className="text-xs" style={{ color: "rgba(255,255,255,0.7)" }}>Credibility:</span>
+                <span className="text-xs" style={{ color: "rgba(255,255,255,0.7)" }}>{ui.credibilityLabel}</span>
                 <StarRating count={credConfig.stars} />
             </div>
 
@@ -140,7 +149,7 @@ function CitationCard({ citation }: { citation: Citation }) {
                             onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = '#e2e8f0'}
                             onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = 'rgba(148,163,184,1)'}
                         >
-                            {expanded ? 'Show less' : 'Show more'}
+                            {expanded ? ui.showLess : ui.showMore}
                         </button>
                     )}
                 </div>
@@ -154,7 +163,7 @@ function CitationCard({ citation }: { citation: Citation }) {
                 className="inline-flex items-center gap-1 text-sm hover:underline mt-3"
                 style={{ color: "#ff8e6e" }}
             >
-                View source
+                {ui.viewSource}
                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                         d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -184,6 +193,9 @@ function LoadingSkeleton() {
 }
 
 export default function CitationPanel({ citations, isLoading }: CitationPanelProps) {
+    const { lang } = useLang();
+    const ui = getUI(lang);
+
     if (isLoading) {
         return (
             <div className="h-full">
@@ -195,7 +207,7 @@ export default function CitationPanel({ citations, isLoading }: CitationPanelPro
     if (citations.length === 0) {
         return (
             <div className="h-full flex items-center justify-center">
-                <p className="text-center text-sm" style={{ color: "rgba(255,255,255,0.4)" }}>References will appear here after your search.</p>
+                <p className="text-center text-sm" style={{ color: "rgba(255,255,255,0.4)" }}>{ui.referencesEmpty}</p>
             </div>
         );
     }
@@ -208,7 +220,7 @@ export default function CitationPanel({ citations, isLoading }: CitationPanelPro
     return (
         <div className="h-full flex flex-col">
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
-                References ({citations.length})
+                {ui.referencesTitle} ({citations.length})
             </p>
 
             <div className="flex gap-2 mb-4 text-xs">
@@ -231,7 +243,7 @@ export default function CitationPanel({ citations, isLoading }: CitationPanelPro
 
             <div className="mt-4 pt-3" style={{ borderTop: "1px solid rgba(255,255,255,0.1)" }}>
                 <p className="text-xs text-center" style={{ color: "rgba(255,255,255,0.35)" }}>
-                    Click "View source" to verify each reference.
+                    {ui.verifyReference}
                 </p>
             </div>
         </div>

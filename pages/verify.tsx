@@ -7,6 +7,8 @@ import UpgradeModal from '../components/UpgradeModal';
 import Toast from '../components/Toast';
 import PHIWarning from '../components/PHIWarning';
 import PageShell from '../components/PageShell';
+import { useLang } from '../utils/LangContext';
+import { getUI } from '../utils/i18n-ui';
 
 // Verify accent color
 const ACCENT = '#63b3ed';
@@ -31,6 +33,8 @@ interface VerifyResponse {
 
 function VerifyForm() {
     const { getToken } = useAuth();
+    const { lang } = useLang();
+    const ui = getUI(lang);
 
     const [drugs, setDrugs]   = useState('');
     const [result, setResult] = useState<VerifyResponse | null>(null);
@@ -50,7 +54,7 @@ function VerifyForm() {
 
         const drugList = drugs.split('\n').map(d => d.trim()).filter(Boolean);
         if (drugList.length < 2) {
-            setError('Please enter at least 2 drug names.');
+            setError(ui.enterTwoDrugs);
             return;
         }
 
@@ -59,7 +63,7 @@ function VerifyForm() {
 
         try {
             const token = await getToken({ skipCache: true });
-            if (!token) { setError('Authentication required. Please sign in again.'); return; }
+            if (!token) { setError(ui.authRequired); return; }
 
             const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/verify`, {
                 method: 'POST',
@@ -80,7 +84,7 @@ function VerifyForm() {
                     setShowUpgradeModal(true);
                     return;
                 }
-                setError('Session expired. Please refresh and sign in again.');
+                setError(ui.sessionExpired);
                 return;
             }
             if (res.status === 429) {
@@ -88,7 +92,7 @@ function VerifyForm() {
                 return;
             }
             if (res.status === 401) {
-                setError('Session expired. Please refresh and sign in again.');
+                setError(ui.sessionExpired);
                 return;
             }
             if (!res.ok) throw new Error(`Server error (${res.status}). Please try again.`);
@@ -137,7 +141,7 @@ function VerifyForm() {
 
     const getInteractionSummary = (interactions: DrugInteraction[]) => {
         if (interactions.length === 0) {
-            return { text: 'No interactions found', color: 'rgba(255,255,255,0.5)' };
+            return { text: ui.noInteractions, color: 'rgba(255,255,255,0.5)' };
         }
         const severityOrder = ['Critical', 'Major', 'Moderate', 'Minor'];
         const counts: Record<string, number> = {};
@@ -162,15 +166,15 @@ function VerifyForm() {
         <div className="container mx-auto px-4 py-8 max-w-5xl">
             <div className="flex justify-between items-center mb-6">
                 <div>
-                    <h1 className="text-2xl font-bold tracking-tight" style={{ color: "#ffffff" }}>Drug Interaction Checker</h1>
-                    <p className="text-sm mt-1" style={{ color: "rgba(255,255,255,0.5)" }}>FDA Official · Evidence-based</p>
+                    <h1 className="text-2xl font-bold tracking-tight" style={{ color: "#ffffff" }}>{ui.verifyTitle}</h1>
+                    <p className="text-sm mt-1" style={{ color: "rgba(255,255,255,0.5)" }}>{ui.verifySubtitle}</p>
                 </div>
                 {(result || drugs) && !loading && (
                     <button onClick={handleReset} className="text-sm font-medium px-3 py-1 rounded-lg transition-all"
                         style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.3)', color: 'rgba(255,255,255,0.7)' }}
                         onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.1)'; }}
                         onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}>
-                        + New
+                        {ui.newBtn}
                     </button>
                 )}
             </div>
@@ -178,7 +182,7 @@ function VerifyForm() {
             {/* Language box */}
             <div className="rounded-xl p-4 text-sm mb-6" style={{ background: 'rgba(56,189,248,0.05)', border: '1px solid rgba(56,189,248,0.3)' }}>
                 <p style={{ color: 'rgba(56,189,248,0.9)' }}>
-                    <span className="font-semibold">Any drug name, any language</span> — checked against FDA official labels.
+                    <span className="font-semibold">{ui.verifyInfoBox}</span>
                 </p>
             </div>
 
@@ -188,7 +192,7 @@ function VerifyForm() {
                     <form onSubmit={handleSubmit} className="space-y-5">
                         <div className="space-y-3">
                             <label className="block text-sm font-medium" style={{ color: "rgba(255,255,255,0.8)" }}>
-                                Drug list <span className="font-normal" style={{ color: "rgba(255,255,255,0.5)" }}>(one per line, or click to add)</span>
+                                {ui.drugListLabel} <span className="font-normal" style={{ color: "rgba(255,255,255,0.5)" }}>{ui.drugListHint}</span>
                             </label>
                             {/* Quick-add chips */}
                             <div className="flex flex-wrap gap-2">
@@ -227,7 +231,7 @@ function VerifyForm() {
                             className="w-full text-white font-medium py-2.5 px-6 rounded-lg transition-opacity disabled:opacity-50 text-sm"
                             style={{ background: ACCENT }}
                         >
-                            {loading ? 'Analyzing...' : 'Analyze Interactions'}
+                            {loading ? ui.analyzingBtn : ui.analyzeBtn}
                         </button>
                     </form>
 
@@ -248,14 +252,14 @@ function VerifyForm() {
                 <div className="rounded-xl p-6 flex flex-col" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}>
                     {!result && !loading && (
                         <div className="flex items-center justify-center h-full text-sm" style={{ color: "rgba(255,255,255,0.4)" }}>
-                            Results will appear here after analysis.
+                            {ui.verifyEmpty}
                         </div>
                     )}
 
                     {loading && (
                         <div className="text-center py-16">
                             <div className="w-8 h-8 border-2 border-gray-200 border-t-blue-400 rounded-full animate-spin mx-auto" />
-                            <p className="mt-4 text-sm text-gray-400">Analyzing interactions...</p>
+                            <p className="mt-4 text-sm text-gray-400">{ui.analyzingMsg}</p>
                         </div>
                     )}
 
@@ -265,7 +269,7 @@ function VerifyForm() {
                             <div>
                                 <div className="flex justify-between items-start mb-3">
                                     <h2 className="text-base font-semibold" style={{ color: "#ffffff" }}>
-                                        Analysis Summary
+                                        {ui.analysisSummary}
                                     </h2>
                                     <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium border ${getRiskBadge(result.risk_level)}`}>
                                         {result.risk_level}
@@ -335,26 +339,16 @@ function VerifyForm() {
             </div>
 
             <div className="mt-8 border-t pt-6 space-y-2 text-xs" style={{ borderColor: "rgba(99,179,237,0.35)", color: "rgba(255,255,255,0.4)" }}>
-                <p className="font-medium" style={{ color: "rgba(255,255,255,0.6)" }}>Data Sources & Attribution</p>
-                <p>
-                    Drug interaction data sourced from FDA official drug labels via{' '}
-                    <a href="https://dailymed.nlm.nih.gov" target="_blank" rel="noopener noreferrer" className="underline opacity-70 hover:opacity-100">DailyMed</a>
-                    {' '}(FDA/NLM).
-                </p>
-                <p>
-                    Drug name standardization powered by{' '}
-                    <a href="https://www.nlm.nih.gov/research/umls/rxnorm" target="_blank" rel="noopener noreferrer" className="underline opacity-70 hover:opacity-100">RxNorm</a>
-                    {' '}(NLM).
-                </p>
-                <p>
-                    Vela is not affiliated with or endorsed by NLM, FDA, or any U.S. government agency.
-                </p>
+                <p className="font-medium" style={{ color: "rgba(255,255,255,0.6)" }}>{ui.dataSourcesTitle}</p>
+                <p dangerouslySetInnerHTML={{ __html: ui.verifyAttr1 }} />
+                <p dangerouslySetInnerHTML={{ __html: ui.verifyAttr2 }} />
+                <p dangerouslySetInnerHTML={{ __html: ui.verifyAttr3 }} />
             </div>
 
         <UpgradeModal isOpen={showUpgradeModal} onClose={() => setShowUpgradeModal(false)} />
             {showDailyCapToast && (
                 <Toast
-                    message="You've reached today's usage limit. Resets at midnight UTC."
+                    message={ui.dailyCapToast}
                     type="warning"
                     onClose={() => setShowDailyCapToast(false)}
                     duration={5000}

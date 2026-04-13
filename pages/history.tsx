@@ -6,6 +6,8 @@ import Link from 'next/link';
 import UpgradeModal from '../components/UpgradeModal';
 import ProFeatureOverlay from '../components/ProFeatureOverlay';
 import PageShell from '../components/PageShell';
+import { useLang } from '../utils/LangContext';
+import { getUI } from '../utils/i18n-ui';
 
 // ─── Design System ────────────────────────────────────────────────────────────
 // 顏色對應跨頁面一致，首頁 card / 功能頁 accent / History 標籤全部同色
@@ -77,6 +79,8 @@ function TypeTag({ type }: { type: string }) {
 
 function HistoryList() {
     const { getToken } = useAuth();
+    const { lang } = useLang();
+    const ui = getUI(lang);
     const [history, setHistory] = useState<HistoryItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [expandedId, setExpandedId] = useState<number | null>(null);
@@ -185,7 +189,7 @@ function HistoryList() {
         return (
             <div className="text-center py-16">
                 <div className="animate-spin rounded-full h-10 w-10 border-2 border-gray-200 border-t-gray-500 mx-auto" />
-                <p className="mt-4 text-sm text-gray-400">Loading history...</p>
+                <p className="mt-4 text-sm text-gray-400">{ui.loadingHistory}</p>
             </div>
         );
     }
@@ -193,9 +197,9 @@ function HistoryList() {
     if (history.length === 0) {
         return (
             <div className="text-center py-16">
-                <p className="text-gray-400 mb-4">No history yet.</p>
+                <p className="text-gray-400 mb-4">{ui.noHistory}</p>
                 <Link href="/research" className="text-sm hover:text-white underline underline-offset-4" style={{ color: "rgba(255,255,255,0.5)" }}>
-                    Start your first search →
+                    {ui.startSearch}
                 </Link>
             </div>
         );
@@ -211,11 +215,7 @@ function HistoryList() {
             {plan === 'free' && (
                 <div className="rounded-xl p-4 text-sm mb-2" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)' }}>
                     <p style={{ color: 'rgba(255,255,255,0.7)' }}>
-                        Free plan shows last 7 days.{' '}
-                        <Link href="/pricing" className="font-medium underline underline-offset-2" style={{ color: '#ff8e6e' }}>
-                            Upgrade to Pro
-                        </Link>{' '}
-                        for full history and search.
+                        {ui.freeHistoryMsg}
                     </p>
                 </div>
             )}
@@ -225,7 +225,7 @@ function HistoryList() {
                 <div className="relative">
                     <input
                         type="text"
-                        placeholder="Search history..."
+                        placeholder={ui.searchHistory}
                         value={searchQuery}
                         onChange={e => setSearchQuery(e.target.value)}
                         disabled={plan !== 'pro'}

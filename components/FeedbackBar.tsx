@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import { useAuth } from '@clerk/nextjs';
+import { useLang } from '../utils/LangContext';
+import { getUI } from '../utils/i18n-ui';
 
 interface FeedbackBarProps {
     query: string;
@@ -11,6 +13,8 @@ interface FeedbackBarProps {
 
 export default function FeedbackBar({ query, response, category }: FeedbackBarProps) {
     const { getToken } = useAuth();
+    const { lang } = useLang();
+    const ui = getUI(lang);
     const [status, setStatus] = useState<'idle' | 'liked' | 'disliked'>('idle');
 
     const sendFeedback = async (rating: number) => {
@@ -43,7 +47,7 @@ export default function FeedbackBar({ query, response, category }: FeedbackBarPr
 
     return (
         <div className="flex items-center gap-2 mt-4 pt-3 border-t select-none" style={{ borderColor: 'rgba(255,255,255,0.12)' }}>
-            <span className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>Was this helpful?</span>
+            <span className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>{ui.wasHelpful}</span>
             <button
                 onClick={handleLike}
                 disabled={status !== 'idle'}
@@ -71,7 +75,7 @@ export default function FeedbackBar({ query, response, category }: FeedbackBarPr
                 👎
             </button>
             {status !== 'idle' && (
-                <span className="text-xs ml-1" style={{ color: 'rgba(255,255,255,0.4)' }}>Thanks!</span>
+                <span className="text-xs ml-1" style={{ color: 'rgba(255,255,255,0.4)' }}>{ui.thanks}</span>
             )}
         </div>
     );

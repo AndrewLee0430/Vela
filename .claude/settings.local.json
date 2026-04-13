@@ -77,7 +77,8 @@
       "WebFetch(domain:pricepertoken.com)",
       "Bash(npm ls:*)",
       "Bash(uv run:*)",
-      "Bash(PYTHONIOENCODING=utf-8 TEST_MODE=true uv run python tests/run_golden_tests.py)"
+      "Bash(PYTHONIOENCODING=utf-8 TEST_MODE=true uv run python tests/run_golden_tests.py)",
+      "Bash(netstat -ano)"
     ]
   }
 }

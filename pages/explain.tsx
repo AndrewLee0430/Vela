@@ -13,6 +13,8 @@ import PHIWarning from '../components/PHIWarning';
 import UpgradeModal from '../components/UpgradeModal';
 import ProFeatureOverlay from '../components/ProFeatureOverlay';
 import PageShell from '../components/PageShell';
+import { useLang } from '../utils/LangContext';
+import { getUI, getLoincTooltip as getLoincTooltipI18n } from '../utils/i18n-ui';
 
 const ACCENT = '#68d391';
 
@@ -50,37 +52,9 @@ function getSourceUrl(source: ExplainSource): string | null {
     return null;
 }
 
-const LOINC_TOOLTIPS: Record<string, string> = {
-    'egfr': 'Estimated Glomerular Filtration Rate — measures how well your kidneys filter waste.',
-    'gfr': 'Glomerular Filtration Rate — measures kidney filtering function.',
-    'hba1c': 'Hemoglobin A1c — reflects average blood sugar over 2-3 months.',
-    'tsh': 'Thyroid Stimulating Hormone — evaluates thyroid gland function.',
-    'sodium': 'Sodium — an electrolyte essential for fluid balance and nerve function.',
-    'potassium': 'Potassium — an electrolyte critical for heart and muscle function.',
-    'creatinine': 'Creatinine — a waste product used to assess kidney function.',
-    'glucose': 'Blood Glucose — measures current blood sugar level.',
-    'cholesterol': 'Cholesterol — measures fats in the blood linked to heart health.',
-    'alt': 'Alanine Aminotransferase — a liver enzyme indicating liver health.',
-    'ast': 'Aspartate Aminotransferase — an enzyme used to detect liver damage.',
-    'bun': 'Blood Urea Nitrogen — measures kidney function and hydration.',
-    'wbc': 'White Blood Cell Count — indicates immune system activity.',
-    'rbc': 'Red Blood Cell Count — measures oxygen-carrying cells.',
-    'hemoglobin': 'Hemoglobin — the protein in red blood cells that carries oxygen.',
-    'platelet': 'Platelet Count — measures blood clotting ability.',
-    'albumin': 'Albumin — a protein reflecting liver function and nutrition.',
-    'bilirubin': 'Bilirubin — a byproduct of red blood cell breakdown, assessed for liver function.',
-    'calcium': 'Calcium — essential for bones, muscles, and nerve signaling.',
-    'iron': 'Iron — measures iron levels important for oxygen transport.',
-    'uric acid': 'Uric Acid — a waste product, elevated levels may indicate gout risk.',
-    'triglycerides': 'Triglycerides — a type of fat in the blood linked to heart disease risk.',
-    'mcv': 'Mean Corpuscular Volume — measures the average size of red blood cells.',
-    'mch': 'Mean Corpuscular Hemoglobin — average hemoglobin per red blood cell.',
-    'mchc': 'Mean Corpuscular Hemoglobin Concentration — hemoglobin concentration in red blood cells.',
-};
-
-function getLoincTooltip(label: string): string {
-    const term = label.replace(/^LOINC\s+/i, '').trim().toLowerCase();
-    return LOINC_TOOLTIPS[term] ?? 'LOINC — verified lab test standard (loinc.org)';
+function useLoincTooltip(label: string): string {
+    const { lang } = useLang();
+    return getLoincTooltipI18n(lang, label);
 }
 
 function LoincBadge({ source, index = 0 }: { source: ExplainSource; index?: number }) {
@@ -88,7 +62,7 @@ function LoincBadge({ source, index = 0 }: { source: ExplainSource; index?: numb
     const [show, setShow] = useState(false);
     const wrapperRef = useRef<HTMLSpanElement>(null);
     const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-    const tip = getLoincTooltip(source.label);
+    const tip = useLoincTooltip(source.label);
 
     useEffect(() => {
         if (!show) return;
@@ -195,6 +169,8 @@ type UploadState = 'idle' | 'uploading' | 'preview' | 'error';
 
 function ExplainForm() {
     const { getToken } = useAuth();
+    const { lang } = useLang();
+    const ui = getUI(lang);
     const [reportText, setReportText] = useState('');
     const [output, setOutput]         = useState('');
     const [sources, setSources]       = useState<ExplainSource[]>([]);
@@ -291,12 +267,12 @@ function ExplainForm() {
 
         if (!ALLOWED_TYPES.includes(file.type)) {
             setUploadState('error');
-            setUploadError('Please upload a PDF or image file (JPG, PNG).');
+            setUploadError(ui.uploadPdfOrImage);
             return;
         }
         if (file.size > MAX_FILE_SIZE) {
             setUploadState('error');
-            setUploadError('File too large. Maximum size is 10MB.');
+            setUploadError(ui.fileTooLarge);
             return;
         }
 
@@ -313,7 +289,7 @@ function ExplainForm() {
 
             if (!text.trim()) {
                 setUploadState('error');
-                setUploadError('Could not extract text. Please paste your report manually.');
+                setUploadError(ui.couldNotExtract);
                 return;
             }
 
@@ -325,10 +301,10 @@ function ExplainForm() {
                 setShowUpgradeModal(true);
             } else {
                 setUploadState('error');
-                setUploadError('Could not extract text. Please paste your report manually.');
+                setUploadError(ui.couldNotExtract);
             }
         }
-    }, [extractFromPdf, extractFromImage, plan]);
+    }, [extractFromPdf, extractFromImage, plan, ui]);
 
     const handleDrop = useCallback((e: DragEvent) => {
         e.preventDefault();
@@ -368,14 +344,21 @@ function ExplainForm() {
                 body: JSON.stringify({ report_text: reportText }),
                 openWhenHidden: true,
                 onopen: makeOnOpen({
-                    onPhiBlocked: (detail, suggestion) => setPhiError({ detail, suggestion }),
+                    onPhiBlocked: () => setPhiError({ detail: ui.phiDetail, suggestion: ui.phiSuggestion }),
                     onLimitReached: () => setShowUpgradeModal(true),
                 }),
                 onmessage(ev) {
                     if (!ev.data || ev.data.trim() === '') return;
                     try {
                         const data = JSON.parse(ev.data);
-                        if (data.type === 'status')       setStatusMsg(data.content);
+                        if (data.type === 'status') {
+                            const statusMap: Record<string, string> = {
+                                'Analyzing your report...': ui.statusAnalyzingReport,
+                                'Looking up verified sources...': ui.statusLookingUp,
+                                'Generating explanation...': ui.statusGenerating,
+                            };
+                            setStatusMsg(statusMap[data.content] || data.content);
+                        }
                         else if (data.type === 'sources') setSources(data.content ?? []);
                         else if (data.type === 'answer')  { accumulated += data.content; setOutput(accumulated); }
                         else if (data.type === 'done')    { setLoading(false); setStatusMsg(''); }
@@ -396,7 +379,14 @@ function ExplainForm() {
             });
         } catch (err: any) {
             controller.abort(); setLoading(false); setStatusMsg('');
-            setError(err instanceof Error ? err.message : 'Unknown error.');
+            const code = err?.code as string | undefined;
+            const sseMsg: Record<string, string> = {
+                session_expired: ui.sseSessionExpired,
+                too_many_requests: ui.sseTooManyRequests,
+                server_error: ui.sseServerError,
+                connection_lost: ui.sseConnectionLost,
+            };
+            setError(code && sseMsg[code] ? sseMsg[code] : (err instanceof Error ? err.message : ui.sseConnectionLost));
         } finally { isRunningRef.current = false; }
     }
 
@@ -416,15 +406,15 @@ function ExplainForm() {
         <div className="container mx-auto px-4 py-8 max-w-3xl">
             <div className="flex justify-between items-start mb-6">
                 <div>
-                    <h1 className="text-2xl font-bold tracking-tight mb-1" style={{ color: "#ffffff" }}>Understand Your Medical Report</h1>
-                    <p className="text-sm mt-1" style={{ color: "rgba(255,255,255,0.5)" }}>Evidence-based · Verified Sources</p>
+                    <h1 className="text-2xl font-bold tracking-tight mb-1" style={{ color: "#ffffff" }}>{ui.explainTitle}</h1>
+                    <p className="text-sm mt-1" style={{ color: "rgba(255,255,255,0.5)" }}>{ui.explainSubtitle}</p>
                 </div>
                 {(output || reportText) && (
                     <button onClick={handleReset} className="text-sm font-medium px-3 py-1 rounded-lg transition-all mt-1"
                         style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.3)', color: 'rgba(255,255,255,0.7)' }}
                         onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.1)'; }}
                         onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}>
-                        + New
+                        {ui.newBtn}
                     </button>
                 )}
             </div>
@@ -432,7 +422,7 @@ function ExplainForm() {
             {/* Language box */}
             <div className="rounded-xl p-4 text-sm mb-6" style={{ background: 'rgba(74,222,128,0.05)', border: '1px solid rgba(74,222,128,0.3)' }}>
                 <p style={{ color: 'rgba(74,222,128,0.9)' }}>
-                    <span className="font-semibold">Ask in any language</span> — explained with LOINC, RxNorm &amp; MedlinePlus.
+                    <span className="font-semibold">{ui.explainInfoBox}</span>
                 </p>
             </div>
 
@@ -447,7 +437,7 @@ function ExplainForm() {
             <form onSubmit={handleSubmit} className="rounded-xl p-6 space-y-5" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}>
                 <div className="space-y-2">
                     <label htmlFor="report" className="block text-sm font-medium" style={{ color: "rgba(255,255,255,0.8)" }}>
-                        Medical Report / Lab Results
+                        {ui.reportLabel}
                     </label>
 
                     {/* Upload area */}
@@ -475,12 +465,12 @@ function ExplainForm() {
                                                 onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f); }}
                                             />
                                             <div className="text-2xl mb-2" style={{ opacity: 0.7 }}>📄</div>
-                                            <p className="text-sm font-medium" style={{ color: 'rgba(74,222,128,0.9)' }}>Upload Report</p>
-                                            <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.4)' }}>PDF or image (JPG, PNG) · Max 10MB</p>
+                                            <p className="text-sm font-medium" style={{ color: 'rgba(74,222,128,0.9)' }}>{ui.uploadReport}</p>
+                                            <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.4)' }}>{ui.uploadHint}</p>
                                         </div>
                                     </ProFeatureOverlay>
                                     <p className="text-xs text-center py-1" style={{ color: 'rgba(255,255,255,0.3)' }}>
-                                        ─── or paste text below ───
+                                        ─── {ui.pasteBelow} ───
                                     </p>
                                 </>
                             )}
@@ -488,7 +478,7 @@ function ExplainForm() {
                             {uploadState === 'uploading' && (
                                 <div className="rounded-lg p-6 text-center" style={{ border: '2px dashed rgba(74,222,128,0.4)', background: 'rgba(74,222,128,0.05)' }}>
                                     <div className="w-6 h-6 border-2 border-t-transparent rounded-full animate-spin mx-auto mb-2" style={{ borderColor: 'rgba(74,222,128,0.6)', borderTopColor: 'transparent' }} />
-                                    <p className="text-sm" style={{ color: 'rgba(74,222,128,0.9)' }}>Extracting text...</p>
+                                    <p className="text-sm" style={{ color: 'rgba(74,222,128,0.9)' }}>{ui.extractingText}</p>
                                 </div>
                             )}
 
@@ -501,7 +491,7 @@ function ExplainForm() {
                                         className="text-xs px-3 py-1 rounded-lg transition-all"
                                         style={{ border: '1px solid rgba(255,255,255,0.3)', color: 'rgba(255,255,255,0.7)' }}
                                     >
-                                        Try Again
+                                        {ui.tryAgainBtn}
                                     </button>
                                 </div>
                             )}
@@ -510,10 +500,10 @@ function ExplainForm() {
                                 <div className="rounded-lg p-4 space-y-3" style={{ border: '1px solid rgba(74,222,128,0.3)', background: 'rgba(74,222,128,0.05)' }}>
                                     <div>
                                         <p className="text-sm font-medium" style={{ color: 'rgba(74,222,128,0.9)' }}>
-                                            ✅ Text extracted from {extractedFileName}
+                                            ✅ {ui.textExtractedFrom} {extractedFileName}
                                         </p>
                                         <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.5)' }}>
-                                            Please review before submitting — check numbers carefully.
+                                            {ui.reviewBeforeSubmit}
                                         </p>
                                     </div>
                                     <textarea
@@ -524,7 +514,7 @@ function ExplainForm() {
                                         style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.85)', minHeight: '120px' }}
                                     />
                                     <p className="text-xs" style={{ color: 'rgba(251,191,36,0.7)' }}>
-                                        ⚠️ Image quality may affect accuracy. Verify all numbers before submitting.
+                                        ⚠️ {ui.imageQualityWarning}
                                     </p>
                                     <div className="flex gap-3">
                                         <button
@@ -533,7 +523,7 @@ function ExplainForm() {
                                             className="px-4 py-2 text-sm font-medium rounded-lg transition-opacity text-white"
                                             style={{ background: ACCENT }}
                                         >
-                                            Use This Text
+                                            {ui.useThisText}
                                         </button>
                                         <button
                                             type="button"
@@ -543,7 +533,7 @@ function ExplainForm() {
                                             onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.1)'; }}
                                             onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                                         >
-                                            Upload Different File
+                                            {ui.uploadDifferentFile}
                                         </button>
                                     </div>
                                 </div>
@@ -581,7 +571,7 @@ function ExplainForm() {
                         id="report" required rows={12} value={reportText}
                         onChange={(e) => setReportText(e.target.value)} disabled={loading}
                         className="w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 disabled:opacity-60 font-mono text-sm" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.85)" }}
-                        placeholder={"Paste your lab results or medical report here.\n\nExamples:\neGFR 45 mL/min (ref >60), HbA1c 7.8%, Metformin 1000mg BID\n\n腎絲球過濾率 45，糖化血色素 7.8%，Metformin 1000mg 每日兩次"}
+                        placeholder={ui.explainPlaceholder}
                     />
                 </div>
                 <button
@@ -592,21 +582,21 @@ function ExplainForm() {
                     {loading ? (
                         <span className="flex items-center justify-center gap-2">
                             <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                            {statusMsg || 'Processing...'}
+                            {statusMsg || ui.processingBtn}
                         </span>
-                    ) : 'Explain My Report'}
+                    ) : ui.explainBtn}
                 </button>
             </form>
 
             {output && (
             <p className="text-xs mt-3 text-center" style={{ color: "rgba(255,255,255,0.35)" }}>
-                ⚠️ Explanations are for reference only. Always consult your doctor for medical advice.
+                {ui.explainDisclaimer}
             </p>
             )}
 
             {sources.length > 0 && (
                 <div className="mt-5 rounded-xl p-5" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}>
-                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Verified Sources</p>
+                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">{ui.verifiedSources}</p>
                     <div className="flex flex-wrap gap-2">
                         {sources.map((src, i) => <SourceBadge key={i} source={src} index={i} />)}
                     </div>
@@ -616,10 +606,10 @@ function ExplainForm() {
             {output && (
                 <section className="mt-5 rounded-xl p-6" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}>
                     <div className="flex justify-between items-center mb-4">
-                        <h2 className="text-base font-semibold" style={{ color: "#ffffff" }}>Explanation</h2>
+                        <h2 className="text-base font-semibold" style={{ color: "#ffffff" }}>{ui.explanation}</h2>
                         <button onClick={() => { navigator.clipboard.writeText(output); setShowToast(true); }}
                             className="text-xs text-gray-400 hover:text-white transition-colors">
-                            Copy to clipboard
+                            {ui.copyClipboard}
                         </button>
                     </div>
                     <div
@@ -645,34 +635,17 @@ function ExplainForm() {
             )}
 
             <div className="mt-8 border-t pt-6 space-y-2 text-xs" style={{ borderColor: "rgba(104,211,145,0.35)", color: "rgba(255,255,255,0.4)" }}>
-                <p className="font-medium" style={{ color: "rgba(255,255,255,0.6)" }}>Data Sources & Attribution</p>
-                <p>
-                    Lab test terminology provided by{' '}
-                    <a href="https://loinc.org" target="_blank" rel="noopener noreferrer" className="underline opacity-70 hover:opacity-100">LOINC®</a>
-                    {' '}(Regenstrief Institute, Inc.). LOINC® is a registered trademark of Regenstrief Institute, Inc.
-                    Vela is not affiliated with or endorsed by Regenstrief Institute.
-                </p>
-                <p>
-                    Drug and health information courtesy of{' '}
-                    <a href="https://medlineplus.gov" target="_blank" rel="noopener noreferrer" className="underline opacity-70 hover:opacity-100">MedlinePlus</a>
-                    {' '}and the{' '}
-                    <a href="https://www.nlm.nih.gov" target="_blank" rel="noopener noreferrer" className="underline opacity-70 hover:opacity-100">U.S. National Library of Medicine (NLM)</a>.
-                    Vela is not affiliated with or endorsed by NLM or any U.S. government agency.
-                </p>
-                <p>
-                    Drug name standardization powered by{' '}
-                    <a href="https://www.nlm.nih.gov/research/umls/rxnorm" target="_blank" rel="noopener noreferrer" className="underline opacity-70 hover:opacity-100">RxNorm</a>
-                    {' '}(NLM). Drug label data from{' '}
-                    <a href="https://dailymed.nlm.nih.gov" target="_blank" rel="noopener noreferrer" className="underline opacity-70 hover:opacity-100">DailyMed</a>
-                    {' '}(FDA/NLM).
-                </p>
+                <p className="font-medium" style={{ color: "rgba(255,255,255,0.6)" }}>{ui.dataSourcesTitle}</p>
+                <p dangerouslySetInnerHTML={{ __html: ui.explainAttr1 }} />
+                <p dangerouslySetInnerHTML={{ __html: ui.explainAttr2 }} />
+                <p dangerouslySetInnerHTML={{ __html: ui.explainAttr3 }} />
             </div>
 
-            {showToast && <Toast message="Copied to clipboard" onClose={() => setShowToast(false)} />}
+            {showToast && <Toast message={ui.copiedToClipboard} onClose={() => setShowToast(false)} />}
             <UpgradeModal isOpen={showUpgradeModal} onClose={() => setShowUpgradeModal(false)} />
             {showDailyCapToast && (
                 <Toast
-                    message="You've reached today's usage limit. Resets at midnight UTC."
+                    message={ui.dailyCapToast}
                     type="warning"
                     onClose={() => setShowDailyCapToast(false)}
                     duration={5000}

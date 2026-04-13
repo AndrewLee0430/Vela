@@ -2,6 +2,8 @@
 
 import { useState, useRef, useEffect, useCallback, ReactNode } from 'react';
 import UpgradeModal from './UpgradeModal';
+import { useLang } from '../utils/LangContext';
+import { getUI } from '../utils/i18n-ui';
 
 interface ProFeatureOverlayProps {
     children: ReactNode;
@@ -10,6 +12,8 @@ interface ProFeatureOverlayProps {
 }
 
 export default function ProFeatureOverlay({ children, featureName, isLocked }: ProFeatureOverlayProps) {
+    const { lang } = useLang();
+    const ui = getUI(lang);
     const [showPopover, setShowPopover] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [above, setAbove] = useState(true);
@@ -103,7 +107,7 @@ export default function ProFeatureOverlay({ children, featureName, isLocked }: P
                                 <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
                                 <path d="M7 11V7a5 5 0 0 1 10 0v4" />
                             </svg>
-                            <span className="text-sm font-medium" style={{ color: '#cbd5e1' }}>Pro feature</span>
+                            <span className="text-sm font-medium" style={{ color: '#cbd5e1' }}>{ui.proFeature}</span>
                         </div>
                         {/* Row 2: upgrade button */}
                         <button
@@ -111,7 +115,7 @@ export default function ProFeatureOverlay({ children, featureName, isLocked }: P
                             className="px-3 py-1 text-xs font-semibold rounded-full text-white transition-opacity hover:opacity-90"
                             style={{ background: '#ff8e6e' }}
                         >
-                            Upgrade
+                            {ui.upgrade}
                         </button>
                     </div>
                     {/* Arrow */}

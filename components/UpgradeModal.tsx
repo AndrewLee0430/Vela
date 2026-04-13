@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { useAuth } from '@clerk/nextjs';
 import { clearPlanCache } from './PlanBadge';
+import { useLang } from '../utils/LangContext';
+import { getUI } from '../utils/i18n-ui';
 
 interface UpgradeModalProps {
   isOpen: boolean;
@@ -16,6 +18,8 @@ export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
   const [loading, setLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const { getToken } = useAuth();
+  const { lang } = useLang();
+  const ui = getUI(lang);
 
   if (!isOpen) return null;
 
@@ -68,18 +72,13 @@ export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
         {/* Header */}
         <div className="text-center mb-6">
           <div className="text-4xl mb-2">🪸</div>
-          <h2 className="text-2xl font-bold text-white mb-1">Upgrade to Vela Pro</h2>
-          <p className="text-gray-400 text-sm">Up to 100 queries per day*</p>
+          <h2 className="text-2xl font-bold text-white mb-1">{ui.upgradeTitle}</h2>
+          <p className="text-gray-400 text-sm">{ui.upgradeSubtitle}</p>
         </div>
 
         {/* Features */}
         <ul className="space-y-2 mb-2">
-          {[
-            '✅ Up to 100 credits / day*',
-            '✅ Research (3 credits), Verify (1), Explain (2)',
-            '✅ All features unlocked',
-            '✅ Priority support',
-          ].map((f, i) => (
+          {[ui.upgradeFeature1, ui.upgradeFeature2, ui.upgradeFeature3, ui.upgradeFeature4].map((f, i) => (
             <li key={i} className="text-gray-300 text-sm">{f}</li>
           ))}
         </ul>
@@ -110,7 +109,7 @@ export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
             className="w-full py-3 rounded-xl font-semibold text-white transition-all"
             style={{ background: loading === 'monthly' ? '#cc5533' : '#ff6b4a' }}
           >
-            {loading === 'monthly' ? 'Redirecting...' : 'Monthly — $9.99 / month'}
+            {loading === 'monthly' ? ui.redirecting : ui.monthlyBtn}
           </button>
 
           <button
@@ -119,12 +118,12 @@ export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
             className="w-full py-3 rounded-xl font-semibold text-white transition-all"
             style={{ background: loading === 'yearly' ? '#1a3a6a' : '#1e4a8a' }}
           >
-            {loading === 'yearly' ? 'Redirecting...' : 'Yearly — $89.99 / year (save 25%)'}
+            {loading === 'yearly' ? ui.redirecting : ui.yearlyBtn}
           </button>
         </div>
 
         <p className="text-center text-gray-500 text-xs mt-4">
-          7-day money-back guarantee · Cancel anytime
+          {ui.moneyBackGuarantee}
         </p>
       </div>
     </div>

@@ -4,7 +4,11 @@ import { useState, useEffect, useRef } from 'react';
 import { SignedIn, SignedOut, SignInButton, UserButton, useAuth, useUser } from '@clerk/nextjs';
 import Link from 'next/link';
 import Image from 'next/image';
+import { Settings } from 'lucide-react';
 import UpgradeModal from './UpgradeModal';
+import LanguageSwitcher from './LanguageSwitcher';
+import { useLang } from '../utils/LangContext';
+import { getUI } from '../utils/i18n-ui';
 
 const BG = 'linear-gradient(135deg, #0a1628 0%, #0f2040 45%, #1a1035 75%, #0d1a2e 100%)';
 
@@ -48,9 +52,11 @@ function writeStatusCache(plan: 'free' | 'pro', credits_used_today: number, dail
 }
 
 export default function Navbar({ activePage }: NavbarProps) {
+    const { lang } = useLang();
+    const ui = getUI(lang);
     const [showUpgradeModal, setShowUpgradeModal] = useState(false);
-    const [menuOpen, setMenuOpen] = useState(false);
-    const menuRef = useRef<HTMLDivElement>(null);
+    const [settingsOpen, setSettingsOpen] = useState(false);
+    const settingsRef = useRef<HTMLDivElement>(null);
     const { getToken } = useAuth();
     const { isSignedIn, isLoaded } = useUser();
 
@@ -90,23 +96,23 @@ export default function Navbar({ activePage }: NavbarProps) {
         return () => clearInterval(interval);
     }, [getToken, isLoaded, isSignedIn]);
 
-    // Close menu on outside click
+    // Close settings dropdown on outside click
     useEffect(() => {
         function handleClick(e: MouseEvent) {
-            if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-                setMenuOpen(false);
+            if (settingsRef.current && !settingsRef.current.contains(e.target as Node)) {
+                setSettingsOpen(false);
             }
         }
-        if (menuOpen) document.addEventListener('mousedown', handleClick);
+        if (settingsOpen) document.addEventListener('mousedown', handleClick);
         return () => document.removeEventListener('mousedown', handleClick);
-    }, [menuOpen]);
+    }, [settingsOpen]);
 
     const [showCancelConfirm, setShowCancelConfirm] = useState(false);
     const [cancelling, setCancelling] = useState(false);
     const [cancelMessage, setCancelMessage] = useState('');
 
     const handleManageSubscription = async () => {
-        setMenuOpen(false);
+        setSettingsOpen(false);
         try {
             const token = await getToken({ skipCache: true });
             if (!token) return;
@@ -166,56 +172,72 @@ export default function Navbar({ activePage }: NavbarProps) {
                                 ))}
                             </div>
                         </div>
+
+                        {/* Right side: [PRO/Upgrade] [⚙️] [👤] */}
                         <div className="flex items-center gap-2">
                             <SignedIn>
-                                {/* Plan badge + menu dropdown */}
-                                <div className="relative" ref={menuRef}>
-                                    {plan === 'pro' ? (
-                                        <button
-                                            onClick={() => setMenuOpen(prev => !prev)}
-                                            className="text-base font-bold px-2.5 py-1 rounded-lg cursor-pointer transition-all"
-                                            style={{ letterSpacing: '0.12em', background: 'transparent' }}
-                                            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.1)'; }}
-                                            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
-                                        >
-                                            <span className="bg-gradient-to-r from-[#ff8e6e] to-[#fbbf24] bg-clip-text text-transparent">PRO</span>
-                                        </button>
-                                    ) : plan === 'free' ? (
-                                        <button
-                                            onClick={() => setMenuOpen(prev => !prev)}
-                                            className="text-sm font-semibold px-3 py-1 rounded-lg cursor-pointer transition-all"
-                                            style={{
-                                                background: 'rgba(255,107,74,0.15)',
-                                                border: '1px solid rgba(255,107,74,0.4)',
-                                                color: '#ff8e6e',
-                                            }}
-                                            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,107,74,0.25)'; }}
-                                            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,107,74,0.15)'; }}
-                                        >
-                                            Upgrade
-                                        </button>
-                                    ) : null}
+                                {/* 1. PRO badge / Upgrade button — display only */}
+                                {plan === 'pro' ? (
+                                    <span
+                                        className="text-base font-bold px-2.5 py-1"
+                                        style={{ letterSpacing: '0.12em' }}
+                                    >
+                                        <span className="bg-gradient-to-r from-[#ff8e6e] to-[#fbbf24] bg-clip-text text-transparent">PRO</span>
+                                    </span>
+                                ) : (
+                                    <button
+                                        onClick={() => setShowUpgradeModal(true)}
+                                        className="text-sm font-semibold px-3 py-1 rounded-lg cursor-pointer transition-all"
+                                        style={{
+                                            background: 'rgba(255,107,74,0.15)',
+                                            border: '1px solid rgba(255,107,74,0.4)',
+                                            color: '#ff8e6e',
+                                        }}
+                                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,107,74,0.25)'; }}
+                                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,107,74,0.15)'; }}
+                                    >
+                                        {ui.upgrade}
+                                    </button>
+                                )}
 
-                                    {menuOpen && (
+                                {/* 2. Settings gear — opens dropdown */}
+                                <div className="relative" ref={settingsRef}>
+                                    <button
+                                        onClick={() => setSettingsOpen(prev => !prev)}
+                                        className="p-1.5 rounded-lg transition-all"
+                                        style={{ color: settingsOpen ? 'white' : 'rgba(255,255,255,0.45)', background: settingsOpen ? 'rgba(255,255,255,0.1)' : 'transparent' }}
+                                        onMouseEnter={e => { if (!settingsOpen) (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.8)'; }}
+                                        onMouseLeave={e => { if (!settingsOpen) (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.45)'; }}
+                                    >
+                                        <Settings size={18} strokeWidth={1.8} />
+                                    </button>
+
+                                    {settingsOpen && (
                                         <div
-                                            className="absolute right-0 top-full mt-2 w-56 rounded-xl shadow-2xl border py-2 z-50"
+                                            className="absolute right-0 top-full mt-2 rounded-xl shadow-2xl border py-2 z-50"
                                             style={{
+                                                width: '280px',
                                                 background: 'rgba(15, 23, 42, 0.98)',
                                                 borderColor: 'rgba(255,255,255,0.1)',
                                                 backdropFilter: 'blur(20px)',
                                             }}
                                         >
+                                            {/* Language */}
+                                            <div className="border-b" style={{ borderColor: 'rgba(255,255,255,0.07)' }}>
+                                                <LanguageSwitcher compact />
+                                            </div>
+
                                             {/* Plan label */}
                                             <div className="px-4 py-2 border-b" style={{ borderColor: 'rgba(255,255,255,0.07)' }}>
                                                 <p className="text-xs font-semibold" style={{ color: plan === 'pro' ? '#fbbf24' : 'rgba(255,255,255,0.5)' }}>
-                                                    {plan === 'pro' ? 'Pro Plan' : 'Free Plan'}
+                                                    {plan === 'pro' ? ui.proPlan : ui.freePlan}
                                                 </p>
                                             </div>
 
                                             {/* Usage today */}
                                             <div className="px-4 py-3 border-b" style={{ borderColor: 'rgba(255,255,255,0.07)' }}>
                                                 <p className="text-xs mb-1" style={{ color: 'rgba(255,255,255,0.7)' }}>
-                                                    Today: <span className="font-medium text-white">{creditsUsed}</span> / {dailyLimit} credits used
+                                                    {ui.todayCredits} <span className="font-medium text-white">{creditsUsed}</span> / {dailyLimit} {ui.creditsUsed}
                                                 </p>
                                                 <p className="text-xs mb-2" style={{ color: 'rgba(255,255,255,0.4)' }}>
                                                     Research: 3 · Verify: 1 · Explain: 2
@@ -244,30 +266,30 @@ export default function Navbar({ activePage }: NavbarProps) {
                                                         className="w-full text-left px-4 py-2 text-sm transition-colors hover:bg-white/5"
                                                         style={{ color: 'rgba(255,255,255,0.7)' }}
                                                     >
-                                                        Manage Subscription
+                                                        {ui.manageSubscription}
                                                     </button>
                                                     <button
-                                                        onClick={() => { setMenuOpen(false); setShowCancelConfirm(true); }}
+                                                        onClick={() => { setSettingsOpen(false); setShowCancelConfirm(true); }}
                                                         className="w-full text-left px-4 py-2 text-sm transition-colors hover:bg-white/5"
                                                         style={{ color: '#ef4444' }}
                                                     >
-                                                        Cancel Subscription
+                                                        {ui.cancelSubscription}
                                                     </button>
                                                 </>
                                             ) : (
                                                 <button
-                                                    onClick={() => { setMenuOpen(false); setShowUpgradeModal(true); }}
+                                                    onClick={() => { setSettingsOpen(false); setShowUpgradeModal(true); }}
                                                     className="w-full text-left px-4 py-2 text-sm font-medium transition-colors hover:bg-white/5"
                                                     style={{ color: '#ff8e6e' }}
                                                 >
-                                                    Upgrade to Pro →
+                                                    {ui.upgradeToPro}
                                                 </button>
                                             )}
                                         </div>
                                     )}
                                 </div>
 
-                                {/* Clerk UserButton */}
+                                {/* 3. Clerk UserButton (avatar) */}
                                 <UserButton />
                             </SignedIn>
                             <SignedOut>
@@ -278,7 +300,7 @@ export default function Navbar({ activePage }: NavbarProps) {
                                         onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.1)')}
                                         onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
                                     >
-                                        Sign In
+                                        {ui.signIn}
                                     </button>
                                 </SignInButton>
                             </SignedOut>
@@ -295,27 +317,27 @@ export default function Navbar({ activePage }: NavbarProps) {
                         {cancelMessage === 'success' ? (
                             <div className="text-center py-4">
                                 <p className="text-sm" style={{ color: 'rgba(255,255,255,0.8)' }}>
-                                    Subscription cancelled. Your Pro access has ended.
+                                    {ui.cancelledMsg}
                                 </p>
                             </div>
                         ) : cancelMessage === 'error' ? (
                             <div className="text-center py-4 space-y-4">
                                 <p className="text-sm" style={{ color: '#ef4444' }}>
-                                    Unable to cancel. Please contact <a href="mailto:support@an-tho.com" className="underline">support@an-tho.com</a>
+                                    {ui.cancelError}
                                 </p>
                                 <button
                                     onClick={() => { setShowCancelConfirm(false); setCancelMessage(''); }}
                                     className="px-4 py-2 text-sm rounded-lg"
                                     style={{ background: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.7)' }}
                                 >
-                                    Close
+                                    {ui.closeBtn}
                                 </button>
                             </div>
                         ) : (
                             <>
-                                <h3 className="text-lg font-semibold text-white mb-3">Cancel Subscription</h3>
+                                <h3 className="text-lg font-semibold text-white mb-3">{ui.cancelTitle}</h3>
                                 <p className="text-sm mb-6" style={{ color: 'rgba(255,255,255,0.6)' }}>
-                                    Are you sure you want to cancel your subscription? Your Pro access will end immediately upon cancellation.
+                                    {ui.cancelConfirmMsg}
                                 </p>
                                 <div className="flex gap-3 justify-end">
                                     <button
@@ -323,7 +345,7 @@ export default function Navbar({ activePage }: NavbarProps) {
                                         className="px-4 py-2 text-sm font-medium rounded-lg transition-colors"
                                         style={{ background: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.8)' }}
                                     >
-                                        Keep Pro
+                                        {ui.keepPro}
                                     </button>
                                     <button
                                         onClick={handleCancelSubscription}
@@ -331,7 +353,7 @@ export default function Navbar({ activePage }: NavbarProps) {
                                         className="px-4 py-2 text-sm font-medium rounded-lg transition-colors disabled:opacity-50"
                                         style={{ background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)', color: '#ef4444' }}
                                     >
-                                        {cancelling ? 'Cancelling...' : 'Cancel Subscription'}
+                                        {cancelling ? ui.cancellingBtn : ui.cancelSubscription}
                                     </button>
                                 </div>
                             </>

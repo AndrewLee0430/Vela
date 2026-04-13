@@ -1,26 +1,10 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import Head from 'next/head';
+import { useLang } from '../utils/LangContext';
+import { getUI } from '../utils/i18n-ui';
 
 const ACCENT = '#ff8e6e';
-
-const FREE_FEATURES = [
-    '10 credits per day (resets daily)',
-    'Research: 3 credits · Verify: 1 · Explain: 2',
-    'PubMed 36M+ literature search',
-    'FDA drug label data',
-    '10 languages supported',
-    'Last 7 days query history',
-];
-
-const PRO_FEATURES = [
-    'Up to 100 credits per day*',
-    'Everything in Free, plus:',
-    'PDF & image upload (Explain)',
-    'Export with citations (PDF)',
-    'Full history with search',
-    '7-day money-back guarantee',
-];
 
 function CheckIcon() {
     return (
@@ -31,6 +15,18 @@ function CheckIcon() {
 }
 
 export default function Pricing() {
+    const { lang } = useLang();
+    const ui = getUI(lang);
+
+    const FREE_FEATURES = [
+        ui.pricingFree1, ui.pricingFree2, ui.pricingFree3,
+        ui.pricingFree4, ui.pricingFree5, ui.pricingFree6,
+    ];
+    const PRO_FEATURES = [
+        ui.pricingPro1, ui.pricingPro2, ui.pricingPro3,
+        ui.pricingPro4, ui.pricingPro5, ui.pricingPro6,
+    ];
+
     return (
         <>
             <Head>
@@ -50,16 +46,16 @@ export default function Pricing() {
                             className="text-sm font-medium px-4 py-1.5 rounded-lg transition-opacity hover:opacity-90"
                             style={{ background: ACCENT, color: '#fff' }}
                         >
-                            Get Started
+                            {ui.getStarted}
                         </Link>
                     </div>
                 </nav>
 
                 {/* Header */}
                 <div className="container mx-auto px-4 pt-16 pb-10 text-center">
-                    <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-white">Pricing</h1>
+                    <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-white">{ui.pricingTitle}</h1>
                     <p className="mt-3 text-base" style={{ color: 'rgba(255,255,255,0.5)' }}>
-                        Simple, transparent pricing for healthcare professionals.
+                        {ui.pricingSubtitle}
                     </p>
                 </div>
 
@@ -75,7 +71,7 @@ export default function Pricing() {
                             <h2 className="text-lg font-semibold text-white">Free</h2>
                             <div className="mt-4 mb-6">
                                 <span className="text-3xl font-bold text-white">$0</span>
-                                <span className="text-sm ml-1" style={{ color: 'rgba(255,255,255,0.4)' }}>/ month</span>
+                                <span className="text-sm ml-1" style={{ color: 'rgba(255,255,255,0.4)' }}>{ui.perMonth}</span>
                             </div>
 
                             <ul className="space-y-3 flex-1">
@@ -93,7 +89,7 @@ export default function Pricing() {
                                 onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.1)'; }}
                                 onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                             >
-                                Get Started Free
+                                {ui.getStartedFree}
                             </Link>
                         </div>
 
@@ -107,16 +103,16 @@ export default function Pricing() {
                                 className="absolute -top-3 right-6 text-xs font-semibold px-3 py-1 rounded-full"
                                 style={{ background: ACCENT, color: '#fff' }}
                             >
-                                Recommended
+                                {ui.recommended}
                             </span>
 
                             <h2 className="text-lg font-semibold text-white">Pro</h2>
                             <div className="mt-4 mb-1">
                                 <span className="text-3xl font-bold text-white">$9.99</span>
-                                <span className="text-sm ml-1" style={{ color: 'rgba(255,255,255,0.4)' }}>/ month</span>
+                                <span className="text-sm ml-1" style={{ color: 'rgba(255,255,255,0.4)' }}>{ui.perMonth}</span>
                             </div>
                             <p className="text-xs mb-6" style={{ color: 'rgba(255,255,255,0.4)' }}>
-                                or $89.99 / year <span style={{ color: ACCENT }}>(save 25%)</span>
+                                {ui.orYearly}
                             </p>
 
                             <ul className="space-y-3 flex-1">
@@ -132,11 +128,11 @@ export default function Pricing() {
                                 className="mt-8 block text-center text-sm font-medium py-2.5 rounded-lg transition-opacity hover:opacity-90 text-white"
                                 style={{ background: ACCENT }}
                             >
-                                Upgrade to Pro
+                                {ui.upgradeToPro}
                             </Link>
 
                             <p className="mt-3 text-xs text-center" style={{ color: 'rgba(255,255,255,0.3)' }}>
-                                *Subject to fair use policy
+                                {ui.subjectToFairUse}
                             </p>
                         </div>
                     </div>
@@ -147,11 +143,11 @@ export default function Pricing() {
                     className="flex-shrink-0 flex flex-col items-center gap-2 px-4 py-5 text-sm"
                     style={{ borderTop: '1px solid rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.3)' }}
                 >
-                    <div>Vela is a research tool, not a medical device. It does not provide medical advice.</div>
+                    <div>{ui.pricingDisclaimer}</div>
                     <div className="flex flex-wrap justify-center gap-4 text-xs">
-                        <Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
-                        <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
-                        <Link href="/refund" className="hover:text-white transition-colors">Refund Policy</Link>
+                        <Link href="/terms" className="hover:text-white transition-colors">{ui.termsOfService}</Link>
+                        <Link href="/privacy" className="hover:text-white transition-colors">{ui.privacyPolicy}</Link>
+                        <Link href="/refund" className="hover:text-white transition-colors">{ui.refundPolicy}</Link>
                         <a href="mailto:support@an-tho.com" className="hover:text-white transition-colors">support@an-tho.com</a>
                     </div>
                 </div>

@@ -5,6 +5,7 @@ import posthog from 'posthog-js';
 import { PostHogProvider } from 'posthog-js/react';
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
+import { LangProvider } from '../utils/LangContext';
 import '../styles/globals.css';
 
 if (typeof window !== 'undefined') {
@@ -46,7 +47,9 @@ export default function MyApp({ Component, pageProps }: AppProps) {
           }
         }}
       >
-        <Component {...pageProps} />
+        <LangProvider>
+          <Component {...pageProps} />
+        </LangProvider>
       </ClerkProvider>
     </PostHogProvider>
   );

@@ -17,6 +17,8 @@ import PageShell from '../components/PageShell';
 import ProFeatureOverlay from '../components/ProFeatureOverlay';
 import ResearchSection from '../components/ResearchSection';
 import { exportResearchPdf } from '../utils/exportPdf';
+import { useLang } from '../utils/LangContext';
+import { getUI } from '../utils/i18n-ui';
 
 const ACCENT = '#ff8e6e';
 
@@ -86,18 +88,19 @@ const defaultSuggestions = [
     "Safety of antibiotics in pregnancy?",
 ];
 
-const EVIDENCE_LEVELS = [
-    { emoji: '🟢', label: 'Strong evidence', tip: 'Supported by systematic reviews, RCTs, or major guidelines' },
-    { emoji: '🟡', label: 'Moderate', tip: 'Based on observational studies or conditional recommendations' },
-    { emoji: '🔴', label: 'Limited', tip: 'Limited evidence found in retrieved sources — consider searching this topic separately' },
-];
-
 function EvidenceLegend() {
+    const { lang } = useLang();
+    const ui = getUI(lang);
+    const levels = [
+        { emoji: '🟢', label: ui.evidenceStrong, tip: ui.evidenceStrongTip },
+        { emoji: '🟡', label: ui.evidenceModerate, tip: ui.evidenceModerateTip },
+        { emoji: '🔴', label: ui.evidenceLimited, tip: ui.evidenceLimitedTip },
+    ];
     const [expanded, setExpanded] = useState(false);
     return (
         <div className="mt-4 text-center">
             <div className="inline-flex items-center gap-4 text-xs" style={{ color: 'rgba(255,255,255,0.45)' }}>
-                {EVIDENCE_LEVELS.map(({ emoji, label, tip }) => (
+                {levels.map(({ emoji, label, tip }) => (
                     <span key={emoji} className="relative group">
                         <span className="cursor-help transition-colors hover:text-slate-200">{emoji} {label}</span>
                         {/* Desktop hover tooltip */}
@@ -136,7 +139,7 @@ function EvidenceLegend() {
                     className="md:hidden mt-2 rounded-lg p-3 text-left text-xs space-y-1.5 mx-auto max-w-sm"
                     style={{ background: '#1e293b', border: '1px solid #475569', color: '#cbd5e1' }}
                 >
-                    {EVIDENCE_LEVELS.map(({ emoji, label, tip }) => (
+                    {levels.map(({ emoji, label, tip }) => (
                         <p key={emoji}>{emoji} <span className="font-medium">{label}</span> — {tip}</p>
                     ))}
                 </div>
@@ -146,16 +149,17 @@ function EvidenceLegend() {
 }
 
 function FallbackBanner() {
+    const { lang } = useLang();
+    const ui = getUI(lang);
     return (
         <div className="mb-4 flex items-start gap-3 p-4 rounded-lg" style={{ background: "rgba(245,158,11,0.12)", border: "1px solid rgba(245,158,11,0.3)" }}>
             <span className="text-amber-500 text-sm mt-0.5 font-bold">⚠</span>
             <div>
                 <p className="text-sm font-semibold" style={{ color: "#fbbf24" }}>
-                    No literature found for this query
+                    {ui.noLiteratureFound}
                 </p>
                 <p className="text-sm mt-0.5" style={{ color: "rgba(251,191,36,0.8)" }}>
-                    This answer is based on general medical knowledge, not retrieved PubMed or FDA literature.
-                    Please verify with current clinical guidelines before applying clinically.
+                    {ui.fallbackBasis}
                 </p>
             </div>
         </div>
@@ -164,6 +168,8 @@ function FallbackBanner() {
 
 function ResearchForm() {
     const { getToken } = useAuth();
+    const { lang } = useLang();
+    const ui = getUI(lang);
 
     const [question, setQuestion]   = useState('');
     const [answer, setAnswer]       = useState('');
@@ -235,7 +241,7 @@ function ResearchForm() {
         try {
             const jwt = await getToken({ skipCache: true });
             if (!jwt) {
-                setError('Authentication required. Please sign in again.');
+                setError(ui.authRequired);
                 setLoading(false);
                 isRunningRef.current = false;
                 return;
@@ -249,14 +255,20 @@ function ResearchForm() {
                 openWhenHidden: true,
 
                 onopen: makeOnOpen({
-                    onPhiBlocked: (detail, suggestion) => setPhiError({ detail, suggestion }),
+                    onPhiBlocked: () => setPhiError({ detail: ui.phiDetail, suggestion: ui.phiSuggestion }),
                     onLimitReached: () => setShowUpgradeModal(true),
                 }),
 
                 onmessage(ev) {
                     try {
                         const data = JSON.parse(ev.data);
-                        if (data.type === 'status')        setStatusMsg(data.content);
+                        if (data.type === 'status') {
+                            const statusMap: Record<string, string> = {
+                                'Searching medical literature...': ui.statusSearching,
+                                'Analyzing documents...': ui.statusAnalyzingDocs,
+                            };
+                            setStatusMsg(statusMap[data.content] || data.content);
+                        }
                         else if (data.type === 'language') setDetectedLang(data.lang || 'en');
                         else if (data.type === 'answer')   { setStatusMsg(''); setAnswer(prev => prev + data.content); }
                         else if (data.type === 'fallback') setIsFallback(true);
@@ -282,7 +294,14 @@ function ResearchForm() {
         } catch (err: any) {
             controller.abort();
             setLoading(false);
-            setError(err instanceof Error ? err.message : 'Unknown error. Please try again.');
+            const code = err?.code as string | undefined;
+            const sseMsg: Record<string, string> = {
+                session_expired: ui.sseSessionExpired,
+                too_many_requests: ui.sseTooManyRequests,
+                server_error: ui.sseServerError,
+                connection_lost: ui.sseConnectionLost,
+            };
+            setError(code && sseMsg[code] ? sseMsg[code] : (err instanceof Error ? err.message : ui.sseConnectionLost));
         } finally {
             isRunningRef.current = false;
         }
@@ -298,15 +317,15 @@ function ResearchForm() {
             {/* Title row */}
             <div className="flex justify-between items-start">
                 <div>
-                    <h1 className="text-2xl font-bold tracking-tight" style={{ color: "#ffffff" }}>Medical Research</h1>
-                    <p className="text-sm mt-1" style={{ color: "rgba(255,255,255,0.5)" }}>Evidence-based answers from PubMed 36M+ and official FDA drug data.</p>
+                    <h1 className="text-2xl font-bold tracking-tight" style={{ color: "#ffffff" }}>{ui.researchTitle}</h1>
+                    <p className="text-sm mt-1" style={{ color: "rgba(255,255,255,0.5)" }}>{ui.researchSubtitle}</p>
                 </div>
                 {(answer || question) && (
                     <button onClick={handleReset} className="text-sm font-medium px-3 py-1 rounded-lg transition-all mt-1"
                         style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.3)', color: 'rgba(255,255,255,0.7)' }}
                         onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.1)'; }}
                         onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}>
-                        + New
+                        {ui.newBtn}
                     </button>
                 )}
             </div>
@@ -314,7 +333,7 @@ function ResearchForm() {
             {/* Info box */}
             <div className="rounded-xl p-4 text-sm" style={{ background: "rgba(255,142,110,0.1)", border: "1px solid rgba(255,142,110,0.35)" }}>
                 <p style={{ color: "rgba(255,142,110,0.95)" }}>
-                    <span className="font-semibold">Ask in any language</span> — answered from PubMed 36M+ and FDA official data.
+                    <span className="font-semibold">{ui.researchInfoBox}</span>
                 </p>
             </div>
 
@@ -338,9 +357,9 @@ function ResearchForm() {
                             {!answer && !loading && (
                                 <div className="text-center py-12">
                                     <div className="space-y-3">
-                                        <p className="text-xs uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.35)" }}>Try these</p>
+                                        <p className="text-xs uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.35)" }}>{ui.tryThese}</p>
                                         <p className="text-xs mb-2" style={{ color: "rgba(148,163,184,0.8)" }}>
-                                            Ask one question at a time for the most accurate, evidence-based results.
+                                            {ui.askOneQuestion}
                                         </p>
                                         <div className="flex flex-wrap justify-center gap-2">
                                             {defaultSuggestions.map((s) => {
@@ -458,7 +477,7 @@ function ResearchForm() {
                                                         onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.06)'; (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.55)'; }}
                                                     >
                                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                                                        Export with Citations
+                                                        {ui.exportCitations}
                                                     </button>
                                                 </ProFeatureOverlay>
                                             </div>
@@ -470,7 +489,7 @@ function ResearchForm() {
 
                         {queryTime && (
                             <p className="text-xs mb-2" style={{ color: "rgba(255,255,255,0.35)" }}>
-                                Query time: {(queryTime / 1000).toFixed(2)}s
+                                {ui.queryTime} {(queryTime / 1000).toFixed(2)}s
                             </p>
                         )}
 
@@ -480,7 +499,7 @@ function ResearchForm() {
                                 type="text"
                                 value={question}
                                 onChange={(e) => { setQuestion(e.target.value); setSelectedSuggestion(null); }}
-                                placeholder="Ask a clinical question in any language..."
+                                placeholder={ui.researchPlaceholder}
                                 className="flex-1 px-4 py-2.5 text-sm rounded-lg focus:outline-none transition-shadow"
                                 style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.15)", color: "#ffffff" }}
                                 disabled={loading}
@@ -493,7 +512,7 @@ function ResearchForm() {
                             >
                                 {loading ? (
                                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                                ) : 'Search'}
+                                ) : ui.searchBtn}
                             </button>
                         </form>
 
@@ -515,26 +534,16 @@ function ResearchForm() {
             )}
 
             <div className="mt-8 border-t pt-6 space-y-2 text-xs" style={{ borderColor: "rgba(255,142,110,0.35)", color: "rgba(255,255,255,0.4)" }}>
-                <p className="font-medium" style={{ color: "rgba(255,255,255,0.6)" }}>Data Sources & Attribution</p>
-                <p>
-                    Research results powered by{' '}
-                    <a href="https://pubmed.ncbi.nlm.nih.gov" target="_blank" rel="noopener noreferrer" className="underline opacity-70 hover:opacity-100">PubMed®</a>
-                    {' '}(National Library of Medicine).
-                </p>
-                <p>
-                    Drug data from FDA official drug labels via{' '}
-                    <a href="https://dailymed.nlm.nih.gov" target="_blank" rel="noopener noreferrer" className="underline opacity-70 hover:opacity-100">DailyMed</a>
-                    {' '}(FDA/NLM).
-                </p>
-                <p>
-                    Vela is not affiliated with or endorsed by NLM, FDA, or any U.S. government agency.
-                </p>
+                <p className="font-medium" style={{ color: "rgba(255,255,255,0.6)" }}>{ui.dataSourcesTitle}</p>
+                <p dangerouslySetInnerHTML={{ __html: ui.researchAttr1 }} />
+                <p dangerouslySetInnerHTML={{ __html: ui.researchAttr2 }} />
+                <p dangerouslySetInnerHTML={{ __html: ui.researchAttr3 }} />
             </div>
 
         <UpgradeModal isOpen={showUpgradeModal} onClose={() => setShowUpgradeModal(false)} />
             {showDailyCapToast && (
                 <Toast
-                    message="You've reached today's usage limit. Resets at midnight UTC."
+                    message={ui.dailyCapToast}
                     type="warning"
                     onClose={() => setShowDailyCapToast(false)}
                     duration={5000}

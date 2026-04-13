@@ -3,7 +3,13 @@
  * Extracts duplicated error handling from research.tsx and explain.tsx.
  */
 
-export class FatalError extends Error {}
+export class FatalError extends Error {
+    code?: string;
+    constructor(message: string, code?: string) {
+        super(message);
+        this.code = code;
+    }
+}
 
 interface SSEErrorHandlers {
     onPhiBlocked: (detail: string, suggestion: string) => void;
@@ -31,12 +37,12 @@ export function makeOnOpen(handlers: SSEErrorHandlers) {
                 handlers.onLimitReached();
                 throw new FatalError('');
             }
-            throw new FatalError('Session expired. Please refresh and sign in again.');
+            throw new FatalError('Session expired. Please refresh and sign in again.', 'session_expired');
         }
         if (response.status === 429) {
-            throw new FatalError('Too many requests. Please wait a moment and try again.');
+            throw new FatalError('Too many requests. Please wait a moment and try again.', 'too_many_requests');
         }
-        throw new FatalError(`Server error (${response.status}). Please try again.`);
+        throw new FatalError(`Server error (${response.status}). Please try again.`, 'server_error');
     };
 }
 
@@ -46,5 +52,6 @@ export function makeOnOpen(handlers: SSEErrorHandlers) {
  */
 export function sseOnError(err: unknown) {
     if (err instanceof FatalError) throw err;
-    throw new FatalError(err instanceof Error ? err.message : 'Connection lost. Please try again.');
+    if (err instanceof Error) throw new FatalError(err.message, (err as FatalError).code);
+    throw new FatalError('Connection lost. Please try again.', 'connection_lost');
 }

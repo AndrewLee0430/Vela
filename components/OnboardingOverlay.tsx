@@ -1,48 +1,33 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '@clerk/nextjs';
+import { useLang } from '../utils/LangContext';
+import { getUI } from '../utils/i18n-ui';
 
 interface Step {
   target: string | null;
-  title: string;
-  body: string;
+  titleKey: 'onboardingWelcome' | 'onboardingResearch' | 'onboardingVerify' | 'onboardingExplain';
+  bodyKey: 'onboardingProBody' | 'onboardingFreeBody' | 'onboardingResearchBody' | 'onboardingVerifyBody' | 'onboardingExplainBody';
+  usePlanBody?: boolean;
 }
 
-function buildSteps(plan: 'free' | 'pro'): Step[] {
-  return [
-    {
-      target: null,
-      title: 'Welcome to Vela!',
-      body: plan === 'pro'
-        ? 'You have unlimited* access to all features.\nLet\u2019s take a quick look at what you can do.'
-        : 'You have 15 free credits to get started.\nLet\u2019s take a quick look at what you can do.',
-    },
-    {
-      target: '[data-onboarding="research"]',
-      title: 'Research',
-      body: 'Ask any clinical question in any language \u2014 powered by official medical resources.',
-    },
-    {
-      target: '[data-onboarding="verify"]',
-      title: 'Verify',
-      body: 'Check drug interactions against official FDA data to identify risks.',
-    },
-    {
-      target: '[data-onboarding="explain"]',
-      title: 'Explain Medical Reports',
-      body: 'Understand any lab result or medical report in plain language, backed by official sources.',
-    },
-  ];
-}
+const STEP_DEFS: Step[] = [
+  { target: null, titleKey: 'onboardingWelcome', bodyKey: 'onboardingProBody', usePlanBody: true },
+  { target: '[data-onboarding="research"]', titleKey: 'onboardingResearch', bodyKey: 'onboardingResearchBody' },
+  { target: '[data-onboarding="verify"]', titleKey: 'onboardingVerify', bodyKey: 'onboardingVerifyBody' },
+  { target: '[data-onboarding="explain"]', titleKey: 'onboardingExplain', bodyKey: 'onboardingExplainBody' },
+];
 
 export default function OnboardingOverlay() {
   const { getToken } = useAuth();
+  const { lang } = useLang();
+  const ui = getUI(lang);
   const [step, setStep] = useState(0);
   const [visible, setVisible] = useState(false);
   const [rect, setRect] = useState<DOMRect | null>(null);
   const [plan, setPlan] = useState<'free' | 'pro'>('pro'); // optimistic default
   const popoverRef = useRef<HTMLDivElement>(null);
 
-  const steps = buildSteps(plan);
+  const steps = STEP_DEFS;
 
   // ── fetch plan ────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -100,7 +85,11 @@ export default function OnboardingOverlay() {
 
   if (!visible) return null;
 
-  const current = steps[step];
+  const currentDef = steps[step];
+  const currentTitle = ui[currentDef.titleKey];
+  const currentBody = currentDef.usePlanBody
+    ? (plan === 'pro' ? ui.onboardingProBody : ui.onboardingFreeBody)
+    : ui[currentDef.bodyKey];
   const isFirst = step === 0;
   const isLast = step === steps.length - 1;
   const PAD = 12;
@@ -188,9 +177,9 @@ export default function OnboardingOverlay() {
           ))}
         </div>
 
-        <p className="text-2xl font-semibold text-white mb-2">{current.title}</p>
+        <p className="text-2xl font-semibold text-white mb-2">{currentTitle}</p>
         <p className="text-base leading-relaxed whitespace-pre-line" style={{ color: 'rgba(255,255,255,0.6)' }}>
-          {current.body}
+          {currentBody}
         </p>
 
         {/* buttons */}
@@ -201,7 +190,7 @@ export default function OnboardingOverlay() {
               className="text-sm px-4 py-2 rounded-lg transition-colors"
               style={{ color: 'rgba(255,255,255,0.5)' }}
             >
-              Back
+              {ui.onboardingBack}
             </button>
           ) : (
             <button
@@ -209,7 +198,7 @@ export default function OnboardingOverlay() {
               className="text-sm px-4 py-2 rounded-lg transition-colors"
               style={{ color: 'rgba(255,255,255,0.5)' }}
             >
-              Skip
+              {ui.onboardingSkip}
             </button>
           )}
           <button
@@ -217,7 +206,7 @@ export default function OnboardingOverlay() {
             className="text-sm font-semibold px-6 py-2 rounded-lg transition-all"
             style={{ background: '#ff8e6e', color: '#0a1628' }}
           >
-            {isLast ? 'Done' : 'Next'}
+            {isLast ? ui.onboardingDone : ui.onboardingNext}
           </button>
         </div>
       </div>

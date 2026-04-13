@@ -1,3 +1,6 @@
+import { useLang } from '../utils/LangContext';
+import { getUI } from '../utils/i18n-ui';
+
 interface PHIWarningProps {
     detail: string;
     suggestion: string;
@@ -5,6 +8,8 @@ interface PHIWarningProps {
 }
 
 export default function PHIWarning({ detail, suggestion, onDismiss }: PHIWarningProps) {
+    const { lang } = useLang();
+    const ui = getUI(lang);
     return (
         <div className="rounded-xl p-4 mb-4" style={{
             background: 'rgba(239, 68, 68, 0.08)',
@@ -14,7 +19,7 @@ export default function PHIWarning({ detail, suggestion, onDismiss }: PHIWarning
                 <span className="text-base mt-0.5" style={{ color: '#ef4444' }}>&#x1F512;</span>
                 <div className="flex-1">
                     <p className="text-sm font-semibold mb-1" style={{ color: '#fca5a5' }}>
-                        Personal information detected
+                        {ui.phiDetected}
                     </p>
                     <p className="text-sm mb-2" style={{ color: 'rgba(252, 165, 165, 0.85)' }}>
                         {detail}

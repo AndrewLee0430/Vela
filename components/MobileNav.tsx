@@ -2,6 +2,8 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import { useLang } from '../utils/LangContext';
+import { getUI } from '../utils/i18n-ui';
 
 const TABS = [
   {
@@ -53,6 +55,8 @@ const TABS = [
 
 export default function MobileNav() {
   const { pathname } = useRouter();
+  const { lang } = useLang();
+  const ui = getUI(lang);
 
   return (
     <nav
@@ -74,7 +78,9 @@ export default function MobileNav() {
             style={{ color: isActive ? tab.color : 'rgba(255,255,255,0.35)' }}
           >
             {tab.icon}
-            <span className="text-[10px] font-medium tracking-wide">{tab.label}</span>
+            <span className="text-[10px] font-medium tracking-wide">
+              {tab.href === '/history' ? ui.history : tab.label}
+            </span>
             {isActive && (
               <span
                 className="absolute top-0 block h-0.5 w-8 rounded-full"
