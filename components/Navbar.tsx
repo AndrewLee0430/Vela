@@ -178,21 +178,25 @@ export default function Navbar({ activePage }: NavbarProps) {
                                         {navLabels[page]}
                                     </Link>
                                 ))}
+                                {/* PRO badge — shown next to nav links for Pro users (display only) */}
+                                <SignedIn>
+                                    {plan === 'pro' && (
+                                        <span
+                                            className="text-base font-bold px-2.5 py-1"
+                                            style={{ letterSpacing: '0.12em' }}
+                                        >
+                                            <span className="bg-gradient-to-r from-[#ff8e6e] to-[#fbbf24] bg-clip-text text-transparent">PRO</span>
+                                        </span>
+                                    )}
+                                </SignedIn>
                             </div>
                         </div>
 
-                        {/* Right side: [PRO/Upgrade] [⚙️] [👤] */}
+                        {/* Right side: [Upgrade (free only)] [⚙️] [👤] */}
                         <div className="flex items-center gap-2">
                             <SignedIn>
-                                {/* 1. PRO badge / Upgrade button — display only */}
-                                {plan === 'pro' ? (
-                                    <span
-                                        className="text-base font-bold px-2.5 py-1"
-                                        style={{ letterSpacing: '0.12em' }}
-                                    >
-                                        <span className="bg-gradient-to-r from-[#ff8e6e] to-[#fbbf24] bg-clip-text text-transparent">PRO</span>
-                                    </span>
-                                ) : (
+                                {/* 1. Upgrade button — free users only (Pro badge moved to left) */}
+                                {plan !== 'pro' && (
                                     <button
                                         onClick={() => setShowUpgradeModal(true)}
                                         className="text-sm font-semibold px-3 py-1 rounded-lg cursor-pointer transition-all"
