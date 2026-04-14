@@ -8,6 +8,7 @@ import ProFeatureOverlay from '../components/ProFeatureOverlay';
 import PageShell from '../components/PageShell';
 import { useLang } from '../utils/LangContext';
 import { getUI } from '../utils/i18n-ui';
+import { getExtra } from '../utils/i18n-extra';
 
 // ─── Design System ────────────────────────────────────────────────────────────
 // 顏色對應跨頁面一致，首頁 card / 功能頁 accent / History 標籤全部同色
@@ -384,6 +385,8 @@ function HistoryList() {
 }
 
 export default function History() {
+    const { lang } = useLang();
+    const extra = getExtra(lang);
     return (
         <PageShell
             activePage="history"
@@ -396,7 +399,7 @@ export default function History() {
         >
             <div className="container mx-auto px-4 py-10 max-w-3xl">
                 <h1 className="text-2xl font-bold mb-8 tracking-tight" style={{ color: "#ffffff" }}>
-                    History
+                    {extra.historyPageTitle}
                 </h1>
                 <HistoryList />
             </div>

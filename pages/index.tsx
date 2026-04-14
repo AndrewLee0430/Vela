@@ -12,6 +12,8 @@ import UpgradeModal from '../components/UpgradeModal';
 import Navbar from '../components/Navbar';
 import OnboardingOverlay from '../components/OnboardingOverlay';
 import { translations, LANGUAGES, RTL_LANGS, type LangCode } from '../utils/i18n';
+import { useLang } from '../utils/LangContext';
+import { getExtra } from '../utils/i18n-extra';
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
 const BG = 'linear-gradient(135deg, #0a1628 0%, #0f2040 45%, #1a1035 75%, #0d1a2e 100%)';
@@ -246,8 +248,9 @@ function ProductShowcase({ t }: { t: typeof translations['en'] }) {
 // ─── Landing Page (unauthenticated) ──────────────────────────────────────────
 function LandingPage() {
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
-  const [lang, setLang] = useState<LangCode>('en');
+  const { lang, setLang } = useLang();
   const t = translations[lang];
+  const extra = getExtra(lang);
   const isRtl = RTL_LANGS.includes(lang);
   const arrow = isRtl ? t.arrowLeft : t.arrowRight;
 
@@ -413,6 +416,8 @@ function LandingPage() {
 // ─── Dashboard (authenticated) ────────────────────────────────────────────────
 function Dashboard() {
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const { lang } = useLang();
+  const extra = getExtra(lang);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -433,26 +438,26 @@ function Dashboard() {
 
   const DASHBOARD_CARDS = [
     {
-      href: '/research', label: 'Research', sub: 'PubMed 36M+',
-      desc: 'Evidence-based answers grounded in peer-reviewed literature.',
+      href: '/research', key: 'research', label: extra.dashResearchLabel, sub: extra.dashResearchSub,
+      desc: extra.dashResearchDesc,
       accentColor: '#ff8e6e', color: '#ff8e6e',
       hoverBg: 'rgba(255,142,110,0.12)', hoverBorder: 'rgba(255,142,110,0.45)',
     },
     {
-      href: '/verify', label: 'Verify', sub: 'FDA Official',
-      desc: 'Check drug interactions against official FDA label data.',
+      href: '/verify', key: 'verify', label: extra.dashVerifyLabel, sub: extra.dashVerifySub,
+      desc: extra.dashVerifyDesc,
       accentColor: '#63b3ed', color: '#63b3ed',
       hoverBg: 'rgba(99,179,237,0.12)', hoverBorder: 'rgba(99,179,237,0.45)',
     },
     {
-      href: '/explain', label: 'Explain', sub: 'LOINC + FDA + NLM',
-      desc: 'Summarize medical reports in plain language, backed by official sources.',
+      href: '/explain', key: 'explain', label: extra.dashExplainLabel, sub: extra.dashExplainSub,
+      desc: extra.dashExplainDesc,
       accentColor: '#68d391', color: '#68d391',
       hoverBg: 'rgba(104,211,145,0.12)', hoverBorder: 'rgba(104,211,145,0.45)',
     },
     {
-      href: '/history', label: 'History', sub: 'All queries',
-      desc: 'Browse your past research, verifications, and explanations.',
+      href: '/history', key: 'history', label: extra.dashHistoryLabel, sub: extra.dashHistorySub,
+      desc: extra.dashHistoryDesc,
       accentColor: '#94a3b8', color: '#94a3b8',
       hoverBg: 'rgba(148,163,184,0.12)', hoverBorder: 'rgba(148,163,184,0.45)',
     },
@@ -463,16 +468,16 @@ function Dashboard() {
       <Navbar />
 
       <div className="container mx-auto px-4 md:px-10 py-8 max-w-4xl">
-        <h1 className="text-3xl font-bold tracking-tight mb-2 text-center text-white">Welcome back</h1>
+        <h1 className="text-3xl font-bold tracking-tight mb-2 text-center text-white">{extra.dashWelcome}</h1>
         <p className="text-xl mb-8 font-medium text-center bg-gradient-to-r from-[#ff6b6b] via-[#ff8e6e] to-[#ffb347] bg-clip-text text-transparent">
-          What would you like to research today?
+          {extra.dashWhatToResearch}
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           {DASHBOARD_CARDS.map((f) => (
-            <Link key={f.label} href={f.href}>
+            <Link key={f.key} href={f.href}>
               <div
-                data-onboarding={f.label.toLowerCase()}
+                data-onboarding={f.key}
                 className="h-full min-h-[140px] rounded-2xl px-7 py-6 cursor-pointer transition-all duration-300"
                 style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}
                 onMouseEnter={e => {
@@ -511,12 +516,12 @@ function Dashboard() {
         className="mt-12 flex flex-col items-center gap-2 px-4 md:px-10 py-6 text-sm"
         style={{ borderTop: '1px solid rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.3)' }}
       >
-        <div>&copy; {new Date().getFullYear()} Vela. All rights reserved.</div>
+        <div>&copy; {new Date().getFullYear()} Vela. {extra.allRightsReserved}</div>
         <div className="flex flex-wrap justify-center gap-4 text-xs">
-          <Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
-          <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
-          <Link href="/refund" className="hover:text-white transition-colors">Refund Policy</Link>
-          <Link href="/faq" className="hover:text-white transition-colors">FAQ</Link>
+          <Link href="/terms" className="hover:text-white transition-colors">{extra.termsLabel}</Link>
+          <Link href="/privacy" className="hover:text-white transition-colors">{extra.privacyLabel}</Link>
+          <Link href="/refund" className="hover:text-white transition-colors">{extra.refundLabel}</Link>
+          <Link href="/faq" className="hover:text-white transition-colors">{extra.faqLabel}</Link>
           <a href="mailto:support@an-tho.com" className="hover:text-white transition-colors">support@an-tho.com</a>
         </div>
       </div>

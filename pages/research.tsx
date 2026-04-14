@@ -19,6 +19,7 @@ import ResearchSection from '../components/ResearchSection';
 import { exportResearchPdf } from '../utils/exportPdf';
 import { useLang } from '../utils/LangContext';
 import { getUI } from '../utils/i18n-ui';
+import { getExtra } from '../utils/i18n-extra';
 
 const ACCENT = '#ff8e6e';
 
@@ -75,18 +76,7 @@ function parseResearchSections(text: string): ParsedSection[] | null {
     return sections.length > 0 ? sections : null;
 }
 
-const defaultSuggestions = [
-    "What are the common side effects of Metformin?",
-    "Which drugs interact with Warfarin?",
-    "Contraindications of ACE inhibitors in hypertension?",
-    "DOACs vs Warfarin — key differences?",
-    "When to use beta-blockers in heart failure?",
-    "ワルファリンの副作用は何ですか？",
-    "Metformin 腎臟不好的病人可以用嗎？",
-    "Welche Wechselwirkungen hat Aspirin mit Blutverdünnern?",
-    "Quels sont les effets secondaires des statines?",
-    "Safety of antibiotics in pregnancy?",
-];
+// Sample queries are now language-aware — see getExtra(lang).sampleQueries
 
 function EvidenceLegend() {
     const { lang } = useLang();
@@ -170,6 +160,8 @@ function ResearchForm() {
     const { getToken } = useAuth();
     const { lang } = useLang();
     const ui = getUI(lang);
+    const extra = getExtra(lang);
+    const defaultSuggestions = extra.sampleQueries;
 
     const [question, setQuestion]   = useState('');
     const [answer, setAnswer]       = useState('');

@@ -9,6 +9,7 @@ import UpgradeModal from './UpgradeModal';
 import LanguageSwitcher from './LanguageSwitcher';
 import { useLang } from '../utils/LangContext';
 import { getUI } from '../utils/i18n-ui';
+import { getExtra } from '../utils/i18n-extra';
 
 const BG = 'linear-gradient(135deg, #0a1628 0%, #0f2040 45%, #1a1035 75%, #0d1a2e 100%)';
 
@@ -54,6 +55,13 @@ function writeStatusCache(plan: 'free' | 'pro', credits_used_today: number, dail
 export default function Navbar({ activePage }: NavbarProps) {
     const { lang } = useLang();
     const ui = getUI(lang);
+    const extra = getExtra(lang);
+    const navLabels: Record<ActivePage, string> = {
+        research: extra.navResearch,
+        verify: extra.navVerify,
+        explain: extra.navExplain,
+        history: extra.navHistory,
+    };
     const [showUpgradeModal, setShowUpgradeModal] = useState(false);
     const [settingsOpen, setSettingsOpen] = useState(false);
     const settingsRef = useRef<HTMLDivElement>(null);
@@ -167,7 +175,7 @@ export default function Navbar({ activePage }: NavbarProps) {
                                         className={activePage === page ? 'font-medium transition-colors' : 'text-gray-400 hover:text-white transition-colors'}
                                         style={activePage === page ? { color: LINK_COLORS[page] } : {}}
                                     >
-                                        {page.charAt(0).toUpperCase() + page.slice(1)}
+                                        {navLabels[page]}
                                     </Link>
                                 ))}
                             </div>

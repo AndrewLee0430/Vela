@@ -78,7 +78,9 @@
       "Bash(npm ls:*)",
       "Bash(uv run:*)",
       "Bash(PYTHONIOENCODING=utf-8 TEST_MODE=true uv run python tests/run_golden_tests.py)",
-      "Bash(netstat -ano)"
+      "Bash(netstat -ano)",
+      "Bash(powershell.exe:*)",
+      "Bash(grep -n \"^  '[a-z-]*': {$\\\\|^};$\" C:/Users/andre/projects/Vela/utils/i18n-ui.ts)"
     ]
   }
 }

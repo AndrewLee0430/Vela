@@ -3,12 +3,12 @@
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useLang } from '../utils/LangContext';
-import { getUI } from '../utils/i18n-ui';
+import { getExtra } from '../utils/i18n-extra';
 
 const TABS = [
   {
     href: '/research',
-    label: 'Research',
+    labelKey: 'research' as const,
     color: '#ff8e6e',
     icon: (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -18,7 +18,7 @@ const TABS = [
   },
   {
     href: '/verify',
-    label: 'Verify',
+    labelKey: 'verify' as const,
     color: '#63b3ed',
     icon: (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -29,7 +29,7 @@ const TABS = [
   },
   {
     href: '/explain',
-    label: 'Explain',
+    labelKey: 'explain' as const,
     color: '#68d391',
     icon: (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -41,7 +41,7 @@ const TABS = [
   },
   {
     href: '/history',
-    label: 'History',
+    labelKey: 'history' as const,
     color: '#94a3b8',
     icon: (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -56,7 +56,13 @@ const TABS = [
 export default function MobileNav() {
   const { pathname } = useRouter();
   const { lang } = useLang();
-  const ui = getUI(lang);
+  const extra = getExtra(lang);
+  const labelMap = {
+    research: extra.navResearch,
+    verify: extra.navVerify,
+    explain: extra.navExplain,
+    history: extra.navHistory,
+  } as const;
 
   return (
     <nav
@@ -79,7 +85,7 @@ export default function MobileNav() {
           >
             {tab.icon}
             <span className="text-[10px] font-medium tracking-wide">
-              {tab.href === '/history' ? ui.history : tab.label}
+              {labelMap[tab.labelKey]}
             </span>
             {isActive && (
               <span
