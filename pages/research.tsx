@@ -19,7 +19,6 @@ import ResearchSection from '../components/ResearchSection';
 import { exportResearchPdf } from '../utils/exportPdf';
 import { useLang } from '../utils/LangContext';
 import { getUI } from '../utils/i18n-ui';
-import { getExtra } from '../utils/i18n-extra';
 
 const ACCENT = '#ff8e6e';
 
@@ -76,7 +75,20 @@ function parseResearchSections(text: string): ParsedSection[] | null {
     return sections.length > 0 ? sections : null;
 }
 
-// Sample queries are now language-aware — see getExtra(lang).sampleQueries
+// Fixed multilingual sample queries — showcases "Ask in any language" feature.
+// Intentionally NOT translated: the mix of languages itself is the message.
+const defaultSuggestions = [
+    "小孩發燒幾度需要看醫生？",
+    "What are the common side effects of Metformin?",
+    "ワルファリンの副作用は何ですか？",
+    "老人血壓藥可以跟鈣片一起吃嗎？",
+    "¿Es seguro usar antibióticos durante el embarazo?",
+    "DOACs vs Warfarin — key differences?",
+    "高齢者の骨粗しょう症に最も効果的な治療法は？",
+    "糖尿病老人的降血糖藥物選擇？",
+    "ما هي التفاعلات الدوائية للميتفورمين؟",
+    "심부전에서 베타차단제는 언제 사용하나요?",
+];
 
 function EvidenceLegend() {
     const { lang } = useLang();
@@ -160,8 +172,6 @@ function ResearchForm() {
     const { getToken } = useAuth();
     const { lang } = useLang();
     const ui = getUI(lang);
-    const extra = getExtra(lang);
-    const defaultSuggestions = extra.sampleQueries;
 
     const [question, setQuestion]   = useState('');
     const [answer, setAnswer]       = useState('');
