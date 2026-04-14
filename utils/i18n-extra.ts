@@ -36,8 +36,10 @@ export interface ExtraTranslations {
   refundLabel: string;
   faqLabel: string;
 
-  // Research sample queries (exactly 10)
-  sampleQueries: string[];
+  // Pro feature overlay labels
+  proFeatSearchHistory: string;
+  proFeatPdfUpload: string;
+  proFeatExport: string;
 }
 
 const en: ExtraTranslations = {
@@ -65,18 +67,9 @@ const en: ExtraTranslations = {
   privacyLabel: 'Privacy Policy',
   refundLabel: 'Refund Policy',
   faqLabel: 'FAQ',
-  sampleQueries: [
-    'What fever temperature requires a doctor visit for children?',
-    'Common antibiotic side effects in pediatric patients?',
-    'Safe medications for infant diarrhea?',
-    'Can elderly patients take blood pressure meds with calcium supplements?',
-    'Most effective osteoporosis treatments for seniors?',
-    'Diabetes medication options for elderly patients?',
-    'Metformin interactions in renal impairment?',
-    'DOACs vs Warfarin — key differences?',
-    'Safety of antibiotics in pregnancy?',
-    'When to use beta-blockers in heart failure?',
-  ],
+  proFeatSearchHistory: 'Search History',
+  proFeatPdfUpload: 'PDF Upload',
+  proFeatExport: 'Export',
 };
 
 const zhTW: ExtraTranslations = {
@@ -104,18 +97,9 @@ const zhTW: ExtraTranslations = {
   privacyLabel: '隱私政策',
   refundLabel: '退款政策',
   faqLabel: '常見問題',
-  sampleQueries: [
-    '小孩發燒幾度需要看醫生？',
-    '兒童常見抗生素的副作用？',
-    '嬰兒腹瀉時可以吃什麼藥？',
-    '老人血壓藥可以跟鈣片一起吃嗎？',
-    '長輩骨質疏鬆用什麼藥最有效？',
-    '糖尿病老人的降血糖藥物選擇？',
-    'Metformin 腎臟不好的病人可以用嗎？',
-    'DOACs 跟 Warfarin 的差異？',
-    '懷孕期間使用抗生素安全嗎？',
-    '心衰竭何時使用 beta-blockers？',
-  ],
+  proFeatSearchHistory: '搜尋歷史',
+  proFeatPdfUpload: 'PDF 上傳',
+  proFeatExport: '匯出',
 };
 
 const zhCN: ExtraTranslations = {
@@ -143,18 +127,9 @@ const zhCN: ExtraTranslations = {
   privacyLabel: '隐私政策',
   refundLabel: '退款政策',
   faqLabel: '常见问题',
-  sampleQueries: [
-    '小孩发烧几度需要看医生？',
-    '儿童常见抗生素的副作用？',
-    '婴儿腹泻时可以吃什么药？',
-    '老人血压药可以跟钙片一起吃吗？',
-    '长辈骨质疏松用什么药最有效？',
-    '糖尿病老人的降血糖药物选择？',
-    'Metformin 肾脏不好的病人可以用吗？',
-    'DOACs 跟 Warfarin 的差异？',
-    '怀孕期间使用抗生素安全吗？',
-    '心衰竭何时使用 beta-blockers？',
-  ],
+  proFeatSearchHistory: '搜索历史',
+  proFeatPdfUpload: 'PDF 上传',
+  proFeatExport: '导出',
 };
 
 const ja: ExtraTranslations = {
@@ -182,18 +157,9 @@ const ja: ExtraTranslations = {
   privacyLabel: 'プライバシーポリシー',
   refundLabel: '返金ポリシー',
   faqLabel: 'よくある質問',
-  sampleQueries: [
-    '子供が発熱した場合、何度で医師の診察が必要ですか？',
-    '小児患者における一般的な抗生物質の副作用は？',
-    '乳児の下痢に安全な薬は？',
-    '高齢者は血圧薬とカルシウムサプリを一緒に服用できますか？',
-    '高齢者に最も効果的な骨粗鬆症治療は？',
-    '高齢糖尿病患者の薬の選択肢は？',
-    '腎機能障害におけるメトホルミンの相互作用は？',
-    'DOAC と ワルファリンの主な違いは？',
-    '妊娠中の抗生物質の安全性は？',
-    '心不全における β遮断薬の使用時期は？',
-  ],
+  proFeatSearchHistory: '履歴検索',
+  proFeatPdfUpload: 'PDFアップロード',
+  proFeatExport: 'エクスポート',
 };
 
 const ko: ExtraTranslations = {
@@ -221,18 +187,9 @@ const ko: ExtraTranslations = {
   privacyLabel: '개인정보 처리방침',
   refundLabel: '환불 정책',
   faqLabel: '자주 묻는 질문',
-  sampleQueries: [
-    '어린이가 열이 몇 도일 때 병원에 가야 하나요?',
-    '소아 환자에서 흔한 항생제 부작용은?',
-    '영아 설사에 안전한 약은 무엇인가요?',
-    '노인이 혈압약과 칼슘 보충제를 함께 복용해도 되나요?',
-    '고령자에게 가장 효과적인 골다공증 치료는?',
-    '고령 당뇨병 환자의 약물 선택은?',
-    '신장 기능 저하 환자의 메트포르민 상호작용은?',
-    'DOAC와 와파린의 주요 차이점은?',
-    '임신 중 항생제의 안전성은?',
-    '심부전에서 베타차단제는 언제 사용하나요?',
-  ],
+  proFeatSearchHistory: '기록 검색',
+  proFeatPdfUpload: 'PDF 업로드',
+  proFeatExport: '내보내기',
 };
 
 const es: ExtraTranslations = {
@@ -260,18 +217,9 @@ const es: ExtraTranslations = {
   privacyLabel: 'Política de privacidad',
   refundLabel: 'Política de reembolso',
   faqLabel: 'Preguntas frecuentes',
-  sampleQueries: [
-    '¿Qué temperatura de fiebre requiere visita al médico en niños?',
-    '¿Efectos secundarios comunes de antibióticos en pediatría?',
-    '¿Medicamentos seguros para la diarrea infantil?',
-    '¿Los ancianos pueden tomar antihipertensivos con suplementos de calcio?',
-    '¿Tratamientos más efectivos de osteoporosis en mayores?',
-    '¿Opciones de medicación para diabetes en ancianos?',
-    '¿Interacciones de Metformina en insuficiencia renal?',
-    '¿DOACs vs Warfarina — diferencias clave?',
-    '¿Seguridad de antibióticos en el embarazo?',
-    '¿Cuándo usar betabloqueantes en insuficiencia cardíaca?',
-  ],
+  proFeatSearchHistory: 'Buscar historial',
+  proFeatPdfUpload: 'Subir PDF',
+  proFeatExport: 'Exportar',
 };
 
 const fr: ExtraTranslations = {
@@ -299,18 +247,9 @@ const fr: ExtraTranslations = {
   privacyLabel: 'Politique de confidentialité',
   refundLabel: 'Politique de remboursement',
   faqLabel: 'FAQ',
-  sampleQueries: [
-    'Quelle fièvre nécessite une visite médicale chez l\u2019enfant ?',
-    'Effets secondaires courants des antibiotiques en pédiatrie ?',
-    'Médicaments sûrs pour la diarrhée du nourrisson ?',
-    'Les personnes âgées peuvent-elles associer antihypertenseurs et calcium ?',
-    'Traitements de l\u2019ostéoporose les plus efficaces chez les seniors ?',
-    'Options de traitement du diabète chez les personnes âgées ?',
-    'Interactions de la Metformine en insuffisance rénale ?',
-    'DOACs vs Warfarine — différences clés ?',
-    'Sécurité des antibiotiques pendant la grossesse ?',
-    'Quand utiliser les bêta-bloquants en insuffisance cardiaque ?',
-  ],
+  proFeatSearchHistory: "Recherche d'historique",
+  proFeatPdfUpload: 'Téléversement PDF',
+  proFeatExport: 'Exporter',
 };
 
 const de: ExtraTranslations = {
@@ -338,18 +277,9 @@ const de: ExtraTranslations = {
   privacyLabel: 'Datenschutzrichtlinie',
   refundLabel: 'Erstattungsrichtlinie',
   faqLabel: 'FAQ',
-  sampleQueries: [
-    'Ab welcher Fiebertemperatur muss ein Kind zum Arzt?',
-    'Häufige Antibiotika-Nebenwirkungen bei Kindern?',
-    'Sichere Medikamente bei Säuglingsdurchfall?',
-    'Können ältere Menschen Blutdrucksenker mit Kalzium einnehmen?',
-    'Wirksamste Osteoporose-Therapien für Senioren?',
-    'Diabetes-Medikamente für ältere Patienten?',
-    'Metformin-Wechselwirkungen bei Niereninsuffizienz?',
-    'DOACs vs. Warfarin — wichtige Unterschiede?',
-    'Sicherheit von Antibiotika in der Schwangerschaft?',
-    'Wann Betablocker bei Herzinsuffizienz einsetzen?',
-  ],
+  proFeatSearchHistory: 'Verlaufssuche',
+  proFeatPdfUpload: 'PDF-Upload',
+  proFeatExport: 'Exportieren',
 };
 
 const it: ExtraTranslations = {
@@ -377,18 +307,9 @@ const it: ExtraTranslations = {
   privacyLabel: 'Informativa sulla privacy',
   refundLabel: 'Politica di rimborso',
   faqLabel: 'FAQ',
-  sampleQueries: [
-    'A che temperatura di febbre bisogna portare un bambino dal medico?',
-    'Effetti collaterali comuni degli antibiotici in pediatria?',
-    'Farmaci sicuri per la diarrea nei lattanti?',
-    'Gli anziani possono assumere antipertensivi con integratori di calcio?',
-    'Trattamenti più efficaci per l\u2019osteoporosi negli anziani?',
-    'Opzioni farmacologiche per il diabete negli anziani?',
-    'Interazioni della Metformina in caso di insufficienza renale?',
-    'DOAC vs Warfarin — differenze principali?',
-    'Sicurezza degli antibiotici in gravidanza?',
-    'Quando usare i beta-bloccanti nell\u2019insufficienza cardiaca?',
-  ],
+  proFeatSearchHistory: 'Ricerca cronologia',
+  proFeatPdfUpload: 'Caricamento PDF',
+  proFeatExport: 'Esporta',
 };
 
 const pt: ExtraTranslations = {
@@ -416,18 +337,9 @@ const pt: ExtraTranslations = {
   privacyLabel: 'Política de Privacidade',
   refundLabel: 'Política de Reembolso',
   faqLabel: 'FAQ',
-  sampleQueries: [
-    'Que temperatura de febre requer consulta médica em crianças?',
-    'Efeitos colaterais comuns de antibióticos em pediatria?',
-    'Medicamentos seguros para diarreia infantil?',
-    'Idosos podem tomar anti-hipertensivos com suplementos de cálcio?',
-    'Tratamentos mais eficazes para osteoporose em idosos?',
-    'Opções de medicação para diabetes em idosos?',
-    'Interações da Metformina em insuficiência renal?',
-    'DOACs vs Varfarina — principais diferenças?',
-    'Segurança de antibióticos na gravidez?',
-    'Quando usar betabloqueadores na insuficiência cardíaca?',
-  ],
+  proFeatSearchHistory: 'Pesquisar histórico',
+  proFeatPdfUpload: 'Upload de PDF',
+  proFeatExport: 'Exportar',
 };
 
 const th: ExtraTranslations = {
@@ -455,18 +367,9 @@ const th: ExtraTranslations = {
   privacyLabel: 'นโยบายความเป็นส่วนตัว',
   refundLabel: 'นโยบายการคืนเงิน',
   faqLabel: 'คำถามที่พบบ่อย',
-  sampleQueries: [
-    'ไข้กี่องศาในเด็กที่ต้องพบแพทย์?',
-    'ผลข้างเคียงที่พบบ่อยของยาปฏิชีวนะในเด็ก?',
-    'ยาที่ปลอดภัยสำหรับอาการท้องเสียในทารก?',
-    'ผู้สูงอายุทานยาลดความดันกับแคลเซียมได้ไหม?',
-    'การรักษากระดูกพรุนที่ได้ผลที่สุดในผู้สูงอายุ?',
-    'ตัวเลือกยารักษาเบาหวานสำหรับผู้สูงอายุ?',
-    'ปฏิกิริยาของ Metformin ในผู้ป่วยไตเสื่อม?',
-    'DOACs กับ Warfarin — ความแตกต่างสำคัญ?',
-    'ความปลอดภัยของยาปฏิชีวนะในหญิงตั้งครรภ์?',
-    'เมื่อใดควรใช้ beta-blockers ในภาวะหัวใจล้มเหลว?',
-  ],
+  proFeatSearchHistory: 'ค้นหาประวัติ',
+  proFeatPdfUpload: 'อัปโหลด PDF',
+  proFeatExport: 'ส่งออก',
 };
 
 const ar: ExtraTranslations = {
@@ -494,18 +397,9 @@ const ar: ExtraTranslations = {
   privacyLabel: 'سياسة الخصوصية',
   refundLabel: 'سياسة الاسترداد',
   faqLabel: 'الأسئلة الشائعة',
-  sampleQueries: [
-    'ما درجة حرارة الحمى عند الأطفال التي تستدعي زيارة الطبيب؟',
-    'الآثار الجانبية الشائعة للمضادات الحيوية عند الأطفال؟',
-    'ما الأدوية الآمنة لإسهال الرضع؟',
-    'هل يمكن لكبار السن تناول أدوية الضغط مع مكملات الكالسيوم؟',
-    'أفضل علاجات هشاشة العظام لكبار السن؟',
-    'خيارات علاج السكري لكبار السن؟',
-    'تفاعلات الميتفورمين في القصور الكلوي؟',
-    'DOACs مقابل الوارفارين — الفروق الرئيسية؟',
-    'أمان المضادات الحيوية أثناء الحمل؟',
-    'متى تُستخدم حاصرات بيتا في فشل القلب؟',
-  ],
+  proFeatSearchHistory: 'بحث في السجل',
+  proFeatPdfUpload: 'رفع PDF',
+  proFeatExport: 'تصدير',
 };
 
 const hi: ExtraTranslations = {
@@ -533,18 +427,9 @@ const hi: ExtraTranslations = {
   privacyLabel: 'गोपनीयता नीति',
   refundLabel: 'धनवापसी नीति',
   faqLabel: 'अक्सर पूछे जाने वाले प्रश्न',
-  sampleQueries: [
-    'बच्चों में कितने तापमान के बुखार पर डॉक्टर के पास जाना चाहिए?',
-    'बच्चों में एंटीबायोटिक के सामान्य दुष्प्रभाव?',
-    'शिशुओं के दस्त के लिए सुरक्षित दवाएं?',
-    'क्या बुजुर्ग रक्तचाप की दवा के साथ कैल्शियम ले सकते हैं?',
-    'बुजुर्गों के लिए ऑस्टियोपोरोसिस के सबसे प्रभावी उपचार?',
-    'बुजुर्गों के लिए मधुमेह की दवा के विकल्प?',
-    'गुर्दे की कमजोरी में Metformin की अंतःक्रिया?',
-    'DOACs बनाम Warfarin — मुख्य अंतर?',
-    'गर्भावस्था में एंटीबायोटिक की सुरक्षा?',
-    'हृदय विफलता में बीटा-ब्लॉकर कब उपयोग करें?',
-  ],
+  proFeatSearchHistory: 'इतिहास खोज',
+  proFeatPdfUpload: 'PDF अपलोड',
+  proFeatExport: 'निर्यात',
 };
 
 const bn: ExtraTranslations = {
@@ -572,18 +457,9 @@ const bn: ExtraTranslations = {
   privacyLabel: 'গোপনীয়তা নীতি',
   refundLabel: 'রিফান্ড নীতি',
   faqLabel: 'সাধারণ প্রশ্ন',
-  sampleQueries: [
-    'শিশুদের কত ডিগ্রি জ্বরে ডাক্তারের কাছে যেতে হবে?',
-    'শিশুদের মধ্যে অ্যান্টিবায়োটিকের সাধারণ পার্শ্ব প্রতিক্রিয়া?',
-    'শিশুদের ডায়রিয়ার জন্য নিরাপদ ওষুধ?',
-    'বয়স্করা কি রক্তচাপের ওষুধের সাথে ক্যালসিয়াম নিতে পারেন?',
-    'বয়স্কদের অস্টিওপোরোসিসের সবচেয়ে কার্যকর চিকিৎসা?',
-    'বয়স্কদের জন্য ডায়াবেটিসের ওষুধের বিকল্প?',
-    'কিডনি অকার্যকারিতায় Metformin-এর মিথস্ক্রিয়া?',
-    'DOACs বনাম Warfarin — মূল পার্থক্য?',
-    'গর্ভাবস্থায় অ্যান্টিবায়োটিকের নিরাপত্তা?',
-    'হৃদযন্ত্রের বিকলতায় কখন বিটা-ব্লকার ব্যবহার করবেন?',
-  ],
+  proFeatSearchHistory: 'ইতিহাস অনুসন্ধান',
+  proFeatPdfUpload: 'PDF আপলোড',
+  proFeatExport: 'রপ্তানি',
 };
 
 const he: ExtraTranslations = {
@@ -611,18 +487,9 @@ const he: ExtraTranslations = {
   privacyLabel: 'מדיניות פרטיות',
   refundLabel: 'מדיניות החזרים',
   faqLabel: 'שאלות נפוצות',
-  sampleQueries: [
-    'באיזו טמפרטורת חום בילדים יש לפנות לרופא?',
-    'תופעות לוואי נפוצות של אנטיביוטיקה בילדים?',
-    'תרופות בטוחות לשלשול אצל תינוקות?',
-    'האם קשישים יכולים לקחת תרופות לחץ דם יחד עם תוסף סידן?',
-    'הטיפולים היעילים ביותר באוסטאופורוזיס לקשישים?',
-    'אפשרויות טיפול תרופתי בסוכרת לקשישים?',
-    'אינטראקציות של מטפורמין באי-ספיקת כליות?',
-    'DOAC לעומת וורפרין — ההבדלים המרכזיים?',
-    'בטיחות אנטיביוטיקה בהיריון?',
-    'מתי להשתמש בחוסמי בטא באי-ספיקת לב?',
-  ],
+  proFeatSearchHistory: 'חיפוש בהיסטוריה',
+  proFeatPdfUpload: 'העלאת PDF',
+  proFeatExport: 'ייצוא',
 };
 
 const vi: ExtraTranslations = {
@@ -650,18 +517,9 @@ const vi: ExtraTranslations = {
   privacyLabel: 'Chính sách bảo mật',
   refundLabel: 'Chính sách hoàn tiền',
   faqLabel: 'Câu hỏi thường gặp',
-  sampleQueries: [
-    'Trẻ em sốt bao nhiêu độ cần đi khám bác sĩ?',
-    'Tác dụng phụ thường gặp của kháng sinh ở trẻ em?',
-    'Thuốc an toàn cho tiêu chảy ở trẻ sơ sinh?',
-    'Người cao tuổi có thể uống thuốc huyết áp cùng canxi không?',
-    'Phương pháp điều trị loãng xương hiệu quả nhất cho người cao tuổi?',
-    'Lựa chọn thuốc điều trị tiểu đường cho người cao tuổi?',
-    'Tương tác của Metformin trong suy thận?',
-    'DOACs so với Warfarin — khác biệt chính?',
-    'An toàn của kháng sinh trong thai kỳ?',
-    'Khi nào dùng beta-blocker trong suy tim?',
-  ],
+  proFeatSearchHistory: 'Tìm kiếm lịch sử',
+  proFeatPdfUpload: 'Tải lên PDF',
+  proFeatExport: 'Xuất',
 };
 
 export const extraTranslations: Record<LangCode, ExtraTranslations> = {

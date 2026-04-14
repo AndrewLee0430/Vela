@@ -82,6 +82,7 @@ function HistoryList() {
     const { getToken } = useAuth();
     const { lang } = useLang();
     const ui = getUI(lang);
+    const extra = getExtra(lang);
     const [history, setHistory] = useState<HistoryItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [expandedId, setExpandedId] = useState<number | null>(null);
@@ -222,7 +223,7 @@ function HistoryList() {
             )}
 
             {/* Search box */}
-            <ProFeatureOverlay isLocked={plan !== 'pro'} featureName="Search History">
+            <ProFeatureOverlay isLocked={plan !== 'pro'} featureName={extra.proFeatSearchHistory}>
                 <div className="relative">
                     <input
                         type="text"

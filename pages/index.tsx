@@ -401,9 +401,9 @@ function LandingPage() {
           </div>
           <div>{t.footerDisclaimer}</div>
           <div className="flex flex-wrap justify-center gap-4 text-xs">
-            <Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
-            <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
-            <Link href="/refund" className="hover:text-white transition-colors">Refund Policy</Link>
+            <Link href="/terms" className="hover:text-white transition-colors">{extra.termsLabel}</Link>
+            <Link href="/privacy" className="hover:text-white transition-colors">{extra.privacyLabel}</Link>
+            <Link href="/refund" className="hover:text-white transition-colors">{extra.refundLabel}</Link>
             <Link href="/faq" className="hover:text-white transition-colors">FAQ</Link>
             <a href="mailto:support@an-tho.com" className="hover:text-white transition-colors">support@an-tho.com</a>
           </div>

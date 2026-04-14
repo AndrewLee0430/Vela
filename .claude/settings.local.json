@@ -82,7 +82,14 @@
       "Bash(powershell.exe:*)",
       "Bash(grep -n \"^  '[a-z-]*': {$\\\\|^};$\" C:/Users/andre/projects/Vela/utils/i18n-ui.ts)",
       "Bash(pip install:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(PYTHONIOENCODING=utf-8 python)",
+      "Bash(grep -rn \">[A-Z][a-z][a-zA-Z ]\\\\{4,\\\\}<\" pages/research.tsx pages/explain.tsx pages/verify.tsx pages/history.tsx)",
+      "Bash(grep -vE \"\\(//|\\\\*|Image|className|href=|import|alt=|PubMed|FDA|LOINC|DOAC|DailyMed|MedlinePlus|RxNorm|NLM|Markdown|Vela|Homepage|<a |Clerk|Pro Plan|Free Plan|Research:|Verify:|Explain:|Search History|</?[a-z]+>$\\)\")",
+      "Bash(grep -rEn '\"[A-Z][a-z]+\\([ ][A-Za-z]+\\){1,5}\"' pages/index.tsx pages/history.tsx pages/pricing.tsx components/Navbar.tsx components/MobileNav.tsx)",
+      "Bash(grep -vE \"\\(className|style|href|title=|bg-|text-|rgba|//|import|localStorage|'vela_|alt=\\)\")",
+      "Bash(grep -n \"featureName\\\\|Search History\\\\|Upload PDF\\\\|Export\" pages/*.tsx components/ProFeatureOverlay.tsx)",
+      "Bash(PYTHONIOENCODING=utf-8 python:*)"
     ]
   }
 }

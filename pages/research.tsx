@@ -19,6 +19,7 @@ import ResearchSection from '../components/ResearchSection';
 import { exportResearchPdf } from '../utils/exportPdf';
 import { useLang } from '../utils/LangContext';
 import { getUI } from '../utils/i18n-ui';
+import { getExtra } from '../utils/i18n-extra';
 
 const ACCENT = '#ff8e6e';
 
@@ -172,6 +173,7 @@ function ResearchForm() {
     const { getToken } = useAuth();
     const { lang } = useLang();
     const ui = getUI(lang);
+    const extra = getExtra(lang);
 
     const [question, setQuestion]   = useState('');
     const [answer, setAnswer]       = useState('');
@@ -470,7 +472,7 @@ function ResearchForm() {
                                         <>
                                             <FeedbackBar query={question} response={answer} category="research" />
                                             <div className="mt-3 inline-block">
-                                                <ProFeatureOverlay isLocked={plan !== 'pro'} featureName="Export">
+                                                <ProFeatureOverlay isLocked={plan !== 'pro'} featureName={extra.proFeatExport}>
                                                     <button
                                                         onClick={() => exportResearchPdf(question, answer, citations)}
                                                         className="inline-flex items-center gap-2 text-xs font-medium px-3 py-1.5 rounded-lg transition-all cursor-pointer"
