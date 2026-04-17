@@ -348,7 +348,7 @@ def _check_phi(text: str, endpoint: str, request: Request) -> JSONResponse | Non
     try:
         phi_type = PHIDetector.detect(text)
         if phi_type:
-            client_ip = request.client.host if request.client else "unknown"
+            client_ip = _get_client_ip(request)
             logger.warning("[PHI] Blocked: type=%s, endpoint=%s, ip=%s", phi_type, endpoint, client_ip)
             return _phi_blocked_response(phi_type)
     except Exception as e:
@@ -1337,7 +1337,7 @@ async def dodo_webhook(request: Request, db: Session = Depends(get_db)):
         user_id=clerk_user_id,
         action=f"dodo_webhook:{event_type}",
         query_content=f"customer={dodo_customer_id}, sub={dodo_subscription_id}",
-        ip_address=request.client.host if request.client else "unknown",
+        ip_address=_get_client_ip(request),
     ))
 
     db.add(WebhookEvent(event_id=f"dodo_{event_id}", event_type=event_type))
