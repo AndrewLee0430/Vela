@@ -89,7 +89,8 @@
       "Bash(grep -rEn '\"[A-Z][a-z]+\\([ ][A-Za-z]+\\){1,5}\"' pages/index.tsx pages/history.tsx pages/pricing.tsx components/Navbar.tsx components/MobileNav.tsx)",
       "Bash(grep -vE \"\\(className|style|href|title=|bg-|text-|rgba|//|import|localStorage|'vela_|alt=\\)\")",
       "Bash(grep -n \"featureName\\\\|Search History\\\\|Upload PDF\\\\|Export\" pages/*.tsx components/ProFeatureOverlay.tsx)",
-      "Bash(PYTHONIOENCODING=utf-8 python:*)"
+      "Bash(PYTHONIOENCODING=utf-8 python:*)",
+      "Bash(powershell -ExecutionPolicy Bypass -File ./deploy.ps1)"
     ]
   }
 }

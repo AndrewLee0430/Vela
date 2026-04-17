@@ -156,6 +156,17 @@ RATE_LIMITS = {
     "/api/explain/extract-image": (10, 60),
 }
 
+def _get_client_ip(request: Request) -> str:
+    # Fly edge proxy sets X-Forwarded-For; first entry is the originating client.
+    # Fall back to request.client.host for local/non-proxied requests.
+    xff = request.headers.get("x-forwarded-for")
+    if xff:
+        first = xff.split(",")[0].strip()
+        if first:
+            return first
+    return request.client.host if request.client else "unknown"
+
+
 @app.middleware("http")
 async def rate_limit_middleware(request: Request, call_next):
     global _rate_store_last_cleanup
@@ -164,7 +175,7 @@ async def rate_limit_middleware(request: Request, call_next):
     if path not in RATE_LIMITS:
         return await call_next(request)
 
-    ip = request.client.host if request.client else "unknown"
+    ip = _get_client_ip(request)
     limit, window = RATE_LIMITS[path]
     now = _time.time()
 

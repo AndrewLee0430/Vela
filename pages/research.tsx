@@ -6,6 +6,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkBreaks from 'remark-breaks';
 import rehypeRaw from 'rehype-raw';
+import Head from 'next/head';
 import { fetchEventSource } from '@microsoft/fetch-event-source';
 import { FatalError, makeOnOpen, sseOnError } from '../utils/sse';
 import CitationPanel, { Citation } from '../components/CitationPanel';
@@ -559,7 +560,14 @@ function ResearchForm() {
 
 export default function Research() {
     return (
-        <PageShell activePage="research">
+        <PageShell
+            activePage="research"
+            extraHead={
+                <Head>
+                    <meta name="robots" content="noindex, nofollow" />
+                </Head>
+            }
+        >
             <div className="container mx-auto px-4 py-8">
                 <ResearchForm />
             </div>

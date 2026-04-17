@@ -11,7 +11,7 @@ import PlanBadge from '../components/PlanBadge';
 import UpgradeModal from '../components/UpgradeModal';
 import Navbar from '../components/Navbar';
 import OnboardingOverlay from '../components/OnboardingOverlay';
-import { translations, LANGUAGES, RTL_LANGS, type LangCode } from '../utils/i18n';
+import { translations, LANGUAGES, RTL_LANGS, landingContent, type LangCode } from '../utils/i18n';
 import { useLang } from '../utils/LangContext';
 import { getExtra } from '../utils/i18n-extra';
 
@@ -250,6 +250,7 @@ function LandingPage() {
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const { lang, setLang } = useLang();
   const t = translations[lang];
+  const lc = landingContent[lang];
   const extra = getExtra(lang);
   const isRtl = RTL_LANGS.includes(lang);
   const arrow = isRtl ? t.arrowLeft : t.arrowRight;
@@ -257,14 +258,109 @@ function LandingPage() {
   return (
     <>
       <Head>
-        <title>Vela — Clinical AI for Healthcare Professionals</title>
-        <meta name="description" content="Research PubMed 36M+, verify drug interactions against FDA, and explain lab results in any language." />
-        <link rel="canonical" href="https://vela.an-tho.com" />
-        <meta property="og:url" content="https://vela.an-tho.com" />
-        <meta property="og:title" content="Vela — Clinical AI for Healthcare Professionals" />
-        <meta property="og:description" content="Research PubMed 36M+, verify drug interactions against FDA, and explain lab results in any language." />
-        <meta name="twitter:title" content="Vela — Clinical AI for Healthcare Professionals" />
-        <meta name="twitter:description" content="Research PubMed 36M+, verify drug interactions against FDA, and explain lab results in any language." />
+        {/* Basics */}
+        <title>Vela — Privacy-first AI medical search for healthcare professionals</title>
+        <meta
+          key="description"
+          name="description"
+          content="AI medical search for healthcare professionals who work beyond English. Ask in your language, verified by PubMed, FDA, and local authorities, answered in yours. 16 languages, no identity verification required."
+        />
+        <meta name="robots" content="index, follow" />
+        <link key="canonical" rel="canonical" href="https://vela.an-tho.com/" />
+
+        {/* Open Graph (LinkedIn, Facebook) */}
+        <meta key="og:type" property="og:type" content="website" />
+        <meta key="og:site_name" property="og:site_name" content="Vela" />
+        <meta key="og:url" property="og:url" content="https://vela.an-tho.com/" />
+        <meta
+          key="og:title"
+          property="og:title"
+          content="Vela — Privacy-first AI medical search"
+        />
+        <meta
+          key="og:description"
+          property="og:description"
+          content="Ask in your language. Verified by official sources. Answered in yours. For healthcare professionals who work beyond English."
+        />
+        <meta key="og:image" property="og:image" content="https://vela.an-tho.com/og-image.png" />
+        <meta key="og:image:width" property="og:image:width" content="1200" />
+        <meta key="og:image:height" property="og:image:height" content="630" />
+
+        {/* Twitter / X */}
+        <meta key="twitter:card" name="twitter:card" content="summary_large_image" />
+        <meta
+          key="twitter:title"
+          name="twitter:title"
+          content="Vela — Privacy-first AI medical search"
+        />
+        <meta
+          key="twitter:description"
+          name="twitter:description"
+          content="Ask in your language. Verified by official sources. Answered in yours."
+        />
+        <meta key="twitter:image" name="twitter:image" content="https://vela.an-tho.com/og-image.png" />
+
+        {/* JSON-LD: SoftwareApplication */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'SoftwareApplication',
+              name: 'Vela',
+              applicationCategory: 'HealthApplication',
+              applicationSubCategory: 'Medical Search',
+              operatingSystem: 'Web',
+              url: 'https://vela.an-tho.com/',
+              description:
+                'AI medical search for healthcare professionals who work beyond English. Privacy-first, no identity verification required.',
+              offers: [
+                {
+                  '@type': 'Offer',
+                  name: 'Free',
+                  price: '0',
+                  priceCurrency: 'USD',
+                  description: '10 credits per day',
+                },
+                {
+                  '@type': 'Offer',
+                  name: 'Pro',
+                  price: '9',
+                  priceCurrency: 'USD',
+                  description: 'Unlimited queries, monthly subscription',
+                },
+              ],
+              featureList: [
+                'Multi-language support (16 languages)',
+                'PubMed citation verification',
+                'FDA reference integration',
+                'Anonymous usage without sign-up',
+                'Prescription analysis for pharmacists',
+              ],
+            }),
+          }}
+        />
+
+        {/* JSON-LD: Organization */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'Organization',
+              name: 'Vela',
+              url: 'https://vela.an-tho.com/',
+              logo: 'https://vela.an-tho.com/coral_logo.png',
+              description:
+                'Privacy-first AI medical search for healthcare professionals who work beyond English.',
+              contactPoint: {
+                '@type': 'ContactPoint',
+                email: 'support@an-tho.com',
+                contactType: 'customer support',
+              },
+            }),
+          }}
+        />
       </Head>
       <style>{`
         @keyframes float {
@@ -305,8 +401,9 @@ function LandingPage() {
             <div className="logo-float">
               <Image src="/coral_logo.png" alt="Vela logo" width={120} height={120} style={{ objectFit: 'contain' }} priority />
             </div>
-            <h1
+            <div
               className="mt-1 font-black"
+              aria-label="Vela"
               style={{
                 fontSize: 'clamp(3rem, 7vw, 5rem)',
                 background: 'linear-gradient(90deg, #ff6b6b, #ff8e6e, #ffb347)',
@@ -317,14 +414,17 @@ function LandingPage() {
               }}
             >
               Vela
-            </h1>
+            </div>
           </div>
 
-          <p className="text-xl font-semibold text-white mb-1 tracking-tight">
-            {t.heroTitle}
-          </p>
-          <p className="text-sm mb-4" style={{ color: 'rgba(255,255,255,0.35)' }}>
-            ✦ {t.heroSub} &nbsp;·&nbsp; ✓ {t.everyCited}
+          <h1
+            className="font-semibold text-white mb-2 tracking-tight"
+            style={{ fontSize: 'clamp(1.25rem, 2.6vw, 1.875rem)', maxWidth: '780px', lineHeight: 1.25 }}
+          >
+            {lc.tagline}
+          </h1>
+          <p className="text-sm mb-4 max-w-2xl" style={{ color: 'rgba(255,255,255,0.55)' }}>
+            {lc.subtitle}
           </p>
 
           {/* Typewriter */}
@@ -347,38 +447,44 @@ function LandingPage() {
           </div>
 
           {/* CTA */}
-          <div className="flex gap-3 my-8">
-            <SignedOut>
-              <SignInButton mode="modal">
-                <button
-                  className="group px-6 py-2.5 text-white text-sm font-semibold rounded-xl transition-all duration-300 hover:scale-105 flex items-center gap-2"
-                  style={{ background: 'linear-gradient(135deg, #ff6b6b, #ff8e6e)', boxShadow: '0 0 28px rgba(255,107,107,0.4)' }}
-                >
-                  {t.getStarted}
-                  <span className="group-hover:translate-x-1 transition-transform">{arrow}</span>
-                </button>
-              </SignInButton>
-            </SignedOut>
-            <SignedIn>
-              <Link href="/research">
-                <button
-                  className="group px-6 py-2.5 text-white text-sm font-semibold rounded-xl transition-all duration-300 hover:scale-105 flex items-center gap-2"
-                  style={{ background: 'linear-gradient(135deg, #ff6b6b, #ff8e6e)', boxShadow: '0 0 28px rgba(255,107,107,0.4)' }}
-                >
-                  {t.openApp}
-                  <span className="group-hover:translate-x-1 transition-transform">{arrow}</span>
-                </button>
-              </Link>
-            </SignedIn>
+          <div className="flex flex-wrap justify-center gap-3 my-8">
+            <Link href="/research">
+              <button
+                className="group px-6 py-2.5 text-white text-sm font-semibold rounded-xl transition-all duration-300 hover:scale-105 flex items-center gap-2"
+                style={{ background: 'linear-gradient(135deg, #ff6b6b, #ff8e6e)', boxShadow: '0 0 28px rgba(255,107,107,0.4)' }}
+              >
+                {lc.ctaPrimary}
+                <span className="group-hover:translate-x-1 transition-transform">{arrow}</span>
+              </button>
+            </Link>
             <Link
               href="/pricing"
-              className="text-sm font-medium rounded-full px-4 py-2 transition-all duration-200"
+              className="text-sm font-medium rounded-full px-4 py-2 transition-all duration-200 inline-flex items-center"
               style={{ background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.1)' }}
               onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.15)'; (e.currentTarget as HTMLElement).style.color = 'white'; }}
               onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.08)'; (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.55)'; }}
             >
               {t.seePricing} {arrow}
             </Link>
+          </div>
+
+          {/* v1.1 Value Props */}
+          <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-4 mb-10" style={{ maxWidth: '900px' }}>
+            {[
+              { icon: '🌐', title: lc.valueProp.language.title, body: lc.valueProp.language.body },
+              { icon: '📚', title: lc.valueProp.sources.title, body: lc.valueProp.sources.body },
+              { icon: '🔒', title: lc.valueProp.anonymous.title, body: lc.valueProp.anonymous.body },
+            ].map((vp) => (
+              <div
+                key={vp.title}
+                className="rounded-2xl p-5 text-left"
+                style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)' }}
+              >
+                <div className="text-2xl mb-2" aria-hidden>{vp.icon}</div>
+                <div className="text-base font-semibold text-white mb-1.5">{vp.title}</div>
+                <p className="text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.6)' }}>{vp.body}</p>
+              </div>
+            ))}
           </div>
 
           {/* Social proof */}
@@ -388,6 +494,38 @@ function LandingPage() {
 
           {/* Product showcase */}
           <ProductShowcase t={t} />
+
+          {/* v1.1 Privacy-first transparent definition */}
+          <section className="w-full mt-14 mb-4 text-left" style={{ maxWidth: '780px' }}>
+            <h2 className="text-xl font-semibold text-white mb-4 text-center">
+              {lc.privacy.title}
+            </h2>
+            <ul className="space-y-2.5 mb-6">
+              {[
+                lc.privacy.meansIdentity,
+                lc.privacy.meansRealName,
+                lc.privacy.meansDevice,
+                lc.privacy.meansNoSell,
+                lc.privacy.meansNoTraining,
+              ].map((item) => (
+                <li key={item} className="flex items-start gap-2.5 text-sm" style={{ color: 'rgba(255,255,255,0.75)' }}>
+                  <span className="mt-0.5 font-bold" style={{ color: '#4ade80' }} aria-hidden>✓</span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+            <h3 className="text-sm font-semibold mb-2" style={{ color: 'rgba(255,255,255,0.6)' }}>
+              {lc.privacy.doesntTitle}
+            </h3>
+            <ul className="space-y-2 text-xs" style={{ color: 'rgba(255,255,255,0.45)' }}>
+              {[lc.privacy.doesntE2E, lc.privacy.doesntAnalytics, lc.privacy.doesntPayment].map((item) => (
+                <li key={item} className="flex items-start gap-2">
+                  <span className="mt-0.5" aria-hidden>·</span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
         </div>
 
         {/* Footer */}
@@ -534,19 +672,11 @@ function Dashboard() {
 }
 
 // ─── Entry point ──────────────────────────────────────────────────────────────
+// No isLoaded gate — during SSG `isSignedIn` is undefined, so LandingPage is
+// pre-rendered and crawlers / LinkedIn see the real content. After client
+// hydration Clerk updates the auth state and signed-in users see the Dashboard.
 export default function Home() {
-  const { isSignedIn, isLoaded } = useUser();
-
-  if (!isLoaded) {
-    return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: BG }}>
-        <div
-          className="w-6 h-6 border-2 rounded-full animate-spin"
-          style={{ borderColor: 'rgba(255,255,255,0.15)', borderTopColor: '#ff8e6e' }}
-        />
-      </div>
-    );
-  }
-
-  return isSignedIn ? <Dashboard /> : <LandingPage />;
+  const { isSignedIn } = useUser();
+  if (isSignedIn) return <Dashboard />;
+  return <LandingPage />;
 }

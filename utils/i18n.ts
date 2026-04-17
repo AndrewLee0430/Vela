@@ -98,6 +98,115 @@ const en: Translations = {
   arrowLeft: '←',
 };
 
+// ─── v1.1 Landing content ────────────────────────────────────────────────────
+// Phase 1 scope: en + zh-TW fully translated; other 14 langs fall back to en.
+
+export interface LandingContent {
+  tagline: string;
+  subtitle: string;
+  ctaPrimary: string;
+  valueProp: {
+    language: { title: string; body: string };
+    sources: { title: string; body: string };
+    anonymous: { title: string; body: string };
+  };
+  privacy: {
+    title: string;
+    meansIdentity: string;
+    meansRealName: string;
+    meansDevice: string;
+    meansNoSell: string;
+    meansNoTraining: string;
+    doesntTitle: string;
+    doesntE2E: string;
+    doesntAnalytics: string;
+    doesntPayment: string;
+  };
+}
+
+const landingEn: LandingContent = {
+  tagline: 'Ask in your language. Verified by official sources. Answered in yours.',
+  subtitle: 'The AI medical search for healthcare professionals who work beyond English.',
+  ctaPrimary: 'Try it free — no sign-up needed',
+  valueProp: {
+    language: {
+      title: 'Your Language',
+      body: 'Works in 16 languages. Retrieves from 28M+ English articles.',
+    },
+    sources: {
+      title: 'Official Sources',
+      body: 'Every answer cited. PubMed, FDA, and your local authorities.',
+    },
+    anonymous: {
+      title: 'Anonymous by Default',
+      body: 'No identity verification. No account required to try.',
+    },
+  },
+  privacy: {
+    title: 'What "Privacy-first" means at Vela',
+    meansIdentity: "We don't verify your identity or license",
+    meansRealName: "We don't require your real name",
+    meansDevice: 'Your preferences (role, workplace, language) stay on your device, not our servers',
+    meansNoSell: "We don't sell or share any data with third parties",
+    meansNoTraining: "We don't use your queries to train AI models without consent",
+    doesntTitle: "What it doesn't mean",
+    doesntE2E: "We're not end-to-end encrypted (queries go through our servers to LLM providers)",
+    doesntAnalytics: 'We collect anonymous analytics to improve the product',
+    doesntPayment: 'Payment requires an email for receipts, not linked to your queries',
+  },
+};
+
+const landingZhTW: LandingContent = {
+  tagline: '用你的語言提問。以官方來源驗證。用你的語言回答。',
+  subtitle: '為跨語言工作的醫療專業人員打造的 AI 醫學搜尋。',
+  ctaPrimary: '免費試用 — 不需註冊',
+  valueProp: {
+    language: {
+      title: '你的語言',
+      body: '支援 16 種語言。檢索 2800 萬+ 篇英文文獻。',
+    },
+    sources: {
+      title: '官方來源',
+      body: '每個回答皆附引用。PubMed、FDA 與你所在地的權威機構。',
+    },
+    anonymous: {
+      title: '預設匿名',
+      body: '不驗證身分。試用無需註冊帳號。',
+    },
+  },
+  privacy: {
+    title: 'Vela 所謂「隱私優先」的定義',
+    meansIdentity: '我們不驗證你的身分或執照',
+    meansRealName: '我們不要求你的真實姓名',
+    meansDevice: '你的偏好設定（職務、工作地點、語言）只儲存在你的裝置上，不會上傳到我們的伺服器',
+    meansNoSell: '我們不販售或分享任何資料給第三方',
+    meansNoTraining: '未經同意，我們不會使用你的查詢訓練 AI 模型',
+    doesntTitle: '它不代表什麼',
+    doesntE2E: '我們並非端對端加密（查詢會經由我們的伺服器送到 LLM 提供者）',
+    doesntAnalytics: '我們會收集匿名分析資料以改善產品',
+    doesntPayment: '付款需要電子郵件以寄送收據，但不會與你的查詢連結',
+  },
+};
+
+export const landingContent: Record<LangCode, LandingContent> = {
+  en: landingEn,
+  'zh-TW': landingZhTW,
+  'zh-CN': landingEn,
+  ja: landingEn,
+  ko: landingEn,
+  es: landingEn,
+  fr: landingEn,
+  de: landingEn,
+  it: landingEn,
+  pt: landingEn,
+  th: landingEn,
+  ar: landingEn,
+  hi: landingEn,
+  bn: landingEn,
+  he: landingEn,
+  vi: landingEn,
+};
+
 export const translations: Record<LangCode, Translations> = {
   en,
   'zh-TW': {

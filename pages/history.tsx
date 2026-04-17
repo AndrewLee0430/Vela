@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from 'react';
+import Head from 'next/head';
 import { useAuth } from '@clerk/nextjs';
 import Link from 'next/link';
 import UpgradeModal from '../components/UpgradeModal';
@@ -392,10 +393,15 @@ export default function History() {
         <PageShell
             activePage="history"
             extraHead={
-                <style>{`
-                    .history-question::selection { background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.85); }
-                    .history-question::-moz-selection { background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.85); }
-                `}</style>
+                <>
+                    <Head>
+                        <meta name="robots" content="noindex, nofollow" />
+                    </Head>
+                    <style>{`
+                        .history-question::selection { background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.85); }
+                        .history-question::-moz-selection { background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.85); }
+                    `}</style>
+                </>
             }
         >
             <div className="container mx-auto px-4 py-10 max-w-3xl">

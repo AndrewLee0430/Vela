@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, FormEvent, useRef, useCallback, DragEvent } from 'react';
+import Head from 'next/head';
 import { useAuth } from '@clerk/nextjs';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -660,7 +661,14 @@ function ExplainForm() {
 
 export default function Explain() {
     return (
-        <PageShell activePage="explain">
+        <PageShell
+            activePage="explain"
+            extraHead={
+                <Head>
+                    <meta name="robots" content="noindex, nofollow" />
+                </Head>
+            }
+        >
             <ExplainForm />
         </PageShell>
     );

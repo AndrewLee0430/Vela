@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, FormEvent, useRef } from 'react';
+import Head from 'next/head';
 import { useAuth } from '@clerk/nextjs';
 import FeedbackBar from '../components/FeedbackBar';
 import UpgradeModal from '../components/UpgradeModal';
@@ -360,7 +361,14 @@ function VerifyForm() {
 
 export default function Verify() {
     return (
-        <PageShell activePage="verify">
+        <PageShell
+            activePage="verify"
+            extraHead={
+                <Head>
+                    <meta name="robots" content="noindex, nofollow" />
+                </Head>
+            }
+        >
             <VerifyForm />
         </PageShell>
     );
