@@ -1,11 +1,12 @@
-import { ClerkProvider } from '@clerk/nextjs';
+import { ClerkProvider, useUser } from '@clerk/nextjs';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import posthog from 'posthog-js';
 import { PostHogProvider } from 'posthog-js/react';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import { LangProvider } from '../utils/LangContext';
+import { reset as resetAnalytics } from '../utils/analytics';
 import '../styles/globals.css';
 
 if (typeof window !== 'undefined') {
@@ -19,6 +20,28 @@ const HREFLANG_CODES = [
   'en', 'zh-TW', 'zh-CN', 'ja', 'ko', 'es', 'fr', 'de',
   'it', 'pt', 'th', 'ar', 'hi', 'bn', 'he', 'vi',
 ];
+
+// Resets analytics distinct_id + super properties when Clerk transitions signedIn -> signedOut.
+// Rendered inside ClerkProvider so useUser() is available.
+function AnalyticsAuthBridge() {
+  const { isLoaded, isSignedIn } = useUser();
+  const prevSignedIn = useRef<boolean | null>(null);
+
+  useEffect(() => {
+    if (!isLoaded) return;
+    const current = Boolean(isSignedIn);
+    if (prevSignedIn.current === null) {
+      prevSignedIn.current = current;
+      return;
+    }
+    if (prevSignedIn.current && !current) {
+      resetAnalytics();
+    }
+    prevSignedIn.current = current;
+  }, [isLoaded, isSignedIn]);
+
+  return null;
+}
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter();
@@ -61,6 +84,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         }}
       >
         <LangProvider>
+          <AnalyticsAuthBridge />
           <Component {...pageProps} />
         </LangProvider>
       </ClerkProvider>
