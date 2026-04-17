@@ -6,6 +6,7 @@ import { PostHogProvider } from 'posthog-js/react';
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { LangProvider } from '../utils/LangContext';
+import * as analytics from '../utils/analytics';
 import '../styles/globals.css';
 
 if (typeof window !== 'undefined') {
@@ -28,6 +29,15 @@ export default function MyApp({ Component, pageProps }: AppProps) {
     router.events.on('routeChangeComplete', handleRouteChange);
     return () => router.events.off('routeChangeComplete', handleRouteChange);
   }, [router.events]);
+
+  useEffect(() => {
+    // TEMP: PRD 2.0 Round A verification only — remove after PostHog Dashboard confirms events
+    if (typeof window !== 'undefined') {
+      (window as unknown as { __vela_analytics?: typeof analytics }).__vela_analytics = analytics;
+      // eslint-disable-next-line no-console
+      console.info('[PRD 2.0 verify] window.__vela_analytics available for testing');
+    }
+  }, []);
 
   const path = router.asPath.split('?')[0].split('#')[0];
   const canonicalUrl = `https://vela.an-tho.com${path}`;
