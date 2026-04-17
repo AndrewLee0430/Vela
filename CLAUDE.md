@@ -2,6 +2,35 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Planning Documents (READ FIRST)
+
+When given a feature task, always consult these documents **before** touching code:
+
+| Document | Purpose | Location |
+|---|---|---|
+| `docs/PRD.md` | Master PRD v1.2 — all functional specs, Phase 0/1A/1B/1C, acceptance criteria | `docs/PRD.md` |
+| `FEATURE_AUDIT.md` | Codebase current state — what's built, what's partial, what's missing | `FEATURE_AUDIT.md` |
+
+### Workflow for a new task
+
+1. Read the relevant PRD section (requirements + acceptance + "not in scope")
+2. Check `FEATURE_AUDIT.md` for current state — **do not re-implement what's already done**
+3. Implement
+4. Verify against PRD acceptance criteria, item by item
+5. If implementation changed codebase state, update `FEATURE_AUDIT.md`
+6. Commit message format: `[PRD X.Y] brief description` (e.g. `[PRD 2.0] Remove temp window.__vela_analytics exposure`)
+
+### Cross-document references
+
+- PRD appendix A.2 has a section-by-section mapping between PRD chapters and FEATURE_AUDIT items
+- PRD section 6.3 — shared error codes
+- PRD section 6.6 — Model Provider naming conventions
+- PRD section 0.4 — engineering principles (local-first, stateless, provider-agnostic, i18n-first, citation-mandatory, degrade-gracefully)
+
+### Current Phase
+
+As of 2026-04-17: **Phase 0 — in progress**. See PRD Chapter 2.
+
 ## What This Project Is
 
 Vela is a medical AI SaaS (Next.js 15 + FastAPI) deployed on Fly.io with three core features:
@@ -328,6 +357,9 @@ PDF export: `html2pdf.js` (dynamic import, fallback to `window.print()`).
 11. **ProFeatureOverlay is a popover** — not a full-area overlay; uses `w-full` wrapper for layout
 12. **Evidence section format** — LLM must output `## [SectionName 🟢 — Language]` for `parseResearchSections()` to work
 13. **Cost tracking must not block** — all `log_api_cost_standalone()` calls wrapped in `try/except pass`
+14. **All PostHog events go through `utils/analytics.ts` `track()`** — never call `posthog.capture()` directly. See PRD 2.0.
+15. **All LLM calls go through Provider interface** (`api/providers/`) after Phase 0 2.1 lands — no direct `OpenAI()` or `AsyncOpenAI()` instantiation outside `api/providers/`.
+16. **i18n-first** — every user-visible string needs an i18n key in all 16 languages. Proper nouns (Vela, PubMed, FDA) stay in English.
 
 ## Reusable Stack for New Products
 

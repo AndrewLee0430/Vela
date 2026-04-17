@@ -90,7 +90,8 @@
       "Bash(grep -vE \"\\(className|style|href|title=|bg-|text-|rgba|//|import|localStorage|'vela_|alt=\\)\")",
       "Bash(grep -n \"featureName\\\\|Search History\\\\|Upload PDF\\\\|Export\" pages/*.tsx components/ProFeatureOverlay.tsx)",
       "Bash(PYTHONIOENCODING=utf-8 python:*)",
-      "Bash(powershell -ExecutionPolicy Bypass -File ./deploy.ps1)"
+      "Bash(powershell -ExecutionPolicy Bypass -File ./deploy.ps1)",
+      "Bash(pandoc --version)"
     ]
   }
 }
