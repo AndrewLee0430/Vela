@@ -2,6 +2,23 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+### Current Development Status
+
+**Phase**: Phase 0 — in progress (started 2026-04-17)
+
+**Completed** (do not re-implement):
+- 2.0 PostHog wrapper (`utils/analytics.ts` + `AnalyticsAuthBridge`, v143)
+- 2.5 Landing Page SEO (isLoaded gate removed, JSON-LD in place)
+- 2.6 i18n hreflang (Strategy A, 16 languages + x-default)
+
+**Next sprint** (2.2 + 2.3 combined, 0.5-1d):
+- 2.2 query_id via SSE (backend `audit_id` → frontend state → analytics common field)
+- 2.3 CitationPanel click tracking (`citation_clicked` event)
+
+**Remaining Phase 0**: 2.4 (1d) → 2.7 (1-2d) → 2.1 (5-7d, largest)
+
+**Always consult `FEATURE_AUDIT.md` for latest codebase state before starting any task.**
+
 ## Planning Documents (READ FIRST)
 
 When given a feature task, always consult these documents **before** touching code:
@@ -19,17 +36,6 @@ When given a feature task, always consult these documents **before** touching co
 4. Verify against PRD acceptance criteria, item by item
 5. If implementation changed codebase state, update `FEATURE_AUDIT.md`
 6. Commit message format: `[PRD X.Y] brief description` (e.g. `[PRD 2.0] Remove temp window.__vela_analytics exposure`)
-
-### Cross-document references
-
-- PRD appendix A.2 has a section-by-section mapping between PRD chapters and FEATURE_AUDIT items
-- PRD section 6.3 — shared error codes
-- PRD section 6.6 — Model Provider naming conventions
-- PRD section 0.4 — engineering principles (local-first, stateless, provider-agnostic, i18n-first, citation-mandatory, degrade-gracefully)
-
-### Current Phase
-
-As of 2026-04-17: **Phase 0 — in progress**. See PRD Chapter 2.
 
 ## What This Project Is
 
@@ -360,30 +366,3 @@ PDF export: `html2pdf.js` (dynamic import, fallback to `window.print()`).
 14. **All PostHog events go through `utils/analytics.ts` `track()`** — never call `posthog.capture()` directly. See PRD 2.0.
 15. **All LLM calls go through Provider interface** (`api/providers/`) after Phase 0 2.1 lands — no direct `OpenAI()` or `AsyncOpenAI()` instantiation outside `api/providers/`.
 16. **i18n-first** — every user-visible string needs an i18n key in all 16 languages. Proper nouns (Vela, PubMed, FDA) stay in English.
-
-## Reusable Stack for New Products
-
-| Layer | Choice | Notes |
-|---|---|---|
-| Frontend | Next.js 15 (pages router, `output: 'export'`) | Static export |
-| Backend | FastAPI + uvicorn | Python async, SSE via `sse-starlette` |
-| Auth | Clerk | JWT via JWKS, `TEST_MODE` for local dev |
-| Database | PostgreSQL + SQLAlchemy | QueuePool for serverless |
-| Payments | Dodo Payments | Standard Webhooks, `whsec_` HMAC-SHA256 |
-| Monitoring | Sentry | `FastApiIntegration` backend, `withSentryConfig` frontend |
-| Analytics | PostHog | `NEXT_PUBLIC_POSTHOG_KEY` env var |
-| Hosting | Fly.io | 2 machines, rolling deploy |
-| AI | OpenAI GPT-4.1 + GPT-4.1-mini | 4.1 for generation, 4.1-mini for classification |
-| Streaming | `@microsoft/fetch-event-source` + `sse-starlette` | Token-by-token SSE |
-
-### Security Checklist
-- [ ] Rate limiting on all endpoints
-- [ ] CORS with explicit `ALLOWED_ORIGINS` (fallback localhost only)
-- [ ] Webhook signature verification with mandatory secret
-- [ ] Path traversal prevention (`resolve()` + `startswith`)
-- [ ] Generic error messages (never `str(e)`)
-- [ ] `logging` module (never `print()`)
-- [ ] JWKS cache with TTL
-- [ ] Audit log + WebhookEvent idempotency tables
-- [ ] `ADMIN_USER_ID` from env var
-- [ ] Guard chain fail-close design
