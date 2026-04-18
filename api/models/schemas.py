@@ -213,3 +213,4 @@ class VerifyResponse(BaseModel):
     risk_level: str  # High, Moderate, Low
     disclaimer: str = "For reference only. Does not constitute medical advice. Please consult a qualified healthcare professional."
     query_time_ms: int
+    query_id: Optional[str] = None

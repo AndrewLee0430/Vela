@@ -420,8 +420,11 @@ async def research_query(
 
     async def event_stream():
         full_answer = ""
-        audit_id = None
+        audit_id = f"res_{uuid.uuid4().hex[:16]}"
         try:
+            # Emit query_id first so the client can tag subsequent analytics events
+            yield f"data: {json.dumps({'type': 'query_id', 'query_id': audit_id})}\n\n"
+
             passed, guard_error = await run_guards(body.question)
             if not passed:
                 yield f"data: {json.dumps({'type': 'error', 'content': guard_error}, ensure_ascii=False)}\n\n"
@@ -457,7 +460,6 @@ async def research_query(
                     yield f"data: {json.dumps({'type': 'fallback', 'content': event.content}, ensure_ascii=False)}\n\n"
                 elif event.type == StreamEventType.CITATIONS:
                     citations_data = [c.model_dump() for c in event.content]
-                    audit_id = f"res_{uuid.uuid4().hex[:16]}"
                     _safe_db_write(db, AuditLog(
                             id=audit_id,
                             user_id=user_id,
@@ -525,6 +527,7 @@ async def verify_drug_interaction(
 
     start_time = time.time()
     user_id = get_user_id(creds)
+    audit_id = f"ver_{uuid.uuid4().hex[:16]}"
     logger.info("[Verify] user=%s drugs=%s", user_id, body.drugs)
 
     # Credit 檢查
@@ -612,7 +615,7 @@ async def verify_drug_interaction(
 
     if not drug_labels:
         logger.warning("No FDA labels found for %s, falling back to LLM", body.drugs)
-        _safe_db_write(db, AuditLog(id=f"ver_{uuid.uuid4().hex[:16]}", user_id=user_id,
+        _safe_db_write(db, AuditLog(id=audit_id, user_id=user_id,
                 action="verify_fallback", query_content=f"LLM fallback: {body.drugs}", ip_address="0.0.0.0"),
                 label="Verify Audit")
 
@@ -652,7 +655,8 @@ Return valid JSON only:
                 interactions=fb_interactions,
                 summary=fb_summary,
                 risk_level=fb_data.get("risk_level","Unknown"),
-                query_time_ms=int((time.time()-start_time)*1000)
+                query_time_ms=int((time.time()-start_time)*1000),
+                query_id=audit_id,
             )
         except Exception as e:
             logger.error("Verify fallback failed: %s", e)
@@ -662,7 +666,8 @@ Return valid JSON only:
             return VerifyResponse(
                 drugs_analyzed=body.drugs, interactions=[],
                 summary=fallback_summary,
-                risk_level="Unknown", query_time_ms=int((time.time()-start_time)*1000)
+                risk_level="Unknown", query_time_ms=int((time.time()-start_time)*1000),
+                query_id=audit_id,
             )
 
     fda_context = "\n".join([label.to_text() for label in drug_labels])
@@ -738,7 +743,7 @@ Return valid JSON only:
     elapsed_ms = int((time.time()-start_time)*1000)
 
     _safe_db_write(db,
-        AuditLog(id=f"ver_{uuid.uuid4().hex[:16]}", user_id=user_id,
+        AuditLog(id=audit_id, user_id=user_id,
             action="verify", query_content=f"Checked: {body.drugs}", ip_address="0.0.0.0"),
         ChatHistory(user_id=user_id, session_type="verify",
             question=f"Drugs: {', '.join(body.drugs)}", answer=summary),
@@ -764,7 +769,8 @@ Return valid JSON only:
 
     return VerifyResponse(
         drugs_analyzed=body.drugs, interactions=interactions,
-        summary=summary, risk_level=risk_level, query_time_ms=elapsed_ms
+        summary=summary, risk_level=risk_level, query_time_ms=elapsed_ms,
+        query_id=audit_id,
     )
 
 
@@ -803,7 +809,11 @@ async def explain_report(
 
     async def event_stream():
         full_answer = ""
+        audit_id = f"exp_{uuid.uuid4().hex[:16]}"
         try:
+            # Emit query_id first so the client can tag subsequent analytics events
+            yield f"data: {json.dumps({'type': 'query_id', 'query_id': audit_id})}\n\n"
+
             async for event in run_explain_pipeline(
                 report_text=body.report_text,
                 openai_client=openai_async_client,
@@ -813,6 +823,13 @@ async def explain_report(
                     full_answer += event.get("content", "")
                 # Save to history when done
                 if isinstance(event, dict) and event.get("type") == "done":
+                    _safe_db_write(db, AuditLog(
+                            id=audit_id,
+                            user_id=user_id,
+                            action="explain",
+                            query_content=PHIDetector.sanitize_for_log(body.report_text[:500]),
+                            ip_address="0.0.0.0"
+                        ), label="Explain Audit")
                     _safe_db_write(db, ChatHistory(
                             user_id=user_id,
                             session_type="explain",
