@@ -8,6 +8,7 @@ import UpgradeModal from '../components/UpgradeModal';
 import Toast from '../components/Toast';
 import PHIWarning from '../components/PHIWarning';
 import PageShell from '../components/PageShell';
+import { setQueryId } from '../utils/analytics';
 import { useLang } from '../utils/LangContext';
 import { getUI } from '../utils/i18n-ui';
 
@@ -30,6 +31,7 @@ interface VerifyResponse {
     risk_level: string;
     query_time_ms: number;
     disclaimer?: string;
+    query_id?: string | null;
 }
 
 function VerifyForm() {
@@ -47,7 +49,7 @@ function VerifyForm() {
     const [showDailyCapToast, setShowDailyCapToast] = useState(false);
     const [phiError, setPhiError] = useState<{detail: string; suggestion: string} | null>(null);
 
-    const handleReset = () => { setDrugs(''); setResult(null); setError(''); setPhiError(null); };
+    const handleReset = () => { setDrugs(''); setResult(null); setError(''); setPhiError(null); setQueryId(null); };
 
     async function handleSubmit(e: FormEvent) {
         e.preventDefault();
@@ -61,6 +63,7 @@ function VerifyForm() {
 
         isRunningRef.current = true;
         setLoading(true); setError(''); setResult(null); setPhiError(null);
+        setQueryId(null);
 
         try {
             const token = await getToken({ skipCache: true });
@@ -100,6 +103,7 @@ function VerifyForm() {
 
             const data: VerifyResponse = await res.json();
             setResult(data);
+            if (data.query_id) setQueryId(data.query_id);
 
         } catch (err: any) {
             setError(err.message || 'Analysis failed. Please try again.');

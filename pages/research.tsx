@@ -18,6 +18,7 @@ import PageShell from '../components/PageShell';
 import ProFeatureOverlay from '../components/ProFeatureOverlay';
 import ResearchSection from '../components/ResearchSection';
 import { exportResearchPdf } from '../utils/exportPdf';
+import { setQueryId } from '../utils/analytics';
 import { useLang } from '../utils/LangContext';
 import { getUI } from '../utils/i18n-ui';
 import { getExtra } from '../utils/i18n-extra';
@@ -232,6 +233,7 @@ function ResearchForm() {
         setQuestion(''); setAnswer(''); setCitations([]);
         setQueryTime(null); setError(''); setIsFallback(false); setStatusMsg(''); setPhiError(null);
         setSelectedSuggestion(null);
+        setQueryId(null);
     };
 
     const runSearch = useCallback(async (q: string) => {
@@ -240,6 +242,7 @@ function ResearchForm() {
 
         setAnswer(''); setCitations([]); setQueryTime(null);
         setLoading(true); setError(''); setIsFallback(false); setStatusMsg(''); setPhiError(null); setDetectedLang('en');
+        setQueryId(null);
 
         const controller = new AbortController();
 
@@ -267,7 +270,10 @@ function ResearchForm() {
                 onmessage(ev) {
                     try {
                         const data = JSON.parse(ev.data);
-                        if (data.type === 'status') {
+                        if (data.type === 'query_id') {
+                            if (data.query_id) setQueryId(data.query_id);
+                        }
+                        else if (data.type === 'status') {
                             const statusMap: Record<string, string> = {
                                 'Searching medical literature...': ui.statusSearching,
                                 'Analyzing documents...': ui.statusAnalyzingDocs,

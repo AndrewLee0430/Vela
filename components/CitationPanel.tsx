@@ -3,10 +3,26 @@
 import { useState } from 'react';
 import { useLang } from '../utils/LangContext';
 import { getUI } from '../utils/i18n-ui';
+import { track } from '../utils/analytics';
+
+// PRD 2.3 citation source_type enum (lowercase, canonical)
+export type CitationSourceType =
+    | 'pubmed'
+    | 'fda'
+    | 'loinc'
+    | 'medlineplus'
+    | 'rxnorm'
+    | 'who'
+    | 'nice'
+    | 'ema'
+    | 'cochrane'
+    | 'local'
+    | 'localauthority'
+    | 'other';
 
 export interface Citation {
     id: number;
-    source_type: 'pubmed' | 'fda' | 'local';
+    source_type: string; // Widened — normalized via detectSourceType() before use
     source_id: string;
     title: string;
     snippet: string;
@@ -15,6 +31,34 @@ export interface Citation {
     year?: string;
     authors?: string;
     journal?: string;
+}
+
+function detectSourceType(citation: Citation): CitationSourceType {
+    const raw = (citation.source_type || '').toString().trim().toLowerCase();
+    const known: CitationSourceType[] = [
+        'pubmed', 'fda', 'loinc', 'medlineplus', 'rxnorm',
+        'who', 'nice', 'ema', 'cochrane', 'local', 'localauthority', 'other',
+    ];
+    if ((known as string[]).includes(raw)) return raw as CitationSourceType;
+
+    const url = (citation.url || '').toLowerCase();
+    try {
+        const host = new URL(citation.url).hostname.toLowerCase();
+        if (host.includes('pubmed.ncbi.nlm.nih.gov') || host.includes('ncbi.nlm.nih.gov/pubmed')) return 'pubmed';
+        if (host.includes('fda.gov') || host.includes('accessdata.fda.gov')) return 'fda';
+        if (host.includes('loinc.org')) return 'loinc';
+        if (host.includes('medlineplus.gov')) return 'medlineplus';
+        if (host.includes('dailymed.nlm.nih.gov') || host.includes('rxnav.nlm.nih.gov')) return 'rxnorm';
+        if (host.includes('who.int')) return 'who';
+        if (host.includes('nice.org.uk')) return 'nice';
+        if (host.includes('ema.europa.eu')) return 'ema';
+        if (host.includes('cochrane.org') || host.includes('cochranelibrary.com')) return 'cochrane';
+    } catch {
+        // URL parse failed — fall through to `other`
+        if (url.includes('pubmed')) return 'pubmed';
+        if (url.includes('fda.gov')) return 'fda';
+    }
+    return 'other';
 }
 
 interface CitationPanelProps {
@@ -32,10 +76,19 @@ function useCredibilityConfig() {
     };
 }
 
-const sourceTypeConfig = {
-    'pubmed': { label: 'PubMed', color: '#68d391' },
-    'fda':    { label: 'FDA',    color: '#63b3ed' },
-    'local':  { label: 'Local',  color: '#a0aec0' },
+const sourceTypeConfig: Record<CitationSourceType, { label: string; color: string }> = {
+    'pubmed':        { label: 'PubMed',      color: '#68d391' },
+    'fda':           { label: 'FDA',         color: '#63b3ed' },
+    'loinc':         { label: 'LOINC',       color: '#f6ad55' },
+    'medlineplus':   { label: 'MedlinePlus', color: '#9f7aea' },
+    'rxnorm':        { label: 'RxNorm',      color: '#ed64a6' },
+    'who':           { label: 'WHO',         color: '#4fd1c5' },
+    'nice':          { label: 'NICE',        color: '#90cdf4' },
+    'ema':           { label: 'EMA',         color: '#fbb6ce' },
+    'cochrane':      { label: 'Cochrane',    color: '#b794f4' },
+    'local':         { label: 'Local',       color: '#a0aec0' },
+    'localauthority':{ label: 'Local',       color: '#a0aec0' },
+    'other':         { label: 'Source',      color: '#a0aec0' },
 };
 
 function StarRating({ count }: { count: number }) {
@@ -78,17 +131,31 @@ function extractAbstract(raw: string): string {
     return text;
 }
 
-function CitationCard({ citation }: { citation: Citation }) {
+function CitationCard({ citation, position }: { citation: Citation; position: number }) {
     const [expanded, setExpanded] = useState(false);
     const { lang } = useLang();
     const ui = getUI(lang);
     const credibilityConfig = useCredibilityConfig();
 
-    const sourceConfig = sourceTypeConfig[citation.source_type];
+    const normalizedSourceType = detectSourceType(citation);
+    const sourceConfig = sourceTypeConfig[normalizedSourceType];
     const credConfig   = credibilityConfig[citation.credibility];
     const abstract     = extractAbstract(citation.snippet);
     const isLong       = abstract.length > 200;
     const display      = !expanded && isLong ? abstract.slice(0, 200) + '…' : abstract;
+
+    const handleSourceClick = () => {
+        // Fire-and-forget — never block the link navigation
+        try {
+            track('citation_clicked', {
+                source_type: normalizedSourceType,
+                url: citation.url,
+                citation_position: position,
+            });
+        } catch {
+            // Swallow — analytics must never break UX
+        }
+    };
 
     return (
         <div 
@@ -160,6 +227,8 @@ function CitationCard({ citation }: { citation: Citation }) {
                 href={citation.url}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={handleSourceClick}
+                onAuxClick={handleSourceClick}
                 className="inline-flex items-center gap-1 text-sm hover:underline mt-3"
                 style={{ color: "#ff8e6e" }}
             >
@@ -236,8 +305,8 @@ export default function CitationPanel({ citations, isLoading }: CitationPanelPro
             </div>
 
             <div className="flex-1 overflow-y-auto space-y-3">
-                {citations.map((citation) => (
-                    <CitationCard key={citation.id} citation={citation} />
+                {citations.map((citation, idx) => (
+                    <CitationCard key={citation.id} citation={citation} position={idx + 1} />
                 ))}
             </div>
 

@@ -22,6 +22,7 @@ const SUPER_PROP_KEYS = [
 ] as const;
 
 let modulePlanType: PlanType = "free";
+let moduleQueryId: string | null = null;
 
 function isBrowser(): boolean {
   return typeof window !== "undefined";
@@ -87,8 +88,15 @@ function readUserContext(): UserContext {
 }
 
 function getQueryId(): string | null {
-  // PRD 2.2 will plug in the real getter. Round A always returns null.
-  return null;
+  return moduleQueryId;
+}
+
+export function setQueryId(id: string | null): void {
+  moduleQueryId = id && id.length > 0 ? id : null;
+}
+
+export function getCurrentQueryId(): string | null {
+  return moduleQueryId;
 }
 
 function buildCommonProps(): Record<string, unknown> {
@@ -142,6 +150,7 @@ export function identify(userId: string, traits?: IdentifyTraits): void {
 
 export function reset(): void {
   modulePlanType = "free";
+  moduleQueryId = null;
   if (!isPosthogReady()) return;
   try {
     posthog.reset();

@@ -1,464 +1,283 @@
 # Vela Feature Audit
 
-**Generated:** 2026-04-17
-**Scope:** Code-only review. No changes made.
+**Generated:** 2026-04-18 (updated 2026-04-18 after PRD 2.2 + 2.3 sprint lands)
+**Scope:** Code-only review against PRD v1.2 (Phase 0 / 1A / 1B / 1C).
+**Methodology:** grep / glob over current working tree. Does not trust historical audits.
 
 ---
 
-## 1. `user_usage` 表結構 — specialty / role / workplace / work_language 欄位
+## Status key
 
-**狀態：** ❌ 未實作
-
-**證據：**
-
-`api/models/sql_models.py:45-61` (SQLAlchemy model):
-```python
-class UserUsage(Base):
-    __tablename__ = "user_usage"
-    clerk_user_id = Column(String, primary_key=True)
-    plan_type = Column(String, default="free")
-    credits_used = Column(Integer, default=0)
-    credits_used_today = Column(Integer, default=0)
-    last_daily_reset = Column(DateTime, default=datetime.utcnow)
-    last_free_reset = Column(Date, nullable=True)
-    lemon_customer_id = Column(String, nullable=True)
-    lemon_subscription_id = Column(String, nullable=True)
-    lemon_variant_id = Column(String, nullable=True)
-    dodo_customer_id = Column(String, nullable=True)
-    dodo_subscription_id = Column(String, nullable=True)
-    current_period_end = Column(DateTime, nullable=True)
-```
-
-`migrations/002_add_dodo_and_free_reset.sql` 是目前唯一的 migration，只加了 Dodo / free reset 欄位。
-
-Repo-wide grep `specialty|role|workplace|work_language|medical_specialty|user_profile` 無匹配。
-
-**缺什麼：**
-- SQLAlchemy model 沒有 `specialty`, `role`, `workplace`, `work_language` 欄位
-- 沒有對應的 migration 檔（預期會是 `003_add_user_profile.sql`）
-- 沒有對應的 Pydantic schema / API endpoint 寫入這些欄位
-- 全新功能，需要完整 schema + migration + endpoint + 前端 UI
+- ✅ 已完成 — 實作與 PRD 驗收條件對齊
+- ⚠️ 部分完成 — 核心 primitive 存在但缺少驗收條件內的某些項目
+- ❌ 未開始 — 找不到對應檔案/函式/事件
+- ⛔ 不適用 — 已被取代或 deprecate
 
 ---
 
-## 2. OnboardingOverlay 現況
+## Phase 0 — 基礎建設 + SEO 止血
 
-**狀態：** 🟡 部分實作（只有 4 步導覽，無個人化欄位收集）
+### 2.0 PostHog wrapper — ✅ 已完成
 
-**證據：**
+- `utils/analytics.ts:106-151` export `track()` / `identify()` / `reset()`
+- `utils/analytics.ts:94-104` `buildCommonProps()` 自動注入 `query_id / session_id / user_context_hash / locale / plan_type / work_language`
+- `pages/_app.tsx:26-44` `AnalyticsAuthBridge` 在 Clerk signedIn → signedOut 轉換時呼叫 `resetAnalytics()`(commit 3876239 / v143)
+- SDK 未初始化時 `isPosthogReady()` 擋掉 `posthog.capture()`,符合 degrade-gracefully
+- 生產環境 PostHog Dashboard 已人工驗收(2026-04-17)
 
-`components/OnboardingOverlay.tsx:13-18`:
-```tsx
-const STEP_DEFS: Step[] = [
-  { target: null, titleKey: 'onboardingWelcome', bodyKey: 'onboardingProBody', usePlanBody: true },
-  { target: '[data-onboarding="research"]', titleKey: 'onboardingResearch', bodyKey: 'onboardingResearchBody' },
-  { target: '[data-onboarding="verify"]', titleKey: 'onboardingVerify', bodyKey: 'onboardingVerifyBody' },
-  { target: '[data-onboarding="explain"]', titleKey: 'onboardingExplain', bodyKey: 'onboardingExplainBody' },
-];
-```
-
-**目前 4 步：** Welcome → Research → Verify → Explain（每步只有標題 + body，目標是 spotlight 導覽列按鈕）。
-
-**「略過」按鈕：** 只在第一步出現，點擊執行 `finish()` → 寫入 `localStorage.hasSeenOnboarding`，不送到 backend。
-`components/OnboardingOverlay.tsx:76-79`:
-```tsx
-const finish = () => {
-  localStorage.setItem('hasSeenOnboarding', '1');
-  setVisible(false);
-};
-```
-
-**可重用的 dropdown / select 元件：**
-- `components/LanguageSwitcher.tsx` — 下拉選單，可作為 select 元件參考（但邏輯耦合 `useLang` context）
-- 無通用 `<Select />` 或 `<Dropdown />` 元件
-
-**i18n key 命名慣例：** `onboarding` 前綴 + 駝峰（如 `onboardingWelcome`, `onboardingProBody`, `onboardingNext`, `onboardingSkip`）
-`utils/i18n-ui.ts:98-111` 定義了 TypeScript 型別，所有 key 都要加到 16 種語言的翻譯物件。
-
-**缺什麼：**
-- 沒有任何表單輸入 step（都是純展示 popover）
-- 沒有「收集 specialty / role / workplace / work_language」的 step
-- 沒有 save-to-backend 邏輯（`finish()` 只寫 localStorage）
-- 沒有跳步邏輯（目前是線性 Back / Next）
-- 沒有可重用的 `<Select>` / `<RadioGroup>` 元件
+**尚未消化的餘項(不屬於 2.0 Round A 驗收):**
+- `getQueryId()` 固定回傳 null,待 2.2 串接
+- 無 caller 呼叫 `identify()`,等 Clerk sign-in hook 在 Round B 補上
+- 現存 `posthog.capture('$pageview')`(`pages/_app.tsx:50`)尚未改走 `track()`;Round B 再統一
 
 ---
 
-## 3. CitationPanel
+### 2.1 Model Provider 抽象層 — ❌ 未開始
 
-**狀態：** ✅ 完整實作（但無 PostHog 追蹤、無當前 query 存取）
-
-**證據：**
-
-**`source_type` 欄位：** 有。
-`components/CitationPanel.tsx:7-18`:
-```tsx
-export interface Citation {
-    id: number;
-    source_type: 'pubmed' | 'fda' | 'local';
-    source_id: string;
-    title: string;
-    snippet: string;
-    url: string;
-    credibility: 'peer-reviewed' | 'official' | 'internal';
-    ...
-}
-```
-Backend 側：`api/models/schemas.py:66` 也是 `source_type: SourceType`（列舉包含 PUBMED, FDA, LOINC, RXNORM, MEDLINEPLUS — 比前端型別多）。
-
-**「View source」實作：** 純 `<a>`，無 onClick。
-`components/CitationPanel.tsx:159-171`:
-```tsx
-<a
-    href={citation.url}
-    target="_blank"
-    rel="noopener noreferrer"
-    className="inline-flex items-center gap-1 text-sm hover:underline mt-3"
-    style={{ color: "#ff8e6e" }}
->
-    {ui.viewSource}
-    ...
-</a>
-```
-
-**PostHog capture：** ❌ 完全沒有。整個檔案無 `posthog` import。
-
-**當前 query 存取：** ❌ 無法直接拿到。`CitationPanelProps` 只有 `citations` + `isLoading`，沒有 query prop 或 context。
-`pages/research.tsx:529`: `<CitationPanel citations={citations} isLoading={...} />` — 呼叫端有 query 但沒傳進來。
-
-**缺什麼（若要加「點擊追蹤 + 關聯 query」）：**
-- `CitationPanelProps` 需加 `query?: string` 或 `queryId?: string`
-- `<a onClick>` 上加 `posthog.capture('citation_clicked', { ... })`
-- 前端目前完全沒有 query_id 的概念（見 §4）
+- `api/providers/` 目錄不存在
+- `from openai import (OpenAI | AsyncOpenAI)` 散佈於 10 個檔案(未變):
+  - `api/server.py:47`
+  - `api/database/vector_store.py:11`
+  - `api/rag/generator.py:12`
+  - `api/rag/retriever.py:14`
+  - `api/rag/reranker.py:14`
+  - `api/utils/llm_judge.py:13`
+  - `api/services/explain_service.py:12`
+  - `api/services/entity_extractor.py:8`
+  - `api/middleware/guards.py:16` (+ L149、L237 兩個 sync `OpenAI()`)
+- 模型名仍硬編碼:`RAG_MODEL = "gpt-4.1"`(generator.py:24),guard model `"gpt-4.1-mini"` 字面量(guards.py)
+- 無 `GENERATOR_PROVIDER` / `GUARD_MODEL` 等環境變數在 `.env.example` 內
 
 ---
 
-## 4. PostHog event 體系
+### 2.2 query_id 串接 — ✅ 已完成
 
-**狀態：** ❌ 幾乎未實作（只有 pageview）
-
-**證據：**
-
-全專案 `posthog.capture()` 呼叫 grep 結果：**只有 1 處。**
-`pages/_app.tsx:21-24`:
-```tsx
-useEffect(() => {
-  const handleRouteChange = () => posthog.capture('$pageview');
-  router.events.on('routeChangeComplete', handleRouteChange);
-  return () => router.events.off('routeChangeComplete', handleRouteChange);
-}, [router.events]);
-```
-
-初始化：`pages/_app.tsx:11-16`
-```tsx
-posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
-  api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com',
-  capture_pageview: false,
-});
-```
-
-**Payload 結構：** 只有 `$pageview`（PostHog 內建）。無自訂 payload schema。
-
-**query_id / session_id：**
-- Frontend：❌ 無 `query_id` / `trace_id` / `session_id`（repo-wide grep 無匹配）
-- Backend：audit log 有 `audit_id`（格式 `res_<hex16>`, `ver_<hex16>`, `exp_<hex>`），但從未透過 SSE 傳回前端
-  - `api/server.py:449`: `audit_id = f"res_{uuid.uuid4().hex[:16]}"`
-  - `api/models/sql_models.py:22`: `ChatHistory.session_type`（只是分類字串 "research"/"verify"/"explain"，不是 session ID）
-
-**缺什麼：**
-- 幾乎整套 event 體系（`query_submitted`, `query_completed`, `citation_clicked`, `feedback_given`, `upgrade_clicked`, `onboarding_completed` 等）
-- `query_id` 從 backend 回傳到前端的機制（SSE event 或 response header）
-- 無統一 event payload schema（如 `{ query_id, feature, lang, plan, ... }`）
+- Backend:
+  - Research SSE:`api/server.py:423, 426` 在 `event_stream()` 頂端產生 `audit_id = res_<hex16>`,第一個 SSE event 即 `{type:'query_id', query_id}`;citation 段落 `:462-470` 直接沿用同一 `audit_id` 寫 AuditLog
+  - Verify:`api/server.py:530` 端點入口一次產生 `audit_id = ver_<hex16>`,fallback / main 兩處 AuditLog 與三個 VerifyResponse 全部引用同一 id(`:617, :659, :670, :743, :773`)
+  - Explain SSE:`api/server.py:807, 815` 同一模式;`done` 時寫入 AuditLog `id=exp_<hex16>`
+  - `VerifyResponse.query_id: Optional[str]` 加在 `api/models/schemas.py:216`
+- Frontend:
+  - `utils/analytics.ts:25, 94-101, 147` `moduleQueryId` state + `setQueryId()` export;`getQueryId()` 改讀模組內狀態;`reset()` 一併清空
+  - `pages/research.tsx:272-274` / `pages/explain.tsx:358-360` 新增 `data.type === 'query_id'` 分支,呼叫 `setQueryId(data.query_id)`;`handleReset` + 查詢開始時清空
+  - `pages/verify.tsx:106` 在 `setResult(data)` 後將 `data.query_id` 寫入 analytics 模組
+- Acceptance:所有後續 `track()` 事件(透過 `buildCommonProps()`)自動帶 `query_id`,可在 PostHog 以同一 id 串聯 query → citation_clicked → feedback
 
 ---
 
-## 5. LLM Provider 架構
+### 2.3 CitationPanel 點擊追蹤 — ✅ 已完成
 
-**狀態：** ❌ 未抽象，全部 hardcode OpenAI
-
-**證據：**
-
-`generator.py` 和 `guards.py` 直接 import openai：
-- `api/rag/generator.py:12`: `from openai import AsyncOpenAI`
-- `api/rag/generator.py:94`: `self.client = AsyncOpenAI()`
-- `api/middleware/guards.py:16`: `from openai import OpenAI`
-- `api/middleware/guards.py:149`: `client = OpenAI()`
-- `api/middleware/guards.py:237`: `client = OpenAI()` (medical intent check)
-
-還有 `api/rag/retriever.py:14`, `api/rag/reranker.py:14`, `api/services/explain_service.py:12`, `api/services/entity_extractor.py:8`, `api/utils/llm_judge.py:13`, `api/database/vector_store.py:11`, `api/server.py:47` 全都直接 import OpenAI。
-
-**Provider 抽象層：** ❌ 無。grep `provider|LLMProvider|llm_provider|model_provider` 無匹配。
-
-**模型名稱：** **Hardcoded**（字串字面量，非 env var）。
-- `api/rag/generator.py:24-25`:
-  ```python
-  RAG_MODEL      = "gpt-4.1"
-  FALLBACK_MODEL = "gpt-4.1-mini"
-  ```
-- `api/middleware/guards.py:151,239`: `model="gpt-4.1-mini"` 字面量
-- `api/rag/reranker.py:31`: `model: str = "gpt-4o-mini"` 預設
-- `api/server.py:908`: `model="gpt-4o"` 字面量
-
-唯一半結構化的地方：`api/services/cost_tracker.py:11-16` 的 `MODEL_COSTS` dict（只是定價表，不是 provider abstraction）。
-
-**缺什麼：**
-- Provider interface（`BaseLLMProvider` 抽象類別或 protocol）
-- 環境變數讀取（`OPENAI_MODEL_RAG`, `OPENAI_MODEL_CLASSIFIER` 等）
-- 不同 provider 的 adapter（Anthropic、Azure OpenAI、Gemini）
+- `components/CitationPanel.tsx:5, 11` 新增 `track` import + `CitationSourceType` enum(含 PRD 規定 10 種 + `localauthority` + `other`)
+- `detectSourceType()`(`:35-62`)先讀 `citation.source_type`,白名單比對;不在名單再用 URL hostname fallback(pubmed.ncbi.nlm.nih.gov / fda.gov / loinc.org / medlineplus.gov / dailymed / rxnav / who.int / nice.org.uk / ema.europa.eu / cochrane)
+- `CitationCard`(`:102-166`)新增 `position` prop + `handleSourceClick` 觸發 `track('citation_clicked', { source_type, url, citation_position })`,`onClick` + `onAuxClick` 同時綁定,fire-and-forget(try/catch 包住,絕不阻斷 `<a>` 跳轉)
+- `CitationPanel` map 改傳 `position={idx + 1}`(`:237`)避免 closure trap — 每張卡片持有自己的 citation 與 index
+- `queryId` 不再經由 prop 注入,改由 `utils/analytics.ts` 模組狀態自動帶入 → 所有 components 不需感知 query_id
+- Enum 與 PRD § 2.3 對齊:`pubmed / fda / loinc / medlineplus / rxnorm / who / nice / ema / cochrane / local / localauthority / other`
 
 ---
 
-## 6. Settings 頁面
+### 2.3a Feedback 按讚 / 按爛事件 — ✅ 已完成(伴隨 2.3 lands)
 
-**狀態：** 🟡 部分實作（僅 Navbar dropdown，無 `/settings` 專頁）
-
-**證據：**
-
-無 `pages/settings.tsx`（`ls pages/` 結果：`_app, _document, explain, faq, history, index, pricing, privacy, refund, research, terms, verify`）。
-
-Settings UI 在 Navbar 齒輪 dropdown 中：
-`components/Navbar.tsx:215-302`（width 280px）包含：
-- 語言切換（`<LanguageSwitcher compact />`）
-- Plan label (Free / Pro)
-- 今日 credits 使用進度條（`{creditsUsed} / {dailyLimit}`）
-- Pro 用戶：Manage Subscription / Cancel Subscription 按鈕
-- Free 用戶：Upgrade to Pro 按鈕
-
-**可調整項目：** 只有「語言」+ 「訂閱管理」。
-
-**「個人化」區塊：** ❌ 無。沒有 specialty / role / theme / notification 等設定。
-
-**語言切換：** ✅ 已在 Navbar settings dropdown 內（`Navbar.tsx:238-240`）。
-
-**缺什麼：**
-- 獨立 `/settings` 頁面（目前所有邏輯擠在 280px dropdown）
-- 個人化欄位（specialty / role / workplace / preferred response language）
-- 通知 / 資料管理 / 匯出 / 刪除帳號等 section
+- `components/FeedbackBar.tsx:8, 39, 46` `handleLike` / `handleDislike` 新增 `track('feedback_thumbs_up' | 'feedback_thumbs_down', { category })`,呼叫順序是「setStatus → track → sendFeedback」,track 用 try/catch 包住
+- `category` 欄位值為 `'research' | 'verify' | 'explain'`;`query_id` 透過 `buildCommonProps()` 自動注入
+- Acceptance:PostHog funnel「query → citation_clicked → feedback_thumbs_up」可由 `query_id` join
 
 ---
 
-## 7. 首頁範例查詢
+### 2.4 Bug 回報浮動按鈕 — ❌ 未開始
 
-**狀態：** ✅ 實作（全部 hardcoded，無使用者屬性切換）
-
-**證據：**
-
-**Landing 首頁 (signed-out)：**
-`pages/index.tsx:21-25`（typewriter prompt，3 個，英文 hardcode）：
-```tsx
-const PROMPTS = [
-  { text: 'Research Metformin interactions in renal impairment', color: '#ff8e6e' },
-  { text: 'Verify Warfarin + Aspirin — is it safe?',            color: '#63b3ed' },
-  { text: 'Explain my blood test results in plain language',    color: '#68d391' },
-];
-```
-
-**Research 頁面範例：**
-`pages/research.tsx:81-92`（10 個固定的多語言範例）：
-```tsx
-const defaultSuggestions = [
-    "小孩發燒幾度需要看醫生？",
-    "What are the common side effects of Metformin?",
-    "ワルファリンの副作用は何ですか？",
-    "老人血壓藥可以跟鈣片一起吃嗎？",
-    "¿Es seguro usar antibióticos durante el embarazo?",
-    "DOACs vs Warfarin — key differences?",
-    ...
-];
-```
-註解明確寫：`Fixed multilingual sample queries ... Intentionally NOT translated: the mix of languages itself is the message.`
-
-**是否根據使用者屬性切換：** ❌ 完全沒有。兩處都是 module-level const。無 `useUser()` / `specialty` / plan-based 切換邏輯。
-
-**缺什麼（若要做個人化範例）：**
-- 依 specialty 切換範例的邏輯（需先有 §1 的 user profile 欄位）
-- 依目前語言切換範例的邏輯
+- `components/BugReport*` / `FeedbackButton*` 不存在
+- grep `bug_report|Report an issue|回報問題` 僅命中 PRD
+- 無 i18n key `bug_report.*`
+- 無 support@an-tho.com 郵件 endpoint(`pages/api/` 整個目錄不存在;mailto 觸發流程亦無)
 
 ---
 
-## 8. Bug 回報入口
+### 2.5 Landing Page SEO 修復 — ✅ 已完成
 
-**狀態：** 🟡 部分實作（只有 mailto，無內建表單）
-
-**證據：**
-
-**無內建「回報問題」按鈕 / 表單。** grep `bug.report|bugReport|Report.*issue|report.*bug` 無匹配。
-
-只有 `mailto:support@an-tho.com`，遍布多處：
-- `pages/index.tsx:408, 525`（landing footer）
-- `pages/faq.tsx:149`
-- `pages/pricing.tsx:151`
-- `pages/privacy.tsx:68, 73`
-- `pages/terms.tsx:49, 69`
-- `pages/refund.tsx:29, 54`
-- `components/UpgradeModal.tsx:47`（付款錯誤時顯示）
-- `utils/i18n-ui.ts` faqCta 在 16 種語言都是 mailto
-
-**FeedbackBar (👍👎)** 是針對「答案品質」的 inline 反饋，不是 bug report（見 §10）。
-
-**缺什麼：**
-- 內建 bug report modal / page
-- 截圖上傳 / 重現步驟欄位
-- Bug 相關的 DB 表（目前 `UserFeedback` 綁定 query/response，不適合 bug report）
+- `pages/index.tsx:678-682` `Home()` 只依 `isSignedIn` 切 Dashboard / LandingPage,無 `isLoaded` spinner gate(L675-677 有註解說明為何如此)
+- `pages/index.tsx:260-302` 完整 meta tags:`<title>`、description、robots、canonical、og:*(type/site_name/url/title/description/image/image:width/image:height)、twitter:*(card/title/description/image)
+- L303-402 兩個 JSON-LD(`SoftwareApplication` + `Organization`)
+- `/research`(L567)、`/verify`(L368)、`/explain`(L668)、`/history`(L398)皆有 `<meta name="robots" content="noindex, nofollow" />`
+- `public/sitemap.xml` 涵蓋 `/`、`/pricing`、`/faq`
 
 ---
 
-## 9. 隱私相關 UI
+### 2.6 i18n hreflang (Strategy A) — ✅ 已完成
 
-**狀態：** 🟡 部分實作（有專頁 + footer 連結，但 landing / onboarding / settings 無內嵌訊息）
-
-**證據：**
-
-**Privacy Policy 頁：** `pages/privacy.tsx`
-- Last updated：`pages/privacy.tsx:18`: `"Last updated: March 2026"`
-- 8 sections：Data We Collect / No PHI Storage / No AI Training / Data Retention / Third-Party Services / Cookies / Data Deletion / Contact
-- 只有英文（無 i18n）
-
-**Footer 連結（Privacy Policy）：**
-- `pages/index.tsx:405, 522`: `<Link href="/privacy">{extra.privacyLabel}</Link>`（landing 雙入口，`privacyLabel` 有 i18n）
-
-**Landing / Onboarding / Settings 中的隱私訊息：** ❌ 無直接的「我們不存你的資料」訊息。
-- `pages/index.tsx` grep `privacy|PHI|no.*store` 只有 footer link
-- `OnboardingOverlay.tsx` 無隱私文案
-- Navbar settings dropdown 無隱私連結
-
-**PHI 保護的展示：** 有 `components/PHIWarning.tsx`，但只在使用者輸入 PHI 時出現（Research/Verify/Explain 頁），屬於錯誤訊息，不是事前的隱私承諾。
-
-**缺什麼：**
-- Landing / pricing 增加 trust section（「Your data never trains AI」、「No PHI stored」）
-- Onboarding 中的隱私一句話
-- Settings 裡的「Data & Privacy」區塊（下載資料、刪除帳號）
-- Privacy Policy 翻譯（目前只有英文）
+- `pages/_app.tsx:71-74` 對所有頁面輸出 16 語言 hreflang + x-default
+- `public/sitemap.xml` 對 `/` 與 `/pricing` 每個 URL 都列 16 個 hreflang + x-default(L8-24, L30-46)
+- `pages/_app.tsx:56-57` 每頁都有 canonical URL 組出
+- Strategy B(per-locale URL)是 Phase 2 評估
 
 ---
 
-## 10. FeedbackBar 現況
+### 2.7 Explain 臨床推理強化 — ❌ 未開始
 
-**狀態：** 🟡 部分實作（只寫入 DB，無後續動作、無分析追蹤）
-
-**證據：**
-
-完整實作 `components/FeedbackBar.tsx`：
-
-**👍👎 實作：**
-```tsx
-// FeedbackBar.tsx:20-34
-const sendFeedback = async (rating: number) => {
-    try {
-        const token = await getToken({ skipCache: true });
-        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/feedback`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-            body: JSON.stringify({ query, response, rating, feedback_text: null, category }),
-        });
-    } catch (err) { console.error('Feedback failed:', err); }
-};
-// rating: 1 = like, -1 = dislike
-```
-
-UI state：`idle | liked | disliked`，按鈕點擊後鎖住（`disabled={status !== 'idle'}`）。
-
-**按下 👎 的後續動作：** ❌ **完全沒有。** 和 👍 走同一個 `sendFeedback()`，只是 rating=-1。不會彈「為什麼不滿意」表單，不會記 reason，不會 trigger retry。
-
-**Payload：**
-```json
-{
-  "query": "...",
-  "response": "...",
-  "rating": 1,         // or -1
-  "feedback_text": null,  // 目前永遠是 null
-  "category": "research" // or "verify" / "explain"
-}
-```
-
-**後端：** `api/server.py:944-965` `create_feedback()` 寫入 `UserFeedback` 表（`id=fb_<hex>`）。
-
-**PostHog 追蹤：** ❌ `sendFeedback()` 內無 `posthog.capture()`。
-
-**缺什麼：**
-- 👎 後的 follow-up（原因選項、自由文字輸入）— `feedback_text` 欄位已存在但從未被使用
-- PostHog `feedback_given` event
-- 無「編輯回應」(rating=2) 的 UI，但 DB 已定義 (`sql_models.py:37` comment: `2=Edited`)
+- `api/services/explain_service.py:30-45` system prompt 仍是「解釋報告數值」版本:
+  - 無「臨床組合推理」段落指令
+  - 無 hedging 禁用詞清單(「您有…」「您需要…」)
+  - 無 LOINC 僅限代碼對照、不得作為臨床判斷引用的指令
+- `api/services/explain_service.py:66-70` LOINC 仍是 lab test 的主要 citation 來源(未按 PRD 5 分層)
+- `api/models/explain_schemas.py` 無 `risk_tier` / `clinical_correlations` / `risk_label` 欄位
+- 前端 `pages/explain.tsx` 無 🟢🟡🔴 render;無 correlations 區塊;無固定 disclaimer 渲染(現有 stripLlmDisclaimer 是另一回事)
+- 注意:repo 裡出現的 🟢🟡🔴 全部在 `api/rag/generator.py:288-300` 的 **Research** evidence strength,不是 Explain 的 risk tier,不可混淆
+- `api/utils/llm_judge.py` 無 Explain 專用評估 prompt
 
 ---
 
-## 11. 處方解析 / 交互作用功能
+## Phase 1A — 定位落地
 
-**狀態：** 🟡 Verify 已實作 drug interaction，但無「處方解析」功能
+### 3.1 user_context schema — ❌ 未開始
 
-**證據：**
-
-**Verify 功能（已存在）：** `pages/verify.tsx` — 使用者手動輸入藥物列表（多行）。
-`pages/verify.tsx:55-71`:
-```tsx
-const drugList = drugs.split('\n').map(d => d.trim()).filter(Boolean);
-if (drugList.length < 2) { ... }
-body: JSON.stringify({ drugs: drugList, patient_context: null }),
-```
-後端呼叫 FDA DailyMed，用 Levenshtein 做拼字修正（`api/server.py` verify endpoint）。
-
-**處方解析（prescription parsing）：** ❌ **未實作。**
-- 無 `pages/prescription.tsx`
-- 無 `api/services/prescription_service.py`
-- grep `prescription|prescribing` 僅匹配 `UpgradeModal` 文案、`guards.py` 注釋詞彙、README
-
-**Research / Verify / Explain 之外的第四個功能：** ❌ 無。`pages/` 目錄的主功能頁就這三個（加 history、pricing、faq、privacy、terms、refund 輔助頁）。
-
-**Explain 功能中的處方：** `pages/explain.tsx` 會從醫療報告裡用 LLM 抽取藥物名（`api/services/entity_extractor.py`），但那是「報告解讀」用途，不是「處方解析 → 自動查交互作用」的端到端流程。
-
-**缺什麼（若要做「處方解析 → 自動丟進 Verify」）：**
-- OCR / 結構化抽取 prescription 的 endpoint（可重用 `entity_extractor.py`）
-- 解析結果自動轉成 Verify input 的 UI flow
-- 全新的 `pages/prescription.tsx` 或整合進 Explain
+- `api/models/sql_models.py` `UserUsage` 無 `specialty` / `role_category` / `workplace_category` / `work_language` / `locale`
+- 無 `user_profile` 新表;無 `003_add_user_profile.sql` migration
+- 無 `POST /api/user/context/hash` 與 `GET /api/user/context/hash` endpoints
+- localStorage key `vela_user_context` 只在 `utils/analytics.ts:63-87` 被「讀」,沒有任何地方「寫」(等 3.2 Onboarding 寫入)
 
 ---
 
-## 12. 在地差異提示相關
+### 3.2 Onboarding 三問(workplace → role → work_language)— ❌ 未開始
 
-**狀態：** ❌ 未實作
-
-**證據：**
-
-**LLM prompt 中的「地區」「在地」：** ❌ 無。
-`api/rag/generator.py` 系統 prompt（`_get_system_prompt`, `FALLBACK_PROMPTS`）完全不提 region/locale/country。
-
-`api/services/explain_service.py:36` 只有一行通用模板：
-```
-"Reference ranges may vary by laboratory and region."
-```
-— 要求 LLM 在沒 reference range 時加這句話，並非「依使用者地區調整回答」。
-
-**Hardcoded 官方網站連結 map：** ❌ 無。grep `衛福部|MOHW|cdc\.|health\.gov|official.*website` 無匹配。
-程式碼中的「官方」只有：
-- `api/models/schemas.py:24`: `OFFICIAL = "official"  # FDA 官方` — credibility 列舉標籤
-- `utils/i18n-extra.ts:88,92`: `dashVerifySub: 'FDA 官方'` — 首頁 mockup 文案
-- 沒有任何 `const OFFICIAL_SITES = { 'zh-TW': '...', 'ja': '...' }` 的結構
-
-**語言偵測：** `api/utils/language_detector.py` 做的是「回答用哪個語言」（16 語），不是「使用者在哪個國家」。
-
-**缺什麼：**
-- Prompt-level region awareness（傳 `user_region` 進 system prompt）
-- Region → 官方連結 map（如 TW 衛福部、JP PMDA、KR MFDS、EU EMA）
-- Citation UI 針對非 PubMed/FDA 來源時顯示地區來源
-- 需要先有 §1 的 user profile (workplace / region) 或 IP geolocation
+- `components/OnboardingOverlay.tsx:13-18` 是 4-step spotlight 產品導覽(Welcome/Research/Verify/Explain),**非** PRD 的三步 Wizard
+- 無任何 `<input>` / `<select>` / `<RadioGroup>` step
+- 無誠實提示文案(「你選擇了醫學中心,UpToDate 可能更適合你」)
+- 無 Step 4 隱私聲明卡
+- `finish()` 僅寫 `localStorage.hasSeenOnboarding`,不寫 `vela_user_context`
+- 無 `onboarding_step_completed` / `onboarding_completed` PostHog event
 
 ---
 
-## 總結
+### 3.3 首頁動態範例查詢 — ⚠️ 部分完成
 
-| # | 項目 | 狀態 |
-|---|------|------|
-| 1  | user_usage 個人化欄位             | ❌ |
-| 2  | OnboardingOverlay（含個人化 step）| 🟡 只有導覽，無表單 |
-| 3  | CitationPanel                      | ✅ / 無追蹤 |
-| 4  | PostHog event 體系                 | ❌ 只有 pageview |
-| 5  | LLM Provider 抽象                  | ❌ hardcode OpenAI |
-| 6  | Settings 頁面                      | 🟡 只有 Navbar dropdown |
-| 7  | 首頁範例查詢                       | ✅ hardcoded，無個人化 |
-| 8  | Bug 回報入口                       | 🟡 只有 mailto |
-| 9  | 隱私 UI                            | 🟡 有專頁，無內嵌訊息 |
-| 10 | FeedbackBar                        | 🟡 👎 無後續動作 |
-| 11 | 處方解析                           | ❌ 只有手動 Verify |
-| 12 | 在地差異提示                       | ❌ |
+- `pages/index.tsx:21-25` 有 3 個 hardcoded typewriter prompts(Research/Verify/Explain),皆為英文字面量
+- 無根據 `vela_user_context.role` 切換範例池的邏輯
+- 無「藥師 / 護理師 / 社區醫師 / 醫學生 / 通用」5 個範例池(共 25-40 條 query)
+- 無「點擊範例自動填入 + 送出」互動(目前只是裝飾 typewriter)
+- 無 `example_query_clicked` event
 
-**常見前置依賴：** §2 (onboarding 表單) / §7 (個人化範例) / §12 (在地化) 都依賴 §1 的 user profile 欄位先建起來。§3 (citation 追蹤) 依賴 §4 的 PostHog event 體系。
+**可以快速補:**framework 已在位(PROMPTS 陣列 + TypewriterPrompt),只需加 role 選擇層 + 範例池內容 + click handler。
+
+---
+
+### 3.4 Privacy 四接觸點 + 16 語言 Privacy Policy — ⚠️ 部分完成
+
+| 接觸點 | 狀態 | 證據 |
+|---|---|---|
+| 1. Landing Page | ✅ | `pages/index.tsx` + `utils/i18n.ts` 有 Anonymous by Default pillar 與 Privacy-first 敘述 |
+| 2. Onboarding 隱私卡 | ❌ | 依賴 3.2,3.2 未做 |
+| 3. Settings 隱私狀態 | ❌ | 無 `/settings` 頁;Navbar dropdown 無「✓ 我們沒有記錄你的身份」區塊 |
+| 4. Footer privacy 連結 | ✅ | `pages/index.tsx` Footer + `utils/i18n-extra.ts` `privacyLabel` 16 語言 |
+| Privacy Policy 16 語言 | ❌ | `pages/privacy.tsx` 全英文 hardcode,未讀 `useLang()`;`utils/i18n-extra.ts` 只有 `privacyLabel`(link 字),沒有 policy 內文 |
+
+---
+
+## Phase 1B — 差異化功能
+
+### 4.1 FeedbackBar 👎 原因 chip — ❌ 未開始
+
+- `components/FeedbackBar.tsx:42-46` 按 👎 直接 `sendFeedback(-1)`,`feedback_text: null`(L29)
+- 無 reason chip UI(6 個 value:citation_insufficient / answer_incorrect / not_relevant / too_vague / not_applicable_region / other)
+- 無 "Other" 展開 textarea
+- 無 `feedback_thumbs_down` / `feedback_reason_text` PostHog event
+- **後端欄位已就緒**:`UserFeedback.feedback_text` 存在(見 FEATURE_AUDIT 原第 8 節),前端補完即可;無需 migration
+
+---
+
+### 4.2 Citation ⓘ hover/tap tooltip — ❌ 未開始
+
+- `components/CitationPanel.tsx:105-119` 現有 tooltip 是 **credibility 等級**(peer-reviewed / official / internal 3 種),**不是** PRD 要的「10 個 source_type 一句話說明 + 在地差異」
+- 10 個 source_type 文案(PubMed/FDA/WHO/NICE/EMA/Cochrane/LOINC/MedlinePlus/RxNorm/LocalAuthority)無處儲存
+- 無 `citation_info_viewed` PostHog event
+
+---
+
+### 4.3 Settings user_context 可修改 — ❌ 未開始
+
+- 無 `pages/settings.tsx`
+- Navbar dropdown(`components/Navbar.tsx`)僅有語言切換 + 訂閱管理,無 My Context 區塊
+- 無「第 10 次查詢後再問一次 banner」機制
+- 無「匯出偏好 JSON」、「清除偏好」按鈕
+
+---
+
+### 4.4 處方解析 MVP — ❌ 未開始
+
+- 無 `pages/prescription*.tsx`
+- `pages/verify.tsx` 是既有藥物交互作用功能(藥名對 + FDA),非處方解析 pipeline
+- 無 Stage 1/2/3/4 LLM parsing + RxNorm 查詢 + 交互作用矩陣生成邏輯
+- 無 `prescription_analysis_started` event
+- 無 Pro-gating(每日 2 次 free / Pro 不限次)
+
+---
+
+## Phase 1C — 護城河啟動
+
+### 5.1 在地差異提示(機制層 + 資料層)— ❌ 未開始
+
+- `api/rag/generator.py` system prompt 無「若答案涉及在地敏感議題,附加 ⚠️ Regional Differences Notice」指令
+- 前端無 locale hint 元件(背景微黃 + ⚠️ 圖示 + 收合記住)
+- 無 `locale_hint_displayed` / `locale_hint_clicked` / `locale_hint_dismissed` PostHog event
+- 無 locale 偵測 chain(`user_context.locale` → work_language → timezone → IP)
+
+---
+
+### 5.1.1 YAML 知識庫(config/locale_authorities/ 6 國)— ❌ 未開始
+
+- `config/locale_authorities/` 整個目錄不存在
+- 無 `tw.yaml` / `jp.yaml` / `kr.yaml` / `sg.yaml` / `my.yaml` / `th.yaml`
+- 無 `global_fallback.yaml`(Tier 2 fallback: WHO / NICE / EMA / Cochrane)
+- 無 `api/models/locale_authorities.py` Pydantic schema
+- 無 `get_authorities(locale)` loader
+- `requirements.txt` 未列 PyYAML
+
+---
+
+### 5.2 跨語言橋接面板 — ❌ 未開始
+
+- grep `language_bridge_expanded|key_english_terms` 只命中 PRD.md
+- `api/rag/generator.py` 回傳無 `key_english_terms[]` JSON 欄位
+- `api/rag/retriever.py` 的 query rewrite 結果(3 個英文查詢)未透過 SSE 傳到前端
+- 前端無側邊收合面板 component(`components/LanguageBridge*.tsx` 不存在)
+- 無 `work_language !== 'en'` 才顯示的條件渲染
+
+---
+
+## Cross-cutting observations
+
+### PostHog event 體系現況
+
+- **wrapper 已有三個業務事件**(2026-04-18):`citation_clicked`(CitationPanel)、`feedback_thumbs_up` / `feedback_thumbs_down`(FeedbackBar)。全部 query_id 由 `buildCommonProps()` 自動帶入
+- `pages/_app.tsx:50` 仍用 `posthog.capture('$pageview')` 直接發 pageview,未走 wrapper。PRD 6.1 / Round B 會處理
+- 尚未建立 `query_submitted` / `query_completed` / `export_pdf_clicked` 等 Round B 事件
+
+### `request.client.host` → `_get_client_ip` 修正(歷史紀錄)
+
+- `api/server.py:159-167` 已有 `_get_client_ip()` helper(X-Forwarded-For 優先)
+- rate limiter(L178)、`_check_phi`(L351)、Dodo webhook audit(L1340)皆已改用
+- `fly.toml [http_service.concurrency]` 有 `hard_limit=100 / soft_limit=50`
+- 非 PRD 範圍,記此以備日後查閱
+
+### Planning doc 狀態
+
+- `docs/PRD.md`(v1.2)已從 docx 轉 md
+- `FEATURE_AUDIT.md`(本檔)已於 2026-04-18 以 PRD v1.2 重掃
+- CLAUDE.md Planning Documents 區塊只保留 PRD.md + FEATURE_AUDIT.md 兩條
+
+---
+
+## Phase 0 完成度總結
+
+| 項目 | 狀態 | 備註 |
+|---|---|---|
+| 2.0 PostHog wrapper | ✅ | Round A 完成,生產驗收過 |
+| 2.1 Model Provider | ❌ | 10 檔案待 refactor,5-7 天工程 |
+| 2.2 query_id | ✅ | 2026-04-18 lands;research / verify / explain 共用 audit_id,前端模組狀態自動注入 |
+| 2.3 Citation 追蹤 | ✅ | 2026-04-18 lands;`citation_clicked` 送出 `{query_id, source_type, url, citation_position}` |
+| 2.3a Feedback 事件 | ✅ | 伴隨 2.3 lands;`feedback_thumbs_up` / `feedback_thumbs_down` 帶 category + query_id |
+| 2.4 Bug 回報 | ❌ | 獨立可做,1 天 |
+| 2.5 Landing SEO | ✅ | 完整 meta + JSON-LD + noindex 子頁 |
+| 2.6 i18n hreflang | ✅ | Strategy A 完成 |
+| 2.7 Explain 臨床推理 | ❌ | Prompt + JSON schema + frontend 1-2 天 |
+
+Phase 0 還剩 3 項(2.1 / 2.4 / 2.7);2.1 仍是最大塊工程,2.4 / 2.7 各 1-2 天。

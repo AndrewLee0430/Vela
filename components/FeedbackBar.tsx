@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useAuth } from '@clerk/nextjs';
 import { useLang } from '../utils/LangContext';
 import { getUI } from '../utils/i18n-ui';
+import { track } from '../utils/analytics';
 
 interface FeedbackBarProps {
     query: string;
@@ -36,12 +37,14 @@ export default function FeedbackBar({ query, response, category }: FeedbackBarPr
     const handleLike = () => {
         if (status !== 'idle') return;
         setStatus('liked');
+        try { track('feedback_thumbs_up', { category }); } catch {}
         sendFeedback(1);
     };
 
     const handleDislike = () => {
         if (status !== 'idle') return;
         setStatus('disliked');
+        try { track('feedback_thumbs_down', { category }); } catch {}
         sendFeedback(-1);
     };
 

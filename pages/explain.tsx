@@ -14,6 +14,7 @@ import PHIWarning from '../components/PHIWarning';
 import UpgradeModal from '../components/UpgradeModal';
 import ProFeatureOverlay from '../components/ProFeatureOverlay';
 import PageShell from '../components/PageShell';
+import { setQueryId } from '../utils/analytics';
 import { useLang } from '../utils/LangContext';
 import { getUI, getLoincTooltip as getLoincTooltipI18n } from '../utils/i18n-ui';
 import { getExtra } from '../utils/i18n-extra';
@@ -336,6 +337,7 @@ function ExplainForm() {
         if (isRunningRef.current) return;
         isRunningRef.current = true;
         setOutput(''); setSources([]); setError(''); setStatusMsg(''); setLoading(true); setPhiError(null);
+        setQueryId(null);
         const controller = new AbortController();
         try {
             const jwt = await getToken({ skipCache: true });
@@ -354,7 +356,10 @@ function ExplainForm() {
                     if (!ev.data || ev.data.trim() === '') return;
                     try {
                         const data = JSON.parse(ev.data);
-                        if (data.type === 'status') {
+                        if (data.type === 'query_id') {
+                            if (data.query_id) setQueryId(data.query_id);
+                        }
+                        else if (data.type === 'status') {
                             const statusMap: Record<string, string> = {
                                 'Analyzing your report...': ui.statusAnalyzingReport,
                                 'Looking up verified sources...': ui.statusLookingUp,
@@ -395,6 +400,7 @@ function ExplainForm() {
 
     const handleReset = () => {
         setReportText(''); setOutput(''); setSources([]); setError(''); setStatusMsg(''); setPhiError(null);
+        setQueryId(null);
         handleUploadReset();
     };
 
