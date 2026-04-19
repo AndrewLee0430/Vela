@@ -2,6 +2,7 @@ import { ReactNode } from 'react';
 import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/nextjs';
 import Navbar from './Navbar';
 import MobileNav from './MobileNav';
+import BugReportButton from './BugReportButton';
 
 type ActivePage = 'research' | 'verify' | 'explain' | 'history';
 
@@ -23,6 +24,7 @@ export default function PageShell({ activePage, children, extraHead }: PageShell
                 <SignedIn>{children}</SignedIn>
                 <SignedOut><RedirectToSignIn /></SignedOut>
                 <MobileNav />
+                <BugReportButton />
             </main>
         </>
     );
