@@ -12,11 +12,48 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - 2.3 CitationPanel click tracking + FeedbackBar events (source_type lowercase canonical)
 - 2.5 Landing Page SEO (isLoaded gate removed, JSON-LD in place)
 - 2.6 i18n hreflang (Strategy A, 16 languages + x-default)
+- 2.4 Bug 回報浮動按鈕 (`BugReportButton` FAB + `/api/bug-report` + PHI cleaning + rate limit 5/hour)
 
 **Next task** (choose one):
-- 2.4 Bug 回報浮動按鈕 (1d, 獨立)
-- 3.4 Privacy Policy 16 語言翻譯 (0.5d, 獨立)
+- 2.8 Anonymous Trial Flow (1.5-2d, Decision 001 v0.2 Accepted)
 - 2.7 Explain 臨床推理強化 (1-2d)
+- 2.1 Model Provider Refactor (5-7d, 8 檔案)
+
+### Phase 0 End Action (required before Phase 1A)
+
+Before starting Phase 1A, conduct Phase 0 Retrospective:
+- **Cost review**: actual OpenAI spend vs Decision 001 estimates; calibrate L0/L1 credit config if needed
+- **Code health**: Sentry error rate, tech debt scan, Provider refactor regression check
+- **Product health**: anonymous trial flow validation, PostHog funnel integrity, SEO verification
+- **Deliverable**: create `docs/decisions/002-phase-0-retrospective.md` documenting findings and action items
+- **Estimated effort**: 2.5-3 days
+
+### Tech Debt (tracked for future resolution)
+
+- **[P0 — Must resolve in 2.8]** localhost Clerk sign-in flow missing
+  - Root cause: `_app.tsx` ClerkProvider 使用 Clerk Hosted mode (no `signInUrl` / `signUpUrl` props), localhost 無法登入建立 session
+  - Evidence: 2.4 localhost testing 時,前端無法登入;curl 用 production `await Clerk.session.getToken()` 取新鮮 JWT 測試後端,user_id 正確寫入 DB (user_3BQM...) → 證明 code 正確,只是環境限制
+  - Resolution in 2.8:
+    1. 加 `pages/sign-in/[[...index]].tsx` 和 `pages/sign-up/[[...index]].tsx`
+    2. `_app.tsx` ClerkProvider 加 `signInUrl="/sign-in"` / `signUpUrl="/sign-up"` / fallback redirect URLs
+    3. Rewrite `_optional_user_id()` as `require_auth_or_anonymous()` with explicit 3-tier handling for L0/L1/L2 (per Decision 001 v0.2 § 3.1)
+    4. 補 AUTHORIZED_PARTIES config if Clerk SDK 要求
+
+- **[P1] print() violations in api/** (54 處, audited 2026-04-19)
+  - 生產路徑 9 處(影響 Sentry + log aggregation):
+    - `fda.py:149/152/177` — FDA 請求失敗用 print 而非 logger
+    - `simple_cache.py:90/111/179/183` — cache 事件(179/183 每次 cached call 都吵)
+    - `vector_store.py:38/46` — 啟動 log;L46 含 ✅ emoji 在 Windows CP950 會爆
+  - Test harness (`if __name__ == "__main__":`) 45 處,低優先
+  - `fda_cached.py` 整檔為 dead code (CLAUDE.md 已標),可順手刪除
+  - Resolution: 排入 Phase 0 Retrospective 一次清理
+
+- **[P2] PowerShell 運行 `.env` parse warning**
+  - `python-dotenv` 啟動時 warn `could not parse statement starting at line 1/2`
+  - 不影響功能但 log 很吵
+  - 可能原因:`.env` 檔 UTF-8 BOM,或前兩行有 shell export 語法
+  - Resolution: Phase 0 Retrospective 清 .env 編碼
+
 
 ### Discovered Gaps (action required)
 
@@ -24,9 +61,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   - Full decision record: `docs/decisions/001-anonymous-trial-flow.md`
   - PRD section: § 2.8 (new)
   - Discovered: 2026-04-18
-  - Status: Proposed · pending team review
+  - Status: Accepted (solo founder review, 2026-04-19)
 
-**Remaining Phase 0**: 2.4 (1d) → 2.7 (1-2d) → 2.1 (5-7d, largest)
+**Remaining Phase 0**: 2.8 (1.5-2d) → 2.7 (1-2d) → 2.1 (5-7d, largest)
 
 **Always consult `FEATURE_AUDIT.md` for latest codebase state before starting any task.**
 

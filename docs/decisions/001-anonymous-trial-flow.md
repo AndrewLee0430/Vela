@@ -1,6 +1,6 @@
 # Decision 001: Anonymous Trial Flow
 
-**Status**: Proposed · pending team review
+**Status**: Accepted (solo founder review, 2026-04-19)
 **Date**: 2026-04-18
 **Version**: 0.2(supersedes v0.1 of same decision)
 **Author**: andre (solo founder)

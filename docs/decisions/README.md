@@ -24,7 +24,7 @@
 
 | # | 標題 | Status | 日期 | 簡述 |
 |---|---|---|---|---|
-| 001 | Anonymous Trial Flow | Proposed | 2026-04-18 | 兩層 UX / 三層資料設計,兌現 Privacy-first 承諾 |
+| 001 | Anonymous Trial Flow | Accepted (solo founder review, 2026-04-19) | 2026-04-18 | 兩層 UX / 三層資料設計,兌現 Privacy-first 承諾 |
 
 ## 如何加新決策
 

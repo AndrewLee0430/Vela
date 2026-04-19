@@ -639,7 +639,7 @@ explain_completed 事件加入:
 
 ## 2.8 Anonymous Trial Flow(Phase 0,P1,新增)
 
-**Status**:Proposed · detailed design in Decision 001 v0.2
+**Status**:Accepted(solo founder review, 2026-04-19)· detailed design in Decision 001 v0.2
 **Full design**:[`docs/decisions/001-anonymous-trial-flow.md`](decisions/001-anonymous-trial-flow.md)
 **發現日期**:2026-04-18(post-v1.2 discovered gap,not in original v1.2 scope)
 

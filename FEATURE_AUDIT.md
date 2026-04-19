@@ -17,7 +17,7 @@
 - **Problem**: Landing Page 承諾「No account required to try」(PRD § 0.3),但實際上點 "Try it for free" 被 Clerk sign-in 擋住
 - **Decision Record**: [`docs/decisions/001-anonymous-trial-flow.md`](docs/decisions/001-anonymous-trial-flow.md)
 - **PRD Section**: § 2.8(新增)
-- **Status**: Proposed — pending team review
+- **Status**: Accepted (solo founder review, 2026-04-19)
 - **Next Action**: Team review of Decision 001,決議後 schedule 進 Phase 0 workplan
 
 ---
@@ -100,12 +100,23 @@
 
 ---
 
-### 2.4 Bug 回報浮動按鈕 — ❌ 未開始
+### 2.4 Bug 回報機制 — ✅ Resolved 2026-04-19
 
-- `components/BugReport*` / `FeedbackButton*` 不存在
-- grep `bug_report|Report an issue|回報問題` 僅命中 PRD
-- 無 i18n key `bug_report.*`
-- 無 support@an-tho.com 郵件 endpoint(`pages/api/` 整個目錄不存在;mailto 觸發流程亦無)
+- **Status**: ✅ Resolved 2026-04-19
+- **Resolution**:
+  - New `BugReportButton` FAB component in PageShell (authenticated pages)
+  - New backend `POST /api/bug-report` endpoint
+  - New `bug_reports` table (auto-created via `Base.metadata.create_all()`)
+  - PHI sanitization via `PHIDetector.sanitize_for_log()` before DB write
+  - Rate limit 5 requests/hour per IP via existing `rate_limiter`
+  - PostHog events: `bug_report_opened`, `bug_report_submitted` (via `analytics.track()`)
+  - i18n: en + zh-TW complete, other locales fallback to en
+  - Auth handling: `_optional_user_id()` accepts both authenticated (writes user_id) and anonymous submissions
+- **Production verification**: pending deploy + smoke test
+- **Known issues handed to Tech Debt (see CLAUDE.md)**:
+  - `_optional_user_id()` localhost limitation — not code bug; Clerk Hosted + missing `/sign-in` page (resolved in 2.8)
+  - `print()` violations in api/ (9 prod + 45 test harness) — resolved in Phase 0 Retrospective
+- **Original state** (for reference): 僅 mailto link, 需浮動按鈕
 
 ---
 
@@ -291,9 +302,9 @@
 | 2.2 query_id | ✅ | 2026-04-18 lands;research / verify / explain 共用 audit_id,前端模組狀態自動注入 |
 | 2.3 Citation 追蹤 | ✅ | 2026-04-18 lands;`citation_clicked` 送出 `{query_id, source_type, url, citation_position}` |
 | 2.3a Feedback 事件 | ✅ | 伴隨 2.3 lands;`feedback_thumbs_up` / `feedback_thumbs_down` 帶 category + query_id |
-| 2.4 Bug 回報 | ❌ | 獨立可做,1 天 |
+| 2.4 Bug 回報 | ✅ | 2026-04-19 lands;FAB + `/api/bug-report` + PHI cleaning + rate limit 5/hour |
 | 2.5 Landing SEO | ✅ | 完整 meta + JSON-LD + noindex 子頁 |
 | 2.6 i18n hreflang | ✅ | Strategy A 完成 |
 | 2.7 Explain 臨床推理 | ❌ | Prompt + JSON schema + frontend 1-2 天 |
 
-Phase 0 還剩 3 項(2.1 / 2.4 / 2.7);2.1 仍是最大塊工程,2.4 / 2.7 各 1-2 天。
+Phase 0 還剩 2 項(2.7 / 2.1)+ 1 個發現的 gap(2.8,Decision 001 v0.2 Accepted);2.1 仍是最大塊工程,2.7 / 2.8 各 1-2 天。
