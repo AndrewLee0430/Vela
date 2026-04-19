@@ -141,4 +141,4 @@ media/
 # 備份文件
 *.bak
 *.backup
-*.orig
+*.orig.tmp-docs/
