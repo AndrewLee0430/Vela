@@ -636,6 +636,96 @@ explain_completed 事件加入:
 - 16 語言 i18n key 與翻譯:0.25 天
 - LLM judge 評估 prompt + 真實 case 驗證:0.25-0.5 天
 - 總計:1-2 天
+
+## 2.8 Anonymous Trial Flow(Phase 0,P1,新增)
+
+**Status**:Proposed · detailed design in Decision 001 v0.2
+**Full design**:[`docs/decisions/001-anonymous-trial-flow.md`](decisions/001-anonymous-trial-flow.md)
+**發現日期**:2026-04-18(post-v1.2 discovered gap,not in original v1.2 scope)
+
+### 背景
+
+Landing Page 承諾 "No account required to try"(§ 0.3),但實際上點 "Try it for free" 被 Clerk sign-in 擋住。這是 Phase 1A LinkedIn 第一篇 post 的前置 blocker。
+
+### 目標
+
+兌現 § 0.3 Privacy-first 承諾,消除 GTM credibility gap,同時對齊維運計畫 v3 § 8.3 的 10 credits/day 成本預算。
+
+### 設計摘要(完整規格見 Decision 001 v0.2)
+
+**兩層 UX / 三層資料**:
+- 對使用者感知:Try free / Pro
+- 內部資料:L0 匿名 / L1 註冊免費 ("Vela for Work") / L2 Pro
+
+**Credit 配置(對齊維運計畫 10 credits/day 上限)**:
+
+| | Research | Verify | Explain | Model | 總 credits |
+|---|---|---|---|---|---|
+| L0 匿名 | 2/day | 2/day | **❌ 不開放** | GPT-4.1-mini | — |
+| L1 "Vela for Work" | 2/day | 2/day | 1/day | GPT-4.1 | **10 credits** ✅ |
+| L2 Pro | ~30/day | ~100/day | ~50/day | GPT-4.1 | 100 credits cap |
+
+**L1 升級感來源(不靠量,靠解鎖 + 品質)**:
+1. ⭐ Explain 從 L0 完全不開放 → L1 1/day(新功能解鎖)
+2. ⭐ 7 天 history(stateless → persistent)
+3. ⭐ 跨裝置同步
+4. ⭐ Role-based 個人化範例
+5. ✅ Model 品質升級(mini → GPT-4.1,對使用者包裝為「Enhanced clinical reasoning」)
+
+**L1 對外 brand naming**:"Vela for Work"(註冊帳號版)
+**對外絕不使用的技術語言**:"GPT-4.1-mini"、"upgraded model"、"LLM"
+**對外使用的價值語言**:"Enhanced clinical reasoning"、"Deeper answers"、"Richer citation depth"
+
+**Daily budget cap**:$2 USD/day($60/月 hard ceiling,保護成本失控)
+
+**UX 升級路徑**:
+1. Landing Page 點 "Try it free" 直接進 /research,不經過 Clerk
+2. 第 3 次查詢完成後,顯示可關閉 soft CTA(「Sign up free — get deeper answers, saved history, and Explain」)
+3. Quota 用完顯示 modal,含三選項:Sign up free / Continue tomorrow / Go Pro($9.99/月)
+4. L0 嘗試使用 Explain 時,顯示「Explain is a free feature — sign up to unlock」
+
+### 驗收標準(摘要,完整見 Decision 001 v0.2 § 2)
+
+1. 無痕視窗打開 vela.an-tho.com → 點 "Try it free" → 直接送查詢不被 Clerk 擋
+2. L0 使用者送出 Research 查詢 → 正常拿到 citations + disclaimer,FeedbackBar thumbs 點擊後顯示登入提示(不送 event)
+3. L0 使用者 **進入 /explain 頁面 → 顯示 sign-up CTA 而非表單**(L0 完全無法用 Explain)
+4. L0 第 3 次查詢完成後,答案下方顯示可關閉 soft CTA
+5. L0 quota 用完(Research 或 Verify 任一項達上限)→ 顯示 modal 含「免費註冊 / 明天再來 / 升級 Pro」三選項,「明天再來」選項絕對保留
+6. Daily budget 觸發 $2 cap 後,新匿名請求返回 429 + 明確錯誤訊息
+7. 已註冊 L1/L2 使用者不受 anonymous cap 影響
+8. L1 使用者的 Research / Verify / Explain 走 GPT-4.1(非 mini),延遲 / 品質符合既有 L2 行為
+9. L0 使用者的 Research / Verify 走 GPT-4.1-mini
+10. PostHog 可追蹤 L0 → L1 轉換 funnel(event: `anonymous_to_registered`)
+11. 新 event `explain_locked_viewed` 可追蹤多少 L0 使用者試圖進入 Explain(重要:Phase 1A Week 4 review 的核心指標)
+
+### Out of Scope(Phase 0 不做)
+
+- 匿名使用者的 FeedbackBar 送出(以 tooltip 提示註冊即可)
+- 匿名使用者的 history(stateless by design)
+- 匿名使用者 user_context 個人化(通用範例池即可)
+- 手機 / email 驗證(違反 privacy-first)
+- reCAPTCHA(違反 privacy-first,見 Decision 001 § 4.2)
+- 匿名使用者的 Explain(完全不開放,作為 L1 解鎖誘因)
+
+### 工期
+
+1.5-2 工作天,排入 Phase 0 位於 § 2.4 Bug 回報 之後、§ 2.7 Explain 強化 之前。
+
+### 依賴
+
+- 既有 `api/middleware/rate_limiter.py`(擴充 `RATE_LIMITS`)
+- 既有 `api/services/usage_service.py`(加 anonymous branch,Explain 明確 reject)
+- 既有 `utils/analytics.ts`(加匿名 event)
+- 既有 Clerk `<SignedOut>` 組件(Landing Page CTA 改走 /research)
+- 既有 `api/providers/factory.py`(加 `is_anonymous` 參數,routing 到 mini vs 4.1)
+
+### Notes
+
+- Credit 數字為 **Phase 0 initial values**。Phase 1A Week 4 根據 PostHog metrics 校準(trigger points 見 Decision 001 v0.2 § 6.3)
+- Quota 限制**建議透過 env var 設定**,避免調整時要 redeploy(見 Decision 001 v0.2 § 3.4)
+- **L1 credit 總和嚴格不超過 10 credits/day**,對齊維運計畫 v3 § 8.3 的 Free tier 成本預算承諾
+- L0 不開放 Explain 是策略選擇,Phase 1A Week 4 若發現 `explain_locked_viewed` < 20% → Explain 解鎖誘因弱,考慮 L0 開放 1 次 Explain
+
 **三、Phase 1A — 定位落地**
 
 Phase 1A 不做新功能,只做「感知層」——讓使用者進來的前 30 秒立刻感覺「這個產品為我設計」。

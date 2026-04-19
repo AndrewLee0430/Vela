@@ -6,6 +6,22 @@
 
 ---
 
+## Discovered Gaps
+
+> 記錄在 PRD 之外發現的產品落差。每一項 gap 建立對應的 Decision Record 後,此區塊僅保留 pointer 和 status,不重複決策細節。
+
+### G1. Anonymous Trial Flow
+
+- **Severity**: High — Phase 1A LinkedIn launch blocker
+- **Discovered**: 2026-04-18 by andre(無痕視窗測試)
+- **Problem**: Landing Page 承諾「No account required to try」(PRD § 0.3),但實際上點 "Try it for free" 被 Clerk sign-in 擋住
+- **Decision Record**: [`docs/decisions/001-anonymous-trial-flow.md`](docs/decisions/001-anonymous-trial-flow.md)
+- **PRD Section**: § 2.8(新增)
+- **Status**: Proposed — pending team review
+- **Next Action**: Team review of Decision 001,決議後 schedule 進 Phase 0 workplan
+
+---
+
 ## Status key
 
 - ✅ 已完成 — 實作與 PRD 驗收條件對齊

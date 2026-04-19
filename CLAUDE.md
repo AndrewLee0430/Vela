@@ -8,12 +8,23 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Completed** (do not re-implement):
 - 2.0 PostHog wrapper (`utils/analytics.ts` + `AnalyticsAuthBridge`, v143)
+- 2.2 query_id via SSE (all 3 features emit query_id as first event, v144)
+- 2.3 CitationPanel click tracking + FeedbackBar events (source_type lowercase canonical)
 - 2.5 Landing Page SEO (isLoaded gate removed, JSON-LD in place)
 - 2.6 i18n hreflang (Strategy A, 16 languages + x-default)
 
-**Next sprint** (2.2 + 2.3 combined, 0.5-1d):
-- 2.2 query_id via SSE (backend `audit_id` → frontend state → analytics common field)
-- 2.3 CitationPanel click tracking (`citation_clicked` event)
+**Next task** (choose one):
+- 2.4 Bug 回報浮動按鈕 (1d, 獨立)
+- 3.4 Privacy Policy 16 語言翻譯 (0.5d, 獨立)
+- 2.7 Explain 臨床推理強化 (1-2d)
+
+### Discovered Gaps (action required)
+
+- **G1. Anonymous Trial Flow** — Landing Page promises "No account required to try" but "Try it for free" redirects to Clerk sign-in. Must resolve before Phase 1A Week 1 LinkedIn launch (privacy-first manifesto post).
+  - Full decision record: `docs/decisions/001-anonymous-trial-flow.md`
+  - PRD section: § 2.8 (new)
+  - Discovered: 2026-04-18
+  - Status: Proposed · pending team review
 
 **Remaining Phase 0**: 2.4 (1d) → 2.7 (1-2d) → 2.1 (5-7d, largest)
 
