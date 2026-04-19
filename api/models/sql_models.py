@@ -80,3 +80,18 @@ class WebhookEvent(Base):
     event_id = Column(String, primary_key=True)
     event_type = Column(String)
     processed_at = Column(DateTime, default=datetime.utcnow)
+
+
+class BugReport(Base):
+    __tablename__ = "bug_reports"
+
+    id = Column(String, primary_key=True)
+    issue_type = Column(String, nullable=False)          # inaccurate | ui_error | feature_request | other
+    description = Column(Text, nullable=False)
+    email = Column(String, nullable=True)
+    user_id = Column(String, nullable=True, index=True)  # Clerk user id, null for anonymous
+    query_id = Column(String, nullable=True, index=True) # last query_id when submitted on a feature page
+    page_url = Column(String, nullable=True)
+    user_agent = Column(String, nullable=True)
+    locale = Column(String, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)

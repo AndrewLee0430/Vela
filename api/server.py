@@ -65,7 +65,7 @@ from api.data_sources.fda import FDAClient
 from api.middleware.phi_handler import PHIDetector
 from api.middleware.guards import run_guards
 from api.database.sql_db import get_db, engine, Base, SessionLocal
-from api.models.sql_models import AuditLog, UserFeedback, ChatHistory
+from api.models.sql_models import AuditLog, UserFeedback, ChatHistory, BugReport
 from api.services.usage_service import check_credits, deduct_credits
 from api.utils.llm_judge import LLMJudge, Source as JudgeSource
 
@@ -154,6 +154,7 @@ RATE_LIMITS = {
     "/api/user/portal":           (5,  60),
     "/api/subscription/cancel":   (3,  60),
     "/api/explain/extract-image": (10, 60),
+    "/api/bug-report":            (5,  3600),
 }
 
 def _get_client_ip(request: Request) -> str:
@@ -991,6 +992,76 @@ async def create_feedback(
     except Exception as e:
         logger.error("Feedback error: %s", type(e).__name__)
         return {"status": "error", "message": "Failed to save feedback. Please try again."}
+
+
+# ============================================================
+# 功能 5a：Bug Report (PRD 2.4)
+# ============================================================
+_BUG_REPORT_ISSUE_TYPES = {"inaccurate", "ui_error", "feature_request", "other"}
+
+
+class BugReportCreate(BaseModel):
+    issue_type: str = Field(..., max_length=32)
+    description: str = Field(..., min_length=1, max_length=2000)
+    email: Optional[str] = Field(None, max_length=200)
+    query_id: Optional[str] = Field(None, max_length=64)
+    page_url: Optional[str] = Field(None, max_length=500)
+    locale: Optional[str] = Field(None, max_length=16)
+
+
+async def _optional_user_id(request: Request) -> Optional[str]:
+    """Extract Clerk user_id from Authorization header if present and valid.
+
+    Unlike optional_auth(), this returns None on missing/invalid tokens rather
+    than raising — required for endpoints that accept anonymous submissions.
+    """
+    if TEST_MODE:
+        return os.getenv("TEST_USER_ID") or None
+    auth_header = request.headers.get("Authorization", "")
+    if not auth_header.startswith("Bearer "):
+        return None
+    token = auth_header.split(" ", 1)[1]
+    try:
+        jwks = await get_jwks()
+        payload = jose_jwt.decode(
+            token, jwks, algorithms=["RS256"], options={"verify_aud": False}
+        )
+        return payload.get("sub")
+    except JWTError as e:
+        logger.warning("[bug-report] JWT verification failed: %s", e)
+        return None
+    except Exception as e:
+        logger.error("[bug-report] Unexpected error in _optional_user_id: %s: %s", type(e).__name__, e)
+        return None
+
+
+@app.post("/api/bug-report")
+async def create_bug_report(
+    payload: BugReportCreate,
+    request: Request,
+    db: Session = Depends(get_db),
+):
+    if payload.issue_type not in _BUG_REPORT_ISSUE_TYPES:
+        return JSONResponse(status_code=400, content={"status": "error", "message": "Invalid issue_type"})
+
+    user_id = await _optional_user_id(request)
+    user_agent = request.headers.get("user-agent", "")[:500] or None
+    bug_id = f"bug_{uuid.uuid4().hex[:16]}"
+
+    record = BugReport(
+        id=bug_id,
+        issue_type=payload.issue_type,
+        description=PHIDetector.sanitize_for_log(payload.description) or payload.description,
+        email=payload.email or None,
+        user_id=user_id,
+        query_id=payload.query_id or None,
+        page_url=payload.page_url or None,
+        user_agent=user_agent,
+        locale=payload.locale or None,
+    )
+    if _safe_db_write(db, record, label="BugReport"):
+        return {"status": "success", "id": bug_id}
+    return JSONResponse(status_code=500, content={"status": "error", "message": "Failed to save bug report."})
 
 
 # ============================================================
