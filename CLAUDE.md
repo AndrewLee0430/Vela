@@ -12,7 +12,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - 2.3 CitationPanel click tracking + FeedbackBar events (source_type lowercase canonical)
 - 2.5 Landing Page SEO (isLoaded gate removed, JSON-LD in place)
 - 2.6 i18n hreflang (Strategy A, 16 languages + x-default)
-- 2.4 Bug 回報浮動按鈕 (`BugReportButton` FAB + `/api/bug-report` + PHI cleaning + rate limit 5/hour)
+- 2.4 Bug 回報浮動按鈕 (`BugReportButton` FAB + `/api/bug-report` + PHI cleaning + rate limit 5/hour, production verified 2026-04-20 user_id=user_3BQM...)
 
 **Next task** (choose one):
 - 2.8 Anonymous Trial Flow (1.5-2d, Decision 001 v0.2 Accepted)

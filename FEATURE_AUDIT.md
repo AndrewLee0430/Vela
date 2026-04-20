@@ -112,7 +112,7 @@
   - PostHog events: `bug_report_opened`, `bug_report_submitted` (via `analytics.track()`)
   - i18n: en + zh-TW complete, other locales fallback to en
   - Auth handling: `_optional_user_id()` accepts both authenticated (writes user_id) and anonymous submissions
-- **Production verification**: pending deploy + smoke test
+- **Production verification**: ✅ 2026-04-20, user_id writes correctly
 - **Known issues handed to Tech Debt (see CLAUDE.md)**:
   - `_optional_user_id()` localhost limitation — not code bug; Clerk Hosted + missing `/sign-in` page (resolved in 2.8)
   - `print()` violations in api/ (9 prod + 45 test harness) — resolved in Phase 0 Retrospective
