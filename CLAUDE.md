@@ -100,6 +100,31 @@ Before starting Phase 1A, conduct Phase 0 Retrospective:
   - Risk if kept: wasted maintenance attention, false impression for future readers, ~150-300 prompt tokens wasted per call (dead FALLBACK entries not triggered but pollute code)
   - Discovered: 2026-04-20 during 2.9 Chinese variant handling spread (diagnostic flagged)
 
+- **[P0 → 明天(2026-04-21) 優先]** Landing Page 收尾
+  - 發現 2026-04-20(2.9 ship 後)
+  - **兩個問題:**
+    1. **Hero placeholder 硬寫英文**
+       - 當前:"Verify Warfarin + Aspirin — is it..." 等 rotating examples 全英文
+       - 問題:UI 切繁中後仍顯示英文 placeholder,違反 "Ask in any language" 品牌承諾
+       - 範圍:輪播多個 examples × 7 語言 = N × 7 translations
+       - 依賴:需先 enumerate 目前有幾條 placeholder examples,再做 i18n 擴充
+    2. **Privacy section 過長**
+       - 當前:5 條「我們承諾」+ 3 條「它不代表什麼」,共 8 個 bullet
+       - 問題:Landing Page 應為 conversion page,列限制 = anti-conversion;5 條承諾也偏多
+       - 決策(solo founder 2026-04-20 review):
+         - **刪除**:3 條「它不代表什麼」全部(移至 Privacy Policy 處理,該頁為 Phase 1A i18n mop-up)
+         - **壓縮**:5 條承諾 → 3 條(採下列版本):
+           - ✓ 不需驗證身分或執照
+           - ✓ 預設匿名,不要求真實姓名
+           - ✓ 資料不外流、不訓練 AI 模型
+         - **移除**的 2 條(偏好設定本地儲存、不販售資料第 4 條)其實併到第 3 條
+  - **執行預期工期:**
+    - Landing Page placeholder i18n 化:30-60 分鐘(輪播 N 條 × 7 語言)
+    - Privacy section 簡化 + i18n:30-40 分鐘
+    - 總計:約 1-2 小時
+  - **依賴與阻塞:** 無外部依賴,可於 2.8 開工前插入;建議排序:明天(2026-04-21)開工 2.8 前完成 Landing Page 修復
+  - **備註:** 本條 tech debt 屬「Phase 0 收尾 polish」性質,非新 PRD 需求。工時小可直接執行,不需單獨 ADR
+
 
 ### Discovered Gaps (action required)
 
