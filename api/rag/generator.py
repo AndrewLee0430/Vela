@@ -32,6 +32,8 @@ ERROR_MESSAGES = {
 }
 
 FALLBACK_PROMPTS = {
+    # Updated 2026-04-20: added Chinese variant handling per 2.9 learnings (see PRD § 2.9 post-release).
+    # Applied to "research" key only; "verify" and "document" keys below are dead code (tracked as tech debt).
     "research": """You are a clinical AI assistant supporting healthcare professionals.
 
 No retrieved documents are available for this query.
@@ -46,6 +48,20 @@ Requirements:
 Supported languages: English, 繁體中文 (zh-TW), 简体中文 (zh-CN), 日本語, 한국어, Español, Français, Deutsch, Italiano, Português, ภาษาไทย.
 IMPORTANT: Respond in the SAME language as the user's question. Never switch to English unless the input is English.
 (An explicit language instruction will also be appended at the end of the user message.)
+
+Chinese variant handling (when output language is zh-CN or zh-TW):
+
+**For zh-CN (Simplified Chinese, Mainland China / Singapore medical context):**
+- Use Simplified Chinese characters (简体字) EXCLUSIVELY
+- Do NOT use Traditional Chinese characters like 嚴/導/聯/時/監/評/狀/覆/與/證
+- Use simplified equivalents: 严/导/联/时/监/评/状/覆/与/证
+- Medical terminology should follow PRC / NMPA conventions (药物相互作用, 不良反应, 随访)
+
+**For zh-TW (Traditional Chinese, Taiwan medical context):**
+- Use Traditional Chinese characters (繁體字) as used in Taiwan
+- Medical terminology should follow Taiwan TFDA conventions (藥物交互作用, 不良反應, 追蹤)
+
+If output language is zh-CN but you produce Traditional Chinese characters, the output is INCORRECT. Always verify character form matches the specified variant before returning.
 """,
 
     "verify": """You are a clinical pharmacology expert supporting healthcare professionals.
@@ -260,6 +276,7 @@ class AnswerGenerator:
             logger.error("Fallback generation error: %s", e, exc_info=True)
             yield StreamEvent(type=StreamEventType.DONE)
 
+    # Updated 2026-04-20: added Chinese variant handling per 2.9 learnings (see PRD § 2.9 post-release)
     def _get_system_prompt(self, query_type: str = "research") -> str:
         base = """You are a clinical AI assistant supporting healthcare professionals.
 Your answers must be evidence-based, precise, and clinically actionable.
@@ -272,6 +289,20 @@ Core rules:
 
 Supported languages: English, 繁體中文 (zh-TW), 简体中文 (zh-CN), 日本語, 한국어, Español, Français, Deutsch, Italiano, Português, ภาษาไทย.
 IMPORTANT: An explicit language instruction will be appended in the user message — follow it exactly.
+
+Chinese variant handling (when output language is zh-CN or zh-TW):
+
+**For zh-CN (Simplified Chinese, Mainland China / Singapore medical context):**
+- Use Simplified Chinese characters (简体字) EXCLUSIVELY
+- Do NOT use Traditional Chinese characters like 嚴/導/聯/時/監/評/狀/覆/與/證
+- Use simplified equivalents: 严/导/联/时/监/评/状/覆/与/证
+- Medical terminology should follow PRC / NMPA conventions (药物相互作用, 不良反应, 随访)
+
+**For zh-TW (Traditional Chinese, Taiwan medical context):**
+- Use Traditional Chinese characters (繁體字) as used in Taiwan
+- Medical terminology should follow Taiwan TFDA conventions (藥物交互作用, 不良反應, 追蹤)
+
+If output language is zh-CN but you produce Traditional Chinese characters, the output is INCORRECT. Always verify character form matches the specified variant before returning.
 """
 
         if query_type == "verify":

@@ -2,6 +2,20 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+### Claude Code Collaboration Principles
+
+- 發現跨文件 drift 或指令模糊時,先提出選項讓使用者決定,不要擅自判斷
+- 執行前先 read 實際 code 驗證 spec 的假設,發現 mismatch 就停下
+- 醫療 / 法律 / 多語等專業領域不確定時,flag 而不是靜默做出 best guess
+- 順手發現的可修改項目(drift / dead code / consistency issues)flag 給使用者選擇,不要擅自擴張 scope
+
+Examples from 2026-04-19 to 2026-04-20 sessions:
+- Rule #4 print() check across CLAUDE.md / FEATURE_AUDIT
+- Decision 001 Status drift 跨 5 個檔案
+- Phase 0 執行順序表同步
+- verify_system.md zh-TW severity vs dict 衝突 flag
+- api/rag/generator.py dead code discovery before spec-blind edit
+
 ### Current Development Status
 
 **Phase**: Phase 0 — in progress (started 2026-04-17)
@@ -54,6 +68,37 @@ Before starting Phase 1A, conduct Phase 0 Retrospective:
   - 不影響功能但 log 很吵
   - 可能原因:`.env` 檔 UTF-8 BOM,或前兩行有 shell export 語法
   - Resolution: Phase 0 Retrospective 清 .env 編碼
+
+- **[P2] Chinese variant handling 已 spread(2026-04-20 完成),但 {response_language} pattern 仍不一致**
+  - Verify 2.9 用 `{response_language}` 變數注入 system prompt
+  - Research / Explain 用 `get_language_instruction()` append 到 user message
+  - 兩套都 work,但 pattern 不一致,未來擴充語言 feature 要同步改兩處
+  - Resolution: Phase 1A i18n mop-up 時統一 pattern(建議走 Verify 2.9 的 `{response_language}` 路線,同步 extract Research/Explain prompt to api/prompts/)
+  - Discovered: 2026-04-20 during 2.9 Chinese variant handling spread
+
+- **[P2] zh-TW / zh-CN severity Critical/Major 邊界 drift**
+  - zh-TW dict: Critical=危急, Major=嚴重
+  - zh-CN dict: Critical=严重, Major=重度
+  - 兩套設計:zh-TW 是 Taiwan 醫療 triage 4 級視覺語彙,zh-CN 是結構對稱
+  - Bilingual user 可能困惑(同字不同 severity)
+  - Resolution: Phase 1A 找台灣 + 大陸母語醫療人員 review,決定統一或保留 drift
+
+- **[P1] Research/Explain prompt 仍 inline 在 Python files(PRD § 6.5 違規)**
+  - `generator.py` 有 4 個 inline prompt string(`_get_system_prompt` + `FALLBACK_PROMPTS` × 3)
+  - `explain_service.py` 有 1 個 inline prompt(`EXPLAIN_GENERATION_PROMPT`)
+  - 違反 PRD § 6.5 "All system prompts 在 api/prompts/ 目錄下獨立檔案"
+  - 2.9 當下為了 scope 保護選擇 inline 編輯,未抽檔
+  - Resolution: 2.7 Explain 臨床推理強化時順便 extract `explain_service.py`;Research 的 prompt extract 排 Phase 1A
+  - Discovered: 2026-04-20 during 2.9 Chinese variant handling spread diagnostic
+
+- **[P2] Dead code in `api/rag/generator.py`**
+  - `FALLBACK_PROMPTS["verify"]` (dict entry at line ~34): Verify 走 `api/prompts/verify_system.md` 不經 `generator.generate_stream`,此 key 從未被呼叫
+  - `FALLBACK_PROMPTS["document"]` (dict entry at line ~34): 舊 patient-letter / consultation feature,全 codebase grep 無 caller
+  - `_get_system_prompt()` `query_type == "verify"` branch (line ~263): 同上
+  - Verification method: grep `query_type` + `FALLBACK_PROMPTS\[` 確認無活 caller,或 trace 從 /api endpoints 哪些 route 到 `generator.generate_stream`
+  - Resolution: Phase 1A i18n mop-up 或 2.7 Explain 抽檔時順手 sweep dead code
+  - Risk if kept: wasted maintenance attention, false impression for future readers, ~150-300 prompt tokens wasted per call (dead FALLBACK entries not triggered but pollute code)
+  - Discovered: 2026-04-20 during 2.9 Chinese variant handling spread (diagnostic flagged)
 
 
 ### Discovered Gaps (action required)
