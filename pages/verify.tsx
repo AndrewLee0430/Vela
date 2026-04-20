@@ -11,6 +11,7 @@ import PageShell from '../components/PageShell';
 import { setQueryId } from '../utils/analytics';
 import { useLang } from '../utils/LangContext';
 import { getUI } from '../utils/i18n-ui';
+import { formatInteractionSummary, getSeverityLabel, getRiskLevelLabel } from '../utils/i18n-verify';
 
 // Verify accent color
 const ACCENT = '#63b3ed';
@@ -156,20 +157,27 @@ function VerifyForm() {
             return { text: ui.noInteractions, color: 'rgba(255,255,255,0.5)' };
         }
         const severityOrder = ['Critical', 'Major', 'Moderate', 'Minor'];
-        const counts: Record<string, number> = {};
+        // Accumulate counts + carry backend-localized label (severity_label) for formatter
+        const buckets: Record<string, { label?: string; count: number }> = {};
         let highestIdx = severityOrder.length;
         for (const i of interactions) {
-            counts[i.severity] = (counts[i.severity] || 0) + 1;
-            const idx = severityOrder.indexOf(i.severity);
+            const key = i.severity;
+            if (!buckets[key]) {
+                buckets[key] = { label: i.severity_label || undefined, count: 0 };
+            }
+            buckets[key].count += 1;
+            const idx = severityOrder.indexOf(key);
             if (idx !== -1 && idx < highestIdx) highestIdx = idx;
         }
-        const parts = severityOrder.filter(s => counts[s]).map(s => `${counts[s]} ${s}`);
+        const breakdown = severityOrder
+            .filter(s => buckets[s])
+            .map(s => ({ canonical: s, label: buckets[s].label, count: buckets[s].count }));
         const colorMap: Record<string, string> = {
             Critical: '#f87171', Major: '#f87171', Moderate: '#fbbf24', Minor: '#60a5fa',
         };
         const highest = highestIdx < severityOrder.length ? severityOrder[highestIdx] : 'Minor';
         return {
-            text: `Found ${interactions.length} interaction${interactions.length > 1 ? 's' : ''}: ${parts.join(', ')}`,
+            text: formatInteractionSummary(lang, interactions.length, breakdown),
             color: colorMap[highest] || 'rgba(255,255,255,0.5)',
         };
     };
@@ -284,7 +292,7 @@ function VerifyForm() {
                                         {ui.analysisSummary}
                                     </h2>
                                     <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium border ${getRiskBadge(result.risk_level)}`}>
-                                        {result.risk_level_label || result.risk_level}
+                                        {result.risk_level_label || getRiskLevelLabel(lang, result.risk_level)}
                                     </span>
                                 </div>
                                 {(() => {
@@ -312,19 +320,19 @@ function VerifyForm() {
                                         {result.interactions.map((interaction, idx) => (
                                             <div key={idx} className={`border-l-4 rounded-lg p-4 ${getSeverityStyle(interaction.severity)}`}>
                                                 <div className="flex justify-between items-start mb-2">
-                                                    <p className="font-semibold text-sm" style={{ color: "rgba(255,255,255,0.5)" }}>
+                                                    <p className="font-semibold text-base text-slate-900 dark:text-slate-100">
                                                         {interaction.drug_pair[0]} ↔ {interaction.drug_pair[1]}
                                                     </p>
                                                     <span className={`px-2 py-0.5 rounded text-xs font-medium ml-2 flex-shrink-0 ${getSeverityBadge(interaction.severity)}`}>
-                                                        {interaction.severity_label || interaction.severity}
+                                                        {interaction.severity_label || getSeverityLabel(lang, interaction.severity)}
                                                     </span>
                                                 </div>
-                                                <div className="space-y-2 text-xs leading-relaxed text-gray-700 dark:text-gray-300">
+                                                <div className="space-y-2 text-sm leading-relaxed text-gray-800 dark:text-gray-200">
                                                     <p>{interaction.description}</p>
                                                     {interaction.clinical_recommendation && (
-                                                        <p className="opacity-80">{interaction.clinical_recommendation}</p>
+                                                        <p className="opacity-90">{interaction.clinical_recommendation}</p>
                                                     )}
-                                                    <p className="text-gray-400 italic">
+                                                    <p className="text-xs text-gray-600 dark:text-gray-400 italic">
                                                         Source:{' '}
                                                         {interaction.source_url ? (
                                                             <a href={interaction.source_url} target="_blank" rel="noopener noreferrer"
