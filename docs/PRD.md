@@ -104,6 +104,8 @@ Phase 0 的任務都是看不見的技術基礎,但決定後續所有功能的�
 
 **v1.2 重大變更:**Phase 0 從 v1.1 的 2-2.5 週延長為 2.5-3 週(13-15 個工作天)。原因:新增 2.7 Explain 臨床推理強化(1-2 天)。2.7 排在 2.1 Model Provider 之前執行,原因見上節最後一段。
 
+**post-v1.2 調整(2026-04-20):**再新增 2.8 Anonymous Trial Flow(1.5-2d)與 2.9 Verify 輸出語言對齊 user locale(1d)兩個 discovered gaps,Phase 0 總工時調整為 3-3.7 週(加 2.8 + 2.9 兩個 post-v1.2 discovered gaps 合計 2.5-3 天)。
+
 **Phase 0 執行順序建議**
 
 | **順序** | **任務** | **說明** | **工期** |
@@ -112,10 +114,12 @@ Phase 0 的任務都是看不見的技術基礎,但決定後續所有功能的�
 | Day 1-1.5 | 2.0 PostHog 基礎建設 | 其他追蹤任務依賴此 | 1-1.5d |
 | Day 2 | 2.2 query_id + 2.3 Citation 追蹤 | 可並行,依賴 2.0 | 0.5d |
 | Day 2.5-3.5 | 3.1 user_context schema(前移) | Onboarding 改版依賴此 | 1-2d |
-| Day 3.5-4.5 | 2.4 Bug 回報入口 | 相對獨立可最後做 | 1d |
-| Day 5-6.5 | 2.7 Explain 臨床推理強化(v1.2 新增) | 改 explain_service.py prompt,1-2 天 | 1-2d |
-| Day 6.5-12.5 | 2.1 Model Provider 全面 refactor | 最大工作量,8 檔案 | 5-7d |
-| Day 13-14.5 | Regression 測試 + buffer | 統一驗收 | 2d |
+| Day 3.5-4.5 | 2.4 Bug 回報入口 | 相對獨立可最後做(✅ 已完成 2026-04-19, production verified 2026-04-20) | 1d |
+| Day 4.5-6 | 2.8 Anonymous Trial Flow(discovered gap,Decision 001 v0.2 Accepted) | 兩層 UX / 三層資料設計 | 1.5-2d |
+| Day 6-7 | 2.9 Verify 輸出語言對齊 user locale(discovered gap,Accepted) | 傳 response_language,改 verify system prompt | 1d |
+| Day 7-8.5 | 2.7 Explain 臨床推理強化(v1.2 新增) | 改 explain_service.py prompt,1-2 天 | 1-2d |
+| Day 8.5-14.5 | 2.1 Model Provider 全面 refactor | 最大工作量,8 檔案 | 5-7d |
+| Day 15-16.5 | Regression 測試 + buffer | 統一驗收 | 2d |
 
 **2.0 PostHog 事件基礎建設(v1.1 新增)**
 
@@ -725,6 +729,73 @@ Landing Page 承諾 "No account required to try"(§ 0.3),但實際上點 "Try it
 - Quota 限制**建議透過 env var 設定**,避免調整時要 redeploy(見 Decision 001 v0.2 § 3.4)
 - **L1 credit 總和嚴格不超過 10 credits/day**,對齊維運計畫 v3 § 8.3 的 Free tier 成本預算承諾
 - L0 不開放 Explain 是策略選擇,Phase 1A Week 4 若發現 `explain_locked_viewed` < 20% → Explain 解鎖誘因弱,考慮 L0 開放 1 次 Explain
+
+## 2.9 Verify 輸出語言對齊 user locale(Phase 0,P1,新增)
+
+**Status**: Accepted (solo founder review, 2026-04-20)
+**發現日期**: 2026-04-20(post-2.4 production smoke test)
+
+### 背景
+
+Vela 核心承諾 "Ask in any language, answered in yours"(§ 0.2)對 Verify 服務失效。使用者把介面切換為繁中、點選英文藥名標籤(例如 Warfarin + Aspirin),/verify endpoint 回傳英文交互作用分析,違反承諾。
+
+根本原因:Verify input 是結構化藥名 tokens(不是自然語言),LLM 無法從 input 推論使用者期待輸出語言。Research / Explain 輸入是自然語言,LLM 可從輸入語言推論輸出語言,所以運作正常。
+
+### 目標
+
+- 把「使用者期待輸出語言」訊號明確傳入 Verify 的 LLM prompt
+- 保留藥名 canonical 英文格式(安全性 + 可搜尋性)
+- 翻譯所有描述性內容(severity label、description、recommendation)
+
+### 設計原則
+
+**保留英文**:
+- 藥名 canonical(e.g., `Warfarin`、`Aspirin`)
+- FDA Label Source 引用標示
+
+**翻譯成 user locale**:
+- 交互作用嚴重度 tag(Major → 嚴重)
+- 機制描述
+- 建議與監測事項
+- Hedging 語言
+
+### 技術實作
+
+**前端 (pages/verify.tsx)**:
+- fetch /api/verify 時帶 `response_language` 參數,取自 LangContext
+- 語言來源 fallback 順序:user_context.work_language → UI language → browser Accept-Language → "en"
+
+**後端 (api/services/verify_service.py 或 api/prompts/verify_system.md)**:
+- System prompt 接受 `{response_language}` 變數
+- 明確指示 LLM:「回覆用 {response_language},藥名保留英文 canonical,嚴重度使用對應語言」
+
+### 驗收標準
+
+1. UI 切繁中 → 點 Warfarin + Aspirin → 送出 → severity tag 顯示「嚴重」不是「Major」
+2. UI 切繁中 → 描述內容、建議都是繁中
+3. UI 切繁中 → 藥名仍顯示為 `Warfarin, Aspirin`(英文 canonical 保留)
+4. UI 切日文 → 同樣邏輯(日文描述 + 英文藥名)
+5. UI 切其他語言 → fallback 可運作(至少英文)
+
+### 不做什麼
+
+- 不把藥名翻譯成當地語言(保留 English canonical)
+- 不做靜態預翻譯庫(維護成本過高)
+- 不做多層翻譯(先英文再翻),直接用 LLM 一次輸出目標語言
+
+### 工期
+
+1 個工作天
+
+### 依賴
+
+- 既有 `utils/LangContext.tsx`(已存在,提供當前 UI locale)
+- 既有 `api/services/verify_service.py`
+- 既有 `api/prompts/verify_*.md`(若存在)
+
+### Notes
+
+本節是 post-v1.2 discovered gap,發現於 2.4 production smoke test 時的多語測試。
 
 **三、Phase 1A — 定位落地**
 
@@ -1640,6 +1711,7 @@ pharmacist Free → Pro 轉換率 ≥ 其他角色 2 倍是 PMF 達成的主要�
 
 - v1.2 從 v1.1 的 2-2.5 週延長為 2.5-3 週(13-15 工作天)
 - 原因:v1.2 新增 2.7 Explain 臨床推理強化(1-2 天),排在 2.1 Model Provider 之前
+- **post-v1.2 再調整(2026-04-20):**Phase 0 工時從 2.5-3 週調整為 3-3.7 週(加 2.8 + 2.9 兩個 post-v1.2 discovered gaps 合計 2.5-3 天)
 - Provider 抽象層 refactor 本身就是 5-7 天工作量,是 Phase 0 最大項目
 - 若發現時程緊,可將 Bug 回報(2.4)推到 Phase 1A 初期(獨立性高),2.7 不可推遲(Model Provider 依賴其 prompt 定型)
 **附錄 A:PRD 使用說明**
@@ -1699,6 +1771,11 @@ pharmacist Free → Pro 轉換率 ≥ 其他角色 2 倍是 PMF 達成的主要�
 | 調整:8.4 Phase 1C 驗收標準 | 新增 YAML 驗證、6 國 YAML 完整、url_native HTTP 200 三項。 |
 | 調整:附錄 A.2 章節對照 | 新增 2.7 與 5.1.1 的 FEATURE_AUDIT 對照行。 |
 | 調整:附錄 A.1 範例 prompt | 改以 2.7 為範例任務。 |
+
+**10.1.1 v1.2 post-release 變更記錄(非正式 bump 版號)**
+
+- 2026-04-18:新增 § 2.8 Anonymous Trial Flow(discovered gap,見 ADR 001)
+- 2026-04-20:新增 § 2.9 Verify 輸出語言對齊 user locale(discovered gap,solo review Accepted,post-2.4 smoke test)
 
 **10.2 v1.0 → v1.1 變更(2026-04-17)**
 

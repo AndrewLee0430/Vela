@@ -16,6 +16,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Next task** (choose one):
 - 2.8 Anonymous Trial Flow (1.5-2d, Decision 001 v0.2 Accepted)
+- 2.9 Verify 輸出語言對齊 user locale (1d, PRD § 2.9 Accepted)
 - 2.7 Explain 臨床推理強化 (1-2d)
 - 2.1 Model Provider Refactor (5-7d, 8 檔案)
 
@@ -63,7 +64,7 @@ Before starting Phase 1A, conduct Phase 0 Retrospective:
   - Discovered: 2026-04-18
   - Status: Accepted (solo founder review, 2026-04-19)
 
-**Remaining Phase 0**: 2.8 (1.5-2d) → 2.7 (1-2d) → 2.1 (5-7d, largest)
+**Remaining Phase 0**: 2.8 (1.5-2d) → 2.9 (1d) → 2.7 (1-2d) → 2.1 (5-7d, largest)
 
 **Always consult `FEATURE_AUDIT.md` for latest codebase state before starting any task.**
 
