@@ -307,6 +307,6 @@
 | 2.6 i18n hreflang | ✅ | Strategy A 完成 |
 | 2.7 Explain 臨床推理 | ❌ | Prompt + JSON schema + frontend 1-2 天 |
 | 2.8 Anonymous Trial Flow | ⏳ 未開始 | discovered gap,Decision 001 v0.2 Accepted;兩層 UX / 三層資料設計,1.5-2 天 |
-| 2.9 Verify 輸出語言對齊 user locale | ⏳ 未開始 | discovered gap,Accepted 2026-04-20;傳 response_language + 改 verify system prompt,1 天 |
+| 2.9 Verify 輸出語言對齊 user locale | ✅ 已完成 2026-04-20 | response_language variable + verify_system.md v2.1 + 7 languages i18n-verify.ts + UX polish + Chinese variant handling spread to Research/Explain |
 
-Phase 0 還剩 2 項(2.7 / 2.1)+ 2 個發現的 gap(2.8 Decision 001 v0.2 Accepted / 2.9 PRD § 2.9 Accepted);2.1 仍是最大塊工程,2.7 / 2.8 / 2.9 合計 3.5-5 天。
+Phase 0 還剩 2 項(2.7 / 2.1)+ 1 個發現的 gap(2.8 Decision 001 v0.2 Accepted);2.1 仍是最大塊工程,2.7 / 2.8 合計 2.5-4 天。

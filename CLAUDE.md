@@ -27,10 +27,10 @@ Examples from 2026-04-19 to 2026-04-20 sessions:
 - 2.5 Landing Page SEO (isLoaded gate removed, JSON-LD in place)
 - 2.6 i18n hreflang (Strategy A, 16 languages + x-default)
 - 2.4 Bug 回報浮動按鈕 (`BugReportButton` FAB + `/api/bug-report` + PHI cleaning + rate limit 5/hour, production verified 2026-04-20 user_id=user_3BQM...)
+- 2.9 Verify 輸出語言對齊 user locale (response_language variable + prompt v2.1 + 7 languages i18n + UX polish + Chinese variant handling spread) — 2026-04-20 production verified
 
 **Next task** (choose one):
 - 2.8 Anonymous Trial Flow (1.5-2d, Decision 001 v0.2 Accepted)
-- 2.9 Verify 輸出語言對齊 user locale (1d, PRD § 2.9 Accepted)
 - 2.7 Explain 臨床推理強化 (1-2d)
 - 2.1 Model Provider Refactor (5-7d, 8 檔案)
 
