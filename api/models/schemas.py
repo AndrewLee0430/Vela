@@ -176,6 +176,12 @@ class VerifyRequest(BaseModel):
         description="患者背景 (年齡範圍、性別、共病)，請勿輸入個資",
         max_length=200
     )
+    response_language: Optional[str] = Field(
+        None,
+        description="使用者期待的輸出語言代碼 (e.g. 'zh-TW', 'ja', 'en')。未提供時後端會回退到 Accept-Language → 'en'。",
+        max_length=16,
+        examples=["zh-TW", "ja", "en"],
+    )
 
     @field_validator("drugs")
     @classmethod
@@ -197,7 +203,8 @@ class VerifyRequest(BaseModel):
 class DrugInteraction(BaseModel):
     """單一交互作用結果"""
     drug_pair: tuple[str, str]
-    severity: str  # Critical, Major, Moderate, Minor, Unknown
+    severity: str  # Canonical enum: Critical, Major, Moderate, Minor, Unknown (for CSS / summary math)
+    severity_label: Optional[str] = None  # Localized display (e.g. '嚴重' for zh-TW). Frontend: label || severity
     description: str
     mechanism: Optional[str] = None
     clinical_recommendation: str
@@ -210,7 +217,9 @@ class VerifyResponse(BaseModel):
     drugs_analyzed: list[str]
     interactions: list[DrugInteraction]
     summary: str
-    risk_level: str  # High, Moderate, Low
+    risk_level: str  # Canonical enum: Critical, Major, Moderate, Minor, Low, Unknown
+    risk_level_label: Optional[str] = None  # Localized display for risk_level
+    response_language: Optional[str] = None  # Language used for LLM response (echoed back for frontend debug / analytics)
     disclaimer: str = "For reference only. Does not constitute medical advice. Please consult a qualified healthcare professional."
     query_time_ms: int
     query_id: Optional[str] = None

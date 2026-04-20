@@ -71,7 +71,76 @@ from api.utils.llm_judge import LLMJudge, Source as JudgeSource
 
 from api.models.explain_schemas import ExplainRequest
 from api.services.explain_service import run_explain_pipeline
-from api.utils.language_detector import detect_language, get_language_instruction  # ← v2.5
+from api.utils.language_detector import detect_language, get_language_instruction, LANGUAGE_NAMES, get_language_name  # ← v2.5
+
+# ============================================================
+# Verify system prompt (PRD § 2.9, v2)
+# ============================================================
+_VERIFY_PROMPT_PATH = Path(__file__).parent / "prompts" / "verify_system.md"
+_VERIFY_PROMPT_FALLBACK = (
+    "You are a clinical pharmacist. Analyze FDA drug labels for interactions.\n\n"
+    "Respond in {response_language}. Drug names stay in English canonical form "
+    "(e.g., 'Warfarin'). `severity` and `risk_level` stay as English enum "
+    "(Critical/Major/Moderate/Minor). `severity_label` and `risk_level_label` "
+    "are the localized display in {response_language}. `description`, "
+    "`recommendation`, and `summary` must be in {response_language}.\n\n"
+    "Return valid JSON only:\n"
+    '{{"interactions":[{{"drugs":["Drug1","Drug2"],"severity":"Major",'
+    '"severity_label":"嚴重","description":"...","recommendation":"..."}}],'
+    '"summary":"...","risk_level":"Major","risk_level_label":"嚴重"}}'
+)
+
+try:
+    _VERIFY_SYSTEM_TEMPLATE = _VERIFY_PROMPT_PATH.read_text(encoding="utf-8")
+    logger.info("[Verify] system prompt loaded from %s", _VERIFY_PROMPT_PATH)
+except FileNotFoundError:
+    logger.warning("[Verify] prompt file missing, using inline fallback: %s", _VERIFY_PROMPT_PATH)
+    _VERIFY_SYSTEM_TEMPLATE = _VERIFY_PROMPT_FALLBACK
+
+
+def _resolve_response_language(body_value: Optional[str], request: Request) -> str:
+    """
+    Resolve user's desired response language for Verify per PRD § 2.9.
+
+    Fallback chain:
+      1. body.response_language (if valid LANGUAGE_NAMES key)
+      2. first tag from Accept-Language header (if valid)
+      3. "en"
+    """
+    # Normalize common aliases
+    def _normalize(code: str) -> Optional[str]:
+        if not code:
+            return None
+        code = code.strip()
+        if code in LANGUAGE_NAMES:
+            return code
+        # BCP-47 normalization: "zh-tw" → "zh-TW", "ZH-CN" → "zh-CN"
+        if "-" in code:
+            primary, region = code.split("-", 1)
+            canonical = f"{primary.lower()}-{region.upper()}"
+            if canonical in LANGUAGE_NAMES:
+                return canonical
+        # Bare primary subtag: "zh" → "zh-TW" (matches existing detect_language behavior)
+        if code.lower() == "zh":
+            return "zh-TW"
+        low = code.lower()
+        if low in LANGUAGE_NAMES:
+            return low
+        return None
+
+    resolved = _normalize(body_value) if body_value else None
+    if resolved:
+        return resolved
+
+    accept = request.headers.get("accept-language", "")
+    if accept:
+        # "zh-TW,zh;q=0.9,en;q=0.8" → first tag = "zh-TW"
+        first_tag = accept.split(",", 1)[0].split(";", 1)[0].strip()
+        resolved = _normalize(first_tag)
+        if resolved:
+            return resolved
+
+    return "en"
 
 # ============================================================
 # DB write helper
@@ -546,7 +615,12 @@ async def verify_drug_interaction(
     if not passed:
         return JSONResponse(status_code=400, content={"detail": guard_error})
 
-    # ── 語言偵測：優先用 patient_context（含用戶語言），否則從藥名猜 ──
+    # ── PRD § 2.9: 語言決策優先 body.response_language，不再從藥名猜 ──
+    response_language = _resolve_response_language(body.response_language, request)
+    response_language_name = get_language_name(response_language)
+    logger.info("[Verify] response_language=%s (body=%s)", response_language, body.response_language)
+
+    # Legacy lang detection retained for fallback path's lang_instruction only
     verify_query = body.patient_context or " ".join(body.drugs)
     lang = detect_language(verify_query)
     lang_instruction = get_language_instruction(lang)
@@ -620,14 +694,15 @@ async def verify_drug_interaction(
                 action="verify_fallback", query_content=f"LLM fallback: {body.drugs}", ip_address="0.0.0.0"),
                 label="Verify Audit")
 
-        fallback_system = """You are a clinical pharmacologist. Analyze drug interactions based on pharmacological knowledge.
-Return valid JSON only:
-{"interactions":[{"drugs":["Drug1","Drug2"],"severity":"Major","description":"...","recommendation":"..."}],"summary":"...","risk_level":"Major"}"""
+        # PRD § 2.9: fallback prompt also follows response_language contract
+        fallback_system = _VERIFY_SYSTEM_TEMPLATE.format(response_language=response_language_name)
 
         try:
-            fb_user_content = f"Analyze interaction between: {', '.join(body.drugs)}\nContext: {body.patient_context or 'None'}"
-            if lang_instruction:
-                fb_user_content += f"\n\n{lang_instruction}"
+            fb_user_content = (
+                f"Analyze interaction between: {', '.join(body.drugs)}\n"
+                f"Context: {body.patient_context or 'None'}\n"
+                "(No FDA label data available — rely on general clinical pharmacology knowledge.)"
+            )
             fb = await openai_async_client.chat.completions.create(
                 model="gpt-4.1-mini",
                 messages=[
@@ -641,6 +716,7 @@ Return valid JSON only:
                 DrugInteraction(
                     drug_pair=tuple(item["drugs"][:2]),
                     severity=item.get("severity","Unknown"),
+                    severity_label=item.get("severity_label") or None,
                     description=item.get("description",""),
                     clinical_recommendation=item.get("recommendation",""),
                     source="Clinical Knowledge (No FDA label available)",
@@ -656,6 +732,8 @@ Return valid JSON only:
                 interactions=fb_interactions,
                 summary=fb_summary,
                 risk_level=fb_data.get("risk_level","Unknown"),
+                risk_level_label=fb_data.get("risk_level_label") or None,
+                response_language=response_language,
                 query_time_ms=int((time.time()-start_time)*1000),
                 query_id=audit_id,
             )
@@ -667,32 +745,28 @@ Return valid JSON only:
             return VerifyResponse(
                 drugs_analyzed=body.drugs, interactions=[],
                 summary=fallback_summary,
-                risk_level="Unknown", query_time_ms=int((time.time()-start_time)*1000),
+                risk_level="Unknown",
+                response_language=response_language,
+                query_time_ms=int((time.time()-start_time)*1000),
                 query_id=audit_id,
             )
 
     fda_context = "\n".join([label.to_text() for label in drug_labels])
 
-    # ── 移除 "LANGUAGE RULE: Always respond in English"，改由語言偵測控制 ──
-    system_prompt = """You are a clinical pharmacist. Analyze FDA drug labels for interactions.
-Classify severity as: Critical, Major, Moderate, Minor.
-For each interaction include: mechanism, dose context, warning signs, monitoring parameters, safer alternative.
-
-Supported languages: English, 繁體中文 (zh-TW), 简体中文 (zh-CN), 日本語, 한국어, Español, Français, Deutsch, Italiano, Português, ภาษาไทย.
-IMPORTANT: Respond in the SAME language as the patient_context or question. An explicit language instruction will be appended — follow it exactly.
-
-Return valid JSON only:
-{"interactions":[{"drugs":["Drug1","Drug2"],"severity":"Major","description":"...","recommendation":"..."}],"summary":"...","risk_level":"Major"}"""
+    # ── PRD § 2.9: system prompt v2 從 api/prompts/verify_system.md 載入 ──
+    system_prompt = _VERIFY_SYSTEM_TEMPLATE.format(response_language=response_language_name)
 
     interactions = []
     summary = ""
     risk_level = "Unknown"
+    risk_level_label = None
     analysis_success = False
 
-    # ── user content 加入語言指令 ──────────────────────────────────
-    main_user_content = f"Patient Context: {body.patient_context or 'None'}\nDrugs: {', '.join(body.drugs)}\n\nFDA Data:\n{fda_context}"
-    if lang_instruction:
-        main_user_content += f"\n\n{lang_instruction}"
+    main_user_content = (
+        f"Patient Context: {body.patient_context or 'None'}\n"
+        f"Drugs: {', '.join(body.drugs)}\n\n"
+        f"FDA Data:\n{fda_context}"
+    )
 
     for attempt in range(2):
         try:
@@ -713,12 +787,14 @@ Return valid JSON only:
                 temp.append(DrugInteraction(
                     drug_pair=tuple(drugs[:2]),
                     severity=item.get("severity","Unknown"),
+                    severity_label=item.get("severity_label") or None,
                     description=item.get("description","No description provided"),
                     clinical_recommendation=item.get("recommendation",""),
                     source="FDA Label Analysis",
                     source_url=f"https://dailymed.nlm.nih.gov/dailymed/search.cfm?labeltype=all&query={drugs[0].replace(' ','+')}"
                 ))
             interactions = temp
+            risk_level_label = analysis.get("risk_level_label") or None
             analysis_success = True
             break
         except Exception as e:
@@ -770,7 +846,10 @@ Return valid JSON only:
 
     return VerifyResponse(
         drugs_analyzed=body.drugs, interactions=interactions,
-        summary=summary, risk_level=risk_level, query_time_ms=elapsed_ms,
+        summary=summary, risk_level=risk_level,
+        risk_level_label=risk_level_label,
+        response_language=response_language,
+        query_time_ms=elapsed_ms,
         query_id=audit_id,
     )
 

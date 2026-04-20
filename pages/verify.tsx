@@ -17,7 +17,8 @@ const ACCENT = '#63b3ed';
 
 interface DrugInteraction {
     drug_pair: [string, string];
-    severity: string;
+    severity: string;                 // canonical enum (Critical/Major/Moderate/Minor)
+    severity_label?: string | null;   // localized display (e.g. "嚴重")
     description: string;
     clinical_recommendation: string;
     source: string;
@@ -29,6 +30,8 @@ interface VerifyResponse {
     interactions: DrugInteraction[];
     summary: string;
     risk_level: string;
+    risk_level_label?: string | null;
+    response_language?: string | null;
     query_time_ms: number;
     disclaimer?: string;
     query_id?: string | null;
@@ -72,7 +75,11 @@ function VerifyForm() {
             const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/verify`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                body: JSON.stringify({ drugs: drugList, patient_context: null }),
+                body: JSON.stringify({
+                    drugs: drugList,
+                    patient_context: null,
+                    response_language: lang,  // PRD § 2.9: align LLM output language with UI locale
+                }),
             });
 
             if (res.status === 400) {
@@ -277,7 +284,7 @@ function VerifyForm() {
                                         {ui.analysisSummary}
                                     </h2>
                                     <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium border ${getRiskBadge(result.risk_level)}`}>
-                                        {result.risk_level}
+                                        {result.risk_level_label || result.risk_level}
                                     </span>
                                 </div>
                                 {(() => {
@@ -309,7 +316,7 @@ function VerifyForm() {
                                                         {interaction.drug_pair[0]} ↔ {interaction.drug_pair[1]}
                                                     </p>
                                                     <span className={`px-2 py-0.5 rounded text-xs font-medium ml-2 flex-shrink-0 ${getSeverityBadge(interaction.severity)}`}>
-                                                        {interaction.severity}
+                                                        {interaction.severity_label || interaction.severity}
                                                     </span>
                                                 </div>
                                                 <div className="space-y-2 text-xs leading-relaxed text-gray-700 dark:text-gray-300">
