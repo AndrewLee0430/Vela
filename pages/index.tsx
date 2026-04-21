@@ -1,7 +1,7 @@
 "use client"
 
 import Head from 'next/head';
-import { useUser, SignInButton, UserButton } from '@clerk/nextjs';
+import { useUser, UserButton } from '@clerk/nextjs';
 import { SignedIn, SignedOut } from '@clerk/nextjs';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -390,7 +390,7 @@ function LandingPage() {
           <PlanBadge onUpgrade={() => setShowUpgradeModal(true)} />
           <SignedIn><UserButton /></SignedIn>
           <SignedOut>
-            <SignInButton mode="modal">
+            <Link href="/sign-in">
               <button
                 className="px-5 py-2 text-sm font-medium text-white rounded-lg transition-all duration-200"
                 style={{ border: '1px solid rgba(255,255,255,0.2)' }}
@@ -399,7 +399,7 @@ function LandingPage() {
               >
                 {t.signIn}
               </button>
-            </SignInButton>
+            </Link>
           </SignedOut>
         </nav>
         <UpgradeModal isOpen={showUpgradeModal} onClose={() => setShowUpgradeModal(false)} />

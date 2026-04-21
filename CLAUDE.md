@@ -145,6 +145,16 @@ Before starting Phase 1A, conduct Phase 0 Retrospective:
   - 驗收:開新 Claude Code session 問它 "project structure",能正確描述 + 知道去哪看細節
   - Discovered: 2026-04-21(Landing Page ship 後 solo founder 討論 instruction budget best practice 時識別)
 
+- **[P2]** Clerk JWT authorized_parties (azp) claim 未驗證
+  - **現況**: `api/server.py` 使用 hand-rolled `jose_jwt.decode` with `options={"verify_aud": False}`,依賴 JWKS RS256 簽名驗證 + issuer 隱式信任。未檢查 `azp` claim。
+  - **風險**: 理論上若攻擊者能取得 Clerk 公開 JWKS 並知道 issuer,可能能 forge token 通過 signature verify。實務上極難(需拿到使用者 session token 或攻破 Clerk infra),但 defense-in-depth 標準作業應驗證 authorized_parties。
+  - **Resolution**:
+    - 新建 `CLERK_AUTHORIZED_PARTIES` env var(allowlist of origin URLs)
+    - `api/server.py` JWT decode 後手動檢查 `azp` claim 在 allowlist 中
+    - 或:改用 `fastapi_clerk_auth` 套件的完整驗證鏈(當前 import 未使用)
+  - **Priority**: P2(未有明確攻擊 vector 但屬 best practice);排入 Phase 0 Retrospective 或 Phase 1A 安全 review
+  - **Discovered**: 2026-04-22 during 2.8 Round 2A Clerk config diagnose
+
 
 ### Discovered Gaps (action required)
 

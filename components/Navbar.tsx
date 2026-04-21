@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from 'react';
-import { SignedIn, SignedOut, SignInButton, UserButton, useAuth, useUser } from '@clerk/nextjs';
+import { SignedIn, SignedOut, UserButton, useAuth, useUser } from '@clerk/nextjs';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Settings } from 'lucide-react';
@@ -305,7 +305,7 @@ export default function Navbar({ activePage }: NavbarProps) {
                                 <UserButton />
                             </SignedIn>
                             <SignedOut>
-                                <SignInButton mode="modal">
+                                <Link href="/sign-in">
                                     <button
                                         className="px-4 py-1.5 text-sm font-medium text-white rounded-lg transition-all duration-200"
                                         style={{ border: '1px solid rgba(255,255,255,0.2)' }}
@@ -314,7 +314,7 @@ export default function Navbar({ activePage }: NavbarProps) {
                                     >
                                         {ui.signIn}
                                     </button>
-                                </SignInButton>
+                                </Link>
                             </SignedOut>
                         </div>
                     </div>

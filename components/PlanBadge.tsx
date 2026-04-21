@@ -73,6 +73,9 @@ export default function PlanBadge({ onUpgrade }: PlanBadgeProps) {
     // Not signed in → Upgrade button opens sign-in flow, then redirects with ?upgrade=true
     if (!isSignedIn) {
         return (
+            // Intentional: Upgrade CTA uses modal + forceRedirectUrl for conversion funnel UX
+            // (modal-then-auto-open-UpgradeModal). Plain /sign-in link would drop the
+            // ?upgrade=true redirect chain and require a second click post-signin.
             <SignInButton mode="modal" forceRedirectUrl="/?upgrade=true">
                 <button className="text-base font-semibold px-3 py-1 rounded-lg transition-all mr-2" style={upgradeStyle}>
                     Upgrade
