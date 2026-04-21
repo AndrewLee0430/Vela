@@ -49,6 +49,10 @@ export interface Translations {
   seeHow: string;
   footerCopy: string;
   footerDisclaimer: string;
+  // Hero placeholder rotation (typewriter)
+  heroPlaceholderResearch: string;
+  heroPlaceholderVerify: string;
+  heroPlaceholderExplain: string;
   // Mockup card content
   mockupResearchQuery: string;
   mockupResearchSource: string;
@@ -58,6 +62,12 @@ export interface Translations {
   mockupExplainValue: string;
   mockupExplainStatus: string;
   mockupExplainSource: string;
+  // Privacy section (compact 3-bullet + policy link)
+  privacyTitle: string;
+  privacyPromise1: string;
+  privacyPromise2: string;
+  privacyPromise3: string;
+  privacyPolicyLink: string;
   // Arrows for RTL
   arrowRight: string;
   arrowLeft: string;
@@ -86,6 +96,9 @@ const en: Translations = {
   seeHow: 'See how Vela works',
   footerCopy: 'All rights reserved.',
   footerDisclaimer: 'Vela is a research tool, not a medical device. It does not provide medical advice.',
+  heroPlaceholderResearch: 'Metformin interactions in renal impairment',
+  heroPlaceholderVerify: 'Verify Warfarin + Aspirin — is it safe?',
+  heroPlaceholderExplain: 'Explain my blood test results in plain language',
   mockupResearchQuery: 'What are the side effects of Metformin?',
   mockupResearchSource: 'PubMed · Peer Reviewed',
   mockupVerifyDrugs: 'Warfarin + Aspirin',
@@ -94,12 +107,18 @@ const en: Translations = {
   mockupExplainValue: 'TSH 12.5 mIU/L (ref 0.4–4.0)',
   mockupExplainStatus: 'Above normal range',
   mockupExplainSource: 'LOINC · MedlinePlus',
+  privacyTitle: 'What "Privacy-first" means at Vela',
+  privacyPromise1: 'No identity or license verification required',
+  privacyPromise2: 'Anonymous by default — no real name required',
+  privacyPromise3: 'Your data is never shared, sold, or used to train AI',
+  privacyPolicyLink: 'Read our full privacy policy →',
   arrowRight: '→',
   arrowLeft: '←',
 };
 
 // ─── v1.1 Landing content ────────────────────────────────────────────────────
-// Phase 1 scope: en + zh-TW fully translated; other 14 langs fall back to en.
+// All 16 langs translated. hi / bn / th / ar / he / vi are moderate-to-lower
+// confidence — Phase 1A native-medical review queued (see CLAUDE.md tech debt).
 
 export interface LandingContent {
   tagline: string;
@@ -109,18 +128,6 @@ export interface LandingContent {
     language: { title: string; body: string };
     sources: { title: string; body: string };
     anonymous: { title: string; body: string };
-  };
-  privacy: {
-    title: string;
-    meansIdentity: string;
-    meansRealName: string;
-    meansDevice: string;
-    meansNoSell: string;
-    meansNoTraining: string;
-    doesntTitle: string;
-    doesntE2E: string;
-    doesntAnalytics: string;
-    doesntPayment: string;
   };
 }
 
@@ -142,18 +149,6 @@ const landingEn: LandingContent = {
       body: 'No identity verification. No account required to try.',
     },
   },
-  privacy: {
-    title: 'What "Privacy-first" means at Vela',
-    meansIdentity: "We don't verify your identity or license",
-    meansRealName: "We don't require your real name",
-    meansDevice: 'Your preferences (role, workplace, language) stay on your device, not our servers',
-    meansNoSell: "We don't sell or share any data with third parties",
-    meansNoTraining: "We don't use your queries to train AI models without consent",
-    doesntTitle: "What it doesn't mean",
-    doesntE2E: "We're not end-to-end encrypted (queries go through our servers to LLM providers)",
-    doesntAnalytics: 'We collect anonymous analytics to improve the product',
-    doesntPayment: 'Payment requires an email for receipts, not linked to your queries',
-  },
 };
 
 const landingZhTW: LandingContent = {
@@ -174,37 +169,305 @@ const landingZhTW: LandingContent = {
       body: '不驗證身分。試用無需註冊帳號。',
     },
   },
-  privacy: {
-    title: 'Vela 所謂「隱私優先」的定義',
-    meansIdentity: '我們不驗證你的身分或執照',
-    meansRealName: '我們不要求你的真實姓名',
-    meansDevice: '你的偏好設定（職務、工作地點、語言）只儲存在你的裝置上，不會上傳到我們的伺服器',
-    meansNoSell: '我們不販售或分享任何資料給第三方',
-    meansNoTraining: '未經同意，我們不會使用你的查詢訓練 AI 模型',
-    doesntTitle: '它不代表什麼',
-    doesntE2E: '我們並非端對端加密（查詢會經由我們的伺服器送到 LLM 提供者）',
-    doesntAnalytics: '我們會收集匿名分析資料以改善產品',
-    doesntPayment: '付款需要電子郵件以寄送收據，但不會與你的查詢連結',
+};
+
+const landingZhCN: LandingContent = {
+  tagline: '用你的语言提问。由官方来源验证。以你的语言回答。',
+  subtitle: '为跨语言工作的医疗专业人员打造的 AI 医学搜索。',
+  ctaPrimary: '免费试用 — 无需注册',
+  valueProp: {
+    language: {
+      title: '你的语言',
+      body: '支持 16 种语言。检索 2800 万+ 篇英文文献。',
+    },
+    sources: {
+      title: '官方来源',
+      body: '每个回答均附引用。PubMed、FDA 及你所在地的权威机构。',
+    },
+    anonymous: {
+      title: '默认匿名',
+      body: '不验证身份。试用无需注册账号。',
+    },
+  },
+};
+
+const landingJa: LandingContent = {
+  tagline: 'あなたの言語で質問。公式ソースで検証。あなたの言語で回答。',
+  subtitle: '英語以外でも働く医療従事者のための AI 医学検索。',
+  ctaPrimary: '無料で試す — 登録不要',
+  valueProp: {
+    language: {
+      title: 'あなたの言語で',
+      body: '16 言語対応。2800 万本以上の英語論文を検索。',
+    },
+    sources: {
+      title: '公式ソース',
+      body: 'すべての回答に引用付き。PubMed、FDA、地域の当局。',
+    },
+    anonymous: {
+      title: 'デフォルトで匿名',
+      body: '本人確認なし。試用にアカウント登録も不要。',
+    },
+  },
+};
+
+const landingKo: LandingContent = {
+  tagline: '당신의 언어로 질문. 공식 출처로 검증. 당신의 언어로 답변.',
+  subtitle: '영어권 밖에서 일하는 의료 전문가를 위한 AI 의학 검색.',
+  ctaPrimary: '무료로 시작 — 가입 불필요',
+  valueProp: {
+    language: {
+      title: '당신의 언어',
+      body: '16개 언어 지원. 2800만+ 편의 영어 논문 검색.',
+    },
+    sources: {
+      title: '공식 출처',
+      body: '모든 답변 인용 포함. PubMed, FDA 및 현지 기관.',
+    },
+    anonymous: {
+      title: '기본 익명',
+      body: '신분 확인 없음. 체험에 계정 가입 불필요.',
+    },
+  },
+};
+
+const landingEs: LandingContent = {
+  tagline: 'Pregunta en tu idioma. Verificado por fuentes oficiales. Respondido en el tuyo.',
+  subtitle: 'La búsqueda médica con IA para profesionales sanitarios que trabajan más allá del inglés.',
+  ctaPrimary: 'Prueba gratis — sin registro',
+  valueProp: {
+    language: {
+      title: 'Tu idioma',
+      body: 'Funciona en 16 idiomas. Busca entre más de 28 millones de artículos en inglés.',
+    },
+    sources: {
+      title: 'Fuentes oficiales',
+      body: 'Cada respuesta citada. PubMed, FDA y autoridades locales.',
+    },
+    anonymous: {
+      title: 'Anónimo por defecto',
+      body: 'Sin verificación de identidad. No requiere cuenta para probar.',
+    },
+  },
+};
+
+const landingFr: LandingContent = {
+  tagline: 'Posez la question dans votre langue. Vérifié par des sources officielles. Réponse dans la vôtre.',
+  subtitle: 'La recherche médicale par IA pour les professionnels de santé qui travaillent au-delà de l\'anglais.',
+  ctaPrimary: 'Essayez gratuitement — sans inscription',
+  valueProp: {
+    language: {
+      title: 'Votre langue',
+      body: 'Fonctionne en 16 langues. Recherche parmi plus de 28 millions d\'articles en anglais.',
+    },
+    sources: {
+      title: 'Sources officielles',
+      body: 'Chaque réponse citée. PubMed, FDA et autorités locales.',
+    },
+    anonymous: {
+      title: 'Anonyme par défaut',
+      body: 'Aucune vérification d\'identité. Aucun compte requis pour essayer.',
+    },
+  },
+};
+
+const landingDe: LandingContent = {
+  tagline: 'Fragen Sie in Ihrer Sprache. Geprüft von offiziellen Quellen. Antwort in Ihrer Sprache.',
+  subtitle: 'Die KI-Medizinsuche für medizinische Fachkräfte, die jenseits von Englisch arbeiten.',
+  ctaPrimary: 'Kostenlos testen — ohne Anmeldung',
+  valueProp: {
+    language: {
+      title: 'Ihre Sprache',
+      body: 'Funktioniert in 16 Sprachen. Durchsucht über 28 Mio. englische Artikel.',
+    },
+    sources: {
+      title: 'Offizielle Quellen',
+      body: 'Jede Antwort mit Quellenangabe. PubMed, FDA und lokale Behörden.',
+    },
+    anonymous: {
+      title: 'Standardmäßig anonym',
+      body: 'Keine Identitätsprüfung. Kein Konto zum Testen erforderlich.',
+    },
+  },
+};
+
+const landingIt: LandingContent = {
+  tagline: 'Chiedi nella tua lingua. Verificato da fonti ufficiali. Risposta nella tua.',
+  subtitle: 'La ricerca medica con IA per i professionisti sanitari che lavorano oltre l\'inglese.',
+  ctaPrimary: 'Prova gratis — senza registrazione',
+  valueProp: {
+    language: {
+      title: 'La tua lingua',
+      body: 'Funziona in 16 lingue. Cerca tra oltre 28 milioni di articoli in inglese.',
+    },
+    sources: {
+      title: 'Fonti ufficiali',
+      body: 'Ogni risposta citata. PubMed, FDA e autorità locali.',
+    },
+    anonymous: {
+      title: 'Anonimo di default',
+      body: 'Nessuna verifica di identità. Nessun account richiesto per provare.',
+    },
+  },
+};
+
+const landingPt: LandingContent = {
+  tagline: 'Pergunte no seu idioma. Verificado por fontes oficiais. Respondido no seu.',
+  subtitle: 'A pesquisa médica com IA para profissionais de saúde que trabalham além do inglês.',
+  ctaPrimary: 'Experimente grátis — sem cadastro',
+  valueProp: {
+    language: {
+      title: 'Seu idioma',
+      body: 'Funciona em 16 idiomas. Pesquisa mais de 28 milhões de artigos em inglês.',
+    },
+    sources: {
+      title: 'Fontes oficiais',
+      body: 'Toda resposta com citação. PubMed, FDA e autoridades locais.',
+    },
+    anonymous: {
+      title: 'Anônimo por padrão',
+      body: 'Sem verificação de identidade. Sem conta necessária para testar.',
+    },
+  },
+};
+
+const landingTh: LandingContent = {
+  tagline: 'ถามในภาษาของคุณ ตรวจสอบโดยแหล่งข้อมูลทางการ ตอบในภาษาของคุณ',
+  subtitle: 'การค้นหาทางการแพทย์ด้วย AI สำหรับบุคลากรทางการแพทย์ที่ทำงานนอกเหนือภาษาอังกฤษ',
+  ctaPrimary: 'ทดลองใช้ฟรี — ไม่ต้องสมัคร',
+  valueProp: {
+    language: {
+      title: 'ภาษาของคุณ',
+      body: 'รองรับ 16 ภาษา ค้นหาจากบทความภาษาอังกฤษกว่า 28 ล้านฉบับ',
+    },
+    sources: {
+      title: 'แหล่งข้อมูลทางการ',
+      body: 'ทุกคำตอบมีการอ้างอิง PubMed, FDA และหน่วยงานท้องถิ่น',
+    },
+    anonymous: {
+      title: 'ไม่ระบุตัวตนโดยค่าเริ่มต้น',
+      body: 'ไม่มีการยืนยันตัวตน ไม่ต้องสมัครบัญชีเพื่อทดลองใช้',
+    },
+  },
+};
+
+const landingAr: LandingContent = {
+  tagline: 'اسأل بلغتك. متحقق من مصادر رسمية. الإجابة بلغتك.',
+  subtitle: 'البحث الطبي بالذكاء الاصطناعي لمهنيي الرعاية الصحية الذين يعملون خارج اللغة الإنجليزية.',
+  ctaPrimary: 'جرّب مجاناً — بدون تسجيل',
+  valueProp: {
+    language: {
+      title: 'لغتك',
+      body: 'يدعم 16 لغة. يبحث في أكثر من 28 مليون مقالة باللغة الإنجليزية.',
+    },
+    sources: {
+      title: 'مصادر رسمية',
+      body: 'كل إجابة مع اقتباسات. PubMed وFDA والجهات المحلية.',
+    },
+    anonymous: {
+      title: 'مجهول الهوية افتراضياً',
+      body: 'لا تحقق من الهوية. لا حاجة لحساب للتجربة.',
+    },
+  },
+};
+
+const landingHi: LandingContent = {
+  tagline: 'अपनी भाषा में पूछें। आधिकारिक स्रोतों से सत्यापित। आपकी भाषा में उत्तर।',
+  subtitle: 'अंग्रेज़ी से परे काम करने वाले स्वास्थ्य पेशेवरों के लिए AI चिकित्सा खोज।',
+  ctaPrimary: 'मुफ़्त आज़माएं — साइन-अप आवश्यक नहीं',
+  valueProp: {
+    language: {
+      title: 'आपकी भाषा',
+      body: '16 भाषाओं में काम करता है। 2.8 करोड़+ अंग्रेज़ी लेखों से खोज।',
+    },
+    sources: {
+      title: 'आधिकारिक स्रोत',
+      body: 'हर उत्तर उद्धृत। PubMed, FDA और आपके स्थानीय प्राधिकरण।',
+    },
+    anonymous: {
+      title: 'डिफ़ॉल्ट रूप से गुमनाम',
+      body: 'कोई पहचान सत्यापन नहीं। आज़माने के लिए खाता आवश्यक नहीं।',
+    },
+  },
+};
+
+const landingBn: LandingContent = {
+  tagline: 'আপনার ভাষায় জিজ্ঞাসা করুন। আধিকারিক সূত্র দ্বারা যাচাইকৃত। আপনার ভাষায় উত্তর।',
+  subtitle: 'ইংরেজির বাইরে কাজ করা স্বাস্থ্য পেশাদারদের জন্য AI চিকিৎসা অনুসন্ধান।',
+  ctaPrimary: 'বিনামূল্যে চেষ্টা করুন — সাইন-আপ প্রয়োজন নেই',
+  valueProp: {
+    language: {
+      title: 'আপনার ভাষা',
+      body: '16টি ভাষায় কাজ করে। 2.8 কোটি+ ইংরেজি নিবন্ধ থেকে অনুসন্ধান।',
+    },
+    sources: {
+      title: 'আধিকারিক সূত্র',
+      body: 'প্রতিটি উত্তর উদ্ধৃতিসহ। PubMed, FDA এবং আপনার স্থানীয় কর্তৃপক্ষ।',
+    },
+    anonymous: {
+      title: 'ডিফল্টভাবে বেনামী',
+      body: 'কোনো পরিচয় যাচাই নেই। চেষ্টা করতে অ্যাকাউন্ট প্রয়োজন নেই।',
+    },
+  },
+};
+
+const landingHe: LandingContent = {
+  tagline: 'שאלו בשפה שלכם. מאומת ממקורות רשמיים. תשובה בשפתכם.',
+  subtitle: 'חיפוש רפואי מבוסס AI לאנשי מקצוע רפואיים שעובדים מחוץ לאנגלית.',
+  ctaPrimary: 'נסו בחינם — ללא הרשמה',
+  valueProp: {
+    language: {
+      title: 'השפה שלכם',
+      body: 'עובד ב-16 שפות. מחפש מעל 28 מיליון מאמרים באנגלית.',
+    },
+    sources: {
+      title: 'מקורות רשמיים',
+      body: 'כל תשובה עם ציטוטים. PubMed, FDA ורשויות מקומיות.',
+    },
+    anonymous: {
+      title: 'אנונימי כברירת מחדל',
+      body: 'ללא אימות זהות. לא נדרש חשבון כדי לנסות.',
+    },
+  },
+};
+
+const landingVi: LandingContent = {
+  tagline: 'Hỏi bằng ngôn ngữ của bạn. Được kiểm chứng từ nguồn chính thức. Trả lời bằng ngôn ngữ của bạn.',
+  subtitle: 'Công cụ tìm kiếm y khoa AI dành cho nhân viên y tế làm việc ngoài tiếng Anh.',
+  ctaPrimary: 'Dùng thử miễn phí — không cần đăng ký',
+  valueProp: {
+    language: {
+      title: 'Ngôn ngữ của bạn',
+      body: 'Hỗ trợ 16 ngôn ngữ. Truy xuất hơn 28 triệu bài báo tiếng Anh.',
+    },
+    sources: {
+      title: 'Nguồn chính thức',
+      body: 'Mọi câu trả lời đều có trích dẫn. PubMed, FDA và cơ quan địa phương.',
+    },
+    anonymous: {
+      title: 'Ẩn danh mặc định',
+      body: 'Không xác minh danh tính. Không cần tài khoản để dùng thử.',
+    },
   },
 };
 
 export const landingContent: Record<LangCode, LandingContent> = {
   en: landingEn,
   'zh-TW': landingZhTW,
-  'zh-CN': landingEn,
-  ja: landingEn,
-  ko: landingEn,
-  es: landingEn,
-  fr: landingEn,
-  de: landingEn,
-  it: landingEn,
-  pt: landingEn,
-  th: landingEn,
-  ar: landingEn,
-  hi: landingEn,
-  bn: landingEn,
-  he: landingEn,
-  vi: landingEn,
+  'zh-CN': landingZhCN,
+  ja: landingJa,
+  ko: landingKo,
+  es: landingEs,
+  fr: landingFr,
+  de: landingDe,
+  it: landingIt,
+  pt: landingPt,
+  th: landingTh,
+  ar: landingAr,
+  hi: landingHi,
+  bn: landingBn,
+  he: landingHe,
+  vi: landingVi,
 };
 
 export const translations: Record<LangCode, Translations> = {
@@ -232,6 +495,9 @@ export const translations: Record<LangCode, Translations> = {
     seeHow: '看看 Vela 怎麼運作',
     footerCopy: '版權所有',
     footerDisclaimer: 'Vela 為研究工具，非醫療器材，不提供醫療建議。',
+    heroPlaceholderResearch: 'Metformin 在腎功能不全時的交互作用',
+    heroPlaceholderVerify: '驗證 Warfarin + Aspirin — 安全嗎？',
+    heroPlaceholderExplain: '用白話解讀我的血液檢查報告',
     mockupResearchQuery: 'Metformin 的副作用有哪些？',
     mockupResearchSource: 'PubMed · 同儕審查',
     mockupVerifyDrugs: 'Warfarin + Aspirin',
@@ -240,6 +506,11 @@ export const translations: Record<LangCode, Translations> = {
     mockupExplainValue: 'TSH 12.5 mIU/L（參考值 0.4–4.0）',
     mockupExplainStatus: '高於正常範圍',
     mockupExplainSource: 'LOINC · MedlinePlus',
+    privacyTitle: 'Vela 所謂「隱私優先」的定義',
+    privacyPromise1: '不需驗證身分或執照',
+    privacyPromise2: '預設匿名，不要求真實姓名',
+    privacyPromise3: '資料不外流、不販售、不用於訓練 AI 模型',
+    privacyPolicyLink: '閱讀完整隱私權政策 →',
     arrowRight: '→',
     arrowLeft: '←',
   },
@@ -266,6 +537,9 @@ export const translations: Record<LangCode, Translations> = {
     seeHow: '看看 Vela 怎么运作',
     footerCopy: '版权所有',
     footerDisclaimer: 'Vela 为研究工具，非医疗器械，不提供医疗建议。',
+    heroPlaceholderResearch: 'Metformin 在肾功能不全时的相互作用',
+    heroPlaceholderVerify: '验证 Warfarin + Aspirin — 安全吗？',
+    heroPlaceholderExplain: '用白话解读我的血液检查报告',
     mockupResearchQuery: 'Metformin 的副作用有哪些？',
     mockupResearchSource: 'PubMed · 同行评审',
     mockupVerifyDrugs: 'Warfarin + Aspirin',
@@ -274,6 +548,11 @@ export const translations: Record<LangCode, Translations> = {
     mockupExplainValue: 'TSH 12.5 mIU/L（参考值 0.4–4.0）',
     mockupExplainStatus: '高于正常范围',
     mockupExplainSource: 'LOINC · MedlinePlus',
+    privacyTitle: 'Vela 所谓"隐私优先"的定义',
+    privacyPromise1: '无需验证身份或执照',
+    privacyPromise2: '默认匿名，不要求真实姓名',
+    privacyPromise3: '数据不外流、不贩售、不用于训练 AI 模型',
+    privacyPolicyLink: '阅读完整隐私政策 →',
     arrowRight: '→',
     arrowLeft: '←',
   },
@@ -300,6 +579,9 @@ export const translations: Record<LangCode, Translations> = {
     seeHow: 'Vela の仕組みを見る',
     footerCopy: '全著作権所有',
     footerDisclaimer: 'Vela は研究ツールであり、医療機器ではありません。医療アドバイスは提供しません。',
+    heroPlaceholderResearch: '腎機能低下時の Metformin 相互作用',
+    heroPlaceholderVerify: 'Warfarin + Aspirin の併用は安全か検証',
+    heroPlaceholderExplain: '血液検査の結果をわかりやすく解説',
     mockupResearchQuery: 'Metformin の副作用は何ですか？',
     mockupResearchSource: 'PubMed · 査読済み',
     mockupVerifyDrugs: 'Warfarin + Aspirin',
@@ -308,6 +590,11 @@ export const translations: Record<LangCode, Translations> = {
     mockupExplainValue: 'TSH 12.5 mIU/L（基準値 0.4–4.0）',
     mockupExplainStatus: '基準値を超えています',
     mockupExplainSource: 'LOINC · MedlinePlus',
+    privacyTitle: 'Vela における「プライバシー優先」の定義',
+    privacyPromise1: '身分証明や資格の確認は不要',
+    privacyPromise2: 'デフォルトで匿名 — 本名は不要',
+    privacyPromise3: 'データは共有・販売せず、AI の学習にも使用しません',
+    privacyPolicyLink: 'プライバシーポリシー全文を読む →',
     arrowRight: '→',
     arrowLeft: '←',
   },
@@ -334,6 +621,9 @@ export const translations: Record<LangCode, Translations> = {
     seeHow: 'Vela 작동 방식 보기',
     footerCopy: '모든 권리 보유',
     footerDisclaimer: 'Vela는 연구 도구이며 의료기기가 아닙니다. 의학적 조언을 제공하지 않습니다.',
+    heroPlaceholderResearch: '신기능 저하 시 Metformin 상호작용',
+    heroPlaceholderVerify: 'Warfarin + Aspirin 병용 — 안전한가?',
+    heroPlaceholderExplain: '혈액검사 결과를 쉬운 말로 설명',
     mockupResearchQuery: 'Metformin의 부작용은 무엇인가요?',
     mockupResearchSource: 'PubMed · 동료 심사',
     mockupVerifyDrugs: 'Warfarin + Aspirin',
@@ -342,6 +632,11 @@ export const translations: Record<LangCode, Translations> = {
     mockupExplainValue: 'TSH 12.5 mIU/L (참고치 0.4–4.0)',
     mockupExplainStatus: '정상 범위 초과',
     mockupExplainSource: 'LOINC · MedlinePlus',
+    privacyTitle: 'Vela의 "프라이버시 우선" 원칙이란',
+    privacyPromise1: '신분증이나 자격 확인이 필요 없습니다',
+    privacyPromise2: '기본 익명 — 실명을 요구하지 않습니다',
+    privacyPromise3: '데이터를 공유·판매하지 않으며, AI 학습에도 사용하지 않습니다',
+    privacyPolicyLink: '전체 개인정보 처리방침 보기 →',
     arrowRight: '→',
     arrowLeft: '←',
   },
@@ -368,6 +663,9 @@ export const translations: Record<LangCode, Translations> = {
     seeHow: 'Mira cómo funciona Vela',
     footerCopy: 'Todos los derechos reservados',
     footerDisclaimer: 'Vela es una herramienta de investigación, no un dispositivo médico. No proporciona asesoramiento médico.',
+    heroPlaceholderResearch: 'Interacciones de Metformin en insuficiencia renal',
+    heroPlaceholderVerify: 'Verificar Warfarin + Aspirin — ¿es seguro?',
+    heroPlaceholderExplain: 'Explica mi análisis de sangre en lenguaje sencillo',
     mockupResearchQuery: '¿Cuáles son los efectos secundarios de Metformin?',
     mockupResearchSource: 'PubMed · Revisado por pares',
     mockupVerifyDrugs: 'Warfarin + Aspirin',
@@ -376,6 +674,11 @@ export const translations: Record<LangCode, Translations> = {
     mockupExplainValue: 'TSH 12.5 mIU/L (ref 0.4–4.0)',
     mockupExplainStatus: 'Por encima del rango normal',
     mockupExplainSource: 'LOINC · MedlinePlus',
+    privacyTitle: 'Lo que significa "Privacidad primero" en Vela',
+    privacyPromise1: 'No se requiere verificación de identidad ni licencia',
+    privacyPromise2: 'Anónimo por defecto — sin nombre real requerido',
+    privacyPromise3: 'Tus datos nunca se comparten, venden ni se usan para entrenar IA',
+    privacyPolicyLink: 'Lee nuestra política de privacidad completa →',
     arrowRight: '→',
     arrowLeft: '←',
   },
@@ -402,6 +705,9 @@ export const translations: Record<LangCode, Translations> = {
     seeHow: 'Découvrez comment Vela fonctionne',
     footerCopy: 'Tous droits réservés',
     footerDisclaimer: 'Vela est un outil de recherche, pas un dispositif médical. Il ne fournit pas de conseils médicaux.',
+    heroPlaceholderResearch: 'Interactions de Metformin en insuffisance rénale',
+    heroPlaceholderVerify: 'Vérifier Warfarin + Aspirin — est-ce sûr ?',
+    heroPlaceholderExplain: 'Expliquez mon bilan sanguin en langage simple',
     mockupResearchQuery: 'Quels sont les effets secondaires de Metformin ?',
     mockupResearchSource: 'PubMed · Évalué par les pairs',
     mockupVerifyDrugs: 'Warfarin + Aspirin',
@@ -410,6 +716,11 @@ export const translations: Record<LangCode, Translations> = {
     mockupExplainValue: 'TSH 12.5 mIU/L (réf 0.4–4.0)',
     mockupExplainStatus: 'Au-dessus de la plage normale',
     mockupExplainSource: 'LOINC · MedlinePlus',
+    privacyTitle: 'Ce que signifie « Confidentialité d\'abord » chez Vela',
+    privacyPromise1: 'Aucune vérification d\'identité ni de licence requise',
+    privacyPromise2: 'Anonyme par défaut — aucun nom réel requis',
+    privacyPromise3: 'Vos données ne sont jamais partagées, vendues ni utilisées pour entraîner l\'IA',
+    privacyPolicyLink: 'Lire notre politique de confidentialité complète →',
     arrowRight: '→',
     arrowLeft: '←',
   },
@@ -436,6 +747,9 @@ export const translations: Record<LangCode, Translations> = {
     seeHow: 'So funktioniert Vela',
     footerCopy: 'Alle Rechte vorbehalten',
     footerDisclaimer: 'Vela ist ein Forschungstool, kein Medizinprodukt. Es bietet keine medizinische Beratung.',
+    heroPlaceholderResearch: 'Metformin-Wechselwirkungen bei Niereninsuffizienz',
+    heroPlaceholderVerify: 'Warfarin + Aspirin prüfen — ist es sicher?',
+    heroPlaceholderExplain: 'Blutbild in verständlicher Sprache erklären',
     mockupResearchQuery: 'Was sind die Nebenwirkungen von Metformin?',
     mockupResearchSource: 'PubMed · Peer-reviewed',
     mockupVerifyDrugs: 'Warfarin + Aspirin',
@@ -444,6 +758,11 @@ export const translations: Record<LangCode, Translations> = {
     mockupExplainValue: 'TSH 12.5 mIU/L (Ref 0.4–4.0)',
     mockupExplainStatus: 'Über dem Normalbereich',
     mockupExplainSource: 'LOINC · MedlinePlus',
+    privacyTitle: 'Was „Datenschutz zuerst" bei Vela bedeutet',
+    privacyPromise1: 'Keine Identitäts- oder Lizenzprüfung erforderlich',
+    privacyPromise2: 'Standardmäßig anonym — kein Klarname erforderlich',
+    privacyPromise3: 'Ihre Daten werden nicht geteilt, verkauft oder zum KI-Training verwendet',
+    privacyPolicyLink: 'Vollständige Datenschutzerklärung lesen →',
     arrowRight: '→',
     arrowLeft: '←',
   },
@@ -470,6 +789,9 @@ export const translations: Record<LangCode, Translations> = {
     seeHow: 'Scopri come funziona Vela',
     footerCopy: 'Tutti i diritti riservati',
     footerDisclaimer: 'Vela è uno strumento di ricerca, non un dispositivo medico. Non fornisce consulenza medica.',
+    heroPlaceholderResearch: "Interazioni di Metformin nell'insufficienza renale",
+    heroPlaceholderVerify: 'Verificare Warfarin + Aspirin — è sicuro?',
+    heroPlaceholderExplain: 'Spiega il mio esame del sangue in parole semplici',
     mockupResearchQuery: 'Quali sono gli effetti collaterali di Metformin?',
     mockupResearchSource: 'PubMed · Peer-reviewed',
     mockupVerifyDrugs: 'Warfarin + Aspirin',
@@ -478,6 +800,11 @@ export const translations: Record<LangCode, Translations> = {
     mockupExplainValue: 'TSH 12.5 mIU/L (rif 0.4–4.0)',
     mockupExplainStatus: 'Sopra il range normale',
     mockupExplainSource: 'LOINC · MedlinePlus',
+    privacyTitle: 'Cosa significa "Privacy prima di tutto" per Vela',
+    privacyPromise1: 'Nessuna verifica di identità o licenza richiesta',
+    privacyPromise2: 'Anonimo di default — nessun nome reale richiesto',
+    privacyPromise3: 'I tuoi dati non vengono mai condivisi, venduti o usati per addestrare IA',
+    privacyPolicyLink: 'Leggi la nostra privacy policy completa →',
     arrowRight: '→',
     arrowLeft: '←',
   },
@@ -504,6 +831,9 @@ export const translations: Record<LangCode, Translations> = {
     seeHow: 'Veja como o Vela funciona',
     footerCopy: 'Todos os direitos reservados',
     footerDisclaimer: 'Vela é uma ferramenta de pesquisa, não um dispositivo médico. Não fornece aconselhamento médico.',
+    heroPlaceholderResearch: 'Interações de Metformin na insuficiência renal',
+    heroPlaceholderVerify: 'Verificar Warfarin + Aspirin — é seguro?',
+    heroPlaceholderExplain: 'Explique meu exame de sangue em linguagem simples',
     mockupResearchQuery: 'Quais são os efeitos colaterais de Metformin?',
     mockupResearchSource: 'PubMed · Revisado por pares',
     mockupVerifyDrugs: 'Warfarin + Aspirin',
@@ -512,6 +842,11 @@ export const translations: Record<LangCode, Translations> = {
     mockupExplainValue: 'TSH 12.5 mIU/L (ref 0.4–4.0)',
     mockupExplainStatus: 'Acima da faixa normal',
     mockupExplainSource: 'LOINC · MedlinePlus',
+    privacyTitle: 'O que significa "Privacidade em primeiro lugar" na Vela',
+    privacyPromise1: 'Sem verificação de identidade ou licença',
+    privacyPromise2: 'Anônimo por padrão — nome real não é necessário',
+    privacyPromise3: 'Seus dados nunca são compartilhados, vendidos ou usados para treinar IA',
+    privacyPolicyLink: 'Leia nossa política de privacidade completa →',
     arrowRight: '→',
     arrowLeft: '←',
   },
@@ -538,6 +873,9 @@ export const translations: Record<LangCode, Translations> = {
     seeHow: 'ดูวิธีการทำงานของ Vela',
     footerCopy: 'สงวนลิขสิทธิ์',
     footerDisclaimer: 'Vela เป็นเครื่องมือวิจัย ไม่ใช่อุปกรณ์การแพทย์ ไม่ได้ให้คำแนะนำทางการแพทย์',
+    heroPlaceholderResearch: 'ปฏิกิริยาของ Metformin เมื่อไตทำงานบกพร่อง',
+    heroPlaceholderVerify: 'ตรวจสอบ Warfarin + Aspirin — ปลอดภัยไหม?',
+    heroPlaceholderExplain: 'อธิบายผลตรวจเลือดของฉันเป็นภาษาง่าย ๆ',
     mockupResearchQuery: 'ผลข้างเคียงของ Metformin คืออะไร?',
     mockupResearchSource: 'PubMed · ผ่านการทบทวนโดยผู้เชี่ยวชาญ',
     mockupVerifyDrugs: 'Warfarin + Aspirin',
@@ -546,6 +884,11 @@ export const translations: Record<LangCode, Translations> = {
     mockupExplainValue: 'TSH 12.5 mIU/L (ค่าอ้างอิง 0.4–4.0)',
     mockupExplainStatus: 'สูงกว่าช่วงปกติ',
     mockupExplainSource: 'LOINC · MedlinePlus',
+    privacyTitle: 'ความหมายของ "ความเป็นส่วนตัวมาก่อน" ที่ Vela',
+    privacyPromise1: 'ไม่ต้องยืนยันตัวตนหรือใบอนุญาต',
+    privacyPromise2: 'ไม่ระบุตัวตนโดยค่าเริ่มต้น — ไม่ต้องใช้ชื่อจริง',
+    privacyPromise3: 'ข้อมูลของคุณจะไม่ถูกแชร์ ขาย หรือนำไปฝึก AI',
+    privacyPolicyLink: 'อ่านนโยบายความเป็นส่วนตัวฉบับเต็ม →',
     arrowRight: '→',
     arrowLeft: '←',
   },
@@ -572,6 +915,9 @@ export const translations: Record<LangCode, Translations> = {
     seeHow: 'شاهد كيف يعمل Vela',
     footerCopy: 'جميع الحقوق محفوظة',
     footerDisclaimer: 'Vela أداة بحث وليست جهازاً طبياً. لا تقدم استشارات طبية.',
+    heroPlaceholderResearch: 'تفاعلات Metformin عند القصور الكلوي',
+    heroPlaceholderVerify: 'تحقق من Warfarin + Aspirin — هل آمن؟',
+    heroPlaceholderExplain: 'اشرح نتائج تحليل الدم بلغة بسيطة',
     mockupResearchQuery: 'ما هي الآثار الجانبية لـ Metformin؟',
     mockupResearchSource: 'PubMed · محكّمة علمياً',
     mockupVerifyDrugs: 'Warfarin + Aspirin',
@@ -580,6 +926,11 @@ export const translations: Record<LangCode, Translations> = {
     mockupExplainValue: 'TSH 12.5 mIU/L (المرجع 0.4–4.0)',
     mockupExplainStatus: 'أعلى من المعدل الطبيعي',
     mockupExplainSource: 'LOINC · MedlinePlus',
+    privacyTitle: 'ما الذي تعنيه "الخصوصية أولاً" في Vela',
+    privacyPromise1: 'لا حاجة للتحقق من الهوية أو الترخيص',
+    privacyPromise2: 'مجهول الهوية افتراضياً — لا يلزم الاسم الحقيقي',
+    privacyPromise3: 'لا تُشارك بياناتك أو تُباع أو تُستخدم لتدريب الذكاء الاصطناعي',
+    privacyPolicyLink: '← اقرأ سياسة الخصوصية الكاملة',
     arrowRight: '←',
     arrowLeft: '→',
   },
@@ -606,6 +957,9 @@ export const translations: Record<LangCode, Translations> = {
     seeHow: 'देखें Vela कैसे काम करता है',
     footerCopy: 'सर्वाधिकार सुरक्षित',
     footerDisclaimer: 'Vela एक शोध उपकरण है, चिकित्सा उपकरण नहीं। यह चिकित्सा सलाह प्रदान नहीं करता।',
+    heroPlaceholderResearch: 'गुर्दे की कमज़ोरी में Metformin की अंतःक्रियाएं',
+    heroPlaceholderVerify: 'Warfarin + Aspirin सत्यापित करें — क्या सुरक्षित है?',
+    heroPlaceholderExplain: 'मेरे रक्त परीक्षण परिणाम सरल भाषा में समझाएं',
     mockupResearchQuery: 'Metformin के दुष्प्रभाव क्या हैं?',
     mockupResearchSource: 'PubMed · सहकर्मी-समीक्षित',
     mockupVerifyDrugs: 'Warfarin + Aspirin',
@@ -614,6 +968,11 @@ export const translations: Record<LangCode, Translations> = {
     mockupExplainValue: 'TSH 12.5 mIU/L (संदर्भ 0.4–4.0)',
     mockupExplainStatus: 'सामान्य सीमा से ऊपर',
     mockupExplainSource: 'LOINC · MedlinePlus',
+    privacyTitle: 'Vela में "प्राइवेसी पहले" का अर्थ',
+    privacyPromise1: 'पहचान या लाइसेंस सत्यापन की आवश्यकता नहीं',
+    privacyPromise2: 'डिफ़ॉल्ट रूप से गुमनाम — असली नाम आवश्यक नहीं',
+    privacyPromise3: 'आपका डेटा कभी साझा, बेचा या AI प्रशिक्षण के लिए उपयोग नहीं किया जाता',
+    privacyPolicyLink: 'पूर्ण गोपनीयता नीति पढ़ें →',
     arrowRight: '→',
     arrowLeft: '←',
   },
@@ -640,6 +999,9 @@ export const translations: Record<LangCode, Translations> = {
     seeHow: 'দেখুন Vela কীভাবে কাজ করে',
     footerCopy: 'সর্বস্বত্ব সংরক্ষিত',
     footerDisclaimer: 'Vela একটি গবেষণা সরঞ্জাম, চিকিৎসা যন্ত্র নয়। এটি চিকিৎসা পরামর্শ প্রদান করে না।',
+    heroPlaceholderResearch: 'কিডনি দুর্বলতায় Metformin-এর মিথস্ক্রিয়া',
+    heroPlaceholderVerify: 'Warfarin + Aspirin যাচাই করুন — নিরাপদ কি?',
+    heroPlaceholderExplain: 'সহজ ভাষায় আমার রক্ত পরীক্ষার ফলাফল ব্যাখ্যা করুন',
     mockupResearchQuery: 'Metformin-এর পার্শ্বপ্রতিক্রিয়া কী?',
     mockupResearchSource: 'PubMed · পিয়ার-রিভিউড',
     mockupVerifyDrugs: 'Warfarin + Aspirin',
@@ -648,6 +1010,11 @@ export const translations: Record<LangCode, Translations> = {
     mockupExplainValue: 'TSH 12.5 mIU/L (রেফ 0.4–4.0)',
     mockupExplainStatus: 'স্বাভাবিক সীমার উপরে',
     mockupExplainSource: 'LOINC · MedlinePlus',
+    privacyTitle: 'Vela-তে "গোপনীয়তা প্রথম" মানে কী',
+    privacyPromise1: 'পরিচয় বা লাইসেন্স যাচাইয়ের প্রয়োজন নেই',
+    privacyPromise2: 'ডিফল্টভাবে বেনামী — প্রকৃত নাম প্রয়োজন নেই',
+    privacyPromise3: 'আপনার ডেটা কখনও শেয়ার, বিক্রি বা AI প্রশিক্ষণে ব্যবহৃত হয় না',
+    privacyPolicyLink: 'সম্পূর্ণ গোপনীয়তা নীতি পড়ুন →',
     arrowRight: '→',
     arrowLeft: '←',
   },
@@ -674,6 +1041,9 @@ export const translations: Record<LangCode, Translations> = {
     seeHow: 'ראו כיצד Vela עובד',
     footerCopy: 'כל הזכויות שמורות',
     footerDisclaimer: 'Vela הוא כלי מחקר, לא מכשיר רפואי. אינו מספק ייעוץ רפואי.',
+    heroPlaceholderResearch: 'אינטראקציות של Metformin באי-ספיקת כליות',
+    heroPlaceholderVerify: 'אמת Warfarin + Aspirin — האם בטוח?',
+    heroPlaceholderExplain: 'הסבר את בדיקות הדם שלי בשפה פשוטה',
     mockupResearchQuery: 'מהן תופעות הלוואי של Metformin?',
     mockupResearchSource: 'PubMed · ביקורת עמיתים',
     mockupVerifyDrugs: 'Warfarin + Aspirin',
@@ -682,6 +1052,11 @@ export const translations: Record<LangCode, Translations> = {
     mockupExplainValue: 'TSH 12.5 mIU/L (הפניה 0.4–4.0)',
     mockupExplainStatus: 'מעל הטווח התקין',
     mockupExplainSource: 'LOINC · MedlinePlus',
+    privacyTitle: 'המשמעות של "פרטיות תחילה" ב-Vela',
+    privacyPromise1: 'אין צורך באימות זהות או רישיון',
+    privacyPromise2: 'אנונימי כברירת מחדל — אין צורך בשם אמיתי',
+    privacyPromise3: 'הנתונים שלך לעולם לא משותפים, נמכרים או משמשים לאימון AI',
+    privacyPolicyLink: '← קראו את מדיניות הפרטיות המלאה',
     arrowRight: '←',
     arrowLeft: '→',
   },
@@ -708,6 +1083,9 @@ export const translations: Record<LangCode, Translations> = {
     seeHow: 'Xem cách Vela hoạt động',
     footerCopy: 'Đã đăng ký bản quyền',
     footerDisclaimer: 'Vela là công cụ nghiên cứu, không phải thiết bị y tế. Không cung cấp tư vấn y khoa.',
+    heroPlaceholderResearch: 'Tương tác Metformin khi suy thận',
+    heroPlaceholderVerify: 'Kiểm tra Warfarin + Aspirin — có an toàn không?',
+    heroPlaceholderExplain: 'Giải thích kết quả xét nghiệm máu của tôi bằng ngôn ngữ đơn giản',
     mockupResearchQuery: 'Tác dụng phụ của Metformin là gì?',
     mockupResearchSource: 'PubMed · Bình duyệt',
     mockupVerifyDrugs: 'Warfarin + Aspirin',
@@ -716,6 +1094,11 @@ export const translations: Record<LangCode, Translations> = {
     mockupExplainValue: 'TSH 12.5 mIU/L (tham chiếu 0.4–4.0)',
     mockupExplainStatus: 'Trên mức bình thường',
     mockupExplainSource: 'LOINC · MedlinePlus',
+    privacyTitle: 'Ý nghĩa của "Quyền riêng tư trên hết" tại Vela',
+    privacyPromise1: 'Không yêu cầu xác minh danh tính hoặc giấy phép',
+    privacyPromise2: 'Ẩn danh theo mặc định — không cần tên thật',
+    privacyPromise3: 'Dữ liệu của bạn không bao giờ được chia sẻ, bán hoặc dùng để huấn luyện AI',
+    privacyPolicyLink: 'Đọc chính sách bảo mật đầy đủ →',
     arrowRight: '→',
     arrowLeft: '←',
   },

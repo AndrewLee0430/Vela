@@ -18,19 +18,22 @@ import { getExtra } from '../utils/i18n-extra';
 // ─── Design tokens ────────────────────────────────────────────────────────────
 const BG = 'linear-gradient(135deg, #0a1628 0%, #0f2040 45%, #1a1035 75%, #0d1a2e 100%)';
 
-const PROMPTS = [
-  { text: 'Research Metformin interactions in renal impairment', color: '#ff8e6e' },
-  { text: 'Verify Warfarin + Aspirin — is it safe?',            color: '#63b3ed' },
-  { text: 'Explain my blood test results in plain language',    color: '#68d391' },
-];
+const PROMPT_COLORS = ['#ff8e6e', '#63b3ed', '#68d391'] as const;
 
 // ─────────────────────────────────────────────────────────────────────────────
 
 function TypewriterPrompt() {
+  const { lang } = useLang();
+  const t = translations[lang];
+  const prompts = [
+    { text: t.heroPlaceholderResearch, color: PROMPT_COLORS[0] },
+    { text: t.heroPlaceholderVerify,   color: PROMPT_COLORS[1] },
+    { text: t.heroPlaceholderExplain,  color: PROMPT_COLORS[2] },
+  ];
   const [index, setIndex] = useState(0);
   const [text, setText] = useState('');
   const [deleting, setDeleting] = useState(false);
-  const current = PROMPTS[index];
+  const current = prompts[index];
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -42,10 +45,16 @@ function TypewriterPrompt() {
       timer = setTimeout(() => setText(text.slice(0, -1)), 25);
     } else {
       setDeleting(false);
-      setIndex((prev) => (prev + 1) % PROMPTS.length);
+      setIndex((prev) => (prev + 1) % prompts.length);
     }
     return () => clearTimeout(timer);
-  }, [text, deleting, index, current.text]);
+  }, [text, deleting, index, current.text, prompts.length]);
+
+  useEffect(() => {
+    setText('');
+    setDeleting(false);
+    setIndex(0);
+  }, [lang]);
 
   return (
     <span style={{ color: current.color, transition: 'color 0.3s ease' }}>
@@ -498,33 +507,25 @@ function LandingPage() {
           {/* v1.1 Privacy-first transparent definition */}
           <section className="w-full mt-14 mb-4 text-left" style={{ maxWidth: '780px' }}>
             <h2 className="text-xl font-semibold text-white mb-4 text-center">
-              {lc.privacy.title}
+              {t.privacyTitle}
             </h2>
-            <ul className="space-y-2.5 mb-6">
-              {[
-                lc.privacy.meansIdentity,
-                lc.privacy.meansRealName,
-                lc.privacy.meansDevice,
-                lc.privacy.meansNoSell,
-                lc.privacy.meansNoTraining,
-              ].map((item) => (
+            <ul className="space-y-2.5 mb-5">
+              {[t.privacyPromise1, t.privacyPromise2, t.privacyPromise3].map((item) => (
                 <li key={item} className="flex items-start gap-2.5 text-sm" style={{ color: 'rgba(255,255,255,0.75)' }}>
                   <span className="mt-0.5 font-bold" style={{ color: '#4ade80' }} aria-hidden>✓</span>
                   <span>{item}</span>
                 </li>
               ))}
             </ul>
-            <h3 className="text-sm font-semibold mb-2" style={{ color: 'rgba(255,255,255,0.6)' }}>
-              {lc.privacy.doesntTitle}
-            </h3>
-            <ul className="space-y-2 text-xs" style={{ color: 'rgba(255,255,255,0.45)' }}>
-              {[lc.privacy.doesntE2E, lc.privacy.doesntAnalytics, lc.privacy.doesntPayment].map((item) => (
-                <li key={item} className="flex items-start gap-2">
-                  <span className="mt-0.5" aria-hidden>·</span>
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
+            <div className="text-center">
+              <Link
+                href="/privacy"
+                className="text-sm hover:text-white transition-colors"
+                style={{ color: 'rgba(255,255,255,0.55)' }}
+              >
+                {t.privacyPolicyLink}
+              </Link>
+            </div>
           </section>
         </div>
 
