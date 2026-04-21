@@ -51,7 +51,7 @@ Before starting Phase 1A, conduct Phase 0 Retrospective:
   - Resolution in 2.8:
     1. 加 `pages/sign-in/[[...index]].tsx` 和 `pages/sign-up/[[...index]].tsx`
     2. `_app.tsx` ClerkProvider 加 `signInUrl="/sign-in"` / `signUpUrl="/sign-up"` / fallback redirect URLs
-    3. Rewrite `_optional_user_id()` as `require_auth_or_anonymous()` with explicit 3-tier handling for L0/L1/L2 (per Decision 001 v0.2 § 3.1)
+    3. Rewrite `optional_auth()` (api/server.py:320) as `require_auth_or_anonymous()` with explicit 3-tier handling for L0/L1/L2 (per Decision 001 v0.3 § A, D). Note: `_optional_user_id()` is already true soft-optional (returns None) and used only by `/api/bug-report` — it is NOT the target.
     4. 補 AUTHORIZED_PARTIES config if Clerk SDK 要求
 
 - **[P1] print() violations in api/** (54 處, audited 2026-04-19)

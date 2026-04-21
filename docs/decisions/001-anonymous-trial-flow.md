@@ -1,8 +1,8 @@
 # Decision 001: Anonymous Trial Flow
 
-**Status**: Accepted (solo founder review, 2026-04-19)
+**Status**: Accepted (solo founder review, 2026-04-19; v0.3 implementation alignment 2026-04-21)
 **Date**: 2026-04-18
-**Version**: 0.2(supersedes v0.1 of same decision)
+**Version**: 0.3(supersedes v0.2)
 **Author**: andre (solo founder)
 **Supersedes**: (none — first decision record)
 **Superseded by**: (none — this is current)
@@ -235,6 +235,148 @@ Cross-device       —          ✓                ✓
 PDF upload         —          —                ✓
 Export PDF         —          —                ✓
 ```
+
+---
+
+## v0.3 Implementation Alignment Notes (2026-04-21)
+
+在開工前 diagnose codebase 發現 Decision 001 v0.2 的 architectural vision 引用了 Vela 尚未具備的基礎設施。本節明文記錄 v0.2 規格 vs Vela 實際 infrastructure 的差異,以及對應的 implementation choices。
+
+### A. Redis → Postgres
+
+**v0.2 規格**: anonymous quota 透過 Redis (`self._redis.get` / `incr`)
+**Vela 現況**: 完全無 Redis(codebase grep 零 imports,package.json 無依賴)
+**實作選擇**: 新建 `anonymous_usage` Postgres table,mirror UserUsage 既有邏輯
+- Column: `anon_id` (pk) / `credits_used_today` / `last_reset_date`
+- Index: `(anon_id, last_reset_date)`
+- 每日 00:00 UTC 由既有 daily reset task 一併 reset(非獨立 cron)
+
+**長期遷移**: 若未來 anonymous usage 規模爆炸(> 10k concurrent anonymous sessions),再評估是否引入 Redis。目前規模 Postgres 足夠。
+
+### B. Provider factory (api/providers/) → Inline branching
+
+**v0.2 規格**: L0 anonymous users 用 GPT-4.1-mini,L1/L2 用 GPT-4.1,routing 透過 provider factory
+**Vela 現況**: `api/providers/` 目錄不存在(2.1 Model Provider Refactor 才建立)
+**實作選擇**: 2.8 在 LLM call site 做 inline model-name branching:
+
+- 如:`model = "gpt-4.1-mini" if tier == "L0" else "gpt-4.1"`
+- 加 inline comment: `# 2.8: inline tier routing; migrate to provider factory in 2.1`
+
+**長期遷移**: 2.1 Model Provider Refactor 時統一抽到 `api/providers/factory.py`,用 grep 能完整找出所有 inline branching point。
+
+### C. cost_budget.py enforcement → 輕量查詢 ApiCostLog
+
+**v0.2 規格**: 用 `api/services/cost_budget.py` enforce $2/day anonymous aggregate spend
+**Vela 現況**: 僅有 `api/services/cost_tracker.py`(logging,無 enforcement)
+**實作選擇**: 在 anonymous request 進入時,`SELECT sum(cost_usd) FROM api_cost_logs WHERE user_id IS NULL AND date(created_at) = today`,若 >= $2.00 則 503 `budget_exceeded` 全局 block 新 anonymous request(已存在 session 的使用者仍可繼續)
+
+**長期遷移**: 若 anonymous 流量爆大,改成 Redis counter + daily reset;現階段 Postgres query 每個 anonymous request 一次,成本可接受。
+
+### D. request.state.user pattern → Depends() DI
+
+**v0.2 規格**: 使用 `request.state.user` attribute 附載 auth identity
+**Vela 現況**: 全 codebase 使用 FastAPI `Depends()` DI pattern(例 `creds: ... = Depends(optional_auth)`)
+**實作選擇**: 保留 DI pattern,新建 `require_auth_or_anonymous()` dependency 返回 `(user_id: str | None, anon_id: str | None)` tuple
+
+- 一個永遠非 None,另一個為 None
+- Endpoint 處理時判斷 `if user_id is None: use anon_id else: use user_id`
+
+**長期遷移**: 無,DI pattern 本來就是 FastAPI idiomatic。
+
+### E. AnonymousUser / User classes / today_utc() / FeatureNotAvailable / QuotaExceeded
+
+**v0.2 規格**: 引用這些 class / helper / exception 但 codebase 無
+**實作選擇**: 2.8 新建,放在:
+
+- `api/models/auth.py`: AnonymousUser / User data classes(或繼續用 tuple,不新建 class)
+- `api/services/anonymous_identity.py`: `today_utc()` helper
+- `api/errors.py`(若不存在則新建): `FeatureNotAvailable` / `QuotaExceeded` / `BudgetExceeded` exceptions
+- 保持簡潔 — 不引入 dataclass / pydantic 除非必要
+
+**決定**: tuple 就夠,不新建 class(Pythonic,少依賴)。
+
+### F. CORS allow_headers 擴充
+
+**v0.2 規格**: 提到 `X-Anon-Fingerprint` header
+**Vela 現況**: `server.py:284` `allow_headers=["Authorization", "Content-Type"]`
+**實作選擇**: append `"X-Anon-Fingerprint"`
+
+---
+
+## v0.3 Implementation Decisions — Previously Ambiguous (A1-A5)
+
+Decision 001 v0.2 在以下 5 個 implementation details 留下解釋空間,v0.3 明文定案以避免實作時歧異。
+
+### A1. PostHog anonymous tier property
+
+**決定**: 新增 `tier` super-property,值為 `"L0"` | `"L1"` | `"L2"`
+**不採用**: 擴充既有 `plan_type` 加 `"anonymous"` 值
+**理由**:
+
+- `plan_type` 既有語義是付費等級(free / pro),加入 "anonymous" 混淆 funnel analysis
+- `tier` 對齊 Decision 001 正式用語,未來擴充 L3 等更乾淨
+- 兩欄位可並存:signed-up free user = `plan_type: "free", tier: "L1"`
+
+### A2. X-Anon-Fingerprint 驗證
+
+**決定**: Server 端做輕度驗證
+
+- 長度: `16 <= len <= 128`
+- 字元集: `^[a-zA-Z0-9\-_]+$` (URL-safe base64 alphabet)
+- 不符合 → 400 BAD_REQUEST `{type: "invalid_fingerprint"}`
+
+**理由**:
+
+- 防止空字串 / 過長 DoS
+- 輕度 validation 成本極低
+- 對齊 session_id 用 UUID 的既有 pattern
+
+### A3. Mid-session signup reconciliation
+
+**決定**: **Reset** — 使用者從 L0 註冊成 L1 時,L1 獲得當天全新 quota (10 credits),L0 已用 credits 不繼承
+**不採用**: (b) 繼承 L0 已用 credits / (c) 平行保留 L0 row + 新 L1 row
+**理由**:
+
+- Conversion incentive: 使用者註冊立刻「賺到」10 credits,提升 signup 動力
+- Decision 001 核心精神是降低轉換摩擦,reset 一致
+- 反覆註冊刷 credit 風險極低(Clerk 有 email verification,邊際成本高)
+- 實作簡單:signup webhook 時 insert UserUsage row,不動原 AnonymousUsage row
+
+### A4. L0 Explain block response
+
+**決定**: 403 `{type: "signup_required", message: "..."}`
+**不採用**: (a) 403 `pro_required` / (c) 404
+**理由**:
+
+- 語義精確:L0 使用者還沒碰 Pro gate,只是還沒註冊
+- 新 type 讓 frontend switch 不同 CTA:
+  - `pro_required` → UpgradeModal (Pro $9.99)
+  - `signup_required` → Sign-up CTA (免費註冊)
+- 404 語義錯誤(endpoint 存在,只是權限不足)
+
+### A5. Tier routing mechanism
+
+**決定**: 2.8 inline model-name branching(不 land provider factory stub)
+**不採用**: 2.8 順手建最簡 provider factory
+**理由**:
+
+- 2.1 Model Provider Refactor 是正式 task,不應半做
+- 2.8 scope 已廣,加 provider stub 會爆
+- Inline branching 是好 migration point — 2.1 可用 grep 找齊所有點
+- 對齊 § Alignment Notes B
+
+### Implementation Acceptance (v0.3)
+
+1. `scripts/003_add_anonymous_usage.sql` 存在且可 apply
+2. `api/services/anonymous_identity.py` 新建含 `today_utc()` helper
+3. `api/server.py` `optional_auth()` 重寫為 `require_auth_or_anonymous()`(名稱改一致)
+4. Research / Verify endpoints 支援 anonymous(Bearer 或 `X-Anon-Fingerprint` 擇一)
+5. Explain endpoint 對 anonymous 返回 403 `{type: "signup_required"}`
+6. CORS `allow_headers` 包含 `"X-Anon-Fingerprint"`
+7. Postgres query enforcement $2/day anonymous aggregate budget cap
+8. PostHog 事件攜帶 `tier` super-property
+9. `pages/sign-in/[[...index]].tsx` + `pages/sign-up/[[...index]].tsx` 存在
+10. `_app.tsx` ClerkProvider 包含 `signInUrl` / `signUpUrl` / fallback redirects
 
 ---
 
@@ -694,7 +836,8 @@ reCAPTCHA v3(隱形驗證)雖然是主流防 bot 工具,但跟 Vela 有三層衝
 | Version | Date | Author | Changes |
 |---|---|---|---|
 | 0.1 | 2026-04-18 | andre | Initial draft based on gap discovery |
-| **0.2** | **2026-04-18** | **andre** | **L1 credit 對齊維運計畫 10 credits 上限;L0 拿掉 Explain 作為 L1 解鎖誘因;新增 "Vela for Work" naming 與 CTA 文案;成本重算** |
+| 0.2 | 2026-04-18 | andre | L1 credit 對齊維運計畫 10 credits 上限;L0 拿掉 Explain 作為 L1 解鎖誘因;新增 "Vela for Work" naming 與 CTA 文案;成本重算 |
+| **0.3** | **2026-04-21** | **solo founder + Claude Code diagnostic** | **Pre-implementation diagnostic revealed spec-vs-codebase gaps; align to actual Vela infrastructure to remove ambiguity before Round 1 execution. Adds § Implementation Alignment Notes (Redis→Postgres, provider factory→inline branching, cost_budget.py→ApiCostLog query, request.state→Depends DI) + § Implementation Decisions A1-A5 (PostHog tier property, fingerprint validation, mid-session signup reset, Explain 403 signup_required, tier routing deferred to 2.1) + Implementation Acceptance checklist.** |
 
 ---
 
