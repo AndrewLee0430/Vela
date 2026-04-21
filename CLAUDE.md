@@ -46,13 +46,13 @@ Before starting Phase 1A, conduct Phase 0 Retrospective:
 ### Tech Debt (tracked for future resolution)
 
 - **[P0 — Must resolve in 2.8]** localhost Clerk sign-in flow missing
+  - **Partial progress**: Auth split (require_auth + require_auth_or_anonymous) completed in Round 1 (7a8c5a8). Remaining 3 items for Round 2 (frontend sign-in pages + ClerkProvider config + Clerk SDK config verification).
   - Root cause: `_app.tsx` ClerkProvider 使用 Clerk Hosted mode (no `signInUrl` / `signUpUrl` props), localhost 無法登入建立 session
   - Evidence: 2.4 localhost testing 時,前端無法登入;curl 用 production `await Clerk.session.getToken()` 取新鮮 JWT 測試後端,user_id 正確寫入 DB (user_3BQM...) → 證明 code 正確,只是環境限制
   - Resolution in 2.8:
     1. 加 `pages/sign-in/[[...index]].tsx` 和 `pages/sign-up/[[...index]].tsx`
     2. `_app.tsx` ClerkProvider 加 `signInUrl="/sign-in"` / `signUpUrl="/sign-up"` / fallback redirect URLs
-    3. Rewrite `optional_auth()` (api/server.py:320) as `require_auth_or_anonymous()` with explicit 3-tier handling for L0/L1/L2 (per Decision 001 v0.3 § A, D). Note: `_optional_user_id()` is already true soft-optional (returns None) and used only by `/api/bug-report` — it is NOT the target.
-    4. 補 AUTHORIZED_PARTIES config if Clerk SDK 要求
+    3. 補 AUTHORIZED_PARTIES config if Clerk SDK 要求
 
 - **[P1] print() violations in api/** (54 處, audited 2026-04-19)
   - 生產路徑 9 處(影響 Sentry + log aggregation):

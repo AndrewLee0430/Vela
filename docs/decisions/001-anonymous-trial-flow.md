@@ -471,6 +471,12 @@ Decision 001 v0.2 在以下 5 個 implementation details 留下解釋空間,v0.3
 | absent | absent | True | (TEST_USER_ID, None) — 保留 legacy test flow |
 | absent | absent | False | raise 403 Missing token |
 
+**Implementation convention notes** (verified during Round 1 self-audit):
+
+- **HTTP status codes for auth failure**: Vela codebase uses 403 (not 401) for both missing and invalid tokens, established pre-Round 1 by the original optional_auth function. require_auth_or_anonymous preserves this convention. Although 401 is often canonical for "needs authentication", Vela's 403 precedent is kept to avoid frontend regression (auth failure handling already branches on 403). Future migration to 401 (if ever needed) should be a standalone task aligning all 15+ callers uniformly.
+
+- **Credit deduction order**: L0 anonymous path follows the same check-before / deduct-after-success pattern as L1/L2 authed (check_credits before stream initiation; deduct_credits only on DONE event). Deducting before stream would leak credits on stream failures (timeout / network / LLM refusal), so impl prefers after-success. This is safer and symmetric across tiers.
+
 **Discovered**: 2026-04-21 Round 1B diagnose(17 `Depends(optional_auth)` callers vs spec 預設 3,blast radius 放大 5x)。
 
 ### A10. ApiCostLog.user_id IS NULL as anonymous marker
