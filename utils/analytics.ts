@@ -87,6 +87,16 @@ function readUserContext(): UserContext {
   }
 }
 
+/**
+ * Session-scoped fingerprint for backend anonymous identity (Decision 001 v0.3 A2).
+ * Returns the same UUID as PostHog session_id — correlating PostHog analytics
+ * with backend anon_id (derived via SHA-256(salt + IP + fingerprint)[:16]).
+ * SSR-safe: returns null when sessionStorage is unavailable.
+ */
+export function getAnonFingerprint(): string | null {
+  return getSessionId();
+}
+
 function getQueryId(): string | null {
   return moduleQueryId;
 }

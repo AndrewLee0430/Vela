@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, FormEvent, useRef, useEffect, useCallback } from 'react';
-import { useAuth } from '@clerk/nextjs';
+import { useAuth, useUser } from '@clerk/nextjs';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkBreaks from 'remark-breaks';
@@ -18,7 +18,7 @@ import PageShell from '../components/PageShell';
 import ProFeatureOverlay from '../components/ProFeatureOverlay';
 import ResearchSection from '../components/ResearchSection';
 import { exportResearchPdf } from '../utils/exportPdf';
-import { setQueryId } from '../utils/analytics';
+import { setQueryId, getAnonFingerprint } from '../utils/analytics';
 import { useLang } from '../utils/LangContext';
 import { getUI } from '../utils/i18n-ui';
 import { getExtra } from '../utils/i18n-extra';
@@ -173,6 +173,7 @@ function FallbackBanner() {
 
 function ResearchForm() {
     const { getToken } = useAuth();
+    const { isSignedIn } = useUser();
     const { lang } = useLang();
     const ui = getUI(lang);
     const extra = getExtra(lang);
@@ -187,6 +188,7 @@ function ResearchForm() {
     const [statusMsg, setStatusMsg] = useState<string>('');
     const [showUpgradeModal, setShowUpgradeModal] = useState(false);
     const [showDailyCapToast, setShowDailyCapToast] = useState(false);
+    const [anonNoticeMsg, setAnonNoticeMsg] = useState<string | null>(null);
     const [phiError, setPhiError] = useState<{detail: string; suggestion: string} | null>(null);
     const [detectedLang, setDetectedLang] = useState<string>('en');
 
@@ -203,6 +205,7 @@ function ResearchForm() {
     });
 
     useEffect(() => {
+        if (!isSignedIn) return; // L0 anonymous: no plan concept
         (async () => {
             try {
                 const token = await getToken({ skipCache: true });
@@ -216,7 +219,7 @@ function ResearchForm() {
                 }
             } catch {}
         })();
-    }, [getToken]);
+    }, [getToken, isSignedIn]);
 
     const answerRef    = useRef<HTMLDivElement>(null);
     const inputRef     = useRef<HTMLInputElement>(null);
@@ -247,24 +250,41 @@ function ResearchForm() {
         const controller = new AbortController();
 
         try {
-            const jwt = await getToken({ skipCache: true });
-            if (!jwt) {
-                setError(ui.authRequired);
-                setLoading(false);
-                isRunningRef.current = false;
-                return;
+            const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+            if (isSignedIn) {
+                const jwt = await getToken({ skipCache: true });
+                if (!jwt) {
+                    setError(ui.authRequired);
+                    setLoading(false);
+                    isRunningRef.current = false;
+                    return;
+                }
+                headers['Authorization'] = `Bearer ${jwt}`;
+            } else {
+                const fp = getAnonFingerprint();
+                if (!fp) {
+                    setError('Session unavailable. Please refresh and try again.');
+                    setLoading(false);
+                    isRunningRef.current = false;
+                    return;
+                }
+                headers['X-Anon-Fingerprint'] = fp;
             }
 
             await fetchEventSource(`${process.env.NEXT_PUBLIC_API_URL}/api/research`, {
                 signal: controller.signal,
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${jwt}` },
+                headers,
                 body: JSON.stringify({ question: q, max_results: 5 }),
                 openWhenHidden: true,
 
                 onopen: makeOnOpen({
                     onPhiBlocked: () => setPhiError({ detail: ui.phiDetail, suggestion: ui.phiSuggestion }),
                     onLimitReached: () => setShowUpgradeModal(true),
+                    onSignupRequired: () => setError('Sign up required to continue. Please create a free account.'),
+                    onAnonymousQuotaExceeded: () => setAnonNoticeMsg('Daily free limit reached. Sign up to continue.'),
+                    onBudgetExceeded: () => setAnonNoticeMsg('Service temporarily at capacity. Please try again later.'),
+                    onInvalidFingerprint: () => setError('Session unavailable. Please refresh and try again.'),
                 }),
 
                 onmessage(ev) {
@@ -316,7 +336,7 @@ function ResearchForm() {
         } finally {
             isRunningRef.current = false;
         }
-    }, [getToken]);
+    }, [getToken, isSignedIn, ui]);
 
     async function handleSubmit(e: FormEvent) {
         e.preventDefault();
@@ -560,6 +580,14 @@ function ResearchForm() {
                     duration={5000}
                 />
             )}
+            {anonNoticeMsg && (
+                <Toast
+                    message={anonNoticeMsg}
+                    type="warning"
+                    onClose={() => setAnonNoticeMsg(null)}
+                    duration={5000}
+                />
+            )}
         </div>
     );
 }
@@ -568,6 +596,7 @@ export default function Research() {
     return (
         <PageShell
             activePage="research"
+            allowAnonymous
             extraHead={
                 <Head>
                     <meta name="robots" content="noindex, nofollow" />

@@ -54,6 +54,19 @@ Before starting Phase 1A, conduct Phase 0 Retrospective:
     2. `_app.tsx` ClerkProvider 加 `signInUrl="/sign-in"` / `signUpUrl="/sign-up"` / fallback redirect URLs
     3. 補 AUTHORIZED_PARTIES config if Clerk SDK 要求
 
+- **[P1 → Round 2B + 3 完成後一起 E2E 測試]** Clerk email sign-up/sign-in end-to-end 驗證
+  - **背景**: 2026-04-22 localhost /sign-in 已確認 Clerk Development instance 有 email input(切 Dev instance + 啟用 email code verification 後解決)。Production instance email 設定也已確認 ON。
+  - **尚未驗證**:
+    - Email code 能否真的發到使用者信箱(依賴 Clerk email 發送能力)
+    - 新使用者透過 email 註冊 → Clerk user 建立 → backend JWT 驗證成功 → /research 能載入
+    - Email 與 SSO Google 同一 email 時,Clerk 如何處理(期待:同一 Clerk user)
+  - **測試順序**(Round 2B + 3 完成後一起做):
+    1. 無痕視窗 /sign-up → 輸入全新 email → 收 code → 輸入 → 完成註冊 → redirect /research
+    2. 無痕視窗 /sign-in → 輸入 #1 註冊的 email → 收 code → 登入成功
+    3. 新 email 註冊 → logout → 改用同 email Google SSO → 看 Clerk 是否合併 user
+  - **Priority**: P1(2.8 完整驗收一部分),軟啟動前必須通過
+  - **Discovered**: 2026-04-22 during Clerk Dev/Prod instance diagnostic
+
 - **[P1] print() violations in api/** (54 處, audited 2026-04-19)
   - 生產路徑 9 處(影響 Sentry + log aggregation):
     - `fda.py:149/152/177` — FDA 請求失敗用 print 而非 logger
@@ -154,6 +167,41 @@ Before starting Phase 1A, conduct Phase 0 Retrospective:
     - 或:改用 `fastapi_clerk_auth` 套件的完整驗證鏈(當前 import 未使用)
   - **Priority**: P2(未有明確攻擊 vector 但屬 best practice);排入 Phase 0 Retrospective 或 Phase 1A 安全 review
   - **Discovered**: 2026-04-22 during 2.8 Round 2A Clerk config diagnose
+
+- **[P2 → Round 3 或 Phase 1A]** 阻止 signed-in user 訪問 `/sign-in` 和 `/sign-up`
+  - **現況**: logged-in user 打 `/sign-in` 會看到 Clerk SignIn card,可能困惑
+  - **解法**: `pages/sign-in/[[...index]].tsx` 和 `pages/sign-up/[[...index]].tsx` 頂部加 `<SignedIn><RedirectToResearch /></SignedIn>` wrapper(或 useEffect + router.push('/research'))
+  - **Priority**: P2 UX polish
+  - **Discovered**: 2026-04-22 during 2.8 Round 2B diagnose
+
+- **[P2 → Phase 1A]** Backend error response shape 不統一
+  - **現況**: pre-Round 1B endpoints 回 `{error: "code"}`,Round 1B 新 `api/errors.py` 回 `{type: "code", ...}`
+  - **Round 2B frontend 處理**: dual-read pattern 兼容 `const code = data.type ?? data.error`
+  - **解法**: Phase 1A 統一 endpoint error shape(建議走 `{type, message}` 新 shape),frontend 簡化掉 dual-read
+  - **Priority**: P2 consistency
+  - **Discovered**: 2026-04-22 during 2.8 Round 2B diagnose
+
+- **[P1 → Round 3 AnonymousUpgradeCTA 一起做]** Anonymous quota message 不 surface 正確 type
+  - **現況**: E2E Test 4 發現 anon daily quota 耗盡時,前端顯示通用 "Too many requests. Please wait a moment and try again.",而非 Round 2B 預期的 "Daily free limit reached. Sign up to continue."
+  - **Root cause 假設**: FastAPI `HTTPException(status_code=429, detail={type: "anonymous_quota_exceeded", ...})` 序列化後 response body 是 `{detail: {type: ...}}` 而非 `{type: ...}` → `utils/sse.ts` 的 dual-read `data.type ?? data.error` 抓不到(真實路徑應為 `data.detail?.type ?? data.type ?? data.error`)
+  - **驗證步驟**: curl anon endpoint 耗盡 quota,印出 raw response body shape 確認
+  - **解法 (Round 3 一起處理)**:
+    1. 後端改用 `api/errors.py` 的 `JSONResponse` 路徑回 `{type, message}` 而非 `HTTPException(detail=...)` — 同時 resolve 上面 P2 error shape 統一
+    2. 或 frontend `utils/sse.ts` 加 `data.detail?.type` fallback(hacky,不建議)
+    3. 搭配 Round 3 `AnonymousUpgradeCTA` 元件實作,確保 message + CTA 一起 surface
+  - **Priority**: P1(軟啟動前必須 fix,影響 anon-to-signup 轉換訊息)
+  - **Discovered**: 2026-04-22 during 2.8 Round 2B Test 4 E2E
+
+- **[P2 → Dodo 付費啟用前]** `CLERK_SECRET_KEY` 仍是 `sk_live_` 對 Dev instance user checkout 會 500
+  - **現況**: Round 2B JWT Dev/Prod mismatch fix 只改 `CLERK_JWKS_URL` 指向 Dev instance (`joint-guppy-23.clerk.accounts.dev`);`CLERK_SECRET_KEY` 仍為 Prod `sk_live_NhG...`
+  - **影響範圍**: Dodo checkout path 會用 `CLERK_SECRET_KEY` call Clerk Backend API 取 user email/name;Dev instance user ID 對 Prod secret key 查不到 → 500 error
+  - **現行不爆的原因**: Round 2B 測試只跑 Research + Verify,沒動到 Dodo checkout;Dodo 付費要到 Phase 1A 才啟用
+  - **解法** (Dodo 付費啟用前):
+    - 改用 Dev instance secret key(`sk_test_...`)for localhost + Dev user 測試
+    - 或將 Prod env 與 Dev env 的 Clerk 設定徹底分離(`fly secrets` vs `.env`)
+    - 驗證 `/api/checkout/dodo` + `/api/webhook/dodo` 路徑對 Dev user 能順利 create subscription
+  - **Priority**: P2(不 block 當前軟啟動;Dodo 付費啟用是 Phase 1A scope)
+  - **Discovered**: 2026-04-22 during 2.8 Round 2B Test 5 Clerk JWT Dev/Prod mismatch fix
 
 
 ### Discovered Gaps (action required)

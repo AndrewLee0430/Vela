@@ -14,11 +14,21 @@ export class FatalError extends Error {
 interface SSEErrorHandlers {
     onPhiBlocked: (detail: string, suggestion: string) => void;
     onLimitReached: () => void;
+    // Round 2B — L0 anonymous error handlers (all optional for back-compat).
+    onSignupRequired?: (message?: string) => void;
+    onAnonymousQuotaExceeded?: (message?: string) => void;
+    onBudgetExceeded?: (message?: string) => void;
+    onInvalidFingerprint?: (message?: string) => void;
 }
 
 /**
  * Standard onopen handler for SSE connections.
- * Handles: 400 phi_blocked, 403 limit_reached, 429 rate limit, generic errors.
+ * Handles:
+ *  - 400 phi_blocked, invalid_fingerprint
+ *  - 403 signup_required, limit_reached
+ *  - 429 anonymous_quota_exceeded, generic too_many_requests
+ *  - 503 budget_exceeded
+ * Uses dual-read `data.type ?? data.error` for back-compat with pre-Round 1B endpoints.
  */
 export function makeOnOpen(handlers: SSEErrorHandlers) {
     return async (response: Response) => {
@@ -26,21 +36,46 @@ export function makeOnOpen(handlers: SSEErrorHandlers) {
 
         if (response.status === 400) {
             const data = await response.json().catch(() => ({}));
-            if (data.type === 'phi_blocked') {
+            const code = data.type ?? data.error;
+            if (code === 'phi_blocked') {
                 handlers.onPhiBlocked(data.detail, data.suggestion);
                 throw new FatalError('');
+            }
+            if (code === 'invalid_fingerprint') {
+                handlers.onInvalidFingerprint?.(data.message);
+                throw new FatalError(data.message || 'Invalid session fingerprint.', 'invalid_fingerprint');
             }
         }
         if (response.status === 403) {
             const data = await response.json().catch(() => ({}));
-            if (data.error === 'limit_reached') {
+            const code = data.type ?? data.error;
+            if (code === 'signup_required') {
+                handlers.onSignupRequired?.(data.message);
+                throw new FatalError('');
+            }
+            if (code === 'limit_reached') {
                 handlers.onLimitReached();
                 throw new FatalError('');
             }
             throw new FatalError('Session expired. Please refresh and sign in again.', 'session_expired');
         }
         if (response.status === 429) {
+            const data = await response.json().catch(() => ({}));
+            const code = data.type ?? data.error;
+            if (code === 'anonymous_quota_exceeded') {
+                handlers.onAnonymousQuotaExceeded?.(data.message);
+                throw new FatalError('');
+            }
             throw new FatalError('Too many requests. Please wait a moment and try again.', 'too_many_requests');
+        }
+        if (response.status === 503) {
+            const data = await response.json().catch(() => ({}));
+            const code = data.type ?? data.error;
+            if (code === 'budget_exceeded') {
+                handlers.onBudgetExceeded?.(data.message);
+                throw new FatalError('');
+            }
+            throw new FatalError('Service temporarily unavailable. Please try again later.', 'server_error');
         }
         throw new FatalError(`Server error (${response.status}). Please try again.`, 'server_error');
     };

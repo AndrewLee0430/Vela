@@ -10,9 +10,10 @@ interface PageShellProps {
     activePage: ActivePage;
     children: ReactNode;
     extraHead?: ReactNode;
+    allowAnonymous?: boolean;
 }
 
-export default function PageShell({ activePage, children, extraHead }: PageShellProps) {
+export default function PageShell({ activePage, children, extraHead, allowAnonymous = false }: PageShellProps) {
     return (
         <>
             {extraHead}
@@ -21,8 +22,14 @@ export default function PageShell({ activePage, children, extraHead }: PageShell
                 style={{ background: "linear-gradient(135deg, #0a1628 0%, #0f2040 45%, #1a1035 75%, #0d1a2e 100%)" }}
             >
                 <Navbar activePage={activePage} />
-                <SignedIn>{children}</SignedIn>
-                <SignedOut><RedirectToSignIn /></SignedOut>
+                {allowAnonymous ? (
+                    children
+                ) : (
+                    <>
+                        <SignedIn>{children}</SignedIn>
+                        <SignedOut><RedirectToSignIn /></SignedOut>
+                    </>
+                )}
                 <MobileNav />
                 <BugReportButton />
             </main>

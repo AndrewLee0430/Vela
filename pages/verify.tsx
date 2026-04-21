@@ -2,13 +2,13 @@
 
 import { useState, FormEvent, useRef } from 'react';
 import Head from 'next/head';
-import { useAuth } from '@clerk/nextjs';
+import { useAuth, useUser } from '@clerk/nextjs';
 import FeedbackBar from '../components/FeedbackBar';
 import UpgradeModal from '../components/UpgradeModal';
 import Toast from '../components/Toast';
 import PHIWarning from '../components/PHIWarning';
 import PageShell from '../components/PageShell';
-import { setQueryId } from '../utils/analytics';
+import { setQueryId, getAnonFingerprint } from '../utils/analytics';
 import { useLang } from '../utils/LangContext';
 import { getUI } from '../utils/i18n-ui';
 import { formatInteractionSummary, getSeverityLabel, getRiskLevelLabel } from '../utils/i18n-verify';
@@ -40,6 +40,7 @@ interface VerifyResponse {
 
 function VerifyForm() {
     const { getToken } = useAuth();
+    const { isSignedIn } = useUser();
     const { lang } = useLang();
     const ui = getUI(lang);
 
@@ -51,6 +52,7 @@ function VerifyForm() {
     const isRunningRef = useRef(false);
     const [showUpgradeModal, setShowUpgradeModal] = useState(false);
     const [showDailyCapToast, setShowDailyCapToast] = useState(false);
+    const [anonNoticeMsg, setAnonNoticeMsg] = useState<string | null>(null);
     const [phiError, setPhiError] = useState<{detail: string; suggestion: string} | null>(null);
 
     const handleReset = () => { setDrugs(''); setResult(null); setError(''); setPhiError(null); setQueryId(null); };
@@ -70,12 +72,20 @@ function VerifyForm() {
         setQueryId(null);
 
         try {
-            const token = await getToken({ skipCache: true });
-            if (!token) { setError(ui.authRequired); return; }
+            const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+            if (isSignedIn) {
+                const token = await getToken({ skipCache: true });
+                if (!token) { setError(ui.authRequired); return; }
+                headers['Authorization'] = `Bearer ${token}`;
+            } else {
+                const fp = getAnonFingerprint();
+                if (!fp) { setError('Session unavailable. Please refresh and try again.'); return; }
+                headers['X-Anon-Fingerprint'] = fp;
+            }
 
             const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/verify`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                headers,
                 body: JSON.stringify({
                     drugs: drugList,
                     patient_context: null,
@@ -85,14 +95,24 @@ function VerifyForm() {
 
             if (res.status === 400) {
                 const data = await res.json().catch(() => ({}));
-                if (data.type === 'phi_blocked') {
+                const code = data.type ?? data.error;
+                if (code === 'phi_blocked') {
                     setPhiError({ detail: data.detail, suggestion: data.suggestion });
+                    return;
+                }
+                if (code === 'invalid_fingerprint') {
+                    setError('Session unavailable. Please refresh and try again.');
                     return;
                 }
             }
             if (res.status === 403) {
                 const data = await res.json().catch(() => ({}));
-                if (data.error === 'limit_reached') {
+                const code = data.type ?? data.error;
+                if (code === 'signup_required') {
+                    setError('Sign up required to continue. Please create a free account.');
+                    return;
+                }
+                if (code === 'limit_reached') {
                     setShowUpgradeModal(true);
                     return;
                 }
@@ -100,7 +120,23 @@ function VerifyForm() {
                 return;
             }
             if (res.status === 429) {
+                const data = await res.json().catch(() => ({}));
+                const code = data.type ?? data.error;
+                if (code === 'anonymous_quota_exceeded') {
+                    setAnonNoticeMsg('Daily free limit reached. Sign up to continue.');
+                    return;
+                }
                 setShowDailyCapToast(true);
+                return;
+            }
+            if (res.status === 503) {
+                const data = await res.json().catch(() => ({}));
+                const code = data.type ?? data.error;
+                if (code === 'budget_exceeded') {
+                    setAnonNoticeMsg('Service temporarily at capacity. Please try again later.');
+                    return;
+                }
+                setError(`Service temporarily unavailable. Please try again later.`);
                 return;
             }
             if (res.status === 401) {
@@ -374,6 +410,14 @@ function VerifyForm() {
                     duration={5000}
                 />
             )}
+            {anonNoticeMsg && (
+                <Toast
+                    message={anonNoticeMsg}
+                    type="warning"
+                    onClose={() => setAnonNoticeMsg(null)}
+                    duration={5000}
+                />
+            )}
         </div>
     );
 }
@@ -382,6 +426,7 @@ export default function Verify() {
     return (
         <PageShell
             activePage="verify"
+            allowAnonymous
             extraHead={
                 <Head>
                     <meta name="robots" content="noindex, nofollow" />
