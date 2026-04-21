@@ -125,6 +125,26 @@ Before starting Phase 1A, conduct Phase 0 Retrospective:
   - **依賴與阻塞:** 無外部依賴,可於 2.8 開工前插入;建議排序:明天(2026-04-21)開工 2.8 前完成 Landing Page 修復
   - **備註:** 本條 tech debt 屬「Phase 0 收尾 polish」性質,非新 PRD 需求。工時小可直接執行,不需單獨 ADR
 
+- **[P1 → Phase 0 Retrospective]** CLAUDE.md 結構性精簡
+  - 問題:
+    - 當前 ~400 行,違反 LLM instruction budget 最佳實踐(社群共識 < 300 行)
+    - 多處內容為 reference material 而非 instruction(architecture 詳細、env vars、file paths),違反 Progressive Disclosure pattern
+    - Current Development Status / Discovered Gaps 與 FEATURE_AUDIT.md / decision docs 有 drift 風險
+  - 不現在做的理由:
+    - Claude Code 在當前 CLAUDE.md 長度下仍能交付 staff-engineer level 品質(2.4 / 2.9 / Landing Page 已驗證)
+    - 重構會花 3-4 小時,與 2.8 / 2.7 / 2.1 GTM 排程衝突
+    - Phase 0 Retrospective 本來就要 review code health,重構 CLAUDE.md 在那時 sync 最自然(可併入 "code health" section)
+  - 解法(Phase 0 Retrospective 執行):
+    1. 拆 CLAUDE.md 成三份:
+       - CLAUDE.md (~150-180 lines, active instructions only)
+       - TECH_DEBT.md (new, historical + open items, CLAUDE.md 只指 active items)
+       - docs/architecture.md (new, 5-layer guards / pipelines / payments / DB / env / deploy / frontend)
+    2. 保留項:Collaboration Principles 含 Examples(few-shot anchoring 效果,不是歷史紀錄)、Important Rules 16 條、Commands、Workflow
+    3. 刪除項:Key File Paths(Claude 自己 grep)、Current Development Status(由 FEATURE_AUDIT 取代)、Discovered Gaps(由 decision docs 取代)
+    4. Active Tech Debt 變動態區塊:只列「下個 task 要看的 1-3 條」,其他移 TECH_DEBT.md
+  - 驗收:開新 Claude Code session 問它 "project structure",能正確描述 + 知道去哪看細節
+  - Discovered: 2026-04-21(Landing Page ship 後 solo founder 討論 instruction budget best practice 時識別)
+
 
 ### Discovered Gaps (action required)
 
