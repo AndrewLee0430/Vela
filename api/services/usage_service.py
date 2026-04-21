@@ -2,11 +2,17 @@
 
 from datetime import datetime, timezone
 from sqlalchemy.orm import Session
-from api.models.sql_models import UserUsage
+from api.models.sql_models import UserUsage, AnonymousUsage
+from api.services.anonymous_identity import today_utc
 
 # Credit 設定（僅後端，不暴露給前端）
 FREE_DAILY_LIMIT = 10
 PRO_DAILY_SAFETY_CAP = 100
+
+# Decision 001 v0.3 A6: "2R + 2V" pattern (2×3 + 2×1 = 8 credits).
+# Aggregate limit (not per-feature) simplifies check/deduct logic.
+# $2/day global anonymous budget cap provides cost safety net.
+ANONYMOUS_DAILY_LIMIT = 8
 
 CREDIT_COSTS = {
     "research": 3,
@@ -109,4 +115,74 @@ async def deduct_credits(
     if usage.plan_type == "free":
         usage.credits_used += cost  # Keep lifetime counter for analytics
     usage.updated_at = datetime.now(timezone.utc)
+    db.commit()
+
+
+# --------------------------------------------------------------------------- #
+# Decision 001 L0 anonymous tier — quota helpers                              #
+# --------------------------------------------------------------------------- #
+
+
+async def _get_or_create_anonymous_usage(
+    db: Session, anon_id: str
+) -> AnonymousUsage:
+    """取得或建立 anonymous session 的 usage record."""
+    usage = db.query(AnonymousUsage).filter(
+        AnonymousUsage.anon_id == anon_id
+    ).first()
+
+    if not usage:
+        usage = AnonymousUsage(
+            anon_id=anon_id,
+            credits_used_today=0,
+            last_reset_date=today_utc(),
+        )
+        db.add(usage)
+        db.commit()
+        db.refresh(usage)
+
+    return usage
+
+
+async def _reset_anonymous_daily_if_needed(
+    db: Session, usage: AnonymousUsage
+) -> AnonymousUsage:
+    """如果已經是新的一天（UTC），重置 anonymous 每日 credits."""
+    today = today_utc()
+    if usage.last_reset_date < today:
+        usage.credits_used_today = 0
+        usage.last_reset_date = today
+        db.commit()
+        db.refresh(usage)
+    return usage
+
+
+async def check_anonymous_credits(
+    db: Session, anon_id: str, feature: str
+) -> tuple[bool, int]:
+    """
+    檢查匿名身份是否有足夠 credits 執行此次請求。不扣減。
+    返回 (allowed, credits_remaining_after_this_cost).
+    若 not allowed, remaining = credits left before this request (>= 0).
+    """
+    usage = await _get_or_create_anonymous_usage(db, anon_id)
+    usage = await _reset_anonymous_daily_if_needed(db, usage)
+    cost = CREDIT_COSTS.get(feature, 1)
+
+    if usage.credits_used_today + cost > ANONYMOUS_DAILY_LIMIT:
+        remaining = max(0, ANONYMOUS_DAILY_LIMIT - usage.credits_used_today)
+        return False, remaining
+
+    return True, ANONYMOUS_DAILY_LIMIT - usage.credits_used_today - cost
+
+
+async def deduct_anonymous_credits(
+    db: Session, anon_id: str, feature: str
+) -> None:
+    """扣減並更新 last_active_at（在成功後呼叫）."""
+    usage = await _get_or_create_anonymous_usage(db, anon_id)
+    cost = CREDIT_COSTS.get(feature, 1)
+
+    usage.credits_used_today += cost
+    usage.last_active_at = datetime.now(timezone.utc)
     db.commit()

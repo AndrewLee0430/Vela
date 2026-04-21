@@ -2,6 +2,7 @@
 
 import logging
 from datetime import datetime, timezone
+from typing import Optional
 from sqlalchemy.orm import Session
 from api.models.sql_models import ApiCostLog
 
@@ -18,13 +19,17 @@ MODEL_COSTS = {
 
 async def log_api_cost(
     db: Session,
-    user_id: str,
+    user_id: Optional[str],
     feature: str,
     model: str,
     prompt_tokens: int,
     completion_tokens: int
 ) -> None:
-    """記錄單次 API call 的 token 成本（使用已有的 db session）"""
+    """記錄單次 API call 的 token 成本（使用已有的 db session）。
+
+    user_id=None 表示 anonymous 使用（Decision 001 v0.4 A10 — ApiCostLog.user_id IS NULL
+    作為 anonymous marker,供 cost_guard $2/day aggregate cap query 使用）。
+    """
     cost_config = MODEL_COSTS.get(model, MODEL_COSTS["gpt-4.1-mini"])
     estimated_cost = (
         (prompt_tokens / 1_000_000) * cost_config["input"] +
@@ -45,13 +50,13 @@ async def log_api_cost(
 
 
 async def log_api_cost_standalone(
-    user_id: str,
+    user_id: Optional[str],
     feature: str,
     model: str,
     prompt_tokens: int,
     completion_tokens: int
 ) -> None:
-    """記錄 token 成本（自建 db session，供 pipeline 內部元件使用）"""
+    """記錄 token 成本（自建 db session，供 pipeline 內部元件使用）。user_id=None 表示 anonymous。"""
     try:
         from api.database.sql_db import SessionLocal
         db = SessionLocal()

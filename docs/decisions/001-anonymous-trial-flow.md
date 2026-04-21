@@ -1,8 +1,8 @@
 # Decision 001: Anonymous Trial Flow
 
-**Status**: Accepted (solo founder review, 2026-04-19; v0.3 implementation alignment 2026-04-21)
+**Status**: Accepted (solo founder review, 2026-04-19; v0.3 implementation alignment 2026-04-21; v0.4 Round 1B codification 2026-04-21)
 **Date**: 2026-04-18
-**Version**: 0.3(supersedes v0.2)
+**Version**: 0.4(supersedes v0.3)
 **Author**: andre (solo founder)
 **Supersedes**: (none — first decision record)
 **Superseded by**: (none — this is current)
@@ -365,11 +365,182 @@ Decision 001 v0.2 在以下 5 個 implementation details 留下解釋空間,v0.3
 - Inline branching 是好 migration point — 2.1 可用 grep 找齊所有點
 - 對齊 § Alignment Notes B
 
-### Implementation Acceptance (v0.3)
+### A6. Anonymous daily credit limit
 
-1. `scripts/003_add_anonymous_usage.sql` 存在且可 apply
-2. `api/services/anonymous_identity.py` 新建含 `today_utc()` helper
-3. `api/server.py` `optional_auth()` 重寫為 `require_auth_or_anonymous()`(名稱改一致)
+**決定**: `ANONYMOUS_DAILY_LIMIT = 8` aggregate credits(covers "2 Research + 2 Verify" pattern)
+**不採用**:
+
+- `= 5` credits (half of Free): restrictive, breaks "2R+2V" spec promise
+- Per-feature counts (separate `research_used` / `verify_used` columns): overkill schema complexity
+
+**理由**:
+
+- Aligns with Decision 001 v0.2 original spec "Research 2/day + Verify 2/day"
+- With `CREDIT_COSTS {research: 3, verify: 1}`, 2R+2V = 8 credits
+- v0.3 § C $2/day aggregate anonymous budget cap serves as cost safety net
+- `= 5` aggregate limit would force 1R + 2V max, undermining conversion psychology (single Research = 3 credits feels too tight)
+- Per-feature precision unnecessary for L0 tier; aggregate is simpler check/deduct logic
+
+**Discovered**: 2026-04-21 during Round 1A implementation review (initial `ANONYMOUS_DAILY_LIMIT = 5` flagged as inconsistent with spec "2R + 2V" — aggregate math was 8, not 5).
+
+### A7. $2/day anonymous budget cap 合理性
+
+**決定**: 保留 $2/day aggregate anonymous spend cap,作為 launch 期間保守上限
+
+**分析**:
+
+- L0 main generation on GPT-4.1-mini per A5/A8:
+  - Research 單次 ~$0.008-0.010(約 10k input + 2.7k output tokens)
+  - Verify 單次 ~$0.001-0.003
+  - $2/day cap 可 cover ~200-250 anonymous Research 或 ~600+ anonymous Verify
+- Edge case: 若 inline branching bug 讓 L0 fallback 到 GPT-4.1
+  - Research 單次 ~$0.04-0.05
+  - $2/day cap 只 cover ~50 anonymous Research
+  - Budget cap 反而成為 bug detection 信號(提前 alert)
+- Launch 保守原則:
+  - Soft launch 預估 <100 anonymous users/day,$2 足夠
+  - 若 Phase 0 Retrospective 觀察實際 spend 穩定 <$0.50,cap 可上調到 $5-10
+  - 若流量爆,先 scale cap 比 silent overage 安全
+
+**Phase 0 Retrospective action**: 觀察 2-3 週實際 anonymous spend,重新 calibrate budget cap。
+
+### A8. L0 tier model assignment (Research main generation)
+
+**決定**: Research main generation 在 L0 tier 用 `gpt-4.1-mini`;L1/L2 保留 `gpt-4.1`。
+
+**不影響的 Research pipeline LLM calls**:
+
+- Query rewrite(已經是 mini)
+- Relevance filter(已經是 mini)
+- Reranking(已經是 mini)
+- LLM Judge(已經是 mini)
+
+**不影響的 features**:
+
+- Verify 本來就是 mini(所有 tier 共用)
+- Explain 不對 L0 開放(L0 Explain 返回 `signup_required`,per A4)
+
+**實作**: 2.8 Round 1B 在 `api/rag/generator.py` main generation call site inline branch,per A5 inline routing。
+
+**成本差**: L0 Research 單次從 ~$0.04 降到 ~$0.008,5x 成本下降。
+
+**預期品質影響**(based on GPT-4.1 vs mini public benchmarks):
+
+- 80-85% queries: 無感差異(retrieval-dominated;LLM 只做整合生成)
+- 10-15% queries: 輕微差異(citation 偶爾漏、evidence strength 偶判錯)
+- <5% queries: 明顯差異(複雜多藥物交互作用、罕見疾病、跨系統推理)
+
+**為什麼可接受**:
+
+- L0 是 trial tier,目的是傳達 Vela 核心價值(實證多語),非展現最強品質
+- Vela 的 RAG pipeline(retrieval + reranker)承擔 heavy lifting,LLM 主要做整合
+- Mini 的 IFEval 87.4% 足以遵守 Vela prompt 的格式約束(section headers + citations)
+- L1/L2 升級到 full 是「看得到的差異」,支撐註冊 conversion 誘因
+
+**Phase 0 Retrospective 評估準則**:
+
+- 觀察 L0 feedback 分布(thumbs up/down rate via PostHog)
+- 比較 L0 與 Free tier 的 thumbs up/down rate 差距
+- 若差距 > 15%: 考慮升級 L0 到 full(並同步升 $2/day cap 到 $10+)
+- 若差距 < 10%: 保持 mini(成本安全邊際大)
+
+### A9. Auth helper split (rename + add, not blanket rewrite)
+
+**決定**: v0.3 § Implementation Acceptance item 3 提「`optional_auth()` 重寫為 `require_auth_or_anonymous()`」會誤導成 single rename with tuple return,實際 Round 1B 採 **Option B 分裂**:
+
+- 既有 `optional_auth()` rename 為 `require_auth()`(body 不動,只改名符合語義 — 它本來就會 raise 403)
+- 新建 `require_auth_or_anonymous()` dependency,返回 `Tuple[Optional[str], Optional[str]]` = (user_id, anon_id),exactly one non-None
+- **只有 Research / Verify / Explain 三個 L0-relevant endpoints 切 `require_auth_or_anonymous`**
+- 其餘 12 個 auth-only endpoints(history / feedback / billing / admin / checkout / subscription / bug-report 相鄰 handlers 等)維持 `require_auth` 舊契約
+
+**不採用**: 所有 15 個 `Depends(optional_auth)` 一次切換成 `require_auth_or_anonymous`
+**理由**:
+
+- Billing / admin endpoints 本來就不接受 L0,強迫它們接受 tuple + 檢查 `if anon_id is not None: raise` 是 noise
+- Blast radius: 2 files touched → ~15 endpoints not re-tested = 高風險
+- Rename 只改名不改行為,sem-safe 不需個別回歸
+- 三個 feature endpoints 本來就要重寫 body,切新 dependency 邊際成本為零
+- 未來新增 endpoint 按需求選其中一個,不會回到混淆狀態
+
+**TEST_MODE 行為矩陣(`require_auth_or_anonymous`)**:
+
+| Bearer header | X-Anon-Fingerprint header | TEST_MODE | 返回 |
+|---|---|---|---|
+| present | — | any | (user_id from JWT, None) |
+| absent | present | any | (None, anon_id) — 走匿名 path |
+| absent | absent | True | (TEST_USER_ID, None) — 保留 legacy test flow |
+| absent | absent | False | raise 403 Missing token |
+
+**Discovered**: 2026-04-21 Round 1B diagnose(17 `Depends(optional_auth)` callers vs spec 預設 3,blast radius 放大 5x)。
+
+### A10. ApiCostLog.user_id IS NULL as anonymous marker
+
+**決定**: 既有 `ApiCostLog.user_id: Column(String, index=True)` 已 nullable(未設 `nullable=False`)。L0 cost logging 直接 pass `user_id=None`,以 `WHERE user_id IS NULL` 作為匿名 marker。
+
+**不採用**:
+
+- 新增 `anon_id` column 到 `ApiCostLog`:schema 膨脹,破壞 privacy-first(cost log 不應該能追溯回 specific anon session)
+- 用 magic string 如 `"__anonymous__"` 當 user_id:破壞型別語義,query 時要記住 magic value
+- 分拆 `AnonymousCostLog` table:冗餘,aggregate 時要 UNION 兩 table
+
+**理由**:
+
+- NULL 是標準 SQL semantics,query `WHERE user_id IS NULL` 正是 `check_anonymous_budget` 的 aggregate 邏輯
+- Privacy-first: anonymous cost log 與 anon_id 解耦 — 流量總量可追蹤,但單筆無法 trace 回 session
+- `cost_tracker.log_api_cost` 簽名改 `user_id: str` → `user_id: Optional[str]` 是極小變更
+- 既有 `UserUsage` / `ApiCostLog` join 查詢從不需要 L0 rows,自動被 `WHERE user_id IS NOT NULL` 濾掉
+
+**實作**:
+
+- `api/services/cost_tracker.py`: 兩個 function 簽名從 `user_id: str` 改為 `user_id: Optional[str]`,docstring 註明 A10
+- `api/services/cost_guard.py`(新): `check_anonymous_budget(db) -> Tuple[bool, float]` 透過 `SUM(estimated_cost_usd) WHERE user_id IS NULL AND created_at::date = today_utc()` enforce $2/day
+- 三個 feature endpoints 在 anonymous 分支 pass `user_id=None` 給 `log_api_cost(...)`
+
+**Discovered**: 2026-04-21 Round 1B diagnose(v0.3 § C 預設用 ApiCostLog aggregate query 但沒明文 column semantics;實作時 cost_tracker.py 簽名不允許 None,需要 relaxation)。
+
+### A11. Anonymous requests skip AuditLog + ChatHistory
+
+**決定**: L0 tier requests 完全跳過 AuditLog 和 ChatHistory 寫入。只有 ApiCostLog 捕捉每個 L0 request。
+
+**範圍**:
+- /api/research L0 path: 不寫 AuditLog / ChatHistory
+- /api/verify L0 path: 不寫 AuditLog / ChatHistory
+- /api/explain L0 path: 在 FeatureNotAvailable 前就 block,根本不執行
+- ApiCostLog: 所有 L0 request 都寫入 (user_id=None per A10)
+
+**理由**:
+- Privacy-first 是 Vela 品牌核心 pillar (Landing Page 三條承諾: 不要求驗證 / 預設匿名 / 資料不外流)
+- AuditLog 存 full query text + 完整 response,對匿名使用者是過度蒐集
+- 使用者不登入 = 信任 Vela 不存取資料,應 honor 此期待
+- ApiCostLog 只存 (anon_id marker via user_id=NULL, cost, timestamp, model, tokens) — 對 budget enforcement + aggregate analytics 足夠
+
+**Abuse detection 替代機制**:
+- Rate limit (per-IP,既有) 防 DoS
+- ANONYMOUS_DAILY_LIMIT = 8 credits per anon_id (Round 1A) 防單 anon_id 刷量
+- $2/day aggregate budget cap (A7) 防全域爆量
+- ApiCostLog + 時戳 可 query 單 anon_id 異常模式(若未來需要)
+
+**Future consideration**:
+- 若需要更深 abuse detection(e.g. query content pattern analysis),新建輕量 AbuseLog,不回歸 AuditLog
+- 此決定不影響 L1/L2 的 AuditLog 行為
+
+### A12. Anonymous requests skip LLMJudge
+
+**決定**: L0 tier Research requests 不觸發 LLMJudge background task。
+
+**理由**:
+- LLMJudge 評估結果寫回 AuditLog.extra_data
+- 既然 L0 無 AuditLog (per A11),judge 結果無處儲存
+- 跑 LLMJudge 對 L0 是純消耗 token,無 signal capture
+- L0 品質監控透過 PostHog thumbs up/down events (user-driven signal,比 LLMJudge 更有價值)
+
+**Implementation**: /api/research 的 elif DONE branch 只對 L1/L2 (user_id != None) 觸發 llm_judge_task
+
+### Implementation Acceptance (v0.4 — cumulative over v0.3)
+
+1. `migrations/003_add_anonymous_usage.sql` 存在且可 apply
+2. `api/services/anonymous_identity.py` 新建含 `today_utc()` helper + `derive_anon_id()` + `validate_fingerprint()`
+3. `api/server.py` `optional_auth` rename 為 `require_auth`;新增 `require_auth_or_anonymous` dependency(per A9 分裂,非單一 rewrite)
 4. Research / Verify endpoints 支援 anonymous(Bearer 或 `X-Anon-Fingerprint` 擇一)
 5. Explain endpoint 對 anonymous 返回 403 `{type: "signup_required"}`
 6. CORS `allow_headers` 包含 `"X-Anon-Fingerprint"`
@@ -377,6 +548,11 @@ Decision 001 v0.2 在以下 5 個 implementation details 留下解釋空間,v0.3
 8. PostHog 事件攜帶 `tier` super-property
 9. `pages/sign-in/[[...index]].tsx` + `pages/sign-up/[[...index]].tsx` 存在
 10. `_app.tsx` ClerkProvider 包含 `signInUrl` / `signUpUrl` / fallback redirects
+11. Budget cap: Postgres aggregate query on `ApiCostLog` enforces $2/day anonymous spend; returns 503 `{type: "budget_exceeded"}` when exceeded
+12. Model tier routing: Research main generation uses `gpt-4.1-mini` for L0 tier, `gpt-4.1` for L1/L2 tier (verified via `model_override` kwarg in `api/rag/generator.py`)
+13. `require_auth_or_anonymous` returns `Tuple[Optional[str], Optional[str]]`;exactly one non-None;TEST_MODE matrix per A9
+14. `ApiCostLog.user_id` 接受 NULL;L0 costs 以 `user_id=None` 寫入;`cost_guard.check_anonymous_budget` 以 `WHERE user_id IS NULL` aggregate(per A10)
+15. L0 endpoints 不寫 `AuditLog` / `ChatHistory`(stateless, privacy-first);L0 扣 `AnonymousUsage.credits_used_today`,L1/L2 扣 `UserUsage.credits_used_today`
 
 ---
 
@@ -837,7 +1013,8 @@ reCAPTCHA v3(隱形驗證)雖然是主流防 bot 工具,但跟 Vela 有三層衝
 |---|---|---|---|
 | 0.1 | 2026-04-18 | andre | Initial draft based on gap discovery |
 | 0.2 | 2026-04-18 | andre | L1 credit 對齊維運計畫 10 credits 上限;L0 拿掉 Explain 作為 L1 解鎖誘因;新增 "Vela for Work" naming 與 CTA 文案;成本重算 |
-| **0.3** | **2026-04-21** | **solo founder + Claude Code diagnostic** | **Pre-implementation diagnostic revealed spec-vs-codebase gaps; align to actual Vela infrastructure to remove ambiguity before Round 1 execution. Adds § Implementation Alignment Notes (Redis→Postgres, provider factory→inline branching, cost_budget.py→ApiCostLog query, request.state→Depends DI) + § Implementation Decisions A1-A5 (PostHog tier property, fingerprint validation, mid-session signup reset, Explain 403 signup_required, tier routing deferred to 2.1) + Implementation Acceptance checklist.** |
+| **0.3** | **2026-04-21** | **solo founder + Claude Code diagnostic** | **Pre-implementation diagnostic revealed spec-vs-codebase gaps; align to actual Vela infrastructure to remove ambiguity before Round 1 execution. Adds § Implementation Alignment Notes (Redis→Postgres, provider factory→inline branching, cost_budget.py→ApiCostLog query, request.state→Depends DI) + § Implementation Decisions A1-A5 (PostHog tier property, fingerprint validation, mid-session signup reset, Explain 403 signup_required, tier routing deferred to 2.1) + Implementation Acceptance checklist. Mid-v0.3 additions: A6 (ANONYMOUS_DAILY_LIMIT=8 aggregate covers "2R+2V"), A7 ($2/day budget cap rationale + Phase 0 Retrospective re-calibration plan), A8 (L0 Research main generation uses gpt-4.1-mini; mini-vs-full impact analysis + quality acceptance criteria).** |
+| **0.4** | **2026-04-21** | **solo founder + Claude Code Round 1B** | **Round 1B backend integration codified. Adds A9 (auth helper split: `optional_auth` rename to `require_auth` + new `require_auth_or_anonymous` dependency for 3 L0-relevant endpoints; Option B, not blanket rewrite) + A10 (ApiCostLog.user_id IS NULL as anonymous marker; privacy-first cost aggregate query). Implementation Acceptance extended to items 13-15 covering tuple return contract, NULL-semantic cost logging, and L0 no-AuditLog/no-ChatHistory stateless invariant.** |
 
 ---
 

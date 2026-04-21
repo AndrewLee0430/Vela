@@ -36,7 +36,7 @@ import time
 import uuid
 from pathlib import Path
 from contextlib import asynccontextmanager
-from typing import Optional
+from typing import Optional, Tuple
 
 from fastapi import FastAPI, Depends, Request
 from fastapi.responses import StreamingResponse, FileResponse, JSONResponse
@@ -66,7 +66,21 @@ from api.middleware.phi_handler import PHIDetector
 from api.middleware.guards import run_guards
 from api.database.sql_db import get_db, engine, Base, SessionLocal
 from api.models.sql_models import AuditLog, UserFeedback, ChatHistory, BugReport
-from api.services.usage_service import check_credits, deduct_credits
+from api.services.usage_service import (
+    check_credits,
+    deduct_credits,
+    check_anonymous_credits,
+    deduct_anonymous_credits,
+    ANONYMOUS_DAILY_LIMIT,
+)
+from api.services.anonymous_identity import derive_anon_id, validate_fingerprint
+from api.services.cost_guard import check_anonymous_budget
+from api.errors import (
+    FeatureNotAvailable,
+    AnonymousQuotaExceeded,
+    AnonymousBudgetExceeded,
+    InvalidFingerprint,
+)
 from api.utils.llm_judge import LLMJudge, Source as JudgeSource
 
 from api.models.explain_schemas import ExplainRequest
@@ -281,7 +295,7 @@ app.add_middleware(
     allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["GET", "POST"],
-    allow_headers=["Authorization", "Content-Type"],
+    allow_headers=["Authorization", "Content-Type", "X-Anon-Fingerprint"],
 )
 
 
@@ -317,7 +331,15 @@ else:
     logger.warning("TEST_MODE: Clerk authentication disabled")
 
 
-async def optional_auth(request: Request) -> Optional[HTTPAuthorizationCredentials]:
+async def require_auth(request: Request) -> Optional[HTTPAuthorizationCredentials]:
+    """Require a valid Clerk JWT. Raises 403 if missing or invalid.
+
+    Used by L1/L2-only endpoints (history, feedback, billing, admin, bug-report's
+    adjacent handlers, etc.). Decision 001 v0.4 A9 — renamed from optional_auth()
+    because the original name was misleading (it was never truly optional).
+    For endpoints that also accept L0 anonymous traffic, use
+    require_auth_or_anonymous() instead.
+    """
     if TEST_MODE:
         return None
 
@@ -344,6 +366,46 @@ async def optional_auth(request: Request) -> Optional[HTTPAuthorizationCredentia
         logger.error("JWT decode error: %s", e)
         from fastapi import HTTPException
         raise HTTPException(status_code=403, detail="Invalid token")
+
+
+async def require_auth_or_anonymous(
+    request: Request,
+) -> Tuple[Optional[str], Optional[str]]:
+    """Accept either a Clerk JWT (L1/L2) or an X-Anon-Fingerprint header (L0).
+
+    Returns (user_id, anon_id). Exactly one is non-None.
+
+    Decision 001 v0.3 § A, D / v0.4 A9 — used by Research / Verify / Explain.
+    Explain raises FeatureNotAvailable("explain") if anon_id is set (L0 cannot
+    access Explain per Decision 001 v0.3).
+
+    TEST_MODE behavior:
+      - Bearer token present → treat as L1/L2 (use TEST_USER_ID)
+      - X-Anon-Fingerprint present → treat as L0 (derive anon_id normally)
+      - Neither → fall back to TEST_USER_ID as L1 (preserves legacy test flow)
+    """
+    auth_header = request.headers.get("Authorization", "")
+    fp_header = request.headers.get("X-Anon-Fingerprint", "")
+
+    if auth_header.startswith("Bearer "):
+        creds = await require_auth(request)
+        user_id = get_user_id(creds)
+        return user_id, None
+
+    if fp_header:
+        try:
+            fingerprint = validate_fingerprint(fp_header)
+        except ValueError as e:
+            raise InvalidFingerprint(str(e))
+        client_ip = _get_client_ip(request)
+        anon_id = derive_anon_id(client_ip, fingerprint)
+        return None, anon_id
+
+    if TEST_MODE:
+        return os.getenv("TEST_USER_ID", "test_user"), None
+
+    from fastapi import HTTPException
+    raise HTTPException(status_code=403, detail="Missing token")
 
 
 def get_user_id(creds: Optional[HTTPAuthorizationCredentials]) -> str:
@@ -467,26 +529,43 @@ async def audit_middleware(request: Request, call_next):
 async def research_query(
     body: ResearchRequest,
     request: Request,
-    creds: Optional[HTTPAuthorizationCredentials] = Depends(optional_auth),
+    auth: Tuple[Optional[str], Optional[str]] = Depends(require_auth_or_anonymous),
     db: Session = Depends(get_db)
 ):
+    user_id, anon_id = auth
+    is_anonymous = anon_id is not None
+
     # PHI 偵測（在 streaming 開始前）
     phi_resp = _check_phi(body.question, "/api/research", request)
     if phi_resp:
         return phi_resp
 
-    user_id = get_user_id(creds)
     start_time = time.time()
-    logger.info("[Research] user=%s query_length=%d", user_id, len(body.question))
 
-    # Credit 檢查（在 streaming 開始前）
-    if not TEST_MODE:
-        allowed, reason = await check_credits(db, user_id, "research")
+    # Credit / quota / budget 檢查（在 streaming 開始前）
+    # Decision 001 v0.3 A7 / A8: L0 走 $2/day aggregate cap + per-anon ANONYMOUS_DAILY_LIMIT + gpt-4.1-mini
+    if is_anonymous:
+        logger.info("[Research] tier=L0 anon_id=%s query_length=%d", anon_id[:8], len(body.question))
+        budget_ok, _spent = await check_anonymous_budget(db)
+        if not budget_ok:
+            raise AnonymousBudgetExceeded()
+        allowed, remaining = await check_anonymous_credits(db, anon_id, "research")
         if not allowed:
-            if reason == "limit_reached":
-                return JSONResponse(status_code=403, content={"error": "limit_reached", "upgrade_url": "/pricing"})
-            elif reason == "daily_cap_reached":
-                return JSONResponse(status_code=429, content={"error": "daily_cap_reached", "message": "You've reached today's usage limit. Resets at midnight UTC."})
+            raise AnonymousQuotaExceeded(
+                used=ANONYMOUS_DAILY_LIMIT - remaining,
+                limit=ANONYMOUS_DAILY_LIMIT,
+            )
+        model_override: Optional[str] = "gpt-4.1-mini"
+    else:
+        logger.info("[Research] user=%s query_length=%d", user_id, len(body.question))
+        if not TEST_MODE:
+            allowed, reason = await check_credits(db, user_id, "research")
+            if not allowed:
+                if reason == "limit_reached":
+                    return JSONResponse(status_code=403, content={"error": "limit_reached", "upgrade_url": "/pricing"})
+                elif reason == "daily_cap_reached":
+                    return JSONResponse(status_code=429, content={"error": "daily_cap_reached", "message": "You've reached today's usage limit. Resets at midnight UTC."})
+        model_override = None
 
     async def event_stream():
         full_answer = ""
@@ -520,7 +599,8 @@ async def research_query(
                 retrieval_status=retrieval_status,
                 query_type="research",
                 lang=lang,
-                usage_out=usage_out
+                usage_out=usage_out,
+                model_override=model_override
             ):
                 if event.type == StreamEventType.ANSWER:
                     content = event.content or ""
@@ -530,37 +610,47 @@ async def research_query(
                     yield f"data: {json.dumps({'type': 'fallback', 'content': event.content}, ensure_ascii=False)}\n\n"
                 elif event.type == StreamEventType.CITATIONS:
                     citations_data = [c.model_dump() for c in event.content]
-                    _safe_db_write(db, AuditLog(
-                            id=audit_id,
-                            user_id=user_id,
-                            action="research",
-                            query_content=PHIDetector.sanitize_for_log(body.question),
-                            resource_ids=[c.get('source_id') for c in citations_data],
-                            ip_address="0.0.0.0"
-                        ), label="Audit Log")
+                    # L0 anonymous: skip AuditLog (no history persistence for anon)
+                    if not is_anonymous:
+                        _safe_db_write(db, AuditLog(
+                                id=audit_id,
+                                user_id=user_id,
+                                action="research",
+                                query_content=PHIDetector.sanitize_for_log(body.question),
+                                resource_ids=[c.get('source_id') for c in citations_data],
+                                ip_address="0.0.0.0"
+                            ), label="Audit Log")
                     yield f"data: {json.dumps({'type': 'citations', 'content': citations_data}, ensure_ascii=False)}\n\n"
                 elif event.type == StreamEventType.ERROR:
                     yield f"data: {json.dumps({'type': 'error', 'content': event.content}, ensure_ascii=False)}\n\n"
                 elif event.type == StreamEventType.DONE:
                     elapsed_ms = int((time.time() - start_time) * 1000)
-                    _safe_db_write(db, ChatHistory(
-                            user_id=user_id,
-                            session_type="research",
-                            question=PHIDetector.sanitize_for_log(body.question),
-                            answer=full_answer
-                        ), label="History Save")
-                    # 成功後扣減 credits
-                    await deduct_credits(db, user_id, "research")
-                    # Cost logging
-                    if usage_out:
-                        from api.services.cost_tracker import log_api_cost
-                        u = usage_out[0]
-                        await log_api_cost(db, user_id, "research", u["model"], u["prompt_tokens"], u["completion_tokens"])
-                    # Fire LLM Judge in background — does not block SSE stream
-                    if audit_id and full_answer:
-                        asyncio.create_task(
-                            _run_judge_background(audit_id, body.question, full_answer, documents)
-                        )
+                    if is_anonymous:
+                        # L0: deduct anon quota + log cost with user_id=None marker (v0.4 A10)
+                        await deduct_anonymous_credits(db, anon_id, "research")
+                        if usage_out:
+                            from api.services.cost_tracker import log_api_cost
+                            u = usage_out[0]
+                            await log_api_cost(db, None, "research", u["model"], u["prompt_tokens"], u["completion_tokens"])
+                    else:
+                        _safe_db_write(db, ChatHistory(
+                                user_id=user_id,
+                                session_type="research",
+                                question=PHIDetector.sanitize_for_log(body.question),
+                                answer=full_answer
+                            ), label="History Save")
+                        # 成功後扣減 credits
+                        await deduct_credits(db, user_id, "research")
+                        # Cost logging
+                        if usage_out:
+                            from api.services.cost_tracker import log_api_cost
+                            u = usage_out[0]
+                            await log_api_cost(db, user_id, "research", u["model"], u["prompt_tokens"], u["completion_tokens"])
+                        # Fire LLM Judge in background — does not block SSE stream (L1/L2 only)
+                        if audit_id and full_answer:
+                            asyncio.create_task(
+                                _run_judge_background(audit_id, body.question, full_answer, documents)
+                            )
                     yield f"data: {json.dumps({'type': 'done', 'query_time_ms': elapsed_ms}, ensure_ascii=False)}\n\n"
 
         except Exception as e:
@@ -575,7 +665,7 @@ async def research_query(
     )
 
 @app.get("/api/research/suggestions")
-async def get_suggestions(creds: Optional[HTTPAuthorizationCredentials] = Depends(optional_auth)):
+async def get_suggestions(creds: Optional[HTTPAuthorizationCredentials] = Depends(require_auth)):
     return SuggestionsResponse.default_suggestions()
 
 
@@ -586,9 +676,12 @@ async def get_suggestions(creds: Optional[HTTPAuthorizationCredentials] = Depend
 async def verify_drug_interaction(
     body: VerifyRequest,
     request: Request,
-    creds: Optional[HTTPAuthorizationCredentials] = Depends(optional_auth),
+    auth: Tuple[Optional[str], Optional[str]] = Depends(require_auth_or_anonymous),
     db: Session = Depends(get_db)
 ):
+    user_id, anon_id = auth
+    is_anonymous = anon_id is not None
+
     # PHI 偵測
     drugs_text = " ".join(body.drugs)
     phi_resp = _check_phi(drugs_text, "/api/verify", request)
@@ -596,18 +689,30 @@ async def verify_drug_interaction(
         return phi_resp
 
     start_time = time.time()
-    user_id = get_user_id(creds)
     audit_id = f"ver_{uuid.uuid4().hex[:16]}"
-    logger.info("[Verify] user=%s drugs=%s", user_id, body.drugs)
 
-    # Credit 檢查
-    if not TEST_MODE:
-        allowed, reason = await check_credits(db, user_id, "verify")
+    # Credit / quota / budget 檢查
+    # Decision 001 v0.3 A7 / A8: L0 走 $2/day aggregate cap + per-anon ANONYMOUS_DAILY_LIMIT (Verify 已是 gpt-4.1-mini)
+    if is_anonymous:
+        logger.info("[Verify] tier=L0 anon_id=%s drugs=%s", anon_id[:8], body.drugs)
+        budget_ok, _spent = await check_anonymous_budget(db)
+        if not budget_ok:
+            raise AnonymousBudgetExceeded()
+        allowed, remaining = await check_anonymous_credits(db, anon_id, "verify")
         if not allowed:
-            if reason == "limit_reached":
-                return JSONResponse(status_code=403, content={"error": "limit_reached", "upgrade_url": "/pricing"})
-            elif reason == "daily_cap_reached":
-                return JSONResponse(status_code=429, content={"error": "daily_cap_reached", "message": "You've reached today's usage limit. Resets at midnight UTC."})
+            raise AnonymousQuotaExceeded(
+                used=ANONYMOUS_DAILY_LIMIT - remaining,
+                limit=ANONYMOUS_DAILY_LIMIT,
+            )
+    else:
+        logger.info("[Verify] user=%s drugs=%s", user_id, body.drugs)
+        if not TEST_MODE:
+            allowed, reason = await check_credits(db, user_id, "verify")
+            if not allowed:
+                if reason == "limit_reached":
+                    return JSONResponse(status_code=403, content={"error": "limit_reached", "upgrade_url": "/pricing"})
+                elif reason == "daily_cap_reached":
+                    return JSONResponse(status_code=429, content={"error": "daily_cap_reached", "message": "You've reached today's usage limit. Resets at midnight UTC."})
 
     # ── Guard：藥物名稱不需要間接 injection 掃描 ──────────────────
     verify_input = " ".join(body.drugs) + (f" {body.patient_context}" if body.patient_context else "")
@@ -690,9 +795,10 @@ async def verify_drug_interaction(
 
     if not drug_labels:
         logger.warning("No FDA labels found for %s, falling back to LLM", body.drugs)
-        _safe_db_write(db, AuditLog(id=audit_id, user_id=user_id,
-                action="verify_fallback", query_content=f"LLM fallback: {body.drugs}", ip_address="0.0.0.0"),
-                label="Verify Audit")
+        if not is_anonymous:
+            _safe_db_write(db, AuditLog(id=audit_id, user_id=user_id,
+                    action="verify_fallback", query_content=f"LLM fallback: {body.drugs}", ip_address="0.0.0.0"),
+                    label="Verify Audit")
 
         # PRD § 2.9: fallback prompt also follows response_language contract
         fallback_system = _VERIFY_SYSTEM_TEMPLATE.format(response_language=response_language_name)
@@ -725,8 +831,32 @@ async def verify_drug_interaction(
                 for item in fb_data.get("interactions",[]) if len(item.get("drugs",[])) >= 2
             ]
             fb_summary = "⚠️ No FDA label data found. " + fb_data.get("summary","")
-            _safe_db_write(db, ChatHistory(user_id=user_id, session_type="verify",
-                    question=f"Drugs: {', '.join(body.drugs)}", answer=fb_summary), label="Verify History")
+            if not is_anonymous:
+                _safe_db_write(db, ChatHistory(user_id=user_id, session_type="verify",
+                        question=f"Drugs: {', '.join(body.drugs)}", answer=fb_summary), label="Verify History")
+            # Credit / cost accounting for fallback path
+            if is_anonymous:
+                await deduct_anonymous_credits(db, anon_id, "verify")
+                try:
+                    from api.services.cost_tracker import log_api_cost
+                    await log_api_cost(
+                        db, None, "verify", "gpt-4.1-mini",
+                        fb.usage.prompt_tokens,
+                        fb.usage.completion_tokens,
+                    )
+                except Exception as e:
+                    logger.error("Cost log error (verify fallback anon): %s", e)
+            else:
+                await deduct_credits(db, user_id, "verify")
+                try:
+                    from api.services.cost_tracker import log_api_cost
+                    await log_api_cost(
+                        db, user_id, "verify", "gpt-4.1-mini",
+                        fb.usage.prompt_tokens,
+                        fb.usage.completion_tokens,
+                    )
+                except Exception as e:
+                    logger.error("Cost log error (verify fallback): %s", e)
             return VerifyResponse(
                 drugs_analyzed=body.drugs,
                 interactions=fb_interactions,
@@ -740,8 +870,9 @@ async def verify_drug_interaction(
         except Exception as e:
             logger.error("Verify fallback failed: %s", e)
             fallback_summary = "No FDA label data found. Please use specific drug names."
-            _safe_db_write(db, ChatHistory(user_id=user_id, session_type="verify",
-                    question=f"Drugs: {', '.join(body.drugs)}", answer=fallback_summary), label="Verify History")
+            if not is_anonymous:
+                _safe_db_write(db, ChatHistory(user_id=user_id, session_type="verify",
+                        question=f"Drugs: {', '.join(body.drugs)}", answer=fallback_summary), label="Verify History")
             return VerifyResponse(
                 drugs_analyzed=body.drugs, interactions=[],
                 summary=fallback_summary,
@@ -819,25 +950,32 @@ async def verify_drug_interaction(
 
     elapsed_ms = int((time.time()-start_time)*1000)
 
-    _safe_db_write(db,
-        AuditLog(id=audit_id, user_id=user_id,
-            action="verify", query_content=f"Checked: {body.drugs}", ip_address="0.0.0.0"),
-        ChatHistory(user_id=user_id, session_type="verify",
-            question=f"Drugs: {', '.join(body.drugs)}", answer=summary),
-        label="Verify")
+    if not is_anonymous:
+        _safe_db_write(db,
+            AuditLog(id=audit_id, user_id=user_id,
+                action="verify", query_content=f"Checked: {body.drugs}", ip_address="0.0.0.0"),
+            ChatHistory(user_id=user_id, session_type="verify",
+                question=f"Drugs: {', '.join(body.drugs)}", answer=summary),
+            label="Verify")
 
     if spelling_corrections:
         summary = "Note: " + "; ".join(spelling_corrections) + ". Please verify. " + summary
 
-    # 成功後扣減 credits
-    await deduct_credits(db, user_id, "verify")
+    # 成功後扣減 credits + log cost
+    if is_anonymous:
+        await deduct_anonymous_credits(db, anon_id, "verify")
+    else:
+        await deduct_credits(db, user_id, "verify")
 
-    # Cost logging（Verify 用 gpt-4.1-mini，從 completion 取得 usage）
+    # Cost logging（Verify 用 gpt-4.1-mini，從 completion 取得 usage; v0.4 A10: anon → user_id=None）
     try:
         from api.services.cost_tracker import log_api_cost
         if analysis_success and 'completion' in locals():
             await log_api_cost(
-                db, user_id, "verify", "gpt-4.1-mini",
+                db,
+                None if is_anonymous else user_id,
+                "verify",
+                "gpt-4.1-mini",
                 completion.usage.prompt_tokens,
                 completion.usage.completion_tokens
             )
@@ -861,7 +999,7 @@ async def verify_drug_interaction(
 async def explain_report(
     body: ExplainRequest,
     request: Request,
-    creds: Optional[HTTPAuthorizationCredentials] = Depends(optional_auth),
+    auth: Tuple[Optional[str], Optional[str]] = Depends(require_auth_or_anonymous),
     db: Session = Depends(get_db),
 ):
     """
@@ -870,12 +1008,17 @@ async def explain_report(
     Stage 2: Parallel API lookups (LOINC, RxNorm, MedlinePlus)
     Stage 3: Plain-language explanation (GPT-4.1, streaming)
     """
+    user_id, anon_id = auth
+
+    # Decision 001 v0.3: L0 anonymous cannot access Explain (Pro-only feature path)
+    if anon_id is not None:
+        raise FeatureNotAvailable("explain")
+
     # PHI 偵測
     phi_resp = _check_phi(body.report_text, "/api/explain", request)
     if phi_resp:
         return phi_resp
 
-    user_id = get_user_id(creds)
     logger.info("[Explain] user=%s report_length=%d", user_id, len(body.report_text))
 
     # Credit 檢查
@@ -952,7 +1095,7 @@ class IdentifyCorrectionRequest(BaseModel):
 @app.post("/api/explain/feedback")
 async def explain_identify_feedback(
     body: IdentifyCorrectionRequest,
-    creds: Optional[HTTPAuthorizationCredentials] = Depends(optional_auth),
+    creds: Optional[HTTPAuthorizationCredentials] = Depends(require_auth),
     db: Session = Depends(get_db),
 ):
     user_id = get_user_id(creds)
@@ -981,7 +1124,7 @@ from fastapi import File, UploadFile
 @app.post("/api/explain/extract-image")
 async def explain_extract_image(
     file: UploadFile = File(...),
-    creds: Optional[HTTPAuthorizationCredentials] = Depends(optional_auth),
+    creds: Optional[HTTPAuthorizationCredentials] = Depends(require_auth),
     db: Session = Depends(get_db),
 ):
     user_id = get_user_id(creds)
@@ -1052,7 +1195,7 @@ class FeedbackCreate(BaseModel):
 @app.post("/api/feedback")
 async def create_feedback(
     feedback: FeedbackCreate,
-    creds: Optional[HTTPAuthorizationCredentials] = Depends(optional_auth),
+    creds: Optional[HTTPAuthorizationCredentials] = Depends(require_auth),
     db: Session = Depends(get_db)
 ):
     user_id = get_user_id(creds)
@@ -1091,7 +1234,7 @@ class BugReportCreate(BaseModel):
 async def _optional_user_id(request: Request) -> Optional[str]:
     """Extract Clerk user_id from Authorization header if present and valid.
 
-    Unlike optional_auth(), this returns None on missing/invalid tokens rather
+    Unlike require_auth(), this returns None on missing/invalid tokens rather
     than raising — required for endpoints that accept anonymous submissions.
     """
     if TEST_MODE:
@@ -1148,7 +1291,7 @@ async def create_bug_report(
 # ============================================================
 @app.get("/api/history")
 async def get_user_history(
-    creds: Optional[HTTPAuthorizationCredentials] = Depends(optional_auth),
+    creds: Optional[HTTPAuthorizationCredentials] = Depends(require_auth),
     db: Session = Depends(get_db)
 ):
     user_id = get_user_id(creds)
@@ -1186,7 +1329,7 @@ class CheckoutRequest(BaseModel):
 @app.post("/api/checkout")
 async def create_checkout(
     body: CheckoutRequest,
-    creds: Optional[HTTPAuthorizationCredentials] = Depends(optional_auth),
+    creds: Optional[HTTPAuthorizationCredentials] = Depends(require_auth),
     db: Session = Depends(get_db)
 ):
     user_id = get_user_id(creds)
@@ -1208,7 +1351,7 @@ class DodoCheckoutRequest(BaseModel):
 @app.post("/api/checkout/dodo")
 async def create_dodo_checkout(
     body: DodoCheckoutRequest,
-    creds: Optional[HTTPAuthorizationCredentials] = Depends(optional_auth),
+    creds: Optional[HTTPAuthorizationCredentials] = Depends(require_auth),
     db: Session = Depends(get_db)
 ):
     user_id = get_user_id(creds)
@@ -1514,7 +1657,7 @@ async def dodo_webhook(request: Request, db: Session = Depends(get_db)):
 
 @app.get("/api/user/status")
 async def user_status(
-    creds: Optional[HTTPAuthorizationCredentials] = Depends(optional_auth),
+    creds: Optional[HTTPAuthorizationCredentials] = Depends(require_auth),
     db: Session = Depends(get_db)
 ):
     user_id = get_user_id(creds)
@@ -1538,7 +1681,7 @@ async def user_status(
 
 @app.get("/api/user/portal")
 async def user_portal(
-    creds: Optional[HTTPAuthorizationCredentials] = Depends(optional_auth),
+    creds: Optional[HTTPAuthorizationCredentials] = Depends(require_auth),
     db: Session = Depends(get_db)
 ):
     user_id = get_user_id(creds)
@@ -1556,7 +1699,7 @@ async def user_portal(
 
 @app.post("/api/subscription/cancel")
 async def cancel_subscription(
-    creds: Optional[HTTPAuthorizationCredentials] = Depends(optional_auth),
+    creds: Optional[HTTPAuthorizationCredentials] = Depends(require_auth),
     db: Session = Depends(get_db)
 ):
     user_id = get_user_id(creds)
@@ -1598,7 +1741,7 @@ async def cancel_subscription(
 # ============================================================
 @app.get("/api/admin/costs")
 async def admin_costs(
-    creds: Optional[HTTPAuthorizationCredentials] = Depends(optional_auth),
+    creds: Optional[HTTPAuthorizationCredentials] = Depends(require_auth),
     db: Session = Depends(get_db)
 ):
     user_id = get_user_id(creds)
@@ -1663,7 +1806,7 @@ def health_check():
     return {"status": "healthy", "version": "2.2.0"}
 
 @app.get("/api/status")
-async def api_status(creds: Optional[HTTPAuthorizationCredentials] = Depends(optional_auth)):
+async def api_status(creds: Optional[HTTPAuthorizationCredentials] = Depends(require_auth)):
     try:
         from api.database.vector_store import get_vector_store
         vector_store_status = get_vector_store().get_stats()

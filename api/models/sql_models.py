@@ -82,6 +82,16 @@ class WebhookEvent(Base):
     processed_at = Column(DateTime, default=datetime.utcnow)
 
 
+class AnonymousUsage(Base):
+    __tablename__ = "anonymous_usage"
+
+    anon_id = Column(String(64), primary_key=True)
+    credits_used_today = Column(Integer, default=0, nullable=False)
+    last_reset_date = Column(Date, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    last_active_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
 class BugReport(Base):
     __tablename__ = "bug_reports"
 

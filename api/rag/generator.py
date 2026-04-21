@@ -8,7 +8,7 @@ v2.5 改進：
 """
 
 import logging
-from typing import List, AsyncGenerator
+from typing import List, AsyncGenerator, Optional
 from openai import AsyncOpenAI
 from api.models.schemas import (
     RetrievedDocument,
@@ -118,7 +118,8 @@ class AnswerGenerator:
         retrieval_status: str = "ok",
         query_type: str = "research",
         lang: str = "",
-        usage_out: list = None  # 用來回傳 token 使用量給 server.py
+        usage_out: list = None,  # 用來回傳 token 使用量給 server.py
+        model_override: Optional[str] = None  # Decision 001 v0.3 A8 — L0 uses gpt-4.1-mini
     ) -> AsyncGenerator[StreamEvent, None]:
 
         if retrieval_status == "error":
@@ -133,6 +134,7 @@ class AnswerGenerator:
                 yield event
             return
 
+        effective_model = model_override or self.model
         context       = self._build_context(documents)
         system_prompt = self._get_system_prompt(query_type)
         user_prompt   = self._build_user_prompt(question, context, query_type, resolved_lang)
@@ -140,7 +142,7 @@ class AnswerGenerator:
 
         try:
             stream = await self.client.chat.completions.create(
-                model=self.model,
+                model=effective_model,
                 messages=[
                     {"role": "system", "content": system_prompt},
                     {"role": "user",   "content": user_prompt}
@@ -160,7 +162,7 @@ class AnswerGenerator:
                 # 最後一個 chunk 包含 usage
                 if chunk.usage and usage_out is not None:
                     usage_out.append({
-                        "model": self.model,
+                        "model": effective_model,
                         "prompt_tokens": chunk.usage.prompt_tokens,
                         "completion_tokens": chunk.usage.completion_tokens
                     })
@@ -180,7 +182,8 @@ class AnswerGenerator:
         documents: List[RetrievedDocument],
         retrieval_status: str = "ok",
         query_type: str = "research",
-        lang: str = ""
+        lang: str = "",
+        model_override: Optional[str] = None  # Decision 001 v0.3 A8 — L0 uses gpt-4.1-mini
     ) -> tuple[str, List[Citation]]:
 
         if retrieval_status == "error":
@@ -208,6 +211,7 @@ class AnswerGenerator:
                 logger.error("Fallback generation error (non-stream): %s", e, exc_info=True)
                 return ERROR_MESSAGES["error"], []
 
+        effective_model = model_override or self.model
         context       = self._build_context(documents)
         system_prompt = self._get_system_prompt(query_type)
         user_prompt   = self._build_user_prompt(question, context, query_type, resolved_lang)
@@ -215,7 +219,7 @@ class AnswerGenerator:
 
         try:
             completion = await self.client.chat.completions.create(
-                model=self.model,
+                model=effective_model,
                 messages=[
                     {"role": "system", "content": system_prompt},
                     {"role": "user",   "content": user_prompt}
