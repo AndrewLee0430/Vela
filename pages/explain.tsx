@@ -2,7 +2,7 @@
 
 import { useState, useEffect, FormEvent, useRef, useCallback, DragEvent } from 'react';
 import Head from 'next/head';
-import { useAuth } from '@clerk/nextjs';
+import { useAuth, useUser } from '@clerk/nextjs';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkBreaks from 'remark-breaks';
@@ -14,6 +14,7 @@ import PHIWarning from '../components/PHIWarning';
 import UpgradeModal from '../components/UpgradeModal';
 import ProFeatureOverlay from '../components/ProFeatureOverlay';
 import PageShell from '../components/PageShell';
+import ExplainLockedForAnonymous from '../components/ExplainLockedForAnonymous';
 import { setQueryId } from '../utils/analytics';
 import { useLang } from '../utils/LangContext';
 import { getUI, getLoincTooltip as getLoincTooltipI18n } from '../utils/i18n-ui';
@@ -172,6 +173,7 @@ type UploadState = 'idle' | 'uploading' | 'preview' | 'error';
 
 function ExplainForm() {
     const { getToken } = useAuth();
+    const { isSignedIn, isLoaded } = useUser();
     const { lang } = useLang();
     const ui = getUI(lang);
     const extra = getExtra(lang);
@@ -411,6 +413,10 @@ function ExplainForm() {
         "Glucosa en ayunas 156 mg/dL (ref 70-110), HbA1c 8.2%",
         "Sodium 138, Potassium 3.3 (LOW), Creatinine 1.5 (HIGH), Glucose 142 (HIGH)",
     ];
+
+    if (isLoaded && !isSignedIn) {
+        return <ExplainLockedForAnonymous />;
+    }
 
     return (
         <div className="container mx-auto px-4 py-8 max-w-3xl">
@@ -669,6 +675,7 @@ export default function Explain() {
     return (
         <PageShell
             activePage="explain"
+            allowAnonymous
             extraHead={
                 <Head>
                     <meta name="robots" content="noindex, nofollow" />

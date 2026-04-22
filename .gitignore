@@ -144,3 +144,4 @@ media/
 *.orig
 .tmp-docs/
 
+.claude/settings.local.json

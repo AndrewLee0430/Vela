@@ -6,8 +6,10 @@ import { PostHogProvider } from 'posthog-js/react';
 import { useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import { LangProvider } from '../utils/LangContext';
-import { reset as resetAnalytics } from '../utils/analytics';
+import { reset as resetAnalytics, identify, track, type Tier } from '../utils/analytics';
 import '../styles/globals.css';
+
+const ANON_ALIASED_KEY = 'vela_anon_aliased';
 
 if (typeof window !== 'undefined') {
   posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
@@ -21,24 +23,73 @@ const HREFLANG_CODES = [
   'it', 'pt', 'th', 'ar', 'hi', 'bn', 'he', 'vi',
 ];
 
-// Resets analytics distinct_id + super properties when Clerk transitions signedIn -> signedOut.
+// Bridges Clerk auth state to PostHog analytics identity.
+// - signedOut -> signedIn (first time on device): alias anon distinct_id to Clerk user_id, then identify.
+// - signedOut -> signedIn (subsequent): identify only.
+// - signedIn -> signedOut: reset analytics identity + super properties.
 // Rendered inside ClerkProvider so useUser() is available.
 function AnalyticsAuthBridge() {
-  const { isLoaded, isSignedIn } = useUser();
+  const { isLoaded, isSignedIn, user } = useUser();
   const prevSignedIn = useRef<boolean | null>(null);
 
   useEffect(() => {
     if (!isLoaded) return;
     const current = Boolean(isSignedIn);
+    // First-mount: hydrate analytics identity so tier super-prop isn't
+    // stuck at L0 when the user opens a fresh tab with an existing Clerk
+    // session. This path is NOT a signedOut → signedIn transition, so
+    // do NOT alias and do NOT fire anonymous_to_registered — those are
+    // reserved for the real transition branch below (guarded by the
+    // vela_anon_aliased localStorage flag).
     if (prevSignedIn.current === null) {
+      if (current) {
+        const clerkUserId = user?.id;
+        if (clerkUserId) {
+          const plan = (user?.publicMetadata as { plan?: string } | undefined)?.plan;
+          const tier: Tier = plan === 'pro' ? 'L2' : 'L1';
+          identify(clerkUserId, { tier });
+        }
+      }
       prevSignedIn.current = current;
       return;
     }
     if (prevSignedIn.current && !current) {
       resetAnalytics();
     }
+    if (!prevSignedIn.current && current) {
+      const clerkUserId = user?.id;
+      if (!clerkUserId) {
+        // eslint-disable-next-line no-console
+        console.warn('[analytics] signIn transition but user.id is undefined — skipping alias/identify');
+        prevSignedIn.current = current;
+        return;
+      }
+
+      // Derive tier from Clerk publicMetadata.plan if available; default to L1.
+      // Downstream plan-cache fetch (per-feature page) may call identify() again
+      // with a concrete plan_type once the /api/user/status response resolves.
+      const plan = (user?.publicMetadata as { plan?: string } | undefined)?.plan;
+      const tier: Tier = plan === 'pro' ? 'L2' : 'L1';
+
+      let aliased = false;
+      try { aliased = localStorage.getItem(ANON_ALIASED_KEY) === '1'; } catch {}
+
+      if (!aliased) {
+        let anonId: string | null = null;
+        try { anonId = posthog.get_distinct_id?.() ?? null; } catch {}
+        try { posthog.alias(clerkUserId, anonId ?? undefined); } catch (err) {
+          // eslint-disable-next-line no-console
+          console.warn('[analytics] alias failed', err);
+        }
+        identify(clerkUserId, { tier });
+        track('anonymous_to_registered', { signup_method: 'clerk', anon_id: anonId });
+        try { localStorage.setItem(ANON_ALIASED_KEY, '1'); } catch {}
+      } else {
+        identify(clerkUserId, { tier });
+      }
+    }
     prevSignedIn.current = current;
-  }, [isLoaded, isSignedIn]);
+  }, [isLoaded, isSignedIn, user]);
 
   return null;
 }

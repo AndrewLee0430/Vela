@@ -16,7 +16,10 @@ interface SSEErrorHandlers {
     onLimitReached: () => void;
     // Round 2B — L0 anonymous error handlers (all optional for back-compat).
     onSignupRequired?: (message?: string) => void;
-    onAnonymousQuotaExceeded?: (message?: string) => void;
+    onAnonymousQuotaExceeded?: (
+        message?: string,
+        details?: { used?: number; limit?: number }
+    ) => void;
     onBudgetExceeded?: (message?: string) => void;
     onInvalidFingerprint?: (message?: string) => void;
 }
@@ -36,21 +39,26 @@ export function makeOnOpen(handlers: SSEErrorHandlers) {
 
         if (response.status === 400) {
             const data = await response.json().catch(() => ({}));
-            const code = data.type ?? data.error;
+            // Unwrap FastAPI HTTPException's nested detail envelope.
+            // phi_blocked uses a flat JSONResponse where detail is a string,
+            // so guard on object-ness before unwrapping.
+            const d = (typeof data.detail === 'object' && data.detail !== null) ? data.detail : data;
+            const code = d.type ?? d.error;
             if (code === 'phi_blocked') {
-                handlers.onPhiBlocked(data.detail, data.suggestion);
+                handlers.onPhiBlocked(d.detail, d.suggestion);
                 throw new FatalError('');
             }
             if (code === 'invalid_fingerprint') {
-                handlers.onInvalidFingerprint?.(data.message);
-                throw new FatalError(data.message || 'Invalid session fingerprint.', 'invalid_fingerprint');
+                handlers.onInvalidFingerprint?.(d.message);
+                throw new FatalError(d.message || 'Invalid session fingerprint.', 'invalid_fingerprint');
             }
         }
         if (response.status === 403) {
             const data = await response.json().catch(() => ({}));
-            const code = data.type ?? data.error;
+            const d = (typeof data.detail === 'object' && data.detail !== null) ? data.detail : data;
+            const code = d.type ?? d.error;
             if (code === 'signup_required') {
-                handlers.onSignupRequired?.(data.message);
+                handlers.onSignupRequired?.(d.message);
                 throw new FatalError('');
             }
             if (code === 'limit_reached') {
@@ -61,18 +69,20 @@ export function makeOnOpen(handlers: SSEErrorHandlers) {
         }
         if (response.status === 429) {
             const data = await response.json().catch(() => ({}));
-            const code = data.type ?? data.error;
+            const d = (typeof data.detail === 'object' && data.detail !== null) ? data.detail : data;
+            const code = d.type ?? d.error;
             if (code === 'anonymous_quota_exceeded') {
-                handlers.onAnonymousQuotaExceeded?.(data.message);
+                handlers.onAnonymousQuotaExceeded?.(d.message, { used: d.used, limit: d.limit });
                 throw new FatalError('');
             }
             throw new FatalError('Too many requests. Please wait a moment and try again.', 'too_many_requests');
         }
         if (response.status === 503) {
             const data = await response.json().catch(() => ({}));
-            const code = data.type ?? data.error;
+            const d = (typeof data.detail === 'object' && data.detail !== null) ? data.detail : data;
+            const code = d.type ?? d.error;
             if (code === 'budget_exceeded') {
-                handlers.onBudgetExceeded?.(data.message);
+                handlers.onBudgetExceeded?.(d.message);
                 throw new FatalError('');
             }
             throw new FatalError('Service temporarily unavailable. Please try again later.', 'server_error');

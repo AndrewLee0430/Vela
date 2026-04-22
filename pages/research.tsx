@@ -17,8 +17,9 @@ import PHIWarning from '../components/PHIWarning';
 import PageShell from '../components/PageShell';
 import ProFeatureOverlay from '../components/ProFeatureOverlay';
 import ResearchSection from '../components/ResearchSection';
+import AnonymousUpgradeCTA from '../components/AnonymousUpgradeCTA';
 import { exportResearchPdf } from '../utils/exportPdf';
-import { setQueryId, getAnonFingerprint } from '../utils/analytics';
+import { setQueryId, getAnonFingerprint, track } from '../utils/analytics';
 import { useLang } from '../utils/LangContext';
 import { getUI } from '../utils/i18n-ui';
 import { getExtra } from '../utils/i18n-extra';
@@ -189,6 +190,8 @@ function ResearchForm() {
     const [showUpgradeModal, setShowUpgradeModal] = useState(false);
     const [showDailyCapToast, setShowDailyCapToast] = useState(false);
     const [anonNoticeMsg, setAnonNoticeMsg] = useState<string | null>(null);
+    const [anonQuotaCta, setAnonQuotaCta] = useState<{ used: number; limit: number } | null>(null);
+    const [showThirdQueryCta, setShowThirdQueryCta] = useState(false);
     const [phiError, setPhiError] = useState<{detail: string; suggestion: string} | null>(null);
     const [detectedLang, setDetectedLang] = useState<string>('en');
 
@@ -239,6 +242,20 @@ function ResearchForm() {
         setQueryId(null);
     };
 
+    const maybeTriggerThirdQueryCta = useCallback(() => {
+        if (typeof window === 'undefined') return;
+        try {
+            if (sessionStorage.getItem('vela_anon_cta_third_shown') === '1') return;
+            const raw = sessionStorage.getItem('vela_anon_query_count') ?? '0';
+            const next = (parseInt(raw, 10) || 0) + 1;
+            sessionStorage.setItem('vela_anon_query_count', String(next));
+            if (next === 3) {
+                sessionStorage.setItem('vela_anon_cta_third_shown', '1');
+                setShowThirdQueryCta(true);
+            }
+        } catch {}
+    }, []);
+
     const runSearch = useCallback(async (q: string) => {
         if (!q.trim() || isRunningRef.current) return;
         isRunningRef.current = true;
@@ -269,6 +286,7 @@ function ResearchForm() {
                     return;
                 }
                 headers['X-Anon-Fingerprint'] = fp;
+                track('anonymous_query_submitted', { feature: 'research', anon_id: fp });
             }
 
             await fetchEventSource(`${process.env.NEXT_PUBLIC_API_URL}/api/research`, {
@@ -282,7 +300,12 @@ function ResearchForm() {
                     onPhiBlocked: () => setPhiError({ detail: ui.phiDetail, suggestion: ui.phiSuggestion }),
                     onLimitReached: () => setShowUpgradeModal(true),
                     onSignupRequired: () => setError('Sign up required to continue. Please create a free account.'),
-                    onAnonymousQuotaExceeded: () => setAnonNoticeMsg('Daily free limit reached. Sign up to continue.'),
+                    onAnonymousQuotaExceeded: (_msg, details) => {
+                        const used = details?.used ?? 0;
+                        const limit = details?.limit ?? 0;
+                        track('anonymous_quota_hit', { feature: 'research', attempts: used });
+                        setAnonQuotaCta({ used, limit });
+                    },
                     onBudgetExceeded: () => setAnonNoticeMsg('Service temporarily at capacity. Please try again later.'),
                     onInvalidFingerprint: () => setError('Session unavailable. Please refresh and try again.'),
                 }),
@@ -313,7 +336,11 @@ function ResearchForm() {
                                 setError(data.content || data.error || 'An error occurred.');
                             }
                         }
-                        else if (data.type === 'done')     { setLoading(false); if (data.query_time_ms) setQueryTime(data.query_time_ms); }
+                        else if (data.type === 'done')     {
+                            setLoading(false);
+                            if (data.query_time_ms) setQueryTime(data.query_time_ms);
+                            if (!isSignedIn) maybeTriggerThirdQueryCta();
+                        }
                     } catch {}
                 },
 
@@ -336,7 +363,7 @@ function ResearchForm() {
         } finally {
             isRunningRef.current = false;
         }
-    }, [getToken, isSignedIn, ui]);
+    }, [getToken, isSignedIn, ui, maybeTriggerThirdQueryCta]);
 
     async function handleSubmit(e: FormEvent) {
         e.preventDefault();
@@ -512,6 +539,12 @@ function ResearchForm() {
                                                     </button>
                                                 </ProFeatureOverlay>
                                             </div>
+                                            {showThirdQueryCta && !isSignedIn && (
+                                                <AnonymousUpgradeCTA
+                                                    trigger="third_query"
+                                                    onDismiss={() => setShowThirdQueryCta(false)}
+                                                />
+                                            )}
                                         </>
                                     )}
                                 </div>
@@ -586,6 +619,13 @@ function ResearchForm() {
                     type="warning"
                     onClose={() => setAnonNoticeMsg(null)}
                     duration={5000}
+                />
+            )}
+            {anonQuotaCta && (
+                <AnonymousUpgradeCTA
+                    trigger="quota_hit"
+                    quotaDetails={{ feature: 'research', used: anonQuotaCta.used, limit: anonQuotaCta.limit }}
+                    onDismiss={() => setAnonQuotaCta(null)}
                 />
             )}
         </div>

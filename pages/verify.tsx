@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, FormEvent, useRef } from 'react';
+import { useState, FormEvent, useRef, useCallback } from 'react';
 import Head from 'next/head';
 import { useAuth, useUser } from '@clerk/nextjs';
 import FeedbackBar from '../components/FeedbackBar';
@@ -8,7 +8,8 @@ import UpgradeModal from '../components/UpgradeModal';
 import Toast from '../components/Toast';
 import PHIWarning from '../components/PHIWarning';
 import PageShell from '../components/PageShell';
-import { setQueryId, getAnonFingerprint } from '../utils/analytics';
+import AnonymousUpgradeCTA from '../components/AnonymousUpgradeCTA';
+import { setQueryId, getAnonFingerprint, track } from '../utils/analytics';
 import { useLang } from '../utils/LangContext';
 import { getUI } from '../utils/i18n-ui';
 import { formatInteractionSummary, getSeverityLabel, getRiskLevelLabel } from '../utils/i18n-verify';
@@ -53,9 +54,25 @@ function VerifyForm() {
     const [showUpgradeModal, setShowUpgradeModal] = useState(false);
     const [showDailyCapToast, setShowDailyCapToast] = useState(false);
     const [anonNoticeMsg, setAnonNoticeMsg] = useState<string | null>(null);
+    const [anonQuotaCta, setAnonQuotaCta] = useState<{ used: number; limit: number } | null>(null);
+    const [showThirdQueryCta, setShowThirdQueryCta] = useState(false);
     const [phiError, setPhiError] = useState<{detail: string; suggestion: string} | null>(null);
 
     const handleReset = () => { setDrugs(''); setResult(null); setError(''); setPhiError(null); setQueryId(null); };
+
+    const maybeTriggerThirdQueryCta = useCallback(() => {
+        if (typeof window === 'undefined') return;
+        try {
+            if (sessionStorage.getItem('vela_anon_cta_third_shown') === '1') return;
+            const raw = sessionStorage.getItem('vela_anon_query_count') ?? '0';
+            const next = (parseInt(raw, 10) || 0) + 1;
+            sessionStorage.setItem('vela_anon_query_count', String(next));
+            if (next === 3) {
+                sessionStorage.setItem('vela_anon_cta_third_shown', '1');
+                setShowThirdQueryCta(true);
+            }
+        } catch {}
+    }, []);
 
     async function handleSubmit(e: FormEvent) {
         e.preventDefault();
@@ -81,6 +98,7 @@ function VerifyForm() {
                 const fp = getAnonFingerprint();
                 if (!fp) { setError('Session unavailable. Please refresh and try again.'); return; }
                 headers['X-Anon-Fingerprint'] = fp;
+                track('anonymous_query_submitted', { feature: 'verify', anon_id: fp });
             }
 
             const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/verify`, {
@@ -95,9 +113,13 @@ function VerifyForm() {
 
             if (res.status === 400) {
                 const data = await res.json().catch(() => ({}));
-                const code = data.type ?? data.error;
+                // Unwrap FastAPI HTTPException's nested detail envelope.
+                // phi_blocked uses a flat JSONResponse where detail is a string,
+                // so guard on object-ness before unwrapping.
+                const d = (typeof data.detail === 'object' && data.detail !== null) ? data.detail : data;
+                const code = d.type ?? d.error;
                 if (code === 'phi_blocked') {
-                    setPhiError({ detail: data.detail, suggestion: data.suggestion });
+                    setPhiError({ detail: d.detail, suggestion: d.suggestion });
                     return;
                 }
                 if (code === 'invalid_fingerprint') {
@@ -107,7 +129,8 @@ function VerifyForm() {
             }
             if (res.status === 403) {
                 const data = await res.json().catch(() => ({}));
-                const code = data.type ?? data.error;
+                const d = (typeof data.detail === 'object' && data.detail !== null) ? data.detail : data;
+                const code = d.type ?? d.error;
                 if (code === 'signup_required') {
                     setError('Sign up required to continue. Please create a free account.');
                     return;
@@ -121,9 +144,13 @@ function VerifyForm() {
             }
             if (res.status === 429) {
                 const data = await res.json().catch(() => ({}));
-                const code = data.type ?? data.error;
+                const d = (typeof data.detail === 'object' && data.detail !== null) ? data.detail : data;
+                const code = d.type ?? d.error;
                 if (code === 'anonymous_quota_exceeded') {
-                    setAnonNoticeMsg('Daily free limit reached. Sign up to continue.');
+                    const used = typeof d.used === 'number' ? d.used : 0;
+                    const limit = typeof d.limit === 'number' ? d.limit : 0;
+                    track('anonymous_quota_hit', { feature: 'verify', attempts: used });
+                    setAnonQuotaCta({ used, limit });
                     return;
                 }
                 setShowDailyCapToast(true);
@@ -131,7 +158,8 @@ function VerifyForm() {
             }
             if (res.status === 503) {
                 const data = await res.json().catch(() => ({}));
-                const code = data.type ?? data.error;
+                const d = (typeof data.detail === 'object' && data.detail !== null) ? data.detail : data;
+                const code = d.type ?? d.error;
                 if (code === 'budget_exceeded') {
                     setAnonNoticeMsg('Service temporarily at capacity. Please try again later.');
                     return;
@@ -148,6 +176,7 @@ function VerifyForm() {
             const data: VerifyResponse = await res.json();
             setResult(data);
             if (data.query_id) setQueryId(data.query_id);
+            if (!isSignedIn) maybeTriggerThirdQueryCta();
 
         } catch (err: any) {
             setError(err.message || 'Analysis failed. Please try again.');
@@ -389,6 +418,12 @@ function VerifyForm() {
                                     ⚠️ {result.disclaimer}
                                 </p>
                             )}
+                            {showThirdQueryCta && !isSignedIn && (
+                                <AnonymousUpgradeCTA
+                                    trigger="third_query"
+                                    onDismiss={() => setShowThirdQueryCta(false)}
+                                />
+                            )}
                         </div>
                     )}
                 </div>
@@ -416,6 +451,13 @@ function VerifyForm() {
                     type="warning"
                     onClose={() => setAnonNoticeMsg(null)}
                     duration={5000}
+                />
+            )}
+            {anonQuotaCta && (
+                <AnonymousUpgradeCTA
+                    trigger="quota_hit"
+                    quotaDetails={{ feature: 'verify', used: anonQuotaCta.used, limit: anonQuotaCta.limit }}
+                    onDismiss={() => setAnonQuotaCta(null)}
                 />
             )}
         </div>
