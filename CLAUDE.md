@@ -224,6 +224,7 @@ When given a feature task, always consult these documents **before** touching co
 |---|---|---|
 | `docs/PRD.md` | Master PRD v1.2 — all functional specs, Phase 0/1A/1B/1C, acceptance criteria | `docs/PRD.md` |
 | `FEATURE_AUDIT.md` | Codebase current state — what's built, what's partial, what's missing | `FEATURE_AUDIT.md` |
+| `TODO.md` | Lightweight tracker for current-round follow-up bugs + roadmap pointers. Consult alongside FEATURE_AUDIT.md when starting a new task. Full tech debt log remains in CLAUDE.md until Phase 0 Retrospective. | `TODO.md` |
 
 ### Workflow for a new task
 
