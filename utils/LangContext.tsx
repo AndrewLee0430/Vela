@@ -1,7 +1,7 @@
 "use client"
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import type { LangCode } from './i18n';
+import { LANGUAGES, type LangCode } from './i18n';
 
 const STORAGE_KEY = 'vela_lang';
 
@@ -13,12 +13,10 @@ interface LangContextValue {
 const LangCtx = createContext<LangContextValue>({ lang: 'en', setLang: () => {} });
 
 export function LangProvider({ children }: { children: ReactNode }) {
+  // First render must match SSR output ('en') to avoid hydration mismatch.
+  // localStorage is read post-mount in the effect below.
   const [lang, setLangState] = useState<LangCode>(() => {
     if (typeof window === 'undefined') return 'en';
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) return stored as LangCode;
-    } catch {}
     return 'en';
   });
 
@@ -26,6 +24,17 @@ export function LangProvider({ children }: { children: ReactNode }) {
     setLangState(l);
     try { localStorage.setItem(STORAGE_KEY, l); } catch {}
   };
+
+  // Post-mount: hydrate from localStorage if a valid preference is stored.
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (!stored) return;
+      const isValid = LANGUAGES.some((l) => l.code === stored);
+      if (!isValid) return;
+      setLangState((prev) => (stored !== prev ? (stored as LangCode) : prev));
+    } catch {}
+  }, []);
 
   // Sync across tabs
   useEffect(() => {
