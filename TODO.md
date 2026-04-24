@@ -82,3 +82,27 @@
       **Related:** Decision 001 v0.3 § A6 authoritative reconciliation.
       Decision 001 v0.2 language in the same file should be marked
       superseded (separate todo if decided).
+
+- [ ] /pricing page missing yearly plan CTA
+      **Priority:** Medium — UX gap, not functional bug.
+
+      **Facts:**
+      - Yearly Dodo product exists: pdt_0NbELkno040P4wQSaQaam ($89.99/year)
+      - Monthly Dodo product exists: pdt_0NbELHXiGodgawGwVaZ3t ($9.99/month)
+      - UpgradeModal.tsx supports both (triggered on quota hit)
+      - /pricing page only shows Monthly CTA, yearly mentioned as
+        subtitle text only
+      - Users cannot purchase yearly from /pricing directly
+
+      **Scope for full fix (2-4 hours):**
+      - Add Monthly/Yearly toggle on /pricing page
+      - Add 4 i18n keys × 16 languages = 64 new strings
+      - Remove redundant orYearly subtitle key (16 locales)
+      - UpgradeModal reads ?plan=yearly from URL to pre-select
+      - /pricing → direct Dodo checkout for signed-in users (not /sign-up)
+      - Test: monthly→yearly upgrade, yearly→monthly downgrade, refund edge cases
+
+      **Defer reason:** Out of current §2.7 scope. Revenue impact is small
+      during soft launch (most users will hit quota_hit modal where
+      UpgradeModal already surfaces yearly option). Full fix after §2.7
+      completes.
