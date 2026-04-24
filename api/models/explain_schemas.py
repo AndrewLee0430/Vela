@@ -68,9 +68,48 @@ class ExplainSource(BaseModel):
     description: Optional[str] = None
 
 
+# ─── § 2.7 structured output types ──────────────────────────────────────────
+
+class RiskTier(str, Enum):
+    GREEN = "green"
+    YELLOW = "yellow"
+    RED = "red"
+
+
+class ExplainItem(BaseModel):
+    """Single interpreted lab/report item."""
+    term: str                               # e.g. "eGFR", "LDL"
+    value: str                              # e.g. "45 mL/min/1.73m²", "145 mg/dL"
+    explanation: str                        # plain-language interpretation (hedging)
+    risk_tier: RiskTier
+    risk_label_key: str                     # i18n key, e.g. "explain.risk.yellow"
+    citations: list[ExplainSource] = Field(default_factory=list)
+
+
+class ClinicalCorrelation(BaseModel):
+    """Cross-item insight, e.g. eGFR + Metformin → dosage risk."""
+    items_referenced: list[str]             # terms matching ExplainItem.term
+    insight: str                            # reasoning in hedging language
+    risk_tier: RiskTier
+    risk_label_key: str
+    citations: list[ExplainSource] = Field(default_factory=list)
+
+
 class ExplainResponse(BaseModel):
     explanation: str
     sources: list[ExplainSource] = Field(default_factory=list)
     input_language: str = "en"
     disclaimer: str = "⚠️ This explanation is for reference only. It does not constitute medical advice. Please consult your healthcare provider."
     query_time_ms: int = 0
+
+    # § 2.7 structured output (populated by Stage 3 after this step's prompt rewrite)
+    items: list[ExplainItem] = Field(default_factory=list)
+    clinical_correlations: list[ClinicalCorrelation] = Field(default_factory=list)
+
+
+class ExplainCompletedPayload(BaseModel):
+    """DTO for the `explain_completed` PostHog event (not persisted)."""
+    query_id: str
+    items_count: int
+    correlations_count: int
+    risk_tier_distribution: dict[str, int]  # {"green": N, "yellow": N, "red": N}
