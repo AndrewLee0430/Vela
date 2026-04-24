@@ -1041,9 +1041,9 @@ async def explain_report(
                 report_text=body.report_text,
                 openai_client=openai_async_client,
             ):
-                # Accumulate answer for history
-                if isinstance(event, dict) and event.get("type") == "answer":
-                    full_answer += event.get("content", "")
+                # Serialize structured result for ChatHistory.answer text column
+                if isinstance(event, dict) and event.get("type") == "explain_result":
+                    full_answer = json.dumps(event.get("content", {}), ensure_ascii=False)
                 # Save to history when done
                 if isinstance(event, dict) and event.get("type") == "done":
                     _safe_db_write(db, AuditLog(

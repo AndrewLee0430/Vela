@@ -6,14 +6,17 @@ Stage 3: Generate plain-language explanation (streaming)
 """
 
 import asyncio
+import json
 import logging
 import time
 from pathlib import Path
 from typing import AsyncGenerator
 from openai import AsyncOpenAI
+from pydantic import ValidationError
 
 from api.models.explain_schemas import (
-    ExtractedEntities, ExplainSource, SourceType
+    ExtractedEntities, ExplainSource, SourceType,
+    ExplainItem, ClinicalCorrelation,
 )
 from api.services.entity_extractor import extract_entities
 from api.data_sources.loinc_client import loinc_client
@@ -189,9 +192,11 @@ async def generate_explanation(
     entities: ExtractedEntities,
     context: str,
     openai_client: AsyncOpenAI
-) -> AsyncGenerator[str, None]:
+) -> dict:
     """
-    Stage 3: Stream plain-language explanation using retrieved context.
+    Stage 3: Generate structured JSON explanation (non-streaming, JSON mode).
+    Returns dict {items, clinical_correlations, disclaimer}.
+    Raises ValueError on JSON parse or schema validation failure.
     """
     user_content = f"""Medical report to explain:
 ---
@@ -205,21 +210,47 @@ Detected language: {entities.input_language}
 
 Please explain this report in the same language as the input ({entities.input_language})."""
 
-    stream = await openai_client.chat.completions.create(
+    response = await openai_client.chat.completions.create(
         model="gpt-4.1",
         max_tokens=1500,
         temperature=0.3,
-        stream=True,
+        response_format={"type": "json_object"},
         messages=[
             {"role": "system", "content": EXPLAIN_GENERATION_PROMPT},
             {"role": "user", "content": user_content}
         ]
     )
 
-    async for chunk in stream:
-        delta = chunk.choices[0].delta.content
-        if delta:
-            yield delta
+    raw_content = response.choices[0].message.content or ""
+
+    try:
+        parsed = json.loads(raw_content)
+    except json.JSONDecodeError as e:
+        logger.error("[Explain] LLM returned invalid JSON: %s", e)
+        raise ValueError("invalid_json") from e
+
+    try:
+        items = [ExplainItem.model_validate(i) for i in parsed.get("items", [])]
+        correlations = [
+            ClinicalCorrelation.model_validate(c)
+            for c in parsed.get("clinical_correlations", [])
+        ]
+    except ValidationError as e:
+        logger.error("[Explain] LLM JSON failed schema validation: %s", e)
+        raise ValueError("schema_validation_failed") from e
+
+    # TODO Step 5: replace with i18n lookup based on request locale
+    disclaimer = (
+        "⚠️ This explanation is for reference only. "
+        "It does not constitute medical advice. "
+        "Please consult your healthcare provider."
+    )
+
+    return {
+        "items": [i.model_dump(mode="json") for i in items],
+        "clinical_correlations": [c.model_dump(mode="json") for c in correlations],
+        "disclaimer": disclaimer,
+    }
 
 
 # ─── Main pipeline entry point ──────────────────────────────────────────────
@@ -232,8 +263,11 @@ async def run_explain_pipeline(
     Full 3-stage Explain pipeline. Yields SSE-compatible dicts:
       {"type": "status", "content": "..."}
       {"type": "sources", "content": [...]}
-      {"type": "answer", "content": "token..."}
-      {"type": "done"}
+      {"type": "identified", "language": "...", "items": [...]}
+      {"type": "checking", "items": [...]}
+      {"type": "explain_result", "content": {items, clinical_correlations, disclaimer}}
+      {"type": "error", "content": "..."}   # on Stage 3 JSON/schema failure
+      {"type": "done", "query_time_ms": N}
     """
     start = time.time()
 
@@ -312,10 +346,21 @@ async def run_explain_pipeline(
         "items": checking_items,
     }
 
-    # Stage 3: Stream explanation
+    # Stage 3: Generate structured JSON explanation (blocking)
     yield {"type": "status", "content": "Generating explanation..."}
-    async for token in generate_explanation(report_text, entities, context, openai_client):
-        yield {"type": "answer", "content": token}
+    try:
+        result = await generate_explanation(report_text, entities, context, openai_client)
+    except ValueError as e:
+        error_code = str(e)  # "invalid_json" or "schema_validation_failed"
+        logger.error("[Explain] Stage 3 failed: %s", error_code)
+        yield {
+            "type": "error",
+            "code": f"explain_llm_{error_code}",
+            "content": "Failed to generate structured explanation. Please try again.",
+        }
+        return
+
+    yield {"type": "explain_result", "content": result}
 
     elapsed = int((time.time() - start) * 1000)
     yield {"type": "done", "query_time_ms": elapsed}
