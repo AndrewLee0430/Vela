@@ -21,6 +21,7 @@ Examples from 2026-04-19 to 2026-04-20 sessions:
 **Phase**: Phase 0 — in progress (started 2026-04-17)
 
 **Completed** (do not re-implement):
+- 2.7 Explain 臨床推理強化 (BACKEND ONLY, Steps 1-2C, local-only 4 commits not pushed; Steps 3-8 in backlog. Frontend rendering pending — see FEATURE_AUDIT.md § 2.7 for detail)
 - 2.0 PostHog wrapper (`utils/analytics.ts` + `AnalyticsAuthBridge`, v143)
 - 2.2 query_id via SSE (all 3 features emit query_id as first event, v144)
 - 2.3 CitationPanel click tracking + FeedbackBar events (source_type lowercase canonical)
@@ -28,11 +29,12 @@ Examples from 2026-04-19 to 2026-04-20 sessions:
 - 2.6 i18n hreflang (Strategy A, 16 languages + x-default)
 - 2.4 Bug 回報浮動按鈕 (`BugReportButton` FAB + `/api/bug-report` + PHI cleaning + rate limit 5/hour, production verified 2026-04-20 user_id=user_3BQM...)
 - 2.9 Verify 輸出語言對齊 user locale (response_language variable + prompt v2.1 + 7 languages i18n + UX polish + Chinese variant handling spread) — 2026-04-20 production verified
+- 2.8 Anonymous Trial Flow (Rounds 1-3 shipped 2026-04-22, prod verified) — sign-in/sign-up pages + AnonymousUpgradeCTA + ExplainLockedForAnonymous + tier super-property + anonymous_to_registered alias
 
 **Next task** (choose one):
-- 2.8 Anonymous Trial Flow (1.5-2d, Decision 001 v0.2 Accepted)
-- 2.7 Explain 臨床推理強化 (1-2d)
-- 2.1 Model Provider Refactor (5-7d, 8 檔案)
+- 2.7 Explain 臨床推理強化 — continue Steps 3-8 (~5-9 hours total)
+- 2.1 Model Provider Refactor (5-7d, 9 檔案 — note: was estimated 8, re-grep shows 9)
+- 3.1 User Context schema (NOT_STARTED, blocks Phase 1A)
 
 ### Phase 0 End Action (required before Phase 1A)
 
@@ -204,15 +206,15 @@ Before starting Phase 1A, conduct Phase 0 Retrospective:
   - **Discovered**: 2026-04-22 during 2.8 Round 2B Test 5 Clerk JWT Dev/Prod mismatch fix
 
 
-### Discovered Gaps (action required)
+### Discovered Gaps (history)
 
 - **G1. Anonymous Trial Flow** — Landing Page promises "No account required to try" but "Try it for free" redirects to Clerk sign-in. Must resolve before Phase 1A Week 1 LinkedIn launch (privacy-first manifesto post).
   - Full decision record: `docs/decisions/001-anonymous-trial-flow.md`
   - PRD section: § 2.8 (new)
   - Discovered: 2026-04-18
-  - Status: Accepted (solo founder review, 2026-04-19)
+  - Status: ✅ Resolved 2026-04-22 by Round 2B production verification (see FEATURE_AUDIT.md § 2.8)
 
-**Remaining Phase 0**: 2.8 (1.5-2d) → 2.9 (1d) → 2.7 (1-2d) → 2.1 (5-7d, largest)
+**Remaining Phase 0**: 2.7 finish (Steps 3-8) → 2.1 Model Provider (largest, 5-7d) → 3.1 User Context schema (blocks Phase 1A)
 
 **Always consult `FEATURE_AUDIT.md` for latest codebase state before starting any task.**
 
