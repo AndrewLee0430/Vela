@@ -83,6 +83,26 @@
       Decision 001 v0.2 language in the same file should be marked
       superseded (separate todo if decided).
 
+- [ ] § 2.8 event name drift: `explain_locked_viewed` (PRD spec) vs `anonymous_cta_shown` with `trigger=explain_locked` (impl)
+      **Priority:** Low — functional behavior matches PRD acceptance #11 (event fires when
+      anonymous user attempts Explain), only the event name and payload shape differ.
+
+      **Facts:**
+      - PRD § 2.8 acceptance #11 spec'd standalone event `explain_locked_viewed`
+      - `components/AnonymousUpgradeCTA.tsx` emits unified `anonymous_cta_shown`
+        with `trigger: 'third_query' | 'quota_hit' | 'explain_locked'`
+      - `components/ExplainLockedForAnonymous.tsx` is a thin wrapper passing `trigger="explain_locked"`
+      - PostHog funnel still queryable via filter `trigger=explain_locked`
+
+      **Decision needed (revisit when PRD § 2.8 retrospective runs, OR when adding new CTA trigger):**
+      - Option A: rename event to match PRD spec — breaks existing PostHog dashboards / saved queries
+      - Option B (recommended): keep unified event name, mark PRD § 2.8 acceptance #11 as
+        "satisfied via `anonymous_cta_shown` with `trigger=explain_locked`" in next PRD revision
+      - Option C: emit BOTH events (dual-write) — most expensive, only worth if dashboards depend on legacy name
+
+      **Defer reason:** Not blocking soft launch. Funnel data still captureable.
+      Revisit during Phase 0 Retrospective alongside PostHog event audit.
+
 - [ ] /pricing page missing yearly plan CTA
       **Priority:** Medium — UX gap, not functional bug.
 

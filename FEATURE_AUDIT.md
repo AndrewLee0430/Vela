@@ -1,6 +1,6 @@
 # Vela Feature Audit
 
-**Generated:** 2026-04-18 (updated 2026-04-18 after PRD 2.2 + 2.3 sprint lands)
+**Generated:** 2026-04-25 (Updated post-§ 2.7 backend ship + Phase 0 sweep. Prior baseline 2026-04-18.)
 **Scope:** Code-only review against PRD v1.2 (Phase 0 / 1A / 1B / 1C).
 **Methodology:** grep / glob over current working tree. Does not trust historical audits.
 
@@ -17,14 +17,15 @@
 - **Problem**: Landing Page 承諾「No account required to try」(PRD § 0.3),但實際上點 "Try it for free" 被 Clerk sign-in 擋住
 - **Decision Record**: [`docs/decisions/001-anonymous-trial-flow.md`](docs/decisions/001-anonymous-trial-flow.md)
 - **PRD Section**: § 2.8(新增)
-- **Status**: Accepted (solo founder review, 2026-04-19)
-- **Next Action**: Team review of Decision 001,決議後 schedule 進 Phase 0 workplan
+- **Status**: ✅ Resolved 2026-04-22 by Round 2B production verification (see § 2.8 main-body entry)
+- **Next Action**: 無 — 已落地。後續維運項移交 § 2.8 entry 與 CLAUDE.md Tech Debt 區塊
 
 ---
 
 ## Status key
 
 - ✅ 已完成 — 實作與 PRD 驗收條件對齊
+- 🔧 進行中 — 部分 step 已 land(commit 在 local / origin),剩餘 step 在 backlog
 - ⚠️ 部分完成 — 核心 primitive 存在但缺少驗收條件內的某些項目
 - ❌ 未開始 — 找不到對應檔案/函式/事件
 - ⛔ 不適用 — 已被取代或 deprecate
@@ -51,14 +52,14 @@
 ### 2.1 Model Provider 抽象層 — ❌ 未開始
 
 - `api/providers/` 目錄不存在
-- `from openai import (OpenAI | AsyncOpenAI)` 散佈於 10 個檔案(未變):
+- `from openai import (OpenAI | AsyncOpenAI)` 散佈於 9 個檔案(2026-04-25 grep 重核):
   - `api/server.py:47`
   - `api/database/vector_store.py:11`
   - `api/rag/generator.py:12`
   - `api/rag/retriever.py:14`
   - `api/rag/reranker.py:14`
   - `api/utils/llm_judge.py:13`
-  - `api/services/explain_service.py:12`
+  - `api/services/explain_service.py:14`
   - `api/services/entity_extractor.py:8`
   - `api/middleware/guards.py:16` (+ L149、L237 兩個 sync `OpenAI()`)
 - 模型名仍硬編碼:`RAG_MODEL = "gpt-4.1"`(generator.py:24),guard model `"gpt-4.1-mini"` 字面量(guards.py)
@@ -139,17 +140,83 @@
 
 ---
 
-### 2.7 Explain 臨床推理強化 — ❌ 未開始
+### 2.7 Explain 臨床推理強化 — 🔧 進行中(backend land,frontend pending)
 
-- `api/services/explain_service.py:30-45` system prompt 仍是「解釋報告數值」版本:
-  - 無「臨床組合推理」段落指令
-  - 無 hedging 禁用詞清單(「您有…」「您需要…」)
-  - 無 LOINC 僅限代碼對照、不得作為臨床判斷引用的指令
-- `api/services/explain_service.py:66-70` LOINC 仍是 lab test 的主要 citation 來源(未按 PRD 5 分層)
-- `api/models/explain_schemas.py` 無 `risk_tier` / `clinical_correlations` / `risk_label` 欄位
-- 前端 `pages/explain.tsx` 無 🟢🟡🔴 render;無 correlations 區塊;無固定 disclaimer 渲染(現有 stripLlmDisclaimer 是另一回事)
-- 注意:repo 裡出現的 🟢🟡🔴 全部在 `api/rag/generator.py:288-300` 的 **Research** evidence strength,不是 Explain 的 risk tier,不可混淆
-- `api/utils/llm_judge.py` 無 Explain 專用評估 prompt
+**Status (2026-04-25):** Steps 1-2C local-only,共 4 個 commit on `main`(尚未 push 到 origin、尚未 deploy)。Step 3-8 在 backlog。
+
+**已 land(local):**
+- `cd697d1` Step 1:`api/models/explain_schemas.py` 新增 `RiskTier` enum、`ExplainItem`、`ClinicalCorrelation`、`ExplainCompletedPayload` 結構化型別
+- `bfd390a` Step 2A:抽 system prompt 至 `api/prompts/explain_system.md`(消除 PRD § 6.5 inline-prompt 違規)
+- `bcabb29` Step 2B:rewrite prompt to v2 — 含臨床組合推理(hard cap 3)、hedging 禁用詞清單、LOINC scope-limit、risk tier 政策、JSON 輸出契約
+- `148904e` Step 2C:`explain_service.py` 切換到 OpenAI JSON mode + 結構化 SSE event(`explain_result` 取代 `answer`),server.py serialize 結構化 result 到 ChatHistory.answer
+
+**未 land(backlog):**
+- Step 3:LOINC scope post-processing guard — Python 端在 generate_explanation 後檢查 items[].citations,當 explanation 屬於臨床判斷類但 citations 僅含 LOINC 時強制 augment 或 downgrade 輸出。
+- Step 4:`pages/explain.tsx` 結構化 render(🟢🟡🔴 卡片 + correlations 區塊 + disclaimer 渲染)— deploy gate 卡在這
+- Step 5:`utils/i18n*.ts` 新增 `explain.risk.green/yellow/red` + `explain.disclaimer` 16 語言
+- Step 6:PostHog `explain_completed` event(payload schema 已在 `ExplainCompletedPayload`)
+- Step 7:LLM judge Explain prompt
+- Step 8:Acceptance cases(diabetes+eGFR、normal values、20-case hedging)
+
+**注意:**repo 裡出現的 🟢🟡🔴 全部在 `api/rag/generator.py:288-300` 的 **Research** evidence strength,不是 Explain 的 risk tier,不可混淆。
+
+---
+
+### 2.8 Anonymous Trial Flow — ✅ 已完成(2026-04-22 production verified)
+
+Origin:Discovered Gap G1(Landing Page 「No account required to try」 vs Clerk sign-in 擋牆)。Decision Record `docs/decisions/001-anonymous-trial-flow.md` v0.4。
+
+**Round 1(`7a8c5a8`):** Backend infrastructure
+- `api/middleware/auth_split.py` 拆分 `require_auth` / `require_auth_or_anonymous`
+- Anonymous quota 表 + 8-credit/day cap、CREDIT_COSTS(research=3 / verify=1 / explain=2 locked)
+- Research / Verify endpoint 接 `require_auth_or_anonymous`,Explain 保持 `require_auth`(L0 lock)
+- `api/errors.py` 統一 anonymous error shape `{type, message}`
+
+**Round 2A(`cc1e1c7`):** Clerk localhost sign-in pages
+- `pages/sign-in/[[...index]].tsx` + `pages/sign-up/[[...index]].tsx`
+- `pages/_app.tsx` ClerkProvider 加 `signInUrl` / `signUpUrl` / fallback redirect
+- Navbar refactor:signed-out 顯示 Sign in / Sign up CTA
+
+**Round 2B(`a8877e9`):** Frontend anonymous dispatch
+- `utils/anonymousFetch.ts` 包裝 SSE,signed-out 不送 Bearer
+- `pages/research.tsx` + `pages/verify.tsx` 接 anonymous path
+- `utils/sse.ts` dual-read `data.type ?? data.error` 兼容新舊 error shape
+- E2E Test 5:Clerk JWT Dev/Prod mismatch fix(`CLERK_JWKS_URL` 切 Dev instance)
+
+**Round 3(`24b1d79`):** Anonymous CTA components + tier super-property + alias
+- `components/AnonymousUpgradeCTA.tsx`(`third_query` / `quota_hit` / `explain_locked` 三 trigger)
+- `components/ExplainLockedForAnonymous.tsx` thin wrapper
+- PostHog `tier` super-property(L0 / L1 / L2)
+- `pages/_app.tsx:85` 第一次 sign-in 觸發 `track('anonymous_to_registered')`
+- sessionStorage `vela_anon_query_count` 計數成功 query
+
+**Production verification:** 2026-04-22 by curl + 無痕視窗 E2E。
+
+**Open follow-ups (tracked in TODO.md / CLAUDE.md Tech Debt):**
+- `third_query` event PostHog 雙觸發(prod-only,投資觸發)— TODO.md Round 3
+- i18n-anonymous.ts copy drift "free queries" vs actual "credits"— TODO.md Round 3
+- Event name drift:PRD § 2.8 acceptance #11 spec 為 `explain_locked_viewed`,實作為 `anonymous_cta_shown` with `trigger=explain_locked`(功能等價,名稱不同)— TODO.md Round 3
+- `CLERK_SECRET_KEY` Dev/Prod 混用(Dodo 付費啟用前 fix)— CLAUDE.md P2 Tech Debt
+- `azp` claim 未驗證 — CLAUDE.md P2 Tech Debt
+
+---
+
+### 2.9 Verify 輸出語言對齊 user locale — ✅ 已完成(2026-04-20 production verified)
+
+**`c621e3b`:** core implementation
+- `api/services/verify_service.py` 新增 `response_language` 變數注入 system prompt
+- `api/prompts/verify_system.md` v2.1 — 顯式 `{response_language}` placeholder + zh-TW/zh-CN 變體規則
+- `utils/i18n-verify.ts` 7 種語言 severity / category / mechanism / clinical_advice keys
+
+**`f2533f4`:** UX polish + i18n expansion
+- 7 種語言展開到 16 種(en, zh-TW, zh-CN, ja, ko, es, fr, de, it, pt, th, ar, hi, bn, he, vi)
+- Verify result card 文案 i18n 化、severity badge 顏色一致
+
+**`ee055d4`:** Chinese variant handling spread
+- zh-TW(繁体 / Taiwan TFDA conventions) vs zh-CN(简体 / NMPA conventions)分流規則 spread 到 Research / Explain prompt
+- Identified dead code:`api/rag/generator.py` `FALLBACK_PROMPTS["verify"]` / `FALLBACK_PROMPTS["document"]` / `_get_system_prompt() query_type=="verify"` branch — 移交 CLAUDE.md P2 Tech Debt
+
+**Pattern drift acknowledged:** Verify 走 `{response_language}` placeholder,Research / Explain 仍走 `get_language_instruction()` append。Phase 1A i18n mop-up 統一(CLAUDE.md P2)。
 
 ---
 
@@ -305,8 +372,23 @@
 | 2.4 Bug 回報 | ✅ | 2026-04-19 lands;FAB + `/api/bug-report` + PHI cleaning + rate limit 5/hour |
 | 2.5 Landing SEO | ✅ | 完整 meta + JSON-LD + noindex 子頁 |
 | 2.6 i18n hreflang | ✅ | Strategy A 完成 |
-| 2.7 Explain 臨床推理 | ❌ | Prompt + JSON schema + frontend 1-2 天 |
-| 2.8 Anonymous Trial Flow | ⏳ 未開始 | discovered gap,Decision 001 v0.2 Accepted;兩層 UX / 三層資料設計,1.5-2 天 |
+| 2.7 Explain 臨床推理 | 🔧 | Backend Steps 1-2C land local-only(4 commits,deploy gate 卡 Step 4 frontend);Step 3-8 backlog |
+| 2.8 Anonymous Trial Flow | ✅ | 2026-04-22 production verified;Rounds 1-3 lands;follow-ups 移交 TODO.md / CLAUDE.md |
 | 2.9 Verify 輸出語言對齊 user locale | ✅ 已完成 2026-04-20 | response_language variable + verify_system.md v2.1 + 7 languages i18n-verify.ts + UX polish + Chinese variant handling spread to Research/Explain |
 
-Phase 0 還剩 2 項(2.7 / 2.1)+ 1 個發現的 gap(2.8 Decision 001 v0.2 Accepted);2.1 仍是最大塊工程,2.7 / 2.8 合計 2.5-4 天。
+Phase 0 還剩 2.7(4 commits 已 land,Step 3-8 在 backlog)+ 2.1(9 檔 Provider refactor,最大塊)。
+
+---
+
+## Maintenance Protocol
+
+This document is the single source of truth for code state, kept in sync with shipped features.
+
+- **When to refresh:** after each PRD § ships to production, or before starting a new Phase work-block. Do not let it drift > 1 week.
+- **How to refresh:** re-run read-only diagnostic (grep / glob against PRD section spec → classify ✅ / 🔧 / ⚠️ / ❌); update only sections with confirmed drift. Never copy from prior audit without re-verifying.
+- **Authoritative sources:**
+  - PRD spec (docs/PRD.md v1.2): what we said we'd build
+  - Code state (working tree): what's actually built
+  - Commit evidence (git log): when it landed; cite SHA in audit body
+  - Open issues (TODO.md / CLAUDE.md Tech Debt): what's left
+- **Drift discipline:** if FEATURE_AUDIT.md and code disagree, trust the code, fix the audit — never the reverse.
