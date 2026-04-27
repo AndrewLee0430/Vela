@@ -14,7 +14,7 @@ import PageShell from '../components/PageShell';
 import ExplainLockedForAnonymous from '../components/ExplainLockedForAnonymous';
 import ExplainItemCard, { ExplainItem } from '../components/ExplainItemCard';
 import ClinicalCorrelationCard, { ClinicalCorrelation } from '../components/ClinicalCorrelationCard';
-import { setQueryId } from '../utils/analytics';
+import { setQueryId, track } from '../utils/analytics';
 import { useLang } from '../utils/LangContext';
 import { getUI, getLoincTooltip as getLoincTooltipI18n } from '../utils/i18n-ui';
 import { getExtra } from '../utils/i18n-extra';
@@ -336,6 +336,14 @@ function ExplainForm() {
         e.preventDefault();
         if (isRunningRef.current) return;
         isRunningRef.current = true;
+        const t0 = Date.now();
+        let detectedLang: string | null = null;
+        const computeRiskDist = (r: ExplainResponse) => {
+            const dist: Record<'green' | 'yellow' | 'red', number> = { green: 0, yellow: 0, red: 0 };
+            for (const item of r.items) dist[item.risk_tier]++;
+            for (const corr of r.clinical_correlations) dist[corr.risk_tier]++;
+            return dist;
+        };
         setResult(null); setSources([]); setError(''); setStatusMsg(''); setLoading(true); setPhiError(null);
         setQueryId(null);
         const controller = new AbortController();
@@ -358,6 +366,12 @@ function ExplainForm() {
                         if (data.type === 'query_id') {
                             if (data.query_id) setQueryId(data.query_id);
                         }
+                        else if (data.type === 'identified') {
+                            if (typeof data.language === 'string') detectedLang = data.language;
+                            // Note: data.items[] is also available here (entities extracted
+                            // by backend Stage 1) but intentionally unused — Step 6 scope
+                            // is telemetry only, not mid-flight UX.
+                        }
                         else if (data.type === 'status') {
                             const statusMap: Record<string, string> = {
                                 'Analyzing your report...': ui.statusAnalyzingReport,
@@ -367,7 +381,19 @@ function ExplainForm() {
                             setStatusMsg(statusMap[data.content] || data.content);
                         }
                         else if (data.type === 'sources') setSources(data.content ?? []);
-                        else if (data.type === 'explain_result') { if (data.content) setResult(data.content); }
+                        else if (data.type === 'explain_result') {
+                            if (data.content) {
+                                const result: ExplainResponse = data.content;
+                                setResult(result);
+                                track('explain_completed', {
+                                    items_count: result.items.length,
+                                    correlations_count: result.clinical_correlations.length,
+                                    risk_tier_distribution: computeRiskDist(result),
+                                    input_language: detectedLang,
+                                    elapsed_ms: Date.now() - t0,
+                                });
+                            }
+                        }
                         else if (data.type === 'done')    { setLoading(false); setStatusMsg(''); }
                         else if (data.type === 'error') {
                             const code = data.code ?? data.error;
@@ -377,6 +403,10 @@ function ExplainForm() {
                                 setShowDailyCapToast(true);
                             } else {
                                 setError(data.message ?? data.content ?? 'An error occurred.');
+                                track('explain_failed', {
+                                    error_code: code ?? 'unknown',
+                                    elapsed_ms: Date.now() - t0,
+                                });
                             }
                             setLoading(false);
                         }
