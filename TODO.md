@@ -126,3 +126,64 @@
       during soft launch (most users will hit quota_hit modal where
       UpgradeModal already surfaces yearly option). Full fix after §2.7
       completes.
+
+## § 2.7 Step 4 follow-up (deferred from Step 4A scope)
+
+- [ ] Per-item SourceBadge click tracking (parity with Research § 2.3 CitationPanel)
+      **Priority:** Medium — Step 4A explicitly deferred to keep Step 4B/4C scope
+      tight. Enables Phase 1A Week 4 review metrics on which sources users
+      distrust most; deferring too long blinds the § 2.3 retrospective.
+
+      **Facts:**
+      - `components/CitationPanel.tsx` (Research) already emits
+        `track('citation_clicked', { source_type, url, citation_position })`
+      - `pages/explain.tsx` inline `SourceBadge` (L139-170) and `LoincBadge`
+        (L64-137) emit no events
+      - Source data shape sufficient: `{ source_type, label, url? }` already on
+        `ExplainSource` — same fields Research uses
+      - § 2.7 structured output adds a new dimension: citations belong to either
+        `items[]` or `clinical_correlations[]`
+
+      **Scope for full fix:**
+      - Add `track('citation_clicked', { source_type, url, citation_position,
+        category: 'explain', origin: 'item' | 'correlation' })` to SourceBadge /
+        LoincBadge onClick handlers
+      - `citation_position` = index within parent `citations[]` array
+      - Test: verify PostHog funnel splits cleanly by `source_type`
+        (LOINC vs RxNorm vs PubMed/FDA) and by `origin`
+
+      **Defer reason:** Pure analytics polish; revisit after Step 4D ships and
+      PostHog funnel data exposes which source types Explain users actually
+      click. Pairs naturally with PRD § 2.3 retrospective.
+
+- [ ] Copy-to-clipboard markdown serializer for structured Explain result
+      **Priority:** Medium — Step 4A Q3 decision removed the Copy button from §2.7
+      rendering. Real clinician workflow copies interpretation back to patient
+      charts; absence of "no user request yet" reflects pre-launch state, not
+      unimportance. If reinstated post-launch, the new serializer must walk the
+      structured shape (`items[]` + `clinical_correlations[]` + `disclaimer`)
+      rather than copying a flat markdown string.
+
+      **Facts:**
+      - Old `pages/explain.tsx` L626-629 Copy button used
+        `navigator.clipboard.writeText(output)` — works only for flat
+        markdown string from pre-§2.7 output state
+      - Step 4 Q3 decision: drop Copy button entirely from §2.7 cards
+      - `utils/exportPdf.ts` (Pro PDF export) is a natural co-consumer of any
+        serializer added later
+
+      **Scope for full fix:**
+      - Add `utils/explainSerializer.ts`: takes `ExplainResponse`, outputs
+        markdown with one section per item (term · value · risk_tier ·
+        explanation · citations) and a Clinical Correlations section
+      - Section headers language-aware (reuse `getUI(lang)` keys from Step 5)
+      - Reinstate Copy button on Explain output card; emit
+        `track('explain_copied', { items_count, correlations_count })`
+      - Consider sharing serializer with `exportPdf.ts` for Pro export
+
+      **Defer reason:** Structured cards ship Step 4D as the first end-to-end
+      §2.7 surface; adding the serializer + Copy button + i18n'd headers
+      expands Step 4 scope without product-required value before launch.
+      Revisit when either: (a) FeedbackBar surfaces "I want to copy this"
+      requests, or (b) Pro PDF export needs the same structured markdown —
+      whichever arrives first.
