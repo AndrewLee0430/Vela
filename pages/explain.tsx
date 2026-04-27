@@ -3,9 +3,6 @@
 import { useState, useEffect, FormEvent, useRef, useCallback, DragEvent } from 'react';
 import Head from 'next/head';
 import { useAuth, useUser } from '@clerk/nextjs';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import remarkBreaks from 'remark-breaks';
 import { fetchEventSource } from '@microsoft/fetch-event-source';
 import { FatalError, makeOnOpen, sseOnError } from '../utils/sse';
 import FeedbackBar from '../components/FeedbackBar';
@@ -15,6 +12,8 @@ import UpgradeModal from '../components/UpgradeModal';
 import ProFeatureOverlay from '../components/ProFeatureOverlay';
 import PageShell from '../components/PageShell';
 import ExplainLockedForAnonymous from '../components/ExplainLockedForAnonymous';
+import ExplainItemCard, { ExplainItem } from '../components/ExplainItemCard';
+import ClinicalCorrelationCard, { ClinicalCorrelation } from '../components/ClinicalCorrelationCard';
 import { setQueryId } from '../utils/analytics';
 import { useLang } from '../utils/LangContext';
 import { getUI, getLoincTooltip as getLoincTooltipI18n } from '../utils/i18n-ui';
@@ -22,17 +21,17 @@ import { getExtra } from '../utils/i18n-extra';
 
 const ACCENT = '#68d391';
 
-const EXPLAIN_DISCLAIMER_RE = /\n*⚠️?\s*(This explanation|For reference purposes|本說明|本解释|この説明|이 설명|Esta explicación|Cette explication|Diese Erklärung|Questa spiegazione|Esta explicação|คำอธิบายนี้|هذا الشرح|यह व्याख्या|এই ব্যাখ্যা|הסבר זה|Giải thích này|Please consult|does not replace|僅供參考|仅供参考).*$/gm;
-
-function stripExplainDisclaimer(text: string): string {
-    return text.replace(EXPLAIN_DISCLAIMER_RE, '').trim();
-}
-
 interface ExplainSource {
     source_type: string;
     label: string;
     url?: string;
     description?: string;
+}
+
+interface ExplainResponse {
+    items: ExplainItem[];
+    clinical_correlations: ClinicalCorrelation[];
+    disclaimer: string;
 }
 
 const SOURCE_STYLES: Record<string, { bg: string; text: string; border: string }> = {
@@ -178,12 +177,11 @@ function ExplainForm() {
     const ui = getUI(lang);
     const extra = getExtra(lang);
     const [reportText, setReportText] = useState('');
-    const [output, setOutput]         = useState('');
+    const [result, setResult]         = useState<ExplainResponse | null>(null);
     const [sources, setSources]       = useState<ExplainSource[]>([]);
     const [loading, setLoading]       = useState(false);
     const [statusMsg, setStatusMsg]   = useState('');
     const [error, setError]           = useState('');
-    const [showToast, setShowToast]       = useState(false);
     const [showUpgradeModal, setShowUpgradeModal] = useState(false);
     const [showDailyCapToast, setShowDailyCapToast] = useState(false);
     const [phiError, setPhiError] = useState<{detail: string; suggestion: string} | null>(null);
@@ -338,13 +336,12 @@ function ExplainForm() {
         e.preventDefault();
         if (isRunningRef.current) return;
         isRunningRef.current = true;
-        setOutput(''); setSources([]); setError(''); setStatusMsg(''); setLoading(true); setPhiError(null);
+        setResult(null); setSources([]); setError(''); setStatusMsg(''); setLoading(true); setPhiError(null);
         setQueryId(null);
         const controller = new AbortController();
         try {
             const jwt = await getToken({ skipCache: true });
             if (!jwt) { setError('Authentication required.'); setLoading(false); isRunningRef.current = false; return; }
-            let accumulated = '';
             await fetchEventSource(`${process.env.NEXT_PUBLIC_API_URL}/api/explain`, {
                 signal: controller.signal, method: 'POST',
                 headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${jwt}` },
@@ -370,15 +367,16 @@ function ExplainForm() {
                             setStatusMsg(statusMap[data.content] || data.content);
                         }
                         else if (data.type === 'sources') setSources(data.content ?? []);
-                        else if (data.type === 'answer')  { accumulated += data.content; setOutput(accumulated); }
+                        else if (data.type === 'explain_result') { if (data.content) setResult(data.content); }
                         else if (data.type === 'done')    { setLoading(false); setStatusMsg(''); }
                         else if (data.type === 'error') {
-                            if (data.error === 'limit_reached') {
+                            const code = data.code ?? data.error;
+                            if (code === 'limit_reached') {
                                 setShowUpgradeModal(true);
-                            } else if (data.error === 'daily_cap_reached') {
+                            } else if (code === 'daily_cap_reached') {
                                 setShowDailyCapToast(true);
                             } else {
-                                setError(data.content || data.error || 'An error occurred.');
+                                setError(data.message ?? data.content ?? 'An error occurred.');
                             }
                             setLoading(false);
                         }
@@ -401,7 +399,7 @@ function ExplainForm() {
     }
 
     const handleReset = () => {
-        setReportText(''); setOutput(''); setSources([]); setError(''); setStatusMsg(''); setPhiError(null);
+        setReportText(''); setResult(null); setSources([]); setError(''); setStatusMsg(''); setPhiError(null);
         setQueryId(null);
         handleUploadReset();
     };
@@ -425,7 +423,7 @@ function ExplainForm() {
                     <h1 className="text-2xl font-bold tracking-tight mb-1" style={{ color: "#ffffff" }}>{ui.explainTitle}</h1>
                     <p className="text-sm mt-1" style={{ color: "rgba(255,255,255,0.5)" }}>{ui.explainSubtitle}</p>
                 </div>
-                {(output || reportText) && (
+                {(result || reportText) && (
                     <button onClick={handleReset} className="text-sm font-medium px-3 py-1 rounded-lg transition-all mt-1"
                         style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.3)', color: 'rgba(255,255,255,0.7)' }}
                         onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.1)'; }}
@@ -457,7 +455,7 @@ function ExplainForm() {
                     </label>
 
                     {/* Upload area */}
-                    {!output && (
+                    {!result && (
                         <>
                             {uploadState === 'idle' && (
                                 <>
@@ -558,7 +556,7 @@ function ExplainForm() {
                     )}
 
                     {/* Sample query tags */}
-                    {!output && (
+                    {!result && (
                         <div className="flex flex-wrap gap-2 pb-1">
                             {sampleQueries.map((s, i) => (
                                 <button
@@ -604,9 +602,16 @@ function ExplainForm() {
                 </button>
             </form>
 
-            {output && (
+            {loading && statusMsg === ui.statusGenerating && (
+                <p className="text-xs mt-2 text-center" style={{ color: "rgba(255,255,255,0.4)" }}>
+                    {/* TODO Step 5: replace with ui.statusGeneratingHint */}
+                    This may take up to 15 seconds
+                </p>
+            )}
+
+            {result && (
             <p className="text-xs mt-3 text-center" style={{ color: "rgba(255,255,255,0.35)" }}>
-                {ui.explainDisclaimer}
+                {result.disclaimer}
             </p>
             )}
 
@@ -619,34 +624,37 @@ function ExplainForm() {
                 </div>
             )}
 
-            {output && (
+            {result && (
                 <section className="mt-5 rounded-xl p-6" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}>
-                    <div className="flex justify-between items-center mb-4">
+                    <div className="mb-4">
                         <h2 className="text-base font-semibold" style={{ color: "#ffffff" }}>{ui.explanation}</h2>
-                        <button onClick={() => { navigator.clipboard.writeText(output); setShowToast(true); }}
-                            className="text-xs text-gray-400 hover:text-white transition-colors">
-                            {ui.copyClipboard}
-                        </button>
                     </div>
-                    <div
-                        className="prose max-w-none prose-sm prose-headings:font-semibold prose-h2:text-base prose-h2:pb-1 prose-p:leading-relaxed prose-li:leading-relaxed"
-                        style={{
-                            color: "rgba(255,255,255,0.85)",
-                            '--tw-prose-headings': '#ffffff',
-                            '--tw-prose-bold': '#ffffff',
-                            '--tw-prose-links': '#68d391',
-                            '--tw-prose-bullets': 'rgba(255,255,255,0.5)',
-                            '--tw-prose-counters': 'rgba(255,255,255,0.5)',
-                            '--tw-prose-code': '#68d391',
-                            '--tw-prose-hr': 'rgba(255,255,255,0.15)',
-                        } as React.CSSProperties}
-                    >
-                        <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>{loading ? output : stripExplainDisclaimer(output)}</ReactMarkdown>
-                    </div>
-                    {loading && <span className="inline-block w-1.5 h-4 rounded-sm animate-pulse ml-0.5 mt-2" style={{ background: ACCENT }} />}
-                    {!loading && !error && (
-                        <FeedbackBar query={reportText} response={output} category="explain" />
+
+                    {result.items.map((item, i) => (
+                        <ExplainItemCard key={`item-${i}`} item={item}>
+                            {item.citations.map((src, j) => (
+                                <SourceBadge key={j} source={src} index={j} />
+                            ))}
+                        </ExplainItemCard>
+                    ))}
+
+                    {result.clinical_correlations.length > 0 && (
+                        <div className="mt-6">
+                            {/* TODO Step 5: replace with ui.clinicalCorrelations */}
+                            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
+                                Clinical Correlations
+                            </p>
+                            {result.clinical_correlations.map((corr, i) => (
+                                <ClinicalCorrelationCard key={`corr-${i}`} correlation={corr}>
+                                    {corr.citations.map((src, j) => (
+                                        <SourceBadge key={j} source={src} index={j} />
+                                    ))}
+                                </ClinicalCorrelationCard>
+                            ))}
+                        </div>
                     )}
+
+                    <FeedbackBar query={reportText} response={JSON.stringify(result, null, 2)} category="explain" />
                 </section>
             )}
 
@@ -657,7 +665,6 @@ function ExplainForm() {
                 <p dangerouslySetInnerHTML={{ __html: ui.explainAttr3 }} />
             </div>
 
-            {showToast && <Toast message={ui.copiedToClipboard} onClose={() => setShowToast(false)} />}
             <UpgradeModal isOpen={showUpgradeModal} onClose={() => setShowUpgradeModal(false)} />
             {showDailyCapToast && (
                 <Toast
