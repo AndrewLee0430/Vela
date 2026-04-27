@@ -267,6 +267,39 @@
       **Defer reason:** Coordinated with existing § 2.7 Step 4
       follow-up. Combined work makes sense to batch.
 
+- [ ] § 2.7 + § 2.9 LLM body language vs disclaimer language drift
+      **Priority:** Low — UX edge case, not a functional bug.
+
+      **Observation:**
+      Both Verify § 2.9 and Explain § 2.7 (Step 5) use
+      response_language for fixed-string injection (severity_label
+      / disclaimer / downgrade notes), but the LLM-generated body
+      content (description, recommendation, item.explanation,
+      correlation.insight) uses entities.input_language
+      auto-detected from the input text.
+
+      Effect: user types English query but UI is set to Japanese
+      → LLM body returns English, but disclaimer renders Japanese
+      → mixed-language output.
+
+      **Defer reason:** Edge case (most users type in their UI
+      language). Mirrors existing Verify § 2.9 behavior —
+      consistent across features. Phase 1A i18n mop-up is the
+      natural place to harmonize all three features (Research,
+      Verify, Explain) into a single response_language pattern
+      that threads through both LLM prompts and fixed strings.
+
+      **Scope for full fix:**
+      - Decide single source of truth: response_language (UI
+        language) wins over input_language detection
+      - Thread response_language into LLM prompt for all 3 features
+      - Or: keep auto-detect but add visible language picker in
+        UI when detected ≠ UI lang
+      - Update PRD § 2.7 + § 2.9 if behavior changes
+
+      **Discovered:** 2026-04-26 during § 2.7 Step 5C-1
+      implementation flag from Claude Code.
+
 ## § 2.7 Step 8 acceptance protocol
 
 When Step 8 (20 case acceptance run) completes, before declaring
