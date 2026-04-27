@@ -300,6 +300,135 @@
       **Discovered:** 2026-04-26 during § 2.7 Step 5C-1
       implementation flag from Claude Code.
 
+## Phase 1A polish — telemetry & SSE contract follow-ups
+
+These items emerged during § 2.7 Step 6 + Phase 1A completion-event
+rollout (commits e63c231, 6a53dfc, dd128e2). The completion-event
+backfill itself shipped in those three commits; entries below are
+follow-up tightenings discovered during implementation.
+
+- [ ] Backend SSE payload type contract for streaming features
+      **Priority:** Medium — defensive coding tax, not a functional
+      bug.
+
+      **Observation (2026-04-26 during § 2.7 Step 6 Phase 6B-2
+      Research telemetry implementation):**
+
+      Frontend SSE listeners trust backend event payloads as their
+      expected types without explicit validation:
+      - data.lang assumed string (case 'language' branch)
+      - data.content assumed string for chunks (case 'answer' branch)
+      - data.content assumed array for citations (case 'citations'
+        branch)
+      - data.query_time_ms assumed number (case 'done' branch)
+
+      During 6B-2 implementation, defensive coercions were added at
+      the SSE boundary in pages/research.tsx:
+      - typeof data.lang === 'string' ? data.lang : null
+      - typeof data.content === 'string' ? data.content : ''
+      - Array.isArray(data.content) ? data.content : []
+      - typeof data.query_time_ms === 'number' ? ... : null
+
+      One coercion (the answer chunk string-guard) revealed a latent
+      bug in the pre-existing setAnswer logic: 'foo' + undefined ===
+      'fooundefined' would have rendered literally if backend ever
+      sent a non-string content. New coercion treats non-string as
+      empty.
+
+      **Defer reason:** Current backend code paths emit correct
+      types in practice; defensive coercions are belt-and-suspenders
+      for unknown-future cases. No production incidents observed.
+      Phase 1A polish should formalize the contract rather than
+      sprinkling more coercions.
+
+      **Scope for full fix:**
+      - Define a TypeScript discriminated union for SSE event
+        payloads in utils/sse.ts:
+            type SSEEvent =
+              | { type: 'query_id'; query_id: string }
+              | { type: 'language'; lang: string }
+              | { type: 'answer'; content: string }
+              | { type: 'fallback' }
+              | { type: 'citations'; content: Citation[] }
+              | { type: 'identified'; language: string; items: ... }
+              | { type: 'explain_result'; content: ExplainResponse }
+              | { type: 'error'; code?: string; error?: string;
+                  message?: string; content?: string }
+              | { type: 'done'; query_time_ms?: number }
+              | { type: 'status'; content: string }
+      - Update SSE listener typings in pages/research.tsx +
+        pages/explain.tsx to use this union; eliminate ad-hoc
+        defensive coercions
+      - Backend (api/services/explain_service.py + api/rag/*):
+        export matching Pydantic models for SSE payloads, validate
+        before yield (or runtime assert)
+      - Decide error event shape uniformly: code-first vs error-
+        first (Phase 1A polish entry below tracks this separately
+        for HTTP error responses, but SSE error events are also
+        inconsistent — Research uses .error first, Explain uses
+        .code first)
+
+      **Discovered:** 2026-04-26 during § 2.7 Step 6 Phase 6B-2
+      Research telemetry implementation. Inline coercions in
+      pages/research.tsx (commits 6a53dfc Citation guards) flagged
+      this as a pattern needing formalization rather than expansion.
+
+- [ ] Verify: surface spelling_corrections as structured response field
+      **Priority:** Low — already user-visible via summary string
+      prefix, but limits telemetry granularity.
+
+      **Observation (2026-04-26 during § 2.7 Step 6 Phase 6B-3
+      Verify telemetry implementation):**
+
+      The Verify backend collects spelling_corrections: list[str]
+      (api/server.py L734) when Levenshtein spell correction fires
+      on user-typed drug names (e.g. "metfromin" → "Metformin").
+      These corrections are surfaced to users by prefixing
+      VerifyResponse.summary with a "Note: 'X' was interpreted as
+      'Y'..." sentence.
+
+      However, the corrections are NOT exposed as a structured
+      field on VerifyResponse. To detect "did spelling correction
+      fire on this query" from the frontend (for telemetry purposes),
+      one would have to scrape the summary string for the "Note:"
+      prefix and "was interpreted as" substring — a brittle heuristic
+      that breaks if the prefix wording is i18n'd or rephrased.
+
+      During 6B-3 implementation, the had_correction telemetry field
+      was DROPPED rather than implemented via heuristic, per the
+      decision tree:
+        Q2 (had_correction): DROP. Backend spelling_corrections is
+        not surfaced as structured field; summary-prefix heuristic
+        is too brittle.
+
+      **Defer reason:** Verify works correctly today; spelling
+      corrections ARE displayed to users (via summary prefix). The
+      gap is purely structural — telemetry visibility into how often
+      Levenshtein fires. Not blocking soft launch.
+
+      **Scope for full fix:**
+      - Add corrections: list[str] field to VerifyResponse Pydantic
+        model (api/models/schemas.py)
+      - Backend: assign corrections list to response BEFORE building
+        the summary prefix (so structured field is independent of
+        summary text)
+      - Frontend: read result.corrections, render as a separate UI
+        chip / badge below the drug input rather than embedding in
+        summary text
+      - Frontend telemetry: re-enable had_correction in
+        verify_completed payload as: had_correction:
+        result.corrections.length > 0
+      - Optional: also expose correction_count: result.corrections.length
+        for richer signal
+      - Backwards compatibility: keep summary-prefix injection during
+        transition; remove after frontend ships the structured
+        rendering
+
+      **Discovered:** 2026-04-26 during § 2.7 Step 6 Phase 6B-3
+      schema decisions. had_correction was the only proposed Verify
+      telemetry field that couldn't be implemented cleanly without
+      backend support.
+
 ## § 2.7 Step 8 acceptance protocol
 
 When Step 8 (20 case acceptance run) completes, before declaring
