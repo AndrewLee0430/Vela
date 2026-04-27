@@ -84,6 +84,17 @@ function VerifyForm() {
             return;
         }
 
+        const t0 = Date.now();
+        const computeSeverityDist = (interactions: DrugInteraction[]) => {
+            const dist = { Critical: 0, Major: 0, Moderate: 0, Minor: 0 };
+            for (const i of interactions) {
+                if (i.severity in dist) {
+                    dist[i.severity as keyof typeof dist]++;
+                }
+            }
+            return dist;
+        };
+
         isRunningRef.current = true;
         setLoading(true); setError(''); setResult(null); setPhiError(null);
         setQueryId(null);
@@ -175,11 +186,26 @@ function VerifyForm() {
 
             const data: VerifyResponse = await res.json();
             setResult(data);
+            track('verify_completed', {
+                input_drug_count: data.drugs_analyzed.length,
+                interaction_count: data.interactions.length,
+                risk_level: data.risk_level,
+                interaction_severity_distribution: computeSeverityDist(data.interactions),
+                response_language: data.response_language ?? null,
+                elapsed_ms: Date.now() - t0,
+                backend_query_time_ms: typeof data.query_time_ms === 'number'
+                    ? data.query_time_ms : null,
+            });
             if (data.query_id) setQueryId(data.query_id);
             if (!isSignedIn) maybeTriggerThirdQueryCta();
 
         } catch (err: any) {
             setError(err.message || 'Analysis failed. Please try again.');
+            track('verify_failed', {
+                error_code: err?.name === 'TypeError' ? 'network_error'
+                    : (err?.message ?? 'unknown'),
+                elapsed_ms: Date.now() - t0,
+            });
         } finally {
             setLoading(false);
             isRunningRef.current = false;
