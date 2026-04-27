@@ -1,6 +1,6 @@
 # Vela Feature Audit
 
-**Generated:** 2026-04-25 (Updated post-§ 2.7 backend ship + Phase 0 sweep. Prior baseline 2026-04-18.)
+**Generated:** 2026-04-27 (Updated post-§ 2.7 Steps 1-6 ship + Phase 1A polish completion-event backfill. Prior 2026-04-25 baseline.)
 **Scope:** Code-only review against PRD v1.2 (Phase 0 / 1A / 1B / 1C).
 **Methodology:** grep / glob over current working tree. Does not trust historical audits.
 
@@ -140,25 +140,29 @@
 
 ---
 
-### 2.7 Explain 臨床推理強化 — 🔧 進行中(backend land,frontend pending)
+### 2.7 Explain 臨床推理強化 — ✅ DEPLOY-READY (Steps 1-6) / 🔧 ACCEPTANCE PENDING (Steps 7-8)
 
-**Status (2026-04-25):** Steps 1-2C local-only,共 4 個 commit on `main`(尚未 push 到 origin、尚未 deploy)。Step 3-8 在 backlog。
+**Status (2026-04-27):** Steps 1-6 全部 land 並 push to origin/main(19 commits)。Step 6 backfill 同步覆蓋 Research / Verify 的 completion-event telemetry(Phase 1A polish — 詳見下方 Phase 1A 區段)。Steps 7-8(LLM judge prompt + 20-case acceptance run)pending,gating checklist 在 TODO.md「§ 2.7 Step 8 acceptance protocol」section。
 
-**已 land(local):**
+**已 land(pushed):**
 - `cd697d1` Step 1:`api/models/explain_schemas.py` 新增 `RiskTier` enum、`ExplainItem`、`ClinicalCorrelation`、`ExplainCompletedPayload` 結構化型別
 - `bfd390a` Step 2A:抽 system prompt 至 `api/prompts/explain_system.md`(消除 PRD § 6.5 inline-prompt 違規)
 - `bcabb29` Step 2B:rewrite prompt to v2 — 含臨床組合推理(hard cap 3)、hedging 禁用詞清單、LOINC scope-limit、risk tier 政策、JSON 輸出契約
 - `148904e` Step 2C:`explain_service.py` 切換到 OpenAI JSON mode + 結構化 SSE event(`explain_result` 取代 `answer`),server.py serialize 結構化 result 到 ChatHistory.answer
+- `c38b656` Step 3:LOINC scope post-processing guard — Python 端 augment / downgrade 當 explanation 屬臨床判斷類但 citations 僅含 LOINC
+- `0dba4fa` Step 4B:`components/RiskBadge.tsx` + `components/ExplainItemCard.tsx` + `components/ClinicalCorrelationCard.tsx` 三個結構化卡片元件
+- `1fa21f2` Step 4C:`pages/explain.tsx` 整合卡片(🟢🟡🔴 risk badge 渲染 + correlations 區塊 + frontend disclaimer)
+- `e05102e` Step 5:`api/i18n/explain_strings.py` + `api/i18n/__init__.py` 16 語言 risk_label / disclaimer i18n,移除 `risk_label_key` 從 SSE payload(後端注入 localized labels 直接)
+- `753b27d` Step 5 follow-up: TODO entry for LLM body language vs disclaimer language drift (Phase 1A polish item)
+- `e63c231` Step 6:PostHog `explain_completed` + `explain_failed` events(payload 對齊 `ExplainCompletedPayload`)
 
-**未 land(backlog):**
-- Step 3:LOINC scope post-processing guard — Python 端在 generate_explanation 後檢查 items[].citations,當 explanation 屬於臨床判斷類但 citations 僅含 LOINC 時強制 augment 或 downgrade 輸出。
-- Step 4:`pages/explain.tsx` 結構化 render(🟢🟡🔴 卡片 + correlations 區塊 + disclaimer 渲染)— deploy gate 卡在這
-- Step 5:`utils/i18n*.ts` 新增 `explain.risk.green/yellow/red` + `explain.disclaimer` 16 語言
-- Step 6:PostHog `explain_completed` event(payload schema 已在 `ExplainCompletedPayload`)
-- Step 7:LLM judge Explain prompt
-- Step 8:Acceptance cases(diabetes+eGFR、normal values、20-case hedging)
+**Schema version:** `api/prompts/explain_system.md` v2 → v3 (Step 5 — removed `risk_label_key` field from JSON contract; localized labels and disclaimers now injected server-side from `api/i18n/explain_strings.py` per `response_language`)
 
-**注意:**repo 裡出現的 🟢🟡🔴 全部在 `api/rag/generator.py:288-300` 的 **Research** evidence strength,不是 Explain 的 risk tier,不可混淆。
+**Pending (Steps 7-8):**
+- Step 7: LLM judge Explain prompt (`api/prompts/explain_judge.md` — 新檔)
+- Step 8: Acceptance protocol — 20-case hedging compliance audit + risk tier distribution analysis (gating checklist in TODO.md「§ 2.7 Step 8 acceptance protocol」 section)
+
+**注意:**repo 裡出現的 🟢🟡🔴 在兩處:`api/rag/generator.py:288-300` 是 **Research** evidence strength;`components/RiskBadge.tsx` 是 **Explain** risk tier。語義不同,不可混淆。
 
 ---
 
@@ -217,6 +221,28 @@ Origin:Discovered Gap G1(Landing Page 「No account required to try」 vs Clerk 
 - Identified dead code:`api/rag/generator.py` `FALLBACK_PROMPTS["verify"]` / `FALLBACK_PROMPTS["document"]` / `_get_system_prompt() query_type=="verify"` branch — 移交 CLAUDE.md P2 Tech Debt
 
 **Pattern drift acknowledged:** Verify 走 `{response_language}` placeholder,Research / Explain 仍走 `get_language_instruction()` append。Phase 1A i18n mop-up 統一(CLAUDE.md P2)。
+
+---
+
+### Phase 1A polish — Completion-event telemetry backfill — ✅ SHIPPED (2026-04-27)
+
+**Status:** Research / Verify completion events shipped together with § 2.7 Step 6 (Phase 6B unified rollout)。Soft-launch week 1 telemetry 從 day one 就 in place。
+
+Phase 6A grep 揭露:codebase 之前完全沒有 `{feature}_completed` events(只有 `anonymous_*` / `feedback_*` / `citation_clicked` / `bug_report_*`)。為避免分批 ship 造成 Research / Verify 缺通用完成 telemetry,Phase 6B 統一補齊。
+
+**已 land(pushed):**
+- `e63c231` Phase 6B-1:`pages/explain.tsx` 加 `explain_completed` / `explain_failed`(items_count、correlations_count、risk_tier_distribution、input_language、elapsed_ms)
+- `6a53dfc` Phase 6B-2:`pages/research.tsx` 加 `research_completed` / `research_failed`(citation_count、section_count、evidence_distribution { strong, moderate, limited, unmarked }、used_fallback、input_language、elapsed_ms、backend_query_time_ms)。為應對 useCallback closure staleness 風險,實作 local accumulator pattern(避免 refs / useEffect 兩個替代方案)
+- `dd128e2` Phase 6B-3:`pages/verify.tsx` 加 `verify_completed` / `verify_failed`(input_drug_count、interaction_count、risk_level、interaction_severity_distribution { Critical, Major, Moderate, Minor }、response_language、elapsed_ms、backend_query_time_ms)。Schema 刻意 OMIT input_language(Verify 對輸入語言中性,drug names = Latin script regardless of UI lang)
+
+**Schema 慣例:**
+- 共用 auto-injected props by `utils/analytics.ts`:query_id、session_id、tier、plan_type、locale、work_language、user_context_hash
+- `*_failed` 排除 quota errors(已被 `anonymous_quota_hit` / `upgrade_modal` / daily cap toast 覆蓋)
+- Verify failed:outer catch only(401/403/429/503 是 user-state events,各自 UI flow 不視為 failure)
+
+**Open follow-ups (tracked in TODO.md "Phase 1A polish — telemetry & SSE contract follow-ups"):**
+- `381fc0b`:Backend SSE payload type contract for streaming features(defensive coercions added during 6B-2 揭露 SSE event payload 沒有 enforced type contract)
+- `381fc0b`:Verify spelling_corrections 結構化欄位(目前只透過 summary string prefix 暴露,blocks `had_correction` telemetry instrumentation)
 
 ---
 
@@ -372,11 +398,11 @@ Origin:Discovered Gap G1(Landing Page 「No account required to try」 vs Clerk 
 | 2.4 Bug 回報 | ✅ | 2026-04-19 lands;FAB + `/api/bug-report` + PHI cleaning + rate limit 5/hour |
 | 2.5 Landing SEO | ✅ | 完整 meta + JSON-LD + noindex 子頁 |
 | 2.6 i18n hreflang | ✅ | Strategy A 完成 |
-| 2.7 Explain 臨床推理 | 🔧 | Backend Steps 1-2C land local-only(4 commits,deploy gate 卡 Step 4 frontend);Step 3-8 backlog |
+| 2.7 Explain 臨床推理 | ✅ DEPLOY-READY (Steps 1-6) | 19 commits pushed 2026-04-27;Steps 7-8 (LLM judge + 20-case acceptance) pending — gating checklist in TODO.md |
 | 2.8 Anonymous Trial Flow | ✅ | 2026-04-22 production verified;Rounds 1-3 lands;follow-ups 移交 TODO.md / CLAUDE.md |
 | 2.9 Verify 輸出語言對齊 user locale | ✅ 已完成 2026-04-20 | response_language variable + verify_system.md v2.1 + 7 languages i18n-verify.ts + UX polish + Chinese variant handling spread to Research/Explain |
 
-Phase 0 還剩 2.7(4 commits 已 land,Step 3-8 在 backlog)+ 2.1(9 檔 Provider refactor,最大塊)。
+Phase 0 還剩 2.7 Steps 7-8(LLM judge + 20-case acceptance,gated by TODO.md protocol)+ 2.1(9 檔 Provider refactor,最大塊)+ 3.1 user_context schema(blocks Phase 1A)。
 
 ---
 
