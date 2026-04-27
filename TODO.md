@@ -187,3 +187,142 @@
       Revisit when either: (a) FeedbackBar surfaces "I want to copy this"
       requests, or (b) Pro PDF export needs the same structured markdown —
       whichever arrives first.
+
+- [ ] § 2.7 risk tier judgment may skew conservative (yellow-heavy)
+      **Priority:** Medium — quality issue, not a functional bug.
+
+      **Observation (2026-04-25 dev smoke test):**
+      Test case "血紅素 10.2 g/dL (參考值 12-16)、白血球 12,500/μL (偏高)"
+      produced all three risk_tier labels as 🟡 (yellow):
+      - Hemoglobin 10.2 (moderate anemia by WHO classification)
+      - WBC 12,500 (mild leukocytosis)
+      - Anemia + leukocytosis correlation
+
+      Per v2 prompt Section 4 rule 3: "Multi-item combination
+      suggesting high combined risk → red on the correlation".
+      Anemia + leukocytosis combined could indicate chronic
+      inflammation, infection, or hematologic process — should
+      arguably be 🔴.
+
+      **Defer reason:** A single test case is not statistical
+      evidence. Wait for Step 8 (20 acceptance cases) to determine
+      if this is a systematic bias before modifying v2 prompt.
+      Modifying prompt based on n=1 risks overfitting.
+
+      **Trigger evaluation:** Evaluated as part of Step 8 acceptance
+      protocol (see "§ 2.7 Step 8 acceptance protocol" section below).
+
+      **Action when triggered:** If Step 8 risk tier distribution
+      shows yellow > 70% systematic across 20 cases, refine v2 prompt
+      Section 4 decision rules with more explicit thresholds (e.g.
+      "WHO moderate anemia → yellow; severe → red; combined with
+      infection markers → red").
+
+- [ ] § 2.7 RiskBadge hover tooltip with tier definition
+      **Priority:** Medium — UX gap, surfaced during dev smoke test.
+
+      **Observation:**
+      Risk badge labels ("Needs Attention", "Consult Immediately",
+      "General Information") communicate tier but not WHY or WHAT
+      to do. Users without medical context may not understand the
+      threshold or action implication.
+
+      **Scope for full fix:**
+      - Add hover tooltip to RiskBadge.tsx (popover-style, similar
+        to LoincBadge tooltip pattern)
+      - Static tooltip content per tier (not LLM-generated):
+        - 🟢: "一般資訊 — 此項目在參考範圍內或為衛教性內容。"
+        - 🟡: "需要留意 — 此項目超出參考範圍但未達緊急閾值。建議與臨床
+              表現合併判讀。"
+        - 🔴: "建議立即諮詢 — 此項目跨越臨床警戒值或多項組合提示高風險。
+              建議盡快諮詢主治醫師。"
+      - i18n: 16 languages × 3 tier definitions = 48 new strings
+      - Mobile: tap-triggered popover (same pattern as LoincBadge)
+
+      **Defer reason:** Not in PRD § 2.7 explicit acceptance criteria.
+      Step 4 scope is structured rendering, not interactive education
+      polish. Better to ship § 2.7 first, gather user feedback, then
+      add tooltip if confusion is real signal.
+
+- [ ] § 2.7 SourceBadge upgrade: surface source_type (PubMed/FDA/etc)
+      **Priority:** Medium — trust-building for medical TA.
+
+      **Observation:**
+      Citation chips currently show only the title (e.g. "Anemia in
+      adults: a contemporary approach to diagnosis"). For medical
+      professionals, the source authority (peer-reviewed PubMed vs
+      FDA label vs general health info vs LOINC code lookup) is
+      often more important than the title itself.
+
+      **Scope for full fix:**
+      - Modify inline SourceBadge in pages/explain.tsx to prepend
+        source_type prefix (e.g. "PubMed · Anemia in adults...")
+      - Or add small source_type badge alongside title (visual:
+        small pill with source_type abbreviation)
+      - Color-code by source authority tier (peer-reviewed = green,
+        regulatory = blue, code lookup = gray)
+      - Coordinate with existing TODO entry "Per-item SourceBadge
+        click tracking" — both modify SourceBadge, do together
+
+      **Defer reason:** Coordinated with existing § 2.7 Step 4
+      follow-up. Combined work makes sense to batch.
+
+## § 2.7 Step 8 acceptance protocol
+
+When Step 8 (20 case acceptance run) completes, before declaring
+§ 2.7 fully done, execute these post-acceptance checks. This is
+not optional polish — these are the integration points between
+§ 2.7's automated quality and the broader TODO follow-up backlog.
+
+1. **Risk tier distribution analysis**
+   - Count green/yellow/red across 20 cases × N items per case
+   - If yellow > 70% of all items → systematic conservative bias
+     confirmed → execute "§ 2.7 risk tier judgment may skew
+     conservative" entry in § 2.7 Step 4 follow-up above
+   - If green > 80% → opposite bias (under-flagging) → equally
+     a problem; refine v2 prompt to flag borderline values more
+     readily
+
+2. **Hedging compliance audit**
+   - Sample 5 random items across the 20 cases
+   - For each, verify explanation does NOT contain forbidden
+     phrases per v2 prompt Section 2:
+     「您有」「您的診斷是」「您需要」「這表示您得了」
+     "You have", "Your diagnosis is", "You need",
+     "This means you have"
+   - Any violation → refine v2 prompt Section 2 hedging rules +
+     re-run sampled cases until clean
+
+3. **LOINC scope guard trigger rate (Step 3 effectiveness)**
+   - grep dev/prod logs for "[Explain] Step 3 downgrade triggered"
+   - Calculate trigger rate (downgrades / total successful runs):
+     - < 5% → Step 3 functioning as designed safety net; v2 prompt
+       self-check is working
+     - 5-15% → v2 prompt Section 3 may need stronger self-check
+       phrasing; consider iterating
+     - > 15% → v2 prompt Citation strategy section needs major
+       rewrite; LLM is systematically failing to discriminate
+       code-lookup vs clinical-judgment scope
+
+4. **TODO sweep**
+   - grep TODO.md for entries containing "Step 8" or "acceptance"
+   - For each: re-read the trigger condition, evaluate against
+     this run's data
+   - If trigger met → add to next session's task list with
+     priority noted
+   - If not met → leave as deferred, no action
+
+5. **Update FEATURE_AUDIT.md § 2.7 entry**
+   - Status: 🔧 → ✅ DONE
+   - Body: append "Step 8 acceptance summary" sub-section with
+     - Risk tier distribution: green X / yellow Y / red Z
+     - Hedging compliance: clean / N violations corrected
+     - Step 3 downgrade trigger rate: X%
+     - Any v2 prompt revisions performed (cite commit SHA)
+   - Bump "Generated:" date if updating same day, or include
+     "Updated post-Step 8" annotation
+
+This protocol exists because Step 8 is the natural integration
+checkpoint where automated outputs (LLM judgments) meet design
+intent (PRD § 2.7 quality bars). Skipping any item here means
+shipping § 2.7 with unverified assumptions.
