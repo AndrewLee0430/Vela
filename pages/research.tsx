@@ -260,6 +260,27 @@ function ResearchForm() {
         if (!q.trim() || isRunningRef.current) return;
         isRunningRef.current = true;
 
+        const t0 = Date.now();
+        // Local accumulators mirror state for telemetry — runSearch is useCallback'd
+        // with deps that don't include answer/citations/isFallback/detectedLang, so
+        // direct reads in case 'done' would be stale. Locals are scoped to this
+        // single query lifecycle, no staleness risk.
+        let localAnswer = '';
+        let localCitations: Citation[] = [];
+        let localIsFallback = false;
+        let localDetectedLang: string | null = null;
+        const computeEvidenceDist = (markdown: string) => {
+            const sections = parseResearchSections(markdown) ?? [];
+            const dist = { strong: 0, moderate: 0, limited: 0, unmarked: 0 };
+            for (const s of sections) {
+                if (s.evidence === '\u{1F7E2}') dist.strong++;
+                else if (s.evidence === '\u{1F7E1}') dist.moderate++;
+                else if (s.evidence === '\u{1F534}') dist.limited++;
+                else dist.unmarked++;
+            }
+            return { sections_count: sections.length, dist };
+        };
+
         setAnswer(''); setCitations([]); setQueryTime(null);
         setLoading(true); setError(''); setIsFallback(false); setStatusMsg(''); setPhiError(null); setDetectedLang('en');
         setQueryId(null);
@@ -323,23 +344,54 @@ function ResearchForm() {
                             };
                             setStatusMsg(statusMap[data.content] || data.content);
                         }
-                        else if (data.type === 'language') setDetectedLang(data.lang || 'en');
-                        else if (data.type === 'answer')   { setStatusMsg(''); setAnswer(prev => prev + data.content); }
-                        else if (data.type === 'fallback') setIsFallback(true);
-                        else if (data.type === 'citations') setCitations(data.content);
+                        else if (data.type === 'language') {
+                            localDetectedLang = typeof data.lang === 'string' ? data.lang : null;
+                            setDetectedLang(data.lang || 'en');
+                        }
+                        else if (data.type === 'answer')   {
+                            setStatusMsg('');
+                            const chunk = typeof data.content === 'string' ? data.content : '';
+                            localAnswer += chunk;
+                            setAnswer(prev => prev + chunk);
+                        }
+                        else if (data.type === 'fallback') { localIsFallback = true; setIsFallback(true); }
+                        else if (data.type === 'citations') {
+                            const safeCitations = Array.isArray(data.content) ? data.content : [];
+                            localCitations = safeCitations;
+                            setCitations(safeCitations);
+                        }
                         else if (data.type === 'error') {
-                            if (data.error === 'limit_reached') {
+                            // Note: Research uses .error-first; Explain (§ 2.7 Step 2C) uses .code-first.
+                            // Phase 1A polish will harmonize backend error response shape.
+                            const code = data.error ?? data.code;
+                            if (code === 'limit_reached') {
                                 setShowUpgradeModal(true);
-                            } else if (data.error === 'daily_cap_reached') {
+                            } else if (code === 'daily_cap_reached') {
                                 setShowDailyCapToast(true);
                             } else {
-                                setError(data.content || data.error || 'An error occurred.');
+                                setError(data.content || code || 'An error occurred.');
+                                track('research_failed', {
+                                    error_code: code ?? 'unknown',
+                                    elapsed_ms: Date.now() - t0,
+                                });
                             }
                         }
                         else if (data.type === 'done')     {
                             setLoading(false);
-                            if (data.query_time_ms) setQueryTime(data.query_time_ms);
+                            const queryTimeMs = typeof data.query_time_ms === 'number' ? data.query_time_ms : null;
+                            if (queryTimeMs !== null) setQueryTime(queryTimeMs);
                             if (!isSignedIn) maybeTriggerThirdQueryCta();
+                            const stripped = stripLlmDisclaimer(localAnswer);
+                            const { sections_count, dist } = computeEvidenceDist(stripped);
+                            track('research_completed', {
+                                citation_count: localCitations.length,
+                                section_count: sections_count,
+                                evidence_distribution: dist,
+                                used_fallback: localIsFallback,
+                                input_language: localDetectedLang,
+                                elapsed_ms: Date.now() - t0,
+                                backend_query_time_ms: queryTimeMs,
+                            });
                         }
                     } catch {}
                 },
