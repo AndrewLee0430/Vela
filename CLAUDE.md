@@ -232,10 +232,12 @@ When given a feature task, always consult these documents **before** touching co
 
 1. Read the relevant PRD section (requirements + acceptance + "not in scope")
 2. Check `FEATURE_AUDIT.md` for current state — **do not re-implement what's already done**
-3. Implement
-4. Verify against PRD acceptance criteria, item by item
-5. If implementation changed codebase state, update `FEATURE_AUDIT.md`
-6. Commit message format: `[PRD X.Y] brief description` (e.g. `[PRD 2.0] Remove temp window.__vela_analytics exposure`)
+3. **Check `TODO.md` for any acceptance protocols or trigger conditions tied to this task** (e.g. § 2.7 Step 8 acceptance protocol gates prompt-tuning decisions; deferred items in § 2.7 Step 4 follow-up wait on Step 8 data)
+4. Implement
+5. Verify against PRD acceptance criteria, item by item
+6. **If the task is part of an acceptance protocol checkpoint, execute the protocol items** (e.g. completing Step 8 means running the full 5-point checklist in TODO.md, not just "20 cases done")
+7. If implementation changed codebase state, update `FEATURE_AUDIT.md`
+8. Commit message format: `[PRD X.Y] brief description` (e.g. `[PRD 2.0] Remove temp window.__vela_analytics exposure`)
 
 ## What This Project Is
 
