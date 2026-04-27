@@ -345,7 +345,7 @@ function ExplainForm() {
             await fetchEventSource(`${process.env.NEXT_PUBLIC_API_URL}/api/explain`, {
                 signal: controller.signal, method: 'POST',
                 headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${jwt}` },
-                body: JSON.stringify({ report_text: reportText }),
+                body: JSON.stringify({ report_text: reportText, response_language: lang }),
                 openWhenHidden: true,
                 onopen: makeOnOpen({
                     onPhiBlocked: () => setPhiError({ detail: ui.phiDetail, suggestion: ui.phiSuggestion }),
@@ -604,8 +604,7 @@ function ExplainForm() {
 
             {loading && statusMsg === ui.statusGenerating && (
                 <p className="text-xs mt-2 text-center" style={{ color: "rgba(255,255,255,0.4)" }}>
-                    {/* TODO Step 5: replace with ui.statusGeneratingHint */}
-                    This may take up to 15 seconds
+                    {ui.statusGeneratingHint}
                 </p>
             )}
 
@@ -640,9 +639,8 @@ function ExplainForm() {
 
                     {result.clinical_correlations.length > 0 && (
                         <div className="mt-6">
-                            {/* TODO Step 5: replace with ui.clinicalCorrelations */}
                             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
-                                Clinical Correlations
+                                {ui.clinicalCorrelations}
                             </p>
                             {result.clinical_correlations.map((corr, i) => (
                                 <ClinicalCorrelationCard key={`corr-${i}`} correlation={corr}>

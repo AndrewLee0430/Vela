@@ -10,7 +10,7 @@ import json
 import logging
 import time
 from pathlib import Path
-from typing import AsyncGenerator
+from typing import AsyncGenerator, Optional
 from openai import AsyncOpenAI
 from pydantic import ValidationError
 
@@ -23,6 +23,11 @@ from api.data_sources.loinc_client import loinc_client
 from api.data_sources.rxnorm_client import rxnorm_client
 from api.data_sources.medlineplus_client import medlineplus_client
 from api.utils.language_detector import detect_language, get_language_instruction
+from api.i18n.explain_strings import (
+    get_disclaimer,
+    get_downgrade_item_note,
+    get_downgrade_corr_note,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -203,13 +208,19 @@ async def generate_explanation(
     report_text: str,
     entities: ExtractedEntities,
     context: str,
-    openai_client: AsyncOpenAI
+    openai_client: AsyncOpenAI,
+    response_language: Optional[str] = None,
 ) -> dict:
     """
     Stage 3: Generate structured JSON explanation (non-streaming, JSON mode).
     Returns dict {items, clinical_correlations, disclaimer}.
     Raises ValueError on JSON parse or schema validation failure.
+
+    `response_language` (BCP-47, e.g. "zh-TW") drives server-side disclaimer
+    and downgrade-note locale lookups (PRD § 2.7 Step 5). Falls back to
+    English if missing.
     """
+    locale = response_language or "en"
     user_content = f"""Medical report to explain:
 ---
 {report_text}
@@ -268,13 +279,7 @@ Please explain this report in the same language as the input ({entities.input_la
                     [c.source_type.value if hasattr(c.source_type, "value") else c.source_type for c in item.citations],
                 )
                 item.risk_tier = RiskTier.GREEN
-                item.risk_label_key = "explain.risk.green"
-                # TODO Step 5: i18n the downgrade fallback note
-                item.explanation += (
-                    "\n\n(Note: This item references code-lookup sources "
-                    "only; full clinical interpretation should be "
-                    "discussed with your physician.)"
-                )
+                item.explanation += "\n\n" + get_downgrade_item_note(locale)
 
     for corr in correlations:
         if corr.risk_tier in (RiskTier.YELLOW, RiskTier.RED):
@@ -288,19 +293,9 @@ Please explain this report in the same language as the input ({entities.input_la
                     [c.source_type.value if hasattr(c.source_type, "value") else c.source_type for c in corr.citations],
                 )
                 corr.risk_tier = RiskTier.GREEN
-                corr.risk_label_key = "explain.risk.green"
-                # TODO Step 5: i18n the downgrade fallback note
-                corr.insight += (
-                    "\n\n(Note: Insufficient non-code-lookup evidence "
-                    "for this correlation; please consult your physician.)"
-                )
+                corr.insight += "\n\n" + get_downgrade_corr_note(locale)
 
-    # TODO Step 5: replace with i18n lookup based on request locale
-    disclaimer = (
-        "⚠️ This explanation is for reference only. "
-        "It does not constitute medical advice. "
-        "Please consult your healthcare provider."
-    )
+    disclaimer = get_disclaimer(locale)
 
     return {
         "items": [i.model_dump(mode="json") for i in items],
@@ -313,7 +308,8 @@ Please explain this report in the same language as the input ({entities.input_la
 
 async def run_explain_pipeline(
     report_text: str,
-    openai_client: AsyncOpenAI
+    openai_client: AsyncOpenAI,
+    response_language: Optional[str] = None,
 ) -> AsyncGenerator[dict, None]:
     """
     Full 3-stage Explain pipeline. Yields SSE-compatible dicts:
@@ -324,6 +320,9 @@ async def run_explain_pipeline(
       {"type": "explain_result", "content": {items, clinical_correlations, disclaimer}}
       {"type": "error", "content": "..."}   # on Stage 3 JSON/schema failure
       {"type": "done", "query_time_ms": N}
+
+    `response_language` (BCP-47) is threaded into Stage 3 for server-side
+    disclaimer + downgrade-note locale lookups (PRD § 2.7 Step 5).
     """
     start = time.time()
 
@@ -405,7 +404,10 @@ async def run_explain_pipeline(
     # Stage 3: Generate structured JSON explanation (blocking)
     yield {"type": "status", "content": "Generating explanation..."}
     try:
-        result = await generate_explanation(report_text, entities, context, openai_client)
+        result = await generate_explanation(
+            report_text, entities, context, openai_client,
+            response_language=response_language,
+        )
     except ValueError as e:
         error_code = str(e)  # "invalid_json" or "schema_validation_failed"
         logger.error("[Explain] Stage 3 failed: %s", error_code)

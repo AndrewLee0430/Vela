@@ -24,6 +24,12 @@ class ExplainRequest(BaseModel):
         max_length=5000,
         examples=["eGFR 45 mL/min (ref >60), HbA1c 7.8%, Metformin 1000mg BID"]
     )
+    response_language: Optional[str] = Field(
+        None,
+        description="使用者期待的輸出語言代碼 (e.g. 'zh-TW', 'ja', 'en')。未提供時後端會回退到 Accept-Language → 'en'。",
+        max_length=16,
+        examples=["zh-TW", "ja", "en"],
+    )
 
 
 class LabTestEntity(BaseModel):
@@ -82,7 +88,6 @@ class ExplainItem(BaseModel):
     value: str                              # e.g. "45 mL/min/1.73m²", "145 mg/dL"
     explanation: str                        # plain-language interpretation (hedging)
     risk_tier: RiskTier
-    risk_label_key: str                     # i18n key, e.g. "explain.risk.yellow"
     citations: list[ExplainSource] = Field(default_factory=list)
 
 
@@ -91,7 +96,6 @@ class ClinicalCorrelation(BaseModel):
     items_referenced: list[str]             # terms matching ExplainItem.term
     insight: str                            # reasoning in hedging language
     risk_tier: RiskTier
-    risk_label_key: str
     citations: list[ExplainSource] = Field(default_factory=list)
 
 

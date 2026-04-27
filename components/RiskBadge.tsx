@@ -1,5 +1,8 @@
 "use client"
 
+import { useLang } from '../utils/LangContext';
+import { getUI } from '../utils/i18n-ui';
+
 export type RiskTier = 'green' | 'yellow' | 'red';
 
 const RISK_COLORS: Record<RiskTier, { bg: string; text: string; border: string; solid: string }> = {
@@ -14,13 +17,6 @@ const RISK_EMOJI: Record<RiskTier, string> = {
     red: '\u{1F534}',
 };
 
-// TODO Step 5: replace with getUI(lang).riskGreen / riskYellow / riskRed
-const RISK_LABELS_FALLBACK: Record<RiskTier, string> = {
-    green: 'General Information',
-    yellow: 'Needs Attention',
-    red: 'Consult Immediately',
-};
-
 export const RISK_BORDER_COLOR: Record<RiskTier, string> = {
     green: RISK_COLORS.green.solid,
     yellow: RISK_COLORS.yellow.solid,
@@ -29,23 +25,20 @@ export const RISK_BORDER_COLOR: Record<RiskTier, string> = {
 
 interface RiskBadgeProps {
     tier: RiskTier;
-    /** i18n key e.g. "explain.risk.yellow". Unused in Step 4 — see TODO Step 5. */
-    labelKey?: string;
 }
 
-export default function RiskBadge({ tier, labelKey }: RiskBadgeProps) {
-    // labelKey is reserved for Step 5 i18n wiring (will resolve
-    // via getUI(lang).riskGreen/Yellow/Red or similar). Currently
-    // unused; falls back to RISK_LABELS_FALLBACK[tier].
-    void labelKey;
+export default function RiskBadge({ tier }: RiskBadgeProps) {
+    const { lang } = useLang();
+    const ui = getUI(lang);
     const c = RISK_COLORS[tier];
+    const label = tier === 'green' ? ui.riskGreen : tier === 'yellow' ? ui.riskYellow : ui.riskRed;
     return (
         <span
             className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap"
             style={{ background: c.bg, color: c.text, border: `1px solid ${c.border}` }}
         >
             <span aria-hidden="true">{RISK_EMOJI[tier]}</span>
-            <span>{RISK_LABELS_FALLBACK[tier]}</span>
+            <span>{label}</span>
         </span>
     );
 }

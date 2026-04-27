@@ -15,7 +15,6 @@ export interface ExplainItem {
     value: string;
     explanation: string;
     risk_tier: RiskTier;
-    risk_label_key: string;
     citations: ExplainSource[];
 }
 
@@ -50,7 +49,7 @@ export default function ExplainItemCard({ item, children }: ExplainItemCardProps
                         </p>
                     )}
                 </div>
-                <RiskBadge tier={item.risk_tier} labelKey={item.risk_label_key} />
+                <RiskBadge tier={item.risk_tier} />
             </div>
             <p
                 className="text-sm leading-relaxed whitespace-pre-line"

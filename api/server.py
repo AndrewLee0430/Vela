@@ -1019,7 +1019,11 @@ async def explain_report(
     if phi_resp:
         return phi_resp
 
-    logger.info("[Explain] user=%s report_length=%d", user_id, len(body.report_text))
+    # Resolve user-preferred response language (mirrors Verify § 2.9 pattern)
+    response_language = _resolve_response_language(body.response_language, request)
+
+    logger.info("[Explain] user=%s report_length=%d response_language=%s",
+                user_id, len(body.report_text), response_language)
 
     # Credit 檢查
     if not TEST_MODE:
@@ -1040,6 +1044,7 @@ async def explain_report(
             async for event in run_explain_pipeline(
                 report_text=body.report_text,
                 openai_client=openai_async_client,
+                response_language=response_language,
             ):
                 # Serialize structured result for ChatHistory.answer text column
                 if isinstance(event, dict) and event.get("type") == "explain_result":

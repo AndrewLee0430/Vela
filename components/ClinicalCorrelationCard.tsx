@@ -8,7 +8,6 @@ export interface ClinicalCorrelation {
     items_referenced: string[];
     insight: string;
     risk_tier: RiskTier;
-    risk_label_key: string;
     citations: ExplainSource[];
 }
 
@@ -52,7 +51,7 @@ export default function ClinicalCorrelationCard({ correlation, children }: Clini
                         </span>
                     ))}
                 </div>
-                <RiskBadge tier={correlation.risk_tier} labelKey={correlation.risk_label_key} />
+                <RiskBadge tier={correlation.risk_tier} />
             </div>
             <p
                 className="text-sm leading-relaxed whitespace-pre-line"
