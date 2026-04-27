@@ -16,7 +16,7 @@ from pydantic import ValidationError
 
 from api.models.explain_schemas import (
     ExtractedEntities, ExplainSource, SourceType,
-    ExplainItem, ClinicalCorrelation,
+    ExplainItem, ClinicalCorrelation, RiskTier,
 )
 from api.services.entity_extractor import extract_entities
 from api.data_sources.loinc_client import loinc_client
@@ -187,6 +187,18 @@ async def retrieve_context(entities: ExtractedEntities) -> tuple[list[ExplainSou
 
 # ─── Stage 3: Generate explanation (streaming) ──────────────────────────────
 
+def _is_code_lookup_only(citations: list[ExplainSource]) -> bool:
+    """
+    Returns True if all citations are LOINC/RxNorm only, OR citations is empty.
+    Used by Step 3 LOINC scope guard: clinical-judgment claims (yellow/red)
+    cited only by code-lookup sources are treated as insufficient evidence.
+    """
+    if not citations:
+        return True
+    code_lookup_types = (SourceType.LOINC, SourceType.RXNORM)
+    return all(c.source_type in code_lookup_types for c in citations)
+
+
 async def generate_explanation(
     report_text: str,
     entities: ExtractedEntities,
@@ -238,6 +250,50 @@ Please explain this report in the same language as the input ({entities.input_la
     except ValidationError as e:
         logger.error("[Explain] LLM JSON failed schema validation: %s", e)
         raise ValueError("schema_validation_failed") from e
+
+    # Step 3: LOINC scope post-processing guard.
+    # Per PRD § 2.7 req 3: clinical-judgment content (yellow/red risk_tier)
+    # must include at least one non-LOINC, non-RxNorm citation. When the LLM
+    # violates this, downgrade to green rather than re-call (zero added cost).
+    # MedlinePlus is acceptable non-code-lookup evidence for this guard.
+    for item in items:
+        if item.risk_tier in (RiskTier.YELLOW, RiskTier.RED):
+            if _is_code_lookup_only(item.citations):
+                original_tier = item.risk_tier.value
+                logger.warning(
+                    "[Explain] Step 3 downgrade triggered: kind=item "
+                    "term=%s original_tier=%s citations_source_types=%s",
+                    item.term,
+                    original_tier,
+                    [c.source_type.value if hasattr(c.source_type, "value") else c.source_type for c in item.citations],
+                )
+                item.risk_tier = RiskTier.GREEN
+                item.risk_label_key = "explain.risk.green"
+                # TODO Step 5: i18n the downgrade fallback note
+                item.explanation += (
+                    "\n\n(Note: This item references code-lookup sources "
+                    "only; full clinical interpretation should be "
+                    "discussed with your physician.)"
+                )
+
+    for corr in correlations:
+        if corr.risk_tier in (RiskTier.YELLOW, RiskTier.RED):
+            if _is_code_lookup_only(corr.citations):
+                original_tier = corr.risk_tier.value
+                logger.warning(
+                    "[Explain] Step 3 downgrade triggered: kind=correlation "
+                    "items_referenced=%s original_tier=%s citations_source_types=%s",
+                    corr.items_referenced,
+                    original_tier,
+                    [c.source_type.value if hasattr(c.source_type, "value") else c.source_type for c in corr.citations],
+                )
+                corr.risk_tier = RiskTier.GREEN
+                corr.risk_label_key = "explain.risk.green"
+                # TODO Step 5: i18n the downgrade fallback note
+                corr.insight += (
+                    "\n\n(Note: Insufficient non-code-lookup evidence "
+                    "for this correlation; please consult your physician.)"
+                )
 
     # TODO Step 5: replace with i18n lookup based on request locale
     disclaimer = (
