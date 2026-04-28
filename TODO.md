@@ -300,6 +300,41 @@
       **Discovered:** 2026-04-26 during § 2.7 Step 5C-1
       implementation flag from Claude Code.
 
+      **Prod confirmed (2026-04-28 during Phase 0 deploy verify):**
+
+      Reproduction with input "eGFR 45 mL/min (ref >60), HbA1c
+      7.8%, Metformin 1000mg BID" + UI=zh-TW:
+      - Disclaimer rendered in zh-TW (繁中) ✓
+        — i18n key lookup works
+      - Item card body content rendered in English ✗
+        — LLM follows input language, not response_language
+
+      Backend log evidence (fly logs 2026-04-28T03:28:13):
+        [Explain] entities.input_language = en
+
+      Confirms hypothesis from 753b27d: backend detects input
+      language at Stage 1 entity extraction, then Stage 3 LLM
+      generates body in detected language regardless of
+      response_language parameter intent.
+
+      Earlier observation 2026-04-26 with input "血紅素 9.2 g/dL,
+      白血球 14000,血壓 145/95,心跳 102" + UI=zh-TW:
+      - LLM body rendered in 簡體中文 (Simplified Chinese),
+        not 繁中 (Traditional Chinese as expected from UI lang)
+
+      **Refined fix scope (replaces vague v0 scope):**
+      - explain_system.md prompt v3 → v4: explicit instruction
+        "Body content (descriptions, recommendations, clinical
+        correlations) MUST be in {response_language}, regardless
+        of detected input language. Input language detection is
+        for entity normalization only, not output language."
+      - Verify with: zh-TW input → en UI → expect en body,
+        en input → zh-TW UI → expect zh-TW body, zh input →
+        zh-TW UI → expect zh-TW body (not zh-CN)
+      - Add to § 2.7 Step 8 acceptance protocol: 4-locale ×
+        2-input-language matrix (en/zh-TW/ja/ko UI ×
+        en-input/zh-input)
+
 ## Phase 1A polish — telemetry & SSE contract follow-ups
 
 These items emerged during § 2.7 Step 6 + Phase 1A completion-event
@@ -428,6 +463,86 @@ follow-up tightenings discovered during implementation.
       schema decisions. had_correction was the only proposed Verify
       telemetry field that couldn't be implemented cleanly without
       backend support.
+
+- [ ] Verify prompt example value "嚴重" causes severity_label /
+      risk_level_label leak in non-zh locales
+      **Priority:** Medium — pre-existing bug since 2026-04-20
+      (commit ee055d4 introduced verify_system.md v2.1); ~40%
+      reproduction rate (2/5 manual tests on 2026-04-28).
+
+      **Observation (2026-04-28 during Phase 0 deploy smoke test):**
+
+      Verify with UI=en + drug pair input occasionally returns
+      severity_label / risk_level_label as "嚴重" (Traditional
+      Chinese) instead of "Severe" / "Critical". Drug pair example:
+      atorvastatin + clarithromycin. Frontend fallback in
+      pages/verify.tsx (getSeverityLabel/getRiskLevelLabel) is
+      bypassed because backend DOES return a value (just the wrong
+      language).
+
+      **Root cause (verified by Claude Code grep):**
+      api/prompts/verify_system.md L66 + L73 hardcode "嚴重" as
+      severity_label / risk_level_label values inside the JSON
+      schema example block. gpt-4.1-mini occasionally mimics
+      example values verbatim, ignoring the "Respond in
+      {response_language}" instruction at L25.
+
+      **Why § 2.9 prod verification missed this 2026-04-20:**
+      § 2.9 testing likely covered zh-TW / zh-CN paths (where
+      "嚴重" output is correct). en / ja / ko paths either
+      weren't tested or rolled lucky on LLM sampling that day.
+
+      **Fix scope:**
+      - Replace hardcoded "嚴重" in schema examples with
+        placeholder like "<localized severity matching
+        response_language>" or split into per-locale examples
+      - Bump verify_system.md v2.1 → v2.2
+      - Add to § 2.7 Step 8 acceptance protocol or
+        Phase 0 retrospective: explicit en + ja + ko smoke
+        tests for severity label localization
+
+      **Defer reason:** Pre-existing in production since 2026-04-20.
+      Not introduced by today's 22-commit deploy. Frontend label
+      fallback (getSeverityLabel) handles missing-from-backend case
+      but not wrong-language-from-backend case. Acceptable for soft
+      launch since label is informational, not safety-critical.
+
+- [ ] deploy.ps1 "All machines running" false negative when Fly
+      machines are stopped
+      **Priority:** Low — cosmetic, deploy itself functions correctly.
+
+      **Observation (2026-04-28 deploy x2 same day):**
+
+      When `fly status` output contains a stopped machine row,
+      deploy.ps1 Step 3 prints "All machines running." (green) even
+      though the table clearly shows `STATE: stopped` for one machine.
+      Both deploys today (8a943c3 + earlier morning) had the same
+      pattern: machine 2879720c66d478 stopped, machine 683d447c2e5428
+      started, deploy.ps1 missed the stopped one.
+
+      **Likely cause:**
+      PowerShell encoding mismatch on the box-drawing characters (│)
+      in fly CLI table output (CP950/CP1252 vs UTF-8). The regex at
+      deploy.ps1 L20-22 doesn't match the encoded character, so the
+      stopped row is silently skipped in the script's check loop.
+
+      **Why benign:**
+      Fly's `auto_start_machines = true` config means stopped
+      machines wake on first traffic. Both machines run the same
+      version (157 today), so wake-on-traffic still serves correct
+      code. The script's "All machines running" claim is just a
+      false negative — not a service availability issue.
+
+      **Fix scope (one of):**
+      - Update deploy.ps1 regex to handle Unicode box-drawing chars
+      - OR switch to `fly status --json` for structured parsing
+        (preferred — survives any future CLI output format changes)
+      - Add explicit `fly machine start <id>` step for any machine
+        in stopped state (defensive, not strictly necessary)
+
+      **Defer reason:** Deploy works correctly despite the
+      misleading message. Cosmetic only. Good Phase 0 retrospective
+      candidate when reviewing deploy tooling.
 
 ## § 2.7 Step 8 acceptance protocol
 
