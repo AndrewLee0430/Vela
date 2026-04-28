@@ -488,3 +488,77 @@ This protocol exists because Step 8 is the natural integration
 checkpoint where automated outputs (LLM judgments) meet design
 intent (PRD § 2.7 quality bars). Skipping any item here means
 shipping § 2.7 with unverified assumptions.
+
+## § 4.5 / § 4.6 Phase 0 末段 development queue
+
+> **Note on file ordering:** TODO.md sections are appended in
+> chronological order of when entries were logged, not execution
+> order. § 4.5 / § 4.6 execute AFTER § 2.7 Step 8 acceptance
+> protocol (above in this file) but BEFORE Phase 0 Retrospective.
+> See PRD.md § 4.5 / § 4.6 + Phase 0 v1.3 NOTE for execution
+> sequence.
+
+Inserted into Phase 0 execution order per PRD v1.3 (commit 06a9605).
+Execution sequence:
+
+§ 2.7 Step 7 (LLM judge) → § 2.7 Step 8 (20-case acceptance) →
+§ 4.5 Share Answer → § 4.6 SEO Explore Pages → Phase 0 Retrospective
+
+### § 4.5 Share Answer 公開連結
+
+- [ ] Implement § 4.5 per PRD v1.3 spec
+      **Reference:** PRD.md § 4.5 (full functional spec — 9 functional
+      requirements + SharedQuery schema + privacy gate + anti-abuse +
+      6 PostHog events + i18n 16 languages + legal/ToS impacts +
+      acceptance criteria)
+
+      **Pre-implementation gates:**
+      - § 2.7 Step 8 acceptance protocol passed
+      - Backend Postgres migration capability confirmed (SharedQuery
+        table creation)
+      - Public Query Page renderer scope confirmed (shared with § 4.6)
+      - Sensitive-pattern detection rules (i18n / locale-aware)
+        prepared for 繁中 / 英 / 日 (other locales fallback to stronger
+        warning)
+
+      **Implementation phases (detailed at execution time):**
+      Phase A: Public Query Page renderer (shared infra — SSR + OG +
+              JSON-LD pipeline reused by § 4.6)
+      Phase B: Share Modal + privacy gate + sensitive detection
+      Phase C: Settings 「我的分享」tab (list + revoke only; analytics
+              like view_count deferred per PRD § 4.5 需求 5)
+      Phase D: Legal ToS / Privacy Policy revision (parallel — does
+              not block engineering ship)
+      Phase E: i18n 16 languages + integration test (LinkedIn Post
+              Inspector / Twitter Card Validator / Google Rich
+              Results Test per PRD § 4.5 驗收標準)
+
+### § 4.6 SEO Explore Pages
+
+- [ ] Implement § 4.6 per PRD v1.3 spec
+      **Reference:** PRD.md § 4.6 (full functional spec — 8 functional
+      requirements + ExplorePage schema + content workflow + 3
+      PostHog events + sitemap/hreflang + acceptance criteria)
+
+      **Pre-implementation gates:**
+      - § 4.5 Phase A (Public Query Page renderer) shipped — § 4.6
+        reuses it
+      - Content team has provided initial topic list (5-10 published
+        entries before launch — empty-shell pages get GSC penalty)
+      - GSC + Bing Webmaster Tools access configured per 維運計畫
+        v3 § 9.1
+
+      **Implementation phases:**
+      Phase A: ExplorePage schema + slug routing (`/explore/{slug}`
+              + hreflang group support)
+      Phase B: Sitemap auto-generation (sitemap-explore.xml) +
+              hreflang logic (group siblings + missing-locale
+              skip rule per PRD § 4.6 需求 6)
+      Phase C: Content import CLI / Notion sync tool
+      Phase D: Related queries + breadcrumb UI (PRD § 4.6 需求 4)
+      Phase E: Integration test (Google Rich Results Test /
+              robots.txt / hreflang validator)
+
+      **Note:** PRD § 4.4 處方解析 MVP 的 share / explore 機制
+      v1.3 不啟用 (per § 4.5 + § 4.6 對既有 PRD 章節的影響 § 4.4
+      crossref). Share button 在處方解析 answer block 不顯示。
