@@ -1,6 +1,15 @@
-**Vela Master PRD v1.2**
+**Vela Master PRD v1.3**
 
-*Ask in your language. Verified by official sources. Answered in yours. · Updated 2026-04-17*
+*Ask in your language. Verified by official sources. Answered in yours. · Updated 2026-04-28*
+
+**v1.3 重點變更:v1.2 所有章節 + § 4.5 公開分享連結 + § 4.6 SEO Explore Pages(spec 編號維持 Phase 1B 4.x 與其他 4.1-4.4 cohere,執行順序覆寫至 Phase 0 末段,§ 2.7 Step 8 acceptance 通過後、Phase 0 Retrospective 之前)**
+
+本版本為 v1.2 → v1.3 增補版,新增 soft launch(= Phase 0 ship gate)所需的 word-of-mouth 與 organic discovery 兩項基礎機制,並對應調整 § 4.3 / § 3.4 / § 6.2 章節(詳見 § 10.1):
+
+- § 4.5 公開分享連結(使用者觸發,把單一查詢結果產生匿名公開 URL,對齊 GTM_V1 § 5.4 L3 word-of-mouth)
+- § 4.6 SEO Explore Pages(團隊預先建立的長尾 SEO 頁面,共用 4.5 基礎設施,對齊 GTM_V1 § 5.4 L3 organic discovery)
+
+兩功能共用 Public Query Page renderer(SSR + OG + JSON-LD pipeline)。決策依據與完整變更清單見 § 10.1。
 
 **v1.2 重點變更:v1.1 所有章節 + Explain 臨床推理強化(2.7) + 在地知識 YAML 實作規範(5.1.1)**
 
@@ -105,6 +114,8 @@ Phase 0 的任務都是看不見的技術基礎,但決定後續所有功能的�
 **v1.2 重大變更:**Phase 0 從 v1.1 的 2-2.5 週延長為 2.5-3 週(13-15 個工作天)。原因:新增 2.7 Explain 臨床推理強化(1-2 天)。2.7 排在 2.1 Model Provider 之前執行,原因見上節最後一段。
 
 **post-v1.2 調整(2026-04-20):**再新增 2.8 Anonymous Trial Flow(1.5-2d)與 2.9 Verify 輸出語言對齊 user locale(1d)兩個 discovered gaps,Phase 0 總工時調整為 3-3.7 週(加 2.8 + 2.9 兩個 post-v1.2 discovered gaps 合計 2.5-3 天)。
+
+**v1.3 變更(2026-04-28):**§ 4.5 公開分享連結 + § 4.6 SEO Explore Pages 雖然 spec 編號為 4.x(與 Phase 1B 其他 4.1-4.4 features cohere),執行順序插入 Phase 0 末段,於 § 2.7 Step 8 acceptance 通過後、Phase 0 Retrospective 之前。理由:soft launch(= Phase 0 ship gate)需要 share + SEO 機制 day-1 在位;GTM_V1 § 5.4 L3 mechanics 已假設兩者存在,缺一會使 soft launch L3 traction(paid acquisition cost / organic discovery)訊號失真。執行順序:§ 2.7 Step 7 → § 2.7 Step 8 → § 4.5 → § 4.6 → Phase 0 Retrospective。Phase 0 Retrospective 順延對應(時程影響不在本 PRD 估算)。
 
 **Phase 0 執行順序建議**
 
@@ -986,6 +997,8 @@ Table: user_profile(新表,不混在 user_usage 裡):
 
 Phase 1A 讓使用者感覺「這個產品為我設計」,Phase 1B 真正做出「只有 Vela 有的功能」。核心是藥師的處方解析 MVP。
 
+*註:§ 4.5 + § 4.6 為 v1.3 新增 spec。雖編號 Phase 1B 4.x 維持章節 cohere,執行順序覆寫至 Phase 0 末段。詳見二章 v1.3 變更 NOTE。*
+
 **4.1 FeedbackBar 👎 原因 Chip(v1.1 補充實作細節)**
 
 **v1.1 補充:**FEATURE_AUDIT 確認 backend UserFeedback 表已有 feedback_text 欄位(目前永遠是 null)。實作時重用該欄位存 reason chip value 或「其他」補充文字,不用新 migration。
@@ -1157,6 +1170,278 @@ Phase 1A 讓使用者感覺「這個產品為我設計」,Phase 1B 真正做出�
 | 試用後 7 天內再次使用比例 | > 40% | 低於此代表實用度不夠 |
 | pharmacist Free → Pro 轉換率 | ≥ 其他角色 2 倍 | 達成即 PMF 訊號 |
 | 處方分析後 thumbs_up 率 | > 70% | 低於此代表輸出品質需提升 |
+
+**4.5 Share Answer 公開連結(v1.3 新增)**
+
+讓使用者把自己得到的查詢結果產生一組公開可訪問 URL,分享給同行或社群。對齊 GTM_V1 § 5.4 L3 word-of-mouth 機制,把「使用者得到答案」這個原本封閉於登入後的事件轉成可被 forward 的公開資產。
+
+**v1.3 新增背景:**Vela 目前無任何「把答案帶離 Vela」的機制。L3 word-of-mouth 假設「種子使用者在 LINE / FB / m3.com 推薦」,但產品端缺乏 low-friction 推薦工具。藥師目前只能用文字打答案、截圖、或貼 PubMed 連結,三者均高摩擦,word-of-mouth 不會自然發生。本功能與 4.6 共用基礎設施(Public Query Page renderer),屬於同一 ChangeSet。
+
+**功能需求**
+
+**需求 1:Share Answer 觸發**
+
+- 答案產生後,在 answer block 下方加「Share」按鈕(圖示 + 文字,i18n key)
+- 點擊後彈出 Share Modal,需明確同意才生成 share link(隱私 gate)
+- Modal 內容:
+  - 標題:「公開分享這個答案」(i18n)
+  - 警語:「分享後,任何人不需登入即可看到你的問題與答案。請確認問題不含病患個資或可識別資訊。」
+  - 預覽:顯示即將被分享的 query 全文(讓使用者有最後一次檢查機會)
+  - 確認鈕:「產生公開連結」/ 取消鈕
+- 使用者按「產生公開連結」後,系統:
+  - 生成 share_id(短碼,9-12 字元,URL-safe)
+  - 寫入 SharedQuery 資料表(schema 見需求 4)
+  - 顯示產生後的 modal:複製連結按鈕、QR code、社群分享 icons(LinkedIn / X / Facebook / LINE / WhatsApp,locale 自動排序)
+- 使用者已分享過的 query,再按 Share 不重新生成,重用既有 share_id
+
+**需求 2:URL 結構與公開頁面**
+
+- URL 格式:`vela.an-tho.com/q/{share_id}`(短、易輸入、SEO-neutral)
+- 任何人(含未登入、含搜尋引擎爬蟲)直接訪問不被擋
+- 頁面結構:
+  - Header:Vela logo + 主視覺,點擊回首頁
+  - Body:原始 query 全文 + 答案 + 完整 citation list
+  - 答案下方 CTA banner:「想問你自己的版本?」按鈕導向 `/?from_share={share_id}`(帶 UTM 等同 anonymous trial flow)
+  - Footer:免責聲明 + Privacy 連結 + ToS 連結
+- 不顯示原始使用者資訊(連 anonymous_id 都不顯示,完全與發起者解耦)
+- 不顯示 user_context(role / workplace / locale 等偏好絕不洩漏)
+
+**需求 3:SEO 與社群 preview**
+
+- SSR 渲染(Next.js getServerSideProps 或 App Router server component),非 client-only
+- 動態 OG meta tags:
+  - `og:title`:取 query 前 80 字 + 「· Vela」
+  - `og:description`:取答案首段前 160 字
+  - `og:image`:動態生成卡片圖(query + Vela logo,@vercel/og 或同等套件)
+  - `og:url`:canonical URL
+  - `og:type`:article
+- Twitter Card:`summary_large_image`
+- JSON-LD schema:`QAPage`(Google rich result)
+- 加入 sitemap.xml(自動,non-indexed pages 不放;見需求 5 隱私篩選)
+
+**需求 4:資料模型(SharedQuery 表)**
+
+新增 Postgres 表:
+
+```
+table: SharedQuery
+  share_id        text PK             -- short URL-safe code, 9-12 chars
+  query_text      text NOT NULL       -- 原始 query 全文
+  answer_text     text NOT NULL       -- 答案 markdown
+  citations       jsonb NOT NULL      -- citation 陣列(同 PRD 既有 schema)
+  created_by      text                -- anonymous_id 或 user_id hash(僅供反 abuse 統計,公開頁面不顯示)
+  created_at      timestamptz NOT NULL DEFAULT now()
+  is_public       bool NOT NULL DEFAULT true  -- 預設公開,使用者可日後撤回
+  view_count      int NOT NULL DEFAULT 0      -- 累計訪問次數(僅統計,不顯示在頁面)
+  last_viewed_at  timestamptz
+  flagged         bool NOT NULL DEFAULT false -- 內容違規 flag,true 時頁面顯示「此分享已下架」
+```
+
+索引:`share_id`(PK)、`created_by`(per-user rate limit)、`flagged`(後台審核 query)。
+
+**需求 5:隱私 gate 與內容篩選**
+
+- 使用者在 Share Modal **必須勾選**「我已確認此問題不含病患個資或可識別資訊」才能產生連結
+- 若 query 文字符合「敏感模式偵測」(預先定義 regex / keyword:身分證字號、健保號、姓名+年齡組合等),Share 按鈕 disabled,顯示提示:「此問題可能含個資,無法公開分享」
+  - 偵測規則寫成 i18n / locale-aware 模組(初版只覆蓋繁中、英文、日文,其餘 locale fallback 為「不偵測,但顯示更強烈警告」)
+- Share 後使用者可在 Settings 新增頁籤「我的分享」(列表 + 撤回按鈕),撤回後 `is_public = false`,公開頁顯示「此分享已被撤回」
+- Settings 頁籤 v1.3 範圍只做「列表 + 撤回」,「我的分享」分析(view_count 等)推遲至後續版本
+
+**需求 6:防 abuse**
+
+- Per-user rate limit:已登入使用者每日最多生成 50 個 share_id;匿名使用者每日 10 個(by anonymous_id + IP)
+- Per-IP page view rate limit:同一 IP 每分鐘最多訪問 60 個 share page,超過回 429
+- 若 query 含被偵測為攻擊性內容(LLM Guard 已有的 unsafe content classifier,重用),Share 按鈕 disabled
+- 後台 admin 可手動 `flagged = true`,公開頁顯示「此分享因違反使用條款已下架」
+
+**需求 7:PostHog 事件**
+
+- `share_modal_opened`: { query_id, source: 'answer_block' | 'history' }
+- `share_link_generated`: { query_id, share_id, locale }
+- `share_link_copied`: { share_id, method: 'copy_button' | 'qr' | 'social_{platform}' }
+- `share_link_visited`: { share_id, referrer_domain, is_first_view: bool }
+- `share_to_query_clicked`: { share_id, time_on_page_sec }(訪問者按 CTA 進首頁)
+- `share_revoked`: { share_id, days_since_created }
+
+**需求 8:i18n**
+
+- 16 語言全覆蓋
+- 新增 i18n keys:
+  - `share.button`:「分享」
+  - `share.modal.title`:「公開分享這個答案」
+  - `share.modal.warning`:警語全文
+  - `share.modal.confirm`:「產生公開連結」
+  - `share.modal.cancel`:「取消」
+  - `share.modal.consent_checkbox`:「我已確認此問題不含病患個資或可識別資訊」
+  - `share.modal.sensitive_blocked`:「此問題可能含個資,無法公開分享」
+  - `share.public.cta_title`:「想問你自己的版本?」
+  - `share.public.cta_button`:「在 Vela 試試」
+  - `share.public.disclaimer`:免責聲明
+  - `share.public.revoked`:「此分享已被撤回」
+  - `share.public.flagged`:「此分享因違反使用條款已下架」
+  - `share.settings.tab_title`:「我的分享」
+  - `share.settings.revoke_button`:「撤回」
+
+**需求 9:法律與 ToS 對應**
+
+- ToS 新增條款:「分享公開連結即代表使用者授權 Vela 在公開頁面顯示該 query 與答案。Vela 保留下架不當內容權利。」
+- Privacy Policy 新增段落:「公開分享的 query 不視為個人資訊,但仍受『不含個資』規範約束。Vela 不主動審核所有公開內容。」
+- 此兩處文字需法律 review,review 完成才能上線。建議 review 與工程平行,不阻塞工程進度。
+
+**驗收標準**
+
+- 答案下方有「分享」按鈕(16 語言)
+- 點擊 Share 出現 Modal,需勾選同意才能產生 link
+- 含敏感資訊的 query 觸發 Share disabled + 提示
+- 產生的 URL `vela.an-tho.com/q/{share_id}` 任何人不需登入可訪問
+- 公開頁面 SSR 渲染,view source 可見完整 OG meta tags
+- LinkedIn Post Inspector 跑公開頁 URL,顯示正確 title / description / image
+- Twitter Card Validator 通過 `summary_large_image`
+- Google Rich Results Test 通過 QAPage schema
+- 撤回後公開頁顯示「已撤回」,sitemap 自動移除
+- Per-user rate limit 觸發 429
+- 6 個 PostHog 事件全部正確發送
+- Settings 「我的分享」頁籤可列表 + 撤回
+
+---
+
+**4.6 SEO Explore Pages(v1.3 新增)**
+
+主動建立一組公開、SEO 優化的查詢頁面,佔據長尾搜尋,把 Google 流量導入 Vela。對齊 GTM_V1 § 5.4 L3「SEO 自然流量」機制,並利用 4.5 同一基礎設施。
+
+**v1.3 新增背景:**GTM_V1 § 5.4 L3 SEO 流量原本只依賴 Landing Page + Blog 長文(每月 1-2 篇),頁面數量級不足以對抗 UpToDate / Drugs.com 等成熟競品。但醫療長尾詞(多語言、在地法規、特定族群用藥調整)是這些競品的盲區,亦是 Vela TA 的真實搜尋情境。本功能利用 4.5 已建立的 Public Query Page renderer,以極低增量工程成本擴增公開頁面數至 50-100。
+
+**功能需求**
+
+**需求 1:URL 結構**
+
+- URL 格式:`vela.an-tho.com/explore/{slug}`(語意 URL,人類可讀,SEO 友善)
+- slug 規範:小寫、連字號分隔、英數+中文 hyphenated 拼音、長度 ≤ 80 字元
+- 範例:
+  - `/explore/metformin-renal-dose-adjustment`
+  - `/explore/ssri-elderly-bleeding-risk-tw`
+  - `/explore/benzodiazepine-indonesia-bpom-equivalents`
+  - `/explore/metformin-腎功能調整-台灣健保`(中文 slug 走 punycode)
+- 支援 hreflang(對應已建立的 i18n 16 語言基礎設施),同一主題多語言版本互相 alternate
+
+**需求 2:資料模型(ExplorePage 表)**
+
+新增 Postgres 表(獨立於 SharedQuery,因內容生產與授權模型不同):
+
+```
+table: ExplorePage
+  slug              text PK             -- URL-safe slug
+  locale            text NOT NULL       -- e.g. 'zh-TW', 'en', 'ja'
+  query_text        text NOT NULL       -- 預先設計的查詢文字
+  answer_text       text NOT NULL       -- Vela 生成 + 編輯校對的答案
+  citations         jsonb NOT NULL      -- citation 陣列
+  meta_title        text NOT NULL       -- SEO title(可手動覆寫,預設 query_text)
+  meta_description  text NOT NULL       -- SEO description(可手動覆寫)
+  category          text                -- 分類,e.g. 'drug-interaction', 'dose-adjustment', 'regulation'
+  hreflang_group    text                -- 同主題不同語言版本的 group key
+  status            text NOT NULL       -- 'draft' | 'published' | 'archived'
+  published_at      timestamptz
+  last_updated_at   timestamptz NOT NULL DEFAULT now()
+  view_count        int NOT NULL DEFAULT 0
+```
+
+索引:`slug + locale`(複合 PK)、`status`、`hreflang_group`、`category`。
+
+**需求 3:內容生產工作流**
+
+- 內容由產品 / 內容團隊預先撰寫,**不由 LLM 自動生成上線**(品質控管)
+- 工作流(初版,可後續優化):
+  - 內容團隊維護一份 Notion 或 Markdown repo
+  - 每筆 ExplorePage 包含:locale、query、answer、citations、meta、category、hreflang_group
+  - 透過後台或 CLI 工具批次匯入至 ExplorePage 表(`status: draft`)
+  - 內部 review 後改 `status: published`,自動納入 sitemap
+- 初版不做後台 CMS UI,直接 SQL / CLI / Notion sync(降低工程成本)
+- 內容更新節奏:每週 2-3 筆,持續 6-12 個月,目標累計 50-100 筆
+
+**需求 4:頁面渲染**
+
+- 重用 4.5 共用基礎設施(Public Query Page renderer)
+- 頁面結構與 4.5 公開頁一致,但加入:
+  - 頁面頂部 breadcrumb:Vela > Explore > {category} > {query_text}
+  - 頁面底部 related queries(同 hreflang_group 其他語言 + 同 category 5-8 筆)
+  - 答案下方 CTA banner 改為:「想問你自己的版本?」按鈕導向 `/?from_explore={slug}`(UTM 區分)
+- SSR + OG meta + JSON-LD `QAPage` 全部沿用 4.5 規格
+- 不顯示「Generated by user」相關文字(因內容是團隊產出,非使用者分享)
+
+**需求 5:Sitemap 與索引**
+
+- 所有 `status: published` 的 ExplorePage 自動加入 `vela.an-tho.com/sitemap-explore.xml`
+- 主 sitemap.xml index 引用 sitemap-explore.xml
+- robots.txt 確認 `/explore/*` 未被 disallow
+- 提交至 Google Search Console + Bing Webmaster Tools(維運計畫 v3 § 9.1 已寫每週 GSC 檢查,加入 explore page indexing 監控)
+- hreflang 標籤對應 hreflang_group 內所有 published 兄弟頁面
+
+**需求 6:多語言 SEO 策略**
+
+- Phase 1B 內容生產初期,每筆主題只做主要 TA 語言版本(繁中、英文、日文),不全 16 語言
+- 完整翻譯延遲到 Phase 1C 或 Phase 2,先驗證主題選對(看 GSC impressions / clicks)再翻
+- hreflang 缺失語言版本的處理:hreflang group 內缺哪個就不寫 hreflang 標籤(避免指向不存在的 URL)
+
+**需求 7:PostHog 事件**
+
+- `explore_page_visited`: { slug, locale, referrer_domain, is_first_view }
+- `explore_to_query_clicked`: { slug, time_on_page_sec, scroll_depth }(訪問者按 CTA 進首頁)
+- `explore_related_clicked`: { from_slug, to_slug, link_type: 'hreflang' | 'category' }
+
+**需求 8:內容初版主題清單(Week 5 前由內容團隊提供)**
+
+工程上線時資料表為空。初版內容由內容團隊獨立準備,範例方向(僅參考,實際清單由內容 / SEO 分析決定):
+
+- 藥物 + 腎功能調整類(metformin、digoxin、NSAIDs 等高搜尋量)
+- 藥物 + 老年人風險類(SSRI bleeding、benzodiazepine fall risk 等)
+- 在地法規 + 等同藥物類(印尼 BPOM、越南 DAV、菲律賓 FDA 對應藥)
+- 跨語言診斷術語橋接類(部分對應 Phase 1C 跨語言橋接面板,可互相導流)
+
+**驗收標準**
+
+- ExplorePage 表建立,可透過 CLI / SQL 寫入內容
+- `/explore/{slug}` 頁面 SSR 渲染,使用 4.5 同一 renderer
+- sitemap-explore.xml 自動產生,僅含 published 頁面
+- robots.txt 允許 /explore/*
+- hreflang 標籤對應 group 內 published 兄弟頁面
+- Google Rich Results Test 通過 QAPage schema
+- 內容團隊可在不動工程的情況下新增 / 更新 / 下架頁面
+- 3 個 PostHog 事件正確發送
+- 上線後 4 週內 GSC 開始出現 impressions(視內容主題而定)
+
+---
+
+**4.5 + 4.6 共用設計檢核**
+
+- 兩功能共用 Public Query Page renderer:同一 React 元件、同一 SSR pipeline、同一 OG 生成邏輯
+- 兩功能共用 SSR layer:Next.js dynamic route 共用 server component
+- 兩功能共用 PostHog event prefix:`share_*` vs `explore_*` 並列,避免命名衝突
+- 兩功能 URL prefix 區分:`/q/*`(隨機 ID,使用者觸發)vs `/explore/*`(語意 slug,團隊產出),避免 SEO 混淆
+- 兩功能 robots.txt / sitemap 處理:`/q/*` 加入 sitemap 但 noindex(僅供分享用,不主動推 Google 索引,避免 query duplicate);`/explore/*` 加入 sitemap 並 index(主動推索引)
+
+**4.5 + 4.6 對既有 PRD 章節的影響**
+
+- 0.4 開發原則:本兩功能引入「公開資料路徑」,但仍遵守 user_context 隔離(共用頁面絕不讀 user_context)。Stateless 原則維持。
+- 3.1 User Context 資料模型:不影響(SharedQuery / ExplorePage 與 user_context 解耦)
+- 3.4 隱私聲明 UI:Privacy Policy 增段落,描述公開分享機制
+- 4.1 FeedbackBar:公開頁面不顯示 FeedbackBar(訪客非原 query 提交者,給回饋無語意)
+- 4.2 Citation ⓘ:公開頁面 citation 沿用 ⓘ 機制(訪客也應能看 source 說明)
+- 4.3 Settings:新增「我的分享」頁籤
+- 4.4 處方解析 MVP:處方解析答案的 share / explore 機制 v1.3 不啟用(處方涉及高度個資風險,需獨立評估後再開放)。Share 按鈕在處方解析 answer block 不顯示。
+- 6.2 PostHog 事件命名:加入 `share_*` 與 `explore_*` 兩組命名空間
+- 6.4 儲存策略:SharedQuery 與 ExplorePage 為新增 Postgres 表,不影響 user_context localStorage 策略
+
+**v1.2 → v1.3 預定變更摘要**
+
+| **變更類型** | **內容** |
+| --- | --- |
+| 新增 4.5 Share Answer 公開連結(Phase 1B 編號,Phase 0 末段執行,P1) | 使用者觸發的公開分享機制 |
+| 新增 4.6 SEO Explore Pages(Phase 1B 編號,Phase 0 末段執行,P1) | 團隊預先建立的長尾 SEO 頁面 |
+| 共用基礎設施:Public Query Page renderer | 4.5 / 4.6 共用 SSR + OG + JSON-LD pipeline |
+| 調整 4.3 Settings | 新增「我的分享」頁籤 |
+| 調整 3.4 隱私聲明 | Privacy Policy 增公開分享段落 |
+| 調整 6.2 PostHog 命名 | 新增 share_* 與 explore_* prefix |
+| 調整二章 Phase 0 順序 | § 4.5 + § 4.6 插入 § 2.7 Step 8 後、Retrospective 前 |
 
 **五、Phase 1C — 護城河啟動**
 
@@ -1757,7 +2042,33 @@ pharmacist Free → Pro 轉換率 ≥ 其他角色 2 倍是 PMF 達成的主要�
 
 **十、更新記錄**
 
-**10.1 v1.1 → v1.2 變更(2026-04-17)**
+**10.1 v1.2 → v1.3 變更(2026-04-28)**
+
+| **變更類型** | **內容** |
+| --- | --- |
+| 新增:4.5 Share Answer 公開連結 | 使用者觸發,生成匿名公開 URL(`vela.an-tho.com/q/{share_id}`)分享單一查詢結果。功能需求 1-9(Share trigger、URL 結構、SEO/社群 preview、SharedQuery schema、隱私 gate、防 abuse、6 個 PostHog 事件、16 語言 i18n、ToS/Privacy 對應)+ 驗收標準。Phase 1B 編號(維持 4.x cohere),執行順序覆寫至 Phase 0 末段。對齊 GTM_V1 § 5.4 L3 word-of-mouth 機制。 |
+| 新增:4.6 SEO Explore Pages | 團隊預先建立的長尾 SEO 頁面(`vela.an-tho.com/explore/{slug}`),共用 4.5 Public Query Page renderer。功能需求 1-8(URL 結構、ExplorePage schema、內容生產工作流、頁面渲染、Sitemap 與索引、多語言 SEO 策略、3 個 PostHog 事件、內容初版主題清單)+ 驗收標準。Phase 1B 編號,Phase 0 末段執行。對齊 GTM_V1 § 5.4 L3 organic discovery 機制。 |
+| 新增:4.5 + 4.6 共用設計檢核 | 兩功能共用 Public Query Page renderer / SSR layer / PostHog prefix(`share_*` vs `explore_*`),URL prefix 區分(`/q/*` 隨機 ID + noindex vs `/explore/*` 語意 slug + index)。 |
+| 新增:4.5 + 4.6 對既有章節影響清單 | 列出對 0.4 / 3.1 / 3.4 / 4.1 / 4.2 / 4.3 / 4.4 / 6.2 / 6.4 的具體變動或非影響(處方解析 share v1.3 不啟用,因高度個資風險)。 |
+| 調整:二章 Phase 0 執行順序 | 新增 v1.3 變更 NOTE 說明 § 4.5 + § 4.6 雖編號 4.x 但執行順序插入 Phase 0 末段(§ 2.7 Step 8 acceptance 後、Phase 0 Retrospective 前)。執行順序:§ 2.7 Step 7 → § 2.7 Step 8 → § 4.5 → § 4.6 → Retrospective。Phase 0 Retrospective 順延對應(時程估算不在本 PRD)。 |
+| 調整:四章 Phase 1B header note | 加 1 行 italic 註明 § 4.5 + § 4.6 為 v1.3 新增 spec、執行順序覆寫至 Phase 0 末段、詳見二章 NOTE。 |
+| 調整:leading block | v1.3 重點變更段、v1.2 → v1.3 增補 lead 描述、決策依據指向 § 10.1。 |
+| 調整:footer 版本與日期 | v1.2 → v1.3,2026-04-17 → 2026-04-28。 |
+| 調整:十章編號 | 既有 10.1(v1.1→v1.2)→ 10.2、10.1.1 → 10.2.1、10.2(v1.0→v1.1)→ 10.3、10.3(v1.0)→ 10.4。新 10.1 為 v1.2 → v1.3 變更。 |
+
+**v1.3 決策依據(solo founder PM call,2026-04-28)**
+
+soft launch(= Phase 0 ship gate)需要 word-of-mouth 工具(§ 4.5)與 SEO 內容基礎設施(§ 4.6)day-1 在位。GTM_V1 § 5.4 L3 mechanics 已假設兩者存在;若缺,soft launch L3 traction(paid acquisition cost / organic discovery)診斷訊號失真。
+
+接受的取捨:Phase 0 ship gate 與 Phase 1A 起始點順延(時程不在本 PRD 估算)。
+
+否決的替代方案:
+
+- Phase 1B(原 v1.2 章節編號順序)— 否決,理由:soft launch 期間 L3 機制缺失將汙染「什麼有效 / 什麼沒效」的判讀
+- Phase 1A 末段(post soft launch)— 否決,理由同上
+- 只做 4.5 延後 4.6 — 否決,理由:4.6 重用 4.5 共用基礎設施,邊際工程成本低;延後 4.6 等於放棄內容團隊 6-12 個月累積期的起跑點
+
+**10.2 v1.1 → v1.2 變更(2026-04-17)**
 
 | **變更類型** | **內容** |
 | --- | --- |
@@ -1772,12 +2083,12 @@ pharmacist Free → Pro 轉換率 ≥ 其他角色 2 倍是 PMF 達成的主要�
 | 調整:附錄 A.2 章節對照 | 新增 2.7 與 5.1.1 的 FEATURE_AUDIT 對照行。 |
 | 調整:附錄 A.1 範例 prompt | 改以 2.7 為範例任務。 |
 
-**10.1.1 v1.2 post-release 變更記錄(非正式 bump 版號)**
+**10.2.1 v1.2 post-release 變更記錄(非正式 bump 版號)**
 
 - 2026-04-18:新增 § 2.8 Anonymous Trial Flow(discovered gap,見 ADR 001)
 - 2026-04-20:新增 § 2.9 Verify 輸出語言對齊 user locale(discovered gap,solo review Accepted,post-2.4 smoke test)
 
-**10.2 v1.0 → v1.1 變更(2026-04-17)**
+**10.3 v1.0 → v1.1 變更(2026-04-17)**
 
 | **變更類型** | **內容** |
 | --- | --- |
@@ -1794,8 +2105,8 @@ pharmacist Free → Pro 轉換率 ≥ 其他角色 2 倍是 PMF 達成的主要�
 | 校準:Phase 0 時程 | 從 2 週延長為 2-2.5 週(10-13 工作天)。九章時程總覽對應調整。 |
 | 新增:附錄 A PRD 使用說明 | 提供 Claude Code 工作流程範例 + PRD vs FEATURE_AUDIT vs GTM vs 維運計畫的文件關係說明。 |
 
-**10.3 v1.0 版本(保留)**
+**10.4 v1.0 版本(保留)**
 
 v1.0 涵蓋 Phase 0 / 1A / 1B / 1C 初版規格,包括:Model Provider 抽象(初版 2 檔案)、query_id 關聯、Citation 追蹤、Onboarding 三問、首頁動態範例、Privacy 四接觸點、FeedbackBar 原因 chip、Citation ⓘ、Settings user_context、處方解析 MVP、在地差異提示分層、跨語言橋接面板。
 
-*Vela · vela.an-tho.com · Master PRD v1.2 · Updated 2026-04-17*
+*Vela · vela.an-tho.com · Master PRD v1.3 · Updated 2026-04-28*
