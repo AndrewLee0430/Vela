@@ -186,6 +186,7 @@ function VerifyForm() {
 
             const data: VerifyResponse = await res.json();
             setResult(data);
+            if (data.query_id) setQueryId(data.query_id);
             track('verify_completed', {
                 input_drug_count: data.drugs_analyzed.length,
                 interaction_count: data.interactions.length,
@@ -196,7 +197,6 @@ function VerifyForm() {
                 backend_query_time_ms: typeof data.query_time_ms === 'number'
                     ? data.query_time_ms : null,
             });
-            if (data.query_id) setQueryId(data.query_id);
             if (!isSignedIn) maybeTriggerThirdQueryCta();
 
         } catch (err: any) {
