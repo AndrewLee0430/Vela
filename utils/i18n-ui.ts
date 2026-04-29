@@ -99,6 +99,7 @@ export interface UITranslations {
   uploadDifferentFile: string;
   extractingText: string;
   verifiedSources: string;
+  citationScopeBanner: string;
 
   // ── Phase 2: Onboarding ──
   onboardingWelcome: string;
@@ -305,6 +306,7 @@ const en: UITranslations = {
   uploadDifferentFile: 'Upload Different File',
   extractingText: 'Extracting text...',
   verifiedSources: 'Verified Sources',
+  citationScopeBanner: 'This explanation is based on general medical knowledge. Citations are verified authoritative data sources (LOINC, MedlinePlus, RxNorm). For clinical guideline citations, please consult your physician.',
   onboardingWelcome: 'Welcome to Vela!',
   onboardingProBody: 'You have unlimited* access to all features.\nLet\u2019s take a quick look at what you can do.',
   onboardingFreeBody: 'You have 15 free credits to get started.\nLet\u2019s take a quick look at what you can do.',
@@ -484,6 +486,7 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     uploadDifferentFile: '上傳其他檔案',
     extractingText: '正在擷取文字⋯',
     verifiedSources: '已驗證來源',
+    citationScopeBanner: '本解釋的醫療判斷基於通用醫學常識，引用為已驗證的權威資料來源（LOINC、MedlinePlus、RxNorm）。如需臨床指引引用，請諮詢您的醫師。',
     onboardingWelcome: '歡迎使用 Vela！',
     onboardingProBody: '您擁有所有功能的無限*存取權限。\n讓我們快速瀏覽您可以做什麼。',
     onboardingFreeBody: '您有 15 點免費點數可以開始使用。\n讓我們快速瀏覽您可以做什麼。',
@@ -658,6 +661,8 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     uploadDifferentFile: '上传其他文件',
     extractingText: '正在提取文字…',
     verifiedSources: '已验证来源',
+    // TODO native review: citationScopeBanner zh-CN translation (2026-04-29 Path 1 banner ship; using en fallback).
+    citationScopeBanner: 'This explanation is based on general medical knowledge. Citations are verified authoritative data sources (LOINC, MedlinePlus, RxNorm). For clinical guideline citations, please consult your physician.',
     onboardingWelcome: '欢迎使用 Vela！',
     onboardingProBody: '您拥有所有功能的无限*访问权限。\n让我们快速浏览您可以做什么。',
     onboardingFreeBody: '您有 15 个免费积分可以开始使用。\n让我们快速浏览您可以做什么。',
@@ -832,6 +837,7 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     uploadDifferentFile: '別のファイルをアップロード',
     extractingText: 'テキストを抽出中…',
     verifiedSources: '検証済みソース',
+    citationScopeBanner: 'この説明は一般的な医学知識に基づいています。引用元は検証済みの権威データソース（LOINC、MedlinePlus、RxNorm）です。臨床ガイドラインの引用が必要な場合は、医師にご相談ください。',
     onboardingWelcome: 'Vela へようこそ！',
     onboardingProBody: 'すべての機能に無制限*でアクセスできます。\nできることを簡単に見てみましょう。',
     onboardingFreeBody: '15 クレジットの無料体験ができます。\nできることを簡単に見てみましょう。',
@@ -1006,6 +1012,7 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     uploadDifferentFile: '다른 파일 업로드',
     extractingText: '텍스트 추출 중...',
     verifiedSources: '검증된 출처',
+    citationScopeBanner: '이 설명은 일반 의학 지식을 기반으로 합니다. 인용은 검증된 권위 있는 데이터 소스(LOINC, MedlinePlus, RxNorm)입니다. 임상 가이드라인 인용이 필요한 경우 의사와 상담하십시오.',
     onboardingWelcome: 'Vela에 오신 것을 환영합니다!',
     onboardingProBody: '모든 기능에 무제한* 접근할 수 있습니다.\n어떤 것들을 할 수 있는지 간단히 살펴보겠습니다.',
     onboardingFreeBody: '15개의 무료 크레딧으로 시작할 수 있습니다.\n어떤 것들을 할 수 있는지 간단히 살펴보겠습니다.',
@@ -1180,6 +1187,8 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     uploadDifferentFile: 'Subir otro archivo',
     extractingText: 'Extrayendo texto...',
     verifiedSources: 'Fuentes verificadas',
+    // TODO native review: citationScopeBanner es translation (2026-04-29 Path 1 banner ship; using en fallback).
+    citationScopeBanner: 'This explanation is based on general medical knowledge. Citations are verified authoritative data sources (LOINC, MedlinePlus, RxNorm). For clinical guideline citations, please consult your physician.',
     onboardingWelcome: '¡Bienvenido a Vela!',
     onboardingProBody: 'Tiene acceso ilimitado* a todas las funciones.\nVeamos rápidamente lo que puede hacer.',
     onboardingFreeBody: 'Tiene 15 créditos gratuitos para comenzar.\nVeamos rápidamente lo que puede hacer.',
@@ -1354,6 +1363,8 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     uploadDifferentFile: 'Télécharger un autre fichier',
     extractingText: 'Extraction du texte...',
     verifiedSources: 'Sources vérifiées',
+    // TODO native review: citationScopeBanner fr translation (2026-04-29 Path 1 banner ship; using en fallback).
+    citationScopeBanner: 'This explanation is based on general medical knowledge. Citations are verified authoritative data sources (LOINC, MedlinePlus, RxNorm). For clinical guideline citations, please consult your physician.',
     onboardingWelcome: 'Bienvenue sur Vela !',
     onboardingProBody: 'Vous avez un accès illimité* à toutes les fonctionnalités.\nVoyons rapidement ce que vous pouvez faire.',
     onboardingFreeBody: 'Vous avez 15 crédits gratuits pour commencer.\nVoyons rapidement ce que vous pouvez faire.',
@@ -1528,6 +1539,8 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     uploadDifferentFile: 'Andere Datei hochladen',
     extractingText: 'Text wird extrahiert...',
     verifiedSources: 'Verifizierte Quellen',
+    // TODO native review: citationScopeBanner de translation (2026-04-29 Path 1 banner ship; using en fallback).
+    citationScopeBanner: 'This explanation is based on general medical knowledge. Citations are verified authoritative data sources (LOINC, MedlinePlus, RxNorm). For clinical guideline citations, please consult your physician.',
     onboardingWelcome: 'Willkommen bei Vela!',
     onboardingProBody: 'Sie haben unbegrenzten* Zugang zu allen Funktionen.\nSchauen wir uns kurz an, was Sie tun können.',
     onboardingFreeBody: 'Sie haben 15 kostenlose Credits zum Starten.\nSchauen wir uns kurz an, was Sie tun können.',
@@ -1702,6 +1715,8 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     uploadDifferentFile: 'Carica un altro file',
     extractingText: 'Estrazione del testo...',
     verifiedSources: 'Fonti verificate',
+    // TODO native review: citationScopeBanner it translation (2026-04-29 Path 1 banner ship; using en fallback).
+    citationScopeBanner: 'This explanation is based on general medical knowledge. Citations are verified authoritative data sources (LOINC, MedlinePlus, RxNorm). For clinical guideline citations, please consult your physician.',
     onboardingWelcome: 'Benvenuto su Vela!',
     onboardingProBody: 'Hai accesso illimitato* a tutte le funzionalità.\nDiamo un\'occhiata veloce a cosa puoi fare.',
     onboardingFreeBody: 'Hai 15 crediti gratuiti per iniziare.\nDiamo un\'occhiata veloce a cosa puoi fare.',
@@ -1876,6 +1891,8 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     uploadDifferentFile: 'Enviar outro arquivo',
     extractingText: 'Extraindo texto...',
     verifiedSources: 'Fontes verificadas',
+    // TODO native review: citationScopeBanner pt translation (2026-04-29 Path 1 banner ship; using en fallback).
+    citationScopeBanner: 'This explanation is based on general medical knowledge. Citations are verified authoritative data sources (LOINC, MedlinePlus, RxNorm). For clinical guideline citations, please consult your physician.',
     onboardingWelcome: 'Bem-vindo ao Vela!',
     onboardingProBody: 'Você tem acesso ilimitado* a todos os recursos.\nVamos ver rapidamente o que você pode fazer.',
     onboardingFreeBody: 'Você tem 15 créditos gratuitos para começar.\nVamos ver rapidamente o que você pode fazer.',
@@ -2050,6 +2067,8 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     uploadDifferentFile: 'อัปโหลดไฟล์อื่น',
     extractingText: 'กำลังดึงข้อความ...',
     verifiedSources: 'แหล่งข้อมูลที่ยืนยันแล้ว',
+    // TODO native review: citationScopeBanner th translation (2026-04-29 Path 1 banner ship; using en fallback).
+    citationScopeBanner: 'This explanation is based on general medical knowledge. Citations are verified authoritative data sources (LOINC, MedlinePlus, RxNorm). For clinical guideline citations, please consult your physician.',
     onboardingWelcome: 'ยินดีต้อนรับสู่ Vela!',
     onboardingProBody: 'คุณมีสิทธิ์เข้าถึงฟีเจอร์ทั้งหมดแบบไม่จำกัด*\nมาดูกันว่าคุณทำอะไรได้บ้าง',
     onboardingFreeBody: 'คุณมี 15 เครดิตฟรีเพื่อเริ่มต้น\nมาดูกันว่าคุณทำอะไรได้บ้าง',
@@ -2224,6 +2243,8 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     uploadDifferentFile: 'رفع ملف آخر',
     extractingText: 'جارٍ استخراج النص...',
     verifiedSources: 'مصادر موثقة',
+    // TODO native review: citationScopeBanner ar translation (2026-04-29 Path 1 banner ship; using en fallback).
+    citationScopeBanner: 'This explanation is based on general medical knowledge. Citations are verified authoritative data sources (LOINC, MedlinePlus, RxNorm). For clinical guideline citations, please consult your physician.',
     onboardingWelcome: '!مرحباً بك في Vela',
     onboardingProBody: 'لديك وصول غير محدود* لجميع الميزات.\nدعنا نلقي نظرة سريعة على ما يمكنك فعله.',
     onboardingFreeBody: 'لديك 15 رصيداً مجانياً للبدء.\nدعنا نلقي نظرة سريعة على ما يمكنك فعله.',
@@ -2398,6 +2419,8 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     uploadDifferentFile: 'अलग फ़ाइल अपलोड करें',
     extractingText: 'टेक्स्ट निकाला जा रहा है...',
     verifiedSources: 'सत्यापित स्रोत',
+    // TODO native review: citationScopeBanner hi translation (2026-04-29 Path 1 banner ship; using en fallback).
+    citationScopeBanner: 'This explanation is based on general medical knowledge. Citations are verified authoritative data sources (LOINC, MedlinePlus, RxNorm). For clinical guideline citations, please consult your physician.',
     onboardingWelcome: 'Vela में आपका स्वागत है!',
     onboardingProBody: 'आपके पास सभी सुविधाओं तक असीमित* पहुंच है।\nआइए देखें आप क्या कर सकते हैं।',
     onboardingFreeBody: 'शुरू करने के लिए आपके पास 15 मुफ़्त क्रेडिट हैं।\nआइए देखें आप क्या कर सकते हैं।',
@@ -2572,6 +2595,8 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     uploadDifferentFile: 'অন্য ফাইল আপলোড করুন',
     extractingText: 'টেক্সট বের করা হচ্ছে...',
     verifiedSources: 'যাচাইকৃত উৎস',
+    // TODO native review: citationScopeBanner bn translation (2026-04-29 Path 1 banner ship; using en fallback).
+    citationScopeBanner: 'This explanation is based on general medical knowledge. Citations are verified authoritative data sources (LOINC, MedlinePlus, RxNorm). For clinical guideline citations, please consult your physician.',
     onboardingWelcome: 'Vela-তে স্বাগতম!',
     onboardingProBody: 'আপনার সমস্ত ফিচারে সীমাহীন* অ্যাক্সেস আছে।\nআসুন দেখি আপনি কী করতে পারেন।',
     onboardingFreeBody: 'শুরু করতে আপনার 15টি বিনামূল্যে ক্রেডিট আছে।\nআসুন দেখি আপনি কী করতে পারেন।',
@@ -2746,6 +2771,8 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     uploadDifferentFile: 'העלו קובץ אחר',
     extractingText: 'מחלץ טקסט...',
     verifiedSources: 'מקורות מאומתים',
+    // TODO native review: citationScopeBanner he translation (2026-04-29 Path 1 banner ship; using en fallback).
+    citationScopeBanner: 'This explanation is based on general medical knowledge. Citations are verified authoritative data sources (LOINC, MedlinePlus, RxNorm). For clinical guideline citations, please consult your physician.',
     onboardingWelcome: '!ברוכים הבאים ל-Vela',
     onboardingProBody: 'יש לכם גישה בלתי מוגבלת* לכל התכונות.\nבואו נסתכל מהר על מה שאפשר לעשות.',
     onboardingFreeBody: 'יש לכם 15 קרדיטים חינמיים להתחלה.\nבואו נסתכל מהר על מה שאפשר לעשות.',
@@ -2920,6 +2947,8 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     uploadDifferentFile: 'Tải lên tệp khác',
     extractingText: 'Đang trích xuất văn bản...',
     verifiedSources: 'Nguồn đã xác minh',
+    // TODO native review: citationScopeBanner vi translation (2026-04-29 Path 1 banner ship; using en fallback).
+    citationScopeBanner: 'This explanation is based on general medical knowledge. Citations are verified authoritative data sources (LOINC, MedlinePlus, RxNorm). For clinical guideline citations, please consult your physician.',
     onboardingWelcome: 'Chào mừng đến với Vela!',
     onboardingProBody: 'Bạn có quyền truy cập không giới hạn* vào tất cả tính năng.\nHãy xem nhanh những gì bạn có thể làm.',
     onboardingFreeBody: 'Bạn có 15 tín dụng miễn phí để bắt đầu.\nHãy xem nhanh những gì bạn có thể làm.',
@@ -3176,27 +3205,123 @@ export const loincTooltipsI18n: Record<LangCode, Record<string, string>> = {
   vi: { 'egfr': 'Tốc Độ Lọc Cầu Thận Ước Tính — đo khả năng lọc chất thải của thận.', 'gfr': 'Tốc Độ Lọc Cầu Thận — đo chức năng lọc của thận.', 'hba1c': 'Hemoglobin A1c — phản ánh đường huyết trung bình trong 2-3 tháng.', 'tsh': 'Hormone Kích Thích Tuyến Giáp — đánh giá chức năng tuyến giáp.', 'sodium': 'Natri — chất điện giải cần thiết cho cân bằng dịch và chức năng thần kinh.', 'potassium': 'Kali — chất điện giải quan trọng cho chức năng tim và cơ.', 'creatinine': 'Creatinine — chất thải dùng để đánh giá chức năng thận.', 'glucose': 'Đường Huyết — đo mức đường huyết hiện tại.', 'cholesterol': 'Cholesterol — đo chất béo trong máu liên quan đến sức khỏe tim.', 'alt': 'ALT — enzyme gan chỉ thị sức khỏe gan.', 'ast': 'AST — enzyme dùng để phát hiện tổn thương gan.', 'bun': 'BUN — đo chức năng thận và mức nước cơ thể.', 'wbc': 'Bạch Cầu — chỉ thị hoạt động hệ miễn dịch.', 'rbc': 'Hồng Cầu — đo tế bào mang oxy.', 'hemoglobin': 'Hemoglobin — protein trong hồng cầu mang oxy.', 'platelet': 'Tiểu Cầu — đo khả năng đông máu.', 'albumin': 'Albumin — protein phản ánh chức năng gan và dinh dưỡng.', 'bilirubin': 'Bilirubin — sản phẩm phụ từ phân hủy hồng cầu, đánh giá chức năng gan.', 'calcium': 'Canxi — cần thiết cho xương, cơ và tín hiệu thần kinh.', 'iron': 'Sắt — đo mức sắt quan trọng cho vận chuyển oxy.', 'uric acid': 'Acid Uric — chất thải; mức cao có thể chỉ thị nguy cơ gout.', 'triglycerides': 'Triglyceride — loại chất béo trong máu liên quan đến nguy cơ bệnh tim.', 'mcv': 'MCV — đo kích thước trung bình của hồng cầu.', 'mch': 'MCH — hemoglobin trung bình mỗi hồng cầu.', 'mchc': 'MCHC — nồng độ hemoglobin trong hồng cầu.' },
 };
 
+// Bug 2 fix (2026-04-29): generic identity-blind fallback ("LOINC — verified lab test standard")
+// replaced with entity-substituted templates so each pill's tooltip differs by entity even when
+// the rich loincTooltipsI18n dictionary doesn't have the entity. {entity} is replaced by the
+// label suffix (e.g. "Blood Pressure" from "LOINC Blood Pressure"). 4 langs full per ship spec;
+// 12 others use en fallback flagged for native review (matches api/i18n/explain_strings.py pattern).
 export const loincTooltipDefaultI18n: Record<LangCode, string> = {
-  en: 'LOINC — verified lab test standard (loinc.org)',
-  'zh-TW': 'LOINC — 已驗證的實驗室檢測標準 (loinc.org)',
-  'zh-CN': 'LOINC — 已验证的实验室检测标准 (loinc.org)',
-  ja: 'LOINC — 検証済みの臨床検査標準 (loinc.org)',
-  ko: 'LOINC — 검증된 검사 표준 (loinc.org)',
-  es: 'LOINC — estándar verificado de pruebas de laboratorio (loinc.org)',
-  fr: 'LOINC — standard vérifié de tests de laboratoire (loinc.org)',
-  de: 'LOINC — verifizierter Labortest-Standard (loinc.org)',
-  it: 'LOINC — standard verificato di test di laboratorio (loinc.org)',
-  pt: 'LOINC — padrão verificado de testes laboratoriais (loinc.org)',
-  th: 'LOINC — มาตรฐานการทดสอบห้องปฏิบัติการที่ผ่านการตรวจสอบ (loinc.org)',
-  ar: 'LOINC — معيار فحوصات مختبرية معتمد (loinc.org)',
-  hi: 'LOINC — सत्यापित प्रयोगशाला परीक्षण मानक (loinc.org)',
-  bn: 'LOINC — যাচাইকৃত ল্যাব পরীক্ষার মানদণ্ড (loinc.org)',
-  he: 'LOINC — תקן בדיקות מעבדה מאומת (loinc.org)',
-  vi: 'LOINC — tiêu chuẩn xét nghiệm phòng thí nghiệm đã xác minh (loinc.org)',
+  en: 'LOINC standard code for {entity} (loinc.org)',
+  'zh-TW': '{entity} 的 LOINC 標準代碼 (loinc.org)',
+  ja: '{entity} の LOINC 標準コード (loinc.org)',
+  ko: '{entity}의 LOINC 표준 코드 (loinc.org)',
+  // TODO native review: zh-CN/es/fr/de/it/pt/th/ar/hi/bn/he/vi using en fallback (2026-04-29 Path 1).
+  'zh-CN': 'LOINC standard code for {entity} (loinc.org)',
+  es: 'LOINC standard code for {entity} (loinc.org)',
+  fr: 'LOINC standard code for {entity} (loinc.org)',
+  de: 'LOINC standard code for {entity} (loinc.org)',
+  it: 'LOINC standard code for {entity} (loinc.org)',
+  pt: 'LOINC standard code for {entity} (loinc.org)',
+  th: 'LOINC standard code for {entity} (loinc.org)',
+  ar: 'LOINC standard code for {entity} (loinc.org)',
+  hi: 'LOINC standard code for {entity} (loinc.org)',
+  bn: 'LOINC standard code for {entity} (loinc.org)',
+  he: 'LOINC standard code for {entity} (loinc.org)',
+  vi: 'LOINC standard code for {entity} (loinc.org)',
 };
+
+// Bug 2 fix (2026-04-29): RxNorm pills previously had NO hover tooltip (rendered as
+// plain anchors). Add entity-substituted template tooltip for parity with LOINC.
+export const rxnormTooltipTemplateI18n: Record<LangCode, string> = {
+  en: 'RxNorm standard medication code for {entity} (nlm.nih.gov)',
+  'zh-TW': '{entity} 的 RxNorm 藥物標準代碼 (nlm.nih.gov)',
+  ja: '{entity} の RxNorm 標準医薬品コード (nlm.nih.gov)',
+  ko: '{entity}의 RxNorm 표준 의약품 코드 (nlm.nih.gov)',
+  // TODO native review: zh-CN/es/fr/de/it/pt/th/ar/hi/bn/he/vi using en fallback (2026-04-29 Path 1).
+  'zh-CN': 'RxNorm standard medication code for {entity} (nlm.nih.gov)',
+  es: 'RxNorm standard medication code for {entity} (nlm.nih.gov)',
+  fr: 'RxNorm standard medication code for {entity} (nlm.nih.gov)',
+  de: 'RxNorm standard medication code for {entity} (nlm.nih.gov)',
+  it: 'RxNorm standard medication code for {entity} (nlm.nih.gov)',
+  pt: 'RxNorm standard medication code for {entity} (nlm.nih.gov)',
+  th: 'RxNorm standard medication code for {entity} (nlm.nih.gov)',
+  ar: 'RxNorm standard medication code for {entity} (nlm.nih.gov)',
+  hi: 'RxNorm standard medication code for {entity} (nlm.nih.gov)',
+  bn: 'RxNorm standard medication code for {entity} (nlm.nih.gov)',
+  he: 'RxNorm standard medication code for {entity} (nlm.nih.gov)',
+  vi: 'RxNorm standard medication code for {entity} (nlm.nih.gov)',
+};
+
+// Bug 2 fix (2026-04-29): MedlinePlus pills previously had NO hover tooltip.
+export const medlineplusTooltipTemplateI18n: Record<LangCode, string> = {
+  en: 'MedlinePlus consumer health information for {entity} (medlineplus.gov)',
+  'zh-TW': '{entity} 的 MedlinePlus 衛教資訊 (medlineplus.gov)',
+  ja: '{entity} の MedlinePlus 健康情報 (medlineplus.gov)',
+  ko: '{entity}의 MedlinePlus 건강 정보 (medlineplus.gov)',
+  // TODO native review: zh-CN/es/fr/de/it/pt/th/ar/hi/bn/he/vi using en fallback (2026-04-29 Path 1).
+  'zh-CN': 'MedlinePlus consumer health information for {entity} (medlineplus.gov)',
+  es: 'MedlinePlus consumer health information for {entity} (medlineplus.gov)',
+  fr: 'MedlinePlus consumer health information for {entity} (medlineplus.gov)',
+  de: 'MedlinePlus consumer health information for {entity} (medlineplus.gov)',
+  it: 'MedlinePlus consumer health information for {entity} (medlineplus.gov)',
+  pt: 'MedlinePlus consumer health information for {entity} (medlineplus.gov)',
+  th: 'MedlinePlus consumer health information for {entity} (medlineplus.gov)',
+  ar: 'MedlinePlus consumer health information for {entity} (medlineplus.gov)',
+  hi: 'MedlinePlus consumer health information for {entity} (medlineplus.gov)',
+  bn: 'MedlinePlus consumer health information for {entity} (medlineplus.gov)',
+  he: 'MedlinePlus consumer health information for {entity} (medlineplus.gov)',
+  vi: 'MedlinePlus consumer health information for {entity} (medlineplus.gov)',
+};
+
+// Bug 2 fix (2026-04-29): FDA pills previously had NO hover tooltip.
+export const fdaTooltipTemplateI18n: Record<LangCode, string> = {
+  en: 'FDA drug label for {entity} (dailymed.nlm.nih.gov)',
+  'zh-TW': '{entity} 的 FDA 藥物標示 (dailymed.nlm.nih.gov)',
+  ja: '{entity} の FDA 医薬品ラベル (dailymed.nlm.nih.gov)',
+  ko: '{entity}의 FDA 의약품 라벨 (dailymed.nlm.nih.gov)',
+  // TODO native review: zh-CN/es/fr/de/it/pt/th/ar/hi/bn/he/vi using en fallback (2026-04-29 Path 1).
+  'zh-CN': 'FDA drug label for {entity} (dailymed.nlm.nih.gov)',
+  es: 'FDA drug label for {entity} (dailymed.nlm.nih.gov)',
+  fr: 'FDA drug label for {entity} (dailymed.nlm.nih.gov)',
+  de: 'FDA drug label for {entity} (dailymed.nlm.nih.gov)',
+  it: 'FDA drug label for {entity} (dailymed.nlm.nih.gov)',
+  pt: 'FDA drug label for {entity} (dailymed.nlm.nih.gov)',
+  th: 'FDA drug label for {entity} (dailymed.nlm.nih.gov)',
+  ar: 'FDA drug label for {entity} (dailymed.nlm.nih.gov)',
+  hi: 'FDA drug label for {entity} (dailymed.nlm.nih.gov)',
+  bn: 'FDA drug label for {entity} (dailymed.nlm.nih.gov)',
+  he: 'FDA drug label for {entity} (dailymed.nlm.nih.gov)',
+  vi: 'FDA drug label for {entity} (dailymed.nlm.nih.gov)',
+};
+
+function _stripSourcePrefix(label: string, prefix: string): string {
+  return label.replace(new RegExp(`^${prefix}[:\\s]+`, 'i'), '').trim();
+}
 
 export function getLoincTooltip(lang: LangCode, term: string): string {
   const key = term.replace(/^LOINC\s+/i, '').trim().toLowerCase();
   const langMap = loincTooltipsI18n[lang] ?? loincTooltipsI18n.en;
-  return langMap[key] ?? loincTooltipDefaultI18n[lang] ?? loincTooltipDefaultI18n.en;
+  if (langMap[key]) return langMap[key];
+  // Bug 2 fix: entity-specific fallback so each LOINC pill differs even when not in dict.
+  const entity = _stripSourcePrefix(term, 'LOINC');
+  const template = loincTooltipDefaultI18n[lang] ?? loincTooltipDefaultI18n.en;
+  return template.replace('{entity}', entity);
+}
+
+export function getRxnormTooltip(lang: LangCode, term: string): string {
+  const entity = _stripSourcePrefix(term, 'RxNorm');
+  const template = rxnormTooltipTemplateI18n[lang] ?? rxnormTooltipTemplateI18n.en;
+  return template.replace('{entity}', entity);
+}
+
+export function getMedlineplusTooltip(lang: LangCode, term: string): string {
+  const entity = _stripSourcePrefix(term, 'MedlinePlus');
+  const template = medlineplusTooltipTemplateI18n[lang] ?? medlineplusTooltipTemplateI18n.en;
+  return template.replace('{entity}', entity);
+}
+
+export function getFdaTooltip(lang: LangCode, term: string): string {
+  const entity = _stripSourcePrefix(term, 'FDA');
+  const template = fdaTooltipTemplateI18n[lang] ?? fdaTooltipTemplateI18n.en;
+  return template.replace('{entity}', entity);
 }

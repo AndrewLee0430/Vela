@@ -15,8 +15,15 @@ import ExplainLockedForAnonymous from '../components/ExplainLockedForAnonymous';
 import ExplainItemCard, { ExplainItem } from '../components/ExplainItemCard';
 import ClinicalCorrelationCard, { ClinicalCorrelation } from '../components/ClinicalCorrelationCard';
 import { setQueryId, track } from '../utils/analytics';
+import { Info } from 'lucide-react';
 import { useLang } from '../utils/LangContext';
-import { getUI, getLoincTooltip as getLoincTooltipI18n } from '../utils/i18n-ui';
+import {
+  getUI,
+  getLoincTooltip as getLoincTooltipI18n,
+  getRxnormTooltip as getRxnormTooltipI18n,
+  getMedlineplusTooltip as getMedlineplusTooltipI18n,
+  getFdaTooltip as getFdaTooltipI18n,
+} from '../utils/i18n-ui';
 import { getExtra } from '../utils/i18n-extra';
 
 const ACCENT = '#68d391';
@@ -138,10 +145,18 @@ function LoincBadge({ source, index = 0 }: { source: ExplainSource; index?: numb
 function SourceBadge({ source, index = 0 }: { source: ExplainSource; index?: number }) {
     const s = SOURCE_STYLES[source.source_type] ?? SOURCE_STYLES['MedlinePlus'];
     const url = getSourceUrl(source);
+    const { lang } = useLang();
 
     if (source.source_type === 'LOINC') {
         return <LoincBadge source={source} index={index} />;
     }
+
+    // Bug 2 fix (2026-04-29): non-LOINC pills previously had NO tooltip.
+    // Add entity-substituted hover tooltip via HTML title attribute.
+    let tooltip = '';
+    if (source.source_type === 'RxNorm') tooltip = getRxnormTooltipI18n(lang, source.label);
+    else if (source.source_type === 'MedlinePlus') tooltip = getMedlineplusTooltipI18n(lang, source.label);
+    else if (source.source_type === 'FDA') tooltip = getFdaTooltipI18n(lang, source.label);
 
     if (url) {
         return (
@@ -149,6 +164,7 @@ function SourceBadge({ source, index = 0 }: { source: ExplainSource; index?: num
                 href={url}
                 target="_blank"
                 rel="noopener noreferrer"
+                title={tooltip}
                 className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium transition-opacity hover:opacity-80"
                 style={{ background: s.bg, color: s.text, border: `1px solid ${s.border}` }}
             >
@@ -160,6 +176,7 @@ function SourceBadge({ source, index = 0 }: { source: ExplainSource; index?: num
 
     return (
         <span
+            title={tooltip}
             className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium"
             style={{ background: s.bg, color: s.text, border: `1px solid ${s.border}` }}
         >
@@ -649,6 +666,13 @@ function ExplainForm() {
                     <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">{ui.verifiedSources}</p>
                     <div className="flex flex-wrap gap-2">
                         {sources.map((src, i) => <SourceBadge key={i} source={src} index={i} />)}
+                    </div>
+                    {/* Citation-scope transparency banner (2026-04-29 Path 1 RAG defense). Explains
+                        that explanation body is general medical knowledge while citations are limited
+                        to verified authoritative sources — preempts "Vela has weak sources" misread. */}
+                    <div className="mt-3 flex items-start gap-2 text-xs leading-relaxed" style={{ color: "rgba(255,255,255,0.35)" }}>
+                        <Info className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" aria-hidden="true" />
+                        <p>{ui.citationScopeBanner}</p>
                     </div>
                 </div>
             )}
