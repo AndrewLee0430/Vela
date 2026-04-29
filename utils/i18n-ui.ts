@@ -101,6 +101,14 @@ export interface UITranslations {
   verifiedSources: string;
   citationScopeBanner: string;
 
+  // ── Generic error UX (2026-04-29) ──
+  explainErrorEmptyInput: string;
+  explainErrorNoValues: string;
+  explainErrorInputTooLong: string;
+  explainErrorService: string;
+  explainErrorSchemaValidation: string;
+  explainErrorGeneric: string;
+
   // ── Phase 2: Onboarding ──
   onboardingWelcome: string;
   onboardingProBody: string;
@@ -307,6 +315,12 @@ const en: UITranslations = {
   extractingText: 'Extracting text...',
   verifiedSources: 'Verified Sources',
   citationScopeBanner: 'This explanation is based on general medical knowledge. Citations are verified authoritative data sources (LOINC, MedlinePlus, RxNorm). For clinical guideline citations, please consult your physician.',
+  explainErrorEmptyInput: 'Please enter your medical information or lab values.',
+  explainErrorNoValues: 'Please include specific values (e.g., Hemoglobin 9.2 g/dL).',
+  explainErrorInputTooLong: 'Input is too long (maximum 5000 characters). Please shorten and try again.',
+  explainErrorService: 'Service is temporarily busy. Please try again shortly.',
+  explainErrorSchemaValidation: 'Unable to generate explanation. Please try again.',
+  explainErrorGeneric: 'Unable to generate explanation. If the issue persists, please contact support.',
   onboardingWelcome: 'Welcome to Vela!',
   onboardingProBody: 'You have unlimited* access to all features.\nLet\u2019s take a quick look at what you can do.',
   onboardingFreeBody: 'You have 15 free credits to get started.\nLet\u2019s take a quick look at what you can do.',
@@ -487,6 +501,12 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     extractingText: '正在擷取文字⋯',
     verifiedSources: '已驗證來源',
     citationScopeBanner: '本解釋的醫療判斷基於通用醫學常識，引用為已驗證的權威資料來源（LOINC、MedlinePlus、RxNorm）。如需臨床指引引用，請諮詢您的醫師。',
+    explainErrorEmptyInput: '請輸入完整的醫療資訊或檢驗值。',
+    explainErrorNoValues: '請補充具體數值（例如：血紅素 9.2 g/dL）。',
+    explainErrorInputTooLong: '輸入內容過長（最多 5000 字元）。請縮短內容後再試。',
+    explainErrorService: '服務暫時忙線，請稍後再試。',
+    explainErrorSchemaValidation: '無法生成解讀，請再試一次。',
+    explainErrorGeneric: '無法生成解讀。如問題持續，請聯繫客服。',
     onboardingWelcome: '歡迎使用 Vela！',
     onboardingProBody: '您擁有所有功能的無限*存取權限。\n讓我們快速瀏覽您可以做什麼。',
     onboardingFreeBody: '您有 15 點免費點數可以開始使用。\n讓我們快速瀏覽您可以做什麼。',
@@ -663,6 +683,13 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     verifiedSources: '已验证来源',
     // TODO native review: citationScopeBanner zh-CN translation (2026-04-29 Path 1 banner ship; using en fallback).
     citationScopeBanner: 'This explanation is based on general medical knowledge. Citations are verified authoritative data sources (LOINC, MedlinePlus, RxNorm). For clinical guideline citations, please consult your physician.',
+    // TODO native review: explainError* zh-CN translations (2026-04-29 Generic error UX; using en fallback).
+    explainErrorEmptyInput: 'Please enter your medical information or lab values.',
+    explainErrorNoValues: 'Please include specific values (e.g., Hemoglobin 9.2 g/dL).',
+    explainErrorInputTooLong: 'Input is too long (maximum 5000 characters). Please shorten and try again.',
+    explainErrorService: 'Service is temporarily busy. Please try again shortly.',
+    explainErrorSchemaValidation: 'Unable to generate explanation. Please try again.',
+    explainErrorGeneric: 'Unable to generate explanation. If the issue persists, please contact support.',
     onboardingWelcome: '欢迎使用 Vela！',
     onboardingProBody: '您拥有所有功能的无限*访问权限。\n让我们快速浏览您可以做什么。',
     onboardingFreeBody: '您有 15 个免费积分可以开始使用。\n让我们快速浏览您可以做什么。',
@@ -838,6 +865,12 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     extractingText: 'テキストを抽出中…',
     verifiedSources: '検証済みソース',
     citationScopeBanner: 'この説明は一般的な医学知識に基づいています。引用元は検証済みの権威データソース（LOINC、MedlinePlus、RxNorm）です。臨床ガイドラインの引用が必要な場合は、医師にご相談ください。',
+    explainErrorEmptyInput: '医療情報または検査値を入力してください。',
+    explainErrorNoValues: '具体的な数値を含めてください（例：ヘモグロビン 9.2 g/dL）。',
+    explainErrorInputTooLong: '入力内容が長すぎます（最大5000文字）。短くしてからもう一度お試しください。',
+    explainErrorService: 'サービスが一時的に混雑しています。しばらくしてから再度お試しください。',
+    explainErrorSchemaValidation: '解説を生成できませんでした。もう一度お試しください。',
+    explainErrorGeneric: '解説を生成できませんでした。問題が続く場合は、サポートにご連絡ください。',
     onboardingWelcome: 'Vela へようこそ！',
     onboardingProBody: 'すべての機能に無制限*でアクセスできます。\nできることを簡単に見てみましょう。',
     onboardingFreeBody: '15 クレジットの無料体験ができます。\nできることを簡単に見てみましょう。',
@@ -1013,6 +1046,12 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     extractingText: '텍스트 추출 중...',
     verifiedSources: '검증된 출처',
     citationScopeBanner: '이 설명은 일반 의학 지식을 기반으로 합니다. 인용은 검증된 권위 있는 데이터 소스(LOINC, MedlinePlus, RxNorm)입니다. 임상 가이드라인 인용이 필요한 경우 의사와 상담하십시오.',
+    explainErrorEmptyInput: '의료 정보 또는 검사 값을 입력하십시오.',
+    explainErrorNoValues: '구체적인 수치를 포함하십시오 (예: 헤모글로빈 9.2 g/dL).',
+    explainErrorInputTooLong: '입력 내용이 너무 깁니다 (최대 5000자). 짧게 줄여서 다시 시도하십시오.',
+    explainErrorService: '서비스가 일시적으로 혼잡합니다. 잠시 후 다시 시도하십시오.',
+    explainErrorSchemaValidation: '해설을 생성할 수 없습니다. 다시 시도하십시오.',
+    explainErrorGeneric: '해설을 생성할 수 없습니다. 문제가 지속되면 고객 지원에 문의하십시오.',
     onboardingWelcome: 'Vela에 오신 것을 환영합니다!',
     onboardingProBody: '모든 기능에 무제한* 접근할 수 있습니다.\n어떤 것들을 할 수 있는지 간단히 살펴보겠습니다.',
     onboardingFreeBody: '15개의 무료 크레딧으로 시작할 수 있습니다.\n어떤 것들을 할 수 있는지 간단히 살펴보겠습니다.',
@@ -1189,6 +1228,13 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     verifiedSources: 'Fuentes verificadas',
     // TODO native review: citationScopeBanner es translation (2026-04-29 Path 1 banner ship; using en fallback).
     citationScopeBanner: 'This explanation is based on general medical knowledge. Citations are verified authoritative data sources (LOINC, MedlinePlus, RxNorm). For clinical guideline citations, please consult your physician.',
+    // TODO native review: explainError* es translations (2026-04-29 Generic error UX; using en fallback).
+    explainErrorEmptyInput: 'Please enter your medical information or lab values.',
+    explainErrorNoValues: 'Please include specific values (e.g., Hemoglobin 9.2 g/dL).',
+    explainErrorInputTooLong: 'Input is too long (maximum 5000 characters). Please shorten and try again.',
+    explainErrorService: 'Service is temporarily busy. Please try again shortly.',
+    explainErrorSchemaValidation: 'Unable to generate explanation. Please try again.',
+    explainErrorGeneric: 'Unable to generate explanation. If the issue persists, please contact support.',
     onboardingWelcome: '¡Bienvenido a Vela!',
     onboardingProBody: 'Tiene acceso ilimitado* a todas las funciones.\nVeamos rápidamente lo que puede hacer.',
     onboardingFreeBody: 'Tiene 15 créditos gratuitos para comenzar.\nVeamos rápidamente lo que puede hacer.',
@@ -1365,6 +1411,13 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     verifiedSources: 'Sources vérifiées',
     // TODO native review: citationScopeBanner fr translation (2026-04-29 Path 1 banner ship; using en fallback).
     citationScopeBanner: 'This explanation is based on general medical knowledge. Citations are verified authoritative data sources (LOINC, MedlinePlus, RxNorm). For clinical guideline citations, please consult your physician.',
+    // TODO native review: explainError* fr translations (2026-04-29 Generic error UX; using en fallback).
+    explainErrorEmptyInput: 'Please enter your medical information or lab values.',
+    explainErrorNoValues: 'Please include specific values (e.g., Hemoglobin 9.2 g/dL).',
+    explainErrorInputTooLong: 'Input is too long (maximum 5000 characters). Please shorten and try again.',
+    explainErrorService: 'Service is temporarily busy. Please try again shortly.',
+    explainErrorSchemaValidation: 'Unable to generate explanation. Please try again.',
+    explainErrorGeneric: 'Unable to generate explanation. If the issue persists, please contact support.',
     onboardingWelcome: 'Bienvenue sur Vela !',
     onboardingProBody: 'Vous avez un accès illimité* à toutes les fonctionnalités.\nVoyons rapidement ce que vous pouvez faire.',
     onboardingFreeBody: 'Vous avez 15 crédits gratuits pour commencer.\nVoyons rapidement ce que vous pouvez faire.',
@@ -1541,6 +1594,13 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     verifiedSources: 'Verifizierte Quellen',
     // TODO native review: citationScopeBanner de translation (2026-04-29 Path 1 banner ship; using en fallback).
     citationScopeBanner: 'This explanation is based on general medical knowledge. Citations are verified authoritative data sources (LOINC, MedlinePlus, RxNorm). For clinical guideline citations, please consult your physician.',
+    // TODO native review: explainError* de translations (2026-04-29 Generic error UX; using en fallback).
+    explainErrorEmptyInput: 'Please enter your medical information or lab values.',
+    explainErrorNoValues: 'Please include specific values (e.g., Hemoglobin 9.2 g/dL).',
+    explainErrorInputTooLong: 'Input is too long (maximum 5000 characters). Please shorten and try again.',
+    explainErrorService: 'Service is temporarily busy. Please try again shortly.',
+    explainErrorSchemaValidation: 'Unable to generate explanation. Please try again.',
+    explainErrorGeneric: 'Unable to generate explanation. If the issue persists, please contact support.',
     onboardingWelcome: 'Willkommen bei Vela!',
     onboardingProBody: 'Sie haben unbegrenzten* Zugang zu allen Funktionen.\nSchauen wir uns kurz an, was Sie tun können.',
     onboardingFreeBody: 'Sie haben 15 kostenlose Credits zum Starten.\nSchauen wir uns kurz an, was Sie tun können.',
@@ -1717,6 +1777,13 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     verifiedSources: 'Fonti verificate',
     // TODO native review: citationScopeBanner it translation (2026-04-29 Path 1 banner ship; using en fallback).
     citationScopeBanner: 'This explanation is based on general medical knowledge. Citations are verified authoritative data sources (LOINC, MedlinePlus, RxNorm). For clinical guideline citations, please consult your physician.',
+    // TODO native review: explainError* it translations (2026-04-29 Generic error UX; using en fallback).
+    explainErrorEmptyInput: 'Please enter your medical information or lab values.',
+    explainErrorNoValues: 'Please include specific values (e.g., Hemoglobin 9.2 g/dL).',
+    explainErrorInputTooLong: 'Input is too long (maximum 5000 characters). Please shorten and try again.',
+    explainErrorService: 'Service is temporarily busy. Please try again shortly.',
+    explainErrorSchemaValidation: 'Unable to generate explanation. Please try again.',
+    explainErrorGeneric: 'Unable to generate explanation. If the issue persists, please contact support.',
     onboardingWelcome: 'Benvenuto su Vela!',
     onboardingProBody: 'Hai accesso illimitato* a tutte le funzionalità.\nDiamo un\'occhiata veloce a cosa puoi fare.',
     onboardingFreeBody: 'Hai 15 crediti gratuiti per iniziare.\nDiamo un\'occhiata veloce a cosa puoi fare.',
@@ -1893,6 +1960,13 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     verifiedSources: 'Fontes verificadas',
     // TODO native review: citationScopeBanner pt translation (2026-04-29 Path 1 banner ship; using en fallback).
     citationScopeBanner: 'This explanation is based on general medical knowledge. Citations are verified authoritative data sources (LOINC, MedlinePlus, RxNorm). For clinical guideline citations, please consult your physician.',
+    // TODO native review: explainError* pt translations (2026-04-29 Generic error UX; using en fallback).
+    explainErrorEmptyInput: 'Please enter your medical information or lab values.',
+    explainErrorNoValues: 'Please include specific values (e.g., Hemoglobin 9.2 g/dL).',
+    explainErrorInputTooLong: 'Input is too long (maximum 5000 characters). Please shorten and try again.',
+    explainErrorService: 'Service is temporarily busy. Please try again shortly.',
+    explainErrorSchemaValidation: 'Unable to generate explanation. Please try again.',
+    explainErrorGeneric: 'Unable to generate explanation. If the issue persists, please contact support.',
     onboardingWelcome: 'Bem-vindo ao Vela!',
     onboardingProBody: 'Você tem acesso ilimitado* a todos os recursos.\nVamos ver rapidamente o que você pode fazer.',
     onboardingFreeBody: 'Você tem 15 créditos gratuitos para começar.\nVamos ver rapidamente o que você pode fazer.',
@@ -2069,6 +2143,13 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     verifiedSources: 'แหล่งข้อมูลที่ยืนยันแล้ว',
     // TODO native review: citationScopeBanner th translation (2026-04-29 Path 1 banner ship; using en fallback).
     citationScopeBanner: 'This explanation is based on general medical knowledge. Citations are verified authoritative data sources (LOINC, MedlinePlus, RxNorm). For clinical guideline citations, please consult your physician.',
+    // TODO native review: explainError* th translations (2026-04-29 Generic error UX; using en fallback).
+    explainErrorEmptyInput: 'Please enter your medical information or lab values.',
+    explainErrorNoValues: 'Please include specific values (e.g., Hemoglobin 9.2 g/dL).',
+    explainErrorInputTooLong: 'Input is too long (maximum 5000 characters). Please shorten and try again.',
+    explainErrorService: 'Service is temporarily busy. Please try again shortly.',
+    explainErrorSchemaValidation: 'Unable to generate explanation. Please try again.',
+    explainErrorGeneric: 'Unable to generate explanation. If the issue persists, please contact support.',
     onboardingWelcome: 'ยินดีต้อนรับสู่ Vela!',
     onboardingProBody: 'คุณมีสิทธิ์เข้าถึงฟีเจอร์ทั้งหมดแบบไม่จำกัด*\nมาดูกันว่าคุณทำอะไรได้บ้าง',
     onboardingFreeBody: 'คุณมี 15 เครดิตฟรีเพื่อเริ่มต้น\nมาดูกันว่าคุณทำอะไรได้บ้าง',
@@ -2245,6 +2326,13 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     verifiedSources: 'مصادر موثقة',
     // TODO native review: citationScopeBanner ar translation (2026-04-29 Path 1 banner ship; using en fallback).
     citationScopeBanner: 'This explanation is based on general medical knowledge. Citations are verified authoritative data sources (LOINC, MedlinePlus, RxNorm). For clinical guideline citations, please consult your physician.',
+    // TODO native review: explainError* ar translations (2026-04-29 Generic error UX; using en fallback).
+    explainErrorEmptyInput: 'Please enter your medical information or lab values.',
+    explainErrorNoValues: 'Please include specific values (e.g., Hemoglobin 9.2 g/dL).',
+    explainErrorInputTooLong: 'Input is too long (maximum 5000 characters). Please shorten and try again.',
+    explainErrorService: 'Service is temporarily busy. Please try again shortly.',
+    explainErrorSchemaValidation: 'Unable to generate explanation. Please try again.',
+    explainErrorGeneric: 'Unable to generate explanation. If the issue persists, please contact support.',
     onboardingWelcome: '!مرحباً بك في Vela',
     onboardingProBody: 'لديك وصول غير محدود* لجميع الميزات.\nدعنا نلقي نظرة سريعة على ما يمكنك فعله.',
     onboardingFreeBody: 'لديك 15 رصيداً مجانياً للبدء.\nدعنا نلقي نظرة سريعة على ما يمكنك فعله.',
@@ -2421,6 +2509,13 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     verifiedSources: 'सत्यापित स्रोत',
     // TODO native review: citationScopeBanner hi translation (2026-04-29 Path 1 banner ship; using en fallback).
     citationScopeBanner: 'This explanation is based on general medical knowledge. Citations are verified authoritative data sources (LOINC, MedlinePlus, RxNorm). For clinical guideline citations, please consult your physician.',
+    // TODO native review: explainError* hi translations (2026-04-29 Generic error UX; using en fallback).
+    explainErrorEmptyInput: 'Please enter your medical information or lab values.',
+    explainErrorNoValues: 'Please include specific values (e.g., Hemoglobin 9.2 g/dL).',
+    explainErrorInputTooLong: 'Input is too long (maximum 5000 characters). Please shorten and try again.',
+    explainErrorService: 'Service is temporarily busy. Please try again shortly.',
+    explainErrorSchemaValidation: 'Unable to generate explanation. Please try again.',
+    explainErrorGeneric: 'Unable to generate explanation. If the issue persists, please contact support.',
     onboardingWelcome: 'Vela में आपका स्वागत है!',
     onboardingProBody: 'आपके पास सभी सुविधाओं तक असीमित* पहुंच है।\nआइए देखें आप क्या कर सकते हैं।',
     onboardingFreeBody: 'शुरू करने के लिए आपके पास 15 मुफ़्त क्रेडिट हैं।\nआइए देखें आप क्या कर सकते हैं।',
@@ -2597,6 +2692,13 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     verifiedSources: 'যাচাইকৃত উৎস',
     // TODO native review: citationScopeBanner bn translation (2026-04-29 Path 1 banner ship; using en fallback).
     citationScopeBanner: 'This explanation is based on general medical knowledge. Citations are verified authoritative data sources (LOINC, MedlinePlus, RxNorm). For clinical guideline citations, please consult your physician.',
+    // TODO native review: explainError* bn translations (2026-04-29 Generic error UX; using en fallback).
+    explainErrorEmptyInput: 'Please enter your medical information or lab values.',
+    explainErrorNoValues: 'Please include specific values (e.g., Hemoglobin 9.2 g/dL).',
+    explainErrorInputTooLong: 'Input is too long (maximum 5000 characters). Please shorten and try again.',
+    explainErrorService: 'Service is temporarily busy. Please try again shortly.',
+    explainErrorSchemaValidation: 'Unable to generate explanation. Please try again.',
+    explainErrorGeneric: 'Unable to generate explanation. If the issue persists, please contact support.',
     onboardingWelcome: 'Vela-তে স্বাগতম!',
     onboardingProBody: 'আপনার সমস্ত ফিচারে সীমাহীন* অ্যাক্সেস আছে।\nআসুন দেখি আপনি কী করতে পারেন।',
     onboardingFreeBody: 'শুরু করতে আপনার 15টি বিনামূল্যে ক্রেডিট আছে।\nআসুন দেখি আপনি কী করতে পারেন।',
@@ -2773,6 +2875,13 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     verifiedSources: 'מקורות מאומתים',
     // TODO native review: citationScopeBanner he translation (2026-04-29 Path 1 banner ship; using en fallback).
     citationScopeBanner: 'This explanation is based on general medical knowledge. Citations are verified authoritative data sources (LOINC, MedlinePlus, RxNorm). For clinical guideline citations, please consult your physician.',
+    // TODO native review: explainError* he translations (2026-04-29 Generic error UX; using en fallback).
+    explainErrorEmptyInput: 'Please enter your medical information or lab values.',
+    explainErrorNoValues: 'Please include specific values (e.g., Hemoglobin 9.2 g/dL).',
+    explainErrorInputTooLong: 'Input is too long (maximum 5000 characters). Please shorten and try again.',
+    explainErrorService: 'Service is temporarily busy. Please try again shortly.',
+    explainErrorSchemaValidation: 'Unable to generate explanation. Please try again.',
+    explainErrorGeneric: 'Unable to generate explanation. If the issue persists, please contact support.',
     onboardingWelcome: '!ברוכים הבאים ל-Vela',
     onboardingProBody: 'יש לכם גישה בלתי מוגבלת* לכל התכונות.\nבואו נסתכל מהר על מה שאפשר לעשות.',
     onboardingFreeBody: 'יש לכם 15 קרדיטים חינמיים להתחלה.\nבואו נסתכל מהר על מה שאפשר לעשות.',
@@ -2949,6 +3058,13 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     verifiedSources: 'Nguồn đã xác minh',
     // TODO native review: citationScopeBanner vi translation (2026-04-29 Path 1 banner ship; using en fallback).
     citationScopeBanner: 'This explanation is based on general medical knowledge. Citations are verified authoritative data sources (LOINC, MedlinePlus, RxNorm). For clinical guideline citations, please consult your physician.',
+    // TODO native review: explainError* vi translations (2026-04-29 Generic error UX; using en fallback).
+    explainErrorEmptyInput: 'Please enter your medical information or lab values.',
+    explainErrorNoValues: 'Please include specific values (e.g., Hemoglobin 9.2 g/dL).',
+    explainErrorInputTooLong: 'Input is too long (maximum 5000 characters). Please shorten and try again.',
+    explainErrorService: 'Service is temporarily busy. Please try again shortly.',
+    explainErrorSchemaValidation: 'Unable to generate explanation. Please try again.',
+    explainErrorGeneric: 'Unable to generate explanation. If the issue persists, please contact support.',
     onboardingWelcome: 'Chào mừng đến với Vela!',
     onboardingProBody: 'Bạn có quyền truy cập không giới hạn* vào tất cả tính năng.\nHãy xem nhanh những gì bạn có thể làm.',
     onboardingFreeBody: 'Bạn có 15 tín dụng miễn phí để bắt đầu.\nHãy xem nhanh những gì bạn có thể làm.',

@@ -9,8 +9,10 @@ import asyncio
 import json
 import logging
 import time
+from enum import Enum
 from pathlib import Path
 from typing import AsyncGenerator, Optional
+import openai
 from openai import AsyncOpenAI
 from pydantic import ValidationError
 
@@ -30,6 +32,23 @@ from api.i18n.explain_strings import (
 )
 
 logger = logging.getLogger(__name__)
+
+
+class ExplainErrorCode(str, Enum):
+    """Generic error UX (2026-04-29): codes emitted as SSE error events.
+    Frontend ERROR_KEY_MAP in pages/explain.tsx maps these to i18n strings."""
+    EMPTY_INPUT = "empty_input"
+    NO_VALUES_IN_INPUT = "no_values_in_input"
+    INPUT_TOO_LONG = "input_too_long"
+    OPENAI_API_ERROR = "openai_api_error"
+    SCHEMA_VALIDATION_FAILED = "schema_validation_failed"
+    GENERIC = "generic"
+
+
+# Matches pydantic max_length on ExplainRequest.report_text.
+# Pydantic blocks >5000 with a 422 before this check fires; this is
+# defense-in-depth for any path that bypasses pydantic.
+MAX_INPUT_CHARS = 5000
 
 # Startup self-test for language detection
 logger.info(f"Lang detector test: {detect_language('W.B.C. Count 白血球計數 6.5 血液檢查')}")
@@ -261,6 +280,23 @@ def _is_code_lookup_only(citations: list[ExplainSource]) -> bool:
     return all(c.source_type in code_lookup_types for c in citations)
 
 
+def _has_any_value(entities: ExtractedEntities) -> bool:
+    """Generic error UX (2026-04-29): True if at least one entity carries a
+    numeric value, unit, or dosage. Diagnoses are name-only and don't count
+    toward "has values" (a bare "I have diabetes" without labs/meds is the
+    no_values_in_input case)."""
+    for lab in entities.lab_tests:
+        if lab.value or lab.unit:
+            return True
+    for vital in entities.vital_signs:
+        if vital.value:
+            return True
+    for med in entities.medications:
+        if med.dosage:
+            return True
+    return False
+
+
 async def generate_explanation(
     report_text: str,
     entities: ExtractedEntities,
@@ -393,19 +429,78 @@ async def run_explain_pipeline(
     """
     start = time.time()
 
+    # Pre-stream validation (Generic error UX, 2026-04-29).
+    # Empty / whitespace-only input → emit empty_input SSE event and bail.
+    if len(report_text.strip()) == 0:
+        logger.info("[Explain] empty_input — whitespace-only or empty report_text")
+        yield {
+            "type": "error",
+            "code": ExplainErrorCode.EMPTY_INPUT.value,
+            "message": "Empty input",
+        }
+        return
+
+    # Length cap (defense-in-depth; pydantic max_length=5000 normally blocks first).
+    if len(report_text) > MAX_INPUT_CHARS:
+        logger.info("[Explain] input_too_long — len=%d > %d", len(report_text), MAX_INPUT_CHARS)
+        yield {
+            "type": "error",
+            "code": ExplainErrorCode.INPUT_TOO_LONG.value,
+            "message": f"Input exceeds {MAX_INPUT_CHARS} characters",
+        }
+        return
+
     # Stage 1: Extract entities
     detected_lang_early = detect_language(report_text)
     lang_instruction = get_language_instruction(detected_lang_early)
     logger.info("[Explain] Processing report, length=%d, language=%s", len(report_text), detected_lang_early)
     logger.info(f"[Explain] Language instruction for GPT: {lang_instruction or '(none - English default)'}")
     yield {"type": "status", "content": "Analyzing your report..."}
-    entities = await extract_entities(report_text, openai_client)
+    try:
+        entities = await extract_entities(report_text, openai_client)
+    except (openai.APIError, openai.APITimeoutError, openai.RateLimitError) as e:
+        logger.warning("[Explain] OpenAI API error in Stage 1: %s: %s", type(e).__name__, e)
+        yield {
+            "type": "error",
+            "code": ExplainErrorCode.OPENAI_API_ERROR.value,
+            "message": "OpenAI service unavailable",
+        }
+        return
     logger.info(f"[Explain] entities.input_language = {entities.input_language}")
 
     # Override GPT's language detection with ours when they disagree
     if entities.input_language == "en" and detected_lang_early != "en":
         logger.info(f"[Explain] Overriding GPT language '{entities.input_language}' → '{detected_lang_early}'")
         entities.input_language = detected_lang_early
+
+    # Generic error UX (2026-04-29): distinguish "no entities" from "entities without values".
+    # Real entity field names: lab_tests / medications / diagnoses / vital_signs.
+    # MedicationEntity has a single `dosage` field (no separate dose/frequency).
+    total_entities = (
+        len(entities.lab_tests)
+        + len(entities.medications)
+        + len(entities.diagnoses)
+        + len(entities.vital_signs)
+    )
+    if total_entities == 0:
+        logger.info("[Explain] empty_input — Stage 1 detected zero medical entities")
+        yield {
+            "type": "error",
+            "code": ExplainErrorCode.EMPTY_INPUT.value,
+            "message": "No medical entities detected",
+        }
+        return
+    if not _has_any_value(entities):
+        logger.info(
+            "[Explain] no_values_in_input — %d entities, none with numeric values",
+            total_entities,
+        )
+        yield {
+            "type": "error",
+            "code": ExplainErrorCode.NO_VALUES_IN_INPUT.value,
+            "message": "Entities detected but no values",
+        }
+        return
 
     # Stage 2: Parallel API lookups
     logger.info(f"[Explain] Entities extracted — meds: {[m.english for m in entities.medications]}, labs: {[l.english for l in entities.lab_tests]}, vitals: {[v.english for v in entities.vital_signs]}")
@@ -476,13 +571,25 @@ async def run_explain_pipeline(
             response_language=response_language,
             sources=sources,
         )
-    except ValueError as e:
-        error_code = str(e)  # "invalid_json" or "schema_validation_failed"
-        logger.error("[Explain] Stage 3 failed: %s", error_code)
+    except (openai.APIError, openai.APITimeoutError, openai.RateLimitError) as e:
+        logger.warning("[Explain] OpenAI API error in Stage 3: %s: %s", type(e).__name__, e)
         yield {
             "type": "error",
-            "code": f"explain_llm_{error_code}",
-            "content": "Failed to generate structured explanation. Please try again.",
+            "code": ExplainErrorCode.OPENAI_API_ERROR.value,
+            "message": "OpenAI service unavailable",
+        }
+        return
+    except ValueError as e:
+        # generate_explanation raises ValueError("invalid_json") or
+        # ValueError("schema_validation_failed"). Both surface as the
+        # schema_validation_failed error_code (frontend distinction not
+        # needed — same user-visible recovery: try again).
+        inner = str(e)
+        logger.error("[Explain] Stage 3 LLM output invalid: %s", inner)
+        yield {
+            "type": "error",
+            "code": ExplainErrorCode.SCHEMA_VALIDATION_FAILED.value,
+            "message": f"LLM output failed validation ({inner})",
         }
         return
 

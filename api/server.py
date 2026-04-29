@@ -1081,8 +1081,11 @@ async def explain_report(
                         logger.error("Cost log error: %s", e)
                 yield f"data: {json.dumps(event, ensure_ascii=False)}\n\n"
         except Exception as e:
-            logger.error("Explain stream error: %s", type(e).__name__)
-            yield f"data: {json.dumps({'type': 'error', 'content': 'An error occurred. Please try again.'})}\n\n"
+            # Generic error UX (2026-04-29): unexpected exceptions become
+            # the `generic` error_code. Pipeline-internal errors emit their
+            # own SSE error events with specific codes before reaching here.
+            logger.exception("Explain stream error: %s", type(e).__name__)
+            yield f"data: {json.dumps({'type': 'error', 'code': 'generic', 'message': 'Unexpected error'})}\n\n"
 
     return StreamingResponse(
         event_stream(),

@@ -90,8 +90,13 @@ async def extract_entities(report_text: str, openai_client: AsyncOpenAI) -> Extr
         )
 
     except (json.JSONDecodeError, KeyError, TypeError) as e:
+        # Parse / shape errors: LLM returned unparseable output.
+        # Treat as "no entities detected" so caller can route to empty_input
+        # error_code via the Stage 1 entity-count check.
         logger.warning(f"Entity extraction parse error: {e}. Falling back to empty entities.")
         return ExtractedEntities()
-    except Exception as e:
-        logger.error(f"Entity extraction failed: {e}")
-        return ExtractedEntities()
+    # Note: OpenAI errors (APIError/APITimeoutError/RateLimitError) are NOT
+    # caught here — they propagate to run_explain_pipeline which converts
+    # them to the openai_api_error SSE event (Generic error UX, 2026-04-29).
+    # Other unexpected exceptions also propagate to the server.py catchall
+    # which emits the `generic` error_code.

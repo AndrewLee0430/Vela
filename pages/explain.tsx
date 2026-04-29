@@ -23,6 +23,7 @@ import {
   getRxnormTooltip as getRxnormTooltipI18n,
   getMedlineplusTooltip as getMedlineplusTooltipI18n,
   getFdaTooltip as getFdaTooltipI18n,
+  type UITranslations,
 } from '../utils/i18n-ui';
 import { getExtra } from '../utils/i18n-extra';
 
@@ -47,6 +48,26 @@ const SOURCE_STYLES: Record<string, { bg: string; text: string; border: string }
     FDA:         { bg: 'rgba(252,129,129,0.12)', text: '#fc8181', border: 'rgba(252,129,129,0.3)' },
     RxNorm:      { bg: 'rgba(183,148,244,0.12)', text: '#b794f4', border: 'rgba(183,148,244,0.3)' },
 };
+
+// Generic error UX (2026-04-29): SSE pipeline error_code → i18n key.
+// `error` state holds either an error_code from this map (resolved by
+// resolveErrorMessage), a transport code (already resolved to a string at
+// the catch site via sseMsg lookup), or a raw fallback string.
+const ERROR_KEY_MAP: Record<string, keyof UITranslations> = {
+    empty_input: 'explainErrorEmptyInput',
+    no_values_in_input: 'explainErrorNoValues',
+    input_too_long: 'explainErrorInputTooLong',
+    openai_api_error: 'explainErrorService',
+    schema_validation_failed: 'explainErrorSchemaValidation',
+    generic: 'explainErrorGeneric',
+};
+
+function resolveErrorMessage(error: string, ui: UITranslations): string {
+    if (!error) return '';
+    const i18nKey = ERROR_KEY_MAP[error];
+    if (i18nKey) return ui[i18nKey] as string;
+    return error;
+}
 
 function getSourceUrl(source: ExplainSource): string | null {
     // Use backend-provided URL if available (MedlinePlus articles, DailyMed)
@@ -352,6 +373,14 @@ function ExplainForm() {
     async function handleSubmit(e: FormEvent) {
         e.preventDefault();
         if (isRunningRef.current) return;
+        // Generic error UX (2026-04-29): preemptive length check so we never
+        // hit the pydantic 422 path. Backend pre-stream check is defense-in-
+        // depth for any caller that bypasses this client check.
+        if (reportText.length > 5000) {
+            setError('input_too_long');
+            track('explain_failed', { error_code: 'input_too_long', elapsed_ms: 0 });
+            return;
+        }
         isRunningRef.current = true;
         const t0 = Date.now();
         let detectedLang: string | null = null;
@@ -413,15 +442,18 @@ function ExplainForm() {
                         }
                         else if (data.type === 'done')    { setLoading(false); setStatusMsg(''); }
                         else if (data.type === 'error') {
-                            const code = data.code ?? data.error;
+                            const code = data.code ?? data.error ?? 'generic';
                             if (code === 'limit_reached') {
                                 setShowUpgradeModal(true);
                             } else if (code === 'daily_cap_reached') {
                                 setShowDailyCapToast(true);
                             } else {
-                                setError(data.message ?? data.content ?? 'An error occurred.');
+                                // Generic error UX (2026-04-29): store the
+                                // error_code; resolveErrorMessage maps it to
+                                // an i18n string at render time.
+                                setError(code);
                                 track('explain_failed', {
-                                    error_code: code ?? 'unknown',
+                                    error_code: code,
                                     elapsed_ms: Date.now() - t0,
                                 });
                             }
@@ -492,7 +524,7 @@ function ExplainForm() {
             )}
 
             {error && (
-                <div className="mb-5 p-3 rounded-lg border text-sm" style={{ background: "rgba(252,129,129,0.12)", borderColor: "rgba(252,129,129,0.3)", color: "#fc8181" }}>{error}</div>
+                <div className="mb-5 p-3 rounded-lg border text-sm" style={{ background: "rgba(252,129,129,0.12)", borderColor: "rgba(252,129,129,0.3)", color: "#fc8181" }}>{resolveErrorMessage(error, ui)}</div>
             )}
 
             <form onSubmit={handleSubmit} className="rounded-xl p-6 space-y-5" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}>
