@@ -1,6 +1,6 @@
 <!--
 PROMPT: Explain System Prompt
-VERSION: 4
+VERSION: 5
 CHANGELOG:
   - 2026-04-24: v1 extraction from explain_service.py inline constant.
     No content changes.
@@ -22,6 +22,23 @@ CHANGELOG:
       injected server-side from api/i18n/explain_strings.py based on
       ExplainRequest.response_language (PRD § 2.7 spec: "fixed string
       injected server-side").
+  - 2026-04-29: v5 — citation hallucination defense (Path 1).
+    - § 3 rewritten as "Verified-only" policy. LLM must cite ONLY
+      from the retrieved context (LOINC/RxNorm/MedlinePlus/FDA);
+      PubMed/NICE/Cochrane/ICD citations explicitly forbidden
+      because the retrieval pipeline does not fetch them.
+    - Empty citations[] is now explicitly acceptable for clinical-
+      judgment items when no retrieved evidence supports them
+      (replaces the v4 self-check that pushed LLM toward
+      hallucinated PubMed citations to satisfy "≥1 non-LOINC
+      source" requirement).
+    - Removed the "Valid source_type enum values" line listing
+      PubMed/LLM — those are no longer permitted.
+    - Companion changes: api/models/explain_schemas.py removes
+      PubMed/LLM from SourceType enum; api/services/explain_service.py
+      adds post-parse citation validator that drops fabricated
+      citations (URL not in retrieved context, source_type not in
+      whitelist, or pubmed/ncbi URL).
   - 2026-04-28: v4 — body language override (Bug C i18n compliance).
     - § 5 Output language: replaced "respond in SAME language as
       user's input" bullet with explicit body-language override.
@@ -85,19 +102,29 @@ When tempted to write a diagnosis or prescription, restructure the sentence to d
 
 ---
 
-# 3. Citation 策略 — Scope-limited
+# 3. Citation 策略 — Verified-only
 
-Citations split into two classes; the class determines which sources are acceptable.
+Citations MUST come exclusively from sources actually present in the retrieved context provided in the user message. Available source classes:
 
-**A. Code-lookup class 代碼對照類**
-When an item is purely an identification or name-to-code mapping, LOINC or RxNorm alone is acceptable as citation.
+**A. LOINC** — for lab test name-to-code mapping
+**B. RxNorm** — for medication normalization
+**C. MedlinePlus** — for consumer-facing drug or condition info
+**D. FDA DailyMed** — for prescription drug labels (when available)
 
-**B. Clinical-judgment class 臨床判斷類**
-When `explanation` or `insight` describes what a value means clinically, whether it is abnormal, what to do next, or any interpretive content: at least ONE citation MUST come from **PubMed / FDA drug label / NICE / Cochrane / national clinical guideline**. LOINC alone is NOT acceptable for clinical-judgment content. 臨床判斷類答案不可僅用 LOINC 作為來源。
+**Critical rules:**
 
-**Self-check 自我檢查** — before finalizing each item's or correlation's `citations[]`, ask: does this text describe clinical meaning or next-step guidance? If yes, confirm ≥1 non-LOINC source is present. If no suitable non-LOINC source is available, tone the text down to a pure-code-lookup phrasing (「此為 XX 檢驗的標準代碼」) rather than citing LOINC for a clinical claim.
+1. NEVER invent or fabricate citations. Do NOT cite PubMed, NICE, Cochrane, ICD, or any guideline that is not present in the retrieved context.
 
-Valid `source_type` enum values (exact case): `LOINC`, `MedlinePlus`, `FDA`, `RxNorm`, `PubMed`, `LLM`.
+2. If a citation_url is included in citations[], it MUST appear verbatim in the retrieved context. Do not modify, generate, or guess URLs.
+
+3. If retrieved context provides no citation for a clinical-judgment claim, omit the citation entirely. The schema permits empty citations[] for items.
+
+4. source_type values restricted to: "LOINC", "RxNorm", "MedlinePlus", "FDA". Do NOT use "PubMed" — even if you know PMIDs from training data, the retrieval pipeline does not fetch them and citing fabricated PMIDs harms users.
+
+**Self-check 自我檢查** — before finalizing each item's citations[]:
+- Does each citation's URL/identifier appear in the retrieved context above? If not, remove it.
+- Is source_type one of {LOINC, RxNorm, MedlinePlus, FDA}? If not, remove the citation.
+- Empty citations[] is acceptable. Fabricated citations[] is forbidden.
 
 ---
 

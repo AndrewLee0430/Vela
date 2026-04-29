@@ -13,8 +13,12 @@ class SourceType(str, Enum):
     MEDLINEPLUS = "MedlinePlus"
     FDA        = "FDA"
     RXNORM     = "RxNorm"
-    PUBMED     = "PubMed"
-    LLM        = "LLM"  # no external verification
+    # PUBMED   = "PubMed"  # Disabled 2026-04-29 per Path 1 Bug fix —
+                           # Explain pipeline has no PubMed retrieval,
+                           # citations would be LLM-fabricated.
+                           # Re-enable when Path 2 (real PubMed
+                           # retrieval) ships.
+    # LLM      = "LLM"     # Reserved for future fallback signaling.
 
 
 class ExplainRequest(BaseModel):

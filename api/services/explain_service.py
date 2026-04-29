@@ -192,6 +192,63 @@ async def retrieve_context(entities: ExtractedEntities) -> tuple[list[ExplainSou
 
 # ─── Stage 3: Generate explanation (streaming) ──────────────────────────────
 
+# Path 1 citation-hallucination defense (2026-04-29): the LLM may emit
+# fabricated PubMed/NICE/Cochrane citations because the prompt's older
+# "≥1 non-LOINC source required" rule pushed it that way. The retrieval
+# pipeline does NOT fetch PubMed/NICE/Cochrane evidence — only LOINC,
+# RxNorm, MedlinePlus, FDA. Any citation outside that whitelist, or any
+# URL not actually present in the retrieved sources, is fabricated and
+# must be stripped before pydantic validation (PUBMED was removed from
+# the SourceType enum, so unfiltered output would fail schema_validation).
+ALLOWED_CITATION_SOURCE_TYPES = {"LOINC", "RxNorm", "MedlinePlus", "FDA"}
+
+
+def _is_valid_citation_dict(citation: dict, retrieved_urls: set[str]) -> bool:
+    """
+    Returns False if the citation appears fabricated. Operates on the raw
+    JSON dict (pre-pydantic) so banned source_types like PubMed are
+    stripped before SourceType enum validation rejects the whole response.
+    """
+    source_type = citation.get("source_type", "")
+    if source_type not in ALLOWED_CITATION_SOURCE_TYPES:
+        return False
+    url = citation.get("url") or ""
+    if url:
+        url_lower = url.lower()
+        if "pubmed" in url_lower or "ncbi.nlm.nih.gov" in url_lower:
+            return False
+        # URL must match one we actually retrieved. LOINC citations
+        # legitimately have url=null (handled by the `if url:` guard),
+        # so this only fires when the LLM invents a URL.
+        if url not in retrieved_urls:
+            return False
+    return True
+
+
+def _filter_citations_in_dict(parsed: dict, sources: list[ExplainSource]) -> int:
+    """
+    Strip fabricated citations from the raw LLM JSON dict in place.
+    Returns total count of citations dropped (for logging).
+    """
+    retrieved_urls = {s.url for s in sources if s.url}
+    dropped = 0
+    for item in parsed.get("items", []):
+        before = len(item.get("citations", []))
+        item["citations"] = [
+            c for c in item.get("citations", [])
+            if _is_valid_citation_dict(c, retrieved_urls)
+        ]
+        dropped += before - len(item["citations"])
+    for corr in parsed.get("clinical_correlations", []):
+        before = len(corr.get("citations", []))
+        corr["citations"] = [
+            c for c in corr.get("citations", [])
+            if _is_valid_citation_dict(c, retrieved_urls)
+        ]
+        dropped += before - len(corr["citations"])
+    return dropped
+
+
 def _is_code_lookup_only(citations: list[ExplainSource]) -> bool:
     """
     Returns True if all citations are LOINC/RxNorm only, OR citations is empty.
@@ -210,6 +267,7 @@ async def generate_explanation(
     context: str,
     openai_client: AsyncOpenAI,
     response_language: Optional[str] = None,
+    sources: Optional[list[ExplainSource]] = None,
 ) -> dict:
     """
     Stage 3: Generate structured JSON explanation (non-streaming, JSON mode).
@@ -252,6 +310,16 @@ Input language (for entity-to-source matching only, NOT for output): {entities.i
         logger.error("[Explain] LLM returned invalid JSON: %s", e)
         raise ValueError("invalid_json") from e
 
+    # Path 1 defense: drop fabricated citations before pydantic validation.
+    # Without this, a LLM-emitted source_type="PubMed" would fail SourceType
+    # enum validation and reject the entire response.
+    dropped_count = _filter_citations_in_dict(parsed, sources or [])
+    if dropped_count > 0:
+        logger.warning(
+            "[Explain] Filtered %d fabricated citation(s) from LLM response",
+            dropped_count,
+        )
+
     try:
         items = [ExplainItem.model_validate(i) for i in parsed.get("items", [])]
         correlations = [
@@ -262,37 +330,36 @@ Input language (for entity-to-source matching only, NOT for output): {entities.i
         logger.error("[Explain] LLM JSON failed schema validation: %s", e)
         raise ValueError("schema_validation_failed") from e
 
-    # Step 3: LOINC scope post-processing guard.
-    # Per PRD § 2.7 req 3: clinical-judgment content (yellow/red risk_tier)
-    # must include at least one non-LOINC, non-RxNorm citation. When the LLM
-    # violates this, downgrade to green rather than re-call (zero added cost).
-    # MedlinePlus is acceptable non-code-lookup evidence for this guard.
+    # Step 3: limited-citation transparency note.
+    # When a yellow/red item has only code-lookup citations (LOINC/RxNorm,
+    # or empty after Path 1 filtering), append a note disclosing the
+    # citation limitation. The LLM's risk_tier reflects medical judgment
+    # and is preserved — citation completeness is not a proxy for medical
+    # severity (Bug X1, 2026-04-29: prior version forced green here, which
+    # produced medically incorrect UX after Path 1 stripped fabricated
+    # PubMed cites).
     for item in items:
         if item.risk_tier in (RiskTier.YELLOW, RiskTier.RED):
             if _is_code_lookup_only(item.citations):
-                original_tier = item.risk_tier.value
-                logger.warning(
-                    "[Explain] Step 3 downgrade triggered: kind=item "
-                    "term=%s original_tier=%s citations_source_types=%s",
+                logger.info(
+                    "[Explain] Step 3 limited-citation note appended: kind=item "
+                    "term=%s tier=%s citations_source_types=%s",
                     item.term,
-                    original_tier,
+                    item.risk_tier.value,
                     [c.source_type.value if hasattr(c.source_type, "value") else c.source_type for c in item.citations],
                 )
-                item.risk_tier = RiskTier.GREEN
                 item.explanation += "\n\n" + get_downgrade_item_note(locale)
 
     for corr in correlations:
         if corr.risk_tier in (RiskTier.YELLOW, RiskTier.RED):
             if _is_code_lookup_only(corr.citations):
-                original_tier = corr.risk_tier.value
-                logger.warning(
-                    "[Explain] Step 3 downgrade triggered: kind=correlation "
-                    "items_referenced=%s original_tier=%s citations_source_types=%s",
+                logger.info(
+                    "[Explain] Step 3 limited-citation note appended: kind=correlation "
+                    "items_referenced=%s tier=%s citations_source_types=%s",
                     corr.items_referenced,
-                    original_tier,
+                    corr.risk_tier.value,
                     [c.source_type.value if hasattr(c.source_type, "value") else c.source_type for c in corr.citations],
                 )
-                corr.risk_tier = RiskTier.GREEN
                 corr.insight += "\n\n" + get_downgrade_corr_note(locale)
 
     disclaimer = get_disclaimer(locale)
@@ -407,6 +474,7 @@ async def run_explain_pipeline(
         result = await generate_explanation(
             report_text, entities, context, openai_client,
             response_language=response_language,
+            sources=sources,
         )
     except ValueError as e:
         error_code = str(e)  # "invalid_json" or "schema_validation_failed"

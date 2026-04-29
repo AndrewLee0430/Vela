@@ -659,12 +659,13 @@ function ExplainForm() {
                         <h2 className="text-base font-semibold" style={{ color: "#ffffff" }}>{ui.explanation}</h2>
                     </div>
 
+                    {/* Per-item / per-correlation citation strips removed (Bug X2/X3, 2026-04-29):
+                        the page-level "已驗證來源" section above is the single source of truth
+                        for retrieved citations. LLM-emitted citation labels could be verbose
+                        (e.g. "eGFR — value: 45 mL/min (reference: >60)") and duplicated the
+                        page-level pills, which is noisy UX. */}
                     {result.items.map((item, i) => (
-                        <ExplainItemCard key={`item-${i}`} item={item}>
-                            {item.citations.map((src, j) => (
-                                <SourceBadge key={j} source={src} index={j} />
-                            ))}
-                        </ExplainItemCard>
+                        <ExplainItemCard key={`item-${i}`} item={item} />
                     ))}
 
                     {result.clinical_correlations.length > 0 && (
@@ -673,11 +674,7 @@ function ExplainForm() {
                                 {ui.clinicalCorrelations}
                             </p>
                             {result.clinical_correlations.map((corr, i) => (
-                                <ClinicalCorrelationCard key={`corr-${i}`} correlation={corr}>
-                                    {corr.citations.map((src, j) => (
-                                        <SourceBadge key={j} source={src} index={j} />
-                                    ))}
-                                </ClinicalCorrelationCard>
+                                <ClinicalCorrelationCard key={`corr-${i}`} correlation={corr} />
                             ))}
                         </div>
                     )}
