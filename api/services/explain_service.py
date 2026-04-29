@@ -221,7 +221,9 @@ async def generate_explanation(
     English if missing.
     """
     locale = response_language or "en"
-    user_content = f"""Medical report to explain:
+    user_content = f"""Response language: {locale}
+
+Medical report to explain:
 ---
 {report_text}
 ---
@@ -229,9 +231,7 @@ async def generate_explanation(
 Verified reference data from official sources:
 {context if context else "(No external reference data retrieved — explain from medical knowledge only)"}
 
-Detected language: {entities.input_language}
-
-Please explain this report in the same language as the input ({entities.input_language})."""
+Input language (for entity-to-source matching only, NOT for output): {entities.input_language}"""
 
     response = await openai_client.chat.completions.create(
         model="gpt-4.1",

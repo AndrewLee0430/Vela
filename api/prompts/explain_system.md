@@ -1,6 +1,6 @@
 <!--
 PROMPT: Explain System Prompt
-VERSION: 3
+VERSION: 4
 CHANGELOG:
   - 2026-04-24: v1 extraction from explain_service.py inline constant.
     No content changes.
@@ -22,6 +22,19 @@ CHANGELOG:
       injected server-side from api/i18n/explain_strings.py based on
       ExplainRequest.response_language (PRD § 2.7 spec: "fixed string
       injected server-side").
+  - 2026-04-28: v4 — body language override (Bug C i18n compliance).
+    - § 5 Output language: replaced "respond in SAME language as
+      user's input" bullet with explicit body-language override.
+      Output language is now bound to the "Response language: <code>"
+      line surfaced at the top of the Stage 3 user message
+      (explain_service.py threads response_language → user_content).
+      input_language is scoped to entity-to-canonical-source
+      matching only and does NOT determine output language.
+    - Added Field semantics block disambiguating input_language vs
+      response_language for the LLM.
+    - No literal {response_language} placeholder in system prompt
+      (prompt is loaded raw via read_text, not str.format) — the
+      value is surfaced via the user message Response language line.
 -->
 
 # Role and scope
@@ -108,7 +121,27 @@ The frontend renders the localized risk label from `risk_tier` directly — do N
 
 # 5. 輸出語言 — Output language
 
-- `explanation` and `insight` strings: respond in the SAME language as the user's input. 用使用者輸入的語言回應。 If input is 繁體中文, respond in 繁體中文; 简体中文 → 简体中文; English → English; mixed input → use dominant language.
+Output language: The user message will include a "Response language: <code>" line at the top (e.g. "Response language: zh-TW"). All response body content MUST be in that language. Use that value, not the input language.
+
+If Response language = "zh-TW", body must be Traditional Chinese
+(繁體中文), NOT Simplified Chinese.
+If Response language = "en" but input is Chinese, body must still
+be English.
+Input language detection (entities.input_language) is for
+matching medical terms to canonical sources only. It does NOT
+determine output language.
+
+Field semantics:
+
+input_language: language detected from user's raw input. Used to
+match medical entities to canonical source databases (LOINC,
+RxNorm). Does NOT affect output language.
+response_language: target language for ALL output content
+(specified in the "Response language:" line of the user message).
+Authoritative for body, descriptions, recommendations, and
+correlations.
+
+- `explanation` and `insight` strings: respond in the language specified by the "Response language:" line in the user message.
 - `term`, `risk_tier`, `source_type`: **stay English canonical** (enum values). Do NOT translate these — frontend uses them for styling and i18n key lookup.
 
 ## Chinese variant handling (preserved from v1, post § 2.9)
