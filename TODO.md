@@ -544,6 +544,97 @@ follow-up tightenings discovered during implementation.
       misleading message. Cosmetic only. Good Phase 0 retrospective
       candidate when reviewing deploy tooling.
 
+- [ ] Path 2 — Real PubMed retrieval for Explain (replaces Path 1 
+      defensive degradation)
+      **Priority:** High — Path 1 (commit bebf099) ships defensive 
+      degradation that strips fabricated PubMed citations. Result: 
+      Explain shows only LOINC/RxNorm/MedlinePlus citations + 
+      "based on general medical knowledge" banner. This is honest 
+      but thin — Vela's core "evidence-based" positioning needs 
+      real clinical guideline citations to fully deliver.
+      
+      **Discovered:** 2026-04-29 during Path 1 RAG diagnose. The 
+      decoupling: Explain prompt requires PubMed/FDA/NICE/Cochrane 
+      citations for clinical-judgment content, but Explain's 
+      retrieve_context() only fetches LOINC/RxNorm/MedlinePlus. 
+      LLM faced with hard requirement and permissive schema → 
+      fabricated PMIDs.
+      
+      **Reference architecture:** Research feature already has 
+      working PubMed retrieval via api/rag/retriever.py 
+      HybridRetriever (instantiated server.py:421 with 
+      enable_pubmed=True). Pattern is portable to Explain.
+      
+      **Design decisions needed (warrant ADR):**
+      - Query construction: per-entity? combined? LLM-rewritten 
+        like Research's rewrite_query?
+      - top_k: how many PubMed results to retrieve per entity?
+      - Relevance filter: reuse Research's LLM relevance filter 
+        or simpler title-match heuristic?
+      - Cost / latency budget: each PubMed call ~200-400ms; with 
+        4 entities × 3 queries that's 2-4s additional latency on 
+        top of existing Stage 1+2+3 pipeline
+      - Cache strategy: PubMed rate limits (3 req/sec without API 
+        key, 10 with PUBMED_API_KEY)
+      - Timeout / fallback: if PubMed unreachable, degrade to 
+        Path 1 behavior (LOINC-only) gracefully
+      
+      **Fix scope (post-ADR):**
+      - api/services/explain_service.py: add 
+        _lookup_pubmed_clinical() to retrieve_context()
+      - api/data_sources/pubmed.py: likely already importable 
+        (used by Research)
+      - api/prompts/explain_system.md: revert v5 → v6 with prompt 
+        re-allowing PubMed citations (with whitelist guard against 
+        retrieved PMIDs)
+      - api/models/explain_schemas.py: re-enable PUBMED in 
+        SourceType enum (currently commented out per Path 1)
+      - api/services/explain_service.py Layer 3 validator: keep 
+        URL whitelist check (now whitelist will include retrieved 
+        PMIDs; before it would always reject all PubMed)
+      - Tests: 5+ acceptance cases verifying retrieved PMIDs 
+        appear in citations and fabricated PMIDs do not
+      - Frontend: remove or update citationScopeBanner since 
+        PubMed citations are now real
+      
+      **Defer reason:** Needs design review on 4-5 architectural 
+      decisions above. Solo founder can implement after ADR 
+      written. Phase 0 retrospective candidate, or Phase 1A first 
+      polish slot.
+
+- [ ] Generic error UX — observe top 3 failure modes in prod and 
+      tighten messages
+      **Priority:** Low-Medium — UX iteration based on real data, 
+      not pre-emptive design.
+      
+      **Context:** Generic error UX shipped 2026-04-29 (commit 
+      a8eb6e8) with 6 error codes (empty_input, no_values_in_input, 
+      input_too_long, openai_api_error, schema_validation_failed, 
+      generic). Messages designed without prod data on which 
+      failure mode is most common.
+      
+      **Action plan:**
+      1. After ~1 week of soft launch traffic, query PostHog 
+         explain_failed events grouped by error_code
+      2. Identify top 3 failure modes by frequency
+      3. Tighten message specificity for top 3 (e.g. if 
+         openai_api_error is 60% of failures, current "服務暫時忙線" 
+         may need more guidance like "請稍後 5-10 分鐘再試")
+      4. Sub-categorize generic catchall if it's >10% of failures 
+         (currently any unexpected exception → "如問題持續，請聯繫
+         客服")
+      
+      **Required before action:**
+      - Verify PostHog explain_failed event payload includes 
+        error_code field (added in a8eb6e8)
+      - Sufficient prod traffic (~100+ explain_failed events) for 
+        meaningful distribution
+      - Optional: add error_id / sentry trace ID to user-facing 
+        message for support escalation
+      
+      **Defer reason:** Don't design UX without data. Wait until 
+      Phase 1A first or second week.
+
 ## § 2.7 Step 8 acceptance protocol
 
 When Step 8 (20 case acceptance run) completes, before declaring
