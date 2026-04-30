@@ -244,6 +244,26 @@ def _is_valid_citation_dict(citation: dict, retrieved_urls: set[str]) -> bool:
     return True
 
 
+def _normalize_explain_items(parsed: dict) -> int:
+    """Coerce ExplainItem.value=null to "" before pydantic validation.
+
+    The LLM legitimately emits `null` for items with no numeric value
+    (dietary recommendations, lifestyle advice, qualitative findings).
+    The schema declares `value: str` (required). Without this coercion
+    the entire response fails schema_validation_failed (Bug M06,
+    2026-04-30). Frontend gates rendering on falsy `item.value`, so an
+    empty string renders cleanly with no value line.
+
+    Returns count of items normalized (for logging).
+    """
+    normalized = 0
+    for item in parsed.get("items", []):
+        if item.get("value") is None:
+            item["value"] = ""
+            normalized += 1
+    return normalized
+
+
 def _filter_citations_in_dict(parsed: dict, sources: list[ExplainSource]) -> int:
     """
     Strip fabricated citations from the raw LLM JSON dict in place.
@@ -354,6 +374,16 @@ Input language (for entity-to-source matching only, NOT for output): {entities.i
         logger.warning(
             "[Explain] Filtered %d fabricated citation(s) from LLM response",
             dropped_count,
+        )
+
+    # Bug M06 (2026-04-30): coerce ExplainItem.value=null to "" before pydantic.
+    # LLM legitimately emits null for items without numeric values (dietary
+    # advice, lifestyle recommendations); schema requires str.
+    normalized_count = _normalize_explain_items(parsed)
+    if normalized_count > 0:
+        logger.info(
+            "[Explain] Normalized %d item(s) with null value → empty string",
+            normalized_count,
         )
 
     try:
