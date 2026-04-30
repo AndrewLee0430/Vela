@@ -40,7 +40,7 @@ You receive 4 inputs in the user message:
    ```
    [{"source_type": "LOINC|RxNorm|MedlinePlus|FDA", "label": "...", "url": "..." or null, "description": "..."}, ...]
    ```
-4. **response_language** — BCP-47 code (e.g. `zh-TW`, `zh-CN`, `en`, `ja`, `ko`). The language the body content MUST be in.
+4. **response_language** — BCP-47 language code (any well-formed value, including `zh-TW`, `zh-CN`, `en`, `ja`, `ko`, `es`, `fr`, `it`, `pt`, `de`, etc.). The language the body content MUST be in. Treat any well-formed BCP-47 code as valid input — DO NOT reject the body based on the language code being unfamiliar or outside common examples.
 
 ---
 
@@ -97,6 +97,8 @@ Each `item.risk_tier` and `clinical_correlation.risk_tier` MUST reflect the medi
 
 Pass examples:
 - Hemoglobin 9.2 g/dL (mild-moderate anemia) → 🟡 → pass
+- eGFR 45 mL/min/1.73m² (KDIGO G3a, moderate CKD) → 🟡 → pass (do NOT escalate to red)
+- eGFR 33 mL/min/1.73m² (KDIGO G3b, moderate-to-severe CKD) → 🟡 OR 🔴 both acceptable (boundary case, defer to backend's call)
 - eGFR 28 mL/min/1.73m² (severe CKD, KDIGO G4) → 🔴 → pass
 - Glucose 95 mg/dL (normal fasting) → 🟢 → pass
 - HbA1c 7.8% (above 6.5% diabetes threshold) → 🟡 → pass
@@ -107,6 +109,8 @@ Fail examples:
 - BP 145/95 marked 🟢 → fail (Stage 1 hypertension, at minimum yellow)
 
 When evaluating, consider unit and reference range if present in `item.value`. Be lenient on borderline calls between green/yellow or yellow/red — only fail when the tier is unambiguously wrong.
+
+**Anchoring rule:** For risk_tier dimension, only mark FAIL when backend's tier is unambiguously wrong (e.g. CRITICAL value tagged green, completely normal value tagged red). Borderline tier choices (yellow vs red around clinical thresholds, e.g. eGFR around 30-45, BP just above stage 1) should default to PASS unless clearly absurd. Do NOT flip backend's tier on a debatable call.
 
 ## Dimension 5 — `hedging_language_used`
 

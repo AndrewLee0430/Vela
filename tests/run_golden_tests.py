@@ -6,13 +6,22 @@ v3.0：加入 Explain 類別、HTML Report 輸出、Regression 比較
     uv run python tests/run_golden_tests.py
 """
 
+import sys
+from pathlib import Path
+
+# Make `api` package importable when running from repo root or anywhere else.
+# Required since B2 (§ 2.7 Step 8) added `from api.utils.llm_judge import
+# ExplainJudge` as a lazy import inside the main loop. Without this shim the
+# first explain case fails with ModuleNotFoundError: No module named 'api'.
+_REPO_ROOT = Path(__file__).resolve().parent.parent
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
 import asyncio
 import json
 import os
-import sys
 import time
 from datetime import datetime
-from pathlib import Path
 
 import httpx
 from dotenv import load_dotenv
@@ -141,14 +150,25 @@ async def call_verify(client: httpx.AsyncClient, drugs: list[str]) -> str:
         return f"[ERROR] {e}"
 
 
-async def call_explain(client: httpx.AsyncClient, report_text: str) -> str:
-    full_answer = ""
+async def call_explain(
+    client: httpx.AsyncClient,
+    report_text: str,
+    response_language: str = "en",
+) -> str:
+    """Call /api/explain and return concatenated text from explain_result event.
+
+    Updated 2026-04-30: was reading 'answer' event (deprecated since Step 4
+    JSON-mode rewrite 2026-04-26). E13-E28 silently passed empty strings to
+    LLM judge for ~3 days. Now reads explain_result correctly and forwards
+    response_language so the body language matches what the case expects.
+    """
+    parts: list[str] = []
     try:
         response = await client.post(
             f"{BASE_URL}/api/explain",
-            json={"report_text": report_text},
+            json={"report_text": report_text, "response_language": response_language},
             headers=HEADERS,
-            timeout=900.0
+            timeout=900.0,
         )
         if response.status_code == 400:
             try:
@@ -167,22 +187,116 @@ async def call_explain(client: httpx.AsyncClient, report_text: str) -> str:
                 continue
             try:
                 event = json.loads(raw)
-                if event.get("type") == "answer":
-                    chunk = event.get("content", "")
-                    if chunk:
-                        full_answer += chunk
-                elif event.get("type") == "sources":
-                    # Append source labels to answer for evaluation
-                    sources = event.get("content", [])
+                event_type = event.get("type")
+
+                if event_type == "explain_result":
+                    content = event.get("content", {}) or {}
+                    items = content.get("items", []) or []
+                    correlations = content.get("clinical_correlations", []) or []
+                    disclaimer = content.get("disclaimer", "") or ""
+
+                    for item in items:
+                        term = item.get("term", "")
+                        value = item.get("value", "")
+                        explanation = item.get("explanation", "")
+                        risk_tier = item.get("risk_tier", "")
+                        parts.append(f"{term} {value}: {explanation} [{risk_tier}]")
+
+                    for corr in correlations:
+                        insight = corr.get("insight", "")
+                        risk_tier = corr.get("risk_tier", "")
+                        items_ref = corr.get("items_referenced", []) or []
+                        parts.append(
+                            f"Correlation [{', '.join(items_ref)}]: {insight} [{risk_tier}]"
+                        )
+
+                    if disclaimer:
+                        parts.append(f"Disclaimer: {disclaimer}")
+
+                elif event_type == "sources":
+                    sources = event.get("content", []) or []
                     for src in sources:
-                        full_answer += f" [Source: {src.get('source_type', '')}]"
-                elif event.get("type") == "error":
-                    return f"[ERROR] {event.get('content', '')}"
+                        parts.append(f"[Source: {src.get('source_type', '')}]")
+
+                elif event_type == "error":
+                    code = event.get("code") or ""
+                    message = event.get("message") or event.get("content") or ""
+                    return f"[ERROR] {code}: {message}".strip()
             except json.JSONDecodeError:
                 pass
     except Exception as e:
         return f"[ERROR] {e}"
-    return full_answer.strip()
+    return " ".join(parts).strip()
+
+
+async def call_explain_full(
+    client: httpx.AsyncClient,
+    report_text: str,
+    response_language: str = "en",
+) -> dict:
+    """Call /api/explain and return structured response + retrieved sources for ExplainJudge.
+
+    Returns dict {items, clinical_correlations, disclaimer, sources_for_judge, error}.
+    `sources_for_judge` is a List[ExplainJudgeSource] ready to pass into
+    ExplainJudge.evaluate(). When the pipeline emits an error SSE event, sets
+    `error` to the error code so the caller can skip judge invocation.
+    """
+    from api.utils.llm_judge import ExplainJudgeSource
+
+    response_dict: dict = {
+        "items": [],
+        "clinical_correlations": [],
+        "disclaimer": "",
+        "sources_for_judge": [],
+        "error": None,
+    }
+    try:
+        response = await client.post(
+            f"{BASE_URL}/api/explain",
+            json={"report_text": report_text, "response_language": response_language},
+            headers=HEADERS,
+            timeout=900.0,
+        )
+        response.raise_for_status()
+        for line in response.text.split("\n"):
+            line = line.strip()
+            if not line.startswith("data:"):
+                continue
+            raw = line[5:].strip()
+            if not raw or raw == "[DONE]":
+                continue
+            try:
+                event = json.loads(raw)
+                event_type = event.get("type")
+
+                if event_type == "explain_result":
+                    content = event.get("content", {}) or {}
+                    response_dict["items"] = content.get("items", []) or []
+                    response_dict["clinical_correlations"] = (
+                        content.get("clinical_correlations", []) or []
+                    )
+                    response_dict["disclaimer"] = content.get("disclaimer", "") or ""
+
+                elif event_type == "sources":
+                    sources = event.get("content", []) or []
+                    for src in sources:
+                        response_dict["sources_for_judge"].append(
+                            ExplainJudgeSource(
+                                source_type=src.get("source_type", ""),
+                                label=src.get("label", ""),
+                                url=src.get("url"),
+                                description=src.get("description") or "",
+                            )
+                        )
+
+                elif event_type == "error":
+                    response_dict["error"] = event.get("code") or event.get("content") or "unknown"
+                    return response_dict
+            except json.JSONDecodeError:
+                pass
+    except Exception as e:
+        response_dict["error"] = f"http_error:{type(e).__name__}"
+    return response_dict
 
 
 async def call_explain_identified(client: httpx.AsyncClient, report_text: str) -> list[dict]:
@@ -326,7 +440,23 @@ Respond ONLY with valid JSON:
         return {"passed_concepts": [], "missing_concepts": must_contain, "forbidden_found": [], "all_pass": False, "score": 0, "reasoning": str(e)}
 
 
-def determine_status(eval_result: dict, answer: str, cat: str, expected: str = "blocked") -> str:
+def determine_status(
+    eval_result: dict,
+    answer: str,
+    cat: str,
+    expected: str = "blocked",
+    expected_error_code: str | None = None,
+) -> str:
+    # Explain cases that expect a specific pipeline error code (post Generic
+    # error UX a8eb6e8): E20 → no_values_in_input, E26 → empty_input. Match
+    # the prefix call_explain emits: "[ERROR] <code>: <message>".
+    if cat == "explain" and expected == "blocked" and expected_error_code:
+        if answer.startswith(f"[ERROR] {expected_error_code}"):
+            return "PASS"
+        if answer.startswith("[ERROR]"):
+            return "FAIL"  # got an error but wrong code
+        return "FAIL"  # got a normal response when expecting an error
+
     if answer.startswith("[ERROR]"):
         return "ERROR"
     if cat == "phi":
@@ -644,7 +774,40 @@ async def run_tests(smoke_only: bool = False, filter_prefix: str | None = None):
             elif cat == "verify":
                 answer = await call_verify(client, case["drugs"])
             elif cat == "explain":
-                answer = await call_explain(client, case["report_text"])
+                response_lang = case.get("response_language", "en")
+                answer = await call_explain(client, case["report_text"], response_language=response_lang)
+
+                # § 2.7 Step 8 — ExplainJudge integration
+                explain_judge_result = None
+                if case.get("use_explain_judge"):
+                    from api.utils.llm_judge import ExplainJudge
+                    full_response = await call_explain_full(
+                        client, case["report_text"], response_language=response_lang,
+                    )
+                    if full_response["error"]:
+                        # Pipeline errored (e.g. empty_input on E26) — skip judge.
+                        # Override step (after determine_status) ignores skipped results.
+                        explain_judge_result = {
+                            "dimensions": {},
+                            "overall": "fail",
+                            "issues": [f"Pipeline error: {full_response['error']}"],
+                            "explanation": "ExplainJudge skipped — pipeline error",
+                            "skipped": True,
+                        }
+                    else:
+                        explain_judge = ExplainJudge()
+                        explain_judge_result = await explain_judge.evaluate(
+                            report_text=case["report_text"],
+                            explain_response={
+                                "items": full_response["items"],
+                                "clinical_correlations": full_response["clinical_correlations"],
+                                "disclaimer": full_response["disclaimer"],
+                            },
+                            retrieved_sources=full_response["sources_for_judge"],
+                            response_language=response_lang,
+                        )
+                # Tagged on the case dict so the eval block below can read it.
+                case["_explain_judge_result"] = explain_judge_result
             elif cat == "document":
                 answer = "[SKIPPED] document endpoint removed"
             elif cat == "identify":
@@ -734,7 +897,8 @@ async def run_tests(smoke_only: bool = False, filter_prefix: str | None = None):
                 elif endpoint == "verify":
                     answer = await call_verify(client, case["drugs"])
                 elif endpoint == "explain":
-                    answer = await call_explain(client, case["report_text"])
+                    response_lang = case.get("response_language", "en")
+                    answer = await call_explain(client, case["report_text"], response_language=response_lang)
                 else:
                     print(f"\n  ❌  {case_id}: unknown endpoint '{endpoint}'", end=" ")
                     answer = f"[ERROR] Unknown endpoint: {endpoint}"
@@ -783,7 +947,34 @@ async def run_tests(smoke_only: bool = False, filter_prefix: str | None = None):
                 }
 
             total_elapsed = round(time.time() - start, 1)
-            status = determine_status(eval_result, answer, cat, case.get("expected", "blocked"))
+            status = determine_status(
+                eval_result,
+                answer,
+                cat,
+                case.get("expected", "blocked"),
+                expected_error_code=case.get("expected_error_code"),
+            )
+
+            # § 2.7 Step 8 — ExplainJudge override and result enrichment
+            explain_judge_result = case.pop("_explain_judge_result", None) if cat == "explain" else None
+            if explain_judge_result is not None:
+                eval_result["explain_judge_dimensions"] = explain_judge_result.get("dimensions", {})
+                eval_result["explain_judge_overall"] = explain_judge_result.get("overall", "fail")
+                eval_result["explain_judge_issues"] = explain_judge_result.get("issues", [])
+                eval_result["explain_judge_skipped"] = explain_judge_result.get("skipped", False)
+
+                if not explain_judge_result.get("skipped"):
+                    expected_dims = case.get("expected_explain_judge", {}) or {}
+                    actual_dims = explain_judge_result.get("dimensions", {})
+                    judge_failures = []
+                    for dim, expected_val in expected_dims.items():
+                        actual_val = actual_dims.get(dim, "missing")
+                        if actual_val != expected_val:
+                            judge_failures.append(f"{dim}={actual_val} (expected {expected_val})")
+                    if judge_failures:
+                        status = "FAIL"
+                        eval_result["explain_judge_failures"] = judge_failures
+
             stats[status] += 1
             if cat not in by_category:
                 by_category[cat] = []
@@ -797,6 +988,8 @@ async def run_tests(smoke_only: bool = False, filter_prefix: str | None = None):
                     print(f"     ❌ Missing: {mc}")
                 for fb in eval_result.get("forbidden_found", []):
                     print(f"     🚫 Forbidden: {fb}")
+                for jf in eval_result.get("explain_judge_failures", []):
+                    print(f"     ⚖️  Judge: {jf}")
                 if eval_result.get("reasoning"):
                     print(f"     💬 {eval_result['reasoning'][:100]}")
             if status == "ERROR":
@@ -834,6 +1027,47 @@ async def run_tests(smoke_only: bool = False, filter_prefix: str | None = None):
         cat_total = len(statuses)
         cat_rate  = round(cat_pass / cat_total * 100, 1) if cat_total else 0
         print(f"  {cat.capitalize():12s} {cat_pass}/{cat_total} ({cat_rate}%)")
+
+    # § 2.7 Step 8 — Acceptance Gate
+    EXPLAIN_THRESHOLD = 95.0
+    HARD_FLOOR_DIMENSIONS = ["citation_source_types_valid", "no_fabricated_citations"]
+
+    explain_results_summary = [r for r in results if r["category"] == "explain"]
+    if explain_results_summary:
+        explain_pass_count = sum(1 for r in explain_results_summary if r["status"] == "PASS")
+        explain_total_count = len(explain_results_summary)
+        explain_rate = round(explain_pass_count / explain_total_count * 100, 1) if explain_total_count else 0
+
+        # Hard floor: dim 2 + dim 3 must be "pass" on every judge run that wasn't skipped.
+        hard_floor_failures = []
+        for r in explain_results_summary:
+            ev = r.get("eval", {}) or {}
+            judge_dims = ev.get("explain_judge_dimensions", {}) or {}
+            if not judge_dims or ev.get("explain_judge_skipped"):
+                continue
+            for hard_dim in HARD_FLOOR_DIMENSIONS:
+                actual = judge_dims.get(hard_dim, "missing")
+                if actual != "pass":
+                    hard_floor_failures.append({
+                        "case_id": r["id"],
+                        "dimension": hard_dim,
+                        "result": actual,
+                    })
+
+        print(f"\n{BOLD}  § 2.7 Step 8 Acceptance Gate:{RESET}")
+        print(f"  Explain pass rate: {explain_pass_count}/{explain_total_count} ({explain_rate}% — threshold {EXPLAIN_THRESHOLD}%)")
+
+        acceptance_pass = True
+        if explain_rate < EXPLAIN_THRESHOLD:
+            print(f"  {RED}❌ Explain category below threshold{RESET}")
+            acceptance_pass = False
+        if hard_floor_failures:
+            print(f"  {RED}❌ Path 1 hard floor violations:{RESET}")
+            for f in hard_floor_failures:
+                print(f"    {f['case_id']}: {f['dimension']} = {f['result']}")
+            acceptance_pass = False
+        if acceptance_pass:
+            print(f"  {GREEN}✅ § 2.7 Step 8 acceptance gate cleared{RESET}")
 
     # Identify sub-group summary (when identify tests are present)
     identify_results = [r for r in results if r["category"] == "identify"]
