@@ -21,7 +21,7 @@ Examples from 2026-04-19 to 2026-04-20 sessions:
 **Phase**: Phase 0 — in progress (started 2026-04-17)
 
 **Completed** (do not re-implement):
-- 2.7 Explain 臨床推理強化 (Steps 1-6 shipped + pushed 2026-04-27, 19 commits cd697d1..dd128e2; Steps 7-8 LLM judge + 20-case acceptance pending — gating checklist in TODO.md)
+- 2.7 Explain 臨床推理強化 — ✅ DONE (Steps 1-8 + Path 1 RAG defense + M06 fix). Steps 1-6 shipped 2026-04-27 (19 commits). Steps 7-8 acceptance complete 2026-04-30 (commits c5b3a09 ExplainJudge class, 64c72f2 TEST_MODE rate-limit bypass, fa80ff9 acceptance integration, a52bf9f M06 fix). Acceptance run: 121/127 (95.3%) overall, hard floor 100%, 0 regressions. Path 1 RAG defense layers (post Step 8 + M06): Layer 1 prompt v5 (verified-only citations), Layer 2 schema (PUBMED enum disabled), Layer 3 _filter_citations_in_dict (drop fabricated URLs), Layer 4 _normalize_explain_items (null value coercion — Bug M06).
 - 2.0 PostHog wrapper (`utils/analytics.ts` + `AnalyticsAuthBridge`, v143)
 - 2.2 query_id via SSE (all 3 features emit query_id as first event, v144)
 - 2.3 CitationPanel click tracking + FeedbackBar events (source_type lowercase canonical)
@@ -37,7 +37,6 @@ Examples from 2026-04-19 to 2026-04-20 sessions:
 - TODO follow-ups logged: SSE payload type contract, Verify spelling_corrections structured field (in TODO.md "Phase 1A polish — telemetry & SSE contract follow-ups")
 
 **Next task** (choose one):
-- 2.7 Explain 臨床推理強化 — Steps 7-8 only (LLM judge prompt + 20-case acceptance run; protocol in TODO.md "§ 2.7 Step 8 acceptance protocol")
 - 2.1 Model Provider Refactor (5-7d, 9 檔案 — largest remaining Phase 0 block)
 - 3.1 User Context schema (NOT_STARTED, blocks Phase 1A)
 

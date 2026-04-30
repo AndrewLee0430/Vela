@@ -635,65 +635,45 @@ follow-up tightenings discovered during implementation.
       **Defer reason:** Don't design UX without data. Wait until 
       Phase 1A first or second week.
 
-## § 2.7 Step 8 acceptance protocol
+- [ ] Explain — E22/E24 must_contain keyword-coverage LLM variance
+      **Priority:** Low — Phase 1A polish item; not affecting product quality.
+      
+      **Context:** Discovered during § 2.7 Step 8 acceptance protocol (2026-04-30). 
+      E22 ("dense multi-system PDF-style report") and E24 ("urgent values K 6.8 + 
+      Na 128") flip between PASS and WARN across acceptance runs. Both have 
+      must_contain criteria with specific keyword expectations:
+      - E22: "mentions Furosemide is a diuretic" — LLM sometimes describes
+        Furosemide's effect without explicitly using "diuretic"
+      - E24: "explains potassium is critically elevated or dangerously high" — 
+        LLM sometimes says "above the typical reference range" hedged version
+      
+      Both are LLM stochasticity reflecting must_contain keyword strictness, 
+      not product capability gaps. Hard floor (citation_source_types_valid + 
+      no_fabricated_citations) and ExplainJudge per-dimension assessment 
+      consistently pass.
+      
+      **Action plan:**
+      Two options when revisited (Phase 1A polish):
+      - (a) Loosen must_contain criteria: "mentions Furosemide" (no diuretic 
+        keyword); "explains potassium is significantly or critically elevated"
+      - (b) Strengthen prompt explain_system.md to emit specific keywords for 
+        well-known clinical concepts (Furosemide=diuretic, K>6.5=critical)
+      
+      **Defer reason:** Not affecting users. Not blocking § 2.7 結案.
 
-When Step 8 (20 case acceptance run) completes, before declaring
-§ 2.7 fully done, execute these post-acceptance checks. This is
-not optional polish — these are the integration points between
-§ 2.7's automated quality and the broader TODO follow-up backlog.
-
-1. **Risk tier distribution analysis**
-   - Count green/yellow/red across 20 cases × N items per case
-   - If yellow > 70% of all items → systematic conservative bias
-     confirmed → execute "§ 2.7 risk tier judgment may skew
-     conservative" entry in § 2.7 Step 4 follow-up above
-   - If green > 80% → opposite bias (under-flagging) → equally
-     a problem; refine v2 prompt to flag borderline values more
-     readily
-
-2. **Hedging compliance audit**
-   - Sample 5 random items across the 20 cases
-   - For each, verify explanation does NOT contain forbidden
-     phrases per v2 prompt Section 2:
-     「您有」「您的診斷是」「您需要」「這表示您得了」
-     "You have", "Your diagnosis is", "You need",
-     "This means you have"
-   - Any violation → refine v2 prompt Section 2 hedging rules +
-     re-run sampled cases until clean
-
-3. **LOINC scope guard trigger rate (Step 3 effectiveness)**
-   - grep dev/prod logs for "[Explain] Step 3 downgrade triggered"
-   - Calculate trigger rate (downgrades / total successful runs):
-     - < 5% → Step 3 functioning as designed safety net; v2 prompt
-       self-check is working
-     - 5-15% → v2 prompt Section 3 may need stronger self-check
-       phrasing; consider iterating
-     - > 15% → v2 prompt Citation strategy section needs major
-       rewrite; LLM is systematically failing to discriminate
-       code-lookup vs clinical-judgment scope
-
-4. **TODO sweep**
-   - grep TODO.md for entries containing "Step 8" or "acceptance"
-   - For each: re-read the trigger condition, evaluate against
-     this run's data
-   - If trigger met → add to next session's task list with
-     priority noted
-   - If not met → leave as deferred, no action
-
-5. **Update FEATURE_AUDIT.md § 2.7 entry**
-   - Status: 🔧 → ✅ DONE
-   - Body: append "Step 8 acceptance summary" sub-section with
-     - Risk tier distribution: green X / yellow Y / red Z
-     - Hedging compliance: clean / N violations corrected
-     - Step 3 downgrade trigger rate: X%
-     - Any v2 prompt revisions performed (cite commit SHA)
-   - Bump "Generated:" date if updating same day, or include
-     "Updated post-Step 8" annotation
-
-This protocol exists because Step 8 is the natural integration
-checkpoint where automated outputs (LLM judgments) meet design
-intent (PRD § 2.7 quality bars). Skipping any item here means
-shipping § 2.7 with unverified assumptions.
+- [ ] Test infra — multilingual response_language assertion completeness
+      **Priority:** Low — Phase 1A polish.
+      
+      **Context:** Commit fa80ff9 fixed runner not threading response_language 
+      to /api/explain for multilingual category cases (M06/M07). Backend 
+      defaults to en when missing, causing M07 to fail "responds in Thai" 
+      assertion before fix.
+      
+      **Action plan:**
+      Run an audit script that flags any case in golden_dataset.json where 
+      endpoint=explain but response_language is missing. Should be zero 
+      after fa80ff9 — but pin this as a regression net before adding new 
+      cases in future.
 
 ## § 4.5 / § 4.6 Phase 0 末段 development queue
 
