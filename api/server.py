@@ -254,7 +254,15 @@ def _get_client_ip(request: Request) -> str:
 @app.middleware("http")
 async def rate_limit_middleware(request: Request, call_next):
     global _rate_store_last_cleanup
-    # TEST_MODE only skips auth, never rate limiting
+
+    # TEST_MODE bypasses rate limiting. Test runner makes 22+ explain
+    # requests + 22 ExplainJudge calls = 44+ requests in ~5 min, exceeding
+    # all per-IP limits. Production guard at module init (server.py:305-308)
+    # raises RuntimeError if TEST_MODE=true with FLY_APP_NAME set — process
+    # won't start, so this branch can't leak to prod.
+    if TEST_MODE:
+        return await call_next(request)
+
     path = request.url.path
     if path not in RATE_LIMITS:
         return await call_next(request)
