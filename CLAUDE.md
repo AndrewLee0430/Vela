@@ -32,14 +32,37 @@ Examples from 2026-04-19 to 2026-04-20 sessions:
 
 ### Workflow for a new task
 
-1. Read the relevant PRD section (requirements + acceptance + "not in scope")
-2. Check `FEATURE_AUDIT.md` for current state — **do not re-implement what's already done**
-3. Check `STATE.md` for active acceptance protocols and `BACKLOG.md` for trigger conditions tied to this task
-4. Implement
-5. Verify against PRD acceptance criteria, item by item
-6. **If the task is part of an acceptance protocol checkpoint, execute the protocol items** (running the full checklist, not just "X cases done")
-7. If implementation changed codebase state, update `FEATURE_AUDIT.md`. If shipped, append to `ARCHIVE.md`.
-8. Commit message format: `[PRD X.Y] brief description` (e.g. `[PRD 2.0] Remove temp window.__vela_analytics exposure`)
+**Step 0 — Identify the task** (work-source priority):
+
+1. Read `STATE.md` → top of "Next Up" queue is your task
+2. Find that task in `BACKLOG.md` → read short description + phase + estimated time
+3. If task references PRD §X.Y → read `docs/PRD.md` § section (requirements + acceptance + "not in scope")
+4. If task references ADR(s) → read `docs/decisions/00X-*.md` for decision context
+5. Check `FEATURE_AUDIT.md` for current state — **do not re-implement what's already done**
+
+**Step 1 — Implement**:
+
+6. Build per spec
+7. Verify against PRD acceptance criteria, item by item
+8. **If task is part of an acceptance protocol checkpoint** (e.g., § 2.7 Step 8), execute full protocol checklist — not just "X cases done"
+
+**Step 2 — Ship cleanup ritual** (explicit document update sequence):
+
+9. Update 4-5 docs:
+   - `STATE.md`: move task from "Next Up" → "Recently Shipped" (with commit SHA)
+   - `ARCHIVE.md`: append entry with `YYYY-MM-DD [TAG] Title — summary (SHA)`
+   - `BACKLOG.md`: remove entry or mark done
+   - `FEATURE_AUDIT.md`: sync if codebase state changed
+   - `docs/PRD.md` status marker: update §X.Y if section-level change (❌ → ✅ SHIPPED `<date>`)
+10. Commit message format: `[PRD X.Y] brief description` (e.g. `[PRD 2.0] Remove temp window.__vela_analytics exposure`)
+
+**Source-of-truth priority**:
+
+- `STATE.md` is the authoritative "what to do now" — not PRD, not BACKLOG
+- `BACKLOG.md` organizes work by phase; STATE.md "Next Up" is curated execution order
+- `docs/PRD.md` defines WHAT each item does; not an execution queue
+- `TECH_DEBT.md` is opportunistic side-channel; not a primary work source
+- `docs/decisions/` ADRs are decision context; not work sources themselves
 
 ## What This Project Is
 
