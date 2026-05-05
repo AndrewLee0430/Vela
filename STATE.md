@@ -16,7 +16,7 @@ None active. Awaiting next-task selection per Path B execution order (user-confi
 2. **§ 4.6 SEO Explore Pages** — PRD v1.3 Phase 0 末段, shares §4.5 Public Query Page renderer (SSR + OG + JSON-LD pipeline).
 3. **§ 2.1 Model Provider Refactor** — 5-7 days, 9 files, largest remaining Phase 0 block.
 4. **§ 3.1 User Context schema** — blocks Phase 1A.
-5. **Phase 0 Retrospective** — final gate before Phase 1A; produces `docs/decisions/00X-phase-0-retrospective.md` (002 may be reassigned to doc reorg ADR).
+5. **Phase 0 Retrospective** — final gate before Phase 1A; produces `docs/decisions/003-phase-0-retrospective.md` (002 claimed by doc reorg ADR — see docs/decisions/002-doc-reorganization.md).
 
 ## Active Acceptance Protocols
 
