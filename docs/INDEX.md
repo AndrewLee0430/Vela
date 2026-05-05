@@ -21,6 +21,12 @@ This folder contains spec, architecture, decisions, and historical references fo
 |---|---|
 | **decisions/** | ADRs (Architecture Decision Records). Read when work item references "see ADR XXX". Each ADR is short (~50 lines), self-contained. Some reference advisor discussion notes preserved in git history. |
 
+## Reference layer
+
+| File | When to read |
+|---|---|
+| **CONTEXT_MODEL.md** | When confused about which file holds what info, or why doc structure is this way. Quick-lookup tables + rationale for design decisions. |
+
 ## Diagrams
 
 | File | Subject |
