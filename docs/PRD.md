@@ -1196,6 +1196,7 @@ Phase 1A 讓使用者感覺「這個產品為我設計」,Phase 1B 真正做出�
 **需求 1:Share Answer 觸發**
 
 - 答案產生後,在 answer block 下方加「Share」按鈕(圖示 + 文字,i18n key)
+- **(2026-05-05 修訂)** Share button 對未登入使用者 (anonymous L0) disabled,顯示 tooltip + AnonymousUpgradeCTA 風格的 sign-up prompt;只有 L1/L2 已登入使用者才能建立分享。**理由:**(1) ADR 001 anonymous tier 規範 Research 2/day + Verify 2/day,單日上限 4 個答案,本需求 §4.5 需求 6「anon 10/day share 配額」永遠不會 bind,實作意義為 0;(2) Share 是 GTM § 5.4 L3 word-of-mouth 機制,假設「signed-in 種子使用者推薦」,anon 在沒建立任何使用者關係即發布 PHI 風險內容反而失去 abuse 追溯能力;(3) defense-in-depth — 即便前端 sign-in gate 被 bypass,後端 `require_auth` 會擋下 anon 對 `/api/share/create` 的呼叫。
 - 點擊後彈出 Share Modal,需明確同意才生成 share link(隱私 gate)
 - Modal 內容:
   - 標題:「公開分享這個答案」(i18n)
@@ -1222,16 +1223,16 @@ Phase 1A 讓使用者感覺「這個產品為我設計」,Phase 1B 真正做出�
 
 **需求 3:SEO 與社群 preview**
 
-- SSR 渲染(Next.js getServerSideProps 或 App Router server component),非 client-only
+- **(2026-05-05 修訂)** SSR 渲染採 **FastAPI Python Jinja2 server-side rendering**,**不**用 Next.js SSR(現有 `next.config.ts` 已 `output: 'export'`,build pipeline 完全靜態,無 Node runtime 在 production;改用 SSR 需 Dockerfile + next.config 重構,風險高於 §4.5 scope)。Public Query Page 路由註冊於 `api/server.py` 的 `serve_nextjs_pages` catch-all 之前,先 match `/q/{share_id}`。
 - 動態 OG meta tags:
   - `og:title`:取 query 前 80 字 + 「· Vela」
   - `og:description`:取答案首段前 160 字
-  - `og:image`:動態生成卡片圖(query + Vela logo,@vercel/og 或同等套件)
+  - **(2026-05-05 修訂)** `og:image`:Pillow Python backend,於 share 建立時同步生成 PNG,儲存至 `static/og/{share_id}.png`,由 FastAPI 既有 static mount 服務。**不**用 `@vercel/og`(Vercel-hosted edge function,與 Fly.io 自託架構不相容)。
   - `og:url`:canonical URL
   - `og:type`:article
 - Twitter Card:`summary_large_image`
 - JSON-LD schema:`QAPage`(Google rich result)
-- 加入 sitemap.xml(自動,non-indexed pages 不放;見需求 5 隱私篩選)
+- **(2026-05-05 修訂)** `/q/*` **不**進 `sitemap.xml`(內容由使用者產生,品質不可控,進 sitemap 會降低整站 SEO 信任度);改採每頁 `<meta name="robots" content="noindex, follow">` — 仍允許 link juice 流向 `/`,但不被 indexing。**§4.6 SEO Explore Pages 才會進 sitemap**(團隊 curated 內容,品質可控)。
 
 **需求 4:資料模型(SharedQuery 表)**
 
@@ -1258,14 +1259,18 @@ table: SharedQuery
 - 使用者在 Share Modal **必須勾選**「我已確認此問題不含病患個資或可識別資訊」才能產生連結
 - 若 query 文字符合「敏感模式偵測」(預先定義 regex / keyword:身分證字號、健保號、姓名+年齡組合等),Share 按鈕 disabled,顯示提示:「此問題可能含個資,無法公開分享」
   - 偵測規則寫成 i18n / locale-aware 模組(初版只覆蓋繁中、英文、日文,其餘 locale fallback 為「不偵測,但顯示更強烈警告」)
+  - **(2026-05-05 修訂)** 實作:擴充既有 `api/middleware/phi_handler.py` 的 `PHIDetector.detect(text, mode='guard'|'share')`。預設 `mode='guard'` 保留所有現有 caller 行為(Research / Verify / Explain / feedback / bug-report PHI gate);新模式 `mode='share'` 在現有 10 個 PHI 模式之上加 NHI(健保號)+ 姓名+年齡 combo patterns,locale-aware 套用範圍同上。**不**新建獨立 module,避免 PHI 偵測邏輯散落兩處。
 - Share 後使用者可在 Settings 新增頁籤「我的分享」(列表 + 撤回按鈕),撤回後 `is_public = false`,公開頁顯示「此分享已被撤回」
 - Settings 頁籤 v1.3 範圍只做「列表 + 撤回」,「我的分享」分析(view_count 等)推遲至後續版本
 
 **需求 6:防 abuse**
 
 - Per-user rate limit:已登入使用者每日最多生成 50 個 share_id;匿名使用者每日 10 個(by anonymous_id + IP)
+  - **(2026-05-05 修訂)** 與 §4.5 修訂 1 保持一致:anonymous user 不能建立分享,故「每日 10 個 anonymous」實際上是 0 個。本條保留 anon 限制邏輯為 defense-in-depth(若 sign-in gate bypass)。
+  - **(2026-05-05 修訂)** 實作:Postgres COUNT 在 handler 內檢查(`SELECT COUNT(*) FROM shared_query WHERE created_by=? AND created_at > NOW()-INTERVAL '1 day'`),**不**透過 rate limit middleware。理由:現有 middleware 只支援 IP-keyed bucket,per-user_id keying 需重構;且 rate limit middleware 是 in-memory,Fly.io 多機部署狀態不共享,daily quota 不能用 in-memory 算。
 - Per-IP page view rate limit:同一 IP 每分鐘最多訪問 60 個 share page,超過回 429
-- 若 query 含被偵測為攻擊性內容(LLM Guard 已有的 unsafe content classifier,重用),Share 按鈕 disabled
+  - **(2026-05-05 修訂)** 實作:加入既有 `RATE_LIMITS` dict (`api/server.py:226`),per-IP keyed,middleware 自然處理。但要注意 path matching:現有 middleware 是 exact path match (`if path not in RATE_LIMITS`),`/q/{share_id}` 是動態路徑,需在 middleware 加 prefix-match 邏輯,或在 route handler 內手動檢查。
+- ~~若 query 含被偵測為攻擊性內容(LLM Guard 已有的 unsafe content classifier,重用),Share 按鈕 disabled~~ **(2026-05-05 修訂 — 移除)** 此條取消。Recon 確認 codebase 中**不存在** "unsafe content classifier" — 既有 LLM Guard layers 為 (1) injection regex (2) base64 decode (3) indirect injection LLM scan (4) medical intent classifier (5) PHI detector,皆非通用「攻擊性內容」分類器。本 §4.5 不為此功能新建 classifier(成本與收益不對稱);PHI 偵測 + consent gate + admin manual flagged 機制視為足夠。若日後需要,另開 ADR 處理。
 - 後台 admin 可手動 `flagged = true`,公開頁顯示「此分享因違反使用條款已下架」
 
 **需求 7:PostHog 事件**
@@ -1312,7 +1317,7 @@ table: SharedQuery
 - LinkedIn Post Inspector 跑公開頁 URL,顯示正確 title / description / image
 - Twitter Card Validator 通過 `summary_large_image`
 - Google Rich Results Test 通過 QAPage schema
-- 撤回後公開頁顯示「已撤回」,sitemap 自動移除
+- 撤回後公開頁顯示「已撤回」(per 2026-05-05 修訂需求 3,`/q/*` 不在 sitemap.xml,故無「sitemap 自動移除」步驟,僅後端 `is_public=False` + 公開頁渲染撤回畫面即可)
 - Per-user rate limit 觸發 429
 - 6 個 PostHog 事件全部正確發送
 - Settings 「我的分享」頁籤可列表 + 撤回
@@ -1431,7 +1436,7 @@ table: ExplorePage
 - 兩功能共用 SSR layer:Next.js dynamic route 共用 server component
 - 兩功能共用 PostHog event prefix:`share_*` vs `explore_*` 並列,避免命名衝突
 - 兩功能 URL prefix 區分:`/q/*`(隨機 ID,使用者觸發)vs `/explore/*`(語意 slug,團隊產出),避免 SEO 混淆
-- 兩功能 robots.txt / sitemap 處理:`/q/*` 加入 sitemap 但 noindex(僅供分享用,不主動推 Google 索引,避免 query duplicate);`/explore/*` 加入 sitemap 並 index(主動推索引)
+- ~~兩功能 robots.txt / sitemap 處理:`/q/*` 加入 sitemap 但 noindex(僅供分享用,不主動推 Google 索引,避免 query duplicate);`/explore/*` 加入 sitemap 並 index(主動推索引)~~ **(2026-05-05 修訂)**:`/q/*` **不**進 sitemap(理由見 §4.5 需求 3 修訂),只放 `<meta name="robots" content="noindex, follow">`;`/explore/*` 進 sitemap 並 index 不變。
 
 **4.5 + 4.6 對既有 PRD 章節的影響**
 
