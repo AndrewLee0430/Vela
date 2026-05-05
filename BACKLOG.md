@@ -652,3 +652,70 @@ Execution sequence:
       **Note:** PRD § 4.4 處方解析 MVP 的 share / explore 機制
       v1.3 不啟用 (per § 4.5 + § 4.6 對既有 PRD 章節的影響 § 4.4
       crossref). Share button 在處方解析 answer block 不顯示。
+
+---
+
+## Phase 1B (post Phase 0 Retrospective) — per v0.4 + ADR 003+004
+
+Phase 1B work items per Roadmap Discussion v0.4 (commit 394545e) and ADR 003+004. Slot ranges from Week 4-8 of Phase 1B (5-week timeline).
+
+### [P0] Verify 強制英文 + 友善引導
+- **Source**: ADR 003 + v0.4 § 5.1
+- **Implementation**: Frontend input field guard + non-English detection + inline warning UI + 7 i18n keys × 16 languages + 4 PostHog events
+- **Estimated**: 1.5-2 days
+- **Slot**: Phase 1B Week 4
+- **External help links**: TFDA / Drugs.com / PMDA / MFDS (read-only links, NOT API integration)
+
+### [P0] DailyMed API integration
+- **Source**: v0.4 § 5.2
+- **Why**: Augment Research/Verify retrieval — DailyMed is 主檔 vs OpenFDA's sparse mirror; free, no rate limit, no API key
+- **Implementation**: Add as 4th retrieval source for Research; replace/augment FDA OpenFDA in Verify; Citation ⓘ tooltip update
+- **Estimated**: 2-3 days
+- **Slot**: Phase 1B Week 4-5
+
+### [P0] 在地差異提示 Tier 1 (TW/JP/KR/SG/MY/TH)
+- **Source**: v0.4 § 5.3 (advanced from Phase 1C to 1B per ADR 004 護城河 rebalance)
+- **Why advanced**: Removing prescription parser frees 5-7 days; 在地差異 is core 護城河 (per ADR 004 wedge 2)
+- **Implementation**: YAML schema design + 6-country data curation + backend retrieval integration + frontend UI (side panel + tooltip) + 16-lang i18n
+- **Estimated**: 6-7 days
+- **Slot**: Phase 1B Week 5-6
+- **Integration scope**: Augments Research/Verify/Explain (not new tab) — show "在地差異提示" alongside results
+
+### [P1] Anonymous Trial Flow polish
+- **Source**: v0.4 § 5.4
+- **Implementation**: L0→L1 upgrade prompt timing optimization (PostHog signal-driven) + Paywall UI polish + Onboarding 16-lang polish
+- **Estimated**: 2 days
+- **Slot**: Phase 1B Week 7
+
+## Phase 1C — per v0.4 (護城河 deepening)
+
+### [P1] WHO ICD-11 API integration
+- **Source**: v0.4 § 6.1
+- **Why**: Cross-language bridging anchor — multilingual disease name alignment ("糖尿病" / "diabetes" / "당뇨병" → 5A11)
+- **Implementation**: OAuth 2.0 client_id (3-5 day approval, file early) + RESTful integration; 14 official languages
+- **Estimated**: 2-3 days
+- **Slot**: Phase 1C Week 9
+- **Pre-action**: Apply for OAuth client_id NOW (per v0.4 § 10.1)
+
+### [P1] 在地差異提示 Tier 1 expansion (VN/PH/ID/HK/SA/AE)
+- **Source**: v0.4 § 6.2
+- **Implementation**: Same YAML schema as Tier 1 initial 6; backend/frontend already built in Phase 1B
+- **Estimated**: 4-5 days
+- **Slot**: Phase 1C Week 9-10
+
+### [P1] 跨語言橋接面板 MVP
+- **Source**: v0.4 § 6.3 (Wedge 3 of 4-wedge 護城河)
+- **Implementation**: ICD-11 anchor data structure + cross-language query backend + bridging panel UI + 4-5 language alignment logic
+- **Estimated**: 3-4 days
+- **Slot**: Phase 1C Week 11
+
+---
+
+## ❌ Removed from roadmap (per ADR 004)
+
+- **Prescription Parser MVP** (originally PRD § 4.4 Phase 1B 殺手功能) — permanently removed from active roadmap. No Phase 2 candidate spec. If revisited, redesign from scratch.
+- **TFDA API integration** — tied to prescription parser. Not implementing in any phase.
+- **LLM-based drug name resolution** (per ADR 003) — empirically shown unsafe (53-60% confident-wrong rate on GPT-4.1 series).
+- **Prescription clipboard paste with OCR** (was tied to prescription parser) — removed.
+
+If user behavior over time creates strong signal for prescription/Rx workflow (e.g. Verify monthly active users > 1,000 with > 50 user requests for prescription parsing), revisit will trigger fresh design — not v0.4 spec resurrection.
