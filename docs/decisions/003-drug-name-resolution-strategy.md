@@ -2,7 +2,7 @@
 
 **Status**: Accepted
 **Date**: 2026-05-04
-**Decision-makers**: Solo founder (user) + Roadmap Discussion v0.4 (顧問 + 三模型實測)
+**Decision-makers**: Solo founder (user) + advisor discussion 2026-05-04 (顧問 + 三模型實測)
 
 ## Context
 
@@ -12,7 +12,7 @@ Verify pipeline depends on FDA OpenFDA (English-indexed). Production verificatio
 - GPT-4.1 series: 53-60% confident-wrong rate (unacceptable for prescription safety)
 - GPT-5.4 nano: 0% confident wrong but 12.5% recognition rate (UX broken)
 
-Full test report + UI spec + i18n keys + engineering breakdown: see [`docs/roadmap-discussion-v0.4.md` § 5.1, § 11](../roadmap-discussion-v0.4.md).
+Full test report + UI spec + i18n keys + engineering breakdown documented in advisor discussion notes (preserved in git commit 394545e § 5.1, § 11; file removed 2026-05-05 per cleanup decision).
 
 ## Decision
 
@@ -28,12 +28,12 @@ Option B (LLM resolution) and Option C (TFDA API) both rejected — see ADR 004 
 
 ## Implementation
 
-Deferred to Phase 1B Week 4 per BACKLOG.md. UI spec, i18n keys (7 keys × 16 languages), and PostHog event schema documented in [v0.4 § 5.1](../roadmap-discussion-v0.4.md).
+Deferred to Phase 1B Week 4 per BACKLOG.md. UI spec, i18n keys (7 keys × 16 languages), and PostHog event schema documented in advisor discussion notes (git commit 394545e § 5.1).
 
 Estimated engineering: 1.5-2 days.
 
 ## References
 
-- [Roadmap Discussion v0.4](../roadmap-discussion-v0.4.md) — full investigation + UI spec
+- Advisor discussion notes 2026-05-04 (preserved in git commit 394545e — file removed 2026-05-05)
 - [ADR 004](004-prescription-parser-deferral.md) — sister decision (護城河 rebalance)
 - [BACKLOG.md](../../BACKLOG.md) — Phase 1B work item entry

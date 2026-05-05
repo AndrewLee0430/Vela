@@ -1118,7 +1118,7 @@ Phase 1A 讓使用者感覺「這個產品為我設計」,Phase 1B 真正做出�
 - 若訂閱,「清除訂閱關聯資料」
 **4.4 處方解析 MVP(藥師殺手級功能)** 🧊 OUT OF SCOPE (per ADR 004, 2026-05-04)
 
-> **Status update 2026-05-04**: This feature is permanently removed from the active roadmap per [ADR 004](decisions/004-prescription-parser-deferral.md). No Phase 2 candidate spec; spec body below preserved as historical reference. If future market/competitive conditions warrant revisit, the feature will be re-designed from scratch — not resurrected from this spec. Source: [docs/roadmap-discussion-v0.4.md § 0, § 3](roadmap-discussion-v0.4.md).
+> **Status update 2026-05-04**: This feature is permanently removed from the active roadmap per [ADR 004](decisions/004-prescription-parser-deferral.md). No Phase 2 candidate spec; spec body below preserved as historical reference. If future market/competitive conditions warrant revisit, the feature will be re-designed from scratch — not resurrected from this spec. Source: ADR 004 + advisor discussion notes (git commit 394545e § 0, § 3).
 
 **戰略定位:**這是 Phase 1B 的核心功能,Vela product-market fit 的試金石。UpToDate 做不到(它是知識庫)、OpenEvidence 做不到(沒有在地健保資料)、ChatGPT 可以模仿但不可靠(藥師不敢拿病人安全賭注)。目標:直接對應台灣社區藥師的 core job-to-be-done「確認處方安全」。
 
@@ -1461,7 +1461,7 @@ table: ExplorePage
 
 Phase 1C 把「別人複製不了」的東西埋進產品。兩個核心功能——在地差異提示和跨語言橋接——都是 OpenEvidence 和 UpToDate 結構上做不到的差異化。
 
-**5.1 在地差異提示 — 分層式全球化** ❌ PENDING (Phase 1B advanced per v0.4 + ADR 004 護城河 rebalance — Tier 1 6國 originally Phase 1C, now Phase 1B; see BACKLOG.md)
+**5.1 在地差異提示 — 分層式全球化** ❌ PENDING (Phase 1B advanced per ADR 004 + advisor discussion 護城河 rebalance — Tier 1 6國 originally Phase 1C, now Phase 1B; see BACKLOG.md)
 
 **戰略定位:**Vela 對抗 OpenEvidence 全球擴張最重要的結構性護城河。OE 因為 NPI 驗證綁定美國,無法做真正的全球在地化。Vela 的「無身份驗證」架構讓我們可以自然服務全球,透過分層式在地提示實現低成本在地化。
 
@@ -1557,7 +1557,7 @@ Phase 1C 把「別人複製不了」的東西埋進產品。兩個核心功能�
 - 初版建 12 國 authorities:1 個週末
 - 每季檢查連結失效:30 分鐘
 - 新國家加入:30 分鐘-1 小時
-**5.1.1 在地知識 YAML 實作規範(v1.2 新增)** ❌ PENDING (Phase 1B advanced per v0.4 + ADR 004 — Tier 1 schema + 6國 data go to Phase 1B; expansion 6國 stays Phase 1C)
+**5.1.1 在地知識 YAML 實作規範(v1.2 新增)** ❌ PENDING (Phase 1B advanced per ADR 004 + advisor discussion — Tier 1 schema + 6國 data go to Phase 1B; expansion 6國 stays Phase 1C)
 
 **目標**
 

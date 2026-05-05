@@ -421,7 +421,7 @@ Phase 6A grep 揭露:codebase 之前完全沒有 `{feature}_completed` events(�
 
 Phase 0 還剩 2.1(9 檔 Provider refactor,最大塊)+ 3.1 user_context schema(blocks Phase 1A)+ § 4.5 Share Answer + § 4.6 SEO Explore Pages + Phase 0 Retrospective。 (§ 2.7 Steps 1-8 + Path 1 + M06 全部完成 2026-04-30 — see ARCHIVE.md once created)
 
-**Phase 1B-1C scope per v0.4 + ADR 003+004 (2026-05-04):**
+**Phase 1B-1C scope per advisor discussion + ADR 003+004 (2026-05-04):**
 - 處方解析 MVP 永久移除 (ADR 004)
 - TFDA API 不接 (any phase)
 - 在地差異提示 Tier 1 (TW/JP/KR/SG/MY/TH) 從 Phase 1C 提前到 Phase 1B

@@ -1,6 +1,6 @@
 # STATE.md — Vela Current Development Focus
 
-**Last updated**: 2026-05-04 (post v0.4 roadmap integration + ADR 003+004)
+**Last updated**: 2026-05-05 (post advisor roadmap integration cleanup + ADR 003+004)
 
 ## Phase
 
@@ -16,9 +16,9 @@ None active. Awaiting next-task selection per Path B execution order (user-confi
 2. **§ 4.6 SEO Explore Pages** — PRD v1.3 Phase 0 末段, shares §4.5 Public Query Page renderer (SSR + OG + JSON-LD pipeline).
 3. **§ 2.1 Model Provider Refactor** — 5-7 days, 9 files, largest remaining Phase 0 block.
 4. **§ 3.1 User Context schema** — blocks Phase 1A.
-5. **Phase 0 Retrospective** — final gate before Phase 1A; produces `docs/decisions/005-phase-0-retrospective.md` (003+004 claimed by v0.4 integration — see ADR 003 + ADR 004).
+5. **Phase 0 Retrospective** — final gate before Phase 1A; produces `docs/decisions/005-phase-0-retrospective.md` (003+004 claimed by advisor roadmap integration — see ADR 003 + ADR 004).
 
-## Phase 1B preview (per v0.4 + ADR 003+004)
+## Phase 1B preview (per advisor discussion + ADR 003+004)
 
 Week 4-8 work queue (post Phase 0 Retrospective):
 
@@ -40,7 +40,8 @@ None known.
 
 ## Recently Shipped (last 7 days)
 
-- **2026-05-04** v0.4 roadmap integration — ADR 003 drug name resolution + ADR 004 prescription parser deferral + multi-file sync (commits 394545e, 96eb13b, 3e2f384, [this commit])
+- **2026-05-05** Advisor roadmap integration cleanup — v0.4 archive removed + reference scrub across ADRs/BACKLOG/PRD/STATE/FEATURE_AUDIT (this commit)
+- **2026-05-04** Advisor roadmap integration — ADR 003 drug name resolution + ADR 004 prescription parser deferral + multi-file sync (commits 394545e, 96eb13b, 3e2f384, 7eda124)
 - **2026-04-30** Doc reorganization Stage 2 — drift sync (3fdeddc), architecture extract (59002d1), structural reorg (5ced91a), PRD markers (aaa95de), ADR 002 (0305817)
 - **2026-04-30** § 2.7 Steps 7-8 acceptance protocol + M06 fix + docs sync (c5b3a09 ExplainJudge class, 64c72f2 TEST_MODE rate-limit bypass, fa80ff9 acceptance integration, a52bf9f M06, dffd015 docs)
 - **2026-04-29** Path 1 RAG defense (3-layer + UX banner + tooltip Bug X1/X2/X3, bebf099, daaf4be)
