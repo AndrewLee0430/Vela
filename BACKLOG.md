@@ -1,14 +1,16 @@
-# Vela TODO
+# BACKLOG.md — Vela Open Future Work
 
-## Roadmap (see PRD.md for full specs; also cross-referenced in CLAUDE.md "Current Development Status")
+Open tasks not actively in progress. New items captured here, moved to STATE.md when in focus, archived to ARCHIVE.md when shipped.
 
-- [ ] §2.7 Explain 臨床推理強化 (1-2 days; execute after 1 week of
-      baseline metrics — explain_locked_viewed %, L1 thumbs ratio,
-      citation_clicked by source_type)
-- [ ] §3.1 user_context write endpoint (minimal 2-3 days / DB-backed
-      4-5 days; decide based on L1 signup volume)
-- [ ] §2.1 Model Provider abstraction (5-7 days; Month 1-2, or earlier
-      if VelaError LLM_* spike or OpenAI daily cost anomaly — see 維運 § 4.4)
+For active focus see STATE.md. For tech debt see TECH_DEBT.md.
+
+## Categories below
+- Round 3 follow-ups (post §2.8 anon flow)
+- §2.7 Step 4 follow-ups (post Step 8 re-eval, 4 items remaining; 2 archived as resolved/evaluated)
+- Phase 1A polish — telemetry & SSE contract
+- §4.5 / §4.6 Phase 0 末段 development queue
+
+---
 
 ## Round 3 follow-up (high priority)
 - [ ] AnonymousUpgradeCTA third_query fires twice in PostHog.
@@ -188,36 +190,6 @@
       requests, or (b) Pro PDF export needs the same structured markdown —
       whichever arrives first.
 
-- [ ] § 2.7 risk tier judgment may skew conservative (yellow-heavy)
-      **Priority:** Medium — quality issue, not a functional bug.
-
-      **Observation (2026-04-25 dev smoke test):**
-      Test case "血紅素 10.2 g/dL (參考值 12-16)、白血球 12,500/μL (偏高)"
-      produced all three risk_tier labels as 🟡 (yellow):
-      - Hemoglobin 10.2 (moderate anemia by WHO classification)
-      - WBC 12,500 (mild leukocytosis)
-      - Anemia + leukocytosis correlation
-
-      Per v2 prompt Section 4 rule 3: "Multi-item combination
-      suggesting high combined risk → red on the correlation".
-      Anemia + leukocytosis combined could indicate chronic
-      inflammation, infection, or hematologic process — should
-      arguably be 🔴.
-
-      **Defer reason:** A single test case is not statistical
-      evidence. Wait for Step 8 (20 acceptance cases) to determine
-      if this is a systematic bias before modifying v2 prompt.
-      Modifying prompt based on n=1 risks overfitting.
-
-      **Trigger evaluation:** Evaluated as part of Step 8 acceptance
-      protocol (see "§ 2.7 Step 8 acceptance protocol" section below).
-
-      **Action when triggered:** If Step 8 risk tier distribution
-      shows yellow > 70% systematic across 20 cases, refine v2 prompt
-      Section 4 decision rules with more explicit thresholds (e.g.
-      "WHO moderate anemia → yellow; severe → red; combined with
-      infection markers → red").
-
 - [ ] § 2.7 RiskBadge hover tooltip with tier definition
       **Priority:** Medium — UX gap, surfaced during dev smoke test.
 
@@ -266,74 +238,6 @@
 
       **Defer reason:** Coordinated with existing § 2.7 Step 4
       follow-up. Combined work makes sense to batch.
-
-- [ ] § 2.7 + § 2.9 LLM body language vs disclaimer language drift
-      **Priority:** Low — UX edge case, not a functional bug.
-
-      **Observation:**
-      Both Verify § 2.9 and Explain § 2.7 (Step 5) use
-      response_language for fixed-string injection (severity_label
-      / disclaimer / downgrade notes), but the LLM-generated body
-      content (description, recommendation, item.explanation,
-      correlation.insight) uses entities.input_language
-      auto-detected from the input text.
-
-      Effect: user types English query but UI is set to Japanese
-      → LLM body returns English, but disclaimer renders Japanese
-      → mixed-language output.
-
-      **Defer reason:** Edge case (most users type in their UI
-      language). Mirrors existing Verify § 2.9 behavior —
-      consistent across features. Phase 1A i18n mop-up is the
-      natural place to harmonize all three features (Research,
-      Verify, Explain) into a single response_language pattern
-      that threads through both LLM prompts and fixed strings.
-
-      **Scope for full fix:**
-      - Decide single source of truth: response_language (UI
-        language) wins over input_language detection
-      - Thread response_language into LLM prompt for all 3 features
-      - Or: keep auto-detect but add visible language picker in
-        UI when detected ≠ UI lang
-      - Update PRD § 2.7 + § 2.9 if behavior changes
-
-      **Discovered:** 2026-04-26 during § 2.7 Step 5C-1
-      implementation flag from Claude Code.
-
-      **Prod confirmed (2026-04-28 during Phase 0 deploy verify):**
-
-      Reproduction with input "eGFR 45 mL/min (ref >60), HbA1c
-      7.8%, Metformin 1000mg BID" + UI=zh-TW:
-      - Disclaimer rendered in zh-TW (繁中) ✓
-        — i18n key lookup works
-      - Item card body content rendered in English ✗
-        — LLM follows input language, not response_language
-
-      Backend log evidence (fly logs 2026-04-28T03:28:13):
-        [Explain] entities.input_language = en
-
-      Confirms hypothesis from 753b27d: backend detects input
-      language at Stage 1 entity extraction, then Stage 3 LLM
-      generates body in detected language regardless of
-      response_language parameter intent.
-
-      Earlier observation 2026-04-26 with input "血紅素 9.2 g/dL,
-      白血球 14000,血壓 145/95,心跳 102" + UI=zh-TW:
-      - LLM body rendered in 簡體中文 (Simplified Chinese),
-        not 繁中 (Traditional Chinese as expected from UI lang)
-
-      **Refined fix scope (replaces vague v0 scope):**
-      - explain_system.md prompt v3 → v4: explicit instruction
-        "Body content (descriptions, recommendations, clinical
-        correlations) MUST be in {response_language}, regardless
-        of detected input language. Input language detection is
-        for entity normalization only, not output language."
-      - Verify with: zh-TW input → en UI → expect en body,
-        en input → zh-TW UI → expect zh-TW body, zh input →
-        zh-TW UI → expect zh-TW body (not zh-CN)
-      - Add to § 2.7 Step 8 acceptance protocol: 4-locale ×
-        2-input-language matrix (en/zh-TW/ja/ko UI ×
-        en-input/zh-input)
 
 ## Phase 1A polish — telemetry & SSE contract follow-ups
 
