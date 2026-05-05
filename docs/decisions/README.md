@@ -27,6 +27,7 @@
 | 001 | Anonymous Trial Flow | Accepted (solo founder review, 2026-04-19) | 2026-04-18 | 兩層 UX / 三層資料設計,兌現 Privacy-first 承諾 |
 | 002 | Documentation Reorganization | Accepted (2026-04-30) | 2026-04-30 | 拆 CLAUDE.md (574→111),新增 STATE/BACKLOG/ARCHIVE/TECH_DEBT,docs/architecture.md;PRD 加 status markers |
 | 003 | Drug Name Resolution Strategy | Accepted (2026-05-04) | 2026-05-04 | Verify 採 Option A:強制英文 INN 輸入 + 非英文 inline warning + 外部查詢連結;基於 40-題×3 模型實測拒絕 LLM resolution / TFDA dict |
+| 004 | Prescription Parser Deferral | Accepted (2026-05-04) | 2026-05-04 | 處方解析 MVP 永久移除(Phase 1B + 任何未來階段);TFDA API 不整合;護城河重新定位:5-wedge→4-wedge(multilingual + 在地差異 + 跨語言橋接 + privacy) |
 
 ## 如何加新決策
 
