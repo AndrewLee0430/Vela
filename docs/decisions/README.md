@@ -6,11 +6,11 @@
 
 **Spec vs State vs Decision 的分工**:
 
-- `docs/PRD.md` — **Spec**,描述「要做什麼」(穩定,慢改)
-- `FEATURE_AUDIT.md` — **State**,描述「現在做到哪」(高頻,由 Claude Code 維護)
+- `docs/PRD.md` — **Spec**,描述「要做什麼」(穩定,慢改;§ status markers 反映 ship 狀態)
+- `STATE.md` / `ARCHIVE.md` / codebase grep — **State**,描述「現在做到哪」(STATE.md = current focus,ARCHIVE.md = shipped log,codebase = ground truth)
 - `docs/decisions/` — **Decision**,描述「為什麼這樣做」(決策當下 + 後續調整紀錄)
 
-決策紀錄不汙染 PRD(PRD 保持簡潔),也不汙染 FEATURE_AUDIT(那是現況不是理由)。
+決策紀錄不汙染 PRD(PRD 保持簡潔),也不汙染 STATE/ARCHIVE(那是現況不是理由)。
 
 ## 格式規則
 
@@ -35,7 +35,7 @@
 2. 使用 `001-anonymous-trial-flow.md` 的結構為模板
 3. 更新本檔案的「決策索引」表格
 4. 在 PRD 對應章節加 `> See decision: docs/decisions/NNN-title.md` pointer
-5. 在 FEATURE_AUDIT 相關條目也加反向連結
+5. 若 ADR 影響進行中工作,同步更新 STATE.md / BACKLOG.md / TECH_DEBT.md
 6. Commit message 格式:`docs(decisions): add ADR NNN — <short title>`
 
 ## 何時該記 ADR

@@ -58,6 +58,5 @@ For older work see ARCHIVE.md.
 - **Completed work log**: ARCHIVE.md
 - **Tech debt entries**: TECH_DEBT.md
 - **Spec**: docs/PRD.md (v1.3)
-- **Code state vs PRD**: FEATURE_AUDIT.md
 - **Architecture**: docs/architecture.md
 - **ADRs**: docs/decisions/

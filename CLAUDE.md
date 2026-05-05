@@ -27,7 +27,6 @@ Examples from 2026-04-19 to 2026-04-20 sessions:
 | Tech debt entries (active gaps) | TECH_DEBT.md |
 | System architecture (request flow / pipelines / payments / DB / env / frontend / deploy) | docs/architecture.md |
 | Master spec | docs/PRD.md (v1.3) |
-| Code state vs PRD | FEATURE_AUDIT.md |
 | Decision records (ADRs) | docs/decisions/ |
 
 ### Workflow for a new task
@@ -38,7 +37,7 @@ Examples from 2026-04-19 to 2026-04-20 sessions:
 2. Find that task in `BACKLOG.md` → read short description + phase + estimated time
 3. If task references PRD §X.Y → read `docs/PRD.md` § section (requirements + acceptance + "not in scope")
 4. If task references ADR(s) → read `docs/decisions/00X-*.md` for decision context
-5. Check `FEATURE_AUDIT.md` for current state — **do not re-implement what's already done**
+5. Grep codebase to verify partial implementation — `git grep "<feature_keyword>"` + `ls pages/<feature>` etc. Don't re-implement existing code.
 
 **Step 1 — Implement**:
 
@@ -48,11 +47,10 @@ Examples from 2026-04-19 to 2026-04-20 sessions:
 
 **Step 2 — Ship cleanup ritual** (explicit document update sequence):
 
-9. Update 4-5 docs:
+9. Update 4 docs:
    - `STATE.md`: move task from "Next Up" → "Recently Shipped" (with commit SHA)
    - `ARCHIVE.md`: append entry with `YYYY-MM-DD [TAG] Title — summary (SHA)`
    - `BACKLOG.md`: remove entry or mark done
-   - `FEATURE_AUDIT.md`: sync if codebase state changed
    - `docs/PRD.md` status marker: update §X.Y if section-level change (❌ → ✅ SHIPPED `<date>`)
 10. Commit message format: `[PRD X.Y] brief description` (e.g. `[PRD 2.0] Remove temp window.__vela_analytics exposure`)
 

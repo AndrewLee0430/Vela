@@ -8,7 +8,7 @@
 |---|---|
 | ✅ SHIPPED <date> (commits) | Fully implemented + production-verified. See ARCHIVE.md for full log. |
 | 🔧 IN PROGRESS | Actively being worked. See STATE.md for current focus. |
-| 🔬 PARTIAL <date> | Partial implementation. See FEATURE_AUDIT.md for breakdown. |
+| 🔬 PARTIAL <date> | Partial implementation. See ARCHIVE.md for what shipped + codebase grep for what remains. |
 | ❌ PENDING (phase) | Not yet started. See STATE.md for sequence + BACKLOG.md for queue. |
 | 🧊 OUT OF SCOPE | Explicitly deferred per phase-gate or design decision. |
 
@@ -2026,7 +2026,9 @@ pharmacist Free → Pro 轉換率 ≥ 其他角色 2 倍是 PMF 達成的主要�
 
 「請實作 Master PRD v1.2 第 2.7 節 Explain 臨床推理強化。工期目標 1-2 天,主要改動 api/services/explain_service.py 與 api/prompts/explain_system.md。完成後用 2.7 驗收標準逐項確認,並在 api/utils/llm_judge.py 加入 Explain 專用評估 prompt。」
 
-**A.2 章節對照 FEATURE_AUDIT.md**
+**A.2 章節對照 FEATURE_AUDIT.md** (歷史快照,2026-04 撰寫時的 audit 對照表)
+
+> **2026-05-05 update**: FEATURE_AUDIT.md 已 deprecated(commit 後續移除)。本表保留為 PRD 撰寫時的 audit 對照歷史紀錄,不再代表現況。當前狀態請查 codebase grep + STATE.md / ARCHIVE.md 中的 PRD § status markers。
 
 | **PRD 章節** | **FEATURE_AUDIT 對照** | **關係** |
 | --- | --- | --- |
@@ -2049,10 +2051,13 @@ pharmacist Free → Pro 轉換率 ≥ 其他角色 2 倍是 PMF 達成的主要�
 **A.3 文件間關係**
 
 - GTM v7.1:市場定位、渠道、融資、風險。對應「為何要做這些功能」
-- Master PRD v1.2(本文件):產品功能規格。對應「要做什麼」
+- Master PRD v1.3(本文件):產品功能規格。對應「要做什麼」
 - 維運計畫 v3:上線後監控與運維。對應「如何維護」
-- FEATURE_AUDIT.md:Codebase 當前狀態盤點。對應「目前在哪」
-開發新功能建議順序:查 PRD 章節 → 讀該章節需求 → 對照 FEATURE_AUDIT 現狀 → 交付 Claude Code。
+- STATE.md:當前焦點 + Next Up 隊列。對應「現在做哪個」
+- ARCHIVE.md:已 ship 的工作紀錄(chronological)。對應「做過哪些」
+- Codebase grep / git log:現狀 ground truth。對應「目前在哪」
+
+開發新功能建議順序:查 STATE.md「Next Up」→ 讀對應 PRD 章節需求 → grep codebase 確認尚未實作 → 交付 Claude Code。
 
 **十、更新記錄**
 
