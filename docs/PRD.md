@@ -2,6 +2,18 @@
 
 *Ask in your language. Verified by official sources. Answered in yours. · Updated 2026-04-28*
 
+**Status marker legend** (added 2026-04-30 doc reorg, applied to feature section headings only):
+
+| Marker | Meaning |
+|---|---|
+| ✅ SHIPPED <date> (commits) | Fully implemented + production-verified. See ARCHIVE.md for full log. |
+| 🔧 IN PROGRESS | Actively being worked. See STATE.md for current focus. |
+| 🔬 PARTIAL <date> | Partial implementation. See FEATURE_AUDIT.md for breakdown. |
+| ❌ PENDING (phase) | Not yet started. See STATE.md for sequence + BACKLOG.md for queue. |
+| 🧊 OUT OF SCOPE | Explicitly deferred per phase-gate or design decision. |
+
+Markers are inline annotations on section headings. Spec body text below each heading is preserved verbatim from prior PRD versions — markers are status overlay only, not spec change.
+
 **v1.3 重點變更:v1.2 所有章節 + § 4.5 公開分享連結 + § 4.6 SEO Explore Pages(spec 編號維持 Phase 1B 4.x 與其他 4.1-4.4 cohere,執行順序覆寫至 Phase 0 末段,§ 2.7 Step 8 acceptance 通過後、Phase 0 Retrospective 之前)**
 
 本版本為 v1.2 → v1.3 增補版,新增 soft launch(= Phase 0 ship gate)所需的 word-of-mouth 與 organic discovery 兩項基礎機制,並對應調整 § 4.3 / § 3.4 / § 6.2 章節(詳見 § 10.1):
@@ -132,7 +144,7 @@ Phase 0 的任務都是看不見的技術基礎,但決定後續所有功能的�
 | Day 8.5-14.5 | 2.1 Model Provider 全面 refactor | 最大工作量,8 檔案 | 5-7d |
 | Day 15-16.5 | Regression 測試 + buffer | 統一驗收 | 2d |
 
-**2.0 PostHog 事件基礎建設(v1.1 新增)**
+**2.0 PostHog 事件基礎建設(v1.1 新增)** ✅ SHIPPED 2026-04-18 (dd210b9, 3876239)
 
 **背景**
 
@@ -188,7 +200,7 @@ FEATURE_AUDIT.md 第 4 節發現:整個 repo 只有 1 處 posthog.capture(),就�
 - 使用者登出後 distinct_id 正確 reset
 工期:1-1.5 天。
 
-**2.1 Model Provider 抽象層(v1.1 擴充)**
+**2.1 Model Provider 抽象層(v1.1 擴充)** ❌ PENDING (Phase 0 remaining, largest block)
 
 **目標**
 
@@ -294,7 +306,7 @@ Refactor 後必須逐項驗證:
 - 錯誤處理統一:1 天
 - Regression 測試:1-1.5 天
 - 總計:5-7 天
-**2.2 query_id 關聯系統(v1.1 修正)**
+**2.2 query_id 關聯系統(v1.1 修正)** ✅ SHIPPED 2026-04-19 (1737683, 04aae40)
 
 **目標**
 
@@ -341,7 +353,7 @@ Refactor 後必須逐項驗證:
 - 切換查詢後,新 query_id 產生,舊不再綁定
 工期:0.5 天。
 
-**2.3 CitationPanel 引用點擊追蹤**
+**2.3 CitationPanel 引用點擊追蹤** ✅ SHIPPED 2026-04-19 (04aae40)
 
 **目標**
 
@@ -382,7 +394,7 @@ source_type 必須是以下 enum 之一:
 - PostHog Dashboard 能 breakdown by source_type
 工期:0.5 天。
 
-**2.4 Bug 回報內建入口**
+**2.4 Bug 回報內建入口** ✅ SHIPPED 2026-04-20 (380d11f, dfdef25, 11270a9)
 
 **目標**
 
@@ -419,7 +431,7 @@ source_type 必須是以下 enum 之一:
 - 16 語言翻譯品質過關
 工期:1 天。
 
-**2.5 Landing Page SEO 修復(v1.1 新增,P0 最高優先)**
+**2.5 Landing Page SEO 修復(v1.1 新增,P0 最高優先)** ✅ SHIPPED 2026-04-17 (e00d8ac, i18n a22ce9f)
 
 **目標**
 
@@ -494,7 +506,7 @@ public/sitemap.xml 加入目前缺的 public 頁面:
 - 16 語言 i18n 的 hreflang 處理 — 見 2.6
 - Onboarding 三問 — Phase 1A 3.2
 - 首頁動態範例 — Phase 1A 3.3
-**2.6 i18n SEO(hreflang,v1.1 新增,P0 次高優先)**
+**2.6 i18n SEO(hreflang,v1.1 新增,P0 次高優先)** ✅ SHIPPED 2026-04-17
 
 **目標**
 
@@ -546,7 +558,7 @@ repo-wide grep hreflang|rel=.alternate 無任何匹配。<html> tag 也沒有 la
 
 - 策略 A:1-2 小時(Phase 0 內完成)
 - 策略 B:3-5 小時(Phase 2 評估後再做)
-**2.7 Explain 臨床推理強化(v1.2 新增,P1)**
+**2.7 Explain 臨床推理強化(v1.2 新增,P1)** ✅ SHIPPED 2026-04-30 (Steps 1-8 + Path 1 + M06; commits cd697d1..dffd015)
 
 **目標**
 
@@ -652,7 +664,7 @@ explain_completed 事件加入:
 - LLM judge 評估 prompt + 真實 case 驗證:0.25-0.5 天
 - 總計:1-2 天
 
-## 2.8 Anonymous Trial Flow(Phase 0,P1,新增)
+## 2.8 Anonymous Trial Flow(Phase 0,P1,新增) ✅ SHIPPED 2026-04-22 (Rounds 1-3, commits 7a8c5a8, cc1e1c7, a8877e9, 24b1d79)
 
 **Status**:Accepted(solo founder review, 2026-04-19)· detailed design in Decision 001 v0.2
 **Full design**:[`docs/decisions/001-anonymous-trial-flow.md`](decisions/001-anonymous-trial-flow.md)
@@ -741,7 +753,7 @@ Landing Page 承諾 "No account required to try"(§ 0.3),但實際上點 "Try it
 - **L1 credit 總和嚴格不超過 10 credits/day**,對齊維運計畫 v3 § 8.3 的 Free tier 成本預算承諾
 - L0 不開放 Explain 是策略選擇,Phase 1A Week 4 若發現 `explain_locked_viewed` < 20% → Explain 解鎖誘因弱,考慮 L0 開放 1 次 Explain
 
-## 2.9 Verify 輸出語言對齊 user locale(Phase 0,P1,新增)
+## 2.9 Verify 輸出語言對齊 user locale(Phase 0,P1,新增) ✅ SHIPPED 2026-04-20 (c621e3b, ee055d4, b2250ca)
 
 **Status**: Accepted (solo founder review, 2026-04-20)
 **發現日期**: 2026-04-20(post-2.4 production smoke test)
@@ -812,7 +824,7 @@ Vela 核心承諾 "Ask in any language, answered in yours"(§ 0.2)對 Verify 服
 
 Phase 1A 不做新功能,只做「感知層」——讓使用者進來的前 30 秒立刻感覺「這個產品為我設計」。
 
-**3.1 User Context 資料模型**
+**3.1 User Context 資料模型** ❌ PENDING (Phase 1A — blocks Phase 1A)
 
 **核心設計**
 
@@ -854,7 +866,7 @@ Table: user_profile(新表,不混在 user_usage 裡):
 
 - POST /api/user/context/hash:UPSERT into user_profile,回 { ok: true }
 - GET /api/user/context/hash:讀取 user_context_hash 和 locale(跨裝置恢復用)
-**3.2 Onboarding 三問改版**
+**3.2 Onboarding 三問改版** ❌ PENDING (Phase 1A)
 
 取代「單一專科 dropdown」,改為三步驟:工作場域 → 角色 → 工作語言。每一步可略過,結束時顯示隱私聲明卡。
 
@@ -910,7 +922,7 @@ Table: user_profile(新表,不混在 user_usage 裡):
 - Step 2 選項根據 Step 1 正確動態變化
 - PostHog 事件正確,不含 PII
 - 16 語言翻譯完整
-**3.3 首頁動態範例查詢**
+**3.3 首頁動態範例查詢** ❌ PENDING (Phase 1A)
 
 **功能需求**
 
@@ -961,7 +973,7 @@ Table: user_profile(新表,不混在 user_usage 裡):
 **PostHog 事件**
 
 - example_query_clicked: { example_text, role, position }
-**3.4 隱私聲明 UI 元素(v1.1 補充工期)**
+**3.4 隱私聲明 UI 元素(v1.1 補充工期)** ❌ PENDING (Phase 1A)
 
 讓「Privacy-first」不只是口號,每個接觸點都能看到具體承諾。
 
@@ -999,7 +1011,7 @@ Phase 1A 讓使用者感覺「這個產品為我設計」,Phase 1B 真正做出�
 
 *註:§ 4.5 + § 4.6 為 v1.3 新增 spec。雖編號 Phase 1B 4.x 維持章節 cohere,執行順序覆寫至 Phase 0 末段。詳見二章 v1.3 變更 NOTE。*
 
-**4.1 FeedbackBar 👎 原因 Chip(v1.1 補充實作細節)**
+**4.1 FeedbackBar 👎 原因 Chip(v1.1 補充實作細節)** ❌ PENDING (Phase 1A)
 
 **v1.1 補充:**FEATURE_AUDIT 確認 backend UserFeedback 表已有 feedback_text 欄位(目前永遠是 null)。實作時重用該欄位存 reason chip value 或「其他」補充文字,不用新 migration。
 
@@ -1042,7 +1054,7 @@ Phase 1A 讓使用者感覺「這個產品為我設計」,Phase 1B 真正做出�
 - 不選直接關閉,送出無 reason 事件
 - PostHog Dashboard 可 breakdown by reason
 - 👍 行為不變
-**4.2 Citation ⓘ Icon + 來源說明**
+**4.2 Citation ⓘ Icon + 來源說明** ❌ PENDING (Phase 1A)
 
 每個引用來源旁加 ⓘ icon,hover / tap 顯示一句話說明。對「PubMed 是什麼」「FDA 跟 TFDA 差異」有困惑的非英語使用者幫助極大。
 
@@ -1078,7 +1090,7 @@ Phase 1A 讓使用者感覺「這個產品為我設計」,Phase 1B 真正做出�
 - 桌面 hover、mobile tap 正確顯示
 - 10 個 source_type 都有對應文案
 - 16 語言翻譯完整
-**4.3 Settings 加 user_context 可修改**
+**4.3 Settings 加 user_context 可修改** ❌ PENDING (Phase 1A)
 
 **功能需求**
 
@@ -1104,7 +1116,7 @@ Phase 1A 讓使用者感覺「這個產品為我設計」,Phase 1B 真正做出�
 - 「匯出我的偏好」→ 下載 JSON
 - 「清除我的偏好」→ 確認後清空 localStorage
 - 若訂閱,「清除訂閱關聯資料」
-**4.4 處方解析 MVP(藥師殺手級功能)**
+**4.4 處方解析 MVP(藥師殺手級功能)** ❌ PENDING (Phase 1B)
 
 **戰略定位:**這是 Phase 1B 的核心功能,Vela product-market fit 的試金石。UpToDate 做不到(它是知識庫)、OpenEvidence 做不到(沒有在地健保資料)、ChatGPT 可以模仿但不可靠(藥師不敢拿病人安全賭注)。目標:直接對應台灣社區藥師的 core job-to-be-done「確認處方安全」。
 
@@ -1171,7 +1183,7 @@ Phase 1A 讓使用者感覺「這個產品為我設計」,Phase 1B 真正做出�
 | pharmacist Free → Pro 轉換率 | ≥ 其他角色 2 倍 | 達成即 PMF 訊號 |
 | 處方分析後 thumbs_up 率 | > 70% | 低於此代表輸出品質需提升 |
 
-**4.5 Share Answer 公開連結(v1.3 新增)**
+**4.5 Share Answer 公開連結(v1.3 新增)** ❌ PENDING (Phase 0 末段)
 
 讓使用者把自己得到的查詢結果產生一組公開可訪問 URL,分享給同行或社群。對齊 GTM_V1 § 5.4 L3 word-of-mouth 機制,把「使用者得到答案」這個原本封閉於登入後的事件轉成可被 forward 的公開資產。
 
@@ -1305,7 +1317,7 @@ table: SharedQuery
 
 ---
 
-**4.6 SEO Explore Pages(v1.3 新增)**
+**4.6 SEO Explore Pages(v1.3 新增)** ❌ PENDING (Phase 0 末段, shares §4.5 infra)
 
 主動建立一組公開、SEO 優化的查詢頁面,佔據長尾搜尋,把 Google 流量導入 Vela。對齊 GTM_V1 § 5.4 L3「SEO 自然流量」機制,並利用 4.5 同一基礎設施。
 
@@ -1447,7 +1459,7 @@ table: ExplorePage
 
 Phase 1C 把「別人複製不了」的東西埋進產品。兩個核心功能——在地差異提示和跨語言橋接——都是 OpenEvidence 和 UpToDate 結構上做不到的差異化。
 
-**5.1 在地差異提示 — 分層式全球化**
+**5.1 在地差異提示 — 分層式全球化** ❌ PENDING (Phase 1C)
 
 **戰略定位:**Vela 對抗 OpenEvidence 全球擴張最重要的結構性護城河。OE 因為 NPI 驗證綁定美國,無法做真正的全球在地化。Vela 的「無身份驗證」架構讓我們可以自然服務全球,透過分層式在地提示實現低成本在地化。
 
@@ -1543,7 +1555,7 @@ Phase 1C 把「別人複製不了」的東西埋進產品。兩個核心功能�
 - 初版建 12 國 authorities:1 個週末
 - 每季檢查連結失效:30 分鐘
 - 新國家加入:30 分鐘-1 小時
-**5.1.1 在地知識 YAML 實作規範(v1.2 新增)**
+**5.1.1 在地知識 YAML 實作規範(v1.2 新增)** ❌ PENDING (Phase 1C)
 
 **目標**
 
@@ -1676,7 +1688,7 @@ Phase 1C 本版不做 Tier 3 使用者貢獻功能,但保留擴充點:
 - 不為歐美加建 Tier 1 YAML(策略選擇,見上面理由)
 - 不做 admin 介面管理 YAML(curator 直接改檔 + PR 已足夠)
 - 不做自動翻譯 name_native(機器翻譯權威機構名是幻覺溫床,必須人工)
-**5.2 跨語言術語橋接面板**
+**5.2 跨語言術語橋接面板** ❌ PENDING (Phase 1C)
 
 **戰略定位:**對非英語使用者的核心價值證明。表面是翻譯工具,實際做三件事:教育使用者如何更好提問、證明 Vela 真的在搜英文文獻、累積的點擊數據是獨特資產。
 
