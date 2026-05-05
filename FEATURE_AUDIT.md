@@ -1,7 +1,7 @@
 # Vela Feature Audit
 
 **Generated:** 2026-04-27 (Updated post-§ 2.7 Steps 1-6 ship + Phase 1A polish completion-event backfill. Prior 2026-04-25 baseline.)
-**Scope:** Code-only review against PRD v1.2 (Phase 0 / 1A / 1B / 1C).
+**Scope:** Code-only review against PRD v1.3 (Phase 0 / 1A / 1B / 1C).
 **Methodology:** grep / glob over current working tree. Does not trust historical audits.
 
 ---
@@ -397,8 +397,8 @@ Phase 6A grep 揭露:codebase 之前完全沒有 `{feature}_completed` events(�
 
 ### Planning doc 狀態
 
-- `docs/PRD.md`(v1.2)已從 docx 轉 md
-- `FEATURE_AUDIT.md`(本檔)已於 2026-04-18 以 PRD v1.2 重掃
+- `docs/PRD.md`(v1.3)已從 docx 轉 md
+- `FEATURE_AUDIT.md`(本檔)已於 2026-04-18 以 PRD v1.3 重掃
 - CLAUDE.md Planning Documents 區塊只保留 PRD.md + FEATURE_AUDIT.md 兩條
 
 ---
@@ -419,7 +419,7 @@ Phase 6A grep 揭露:codebase 之前完全沒有 `{feature}_completed` events(�
 | 2.8 Anonymous Trial Flow | ✅ | 2026-04-22 production verified;Rounds 1-3 lands;follow-ups 移交 TODO.md / CLAUDE.md |
 | 2.9 Verify 輸出語言對齊 user locale | ✅ 已完成 2026-04-20 | response_language variable + verify_system.md v2.1 + 7 languages i18n-verify.ts + UX polish + Chinese variant handling spread to Research/Explain |
 
-Phase 0 還剩 2.7 Steps 7-8(LLM judge + 20-case acceptance,gated by TODO.md protocol)+ 2.1(9 檔 Provider refactor,最大塊)+ 3.1 user_context schema(blocks Phase 1A)。
+Phase 0 還剩 2.1(9 檔 Provider refactor,最大塊)+ 3.1 user_context schema(blocks Phase 1A)+ § 4.5 Share Answer + § 4.6 SEO Explore Pages + Phase 0 Retrospective。 (§ 2.7 Steps 1-8 + Path 1 + M06 全部完成 2026-04-30 — see ARCHIVE.md once created)
 
 ---
 
@@ -430,7 +430,7 @@ This document is the single source of truth for code state, kept in sync with sh
 - **When to refresh:** after each PRD § ships to production, or before starting a new Phase work-block. Do not let it drift > 1 week.
 - **How to refresh:** re-run read-only diagnostic (grep / glob against PRD section spec → classify ✅ / 🔧 / ⚠️ / ❌); update only sections with confirmed drift. Never copy from prior audit without re-verifying.
 - **Authoritative sources:**
-  - PRD spec (docs/PRD.md v1.2): what we said we'd build
+  - PRD spec (docs/PRD.md v1.3): what we said we'd build
   - Code state (working tree): what's actually built
   - Commit evidence (git log): when it landed; cite SHA in audit body
   - Open issues (TODO.md / CLAUDE.md Tech Debt): what's left

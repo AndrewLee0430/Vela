@@ -218,7 +218,7 @@ Before starting Phase 1A, conduct Phase 0 Retrospective:
   - Discovered: 2026-04-18
   - Status: ✅ Resolved 2026-04-22 by Round 2B production verification (see FEATURE_AUDIT.md § 2.8)
 
-**Remaining Phase 0**: 2.7 finish (Steps 3-8) → 2.1 Model Provider (largest, 5-7d) → 3.1 User Context schema (blocks Phase 1A)
+**Remaining Phase 0**: 2.1 Model Provider (5-7d) → 3.1 User Context schema → § 4.5 Share Answer → § 4.6 SEO Explore Pages → Phase 0 Retrospective
 
 **Always consult `FEATURE_AUDIT.md` for latest codebase state before starting any task.**
 
@@ -228,7 +228,7 @@ When given a feature task, always consult these documents **before** touching co
 
 | Document | Purpose | Location |
 |---|---|---|
-| `docs/PRD.md` | Master PRD v1.2 — all functional specs, Phase 0/1A/1B/1C, acceptance criteria | `docs/PRD.md` |
+| `docs/PRD.md` | Master PRD v1.3 — all functional specs, Phase 0/1A/1B/1C, acceptance criteria | `docs/PRD.md` |
 | `FEATURE_AUDIT.md` | Codebase current state — what's built, what's partial, what's missing | `FEATURE_AUDIT.md` |
 | `TODO.md` | Lightweight tracker for current-round follow-up bugs + roadmap pointers. Consult alongside FEATURE_AUDIT.md when starting a new task. Full tech debt log remains in CLAUDE.md until Phase 0 Retrospective. | `TODO.md` |
 
