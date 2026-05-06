@@ -150,6 +150,14 @@ When entries are resolved, move to ARCHIVE.md (note discovery + resolution dates
   - **Priority**: P2 — current §4.5 design absorbs this gap; no other open need. (TECH_DEBT.md has no P3 tier; lowest is P2.)
   - **Discovered**: 2026-05-05 during §4.5 PHASE A smoke test (PostHog server-side fire was specced but no client existed).
 
+- **[P2]** ShareButton anonymous gating uses redirect, not in-context AnonymousUpgradeCTA modal
+  - **現況**: `components/ShareButton.tsx` for anonymous users routes to `/sign-up` via `router.push` instead of opening `components/AnonymousUpgradeCTA.tsx` modal in-place. PRD §4.5 修訂 1 specced "AnonymousUpgradeCTA 風格" prompt; PHASE B chose redirect to keep scope narrow.
+  - **Conversion impact**: redirect breaks the user's high-intent moment ("I just got an answer, I want to share") by yanking them off the current page. Modal pattern (per ADR 001 / commit 24b1d79) preserves context. Anonymous → registered conversion rate from share-locked trigger is likely lower than from other triggers (`third_query`, etc.) for this reason. Magnitude unknown until data comes in.
+  - **PostHog attribution preserved**: `share_modal_opened` fires with `gated:true, gate_reason:'anonymous'` so the funnel is measurable.
+  - **Resolution**: extend AnonymousUpgradeCTA with a new `trigger='share_locked'` value (~5-10 LOC). Update ShareButton to render `<AnonymousUpgradeCTA trigger='share_locked' onClose={...} />` instead of `router.push('/sign-up')`. Re-test 8k flow.
+  - **Priority**: P2 — measurable conversion cost, but not blocking §4.5 ship. Pick up when GTM data shows share-locked → signup conversion underperforming other triggers, OR opportunistically during Phase 1B Anonymous Trial Flow polish (per STATE.md Phase 1B Week 7 work item).
+  - **Discovered**: 2026-05-06 during §4.5 PHASE B implementation; deviation accepted by reviewer to avoid widening PHASE B scope.
+
 - **[P2 → Dodo 付費啟用前]** `CLERK_SECRET_KEY` 仍是 `sk_live_` 對 Dev instance user checkout 會 500
   - **現況**: Round 2B JWT Dev/Prod mismatch fix 只改 `CLERK_JWKS_URL` 指向 Dev instance (`joint-guppy-23.clerk.accounts.dev`);`CLERK_SECRET_KEY` 仍為 Prod `sk_live_NhG...`
   - **影響範圍**: Dodo checkout path 會用 `CLERK_SECRET_KEY` call Clerk Backend API 取 user email/name;Dev instance user ID 對 Prod secret key 查不到 → 500 error
