@@ -46,6 +46,7 @@ When entries are resolved, move to ARCHIVE.md (note discovery + resolution dates
   - Test harness (`if __name__ == "__main__":`) 45 處,低優先
   - `fda_cached.py` 整檔為 dead code (CLAUDE.md 已標),可順手刪除
   - Resolution: 排入 Phase 0 Retrospective 一次清理
+  - **2026-05-05 update**: Re-confirmed during §4.5 PHASE A smoke test on Windows local uvicorn — the `print()` at `vector_store.py:46` containing U+2705 (✅) crashes uvicorn boot under cp950 console. Workaround for local dev: `PYTHONIOENCODING=utf-8 PYTHONUTF8=1 uvicorn ...`. Production unaffected (Linux/UTF-8). Fix is still pending — replace with `logging.getLogger(__name__).info(...)` per CLAUDE.md Rule 4.
 
 - **[P2] PowerShell 運行 `.env` parse warning**
   - `python-dotenv` 啟動時 warn `could not parse statement starting at line 1/2`
@@ -141,14 +142,6 @@ When entries are resolved, move to ARCHIVE.md (note discovery + resolution dates
   - **Verification needed at Phase 0 Retrospective**: trigger anon daily quota in prod, confirm correct message + CTA path appears.
   - **Priority**: P1(軟啟動前必須 fix,影響 anon-to-signup 轉換訊息)
   - **Discovered**: 2026-04-22 during 2.8 Round 2B Test 4 E2E
-
-- **[P2]** CP950 / `print()` U+2705 emoji in `api/database/vector_store.py:46`
-  - **現況**: `print()` call with ✅ emoji crashes uvicorn boot on Windows console (cp950 codec). Worked around in §4.5 PHASE A local dev via PYTHONIOENCODING=utf-8 PYTHONUTF8=1.
-  - **Risk**: Production runs Linux/UTF-8 so this never triggers in deploy. Strictly a Windows local-dev paper cut.
-  - **Resolution**: Replace with `logging.getLogger(__name__).info("...")` per CLAUDE.md Rule 4. Trivial fix (1 line).
-  - **Priority**: P2 — does not affect production, only annoys solo founder on Windows. (TECH_DEBT.md has no P3 tier; lowest is P2.)
-  - **See also**: subsumed by P1 "print() violations in api/" entry above (line 41) which already lists `vector_store.py:46`. This entry preserves §4.5 PHASE A discovery context + the workaround command for the next person who hits it on Windows.
-  - **Discovered**: 2026-05-05 during §4.5 PHASE A smoke test on Windows local uvicorn.
 
 - **[P2]** No backend PostHog client (`api/` has no `import posthog`)
   - **現況**: All PostHog events flow through `utils/analytics.ts` `track()` from the frontend. Server-side events (e.g. PRD §4.5 需求 7 `share_link_visited`, which fires when LinkedIn/X/Facebook bots scrape OG cards) cannot be captured.
