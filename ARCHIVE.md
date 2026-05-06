@@ -17,6 +17,12 @@ When new entries are added: keep one-liner format, no detail. For full context, 
 
 ---
 
+## 2026-05-06
+
+- `[PRD §4.5]` PHASE B Share API + Modal + sensitive detection + history button — 3 endpoints (create/revoke/list) + track-visit, PHIDetector mode='share' (NHI + name+age combos for zh-TW/en/ja), ShareButton/ShareModal mounted on research/verify/explain/history, /?from_share handler in pages/index.tsx, qrcode.react dep added, SHARE_CREATED_BY_SALT env var introduced
+
+---
+
 ## 2026-04-30
 
 - `[docs]` Doc reorganization Stage 2 structural — STATE.md / BACKLOG.md / ARCHIVE.md / TECH_DEBT.md split out from CLAUDE.md (this commit)

@@ -40,7 +40,8 @@ None known.
 
 ## Recently Shipped (last 7 days)
 
-- **2026-05-05** Advisor roadmap integration cleanup — v0.4 archive removed + reference scrub across ADRs/BACKLOG/PRD/STATE/FEATURE_AUDIT (this commit)
+- **2026-05-06** § 4.5 PHASE B — Share API (create / revoke / list / track-visit) + PHIDetector mode='share' + ShareButton/ShareModal + 4 mount surfaces + /?from_share handler (this commit)
+- **2026-05-05** Advisor roadmap integration cleanup — v0.4 archive removed + reference scrub across ADRs/BACKLOG/PRD/STATE/FEATURE_AUDIT
 - **2026-05-04** Advisor roadmap integration — ADR 003 drug name resolution + ADR 004 prescription parser deferral + multi-file sync (commits 394545e, 96eb13b, 3e2f384, 7eda124)
 - **2026-04-30** Doc reorganization Stage 2 — drift sync (3fdeddc), architecture extract (59002d1), structural reorg (5ced91a), PRD markers (aaa95de), ADR 002 (0305817)
 - **2026-04-30** § 2.7 Steps 7-8 acceptance protocol + M06 fix + docs sync (c5b3a09 ExplainJudge class, 64c72f2 TEST_MODE rate-limit bypass, fa80ff9 acceptance integration, a52bf9f M06, dffd015 docs)

@@ -315,6 +315,21 @@ if TEST_MODE and os.getenv("FLY_APP_NAME"):
     raise RuntimeError("TEST_MODE cannot be enabled in production (FLY_APP_NAME detected)")
 logger.info("TEST_MODE = %s", TEST_MODE)
 
+# PRD § 4.5 PHASE B — created_by hash salt. Fail loudly at startup if
+# missing in production so we never silently degrade to an empty salt.
+# TEST_MODE accepts a built-in fallback so local smoke tests work
+# without forcing every developer to copy a value into .env.
+SHARE_CREATED_BY_SALT = os.getenv("SHARE_CREATED_BY_SALT")
+if not SHARE_CREATED_BY_SALT:
+    if TEST_MODE:
+        SHARE_CREATED_BY_SALT = "vela_share_test_salt_v1"
+        logger.warning("[share] SHARE_CREATED_BY_SALT not set; using TEST_MODE default")
+    else:
+        raise RuntimeError(
+            "SHARE_CREATED_BY_SALT must be set (PRD § 4.5 PHASE B). "
+            "Generate via `python -c \"import secrets; print(secrets.token_urlsafe(32))\"`."
+        )
+
 import httpx
 from jose import jwt as jose_jwt
 from jose.exceptions import JWTError
@@ -1935,6 +1950,278 @@ async def serve_share_page(share_id: str, request: Request, db: Session = Depend
     _ = is_first_view
 
     return Response(content=html, media_type="text/html; charset=utf-8")
+
+
+# ============================================================
+# Share API — PRD § 4.5 PHASE B
+# Endpoints: POST /api/share/create, POST /api/share/{id}/revoke,
+#            GET  /api/share/list,    POST /api/share/track-visit
+# Auth: signed-in only on create/revoke/list (per PRD 修訂 1).
+#       track-visit is unauthenticated (called from the public Jinja2
+#       template) but rate-limited per IP via the global rate limiter.
+# ============================================================
+import hashlib as _hashlib
+import secrets as _secrets
+from datetime import timedelta as _timedelta
+
+from api.middleware.phi_handler import ShareDetectResult as _ShareDetectResult
+
+_SHARE_DAILY_LIMIT = 50
+_SHARE_ID_RETRIES = 3
+
+
+def _hash_created_by(user_id: str) -> str:
+    """sha256(salt + user_id)[:16]. Same hex-truncation convention
+    as anon_id derivation (api/services/anonymous_identity.py)."""
+    raw = f"{SHARE_CREATED_BY_SALT}:{user_id}".encode("utf-8")
+    return _hashlib.sha256(raw).hexdigest()[:16]
+
+
+def _share_url(share_id: str) -> str:
+    base = os.getenv("VELA_PUBLIC_BASE_URL", "https://vela.an-tho.com").rstrip("/")
+    return f"{base}/q/{share_id}"
+
+
+def _og_image_public_url(share_id: str) -> str:
+    base = os.getenv("VELA_PUBLIC_BASE_URL", "https://vela.an-tho.com").rstrip("/")
+    return f"{base}/static/og/{share_id}.png"
+
+
+class ShareCreateRequest(BaseModel):
+    query_id: str = Field(..., min_length=1, max_length=128)
+    query_text: str = Field(..., min_length=1, max_length=8000)
+    answer_text: str = Field(..., min_length=1, max_length=40000)
+    citations: list = Field(default_factory=list)
+    locale: Optional[str] = Field(default=None, max_length=16)
+
+
+@app.post("/api/share/create")
+async def share_create(
+    body: ShareCreateRequest,
+    request: Request,
+    creds: Optional[HTTPAuthorizationCredentials] = Depends(require_auth),
+    db: Session = Depends(get_db),
+):
+    user_id = get_user_id(creds)
+    if not user_id:
+        # Defense-in-depth — require_auth would have raised already.
+        return JSONResponse(
+            status_code=403,
+            content={"type": "share_anon_blocked", "message": "Sign in to share answers."},
+        )
+
+    # ── 1. Sensitive detection (PRD § 4.5 PHASE B Step 2.2) ───
+    share_check = PHIDetector.detect(
+        body.query_text,
+        mode="share",
+        locale=body.locale,
+    )
+    if isinstance(share_check, _ShareDetectResult) and not share_check.is_safe:
+        return JSONResponse(
+            status_code=422,
+            content={
+                "type": "share_sensitive_blocked",
+                "reasons": share_check.reasons,
+                "unknown_locale_fallback": share_check.unknown_locale_fallback,
+            },
+        )
+
+    created_by = _hash_created_by(user_id)
+
+    # ── 2. Per-user daily quota ───────────────────────────────
+    from datetime import datetime as _dt
+    one_day_ago = _dt.utcnow() - _timedelta(days=1)
+    try:
+        used_today = (
+            db.query(_SharedQueryModel)
+            .filter(
+                _SharedQueryModel.created_by == created_by,
+                _SharedQueryModel.created_at > one_day_ago,
+            )
+            .count()
+        )
+    except Exception as e:
+        logger.error("[share] quota count failed: %s", e)
+        return JSONResponse(status_code=500, content={"type": "share_error", "message": "Service unavailable."})
+
+    if used_today >= _SHARE_DAILY_LIMIT:
+        # retry_after_seconds = time until oldest record in the
+        # last-24h window falls off. Simpler than tracking a sliding
+        # window — gives the client a usable ETA.
+        oldest = (
+            db.query(_SharedQueryModel)
+            .filter(
+                _SharedQueryModel.created_by == created_by,
+                _SharedQueryModel.created_at > one_day_ago,
+            )
+            .order_by(_SharedQueryModel.created_at.asc())
+            .first()
+        )
+        if oldest:
+            retry_after = max(1, int((oldest.created_at + _timedelta(days=1) - _dt.utcnow()).total_seconds()))
+        else:
+            retry_after = 3600
+        return JSONResponse(
+            status_code=429,
+            content={
+                "type": "share_daily_limit",
+                "limit": _SHARE_DAILY_LIMIT,
+                "retry_after_seconds": retry_after,
+            },
+        )
+
+    # ── 3. Idempotency: same (query_id, created_by) → return existing
+    existing = (
+        db.query(_SharedQueryModel)
+        .filter(
+            _SharedQueryModel.query_id == body.query_id,
+            _SharedQueryModel.created_by == created_by,
+        )
+        .first()
+    )
+    if existing is not None:
+        return JSONResponse(
+            status_code=200,
+            content={
+                "share_id": existing.share_id,
+                "url": _share_url(existing.share_id),
+                "og_image_url": _og_image_public_url(existing.share_id),
+                "created": False,
+            },
+        )
+
+    # ── 4. Generate unique share_id (max 3 retries) ───────────
+    share_id: Optional[str] = None
+    for _attempt in range(_SHARE_ID_RETRIES):
+        candidate = _secrets.token_urlsafe(8)
+        if not db.query(_SharedQueryModel).filter(_SharedQueryModel.share_id == candidate).first():
+            share_id = candidate
+            break
+    if share_id is None:
+        logger.error("[share] share_id collision after %d retries", _SHARE_ID_RETRIES)
+        return JSONResponse(status_code=500, content={"type": "share_error", "message": "Service unavailable."})
+
+    # ── 5. INSERT (use _safe_db_write per CLAUDE.md Rule 7) ──
+    record = _SharedQueryModel(
+        share_id=share_id,
+        query_id=body.query_id,
+        query_text=body.query_text,
+        answer_text=body.answer_text,
+        citations=body.citations or [],
+        created_by=created_by,
+        is_public=True,
+        view_count=0,
+        flagged=False,
+        locale=body.locale,
+    )
+    if not _safe_db_write(db, record, label="ShareCreate"):
+        return JSONResponse(status_code=500, content={"type": "share_error", "message": "Service unavailable."})
+
+    # ── 6. OG image — synchronous but failure non-fatal ───────
+    try:
+        _generate_og_png(share_id, body.query_text)
+    except Exception as e:
+        logger.error("[share] OG image generation failed for %s: %s", share_id, e)
+
+    return JSONResponse(
+        status_code=201,
+        content={
+            "share_id": share_id,
+            "url": _share_url(share_id),
+            "og_image_url": _og_image_public_url(share_id),
+            "created": True,
+        },
+    )
+
+
+@app.post("/api/share/{share_id}/revoke")
+async def share_revoke(
+    share_id: str,
+    creds: Optional[HTTPAuthorizationCredentials] = Depends(require_auth),
+    db: Session = Depends(get_db),
+):
+    if not share_id or "/" in share_id or "\\" in share_id or len(share_id) > 64:
+        return JSONResponse(status_code=404, content={"detail": "Not found."})
+
+    user_id = get_user_id(creds)
+    if not user_id:
+        return JSONResponse(status_code=403, content={"type": "share_anon_blocked"})
+
+    record = db.query(_SharedQueryModel).filter(_SharedQueryModel.share_id == share_id).first()
+    if record is None:
+        return JSONResponse(status_code=404, content={"detail": "Not found."})
+
+    caller_hash = _hash_created_by(user_id)
+    if record.created_by != caller_hash:
+        return JSONResponse(status_code=403, content={"type": "share_not_owner"})
+
+    record.is_public = False
+    try:
+        db.commit()
+    except Exception as e:
+        logger.error("[share] revoke commit failed: %s", e)
+        db.rollback()
+        return JSONResponse(status_code=500, content={"type": "share_error", "message": "Service unavailable."})
+
+    return JSONResponse(
+        status_code=200,
+        content={"share_id": share_id, "is_public": False},
+    )
+
+
+@app.get("/api/share/list")
+async def share_list(
+    creds: Optional[HTTPAuthorizationCredentials] = Depends(require_auth),
+    db: Session = Depends(get_db),
+):
+    user_id = get_user_id(creds)
+    if not user_id:
+        return JSONResponse(status_code=403, content={"type": "share_anon_blocked"})
+
+    caller_hash = _hash_created_by(user_id)
+    rows = (
+        db.query(_SharedQueryModel)
+        .filter(_SharedQueryModel.created_by == caller_hash)
+        .order_by(desc(_SharedQueryModel.created_at))
+        .limit(100)
+        .all()
+    )
+    shares = [
+        {
+            "share_id": r.share_id,
+            "query_preview": (r.query_text or "")[:60],
+            "created_at": r.created_at.isoformat() if r.created_at else None,
+            "is_public": bool(r.is_public),
+            "view_count": int(r.view_count or 0),
+        }
+        for r in rows
+    ]
+    return JSONResponse(status_code=200, content={"shares": shares})
+
+
+class TrackVisitRequest(BaseModel):
+    share_id: str = Field(..., min_length=1, max_length=64)
+    referrer_domain: Optional[str] = Field(default=None, max_length=253)
+    is_first_view: bool = False
+
+
+@app.post("/api/share/track-visit")
+async def share_track_visit(body: TrackVisitRequest, request: Request):
+    """Forwarded by the public Jinja2 template's inline script.
+
+    PHASE B: backend has no PostHog client wired (utils/analytics.ts is
+    frontend-only), so we just log the visit and return 204. PHASE C+
+    will swap in a backend PostHog client. This endpoint exists now so
+    the template's contract doesn't change later."""
+    if "/" in body.share_id or "\\" in body.share_id:
+        return Response(status_code=400)
+    logger.info(
+        "[share_visit] share_id=%s referrer_domain=%s is_first_view=%s",
+        body.share_id,
+        body.referrer_domain,
+        body.is_first_view,
+    )
+    return Response(status_code=204)
 
 
 # 靜態檔案服務

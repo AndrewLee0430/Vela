@@ -7,6 +7,7 @@ import Link from 'next/link';
 import UpgradeModal from '../components/UpgradeModal';
 import ProFeatureOverlay from '../components/ProFeatureOverlay';
 import PageShell from '../components/PageShell';
+import ShareButton, { type ShareFeature } from '../components/ShareButton';
 import { useLang } from '../utils/LangContext';
 import { getUI } from '../utils/i18n-ui';
 import { getExtra } from '../utils/i18n-extra';
@@ -322,6 +323,19 @@ function HistoryList() {
                                 )}
 
                                 {/* Verify */}
+                                {(item.session_type === 'verify' || item.session_type === 'research' || item.session_type === 'explain') && (
+                                    <div className="mt-3">
+                                        <ShareButton
+                                            feature={item.session_type as ShareFeature}
+                                            queryId={String(item.id)}
+                                            queryText={item.question}
+                                            answerText={item.answer}
+                                            citations={[]}
+                                            source="history"
+                                        />
+                                    </div>
+                                )}
+
                                 {item.session_type === 'verify' && (
                                     <div className="space-y-4">
                                         <div className="rounded-lg p-4" style={{ background: "rgba(255,255,255,0.05)" }}>

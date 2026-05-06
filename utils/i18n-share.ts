@@ -13,12 +13,16 @@ export interface ShareTranslations {
   // Share Modal
   modalTitle: string;              // share.modal.title
   modalWarning: string;            // share.modal.warning  (full warning paragraph)
+  modalGenericWarning: string;     // shown when backend returned unknown_locale_fallback=true
   modalConfirm: string;            // share.modal.confirm
   modalCancel: string;             // share.modal.cancel
   modalConsentCheckbox: string;    // share.modal.consent_checkbox
   modalSensitiveBlocked: string;   // share.modal.sensitive_blocked
+  modalQuotaBlocked: string;       // 429 daily limit message
+  modalGenericError: string;       // catch-all error message
   modalCopyLink: string;           // copy-to-clipboard button (post-creation)
   modalLinkCopied: string;         // toast after copy
+  modalShareOn: string;            // label preceding social-share icon row
 
   // Public Query Page
   publicCtaTitle: string;          // share.public.cta_title
@@ -42,14 +46,19 @@ const en: ShareTranslations = {
   modalTitle: 'Share this answer publicly',
   modalWarning:
     'Anyone with the link can view this question and answer. Do not share if it contains patient identifiers or any private information. Vela may remove shared content that violates our terms.',
+  modalGenericWarning:
+    'Automated sensitivity checks for your language are limited — please review the question carefully before sharing.',
   modalConfirm: 'Create public link',
   modalCancel: 'Cancel',
   modalConsentCheckbox:
     'I confirm this question contains no patient name, ID number, medical record number, insurance number, or any information that could identify a specific patient — and I understand that once shared, this content will be publicly visible and cannot be fully recalled.',
   modalSensitiveBlocked:
     'This question may contain personal information and cannot be shared publicly.',
+  modalQuotaBlocked: 'Daily share limit reached. Try again later.',
+  modalGenericError: 'Could not create share link. Please try again.',
   modalCopyLink: 'Copy link',
   modalLinkCopied: 'Link copied',
+  modalShareOn: 'Share on',
 
   publicCtaTitle: 'Want to ask your own version?',
   publicCtaButton: 'Try it on Vela',
@@ -72,12 +81,16 @@ const zhTW: ShareTranslations = {
   modalTitle: '公開分享這個答案',
   modalWarning:
     '任何取得連結的人都可以看到這個問題與答案。請勿分享含病患可識別資訊或任何私人資料的內容。Vela 保留移除違反使用條款內容的權利。',
+  modalGenericWarning: '此語言的自動敏感資訊檢查有限,請仔細檢查問題後再分享。',
   modalConfirm: '產生公開連結',
   modalCancel: '取消',
   modalConsentCheckbox: '我已確認此問題不含病患姓名、身分證字號、病歷號、健保號或任何可指向特定病患的資訊,並理解分享後此內容將公開可見且無法完全收回。',
   modalSensitiveBlocked: '此問題可能含個資,無法公開分享',
+  modalQuotaBlocked: '今日分享次數已達上限,請稍後再試。',
+  modalGenericError: '無法產生分享連結,請稍後再試。',
   modalCopyLink: '複製連結',
   modalLinkCopied: '已複製連結',
+  modalShareOn: '分享至',
 
   publicCtaTitle: '想問你自己的版本?',
   publicCtaButton: '在 Vela 試試',

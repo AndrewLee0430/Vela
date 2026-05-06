@@ -38,4 +38,67 @@
 <p class="cta-title">{{ s.publicCtaTitle }}</p>
 <a class="cta-button" href="/?from_share={{ share_id }}">{{ s.publicCtaButton }}</a>
 </div>
+<span id="vela-share-render-ts" data-ts="{{ render_timestamp_ms }}" hidden></span>
+<script>
+// PRD § 4.5 PHASE B Step 3 — share_link_visited fires from the
+// public page (per PRD 修訂 7), forwarded through a backend
+// endpoint so that switching to a server-side PostHog client later
+// is a one-line change. Failures are silent — the page still works.
+(function () {
+  document.addEventListener('DOMContentLoaded', function () {
+    try {
+      var sid = {{ share_id | tojson }};
+      if (!sid) return;
+
+      var KEY = 'vela_visited_shares';
+      var visited = [];
+      try {
+        var raw = localStorage.getItem(KEY);
+        if (raw) visited = JSON.parse(raw) || [];
+      } catch (e) { visited = []; }
+
+      var isFirstView = visited.indexOf(sid) === -1;
+      if (isFirstView) {
+        visited.push(sid);
+        // Cap to 500 entries to keep localStorage bounded.
+        if (visited.length > 500) visited = visited.slice(-500);
+        try { localStorage.setItem(KEY, JSON.stringify(visited)); } catch (e) {}
+      }
+
+      var referrerDomain = null;
+      try {
+        if (document.referrer) {
+          referrerDomain = new URL(document.referrer).hostname || null;
+        }
+      } catch (e) { referrerDomain = null; }
+
+      // Cookie marker so /?from_share landing can estimate dwell time
+      // without a server round-trip — set on every visit.
+      try {
+        document.cookie = 'vela_share_render_ts=' + Date.now() + '; path=/; max-age=600; SameSite=Lax';
+      } catch (e) {}
+
+      var payload = JSON.stringify({
+        share_id: sid,
+        referrer_domain: referrerDomain,
+        is_first_view: isFirstView,
+      });
+      var url = '/api/share/track-visit';
+      // sendBeacon survives navigation away; fall back to fetch where unsupported.
+      if (navigator.sendBeacon) {
+        try {
+          navigator.sendBeacon(url, new Blob([payload], { type: 'application/json' }));
+          return;
+        } catch (e) {}
+      }
+      fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: payload,
+        keepalive: true,
+      }).catch(function () { /* swallow */ });
+    } catch (e) { /* swallow — never break the page */ }
+  });
+})();
+</script>
 {% endblock %}

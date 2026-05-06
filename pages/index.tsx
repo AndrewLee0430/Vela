@@ -14,6 +14,7 @@ import OnboardingOverlay from '../components/OnboardingOverlay';
 import { translations, LANGUAGES, RTL_LANGS, landingContent, type LangCode } from '../utils/i18n';
 import { useLang } from '../utils/LangContext';
 import { getExtra } from '../utils/i18n-extra';
+import { track } from '../utils/analytics';
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
 const BG = 'linear-gradient(135deg, #0a1628 0%, #0f2040 45%, #1a1035 75%, #0d1a2e 100%)';
@@ -676,8 +677,51 @@ function Dashboard() {
 // No isLoaded gate — during SSG `isSignedIn` is undefined, so LandingPage is
 // pre-rendered and crawlers / LinkedIn see the real content. After client
 // hydration Clerk updates the auth state and signed-in users see the Dashboard.
+function useFromShareHandler() {
+  // PRD § 4.5 PHASE B Step 7 — Public Query Page CTA lands here with
+  // ?from_share={share_id}. We strip the param immediately so it
+  // doesn't pollute downstream PostHog `$pageview` URLs, then fire a
+  // `share_to_query_clicked` event. time_on_page_sec is best-effort:
+  // the Jinja2 template sets a `vela_share_render_ts` cookie on
+  // every visit (see api/templates/q_public.jinja2). If the cookie
+  // is present we compute the dwell time; otherwise we send null.
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    const shareId = params.get('from_share');
+    if (!shareId) return;
+
+    let timeOnPageSec: number | null = null;
+    try {
+      const match = document.cookie.match(/(?:^|;\s*)vela_share_render_ts=(\d+)/);
+      if (match) {
+        const renderedAt = parseInt(match[1], 10);
+        if (Number.isFinite(renderedAt) && renderedAt > 0) {
+          timeOnPageSec = Math.max(0, Math.round((Date.now() - renderedAt) / 1000));
+        }
+        // Clear the cookie regardless so a later /?from_share for a
+        // different share_id doesn't reuse a stale timestamp.
+        document.cookie = 'vela_share_render_ts=; path=/; max-age=0; SameSite=Lax';
+      }
+    } catch {
+      timeOnPageSec = null;
+    }
+
+    track('share_to_query_clicked', {
+      share_id: shareId,
+      time_on_page_sec: timeOnPageSec,
+    });
+
+    params.delete('from_share');
+    const search = params.toString();
+    const newUrl = window.location.pathname + (search ? `?${search}` : '');
+    window.history.replaceState({}, '', newUrl);
+  }, []);
+}
+
 export default function Home() {
   const { isSignedIn } = useUser();
+  useFromShareHandler();
   if (isSignedIn) return <Dashboard />;
   return <LandingPage />;
 }

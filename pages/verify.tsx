@@ -4,6 +4,7 @@ import { useState, FormEvent, useRef, useCallback } from 'react';
 import Head from 'next/head';
 import { useAuth, useUser } from '@clerk/nextjs';
 import FeedbackBar from '../components/FeedbackBar';
+import ShareButton from '../components/ShareButton';
 import UpgradeModal from '../components/UpgradeModal';
 import Toast from '../components/Toast';
 import PHIWarning from '../components/PHIWarning';
@@ -57,8 +58,9 @@ function VerifyForm() {
     const [anonQuotaCta, setAnonQuotaCta] = useState<{ used: number; limit: number } | null>(null);
     const [showThirdQueryCta, setShowThirdQueryCta] = useState(false);
     const [phiError, setPhiError] = useState<{detail: string; suggestion: string} | null>(null);
+    const [localQueryId, setLocalQueryId] = useState<string | null>(null);
 
-    const handleReset = () => { setDrugs(''); setResult(null); setError(''); setPhiError(null); setQueryId(null); };
+    const handleReset = () => { setDrugs(''); setResult(null); setError(''); setPhiError(null); setQueryId(null); setLocalQueryId(null); };
 
     const maybeTriggerThirdQueryCta = useCallback(() => {
         if (typeof window === 'undefined') return;
@@ -98,6 +100,7 @@ function VerifyForm() {
         isRunningRef.current = true;
         setLoading(true); setError(''); setResult(null); setPhiError(null);
         setQueryId(null);
+        setLocalQueryId(null);
 
         try {
             const headers: Record<string, string> = { 'Content-Type': 'application/json' };
@@ -186,7 +189,10 @@ function VerifyForm() {
 
             const data: VerifyResponse = await res.json();
             setResult(data);
-            if (data.query_id) setQueryId(data.query_id);
+            if (data.query_id) {
+                setQueryId(data.query_id);
+                setLocalQueryId(data.query_id);
+            }
             track('verify_completed', {
                 input_drug_count: data.drugs_analyzed.length,
                 interaction_count: data.interactions.length,
@@ -394,11 +400,25 @@ function VerifyForm() {
                                         </p>
                                     );
                                 })()}
-                                <FeedbackBar
-                                    query={`Drugs: ${result.drugs_analyzed.join(', ')}`}
-                                    response={result.summary}
-                                    category="verify"
-                                />
+                                <div className="flex flex-wrap items-center gap-2">
+                                    <FeedbackBar
+                                        query={`Drugs: ${result.drugs_analyzed.join(', ')}`}
+                                        response={result.summary}
+                                        category="verify"
+                                    />
+                                    <ShareButton
+                                        feature="verify"
+                                        queryId={localQueryId}
+                                        queryText={`Drugs: ${result.drugs_analyzed.join(', ')}`}
+                                        answerText={result.summary}
+                                        citations={result.interactions.map(i => ({
+                                            title: `${i.drug_pair[0]} ↔ ${i.drug_pair[1]} (${i.severity})`,
+                                            url: i.source_url ?? null,
+                                            text: i.description,
+                                        }))}
+                                        source="answer_block"
+                                    />
+                                </div>
                                 <p className="text-xs text-gray-300 dark:text-gray-600 mt-3">
                                     {result.drugs_analyzed.join(', ')} · {(result.query_time_ms / 1000).toFixed(2)}s
                                 </p>

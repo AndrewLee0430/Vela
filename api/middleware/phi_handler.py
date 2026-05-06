@@ -6,10 +6,22 @@ PHI (Protected Health Information) Detection Middleware
 - 攔截包含 PHI 的請求，防止傳送至 LLM
 - 支援多國格式偵測
 - 提供清晰的錯誤訊息引導使用者
+
+Modes (PRD § 4.5 PHASE B 修訂):
+- ``mode='guard'`` (default) — preserves all existing 5+ callers
+  (Research / Verify / Explain / feedback / bug-report). Returns
+  ``Optional[str]`` (PHI type or None).
+- ``mode='share'`` — adds NHI 健保號 + 姓名+年齡 combo patterns on
+  top of the existing 10. Locale-aware: 繁中 / 英 / 日 first-class;
+  other 13 locales degrade to ``mode='guard'`` silently AND mark the
+  result with ``unknown_locale_fallback=True`` so the frontend can
+  show a stronger generic warning. Returns a dataclass with
+  ``(is_safe, reasons, unknown_locale_fallback)``.
 """
 
 import re
 import logging
+from dataclasses import dataclass, field
 from typing import Optional
 
 logger = logging.getLogger(__name__)
@@ -25,6 +37,36 @@ _MEDICAL_UNIT_BEFORE = re.compile(
 )
 
 
+# ============ Share-mode: locale buckets ============
+# First-class locales receive their own targeted patterns. Anything
+# else falls back to mode='guard' AND sets unknown_locale_fallback so
+# the UI can warn the user that the auto-check is partial.
+_SHARE_FIRST_CLASS_LOCALES = {"zh-TW", "en", "ja"}
+
+
+@dataclass
+class ShareDetectResult:
+    """Return shape for ``PHIDetector.detect(text, mode='share')``.
+
+    is_safe:
+        True if no PHI / share-specific pattern hit. The frontend
+        should still show the generic disclaimer regardless.
+    reasons:
+        Human-readable list of every pattern that fired. Empty when
+        is_safe=True. Used by the Share Modal to show *which* type
+        was detected (e.g. "Taiwan ID", "NHI", "Name+age combo").
+    unknown_locale_fallback:
+        True when the caller passed an unsupported locale (or none
+        could be inferred) and the share-mode patterns therefore did
+        NOT run — only the 10 existing guard patterns did. Frontend
+        uses this to render a stronger generic warning.
+    """
+
+    is_safe: bool
+    reasons: list[str] = field(default_factory=list)
+    unknown_locale_fallback: bool = False
+
+
 class PHIDetector:
     """
     多國 PHI 偵測器
@@ -34,6 +76,12 @@ class PHIDetector:
     - 日本：My Number（需關鍵字）、手機號碼
     - 美國：SSN（需分隔符或關鍵字）、電話號碼、MRN
     - 通用：Email、信用卡號
+
+    Share-mode adds:
+    - TW NHI 健保號 (12-digit, keyword-anchored or zh-TW standalone)
+    - Name+age combo (zh-TW, en, ja) — last-line defense for case
+      reports / patient narratives that name+age accidentally pin
+      to a real person.
     """
 
     # ============ 台灣 Taiwan ============
@@ -100,6 +148,36 @@ class PHIDetector:
         re.compile(r'\b\d{8,12}\b'),            # 純數字病歷號
     ]
 
+    # ============ Share-mode: TW NHI 健保號 ============
+    # NHI member IDs are 12 digits. Keyword-anchored variant works
+    # across locales — heuristic: keyword 健保 / 健保卡 / NHI within
+    # 10 chars before a 12-digit run. Example match: "健保號 123456789012".
+    NHI_KEYWORD_PATTERN = re.compile(
+        r'(?:健保(?:卡|號|證)?|NHI)[^\d]{0,10}(\d{12})\b',
+        re.IGNORECASE
+    )
+    # zh-TW standalone variant: a bare 12-digit run inside Chinese
+    # text is rarely something other than NHI / case file numbers and
+    # is worth blocking when sharing. Caller restricts this to zh-TW.
+    NHI_STANDALONE_PATTERN = re.compile(r'(?<!\d)\d{12}(?!\d)')
+
+    # ============ Share-mode: Name+age combos ============
+    # zh-TW: 中文姓名 (2-4) + (optional separator) + 年齡 + 歲|y/o|歲女|歲男|岁
+    NAME_AGE_ZH_TW_PATTERN = re.compile(
+        r'[一-鿿]{2,4}\s*[,，、 ]?\s*\d{1,3}\s*(?:歲女|歲男|歲|岁|y/o)'
+    )
+
+    # en: capitalized first + last + age + y/o or years old
+    NAME_AGE_EN_PATTERN = re.compile(
+        r'\b[A-Z][a-z]+\s+[A-Z][a-z]+,?\s+(?:a\s+)?\d{1,3}[- ]?(?:y/?o|years?[- ]old)\b',
+        re.IGNORECASE,
+    )
+
+    # ja: hiragana / katakana / kanji name (2-5) + sep + age + 歳
+    NAME_AGE_JA_PATTERN = re.compile(
+        r'[一-鿿぀-ゟ゠-ヿ]{2,5}[,、 ]\s*\d{1,3}\s*歳'
+    )
+
     @classmethod
     def _has_medical_context(cls, text: str, match_start: int, match_end: int) -> bool:
         """Check if a numeric match is surrounded by medical units/context."""
@@ -112,16 +190,10 @@ class PHIDetector:
         return False
 
     @classmethod
-    def detect(cls, text: str) -> Optional[str]:
-        """
-        偵測文字中是否包含 PHI
-
-        Args:
-            text: 要檢查的文字
-
-        Returns:
-            偵測到的 PHI 類型，若無則返回 None
-        """
+    def _detect_guard(cls, text: str) -> Optional[str]:
+        """Original 10-pattern guard. Identical behavior to pre-PHASE-B
+        ``detect()``. Kept as a private helper so both modes can call
+        it without duplicating logic."""
         if not text or len(text.strip()) == 0:
             return None
 
@@ -184,6 +256,91 @@ class PHIDetector:
         return None
 
     @classmethod
+    def _detect_share_extras(cls, text: str, locale: Optional[str]) -> list[str]:
+        """Run share-mode-only patterns. Caller decides whether to
+        invoke this based on locale; this method does NOT reason
+        about fallback semantics itself."""
+        reasons: list[str] = []
+
+        # NHI keyword-anchored — locale-agnostic (anyone can write 健保 / NHI)
+        if cls.NHI_KEYWORD_PATTERN.search(text):
+            reasons.append("TW NHI (健保號)")
+
+        # NHI standalone — only enable for zh-TW because a bare 12-digit
+        # number in en / ja is too ambiguous (could be MRN, lab ID).
+        if locale == "zh-TW" and cls.NHI_STANDALONE_PATTERN.search(text):
+            # Avoid double-firing when the keyword variant already hit
+            if "TW NHI (健保號)" not in reasons:
+                reasons.append("TW NHI (健保號 standalone)")
+
+        # Name+age combos — restrict each to its own first-class locale
+        if locale == "zh-TW" and cls.NAME_AGE_ZH_TW_PATTERN.search(text):
+            reasons.append("Name+age combo (zh-TW)")
+        if locale == "en" and cls.NAME_AGE_EN_PATTERN.search(text):
+            reasons.append("Name+age combo (en)")
+        if locale == "ja" and cls.NAME_AGE_JA_PATTERN.search(text):
+            reasons.append("Name+age combo (ja)")
+
+        return reasons
+
+    @classmethod
+    def detect(
+        cls,
+        text: str,
+        mode: str = "guard",
+        locale: Optional[str] = None,
+    ):
+        """
+        偵測文字中是否包含 PHI
+
+        Args:
+            text: 要檢查的文字
+            mode: 'guard' (default) preserves the legacy contract.
+                'share' adds NHI + name+age combo patterns and returns
+                a richer dataclass.
+            locale: BCP-47 tag (e.g. 'zh-TW', 'en', 'ja'). Only honored
+                in mode='share'.
+
+        Returns:
+            mode='guard'  → Optional[str]: PHI type, or None.
+            mode='share'  → ShareDetectResult.
+        """
+        if mode == "guard":
+            return cls._detect_guard(text)
+
+        if mode != "share":
+            raise ValueError(f"PHIDetector.detect: unknown mode {mode!r}")
+
+        # ── share mode ────────────────────────────────────────────
+        reasons: list[str] = []
+        guard_hit = cls._detect_guard(text)
+        if guard_hit:
+            reasons.append(guard_hit)
+
+        if locale and locale in _SHARE_FIRST_CLASS_LOCALES:
+            reasons.extend(cls._detect_share_extras(text, locale))
+            unknown_fallback = False
+        elif locale is None:
+            # Caller didn't tell us — run all 3 first-class buckets
+            # so we don't silently skip detection. Mark fallback so
+            # the UI can show a stronger generic warning.
+            for loc in ("zh-TW", "en", "ja"):
+                for r in cls._detect_share_extras(text, loc):
+                    if r not in reasons:
+                        reasons.append(r)
+            unknown_fallback = True
+        else:
+            # Other 13 locales: no first-class share patterns; rely
+            # only on the existing guard hits.
+            unknown_fallback = True
+
+        return ShareDetectResult(
+            is_safe=not reasons,
+            reasons=reasons,
+            unknown_locale_fallback=unknown_fallback,
+        )
+
+    @classmethod
     def sanitize_for_log(cls, text: Optional[str], mask_char: str = "***") -> Optional[str]:
         """
         對文字進行脫敏處理，用於 Audit Log
@@ -229,3 +386,43 @@ class PHIDetector:
             True 如果安全，False 如果包含 PHI
         """
         return cls.detect(text) is None
+
+
+# ============================================================
+# Smoke test (PHASE B step 1)
+# Run: python -m api.middleware.phi_handler
+# ============================================================
+if __name__ == "__main__":  # pragma: no cover
+    cases = [
+        ("健保號 123456789012, metformin 適合嗎", "zh-TW", False, "TW NHI keyword"),
+        ("王小明 65 歲 metformin 適合嗎", "zh-TW", False, "zh-TW name+age"),
+        ("John Doe, 65 y/o, takes warfarin", "en", False, "en name+age"),
+        ("田中 65歳 メトホルミン", "ja", False, "ja name+age"),
+        ("Is metformin appropriate for type 2 diabetes?", "en", True, "clean en"),
+        ("metformin 二型糖尿病 第一線藥物嗎", "zh-TW", True, "clean zh-TW"),
+        # Standalone 12-digit only fires for zh-TW
+        ("Lab batch number 123456789012 expired", "en", True, "12-digit en (no NHI keyword)"),
+        ("批號 123456789012 已過期", "zh-TW", False, "12-digit zh-TW standalone"),
+    ]
+
+    print("== mode='share' ==")
+    all_pass = True
+    for text, locale, expect_safe, label in cases:
+        res = PHIDetector.detect(text, mode="share", locale=locale)
+        ok = res.is_safe is expect_safe
+        all_pass = all_pass and ok
+        print(f"[{'PASS' if ok else 'FAIL'}] {label}: is_safe={res.is_safe} reasons={res.reasons} fallback={res.unknown_locale_fallback}")
+
+    print("\n== mode='guard' (legacy contract preserved) ==")
+    # On the same name+age strings, guard mode returns None — that's
+    # the whole point of mode='share': don't regress the existing 5+
+    # callers that should NOT block name+age.
+    for text, locale, _expect_safe, label in cases:
+        res = PHIDetector.detect(text)
+        print(f"  guard: {label} -> {res!r}")
+
+    # Unknown locale → fallback flag
+    res = PHIDetector.detect("田中 65歳 メトホルミン", mode="share", locale="th")
+    print(f"\nunknown locale 'th' → fallback={res.unknown_locale_fallback} is_safe={res.is_safe}")
+
+    print("\nALL PASS" if all_pass else "\nSOME FAILED")

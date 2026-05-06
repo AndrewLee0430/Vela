@@ -613,10 +613,12 @@ Execution sequence:
 
       **Implementation phases (detailed at execution time):**
       Phase A: Public Query Page renderer (shared infra — SSR + OG +
-              JSON-LD pipeline reused by § 4.6)
-      Phase B: Share Modal + privacy gate + sensitive detection
+              JSON-LD pipeline reused by § 4.6) — SHIPPED 2026-05-05 (ef0d375)
+      Phase B: Share Modal + privacy gate + sensitive detection +
+              ShareButton mounts on 4 surfaces — SHIPPED 2026-05-06
       Phase C: Settings 「我的分享」tab (list + revoke only; analytics
-              like view_count deferred per PRD § 4.5 需求 5)
+              like view_count deferred per PRD § 4.5 需求 5) — consumes
+              the existing /api/share/list + /revoke endpoints
       Phase D: Legal ToS / Privacy Policy revision (parallel — does
               not block engineering ship)
       Phase E: i18n 16 languages + integration test (LinkedIn Post

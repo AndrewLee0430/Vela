@@ -88,6 +88,8 @@ def _base_url() -> str:
 
 
 def _common_context(share, locale: str) -> dict[str, Any]:
+    import time as _time
+
     s = _STRINGS[locale]
     base = _base_url()
     share_id = getattr(share, "share_id", "") if share else ""
@@ -104,6 +106,11 @@ def _common_context(share, locale: str) -> dict[str, Any]:
         "og_description": _truncate(answer_text, 160),
         "og_image": f"{base}/static/og/{share_id}.png" if share_id else f"{base}/static/og/default.png",
         "canonical_url": f"{base}/q/{share_id}" if share_id else base,
+        # PRD § 4.5 PHASE B Step 3 — wall-clock at render time, used by
+        # the inline script + the /?from_share landing handler to
+        # estimate time_on_page_sec without a server round-trip.
+        "render_timestamp_ms": int(_time.time() * 1000),
+        "api_base_url": base,
     }
 
 

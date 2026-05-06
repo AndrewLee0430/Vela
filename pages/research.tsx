@@ -11,6 +11,7 @@ import { fetchEventSource } from '@microsoft/fetch-event-source';
 import { FatalError, makeOnOpen, sseOnError } from '../utils/sse';
 import CitationPanel, { Citation } from '../components/CitationPanel';
 import FeedbackBar from '../components/FeedbackBar';
+import ShareButton from '../components/ShareButton';
 import UpgradeModal from '../components/UpgradeModal';
 import Toast from '../components/Toast';
 import PHIWarning from '../components/PHIWarning';
@@ -194,6 +195,7 @@ function ResearchForm() {
     const [showThirdQueryCta, setShowThirdQueryCta] = useState(false);
     const [phiError, setPhiError] = useState<{detail: string; suggestion: string} | null>(null);
     const [detectedLang, setDetectedLang] = useState<string>('en');
+    const [localQueryId, setLocalQueryId] = useState<string | null>(null);
 
     const [plan, setPlan] = useState<'free' | 'pro'>(() => {
         if (typeof window === 'undefined') return 'free';
@@ -240,6 +242,7 @@ function ResearchForm() {
         setQueryTime(null); setError(''); setIsFallback(false); setStatusMsg(''); setPhiError(null);
         setSelectedSuggestion(null);
         setQueryId(null);
+        setLocalQueryId(null);
     };
 
     const maybeTriggerThirdQueryCta = useCallback(() => {
@@ -284,6 +287,7 @@ function ResearchForm() {
         setAnswer(''); setCitations([]); setQueryTime(null);
         setLoading(true); setError(''); setIsFallback(false); setStatusMsg(''); setPhiError(null); setDetectedLang('en');
         setQueryId(null);
+        setLocalQueryId(null);
 
         const controller = new AbortController();
 
@@ -335,7 +339,10 @@ function ResearchForm() {
                     try {
                         const data = JSON.parse(ev.data);
                         if (data.type === 'query_id') {
-                            if (data.query_id) setQueryId(data.query_id);
+                            if (data.query_id) {
+                                setQueryId(data.query_id);
+                                setLocalQueryId(data.query_id);
+                            }
                         }
                         else if (data.type === 'status') {
                             const statusMap: Record<string, string> = {
@@ -576,7 +583,17 @@ function ResearchForm() {
                                     )}
                                     {!loading && answer && !error && (
                                         <>
-                                            <FeedbackBar query={question} response={answer} category="research" />
+                                            <div className="flex flex-wrap items-center gap-2">
+                                                <FeedbackBar query={question} response={answer} category="research" />
+                                                <ShareButton
+                                                    feature="research"
+                                                    queryId={localQueryId}
+                                                    queryText={question}
+                                                    answerText={answer}
+                                                    citations={citations}
+                                                    source="answer_block"
+                                                />
+                                            </div>
                                             <div className="mt-3 inline-block">
                                                 <ProFeatureOverlay isLocked={plan !== 'pro'} featureName={extra.proFeatExport}>
                                                     <button

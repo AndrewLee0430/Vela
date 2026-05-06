@@ -6,6 +6,7 @@ import { useAuth, useUser } from '@clerk/nextjs';
 import { fetchEventSource } from '@microsoft/fetch-event-source';
 import { FatalError, makeOnOpen, sseOnError } from '../utils/sse';
 import FeedbackBar from '../components/FeedbackBar';
+import ShareButton from '../components/ShareButton';
 import Toast from '../components/Toast';
 import PHIWarning from '../components/PHIWarning';
 import UpgradeModal from '../components/UpgradeModal';
@@ -223,6 +224,7 @@ function ExplainForm() {
     const [showUpgradeModal, setShowUpgradeModal] = useState(false);
     const [showDailyCapToast, setShowDailyCapToast] = useState(false);
     const [phiError, setPhiError] = useState<{detail: string; suggestion: string} | null>(null);
+    const [localQueryId, setLocalQueryId] = useState<string | null>(null);
     const isRunningRef = useRef(false);
     const [plan, setPlan] = useState<'free' | 'pro'>(() => {
         if (typeof window === 'undefined') return 'free';
@@ -392,6 +394,7 @@ function ExplainForm() {
         };
         setResult(null); setSources([]); setError(''); setStatusMsg(''); setLoading(true); setPhiError(null);
         setQueryId(null);
+        setLocalQueryId(null);
         const controller = new AbortController();
         try {
             const jwt = await getToken({ skipCache: true });
@@ -410,7 +413,10 @@ function ExplainForm() {
                     try {
                         const data = JSON.parse(ev.data);
                         if (data.type === 'query_id') {
-                            if (data.query_id) setQueryId(data.query_id);
+                            if (data.query_id) {
+                                setQueryId(data.query_id);
+                                setLocalQueryId(data.query_id);
+                            }
                         }
                         else if (data.type === 'identified') {
                             if (typeof data.language === 'string') detectedLang = data.language;
@@ -480,6 +486,7 @@ function ExplainForm() {
     const handleReset = () => {
         setReportText(''); setResult(null); setSources([]); setError(''); setStatusMsg(''); setPhiError(null);
         setQueryId(null);
+        setLocalQueryId(null);
         handleUploadReset();
     };
 
@@ -735,7 +742,21 @@ function ExplainForm() {
                         </div>
                     )}
 
-                    <FeedbackBar query={reportText} response={JSON.stringify(result, null, 2)} category="explain" />
+                    <div className="flex flex-wrap items-center gap-2">
+                        <FeedbackBar query={reportText} response={JSON.stringify(result, null, 2)} category="explain" />
+                        <ShareButton
+                            feature="explain"
+                            queryId={localQueryId}
+                            queryText={reportText}
+                            answerText={JSON.stringify(result, null, 2)}
+                            citations={(sources ?? []).map(s => ({
+                                title: (s as { title?: string | null }).title ?? null,
+                                url: (s as { url?: string | null }).url ?? null,
+                                text: null,
+                            }))}
+                            source="answer_block"
+                        />
+                    </div>
                 </section>
             )}
 
