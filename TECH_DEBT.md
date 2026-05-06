@@ -142,6 +142,21 @@ When entries are resolved, move to ARCHIVE.md (note discovery + resolution dates
   - **Priority**: P1(軟啟動前必須 fix,影響 anon-to-signup 轉換訊息)
   - **Discovered**: 2026-04-22 during 2.8 Round 2B Test 4 E2E
 
+- **[P2]** CP950 / `print()` U+2705 emoji in `api/database/vector_store.py:46`
+  - **現況**: `print()` call with ✅ emoji crashes uvicorn boot on Windows console (cp950 codec). Worked around in §4.5 PHASE A local dev via PYTHONIOENCODING=utf-8 PYTHONUTF8=1.
+  - **Risk**: Production runs Linux/UTF-8 so this never triggers in deploy. Strictly a Windows local-dev paper cut.
+  - **Resolution**: Replace with `logging.getLogger(__name__).info("...")` per CLAUDE.md Rule 4. Trivial fix (1 line).
+  - **Priority**: P2 — does not affect production, only annoys solo founder on Windows. (TECH_DEBT.md has no P3 tier; lowest is P2.)
+  - **See also**: subsumed by P1 "print() violations in api/" entry above (line 41) which already lists `vector_store.py:46`. This entry preserves §4.5 PHASE A discovery context + the workaround command for the next person who hits it on Windows.
+  - **Discovered**: 2026-05-05 during §4.5 PHASE A smoke test on Windows local uvicorn.
+
+- **[P2]** No backend PostHog client (`api/` has no `import posthog`)
+  - **現況**: All PostHog events flow through `utils/analytics.ts` `track()` from the frontend. Server-side events (e.g. PRD §4.5 需求 7 `share_link_visited`, which fires when LinkedIn/X/Facebook bots scrape OG cards) cannot be captured.
+  - **Risk for §4.5**: `share_link_visited` was specced as backend-fired with `referrer_domain` + `is_first_view`. Per 2026-05-05 PRD §4.5 修訂, this event is being moved to frontend (accepts that bot views are not counted — arguably correct behavior, view_count remains accurate via server increment).
+  - **Resolution if needed later**: Add `posthog` to requirements.txt + module-level `Posthog(api_key, host=...)` in `api/server.py` + helper for server-side `track()`. ~10 lines. Required only if a future feature needs server-side analytics that frontend cannot emit.
+  - **Priority**: P2 — current §4.5 design absorbs this gap; no other open need. (TECH_DEBT.md has no P3 tier; lowest is P2.)
+  - **Discovered**: 2026-05-05 during §4.5 PHASE A smoke test (PostHog server-side fire was specced but no client existed).
+
 - **[P2 → Dodo 付費啟用前]** `CLERK_SECRET_KEY` 仍是 `sk_live_` 對 Dev instance user checkout 會 500
   - **現況**: Round 2B JWT Dev/Prod mismatch fix 只改 `CLERK_JWKS_URL` 指向 Dev instance (`joint-guppy-23.clerk.accounts.dev`);`CLERK_SECRET_KEY` 仍為 Prod `sk_live_NhG...`
   - **影響範圍**: Dodo checkout path 會用 `CLERK_SECRET_KEY` call Clerk Backend API 取 user email/name;Dev instance user ID 對 Prod secret key 查不到 → 500 error

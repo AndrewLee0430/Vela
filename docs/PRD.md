@@ -1279,6 +1279,8 @@ table: SharedQuery
 - `share_link_generated`: { query_id, share_id, locale }
 - `share_link_copied`: { share_id, method: 'copy_button' | 'qr' | 'social_{platform}' }
 - `share_link_visited`: { share_id, referrer_domain, is_first_view: bool }
+  - **(2026-05-05 修訂)** 從 frontend 發送(non-bot view only),非 backend。理由:Vela backend 目前無 PostHog client(見 TECH_DEBT.md),為了一個 event 接整套 server-side 分析架構成本不對稱。Side effect:LinkedIn / X / Facebook bot 抓 OG 卡片不會計入 view 事件 — 此為設計意圖(bot view 不該污染 PMF 訊號),`view_count` 欄位仍由 backend 在 `GET /q/{share_id}` 中以 `_safe_db_write` 累加(包含 bot),兩個指標分別表達「真人 reach」與「總 traffic」。
+  - **Implementation note**: frontend 在 `/q/{share_id}` 公開頁載入時 fire(透過內嵌的 small JS snippet — 公開頁是 server-side rendered Jinja2,故需在 template 加入 PostHog snippet + analytics.ts 的最小子集,或改用 fetch beacon 直接打 PostHog ingest endpoint)。`is_first_view` 的判定改為 frontend 端 localStorage flag(`vela_visited_shares` set),取代原 backend `last_viewed_at IS NULL` 邏輯。
 - `share_to_query_clicked`: { share_id, time_on_page_sec }(訪問者按 CTA 進首頁)
 - `share_revoked`: { share_id, days_since_created }
 
