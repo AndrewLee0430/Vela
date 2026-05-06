@@ -1,0 +1,41 @@
+{% extends "q_base.jinja2" %}
+
+{% block jsonld %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "QAPage",
+  "mainEntity": {
+    "@type": "Question",
+    "name": {{ query_text | tojson }},
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": {{ answer_text | tojson }}
+    }
+  }
+}
+</script>
+{% endblock %}
+
+{% block content %}
+<h1 class="query">{{ query_text }}</h1>
+<div class="answer">{{ answer_text }}</div>
+
+{% if citations %}
+<div class="citations">
+<h3>{{ s.citationsHeading }}</h3>
+<ol>
+{% for c in citations %}
+<li>
+{% if c.url %}<a href="{{ c.url }}" target="_blank" rel="noopener nofollow">{{ c.title or c.url }}</a>{% else %}{{ c.title or c.text or "Reference" }}{% endif %}
+</li>
+{% endfor %}
+</ol>
+</div>
+{% endif %}
+
+<div class="cta">
+<p class="cta-title">{{ s.publicCtaTitle }}</p>
+<a class="cta-button" href="/?from_share={{ share_id }}">{{ s.publicCtaButton }}</a>
+</div>
+{% endblock %}

@@ -31,6 +31,14 @@ requests==2.32.2
 # -- Streaming ----------------------------------------------------
 sse-starlette==2.1.0
 
+# -- Server-side rendering (PRD § 4.5 Public Query Page) ---------
+# Jinja2 is already a transitive dep via FastAPI/Starlette, but pinned
+# here because api/services/share_renderer.py imports it directly.
+jinja2==3.1.4
+# Pillow generates the OG card PNG (api/services/og_image.py).
+# CJK glyphs require fonts-noto-cjk installed in Dockerfile stage 2.
+pillow==10.4.0
+
 # -- Utilities ----------------------------------------------------
 python-dotenv==1.0.1
 pydantic==2.8.2

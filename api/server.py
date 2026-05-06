@@ -39,7 +39,7 @@ from contextlib import asynccontextmanager
 from typing import Optional, Tuple
 
 from fastapi import FastAPI, Depends, Request
-from fastapi.responses import StreamingResponse, FileResponse, JSONResponse
+from fastapi.responses import StreamingResponse, FileResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
@@ -1839,6 +1839,102 @@ async def api_status(creds: Optional[HTTPAuthorizationCredentials] = Depends(req
         },
         "vector_store": vector_store_status
     }
+
+
+# ============================================================
+# Public Query Page — PRD § 4.5 Share Answer (PHASE A)
+# Must register BEFORE serve_nextjs_pages catch-all below; the
+# catch-all `@app.get("/{path:path}")` would otherwise absorb /q/*
+# and try to serve a static HTML file that doesn't exist.
+# ============================================================
+from api.models.sql_models import SharedQuery as _SharedQueryModel
+from api.services import share_renderer as _share_renderer
+from api.services.og_image import generate_og_png as _generate_og_png
+
+# Per-IP view rate limit for /q/{share_id}. PHASE A uses Option B
+# (in-handler check) instead of extending the middleware path-matcher
+# to support prefixes — keeps the change isolated and avoids touching
+# every other dynamic route's matching semantics.
+_Q_VIEW_LIMIT = 60
+_Q_VIEW_WINDOW = 60  # seconds
+
+
+def _resolve_share_locale(request: Request, share_locale: str | None) -> str:
+    """Prefer the locale recorded at share-creation time. Fall back to
+    Accept-Language. PHASE A only ships en + zh-TW renderer copy so
+    anything else degrades to en (utils/i18n-share.ts has the same
+    fallback policy)."""
+    if share_locale:
+        return _share_renderer.resolve_locale(share_locale)
+    accept = (request.headers.get("accept-language") or "").lower()
+    if "zh-tw" in accept or "zh-hant" in accept:
+        return "zh-TW"
+    return "en"
+
+
+@app.get("/q/{share_id}")
+async def serve_share_page(share_id: str, request: Request, db: Session = Depends(get_db)):
+    # Defense-in-depth: reject path traversal even though FastAPI route
+    # parsing should already prevent it.
+    if not share_id or "/" in share_id or "\\" in share_id or len(share_id) > 64:
+        return JSONResponse(status_code=404, content={"detail": "Not found."})
+
+    # Per-IP rate limit (Option B: in-handler, see comment above)
+    if not TEST_MODE:
+        ip = _get_client_ip(request)
+        key = f"{ip}:/q/"
+        now = _time.time()
+        _rate_store[key] = [t for t in _rate_store[key] if now - t < _Q_VIEW_WINDOW]
+        if len(_rate_store[key]) >= _Q_VIEW_LIMIT:
+            return JSONResponse(
+                status_code=429,
+                content={"detail": f"Rate limit exceeded. Max {_Q_VIEW_LIMIT} requests per {_Q_VIEW_WINDOW}s."},
+            )
+        _rate_store[key].append(now)
+
+    share = db.query(_SharedQueryModel).filter(_SharedQueryModel.share_id == share_id).first()
+    if share is None:
+        return JSONResponse(status_code=404, content={"detail": "Not found."})
+
+    locale = _resolve_share_locale(request, getattr(share, "locale", None))
+
+    # Flagged + revoked must return 200 so social scrapers see the
+    # takedown notice instead of a blank 404 (preview cards already
+    # cached by Slack/Twitter remain valid links).
+    if getattr(share, "flagged", False):
+        html = _share_renderer.render_flagged_page(locale, share=share)
+        return Response(content=html, media_type="text/html; charset=utf-8")
+
+    if not getattr(share, "is_public", True):
+        html = _share_renderer.render_revoked_page(locale, share=share)
+        return Response(content=html, media_type="text/html; charset=utf-8")
+
+    html = _share_renderer.render_public_page(share, locale)
+
+    # Non-blocking side effects: view_count + last_viewed_at, PostHog event.
+    # All wrapped in try/except per CLAUDE.md Rule 13 (non-essential
+    # tracking must never fail the request).
+    try:
+        from datetime import datetime as _dt
+        is_first_view = share.last_viewed_at is None
+        share.view_count = (share.view_count or 0) + 1
+        share.last_viewed_at = _dt.utcnow()
+        db.commit()
+    except Exception as e:
+        logger.warning("[share] view_count update failed for %s: %s", share_id, e)
+        try:
+            db.rollback()
+        except Exception:
+            pass
+        is_first_view = False
+
+    # TODO(PHASE B+): server-side `share_link_visited` PostHog event.
+    # Backend currently has no posthog client wired (utils/analytics.ts
+    # is frontend-only). Skipping rather than blocking PHASE A on it.
+    # Payload would be: {share_id, referrer_domain, is_first_view}.
+    _ = is_first_view
+
+    return Response(content=html, media_type="text/html; charset=utf-8")
 
 
 # 靜態檔案服務

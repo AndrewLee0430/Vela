@@ -105,3 +105,26 @@ class BugReport(Base):
     user_agent = Column(String, nullable=True)
     locale = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
+
+
+class SharedQuery(Base):
+    """PRD § 4.5 — Public share of a single Research/Verify/Explain answer.
+
+    Snapshot semantics: query_text / answer_text / citations are copied
+    in at /api/share/create time (PHASE B). Does NOT FK to chat_history,
+    so 180-day ChatHistory cleanup leaves shares intact.
+    """
+    __tablename__ = "shared_query"
+
+    share_id = Column(String, primary_key=True)
+    query_id = Column(String, nullable=True, index=True)       # PHASE B idempotency key
+    query_text = Column(Text, nullable=False)
+    answer_text = Column(Text, nullable=False)
+    citations = Column(JSON, nullable=False)                   # list of citation dicts; jsonb in Postgres
+    created_by = Column(String, nullable=True, index=True)     # sha256(salt + user_id)[:16]; PHASE B
+    created_at = Column(DateTime, default=datetime.utcnow)
+    is_public = Column(Boolean, nullable=False, default=True)
+    view_count = Column(Integer, nullable=False, default=0)
+    last_viewed_at = Column(DateTime, nullable=True)
+    flagged = Column(Boolean, nullable=False, default=False, index=True)
+    locale = Column(String, nullable=True)                     # renderer i18n hint
