@@ -6,6 +6,7 @@ Active tech debt entries identified during shipping. Format preserved verbose be
 - **[P0]** — blocks shipping or user-facing
 - **[P1]** — affects code quality or upcoming task
 - **[P2]** — best practice / future maintenance
+- **[P3]** — quality-of-life / cosmetic / opportunistic (added 2026-05-06 during §4.5 UX polish 3/3 — supersedes the earlier "no P3 tier" claim in the [P2] No backend PostHog client entry)
 
 **Resolution targets**:
 - "→ Phase 0 Retrospective" — work in retro phase
@@ -15,6 +16,22 @@ Active tech debt entries identified during shipping. Format preserved verbose be
 When entries are resolved, move to ARCHIVE.md (note discovery + resolution dates).
 
 ---
+
+- **[P2 → Phase 1B Week 4 polish] Verify 答案品質 nuance issues — dogfooding 發現 (2026-05-06)**
+  - **背景**: solo founder 2026-05-06 dogfood query「為什麼亞洲老年人 polypharmacy 問題嚴重」的人工 review。所有 4 個 citation 真實存在 (PMID 38368398, 35268461, 37968631, 37574369)，無 hallucination。Retrieval 基礎正常運作。
+  - **發現 5 個 nuance issues**:
+    1. **Citation scope mismatch detection**: retrieval 取回的 citation population scope 與 query population scope 不 match 時，LLM 沒識別、沒 flag，silent 混入結論。範例：query「亞洲老年人」、retrieval 取回 PMID 37968631 (UK 東倫敦巴基斯坦移民老年人)，LLM 把它當作亞洲在地 evidence 引用。
+    2. **Geographic over-generalization**: query 涉及廣域地理 (亞洲、全球、東亞)，LLM 沒 flag「我有哪些地區的 evidence、沒有哪些」。範例：query「亞洲老年人」、evidence 只覆蓋中國 + 馬來西亞 + 東倫敦巴基斯坦移民，沒有日韓泰越，但答案 framing 為通用「亞洲」結論。
+    3. **Citation ranking bias toward recency over scope match**: 對 query 最 match 的 citation 沒被推到 anchor 位置。範例：query「亞洲社區老年人 polypharmacy」最 match 的是 PMID 37574369 (馬來西亞 primary care 393 人)，但 ranking 在第 4 位，前 3 位是中國 inpatient research，scope 較窄。
+    4. **Counterintuitive finding 缺乏 mechanism explanation**: statistical association 直接呈現給使用者，沒附背後的 mechanism。範例：「多重用藥與死亡率略低相關」一般使用者會誤讀為「多吃藥較好」，實際 ChiOTEAF 研究的 mechanism 是「房顫族群中積極治療反映」。
+    5. **LLM 自我評價字句**: 答案結尾出現「參考文獻均來自 2022 年以後，證據屬於近期且具代表性」這類 LLM 自評。應禁止 LLM 評價自己引用的品質。
+  - **影響範圍**: 對藥師讀者影響 medium (會自己判讀)，對一般使用者影響 high (誤導風險)。不是 broken system，是 polish issue。
+  - **Resolution**: 拆兩個 task 對應 Phase 1B
+    - **Task A (Week 4)**: issue #1, #2, #4, #5 為 system prompt 類，順手放進 Verify 強制英文 + drug name resolution (ADR 003) 的 verify_system.md 修改階段。預估 system prompt polish 工時 +0.5-1 天 (Week 4 從 1.5-2 天延長到 2-2.5 天)。
+    - **Task B (Week 7-8)**: issue #3 為 RAG retrieval ranking 改進，需單獨 evaluate。風險：改 ranking 演算法會影響所有 query 的答案，需要 regression test。建議在 Week 7-8 polish 階段 evaluate，視 risk 決定 Phase 1B vs Phase 1C 排程。
+  - **驗證方法**: 持續 dogfooding 累積 5-10 個 query 樣本，混合 narrow query (e.g. metformin 腎功能調整) + broad query (e.g. 亞洲心血管疾病) + 邊緣 query (e.g. 越南藥品 BPOM 等同)，確認上述 issue 是系統性問題或 edge case。
+  - **與顧問視角的對齊**: 另一顧問 review 同一份答案認為品質「臨床產品水準、零幻覺」。本 entry 不否定該視角 (retrieval 基礎沒壞、citation 真實、訊息萃取成功)，但採嚴格標準 polish 以對齊 PRD § 0.1 醫療專業者 TA 的 evidence rigour 期待。對 B2C 受眾另一顧問標準也合理。
+  - **Discovered**: 2026-05-06 during solo founder dogfooding session
 
 - **[P0 — Must resolve in 2.8]** localhost Clerk sign-in flow missing
   - **Partial progress**: Auth split (require_auth + require_auth_or_anonymous) completed in Round 1 (7a8c5a8). Remaining 3 items for Round 2 (frontend sign-in pages + ClerkProvider config + Clerk SDK config verification).
@@ -157,6 +174,7 @@ When entries are resolved, move to ARCHIVE.md (note discovery + resolution dates
   - **Resolution**: extend AnonymousUpgradeCTA with a new `trigger='share_locked'` value (~5-10 LOC). Update ShareButton to render `<AnonymousUpgradeCTA trigger='share_locked' onClose={...} />` instead of `router.push('/sign-up')`. Re-test 8k flow.
   - **Priority**: P2 — measurable conversion cost, but not blocking §4.5 ship. Pick up when GTM data shows share-locked → signup conversion underperforming other triggers, OR opportunistically during Phase 1B Anonymous Trial Flow polish (per STATE.md Phase 1B Week 7 work item).
   - **Discovered**: 2026-05-06 during §4.5 PHASE B implementation; deviation accepted by reviewer to avoid widening PHASE B scope.
+  - **2026-05-06 update**: Resolution scope unchanged but now applies to BOTH `variant='inline'` (history.tsx) and `variant='navbar'` (research/verify/explain pages, commit ca571ce). When implemented, fix in one place propagates to both call sites since both share the same anon-gating code path inside `components/ShareButton.tsx`.
 
 - **[P2 → Dodo 付費啟用前]** `CLERK_SECRET_KEY` 仍是 `sk_live_` 對 Dev instance user checkout 會 500
   - **現況**: Round 2B JWT Dev/Prod mismatch fix 只改 `CLERK_JWKS_URL` 指向 Dev instance (`joint-guppy-23.clerk.accounts.dev`);`CLERK_SECRET_KEY` 仍為 Prod `sk_live_NhG...`
@@ -168,3 +186,33 @@ When entries are resolved, move to ARCHIVE.md (note discovery + resolution dates
     - 驗證 `/api/checkout/dodo` + `/api/webhook/dodo` 路徑對 Dev user 能順利 create subscription
   - **Priority**: P2(不 block 當前軟啟動;Dodo 付費啟用是 Phase 1A scope)
   - **Discovered**: 2026-04-22 during 2.8 Round 2B Test 5 Clerk JWT Dev/Prod mismatch fix
+
+- **[P3]** Main-site body font-family Arial override
+  - **現況**: `styles/globals.css:27` `body { font-family: Arial, Helvetica, sans-serif; }` overrides the Geist intent declared in `@theme inline { --font-sans: var(--font-geist-sans) }`. All authed pages render Arial instead of Geist.
+  - **Discovered context**: surfaced during §4.5 main-site visual audit (commit a5da1c5). Public Jinja2 page (`api/templates/q_base.jinja2`) intentionally uses `-apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans CJK TC", sans-serif` — does NOT regress to Arial.
+  - **Risk**: minor visual quality regression on main site. Geist (the intended brand typeface) is loaded but never applied. Branding asset wasted. Not blocking ship.
+  - **Resolution**: remove the `body { font-family: Arial, ... }` line from `styles/globals.css`; verify Geist loads correctly via Next.js font subsetting; visual diff main-site pages before/after.
+  - **Priority**: P3 — visual polish only, no functional/legal impact.
+  - **Discovered**: 2026-05-05 during §4.5 PHASE A visual audit.
+
+- **[P2]** Native-speaker review pending for §4.5 share i18n legal-weighted strings
+  - **現況**: `utils/i18n-share.ts` ships 16-locale ShareTranslations (commit b378659). en + zh-TW user-reviewed for legal precision; ja user-reviewed PASS during PHASE B live test. Other 12 locales (zh-CN, ko, es, fr, de, it, pt, th, ar, hi, bn, he, vi) are machine-translation baseline.
+  - **Risk**: legal-weighted strings — `modalConsentCheckbox` (consent attestation list of identifiers + irrevocability clause), `publicDisclaimer` (visitor-facing AI medical disclaimer), `publicShortDisclaimer`, `settingsRevokeConfirm` — translation accuracy in those 12 locales unverified. Specific identifier list (病患姓名/身分證字號/病歷號/健保號) and "無法完全收回" clause must survive translation in any language Share is opened to.
+  - **Resolution**: native-speaker review of the 4 legal-weighted keys × 12 unreviewed locales (= 48 strings). Trigger: before opening Share to non-en/zh-TW/ja traffic in production. Reviewer can pre-launch focus on Vela target locales (likely ja already done; ko + es + th worth prioritizing for SE Asia GTM).
+  - **Priority**: P2 — gates non-en/zh-TW/ja Share traffic; not blocking en/zh-TW soft launch.
+  - **Discovered**: 2026-05-06 during §4.5 UX polish 2.5 i18n rollout.
+
+- **[P3]** scripts/cost_report_7d.py untracked file
+  - **現況**: `git status` consistently shows `scripts/cost_report_7d.py` as untracked across multiple §4.5 commits (PHASE B onward). Out of §4.5 scope; not committed nor gitignored.
+  - **Risk**: minor — untracked file accumulates noise in `git status`. Could be ops tooling, dead exploration, or pending feature.
+  - **Resolution**: at Phase 0 Retrospective, decide one of: (a) commit if it's wanted ops tooling, (b) `.gitignore` if it's dev-only artifact, (c) delete if dead.
+  - **Priority**: P3 — quality-of-life only.
+  - **Discovered**: 2026-05-05 during §4.5 PHASE B; persisted through subsequent commits.
+
+- **[P3]** Backend dotenv loader doesn't read .env.local
+  - **現況**: FastAPI backend reads `.env` but NOT `.env.local`. During §4.5 PHASE B local dev, user set `VELA_PUBLIC_BASE_URL=http://localhost:3000` in `.env.local` (Next.js convention) but backend continued falling back to production URL hardcoded default. User had to set `$env:VELA_PUBLIC_BASE_URL` via PowerShell process env to override.
+  - **Risk**: dev quality-of-life paper cut. Easy to accidentally generate share URLs pointing to production from localhost. (Did happen once during this work — user spent 30min debugging "share URL goes to production landing page" before identifying the env-loading mismatch.)
+  - **Resolution**: pick one — (a) extend backend dotenv loader to chain `.env.local` before `.env` (matches Next.js convention; least surprise); (b) document in `.env.example` that backend-side vars (`VELA_PUBLIC_BASE_URL`, `SHARE_CREATED_BY_SALT`) belong in `.env`, not `.env.local`. (a) is preferred for symmetry.
+  - **Related backend latent bug**: `VELA_PUBLIC_BASE_URL` fallback when unset defaults to production URL. Should fall back to `http://localhost:3000` if `TEST_MODE=true` and not set. Bundle the fix with (a).
+  - **Priority**: P3 — dev-only.
+  - **Discovered**: 2026-05-06 during §4.5 PHASE B smoke test 8l.

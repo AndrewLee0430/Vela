@@ -1197,6 +1197,7 @@ Phase 1A 讓使用者感覺「這個產品為我設計」,Phase 1B 真正做出�
 
 - 答案產生後,在 answer block 下方加「Share」按鈕(圖示 + 文字,i18n key)
 - **(2026-05-05 修訂)** Share button 對未登入使用者 (anonymous L0) disabled,顯示 tooltip + AnonymousUpgradeCTA 風格的 sign-up prompt;只有 L1/L2 已登入使用者才能建立分享。**理由:**(1) ADR 001 anonymous tier 規範 Research 2/day + Verify 2/day,單日上限 4 個答案,本需求 §4.5 需求 6「anon 10/day share 配額」永遠不會 bind,實作意義為 0;(2) Share 是 GTM § 5.4 L3 word-of-mouth 機制,假設「signed-in 種子使用者推薦」,anon 在沒建立任何使用者關係即發布 PHI 風險內容反而失去 abuse 追溯能力;(3) defense-in-depth — 即便前端 sign-in gate 被 bypass,後端 `require_auth` 會擋下 anon 對 `/api/share/create` 的呼叫。
+- **(2026-05-06 修訂)** Share button 從原 spec「answer block 下方」relocated 至 Navbar,透過 `contexts/ShareContext.tsx` provider + `useShareContext()` hook 跨頁協調。Visibility gate:當前頁面為 `/research` / `/verify` / `/explain` **且** streaming 已完成 (`shareData != null`) 才渲染。其他 routes(`/dashboard`, `/pricing`, `/settings`, `/history` 等)Navbar 完全不顯示按鈕。`pages/history.tsx` 維持原 spec inline ShareButton(per-row,因 history 一頁多答案,Navbar 共享 slot 在語意上不適用)。Anonymous L0 在 navbar variant 與 inline variant 行為一致(disabled 樣式 + redirect `/sign-up`)。
 - 點擊後彈出 Share Modal,需明確同意才生成 share link(隱私 gate)
 - Modal 內容:
   - 標題:「公開分享這個答案」(i18n)
@@ -1208,6 +1209,7 @@ Phase 1A 讓使用者感覺「這個產品為我設計」,Phase 1B 真正做出�
   - 寫入 SharedQuery 資料表(schema 見需求 4)
   - 顯示產生後的 modal:複製連結按鈕、QR code、社群分享 icons(LinkedIn / X / Facebook / LINE / WhatsApp,locale 自動排序)
 - 使用者已分享過的 query,再按 Share 不重新生成,重用既有 share_id
+- **(2026-05-06 修訂)** QR code 已從 done-state modal 移除,`qrcode.react` 依賴一併拔除。理由:Vela TA(藥師)主要 desktop 使用,QR code 在桌面情境下價值低於視覺成本。`Copy link` + 5 個社群 icon (LinkedIn / X / Facebook / WhatsApp / LINE) 已涵蓋實用分享路徑。Toast「Link copied」配色從綠色改為品牌一致的中性白色表面。
 
 **需求 2:URL 結構與公開頁面**
 
@@ -1220,10 +1222,12 @@ Phase 1A 讓使用者感覺「這個產品為我設計」,Phase 1B 真正做出�
   - Footer:免責聲明 + Privacy 連結 + ToS 連結
 - 不顯示原始使用者資訊(連 anonymous_id 都不顯示,完全與發起者解耦)
 - 不顯示 user_context(role / workplace / locale 等偏好絕不洩漏)
+- **(2026-05-06 修訂)** 公開頁面視覺對齊主站完整設計系統 (commit a5da1c5)。原 spec 僅描述功能性結構;shipped 版本含:dark gradient body (matches PageShell)、evidence-strength card splits (🟢🟡🔴 markers,server-side parsed via Python `parse_research_sections()` ported from `pages/research.tsx`)、hand-rolled CitationPanel HTML (source-type 顏色、credibility pill、5 顆星、abstract 200 字硬截斷)、coral gradient CTA button (與 landing page hero 同 styling)、inline ⚠️ 短免責 + footer 長免責雙層。GTM L3 word-of-mouth 第一印象品質 → 訪客 click-through 較原 minimal 設計顯著提升。
 
 **需求 3:SEO 與社群 preview**
 
 - **(2026-05-05 修訂)** SSR 渲染採 **FastAPI Python Jinja2 server-side rendering**,**不**用 Next.js SSR(現有 `next.config.ts` 已 `output: 'export'`,build pipeline 完全靜態,無 Node runtime 在 production;改用 SSR 需 Dockerfile + next.config 重構,風險高於 §4.5 scope)。Public Query Page 路由註冊於 `api/server.py` 的 `serve_nextjs_pages` catch-all 之前,先 match `/q/{share_id}`。
+- **(2026-05-06 修訂)** `pages/research.tsx::parseResearchSections()` 已 port 至 `api/services/share_renderer.py::parse_research_sections()` (Python regex 同邏輯),public page 在 server-side 切 sections 後送進 Jinja2 render,避免客戶端 splitting 影響 SEO crawler 對 sectioned content 的索引。
 - 動態 OG meta tags:
   - `og:title`:取 query 前 80 字 + 「· Vela」
   - `og:description`:取答案首段前 160 字
