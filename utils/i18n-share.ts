@@ -1,6 +1,11 @@
 // utils/i18n-share.ts — PRD § 4.5 Share Answer translations.
-// Phase 0 coverage: en + zh-TW in full; other 14 languages fall back to en
-// (PRD allows progressive i18n rollout; full 16-language pass deferred to PHASE E).
+// 16-language coverage. en + zh-TW are user-reviewed and locked. The
+// remaining 14 locales were added in §4.5 UX polish 2.5 (post ca571ce
+// live test) — generic UI vocabulary, machine-translation baseline.
+// Long disclaimer + consent strings translated in full to preserve the
+// specific identifier list (patient name, ID number, medical record
+// number, insurance number) and the "cannot be fully recalled" clause
+// for legal weight in each language.
 
 import type { LangCode } from './i18n';
 
@@ -111,7 +116,487 @@ const zhTW: ShareTranslations = {
   settingsEmpty: '你還沒有任何公開分享。',
 };
 
+const zhCN: ShareTranslations = {
+  buttonLabel: '分享',
+  buttonDisabledAnon: '注册以分享',
+  buttonTooltipAnon: '分享功能仅供注册用户使用。',
+
+  modalTitle: '公开分享这个答案',
+  modalWarning:
+    '任何取得链接的人都可以看到这个问题与答案。请勿分享含患者可识别信息或任何私人资料的内容。Vela 保留移除违反使用条款内容的权利。',
+  modalGenericWarning: '此语言的自动敏感信息检查有限,请仔细检查问题后再分享。',
+  modalConfirm: '生成公开链接',
+  modalCancel: '取消',
+  modalConsentCheckbox: '我已确认此问题不含患者姓名、身份证号、病历号、医保号或任何可指向特定患者的信息,并理解分享后此内容将公开可见且无法完全撤回。',
+  modalSensitiveBlocked: '此问题可能含个人信息,无法公开分享',
+  modalQuotaBlocked: '今日分享次数已达上限,请稍后再试。',
+  modalGenericError: '无法生成分享链接,请稍后再试。',
+  modalCopyLink: '复制链接',
+  modalLinkCopied: '已复制链接',
+  modalShareOn: '分享至',
+
+  publicCtaTitle: '想问你自己的版本?',
+  publicCtaButton: '在 Vela 试试',
+  publicDisclaimer: '此内容由 AI 根据公开医学文献生成,仅供医疗专业人员参考讨论,不构成医疗建议、诊断或处方。请勿用于自我诊断或自我用药。如有健康问题请咨询合格医疗人员。',
+  publicShortDisclaimer: '⚠️ 本信息仅供参考,请依据临床指南并咨询合格专业人员。',
+  publicRevoked: '此分享已被撤回',
+  publicFlagged: '此分享因违反使用条款已下架',
+  headerTagline: '用你的语言提问,由官方来源验证。',
+
+  settingsTabTitle: '我的分享',
+  settingsRevokeButton: '撤回',
+  settingsRevokeConfirm: '要撤回此公开链接吗?新访客会看到「已撤回」提示,但已被社交平台或他人缓存的预览卡片可能继续显示一段时间。',
+  settingsEmpty: '你还没有任何公开分享。',
+};
+
+const ja: ShareTranslations = {
+  buttonLabel: '共有',
+  buttonDisabledAnon: '共有するにはサインアップ',
+  buttonTooltipAnon: '共有は登録ユーザーのみご利用いただけます。',
+
+  modalTitle: 'この回答を公開で共有',
+  modalWarning:
+    'リンクを持つすべての人がこの質問と回答を閲覧できます。患者の識別情報や個人情報が含まれている場合は共有しないでください。Vela は利用規約に違反するコンテンツを削除することがあります。',
+  modalGenericWarning: 'お使いの言語に対する自動的な機密情報チェックは限定的です。共有前に質問内容を慎重にご確認ください。',
+  modalConfirm: '公開リンクを作成',
+  modalCancel: 'キャンセル',
+  modalConsentCheckbox: 'この質問に患者の氏名、ID 番号、診療録番号、保険番号、その他特定の患者を識別できる情報が含まれていないこと、および共有後はこの内容が公開され完全に取り消せないことを確認しました。',
+  modalSensitiveBlocked: 'この質問には個人情報が含まれている可能性があり、公開共有できません。',
+  modalQuotaBlocked: '本日の共有上限に達しました。しばらくしてから再度お試しください。',
+  modalGenericError: '共有リンクを作成できませんでした。もう一度お試しください。',
+  modalCopyLink: 'リンクをコピー',
+  modalLinkCopied: 'リンクをコピーしました',
+  modalShareOn: '共有先',
+
+  publicCtaTitle: '自分のバージョンで質問してみますか?',
+  publicCtaButton: 'Vela で試す',
+  publicDisclaimer: 'このコンテンツは公開されている医学文献から AI によって生成され、医療専門家の参考用ディスカッション資料としてのみ提供されます。医療上の助言、診断、処方を構成するものではありません。自己診断や自己投薬には使用しないでください。健康上の懸念がある場合は、有資格の医療提供者にご相談ください。',
+  publicShortDisclaimer: '⚠️ 本情報は参考用です。臨床ガイドラインを確認し、資格のある医療専門家にご相談ください。',
+  publicRevoked: 'この共有は取り消されました。',
+  publicFlagged: 'この共有は利用規約違反のため削除されました。',
+  headerTagline: 'あなたの言語で質問。公式ソースで検証。',
+
+  settingsTabTitle: 'マイ共有',
+  settingsRevokeButton: '取り消す',
+  settingsRevokeConfirm: 'この公開リンクを取り消しますか?新しい訪問者には取り消しの通知が表示されますが、ソーシャルプラットフォームや第三者によって既にキャッシュされたプレビューカードはしばらく表示され続ける場合があります。',
+  settingsEmpty: 'まだ何も共有していません。',
+};
+
+const ko: ShareTranslations = {
+  buttonLabel: '공유',
+  buttonDisabledAnon: '공유하려면 가입',
+  buttonTooltipAnon: '공유 기능은 가입 사용자만 이용할 수 있습니다.',
+
+  modalTitle: '이 답변을 공개로 공유',
+  modalWarning:
+    '링크를 가진 누구나 이 질문과 답변을 볼 수 있습니다. 환자 식별 정보나 개인 정보가 포함된 경우 공유하지 마십시오. Vela는 이용 약관을 위반하는 콘텐츠를 제거할 수 있습니다.',
+  modalGenericWarning: '귀하의 언어에 대한 자동 민감도 검사는 제한적입니다. 공유하기 전에 질문을 신중히 검토해 주십시오.',
+  modalConfirm: '공개 링크 생성',
+  modalCancel: '취소',
+  modalConsentCheckbox: '이 질문에 환자 이름, 신분증 번호, 의료 기록 번호, 보험 번호 또는 특정 환자를 식별할 수 있는 정보가 포함되지 않았음을 확인하며, 공유 후에는 이 내용이 공개되어 완전히 회수할 수 없음을 이해합니다.',
+  modalSensitiveBlocked: '이 질문에는 개인 정보가 포함되어 있을 수 있어 공개 공유할 수 없습니다.',
+  modalQuotaBlocked: '오늘의 공유 한도에 도달했습니다. 나중에 다시 시도하십시오.',
+  modalGenericError: '공유 링크를 생성할 수 없습니다. 다시 시도하십시오.',
+  modalCopyLink: '링크 복사',
+  modalLinkCopied: '링크가 복사되었습니다',
+  modalShareOn: '공유 대상',
+
+  publicCtaTitle: '본인의 버전으로 질문해 보시겠습니까?',
+  publicCtaButton: 'Vela에서 시도',
+  publicDisclaimer: '이 콘텐츠는 공개된 의학 문헌에서 AI에 의해 생성되었으며, 의료 전문가의 참고용 토론 자료로만 제공됩니다. 의료 조언, 진단 또는 처방이 아닙니다. 자가 진단이나 자가 투약에 사용하지 마십시오. 건강 문제가 있는 경우 자격을 갖춘 의료 제공자와 상담하십시오.',
+  publicShortDisclaimer: '⚠️ 본 정보는 참고용입니다. 임상 지침을 확인하고 자격을 갖춘 의료 전문가와 상담하십시오.',
+  publicRevoked: '이 공유는 취소되었습니다.',
+  publicFlagged: '이 공유는 이용 약관 위반으로 삭제되었습니다.',
+  headerTagline: '당신의 언어로 질문하세요. 공식 출처로 검증됩니다.',
+
+  settingsTabTitle: '내 공유',
+  settingsRevokeButton: '취소',
+  settingsRevokeConfirm: '이 공개 링크를 취소하시겠습니까? 새 방문자에게는 취소 알림이 표시되지만, 소셜 플랫폼이나 제3자가 이미 캐시한 미리보기 카드는 한동안 계속 표시될 수 있습니다.',
+  settingsEmpty: '아직 공유한 내용이 없습니다.',
+};
+
+const es: ShareTranslations = {
+  buttonLabel: 'Compartir',
+  buttonDisabledAnon: 'Regístrate para compartir',
+  buttonTooltipAnon: 'Compartir está disponible para usuarios registrados.',
+
+  modalTitle: 'Compartir esta respuesta públicamente',
+  modalWarning:
+    'Cualquier persona con el enlace puede ver esta pregunta y respuesta. No comparta si contiene identificadores de pacientes o información privada. Vela puede eliminar contenido compartido que viole nuestros términos.',
+  modalGenericWarning: 'Las comprobaciones automáticas de información sensible para su idioma son limitadas; revise cuidadosamente la pregunta antes de compartir.',
+  modalConfirm: 'Crear enlace público',
+  modalCancel: 'Cancelar',
+  modalConsentCheckbox: 'Confirmo que esta pregunta no contiene nombre de paciente, número de identificación, número de historia clínica, número de seguro ni ninguna información que pueda identificar a un paciente específico, y entiendo que una vez compartido, este contenido será visible públicamente y no se puede recuperar por completo.',
+  modalSensitiveBlocked: 'Esta pregunta puede contener información personal y no se puede compartir públicamente.',
+  modalQuotaBlocked: 'Se alcanzó el límite diario de compartidos. Inténtelo de nuevo más tarde.',
+  modalGenericError: 'No se pudo crear el enlace de compartir. Inténtelo de nuevo.',
+  modalCopyLink: 'Copiar enlace',
+  modalLinkCopied: 'Enlace copiado',
+  modalShareOn: 'Compartir en',
+
+  publicCtaTitle: '¿Quiere hacer su propia versión?',
+  publicCtaButton: 'Pruébalo en Vela',
+  publicDisclaimer: 'Este contenido es generado por IA a partir de literatura médica disponible públicamente, destinado a profesionales sanitarios solo como referencia de discusión. No constituye consejo médico, diagnóstico ni prescripción. No lo use para autodiagnóstico ni automedicación. Consulte a un proveedor de salud cualificado ante cualquier problema de salud.',
+  publicShortDisclaimer: '⚠️ Solo con fines informativos. Verifique con las guías clínicas y consulte a un profesional cualificado.',
+  publicRevoked: 'Este enlace compartido ha sido revocado.',
+  publicFlagged: 'Este enlace compartido fue eliminado por violar los términos del servicio.',
+  headerTagline: 'Pregunte en su idioma. Verificado por fuentes oficiales.',
+
+  settingsTabTitle: 'Mis compartidos',
+  settingsRevokeButton: 'Revocar',
+  settingsRevokeConfirm: '¿Revocar este enlace público? Los nuevos visitantes verán un aviso de revocación, pero las tarjetas de vista previa ya almacenadas en caché por plataformas sociales u otros pueden seguir mostrándose durante un tiempo.',
+  settingsEmpty: 'Aún no has compartido nada.',
+};
+
+const fr: ShareTranslations = {
+  buttonLabel: 'Partager',
+  buttonDisabledAnon: "S'inscrire pour partager",
+  buttonTooltipAnon: 'Le partage est réservé aux utilisateurs enregistrés.',
+
+  modalTitle: 'Partager cette réponse publiquement',
+  modalWarning:
+    "Toute personne disposant du lien peut voir cette question et cette réponse. Ne partagez pas si elle contient des identifiants de patients ou des informations privées. Vela peut supprimer tout contenu partagé qui enfreint nos conditions.",
+  modalGenericWarning: "Les contrôles automatiques de sensibilité pour votre langue sont limités — veuillez examiner attentivement la question avant de partager.",
+  modalConfirm: 'Créer un lien public',
+  modalCancel: 'Annuler',
+  modalConsentCheckbox: "Je confirme que cette question ne contient ni nom de patient, ni numéro d'identification, ni numéro de dossier médical, ni numéro d'assurance, ni aucune information permettant d'identifier un patient spécifique — et je comprends qu'une fois partagé, ce contenu sera visible publiquement et ne pourra pas être totalement retiré.",
+  modalSensitiveBlocked: 'Cette question peut contenir des informations personnelles et ne peut pas être partagée publiquement.',
+  modalQuotaBlocked: 'Limite de partage quotidienne atteinte. Réessayez plus tard.',
+  modalGenericError: 'Impossible de créer le lien de partage. Veuillez réessayer.',
+  modalCopyLink: 'Copier le lien',
+  modalLinkCopied: 'Lien copié',
+  modalShareOn: 'Partager sur',
+
+  publicCtaTitle: 'Vous voulez poser votre propre version ?',
+  publicCtaButton: 'Essayer sur Vela',
+  publicDisclaimer: "Ce contenu est généré par IA à partir de la littérature médicale publiquement disponible, destiné aux professionnels de santé uniquement comme référence de discussion. Il ne constitue pas un avis médical, un diagnostic ou une prescription. Ne l'utilisez pas pour l'autodiagnostic ou l'automédication. Consultez un professionnel de santé qualifié pour tout problème de santé.",
+  publicShortDisclaimer: '⚠️ À titre informatif uniquement. Vérifiez avec les directives cliniques et consultez un professionnel qualifié.',
+  publicRevoked: 'Ce partage a été révoqué.',
+  publicFlagged: "Ce partage a été supprimé pour violation des conditions d'utilisation.",
+  headerTagline: 'Posez votre question dans votre langue. Vérifié par des sources officielles.',
+
+  settingsTabTitle: 'Mes partages',
+  settingsRevokeButton: 'Révoquer',
+  settingsRevokeConfirm: 'Révoquer ce lien public ? Les nouveaux visiteurs verront un avis de révocation, mais les cartes de prévisualisation déjà mises en cache par les plateformes sociales ou des tiers peuvent continuer à s\'afficher pendant un certain temps.',
+  settingsEmpty: "Vous n'avez encore rien partagé.",
+};
+
+const de: ShareTranslations = {
+  buttonLabel: 'Teilen',
+  buttonDisabledAnon: 'Zum Teilen registrieren',
+  buttonTooltipAnon: 'Das Teilen steht registrierten Nutzern zur Verfügung.',
+
+  modalTitle: 'Diese Antwort öffentlich teilen',
+  modalWarning:
+    'Jeder mit dem Link kann diese Frage und Antwort sehen. Teilen Sie nicht, wenn sie Patientenkennungen oder private Informationen enthält. Vela kann geteilte Inhalte entfernen, die gegen unsere Bedingungen verstoßen.',
+  modalGenericWarning: 'Die automatische Sensibilitätsprüfung für Ihre Sprache ist begrenzt — bitte prüfen Sie die Frage vor dem Teilen sorgfältig.',
+  modalConfirm: 'Öffentlichen Link erstellen',
+  modalCancel: 'Abbrechen',
+  modalConsentCheckbox: 'Ich bestätige, dass diese Frage keinen Patientennamen, Ausweisnummer, Krankenaktennummer, Versicherungsnummer oder andere Informationen enthält, die einen bestimmten Patienten identifizieren könnten — und ich verstehe, dass dieser Inhalt nach dem Teilen öffentlich sichtbar ist und nicht vollständig zurückgerufen werden kann.',
+  modalSensitiveBlocked: 'Diese Frage kann persönliche Informationen enthalten und kann nicht öffentlich geteilt werden.',
+  modalQuotaBlocked: 'Tägliches Freigabelimit erreicht. Versuchen Sie es später erneut.',
+  modalGenericError: 'Freigabelink konnte nicht erstellt werden. Bitte versuchen Sie es erneut.',
+  modalCopyLink: 'Link kopieren',
+  modalLinkCopied: 'Link kopiert',
+  modalShareOn: 'Teilen auf',
+
+  publicCtaTitle: 'Möchten Sie Ihre eigene Version fragen?',
+  publicCtaButton: 'Auf Vela ausprobieren',
+  publicDisclaimer: 'Dieser Inhalt wird von KI aus öffentlich verfügbarer medizinischer Literatur generiert und ist nur als Diskussionsreferenz für medizinisches Fachpersonal gedacht. Er stellt keine medizinische Beratung, Diagnose oder Verschreibung dar. Nicht zur Selbstdiagnose oder Selbstmedikation verwenden. Konsultieren Sie bei gesundheitlichen Bedenken einen qualifizierten Gesundheitsdienstleister.',
+  publicShortDisclaimer: '⚠️ Nur zu Informationszwecken. Überprüfen Sie die klinischen Leitlinien und konsultieren Sie einen qualifizierten Fachmann.',
+  publicRevoked: 'Diese Freigabe wurde widerrufen.',
+  publicFlagged: 'Diese Freigabe wurde wegen Verstoßes gegen die Nutzungsbedingungen entfernt.',
+  headerTagline: 'Fragen Sie in Ihrer Sprache. Verifiziert durch offizielle Quellen.',
+
+  settingsTabTitle: 'Meine Freigaben',
+  settingsRevokeButton: 'Widerrufen',
+  settingsRevokeConfirm: 'Diesen öffentlichen Link widerrufen? Neue Besucher sehen einen Widerrufshinweis, aber Vorschaukarten, die bereits von sozialen Plattformen oder Dritten zwischengespeichert wurden, können noch eine Weile angezeigt werden.',
+  settingsEmpty: 'Sie haben noch nichts geteilt.',
+};
+
+const it: ShareTranslations = {
+  buttonLabel: 'Condividi',
+  buttonDisabledAnon: 'Registrati per condividere',
+  buttonTooltipAnon: 'La condivisione è disponibile per gli utenti registrati.',
+
+  modalTitle: 'Condividi pubblicamente questa risposta',
+  modalWarning:
+    'Chiunque abbia il link può visualizzare questa domanda e risposta. Non condividere se contiene identificatori del paziente o informazioni private. Vela può rimuovere contenuti condivisi che violano i nostri termini.',
+  modalGenericWarning: 'I controlli automatici di sensibilità per la tua lingua sono limitati: ti preghiamo di rivedere attentamente la domanda prima di condividere.',
+  modalConfirm: 'Crea link pubblico',
+  modalCancel: 'Annulla',
+  modalConsentCheckbox: 'Confermo che questa domanda non contiene nome del paziente, numero di documento, numero di cartella clinica, numero assicurativo o qualsiasi informazione che possa identificare un paziente specifico, e comprendo che una volta condiviso questo contenuto sarà pubblicamente visibile e non potrà essere completamente revocato.',
+  modalSensitiveBlocked: 'Questa domanda può contenere informazioni personali e non può essere condivisa pubblicamente.',
+  modalQuotaBlocked: 'Limite di condivisione giornaliero raggiunto. Riprova più tardi.',
+  modalGenericError: 'Impossibile creare il link di condivisione. Riprova.',
+  modalCopyLink: 'Copia link',
+  modalLinkCopied: 'Link copiato',
+  modalShareOn: 'Condividi su',
+
+  publicCtaTitle: 'Vuoi porre la tua versione?',
+  publicCtaButton: 'Provalo su Vela',
+  publicDisclaimer: 'Questo contenuto è generato dall\'IA a partire da letteratura medica disponibile pubblicamente, destinato ai professionisti sanitari solo come riferimento per la discussione. Non costituisce consiglio medico, diagnosi o prescrizione. Non utilizzare per autodiagnosi o automedicazione. Consulta un operatore sanitario qualificato per qualsiasi preoccupazione sulla salute.',
+  publicShortDisclaimer: '⚠️ Solo a scopo informativo. Verificare con le linee guida cliniche e consultare un professionista qualificato.',
+  publicRevoked: 'Questa condivisione è stata revocata.',
+  publicFlagged: 'Questa condivisione è stata rimossa per violazione dei termini di servizio.',
+  headerTagline: 'Chiedi nella tua lingua. Verificato da fonti ufficiali.',
+
+  settingsTabTitle: 'Le mie condivisioni',
+  settingsRevokeButton: 'Revoca',
+  settingsRevokeConfirm: 'Revocare questo link pubblico? I nuovi visitatori vedranno un avviso di revoca, ma le anteprime già memorizzate nella cache da piattaforme social o altri potrebbero continuare a essere visualizzate per un certo periodo.',
+  settingsEmpty: 'Non hai ancora condiviso nulla.',
+};
+
+const pt: ShareTranslations = {
+  buttonLabel: 'Compartilhar',
+  buttonDisabledAnon: 'Cadastre-se para compartilhar',
+  buttonTooltipAnon: 'O compartilhamento está disponível para usuários cadastrados.',
+
+  modalTitle: 'Compartilhar esta resposta publicamente',
+  modalWarning:
+    'Qualquer pessoa com o link pode visualizar esta pergunta e resposta. Não compartilhe se contiver identificadores de pacientes ou qualquer informação privada. A Vela pode remover conteúdo compartilhado que viole nossos termos.',
+  modalGenericWarning: 'As verificações automáticas de informações sensíveis para o seu idioma são limitadas — revise a pergunta com cuidado antes de compartilhar.',
+  modalConfirm: 'Criar link público',
+  modalCancel: 'Cancelar',
+  modalConsentCheckbox: 'Confirmo que esta pergunta não contém nome de paciente, número de identificação, número de prontuário, número de seguro ou qualquer informação que possa identificar um paciente específico, e entendo que, uma vez compartilhado, este conteúdo será visível publicamente e não poderá ser totalmente revogado.',
+  modalSensitiveBlocked: 'Esta pergunta pode conter informações pessoais e não pode ser compartilhada publicamente.',
+  modalQuotaBlocked: 'Limite diário de compartilhamentos atingido. Tente novamente mais tarde.',
+  modalGenericError: 'Não foi possível criar o link de compartilhamento. Tente novamente.',
+  modalCopyLink: 'Copiar link',
+  modalLinkCopied: 'Link copiado',
+  modalShareOn: 'Compartilhar em',
+
+  publicCtaTitle: 'Quer fazer a sua própria versão?',
+  publicCtaButton: 'Experimente no Vela',
+  publicDisclaimer: 'Este conteúdo é gerado por IA a partir de literatura médica disponível publicamente, destinado a profissionais de saúde apenas como referência de discussão. Não constitui aconselhamento médico, diagnóstico ou prescrição. Não use para autodiagnóstico ou automedicação. Consulte um profissional de saúde qualificado para qualquer preocupação de saúde.',
+  publicShortDisclaimer: '⚠️ Apenas para fins informativos. Verifique com as diretrizes clínicas e consulte um profissional qualificado.',
+  publicRevoked: 'Este compartilhamento foi revogado.',
+  publicFlagged: 'Este compartilhamento foi removido por violação dos termos de serviço.',
+  headerTagline: 'Pergunte no seu idioma. Verificado por fontes oficiais.',
+
+  settingsTabTitle: 'Meus compartilhamentos',
+  settingsRevokeButton: 'Revogar',
+  settingsRevokeConfirm: 'Revogar este link público? Novos visitantes verão um aviso de revogação, mas os cartões de pré-visualização já armazenados em cache por plataformas sociais ou terceiros podem continuar a ser exibidos por algum tempo.',
+  settingsEmpty: 'Você ainda não compartilhou nada.',
+};
+
+const th: ShareTranslations = {
+  buttonLabel: 'แชร์',
+  buttonDisabledAnon: 'สมัครเพื่อแชร์',
+  buttonTooltipAnon: 'การแชร์ใช้ได้สำหรับผู้ใช้ที่ลงทะเบียนเท่านั้น',
+
+  modalTitle: 'แชร์คำตอบนี้แบบสาธารณะ',
+  modalWarning:
+    'ทุกคนที่มีลิงก์สามารถดูคำถามและคำตอบนี้ได้ อย่าแชร์หากมีตัวระบุผู้ป่วยหรือข้อมูลส่วนตัวใดๆ Vela อาจลบเนื้อหาที่แชร์ซึ่งละเมิดข้อกำหนดของเรา',
+  modalGenericWarning: 'การตรวจสอบข้อมูลที่ละเอียดอ่อนอัตโนมัติสำหรับภาษาของคุณมีข้อจำกัด กรุณาตรวจสอบคำถามอย่างระมัดระวังก่อนแชร์',
+  modalConfirm: 'สร้างลิงก์สาธารณะ',
+  modalCancel: 'ยกเลิก',
+  modalConsentCheckbox: 'ฉันยืนยันว่าคำถามนี้ไม่มีชื่อผู้ป่วย เลขประจำตัว เลขเวชระเบียน เลขประกัน หรือข้อมูลใดๆ ที่สามารถระบุตัวผู้ป่วยเฉพาะรายได้ และฉันเข้าใจว่าเมื่อแชร์แล้ว เนื้อหานี้จะปรากฏต่อสาธารณะและไม่สามารถเรียกคืนได้อย่างสมบูรณ์',
+  modalSensitiveBlocked: 'คำถามนี้อาจมีข้อมูลส่วนบุคคลและไม่สามารถแชร์แบบสาธารณะได้',
+  modalQuotaBlocked: 'ถึงขีดจำกัดการแชร์รายวันแล้ว ลองอีกครั้งในภายหลัง',
+  modalGenericError: 'ไม่สามารถสร้างลิงก์แชร์ได้ กรุณาลองอีกครั้ง',
+  modalCopyLink: 'คัดลอกลิงก์',
+  modalLinkCopied: 'คัดลอกลิงก์แล้ว',
+  modalShareOn: 'แชร์ไปที่',
+
+  publicCtaTitle: 'อยากถามเวอร์ชันของคุณเองไหม?',
+  publicCtaButton: 'ลองใน Vela',
+  publicDisclaimer: 'เนื้อหานี้สร้างโดย AI จากเอกสารทางการแพทย์ที่เผยแพร่สาธารณะ มีไว้สำหรับผู้เชี่ยวชาญด้านสุขภาพเป็นข้อมูลอ้างอิงสำหรับการอภิปรายเท่านั้น ไม่ถือเป็นคำแนะนำทางการแพทย์ การวินิจฉัย หรือการสั่งยา อย่าใช้เพื่อการวินิจฉัยตนเองหรือการรักษาตนเอง หากมีข้อกังวลด้านสุขภาพ ให้ปรึกษาผู้ให้บริการด้านสุขภาพที่มีคุณสมบัติ',
+  publicShortDisclaimer: '⚠️ ข้อมูลนี้ใช้เพื่อการอ้างอิงเท่านั้น กรุณาตรวจสอบตามแนวทางปฏิบัติทางคลินิกและปรึกษาผู้เชี่ยวชาญที่มีคุณสมบัติ',
+  publicRevoked: 'การแชร์นี้ถูกยกเลิกแล้ว',
+  publicFlagged: 'การแชร์นี้ถูกลบเนื่องจากละเมิดข้อกำหนดในการให้บริการ',
+  headerTagline: 'ถามในภาษาของคุณ ตรวจสอบโดยแหล่งข้อมูลทางการ',
+
+  settingsTabTitle: 'การแชร์ของฉัน',
+  settingsRevokeButton: 'ยกเลิก',
+  settingsRevokeConfirm: 'ยกเลิกลิงก์สาธารณะนี้หรือไม่? ผู้เยี่ยมชมรายใหม่จะเห็นประกาศการยกเลิก แต่การ์ดดูตัวอย่างที่แพลตฟอร์มโซเชียลหรือบุคคลอื่นแคชไว้แล้วอาจยังคงแสดงต่อไปอีกระยะหนึ่ง',
+  settingsEmpty: 'คุณยังไม่ได้แชร์อะไรเลย',
+};
+
+const ar: ShareTranslations = {
+  buttonLabel: 'مشاركة',
+  buttonDisabledAnon: 'سجّل للمشاركة',
+  buttonTooltipAnon: 'المشاركة متاحة للمستخدمين المسجلين.',
+
+  modalTitle: 'مشاركة هذه الإجابة بشكل علني',
+  modalWarning:
+    'يمكن لأي شخص لديه الرابط الاطلاع على هذا السؤال والإجابة. لا تشارك إذا كان يحتوي على معرّفات للمرضى أو أي معلومات خاصة. قد تقوم Vela بإزالة المحتوى المشارَك الذي ينتهك شروطنا.',
+  modalGenericWarning: 'الفحوصات التلقائية للمعلومات الحساسة بلغتك محدودة — يرجى مراجعة السؤال بعناية قبل المشاركة.',
+  modalConfirm: 'إنشاء رابط علني',
+  modalCancel: 'إلغاء',
+  modalConsentCheckbox: 'أؤكد أن هذا السؤال لا يحتوي على اسم مريض أو رقم هوية أو رقم سجل طبي أو رقم تأمين أو أي معلومات قد تحدد مريضاً معيناً — وأفهم أنه بمجرد المشاركة، سيكون هذا المحتوى مرئياً للعامة ولا يمكن استرجاعه بالكامل.',
+  modalSensitiveBlocked: 'قد يحتوي هذا السؤال على معلومات شخصية ولا يمكن مشاركته بشكل علني.',
+  modalQuotaBlocked: 'تم الوصول إلى حد المشاركة اليومي. حاول مرة أخرى لاحقاً.',
+  modalGenericError: 'تعذر إنشاء رابط المشاركة. يرجى المحاولة مرة أخرى.',
+  modalCopyLink: 'نسخ الرابط',
+  modalLinkCopied: 'تم نسخ الرابط',
+  modalShareOn: 'مشاركة على',
+
+  publicCtaTitle: 'هل تريد طرح نسختك الخاصة؟',
+  publicCtaButton: 'جرّبه على Vela',
+  publicDisclaimer: 'تم إنشاء هذا المحتوى بواسطة الذكاء الاصطناعي من الأدبيات الطبية المتاحة للعموم، ومخصص للمتخصصين في الرعاية الصحية كمرجع للنقاش فقط. لا يشكل نصيحة طبية أو تشخيصاً أو وصفة طبية. لا تستخدمه للتشخيص الذاتي أو العلاج الذاتي. استشر مقدم رعاية صحية مؤهل لأي مخاوف صحية.',
+  publicShortDisclaimer: '⚠️ هذه المعلومات للأغراض المرجعية فقط. يرجى التحقق من الإرشادات السريرية واستشارة متخصص مؤهل.',
+  publicRevoked: 'تم إلغاء هذه المشاركة.',
+  publicFlagged: 'تمت إزالة هذه المشاركة لانتهاك شروط الخدمة.',
+  headerTagline: 'اطرح سؤالك بلغتك. تحقق من المصادر الرسمية.',
+
+  settingsTabTitle: 'مشاركاتي',
+  settingsRevokeButton: 'إلغاء',
+  settingsRevokeConfirm: 'إلغاء هذا الرابط العلني؟ سيرى الزوار الجدد إشعار الإلغاء، لكن بطاقات المعاينة التي تم تخزينها مسبقاً بواسطة منصات التواصل الاجتماعي أو أطراف أخرى قد تستمر في الظهور لبعض الوقت.',
+  settingsEmpty: 'لم تشارك أي شيء بعد.',
+};
+
+const hi: ShareTranslations = {
+  buttonLabel: 'साझा करें',
+  buttonDisabledAnon: 'साझा करने के लिए साइन अप करें',
+  buttonTooltipAnon: 'साझा करना केवल पंजीकृत उपयोगकर्ताओं के लिए उपलब्ध है।',
+
+  modalTitle: 'इस उत्तर को सार्वजनिक रूप से साझा करें',
+  modalWarning:
+    'लिंक रखने वाला कोई भी व्यक्ति इस प्रश्न और उत्तर को देख सकता है। यदि इसमें रोगी पहचानकर्ता या कोई निजी जानकारी है तो साझा न करें। Vela हमारी शर्तों का उल्लंघन करने वाली साझा सामग्री को हटा सकता है।',
+  modalGenericWarning: 'आपकी भाषा के लिए स्वचालित संवेदनशीलता जाँच सीमित है — कृपया साझा करने से पहले प्रश्न की सावधानीपूर्वक समीक्षा करें।',
+  modalConfirm: 'सार्वजनिक लिंक बनाएँ',
+  modalCancel: 'रद्द करें',
+  modalConsentCheckbox: 'मैं पुष्टि करता/करती हूँ कि इस प्रश्न में रोगी का नाम, पहचान संख्या, चिकित्सा रिकॉर्ड संख्या, बीमा संख्या या किसी विशिष्ट रोगी की पहचान कर सकने वाली कोई जानकारी नहीं है — और मैं समझता/समझती हूँ कि साझा करने के बाद यह सामग्री सार्वजनिक रूप से दिखाई देगी और पूरी तरह वापस नहीं ली जा सकती।',
+  modalSensitiveBlocked: 'इस प्रश्न में व्यक्तिगत जानकारी हो सकती है और इसे सार्वजनिक रूप से साझा नहीं किया जा सकता।',
+  modalQuotaBlocked: 'दैनिक साझा सीमा तक पहुँच गए। बाद में पुनः प्रयास करें।',
+  modalGenericError: 'साझा लिंक नहीं बना सका। कृपया पुनः प्रयास करें।',
+  modalCopyLink: 'लिंक कॉपी करें',
+  modalLinkCopied: 'लिंक कॉपी हो गया',
+  modalShareOn: 'पर साझा करें',
+
+  publicCtaTitle: 'अपना संस्करण पूछना चाहते हैं?',
+  publicCtaButton: 'Vela पर आज़माएँ',
+  publicDisclaimer: 'यह सामग्री सार्वजनिक रूप से उपलब्ध चिकित्सा साहित्य से AI द्वारा उत्पन्न की गई है, जो स्वास्थ्य देखभाल पेशेवरों के लिए केवल चर्चा के संदर्भ के रूप में है। यह चिकित्सा सलाह, निदान या नुस्खा नहीं है। स्व-निदान या स्व-उपचार के लिए उपयोग न करें। किसी भी स्वास्थ्य चिंता के लिए योग्य स्वास्थ्य देखभाल प्रदाता से परामर्श करें।',
+  publicShortDisclaimer: '⚠️ यह जानकारी केवल संदर्भ उद्देश्यों के लिए है। कृपया नैदानिक दिशानिर्देशों से सत्यापित करें और किसी योग्य पेशेवर से परामर्श करें।',
+  publicRevoked: 'यह साझाकरण रद्द कर दिया गया है।',
+  publicFlagged: 'सेवा की शर्तों का उल्लंघन करने के कारण यह साझाकरण हटा दिया गया।',
+  headerTagline: 'अपनी भाषा में पूछें। आधिकारिक स्रोतों द्वारा सत्यापित।',
+
+  settingsTabTitle: 'मेरे साझाकरण',
+  settingsRevokeButton: 'रद्द करें',
+  settingsRevokeConfirm: 'इस सार्वजनिक लिंक को रद्द करें? नए विज़िटर एक रद्दीकरण सूचना देखेंगे, लेकिन सोशल प्लेटफ़ॉर्म या अन्य पक्षों द्वारा पहले से कैश किए गए पूर्वावलोकन कार्ड कुछ समय तक प्रदर्शित होते रह सकते हैं।',
+  settingsEmpty: 'आपने अभी तक कुछ साझा नहीं किया है।',
+};
+
+const bn: ShareTranslations = {
+  buttonLabel: 'শেয়ার করুন',
+  buttonDisabledAnon: 'শেয়ার করতে সাইন আপ করুন',
+  buttonTooltipAnon: 'শেয়ারিং নিবন্ধিত ব্যবহারকারীদের জন্য উপলব্ধ।',
+
+  modalTitle: 'এই উত্তরটি সর্বজনীনভাবে শেয়ার করুন',
+  modalWarning:
+    'লিঙ্কটি যার কাছে আছে তিনিই এই প্রশ্ন এবং উত্তর দেখতে পারেন। যদি এতে রোগীর সনাক্তকারী বা কোনো ব্যক্তিগত তথ্য থাকে তবে শেয়ার করবেন না। Vela আমাদের শর্তাবলী লঙ্ঘনকারী শেয়ার করা সামগ্রী অপসারণ করতে পারে।',
+  modalGenericWarning: 'আপনার ভাষার জন্য স্বয়ংক্রিয় সংবেদনশীলতা পরীক্ষা সীমিত — শেয়ার করার আগে অনুগ্রহ করে প্রশ্নটি সাবধানে পর্যালোচনা করুন।',
+  modalConfirm: 'সর্বজনীন লিঙ্ক তৈরি করুন',
+  modalCancel: 'বাতিল করুন',
+  modalConsentCheckbox: 'আমি নিশ্চিত করছি যে এই প্রশ্নে রোগীর নাম, পরিচয় নম্বর, চিকিৎসা রেকর্ড নম্বর, বীমা নম্বর বা একটি নির্দিষ্ট রোগীকে চিহ্নিত করতে পারে এমন কোনো তথ্য নেই — এবং আমি বুঝতে পারছি যে শেয়ার করার পরে এই সামগ্রী সর্বজনীনভাবে দৃশ্যমান হবে এবং সম্পূর্ণরূপে ফিরিয়ে নেওয়া যাবে না।',
+  modalSensitiveBlocked: 'এই প্রশ্নে ব্যক্তিগত তথ্য থাকতে পারে এবং এটি সর্বজনীনভাবে শেয়ার করা যাবে না।',
+  modalQuotaBlocked: 'দৈনিক শেয়ারের সীমায় পৌঁছেছে। পরে আবার চেষ্টা করুন।',
+  modalGenericError: 'শেয়ার লিঙ্ক তৈরি করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।',
+  modalCopyLink: 'লিঙ্ক কপি করুন',
+  modalLinkCopied: 'লিঙ্ক কপি হয়েছে',
+  modalShareOn: 'এতে শেয়ার করুন',
+
+  publicCtaTitle: 'আপনার নিজের সংস্করণ জিজ্ঞাসা করতে চান?',
+  publicCtaButton: 'Vela এ চেষ্টা করুন',
+  publicDisclaimer: 'এই সামগ্রীটি AI দ্বারা সর্বজনীনভাবে উপলব্ধ চিকিৎসা সাহিত্য থেকে তৈরি, যা স্বাস্থ্যসেবা পেশাদারদের জন্য আলোচনার রেফারেন্স হিসাবে শুধুমাত্র উদ্দিষ্ট। এটি চিকিৎসা পরামর্শ, রোগ নির্ণয় বা প্রেসক্রিপশন গঠন করে না। স্ব-নির্ণয় বা স্ব-চিকিৎসার জন্য ব্যবহার করবেন না। কোনো স্বাস্থ্য উদ্বেগের জন্য একজন যোগ্য স্বাস্থ্যসেবা প্রদানকারীর সাথে পরামর্শ করুন।',
+  publicShortDisclaimer: '⚠️ এই তথ্য শুধুমাত্র তথ্যসূত্র উদ্দেশ্যে। অনুগ্রহ করে ক্লিনিক্যাল নির্দেশিকা যাচাই করুন এবং একজন যোগ্য পেশাদারের সাথে পরামর্শ করুন।',
+  publicRevoked: 'এই শেয়ারটি প্রত্যাহার করা হয়েছে।',
+  publicFlagged: 'পরিষেবার শর্তাবলী লঙ্ঘনের কারণে এই শেয়ারটি সরিয়ে ফেলা হয়েছে।',
+  headerTagline: 'আপনার ভাষায় প্রশ্ন করুন। অফিসিয়াল উৎস দ্বারা যাচাইকৃত।',
+
+  settingsTabTitle: 'আমার শেয়ার',
+  settingsRevokeButton: 'প্রত্যাহার করুন',
+  settingsRevokeConfirm: 'এই সর্বজনীন লিঙ্কটি প্রত্যাহার করবেন? নতুন দর্শকরা একটি প্রত্যাহার বিজ্ঞপ্তি দেখতে পাবেন, তবে সামাজিক প্ল্যাটফর্ম বা অন্যান্য পক্ষ দ্বারা ইতিমধ্যে ক্যাশ করা পূর্বরূপ কার্ডগুলি কিছু সময়ের জন্য প্রদর্শিত হতে পারে।',
+  settingsEmpty: 'আপনি এখনও কিছু শেয়ার করেননি।',
+};
+
+const he: ShareTranslations = {
+  buttonLabel: 'שתף',
+  buttonDisabledAnon: 'הירשם כדי לשתף',
+  buttonTooltipAnon: 'השיתוף זמין למשתמשים רשומים.',
+
+  modalTitle: 'שתף תשובה זו בפומבי',
+  modalWarning:
+    'כל מי שיש לו את הקישור יכול לראות את השאלה והתשובה הזו. אל תשתף אם הוא מכיל מזהי מטופלים או מידע פרטי כלשהו. Vela עשויה להסיר תוכן ששותף ומפר את התנאים שלנו.',
+  modalGenericWarning: 'בדיקות הרגישות האוטומטיות עבור השפה שלך מוגבלות — אנא בדוק את השאלה בקפידה לפני השיתוף.',
+  modalConfirm: 'צור קישור ציבורי',
+  modalCancel: 'ביטול',
+  modalConsentCheckbox: 'אני מאשר/ת שהשאלה הזו אינה מכילה שם מטופל, מספר תעודת זהות, מספר תיק רפואי, מספר ביטוח או כל מידע שיכול לזהות מטופל ספציפי — ואני מבין/ה שלאחר השיתוף, התוכן הזה יהיה גלוי לציבור ולא ניתן יהיה להסירו במלואו.',
+  modalSensitiveBlocked: 'שאלה זו עשויה להכיל מידע אישי ולא ניתן לשתף אותה בפומבי.',
+  modalQuotaBlocked: 'הגעת למגבלת השיתוף היומית. נסה שוב מאוחר יותר.',
+  modalGenericError: 'לא ניתן ליצור קישור שיתוף. אנא נסה שוב.',
+  modalCopyLink: 'העתק קישור',
+  modalLinkCopied: 'הקישור הועתק',
+  modalShareOn: 'שתף ב',
+
+  publicCtaTitle: 'רוצה לשאול את הגרסה שלך?',
+  publicCtaButton: 'נסה ב-Vela',
+  publicDisclaimer: 'תוכן זה נוצר על ידי AI מתוך ספרות רפואית הזמינה לציבור, ומיועד למקצועני בריאות כעזר לדיון בלבד. הוא אינו מהווה ייעוץ רפואי, אבחון או מרשם. אין להשתמש בו לאבחון עצמי או טיפול עצמי. התייעץ עם נותן שירותי בריאות מוסמך לכל חשש בריאותי.',
+  publicShortDisclaimer: '⚠️ מידע זה מיועד לצורכי עיון בלבד. אנא אמתו מול הנחיות קליניות והתייעצו עם איש מקצוע מוסמך.',
+  publicRevoked: 'שיתוף זה בוטל.',
+  publicFlagged: 'שיתוף זה הוסר עקב הפרת תנאי השירות.',
+  headerTagline: 'שאל בשפה שלך. אומת על ידי מקורות רשמיים.',
+
+  settingsTabTitle: 'השיתופים שלי',
+  settingsRevokeButton: 'בטל',
+  settingsRevokeConfirm: 'לבטל את הקישור הציבורי הזה? מבקרים חדשים יראו הודעת ביטול, אך כרטיסי תצוגה מקדימה שכבר נשמרו במטמון על ידי פלטפורמות חברתיות או צדדים אחרים עשויים להמשיך להופיע לזמן מה.',
+  settingsEmpty: 'עדיין לא שיתפת דבר.',
+};
+
+const vi: ShareTranslations = {
+  buttonLabel: 'Chia sẻ',
+  buttonDisabledAnon: 'Đăng ký để chia sẻ',
+  buttonTooltipAnon: 'Chia sẻ chỉ dành cho người dùng đã đăng ký.',
+
+  modalTitle: 'Chia sẻ câu trả lời này công khai',
+  modalWarning:
+    'Bất kỳ ai có liên kết đều có thể xem câu hỏi và câu trả lời này. Không chia sẻ nếu nó chứa thông tin nhận dạng bệnh nhân hoặc bất kỳ thông tin riêng tư nào. Vela có thể xóa nội dung được chia sẻ vi phạm điều khoản của chúng tôi.',
+  modalGenericWarning: 'Kiểm tra thông tin nhạy cảm tự động cho ngôn ngữ của bạn bị giới hạn — vui lòng xem xét câu hỏi cẩn thận trước khi chia sẻ.',
+  modalConfirm: 'Tạo liên kết công khai',
+  modalCancel: 'Hủy',
+  modalConsentCheckbox: 'Tôi xác nhận câu hỏi này không chứa tên bệnh nhân, số CMND, số bệnh án, số bảo hiểm hoặc bất kỳ thông tin nào có thể nhận dạng một bệnh nhân cụ thể — và tôi hiểu rằng sau khi chia sẻ, nội dung này sẽ hiển thị công khai và không thể thu hồi hoàn toàn.',
+  modalSensitiveBlocked: 'Câu hỏi này có thể chứa thông tin cá nhân và không thể chia sẻ công khai.',
+  modalQuotaBlocked: 'Đã đạt giới hạn chia sẻ hàng ngày. Vui lòng thử lại sau.',
+  modalGenericError: 'Không thể tạo liên kết chia sẻ. Vui lòng thử lại.',
+  modalCopyLink: 'Sao chép liên kết',
+  modalLinkCopied: 'Đã sao chép liên kết',
+  modalShareOn: 'Chia sẻ lên',
+
+  publicCtaTitle: 'Muốn hỏi phiên bản của riêng bạn?',
+  publicCtaButton: 'Thử trên Vela',
+  publicDisclaimer: 'Nội dung này được tạo bởi AI từ tài liệu y khoa có sẵn công khai, dành cho các chuyên gia chăm sóc sức khỏe chỉ làm tài liệu tham khảo thảo luận. Nó không cấu thành lời khuyên y tế, chẩn đoán hoặc kê đơn. Không sử dụng để tự chẩn đoán hoặc tự dùng thuốc. Tham khảo ý kiến nhà cung cấp dịch vụ y tế đủ điều kiện cho bất kỳ vấn đề sức khỏe nào.',
+  publicShortDisclaimer: '⚠️ Thông tin này chỉ mang tính chất tham khảo. Vui lòng kiểm tra theo hướng dẫn lâm sàng và tham khảo ý kiến chuyên gia có trình độ.',
+  publicRevoked: 'Chia sẻ này đã bị thu hồi.',
+  publicFlagged: 'Chia sẻ này đã bị xóa do vi phạm điều khoản dịch vụ.',
+  headerTagline: 'Hỏi bằng ngôn ngữ của bạn. Được xác minh bởi các nguồn chính thức.',
+
+  settingsTabTitle: 'Chia sẻ của tôi',
+  settingsRevokeButton: 'Thu hồi',
+  settingsRevokeConfirm: 'Thu hồi liên kết công khai này? Khách truy cập mới sẽ thấy thông báo thu hồi, nhưng các thẻ xem trước đã được lưu trữ trong bộ nhớ đệm bởi các nền tảng xã hội hoặc các bên khác có thể tiếp tục hiển thị trong một thời gian.',
+  settingsEmpty: 'Bạn chưa chia sẻ bất kỳ điều gì.',
+};
+
+const TRANSLATIONS: Record<LangCode, ShareTranslations> = {
+  en,
+  'zh-TW': zhTW,
+  'zh-CN': zhCN,
+  ja,
+  ko,
+  es,
+  fr,
+  de,
+  it,
+  pt,
+  th,
+  ar,
+  hi,
+  bn,
+  he,
+  vi,
+};
+
 export function getShare(lang: LangCode): ShareTranslations {
-  if (lang === 'zh-TW') return zhTW;
-  return en;
+  return TRANSLATIONS[lang] ?? en;
 }

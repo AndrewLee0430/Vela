@@ -40,8 +40,11 @@ interface Props {
 
 // ─── Visual treatments ──────────────────────────────────────────────
 // Inline: subtle white surface used inline with FeedbackBar (history rows).
-// Navbar: ghost-warm coral pill mirroring the Upgrade button in Navbar.tsx
-//         lines ~200-212.
+// Navbar: same neutral gray-on-transparent tone as inline (user feedback
+// post ca571ce: the original coral-Upgrade-pill mirror was too prominent
+// for a secondary action). Kept as a separate variant slot in case
+// future divergence is needed; currently shares all colors with inline,
+// only the className padding is tuned for navbar context.
 const VISUALS = {
     inline: {
         idleBg: 'rgba(255,255,255,0.06)',
@@ -56,16 +59,16 @@ const VISUALS = {
             'inline-flex items-center gap-2 text-xs font-medium px-3 py-1.5 rounded-lg transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed',
     },
     navbar: {
-        idleBg: 'rgba(255,142,110,0.15)',
-        idleBorder: '1px solid rgba(255,142,110,0.4)',
-        idleColor: '#ff8e6e',
-        hoverBg: 'rgba(255,142,110,0.25)',
-        hoverColor: '#ff8e6e',
-        anonBg: 'rgba(255,142,110,0.06)',
-        anonBorder: '1px solid rgba(255,142,110,0.2)',
-        anonColor: 'rgba(255,142,110,0.6)',
+        idleBg: 'rgba(255,255,255,0.06)',
+        idleBorder: '1px solid rgba(255,255,255,0.15)',
+        idleColor: 'rgba(255,255,255,0.55)',
+        hoverBg: 'rgba(255,255,255,0.12)',
+        hoverColor: '#ffffff',
+        anonBg: 'rgba(255,255,255,0.06)',
+        anonBorder: '1px solid rgba(255,255,255,0.15)',
+        anonColor: 'rgba(255,255,255,0.45)',
         className:
-            'inline-flex items-center gap-2 text-sm font-semibold px-3 py-1 rounded-lg transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed',
+            'inline-flex items-center gap-2 text-xs font-medium px-3 py-1 rounded-lg transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed',
     },
 } as const;
 
