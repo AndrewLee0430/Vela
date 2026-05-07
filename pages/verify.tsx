@@ -1,10 +1,10 @@
 "use client"
 
-import { useState, FormEvent, useRef, useCallback } from 'react';
+import { useState, FormEvent, useRef, useCallback, useEffect } from 'react';
 import Head from 'next/head';
 import { useAuth, useUser } from '@clerk/nextjs';
 import FeedbackBar from '../components/FeedbackBar';
-import ShareButton from '../components/ShareButton';
+import { useShareContext } from '../contexts/ShareContext';
 import UpgradeModal from '../components/UpgradeModal';
 import Toast from '../components/Toast';
 import PHIWarning from '../components/PHIWarning';
@@ -59,8 +59,34 @@ function VerifyForm() {
     const [showThirdQueryCta, setShowThirdQueryCta] = useState(false);
     const [phiError, setPhiError] = useState<{detail: string; suggestion: string} | null>(null);
     const [localQueryId, setLocalQueryId] = useState<string | null>(null);
+    const { setShareData, clearShareData } = useShareContext();
 
     const handleReset = () => { setDrugs(''); setResult(null); setError(''); setPhiError(null); setQueryId(null); setLocalQueryId(null); };
+
+    // PRD § 4.5 UX polish 2/3 — Navbar Share button via ShareContext.
+    useEffect(() => {
+        if (loading) {
+            clearShareData();
+            return;
+        }
+        if (!error && result && localQueryId) {
+            setShareData({
+                queryId: localQueryId,
+                queryText: `Drugs: ${result.drugs_analyzed.join(', ')}`,
+                answerText: result.summary,
+                citations: result.interactions.map(i => ({
+                    title: `${i.drug_pair[0]} ↔ ${i.drug_pair[1]} (${i.severity})`,
+                    url: i.source_url ?? null,
+                    text: i.description,
+                })),
+                feature: 'verify',
+            });
+        }
+    }, [loading, error, result, localQueryId, setShareData, clearShareData]);
+
+    useEffect(() => {
+        return () => clearShareData();
+    }, [clearShareData]);
 
     const maybeTriggerThirdQueryCta = useCallback(() => {
         if (typeof window === 'undefined') return;
@@ -400,25 +426,11 @@ function VerifyForm() {
                                         </p>
                                     );
                                 })()}
-                                <div className="flex flex-wrap items-center gap-2">
-                                    <FeedbackBar
-                                        query={`Drugs: ${result.drugs_analyzed.join(', ')}`}
-                                        response={result.summary}
-                                        category="verify"
-                                    />
-                                    <ShareButton
-                                        feature="verify"
-                                        queryId={localQueryId}
-                                        queryText={`Drugs: ${result.drugs_analyzed.join(', ')}`}
-                                        answerText={result.summary}
-                                        citations={result.interactions.map(i => ({
-                                            title: `${i.drug_pair[0]} ↔ ${i.drug_pair[1]} (${i.severity})`,
-                                            url: i.source_url ?? null,
-                                            text: i.description,
-                                        }))}
-                                        source="answer_block"
-                                    />
-                                </div>
+                                <FeedbackBar
+                                    query={`Drugs: ${result.drugs_analyzed.join(', ')}`}
+                                    response={result.summary}
+                                    category="verify"
+                                />
                                 <p className="text-xs text-gray-300 dark:text-gray-600 mt-3">
                                     {result.drugs_analyzed.join(', ')} · {(result.query_time_ms / 1000).toFixed(2)}s
                                 </p>

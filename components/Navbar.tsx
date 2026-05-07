@@ -7,6 +7,8 @@ import Image from 'next/image';
 import { Settings } from 'lucide-react';
 import UpgradeModal from './UpgradeModal';
 import LanguageSwitcher from './LanguageSwitcher';
+import ShareButton from './ShareButton';
+import { useShareContext } from '../contexts/ShareContext';
 import { useLang } from '../utils/LangContext';
 import { getUI } from '../utils/i18n-ui';
 import { getExtra } from '../utils/i18n-extra';
@@ -67,6 +69,7 @@ export default function Navbar({ activePage }: NavbarProps) {
     const settingsRef = useRef<HTMLDivElement>(null);
     const { getToken } = useAuth();
     const { isSignedIn, isLoaded } = useUser();
+    const { shareData } = useShareContext();
 
     const [plan, setPlan] = useState<'free' | 'pro' | null>(() => {
         if (typeof window === 'undefined') return null;
@@ -192,8 +195,26 @@ export default function Navbar({ activePage }: NavbarProps) {
                             </div>
                         </div>
 
-                        {/* Right side: [Upgrade (free only)] [⚙️] [👤] */}
+                        {/* Right side: [Share (when shareData present)] [Upgrade (free only)] [⚙️] [👤] */}
                         <div className="flex items-center gap-2">
+                            {/* PRD § 4.5 UX polish 2/3 — Share button moved here from
+                                FeedbackBar adjacency. Visible only on md+ (matches nav
+                                links) and only when the active answer page has populated
+                                shareData via ShareContext. Anonymous users still see the
+                                disabled-style pill (sign-up redirect on click). */}
+                            {shareData && (
+                                <div className="hidden md:flex">
+                                    <ShareButton
+                                        feature={shareData.feature}
+                                        queryId={shareData.queryId}
+                                        queryText={shareData.queryText}
+                                        answerText={shareData.answerText}
+                                        citations={shareData.citations as never}
+                                        source="answer_block"
+                                        variant="navbar"
+                                    />
+                                </div>
+                            )}
                             <SignedIn>
                                 {/* 1. Upgrade button — free users only (Pro badge moved to left) */}
                                 {plan !== 'pro' && (

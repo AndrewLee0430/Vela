@@ -6,7 +6,7 @@ import { useAuth, useUser } from '@clerk/nextjs';
 import { fetchEventSource } from '@microsoft/fetch-event-source';
 import { FatalError, makeOnOpen, sseOnError } from '../utils/sse';
 import FeedbackBar from '../components/FeedbackBar';
-import ShareButton from '../components/ShareButton';
+import { useShareContext } from '../contexts/ShareContext';
 import Toast from '../components/Toast';
 import PHIWarning from '../components/PHIWarning';
 import UpgradeModal from '../components/UpgradeModal';
@@ -226,6 +226,32 @@ function ExplainForm() {
     const [phiError, setPhiError] = useState<{detail: string; suggestion: string} | null>(null);
     const [localQueryId, setLocalQueryId] = useState<string | null>(null);
     const isRunningRef = useRef(false);
+    const { setShareData, clearShareData } = useShareContext();
+
+    // PRD § 4.5 UX polish 2/3 — Navbar Share button via ShareContext.
+    useEffect(() => {
+        if (loading) {
+            clearShareData();
+            return;
+        }
+        if (!error && result && localQueryId && reportText) {
+            setShareData({
+                queryId: localQueryId,
+                queryText: reportText,
+                answerText: JSON.stringify(result, null, 2),
+                citations: (sources ?? []).map(s => ({
+                    title: (s as { title?: string | null }).title ?? null,
+                    url: (s as { url?: string | null }).url ?? null,
+                    text: null,
+                })),
+                feature: 'explain',
+            });
+        }
+    }, [loading, error, result, localQueryId, reportText, sources, setShareData, clearShareData]);
+
+    useEffect(() => {
+        return () => clearShareData();
+    }, [clearShareData]);
     const [plan, setPlan] = useState<'free' | 'pro'>(() => {
         if (typeof window === 'undefined') return 'free';
         try {
@@ -742,21 +768,7 @@ function ExplainForm() {
                         </div>
                     )}
 
-                    <div className="flex flex-wrap items-center gap-2">
-                        <FeedbackBar query={reportText} response={JSON.stringify(result, null, 2)} category="explain" />
-                        <ShareButton
-                            feature="explain"
-                            queryId={localQueryId}
-                            queryText={reportText}
-                            answerText={JSON.stringify(result, null, 2)}
-                            citations={(sources ?? []).map(s => ({
-                                title: (s as { title?: string | null }).title ?? null,
-                                url: (s as { url?: string | null }).url ?? null,
-                                text: null,
-                            }))}
-                            source="answer_block"
-                        />
-                    </div>
+                    <FeedbackBar query={reportText} response={JSON.stringify(result, null, 2)} category="explain" />
                 </section>
             )}
 

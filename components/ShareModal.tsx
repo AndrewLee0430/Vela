@@ -1,10 +1,12 @@
 // components/ShareModal.tsx
 // PRD § 4.5 PHASE B Step 5 — last-chance review + consent + create flow,
-// followed by a copy/QR/social share surface on success.
+// followed by a copy/social share surface on success.
+//
+// PRD § 4.5 UX polish 2/3 — QR code section removed (qrcode.react dep
+// dropped); copied toast restyled from green to brand-aligned surface.
 
 import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '@clerk/nextjs';
-import { QRCodeCanvas } from 'qrcode.react';
 import { track } from '../utils/analytics';
 import { useLang } from '../utils/LangContext';
 import { getShare } from '../utils/i18n-share';
@@ -352,12 +354,6 @@ function PostShareView({ t, url, socialOrder, onCopy, onSocialClick, onClose, sh
                 </button>
             </div>
 
-            <div className="mt-5 flex flex-col items-center gap-3">
-                <div className="rounded-lg p-3" style={{ background: '#ffffff' }}>
-                    <QRCodeCanvas value={url} size={144} includeMargin={false} />
-                </div>
-            </div>
-
             <div className="mt-5">
                 <p className="text-xs mb-2" style={{ color: 'rgba(255,255,255,0.55)' }}>{t.modalShareOn}</p>
                 <div className="flex flex-wrap gap-2">
@@ -389,7 +385,11 @@ function PostShareView({ t, url, socialOrder, onCopy, onSocialClick, onClose, sh
             {showCopiedToast && (
                 <div
                     className="absolute top-4 right-4 px-3 py-1.5 text-xs rounded-lg"
-                    style={{ background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.4)', color: '#86efac' }}
+                    style={{
+                        background: 'rgba(255,255,255,0.08)',
+                        border: '1px solid rgba(255,255,255,0.15)',
+                        color: '#ffffff',
+                    }}
                 >
                     {t.modalLinkCopied}
                 </div>

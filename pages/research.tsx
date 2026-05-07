@@ -11,7 +11,7 @@ import { fetchEventSource } from '@microsoft/fetch-event-source';
 import { FatalError, makeOnOpen, sseOnError } from '../utils/sse';
 import CitationPanel, { Citation } from '../components/CitationPanel';
 import FeedbackBar from '../components/FeedbackBar';
-import ShareButton from '../components/ShareButton';
+import { useShareContext } from '../contexts/ShareContext';
 import UpgradeModal from '../components/UpgradeModal';
 import Toast from '../components/Toast';
 import PHIWarning from '../components/PHIWarning';
@@ -196,6 +196,7 @@ function ResearchForm() {
     const [phiError, setPhiError] = useState<{detail: string; suggestion: string} | null>(null);
     const [detectedLang, setDetectedLang] = useState<string>('en');
     const [localQueryId, setLocalQueryId] = useState<string | null>(null);
+    const { setShareData, clearShareData } = useShareContext();
 
     const [plan, setPlan] = useState<'free' | 'pro'>(() => {
         if (typeof window === 'undefined') return 'free';
@@ -236,6 +237,31 @@ function ResearchForm() {
             answerRef.current.scrollTop = answerRef.current.scrollHeight;
         }
     }, [answer]);
+
+    // PRD § 4.5 UX polish 2/3 — Navbar Share button is driven by
+    // ShareContext. Populate when the answer is fully ready (not loading,
+    // no error, query_id received from the SSE stream); clear while
+    // streaming so the button hides; clear on unmount so nav-away
+    // resets the Navbar state.
+    useEffect(() => {
+        if (loading) {
+            clearShareData();
+            return;
+        }
+        if (!error && answer && question && localQueryId) {
+            setShareData({
+                queryId: localQueryId,
+                queryText: question,
+                answerText: answer,
+                citations,
+                feature: 'research',
+            });
+        }
+    }, [loading, error, answer, question, localQueryId, citations, setShareData, clearShareData]);
+
+    useEffect(() => {
+        return () => clearShareData();
+    }, [clearShareData]);
 
     const handleReset = () => {
         setQuestion(''); setAnswer(''); setCitations([]);
@@ -583,17 +609,7 @@ function ResearchForm() {
                                     )}
                                     {!loading && answer && !error && (
                                         <>
-                                            <div className="flex flex-wrap items-center gap-2">
-                                                <FeedbackBar query={question} response={answer} category="research" />
-                                                <ShareButton
-                                                    feature="research"
-                                                    queryId={localQueryId}
-                                                    queryText={question}
-                                                    answerText={answer}
-                                                    citations={citations}
-                                                    source="answer_block"
-                                                />
-                                            </div>
+                                            <FeedbackBar query={question} response={answer} category="research" />
                                             <div className="mt-3 inline-block">
                                                 <ProFeatureOverlay isLocked={plan !== 'pro'} featureName={extra.proFeatExport}>
                                                     <button

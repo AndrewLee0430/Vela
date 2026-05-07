@@ -3,6 +3,12 @@
 // Anonymous users see a disabled button; clicking it surfaces the same
 // AnonymousUpgradeCTA quota_hit modal pattern used elsewhere in the app
 // (the CTA's signup path is the conversion goal).
+//
+// PRD § 4.5 UX polish 2/3 — adds a `variant` prop. The default 'inline'
+// keeps the FeedbackBar-adjacency rendering used by history.tsx. The
+// 'navbar' variant is the ghost-warm coral pill that matches the
+// Navbar Upgrade button — used by the Navbar slot wired through
+// ShareContext.
 
 import { useState } from 'react';
 import { useUser } from '@clerk/nextjs';
@@ -14,6 +20,7 @@ import ShareModal from './ShareModal';
 
 export type ShareSource = 'answer_block' | 'history';
 export type ShareFeature = 'research' | 'verify' | 'explain';
+export type ShareVariant = 'inline' | 'navbar';
 
 interface Citation {
     title?: string | null;
@@ -28,7 +35,39 @@ interface Props {
     answerText: string;
     citations?: Citation[];
     source: ShareSource;
+    variant?: ShareVariant;
 }
+
+// ─── Visual treatments ──────────────────────────────────────────────
+// Inline: subtle white surface used inline with FeedbackBar (history rows).
+// Navbar: ghost-warm coral pill mirroring the Upgrade button in Navbar.tsx
+//         lines ~200-212.
+const VISUALS = {
+    inline: {
+        idleBg: 'rgba(255,255,255,0.06)',
+        idleBorder: '1px solid rgba(255,255,255,0.15)',
+        idleColor: 'rgba(255,255,255,0.55)',
+        hoverBg: 'rgba(255,255,255,0.12)',
+        hoverColor: '#ffffff',
+        anonBg: 'rgba(255,255,255,0.06)',
+        anonBorder: '1px solid rgba(255,255,255,0.15)',
+        anonColor: 'rgba(255,255,255,0.45)',
+        className:
+            'inline-flex items-center gap-2 text-xs font-medium px-3 py-1.5 rounded-lg transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed',
+    },
+    navbar: {
+        idleBg: 'rgba(255,142,110,0.15)',
+        idleBorder: '1px solid rgba(255,142,110,0.4)',
+        idleColor: '#ff8e6e',
+        hoverBg: 'rgba(255,142,110,0.25)',
+        hoverColor: '#ff8e6e',
+        anonBg: 'rgba(255,142,110,0.06)',
+        anonBorder: '1px solid rgba(255,142,110,0.2)',
+        anonColor: 'rgba(255,142,110,0.6)',
+        className:
+            'inline-flex items-center gap-2 text-sm font-semibold px-3 py-1 rounded-lg transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed',
+    },
+} as const;
 
 export default function ShareButton({
     feature,
@@ -37,6 +76,7 @@ export default function ShareButton({
     answerText,
     citations,
     source,
+    variant = 'inline',
 }: Props) {
     const { isSignedIn } = useUser();
     const router = useRouter();
@@ -44,6 +84,7 @@ export default function ShareButton({
     const t = getShare(lang);
     const [open, setOpen] = useState(false);
 
+    const v = VISUALS[variant];
     const disabled = !queryId || !queryText || !answerText;
 
     if (!isSignedIn) {
@@ -65,11 +106,11 @@ export default function ShareButton({
                     });
                     router.push('/sign-up');
                 }}
-                className="inline-flex items-center gap-2 text-xs font-medium px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
+                className={v.className}
                 style={{
-                    background: 'rgba(255,255,255,0.06)',
-                    border: '1px solid rgba(255,255,255,0.15)',
-                    color: 'rgba(255,255,255,0.45)',
+                    background: v.anonBg,
+                    border: v.anonBorder,
+                    color: v.anonColor,
                 }}
             >
                 <ShareIcon />
@@ -91,20 +132,20 @@ export default function ShareButton({
                     });
                     setOpen(true);
                 }}
-                className="inline-flex items-center gap-2 text-xs font-medium px-3 py-1.5 rounded-lg transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                className={v.className}
                 style={{
-                    background: 'rgba(255,255,255,0.06)',
-                    border: '1px solid rgba(255,255,255,0.15)',
-                    color: 'rgba(255,255,255,0.55)',
+                    background: v.idleBg,
+                    border: v.idleBorder,
+                    color: v.idleColor,
                 }}
                 onMouseEnter={e => {
                     if (disabled) return;
-                    (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.12)';
-                    (e.currentTarget as HTMLElement).style.color = 'white';
+                    (e.currentTarget as HTMLElement).style.background = v.hoverBg;
+                    (e.currentTarget as HTMLElement).style.color = v.hoverColor;
                 }}
                 onMouseLeave={e => {
-                    (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.06)';
-                    (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.55)';
+                    (e.currentTarget as HTMLElement).style.background = v.idleBg;
+                    (e.currentTarget as HTMLElement).style.color = v.idleColor;
                 }}
             >
                 <ShareIcon />
