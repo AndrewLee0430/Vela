@@ -86,6 +86,7 @@ from api.utils.llm_judge import LLMJudge, Source as JudgeSource
 from api.models.explain_schemas import ExplainRequest
 from api.services.explain_service import run_explain_pipeline
 from api.utils.language_detector import detect_language, get_language_instruction, LANGUAGE_NAMES, get_language_name  # ← v2.5
+from api.i18n.verify_strings import get_verify_disclaimer
 
 # ============================================================
 # Verify system prompt (PRD § 2.9, v2)
@@ -887,6 +888,7 @@ async def verify_drug_interaction(
                 risk_level=fb_data.get("risk_level","Unknown"),
                 risk_level_label=fb_data.get("risk_level_label") or None,
                 response_language=response_language,
+                disclaimer=get_verify_disclaimer(response_language),
                 query_time_ms=int((time.time()-start_time)*1000),
                 query_id=audit_id,
             )
@@ -901,6 +903,7 @@ async def verify_drug_interaction(
                 summary=fallback_summary,
                 risk_level="Unknown",
                 response_language=response_language,
+                disclaimer=get_verify_disclaimer(response_language),
                 query_time_ms=int((time.time()-start_time)*1000),
                 query_id=audit_id,
             )
@@ -1010,6 +1013,7 @@ async def verify_drug_interaction(
         summary=summary, risk_level=risk_level,
         risk_level_label=risk_level_label,
         response_language=response_language,
+        disclaimer=get_verify_disclaimer(response_language),
         query_time_ms=elapsed_ms,
         query_id=audit_id,
     )
