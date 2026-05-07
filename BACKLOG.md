@@ -661,10 +661,16 @@ Execution sequence:
 
 Phase 1B work items per advisor discussion 2026-05-04 (preserved in git commit 394545e) and ADR 003+004. Slot ranges from Week 4-8 of Phase 1B (5-week timeline).
 
-### [P0] Verify 強制英文 + 友善引導
-- **Source**: ADR 003 (advisor discussion notes preserved in git commit 394545e § 5.1)
-- **Implementation**: Frontend input field guard + non-English detection + inline warning UI + 7 i18n keys × 16 languages + 4 PostHog events
-- **Estimated**: 1.5-2 days
+### [P0] Verify 強制英文 + 友善引導 + system prompt polish
+- **Source**: ADR 003 (advisor discussion notes preserved in git commit 394545e § 5.1) + dogfooding TECH_DEBT entry 2026-05-06
+- **Implementation**:
+  - Frontend input field guard + non-English detection + inline warning UI + 7 i18n keys × 16 languages + 4 PostHog events (per ADR 003)
+  - System prompt polish (per dogfooding TECH_DEBT 2026-05-06 issues #1, #2, #4, #5):
+    - Citation scope mismatch flagging (LLM 在使用每個 citation 前須 explicit assess population scope match)
+    - 廣域地理 query 須明確列出 evidence 涵蓋區域 vs 缺口區域
+    - Counterintuitive finding 須附 plausible mechanism，不能只給 statistical association
+    - 禁止 LLM 自評引用品質 (例如「證據屬於近期且具代表性」字句)
+- **Estimated**: 2-2.5 days (原 1.5-2 days + system prompt polish 0.5 day)
 - **Slot**: Phase 1B Week 4
 - **External help links**: TFDA / Drugs.com / PMDA / MFDS (read-only links, NOT API integration)
 
@@ -689,6 +695,15 @@ Phase 1B work items per advisor discussion 2026-05-04 (preserved in git commit 3
 - **Estimated**: 2 days
 - **Slot**: Phase 1B Week 7
 
+### [P2] Citation retrieval ranking evaluation
+- **Source**: dogfooding TECH_DEBT entry 2026-05-06 issue #3
+- **Why**: 對 query 最 match 的 citation 沒被推到 anchor 位置 (e.g. 「亞洲社區老年人 polypharmacy」最 match 的 PMID 37574369 排名在 PMID 38368398 之後)
+- **Implementation**: 評估 RAG retrieval ranking 是否需要加入 population × setting × geography match score，weight 高於單純 recency
+- **Risk**: 改 ranking 演算法會影響所有 query 的答案，需要 regression test
+- **Estimated**: 1-2 days evaluate + 視結果 1 週實作
+- **Slot**: Phase 1B Week 7-8 evaluate；視 risk 決定 Phase 1B 內 ship 或延 Phase 1C
+- **Pre-requisite**: 累積 5-10 個 dogfooding query 樣本，確認 issue 是系統性
+
 ## Phase 1C — per advisor discussion (護城河 deepening)
 
 ### [P1] WHO ICD-11 API integration
@@ -710,6 +725,20 @@ Phase 1B work items per advisor discussion 2026-05-04 (preserved in git commit 3
 - **Implementation**: ICD-11 anchor data structure + cross-language query backend + bridging panel UI + 4-5 language alignment logic
 - **Estimated**: 3-4 days
 - **Slot**: Phase 1C Week 11
+
+### [P2] WHO API integration — RAG source for global treatment guidelines
+- **Background**: PRD §2.3 CitationPanel `source_type` enum already includes 'WHO', but no work item exists for actually ingesting WHO data as a retrievable RAG source. Currently 'WHO' is a valid display label only — no document ingest pipeline produces WHO-tagged citations.
+- **Scope**: integrate one or more WHO data endpoints (Essential Medicines List / treatment guidelines / global pharmaceutical reference) into the existing retriever pipeline (`api/rag/retriever.py` + `api/services/*`). Treat WHO as a baseline global reference that complements local-authority sources (§5.1 Tier 1 6國).
+- **Why Phase 1C, not Phase 1B**:
+  - Phase 1B Week 4-8 already loaded with DailyMed (Week 4-5) + §5.1 Tier 1 6國 (Week 5-6) + Anonymous Trial Flow polish (Week 7) + integration test (Week 7-8). No buffer.
+  - GTM priority: §5.1 in-locale differentiation is the moat (UpToDate / OpenEvidence don't have local data); WHO is a global baseline competitors can replicate.
+  - Sequencing: implementing §5.1 first surfaces whether WHO ingestion is needed standalone or can be folded into §5.1 local-vs-global comparison logic.
+- **Pre-implementation gates**:
+  - §5.1 Tier 1 6國 shipped (informs WHO data shape requirements)
+  - §2.1 Model Provider refactor shipped (clean retriever interface)
+- **Distinct from existing [P1] WHO ICD-11 API integration entry above**: that item is about ICD-11 anchor codes (cross-language disease term alignment, Wedge 1). This item is about WHO content ingestion as RAG documents.
+- **Estimated**: 2-3 days
+- **Discovered**: 2026-05-06 — user-flagged BACKLOG gap during §4.5 UX polish closing review
 
 ---
 
