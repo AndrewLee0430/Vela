@@ -373,9 +373,11 @@ Refactor 後必須逐項驗證:
 
 source_type 必須是以下 enum 之一:
 
-- 'PubMed' | 'FDA' | 'LOINC' | 'MedlinePlus' | 'RxNorm'
+- 'PubMed' (學術文獻) | 'FDA' / 'DailyMed' (藥品仿單) | 'LOINC' | 'MedlinePlus' | 'RxNorm'
 - 'WHO' | 'NICE' | 'EMA' | 'Cochrane'
 - 'LocalAuthority'(Phase 1C 加)| 'Other'
+- **(2026-05-06 新增)** 'DailyMed' enum value 預定 Phase 1B Week 4-5 ship 時啟用 (per BACKLOG [P0] DailyMed API integration)。詳見新增 §2.10 資料來源策略。
+
 判定邏輯:
 
 - 若 citation object 已有 source_type,直接用
@@ -819,6 +821,76 @@ Vela 核心承諾 "Ask in any language, answered in yours"(§ 0.2)對 Verify 服
 ### Notes
 
 本節是 post-v1.2 discovered gap,發現於 2.4 production smoke test 時的多語測試。
+
+**2.10 資料來源策略 (2026-05-06 新增)**
+
+> **背景:** 截至 v1.3,Vela 整合 PubMed + FDA + LOINC + RxNorm + MedlinePlus 5 個 source。Phase 1B 加入 DailyMed,Phase 1C 加入 WHO ICD-11 (術語 anchor) 和 WHO 內容 ingestion。本節定義各 source 在產品中的職責邊界,避免重複工作或誤用。
+
+**2.10.1 Source 分層模型**
+
+四層醫療權威 source,藥師在不同情境跨層使用屬正常行為:
+
+| Layer | Source | 內容性質 | 回答的問題類型 |
+| --- | --- | --- | --- |
+| 1 學術文獻 | PubMed | 全球生醫期刊論文索引 (36M+ 篇) | 「最新研究怎麼說」「meta-analysis 結論」「罕見副作用 case report」 |
+| 2 官方藥品仿單 | FDA OpenFDA → DailyMed | 美國核准藥品 official label | 「official 適應症」「禁忌症 list」「黑框警告內容」 |
+| 3 全球指引 | WHO 全球指引 (Phase 1C) | 全球公衛 baseline (Essential Medicines List, treatment guidelines, GHO 統計) | 「WHO 對 X 疾病的全球建議」「東亞地區 X 盛行率」 |
+| 4 術語 anchor (內部用) | WHO ICD-11 (Phase 1C) | 跨語言疾病分類碼 (14 官方語言) | 跨語言 query alignment (內部 retrieval 機制,使用者不直接看) |
+
+**FDA → DailyMed 升級說明 (Phase 1B Week 4-5):**
+- FDA OpenFDA: 結構化品質不一,常缺最新版本欄位
+- DailyMed: NIH 維護的同 label master copy,結構化品質高 1-2 個量級,免費,無 API key,無 rate limit
+- Phase 1B 後 Verify pipeline 切換 DailyMed 為主、FDA OpenFDA 為 fallback;Research 將 DailyMed 作為第 4 個並行 retrieval source
+
+**2.10.2 Source × Feature 矩陣**
+
+| Source | Research (探索性問答) | Verify (藥物安全 / 交互作用) | Explain (報告 / 檢驗值解讀) |
+| --- | --- | --- | --- |
+| PubMed | ✅ 主力 — 文獻 evidence | ⚠️ 輔助 — 罕見交互作用 case report | ❌ 不直接用 |
+| FDA OpenFDA (現有) | ✅ 部分 — 藥品基本資訊 | ✅ 主力 — 官方禁忌 / 交互作用 | ❌ 不直接用 |
+| DailyMed (Phase 1B 取代 FDA 主力) | ✅ 升級 — 完整 label content | ✅ 主力 (取代 FDA) | ⚠️ 可選 — label 內「臨床用法」段落 |
+| WHO ICD-11 (Phase 1C anchor) | 🔧 內部用 — 跨語言 query alignment | 🔧 內部用 — 藥品國際分類對齊 | 🔧 內部用 — 疾病名跨語言 |
+| WHO 內容 RAG (Phase 1C) | ✅ 補充 — 全球 baseline | ⚠️ 邊緣 — 全球禁忌 baseline | ❌ 不直接用 |
+| LOINC / RxNorm / MedlinePlus (現有) | ❌ | ❌ | ✅ Explain 主力 |
+
+✅ 主力使用 / ⚠️ 輔助或可選 / 🔧 內部機制 / ❌ 不使用
+
+**2.10.3 設計原則**
+
+1. **Vela 自動跨 source 整合,不讓使用者選 source**
+   - 與 UpToDate / OpenEvidence 一致 — 使用者不需要 「source filter」 UI
+   - 違反此原則等於把 「整合 sources」 這個 Vela 核心價值還給使用者做
+   - **例外觸發條件:** 若 PostHog 數據顯示 ≥10% query 包含 explicit source 偏好 (e.g. 「給我 WHO 觀點」),再考慮加 filter UI
+2. **每條 citation 透明顯示來源層級**
+   - CitationPanel source_type chip 顏色已實作 (PRD §2.3)
+   - Citation ⓘ tooltip 補上 「這個 source 是什麼」 1-2 句說明 (Phase 1B Week 4-5 整合 DailyMed 時順手做,16 語言)
+3. **權威性差異需在 retrieval ranking 反映 (Phase 1B Week 7-8 evaluate)**
+   - 預設假設: DailyMed/FDA × 1.5,WHO 全球指引 × 1.3,PubMed × 1.0,個別 case report × 0.7
+   - 風險: 純 semantic similarity 排序可能讓 PubMed individual studies 淹沒 DailyMed 官方 label
+   - 評估方法見 BACKLOG [P2] Citation retrieval ranking evaluation
+4. **新增 source 不需新 feature / 新 UI**
+   - 4 source 整合進 RAG pipeline 後,使用者答案品質升級為 silent quality upgrade
+   - 例外:Phase 1C 跨語言橋接面板 (PRD §5.X 待補) — 那是新 UI,不是 source 整合的 by-product
+
+**2.10.4 RAG pipeline 影響 (Phase 1B Week 7-8 evaluate)**
+
+並行 retrieval:
+- 當前 (v1.3): 3 queries × 3 sources = 9 並行 task
+- Phase 1B 後: 3 queries × 4 sources = 12 並行 task (加 DailyMed)
+- Phase 1C 後: 3 queries × 5 sources = 15 並行 task (加 WHO 內容)
+
+Latency 影響可忽略 (asyncio.gather 並行)。Top-K=8 不變,LLM 看到的 evidence 數量不變,僅 candidate pool 擴大。
+
+**待 Phase 1B Week 7-8 evaluate 後決定的事項:**
+- Reranker 是否需要 source-weighted scoring (見 BACKLOG [P2])
+- BM25 / hybrid search 是否引入 (傾向 Phase 1C 才考慮)
+- Source weight 具體數值 (上述 1.5/1.3/1.0/0.7 為 hypothesis,需 dogfooding 驗證)
+
+**2.10.5 為什麼不在 v1.3 spec 動 RAG**
+
+§2.1 Model Provider refactor 是 Phase 0 末段最大 block,先抽乾淨 provider 介面,再動 retrieval / ranking。順序反了會重做兩遍。
+真實 candidate pool 變大的數據還沒有 (DailyMed/WHO 都還沒接),現在動 reranker 是猜。
+原則:**先量再動,別先動再量。**
 
 **三、Phase 1A — 定位落地**
 

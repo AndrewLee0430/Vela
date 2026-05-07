@@ -680,6 +680,10 @@ Phase 1B work items per advisor discussion 2026-05-04 (preserved in git commit 3
 - **Implementation**: Add as 4th retrieval source for Research; replace/augment FDA OpenFDA in Verify; Citation ⓘ tooltip update
 - **Estimated**: 2-3 days
 - **Slot**: Phase 1B Week 4-5
+- **UX sub-tasks 整合時順手做 (per PRD §2.10):**
+  - Citation ⓘ tooltip 加 4 source 短說明 (PubMed / DailyMed / WHO 預留位 / FDA fallback),16 語言。預留 WHO 條目 (Phase 1C 啟用) 避免日後重做 i18n。
+  - Verify pipeline FDA OpenFDA → DailyMed 主從切換的 retrieval ranking 驗證 (5 個典型藥物交互作用 query 比對 before/after)
+  - PRD §2.3 source_type enum 'DailyMed' 啟用 + Citation chip 顏色 token 確認
 
 ### [P0] 在地差異提示 Tier 1 (TW/JP/KR/SG/MY/TH)
 - **Source**: ADR 004 (advisor discussion in git commit 394545e § 5.3 — advanced from Phase 1C to 1B per 護城河 rebalance)
@@ -703,6 +707,24 @@ Phase 1B work items per advisor discussion 2026-05-04 (preserved in git commit 3
 - **Estimated**: 1-2 days evaluate + 視結果 1 週實作
 - **Slot**: Phase 1B Week 7-8 evaluate；視 risk 決定 Phase 1B 內 ship 或延 Phase 1C
 - **Pre-requisite**: 累積 5-10 個 dogfooding query 樣本，確認 issue 是系統性
+- **Dogfooding test plan (per PRD §2.10.3 設計原則 #3):**
+  Trigger: DailyMed integration shipped (Phase 1B Week 4-5 結束)。
+  4 條 evaluation:
+  1. **Candidate pool 分布測試**: 5 個典型 query × 4 個 feature (Research / Verify / Explain / Share-from-history) = 20 條測試,看 candidate pool 從 9 → 12 之後 top 8 evidence 的 source 分布是否合理
+  2. **禁忌 / 黑框警告類專測**: 「Warfarin + Aspirin 安全嗎」「metformin 禁忌症」等,確認 DailyMed FDA label 沒被 PubMed studies 擠下去
+  3. **最新研究類專測**: 「最新阿茲海默症療法」「SGLT2 inhibitor 心衰研究」等,確認 PubMed 沒被 DailyMed/FDA 靜態 label 擠下去
+  4. **跨語言 query**: 5 query × 3 locale (zh-TW / ja / ko),確認語言切換後 retrieval source 分布不退化
+- **Source weight 初始假設 (待 dogfooding 驗證):**
+  - DailyMed / FDA: × 1.5 (權威 source 加權)
+  - WHO 全球指引: × 1.3 (Phase 1C 才適用)
+  - PubMed (RCT / meta-analysis): × 1.0 (baseline)
+  - PubMed (個別 case report): × 0.7 (低證據等級)
+  - 風險: 上述為 hypothesis,實際數值需看 dogfooding 結果調整
+- **Decision tree (evaluate 完看):**
+  - 若 4 條測試全部 source 分布合理 → 不動 reranker,只記文件 (low priority Phase 1C)
+  - 若僅 「禁忌 / 黑框」類失準 → 動 source-weighted scoring,不動 BM25
+  - 若 「跨語言」類失準 → 先檢查 query rewrite 階段,不一定動 reranker
+  - 若全面失準 → 考慮 BM25 / hybrid search,排 Phase 1C
 
 ## Phase 1C — per advisor discussion (護城河 deepening)
 
