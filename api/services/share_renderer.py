@@ -7,16 +7,29 @@ FastAPI Jinja2 SSR (NOT Next.js — current next.config.ts is `output:
 
 PHASE A coverage: en + zh-TW. Other locales fall back to en. PHASE E
 unifies i18n source-of-truth across utils/i18n-share.ts and this dict.
+
+UX polish 1 (2026-05-07): full alignment with main-site design system.
+- Ports parseResearchSections() from pages/research.tsx so the public
+  page can render evidence-strength cards with the same colored
+  left-border treatment.
+- Augments citations with the source-type / credibility config tables
+  ported from components/CitationPanel.tsx so visitor sees the same
+  source label color, credibility pill, and star rating.
 """
 
 from __future__ import annotations
 
 import logging
 import os
+import re
+from collections import Counter
+from html import escape as _escape
 from pathlib import Path
 from typing import Any
 
+import markdown as _markdown
 from jinja2 import Environment, FileSystemLoader, select_autoescape
+from markupsafe import Markup
 
 logger = logging.getLogger(__name__)
 
@@ -42,29 +55,320 @@ _STRINGS: dict[str, dict[str, str]] = {
             "or prescription. Do not use for self-diagnosis or self-medication. "
             "Consult a qualified healthcare provider for any health concerns."
         ),
+        "publicShortDisclaimer": (
+            "⚠️ For informational purposes only. Always verify with "
+            "clinical guidelines and consult a qualified professional."
+        ),
         "publicRevoked": "This share has been revoked.",
         "publicFlagged": "This share was removed for violating the terms of service.",
         "citationsHeading": "References",
+        "credibilityLabel": "Credibility",
+        "viewSource": "View source",
+        "peerReviewed": "Peer Reviewed",
+        "official": "Official",
+        "internal": "Internal",
+        "headerTagline": "Ask in your language. Verified by official sources.",
         "privacyLink": "Privacy",
         "termsLink": "Terms",
     },
     "zh-TW": {
-        "publicCtaTitle": "想問你自己的版本？",
+        "publicCtaTitle": "想問你自己的版本?",
         "publicCtaButton": "在 Vela 試試",
         "publicDisclaimer": (
-            "此內容由 AI 根據公開醫學文獻生成，僅供醫療專業人員參考討論，"
+            "此內容由 AI 根據公開醫學文獻生成,僅供醫療專業人員參考討論,"
             "不構成醫療建議、診斷或處方。請勿用於自我診斷或自我用藥。"
             "如有健康問題請諮詢合格醫療人員。"
+        ),
+        "publicShortDisclaimer": (
+            "⚠️ 本資訊僅供參考,請依據臨床指引並諮詢合格專業人員。"
         ),
         "publicRevoked": "此分享已被撤回。",
         "publicFlagged": "此分享因違反使用條款已下架。",
         "citationsHeading": "參考來源",
+        "credibilityLabel": "可信度",
+        "viewSource": "檢視來源",
+        "peerReviewed": "同儕審查",
+        "official": "官方來源",
+        "internal": "內部資料",
+        "headerTagline": "用你的語言提問,由官方來源驗證。",
         "privacyLink": "隱私政策",
         "termsLink": "使用條款",
     },
 }
 
 _HTML_LANG_MAP = {"en": "en", "zh-TW": "zh-Hant"}
+
+
+# ============================================================
+# Section parser — port of parseResearchSections() in
+# pages/research.tsx 61-82. Splits the answer markdown by H2 headers
+# of the form:
+#     ## Title 🟢 — Language
+#     ## Title 🟡 — Language
+#     ## Title 🔴 — Language
+#     ## Title  (no marker, fallback)
+# Returns a list of dicts: {title, marker, content}. If no headers
+# are found, returns a single section with title=None marker=None and
+# the whole answer as content (so the caller can still render a card).
+# ============================================================
+_HEADER_RE = re.compile(
+    r"^##\s+(?P<title>.+?)(?:\s+(?P<marker>\U0001F7E2|\U0001F7E1|\U0001F534))?\s*(?:—\s*.+)?$",
+    re.MULTILINE,
+)
+
+# Color table for evidence-strength markers — matches
+# components/ResearchSection.tsx borderColors (lines 11-15).
+_MARKER_BORDER_COLORS: dict[str | None, str] = {
+    "\U0001F7E2": "#22c55e",  # 🟢 strong
+    "\U0001F7E1": "#eab308",  # 🟡 moderate
+    "\U0001F534": "#ef4444",  # 🔴 limited
+    None: "#475569",          # default slate
+}
+
+
+def parse_research_sections(answer_text: str) -> list[dict[str, Any]]:
+    """Split an answer into evidence-strength sections.
+
+    Mirrors the JS implementation in pages/research.tsx so the public
+    page renders the same card UI a logged-in user sees on /research.
+    """
+    if not answer_text or not answer_text.strip():
+        return [{"title": None, "marker": None, "content": ""}]
+
+    matches = list(_HEADER_RE.finditer(answer_text))
+    if not matches:
+        return [{"title": None, "marker": None, "content": answer_text.strip()}]
+
+    sections: list[dict[str, Any]] = []
+    for i, m in enumerate(matches):
+        title = (m.group("title") or "").strip()
+        marker = m.group("marker")
+        start = m.end()
+        end = matches[i + 1].start() if i + 1 < len(matches) else len(answer_text)
+        content = answer_text[start:end]
+        # Strip leading "---" separator (matches JS behavior).
+        content = re.sub(r"^\s*---\s*", "", content).strip()
+        if content:
+            sections.append({"title": title, "marker": marker, "content": content})
+
+    if not sections:
+        return [{"title": None, "marker": None, "content": answer_text.strip()}]
+    return sections
+
+
+def _markdown_to_html(text: str) -> str:
+    """Render section content markdown → HTML for embedding inside
+    the .vela-prose div in the public page. Uses python-markdown
+    with the same feature set ReactMarkdown ships on the main site
+    (gfm-style: fenced code, tables, breaks)."""
+    if not text:
+        return ""
+    return _markdown.markdown(
+        text,
+        extensions=["extra", "sane_lists", "nl2br"],
+        output_format="html",
+    )
+
+
+# ============================================================
+# Citation source-type / credibility config — ported from
+# components/CitationPanel.tsx 73-92. Same values; comment in TS
+# refs back to here.
+# ============================================================
+_SOURCE_TYPE_CONFIG: dict[str, dict[str, str]] = {
+    "pubmed":         {"label": "PubMed",      "color": "#68d391"},
+    "fda":            {"label": "FDA",         "color": "#63b3ed"},
+    "loinc":          {"label": "LOINC",       "color": "#f6ad55"},
+    "medlineplus":    {"label": "MedlinePlus", "color": "#9f7aea"},
+    "rxnorm":         {"label": "RxNorm",      "color": "#ed64a6"},
+    "who":            {"label": "WHO",         "color": "#4fd1c5"},
+    "nice":           {"label": "NICE",        "color": "#90cdf4"},
+    "ema":            {"label": "EMA",         "color": "#fbb6ce"},
+    "cochrane":       {"label": "Cochrane",    "color": "#b794f4"},
+    "local":          {"label": "Local",       "color": "#a0aec0"},
+    "localauthority": {"label": "Local",       "color": "#a0aec0"},
+    "other":          {"label": "Source",      "color": "#a0aec0"},
+}
+
+_CRED_CONFIG: dict[str, dict[str, str | int]] = {
+    "peer-reviewed": {
+        "label_key": "peerReviewed",
+        "bg": "rgba(255,142,110,0.15)",
+        "color": "#ff8e6e",
+        "stars": 5,
+    },
+    "official": {
+        "label_key": "official",
+        "bg": "rgba(99,179,237,0.15)",
+        "color": "#63b3ed",
+        "stars": 5,
+    },
+    "internal": {
+        "label_key": "internal",
+        "bg": "rgba(160,174,192,0.15)",
+        "color": "#a0aec0",
+        "stars": 3,
+    },
+}
+
+
+# Star path replicated from components/CitationPanel.tsx StarRating
+# (lines 94-108): a 20×20 SVG with an empty/filled fill.
+_STAR_PATH = (
+    "M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0"
+    "l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"
+)
+
+
+def _render_stars_html(filled: int, total: int = 5) -> str:
+    """5 inline SVGs: `filled` golden, rest gray. Matches the visual
+    in CitationPanel.tsx without bringing in any client JS."""
+    parts: list[str] = []
+    for i in range(total):
+        color = "#facc15" if i < filled else "#4b5563"  # yellow-400 / gray-600
+        parts.append(
+            f'<svg viewBox="0 0 20 20" fill="{color}" aria-hidden="true">'
+            f'<path d="{_STAR_PATH}"/></svg>'
+        )
+    return "".join(parts)
+
+
+def _detect_source_type(citation: dict[str, Any]) -> str:
+    """Mirror of detectSourceType() in CitationPanel.tsx 36-62.
+    Falls back to URL hostname matching when source_type is missing."""
+    raw = (citation.get("source_type") or "").strip().lower()
+    if raw in _SOURCE_TYPE_CONFIG:
+        return raw
+    url = (citation.get("url") or "").lower()
+    if not url:
+        return "other"
+    hostmap = (
+        ("pubmed.ncbi.nlm.nih.gov", "pubmed"),
+        ("ncbi.nlm.nih.gov/pubmed", "pubmed"),
+        ("fda.gov", "fda"),
+        ("accessdata.fda.gov", "fda"),
+        ("loinc.org", "loinc"),
+        ("medlineplus.gov", "medlineplus"),
+        ("dailymed.nlm.nih.gov", "rxnorm"),
+        ("rxnav.nlm.nih.gov", "rxnorm"),
+        ("who.int", "who"),
+        ("nice.org.uk", "nice"),
+        ("ema.europa.eu", "ema"),
+        ("cochrane.org", "cochrane"),
+        ("cochranelibrary.com", "cochrane"),
+    )
+    for needle, slug in hostmap:
+        if needle in url:
+            return slug
+    return "other"
+
+
+_ABSTRACT_HEADER_RE = re.compile(r"^#{1,3}\s*abstract", re.IGNORECASE)
+_ABSTRACT_LABEL_RE = re.compile(
+    r"^\*\*(Authors?|Journal|PMID|Background|Methods?|Results?|Conclusions?|Objective)s?\*\*",
+    re.IGNORECASE,
+)
+_ABSTRACT_INLINE_LABEL_RE = re.compile(r"\*\*[A-Z][A-Z\s/]{1,20}:\*\*")
+
+
+def _extract_abstract(raw: str) -> str:
+    """Mirror of extractAbstract() in CitationPanel.tsx 110-132.
+    Strips the leading `## Abstract` header and bold-label lines so
+    the public page shows just the prose body."""
+    if not raw:
+        return ""
+    lines = raw.split("\n")
+    # Look for a leading "## Abstract" / "### Abstract" / "# Abstract" line
+    abstract_idx = -1
+    for i, line in enumerate(lines):
+        if _ABSTRACT_HEADER_RE.match(line.strip()):
+            abstract_idx = i
+            break
+    if abstract_idx != -1:
+        text = " ".join(lines[abstract_idx + 1:]).strip()
+    else:
+        text = " ".join(
+            line for line in lines
+            if line.strip()
+            and not line.strip().startswith("#")
+            and not _ABSTRACT_LABEL_RE.match(line.strip())
+        ).strip()
+    text = _ABSTRACT_INLINE_LABEL_RE.sub("", text).strip()
+    text = re.sub(r"\s{2,}", " ", text).strip()
+    return text
+
+
+def _truncate_abstract(text: str | None, n: int = 200) -> str | None:
+    """Strip leading markdown header/labels, then hard truncate; no
+    expand toggle on the public page (locked decision per task plan)."""
+    if not text:
+        return None
+    cleaned = _extract_abstract(text)
+    if not cleaned:
+        return None
+    if len(cleaned) <= n:
+        return cleaned
+    return cleaned[: n - 1].rstrip() + "…"
+
+
+def _augment_citations(
+    citations: list[dict[str, Any]] | None,
+    locale: str,
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    """Return (augmented_citations, source_chips).
+
+    Each augmented citation carries the precomputed display-only fields
+    the template needs so the Jinja layer stays trivial: source_type
+    (slug), source_label, source_color, credibility (raw key),
+    cred_label, cred_bg, cred_color, stars (int), stars_html,
+    abstract_truncated.
+    """
+    if not citations:
+        return [], []
+    s = _STRINGS[locale]
+
+    augmented: list[dict[str, Any]] = []
+    type_counter: Counter[str] = Counter()
+    for c in citations:
+        if not isinstance(c, dict):
+            continue
+        slug = _detect_source_type(c)
+        sconf = _SOURCE_TYPE_CONFIG[slug]
+        cred_raw = (c.get("credibility") or "").strip().lower()
+        cred = _CRED_CONFIG.get(cred_raw)
+        cred_label = s.get(cred["label_key"], cred_raw) if cred else None
+        cred_bg = cred["bg"] if cred else None
+        cred_color = cred["color"] if cred else None
+        stars = int(cred["stars"]) if cred else 0
+        # citations from ChatHistory may not include `snippet`;
+        # ShareCreate's payload uses whatever the ChatHistory schema
+        # carried. Try a few common keys.
+        abstract = (
+            c.get("snippet")
+            or c.get("abstract")
+            or c.get("text")
+            or ""
+        )
+        augmented.append({
+            **c,
+            "source_type": slug,
+            "source_label": sconf["label"],
+            "source_color": sconf["color"],
+            "credibility": cred_raw if cred else None,
+            "cred_label": cred_label,
+            "cred_bg": cred_bg,
+            "cred_color": cred_color,
+            "stars": stars,
+            "stars_html": Markup(_render_stars_html(stars)) if cred else Markup(""),
+            "abstract_truncated": _truncate_abstract(abstract),
+        })
+        type_counter[sconf["label"]] += 1
+
+    chips = [
+        {"label": label, "count": count}
+        for label, count in type_counter.most_common()
+    ]
+    return augmented, chips
 
 
 def resolve_locale(requested: str | None) -> str:
@@ -117,7 +421,25 @@ def _common_context(share, locale: str) -> dict[str, Any]:
 def render_public_page(share, locale: str) -> str:
     locale = resolve_locale(locale)
     ctx = _common_context(share, locale)
-    ctx["citations"] = getattr(share, "citations", None) or []
+    raw_citations = getattr(share, "citations", None) or []
+    answer_text = ctx.get("answer_text", "")
+
+    # Pre-split sections + render markdown server-side.
+    parsed = parse_research_sections(answer_text)
+    sections: list[dict[str, Any]] = []
+    for sec in parsed:
+        sections.append({
+            "title": sec["title"],
+            "marker": sec["marker"],
+            "border_color": _MARKER_BORDER_COLORS.get(sec["marker"], _MARKER_BORDER_COLORS[None]),
+            "html": Markup(_markdown_to_html(sec["content"])),
+        })
+
+    augmented, source_chips = _augment_citations(raw_citations, locale)
+
+    ctx["sections"] = sections
+    ctx["citations"] = augmented
+    ctx["source_chips"] = source_chips
     return _env.get_template("q_public.jinja2").render(**ctx)
 
 

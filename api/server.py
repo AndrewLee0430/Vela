@@ -2224,6 +2224,30 @@ async def share_track_visit(body: TrackVisitRequest, request: Request):
     return Response(status_code=204)
 
 
+class TrackCitationClickRequest(BaseModel):
+    share_id: str = Field(..., min_length=1, max_length=64)
+    source_type: Optional[str] = Field(default=None, max_length=32)
+    citation_id: Optional[str] = Field(default=None, max_length=16)
+    url: Optional[str] = Field(default=None, max_length=2048)
+
+
+@app.post("/api/share/track-citation-click")
+async def share_track_citation_click(body: TrackCitationClickRequest, request: Request):
+    """PRD § 4.5 UX polish 1 — fired by the public page when a visitor
+    clicks a citation "View source" link. No-op handler: server-side
+    log only, returns 204. Swapping to a backend PostHog client later
+    is a one-line change. No DB write (per existing P3 TECH_DEBT)."""
+    if "/" in body.share_id or "\\" in body.share_id:
+        return Response(status_code=400)
+    logger.info(
+        "[share_citation] share_id=%s source_type=%s citation_id=%s",
+        body.share_id,
+        body.source_type,
+        body.citation_id,
+    )
+    return Response(status_code=204)
+
+
 # 靜態檔案服務
 static_path = Path("static")
 if static_path.exists():

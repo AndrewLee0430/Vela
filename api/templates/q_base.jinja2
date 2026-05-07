@@ -17,41 +17,355 @@
 {% block jsonld %}{% endblock %}
 <style>
 :root {
-  --fg: #111827;
-  --muted: #6b7280;
-  --bg: #ffffff;
-  --accent: #2563eb;
-  --border: #e5e7eb;
-  --card: #f9fafb;
+  --vela-coral: #ff8e6e;
+  --vela-coral-dark: #ff6b6b;
+  --vela-coral-light: #ffb347;
+  --vela-verify: #63b3ed;
+  --vela-explain: #68d391;
+  --vela-evidence-strong: #22c55e;
+  --vela-evidence-moderate: #eab308;
+  --vela-evidence-limited: #ef4444;
+  --vela-evidence-default: #475569;
+  --vela-bg-1: #0a1628;
+  --vela-bg-2: #0f2040;
+  --vela-bg-3: #1a1035;
+  --vela-bg-4: #0d1a2e;
+  --vela-card-bg: rgba(255,255,255,0.04);
+  --vela-card-bg-hover: rgba(255,255,255,0.08);
+  --vela-card-border: rgba(255,255,255,0.1);
+  --vela-card-border-strong: rgba(255,255,255,0.15);
+  --vela-section-bg: rgba(30,41,59,0.3);
+  --vela-text-primary: #ffffff;
+  --vela-text-body: rgba(255,255,255,0.85);
+  --vela-text-muted: rgba(255,255,255,0.55);
+  --vela-text-subtle: rgba(255,255,255,0.35);
+  --vela-prose-headings: #ffffff;
+  --vela-prose-bold: #ffffff;
+  --vela-prose-links: #ff8e6e;
+  --vela-prose-bullets: rgba(255,255,255,0.5);
+  --vela-prose-code: #ff8e6e;
+  --vela-prose-hr: rgba(255,255,255,0.15);
 }
+
 * { box-sizing: border-box; }
-body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", "Noto Sans CJK TC", sans-serif; color: var(--fg); background: var(--bg); line-height: 1.6; }
-header { border-bottom: 1px solid var(--border); padding: 16px 24px; }
-header a { color: var(--fg); text-decoration: none; font-weight: 600; font-size: 18px; }
-main { max-width: 760px; margin: 32px auto; padding: 0 24px; }
-.query { font-size: 22px; font-weight: 600; margin: 0 0 24px; }
-.answer { font-size: 16px; white-space: pre-wrap; }
-.citations { margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border); }
-.citations h3 { font-size: 14px; color: var(--muted); margin: 0 0 12px; text-transform: uppercase; letter-spacing: 0.05em; }
-.citations ol { padding-left: 20px; margin: 0; }
-.citations li { font-size: 13px; color: var(--muted); margin-bottom: 6px; }
-.citations a { color: var(--accent); }
-.cta { margin-top: 48px; padding: 24px; background: var(--card); border-radius: 12px; text-align: center; }
-.cta-title { font-size: 18px; font-weight: 600; margin: 0 0 12px; }
-.cta-button { display: inline-block; padding: 10px 20px; background: var(--accent); color: white; text-decoration: none; border-radius: 8px; font-weight: 500; }
-footer { max-width: 760px; margin: 48px auto 32px; padding: 24px; font-size: 12px; color: var(--muted); border-top: 1px solid var(--border); }
-footer a { color: var(--muted); margin-right: 16px; }
-.notice { padding: 32px; background: var(--card); border-radius: 12px; text-align: center; font-size: 16px; color: var(--muted); }
+html, body { margin: 0; padding: 0; }
+
+body {
+  background: linear-gradient(135deg, var(--vela-bg-1) 0%, var(--vela-bg-2) 45%, var(--vela-bg-3) 75%, var(--vela-bg-4) 100%);
+  background-attachment: fixed;
+  color: var(--vela-text-body);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", "Noto Sans CJK TC", sans-serif;
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+/* ─── Header ──────────────────────────────────────────── */
+.vela-header {
+  background: linear-gradient(135deg, var(--vela-bg-1) 0%, var(--vela-bg-2) 100%);
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  padding: 12px 24px;
+}
+.vela-header-inner {
+  max-width: 960px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+.vela-logo-link { display: inline-flex; }
+.vela-logo-link img { display: block; }
+.vela-tagline {
+  font-size: 0.825rem;
+  color: var(--vela-text-muted);
+  text-align: right;
+}
+@media (max-width: 600px) {
+  .vela-tagline { display: none; }
+}
+
+/* ─── Main / footer shells ────────────────────────────── */
+.vela-main {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 24px 16px 48px;
+}
+.vela-footer {
+  max-width: 760px;
+  margin: 32px auto 0;
+  padding: 24px 16px 32px;
+  border-top: 1px solid var(--vela-card-border);
+  text-align: center;
+}
+.vela-footer-disclaimer {
+  font-size: 0.75rem;
+  color: var(--vela-text-subtle);
+  line-height: 1.5;
+  max-width: 600px;
+  margin: 0 auto 12px;
+}
+.vela-footer-links {
+  font-size: 0.75rem;
+  color: var(--vela-text-subtle);
+  margin-bottom: 8px;
+}
+.vela-footer-links a {
+  color: var(--vela-text-muted);
+  text-decoration: none;
+  margin: 0 6px;
+}
+.vela-footer-links a:hover { color: var(--vela-text-primary); }
+.vela-footer-copy {
+  font-size: 0.7rem;
+  color: rgba(255,255,255,0.25);
+  margin: 0;
+}
+
+/* ─── Query title ─────────────────────────────────────── */
+.vela-query-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--vela-text-primary);
+  margin: 24px 0 16px;
+  line-height: 1.3;
+}
+
+/* ─── Evidence cards ──────────────────────────────────── */
+.vela-answer-stack { margin-bottom: 16px; }
+.vela-evidence-card {
+  background: var(--vela-section-bg);
+  border-left: 3px solid var(--vela-evidence-default);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 12px;
+}
+.vela-evidence-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #e2e8f0;
+  margin: 0 0 8px;
+}
+
+/* ─── Prose (markdown body) ───────────────────────────── */
+.vela-prose {
+  color: var(--vela-text-body);
+  font-size: 0.9rem;
+}
+.vela-prose h1, .vela-prose h2, .vela-prose h3, .vela-prose h4 {
+  color: var(--vela-prose-headings);
+  font-weight: 600;
+  margin: 16px 0 8px;
+  line-height: 1.3;
+}
+.vela-prose h2 { font-size: 1.05rem; }
+.vela-prose h3 { font-size: 0.95rem; }
+.vela-prose p { margin: 8px 0; }
+.vela-prose strong { color: var(--vela-prose-bold); font-weight: 700; }
+.vela-prose em { font-style: italic; }
+.vela-prose a {
+  color: var(--vela-prose-links);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255,142,110,0.3);
+}
+.vela-prose a:hover { border-bottom-color: var(--vela-prose-links); }
+.vela-prose ul, .vela-prose ol {
+  padding-left: 1.5rem;
+  margin: 8px 0;
+}
+.vela-prose li { margin: 4px 0; }
+.vela-prose li::marker { color: var(--vela-prose-bullets); }
+.vela-prose code {
+  color: var(--vela-prose-code);
+  background: rgba(255,142,110,0.08);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 0.85em;
+}
+.vela-prose pre {
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--vela-card-border);
+  border-radius: 8px;
+  padding: 12px;
+  overflow-x: auto;
+}
+.vela-prose pre code {
+  background: transparent;
+  padding: 0;
+  color: var(--vela-text-body);
+}
+.vela-prose hr {
+  border: none;
+  border-top: 1px solid var(--vela-prose-hr);
+  margin: 16px 0;
+}
+.vela-prose blockquote {
+  border-left: 3px solid var(--vela-card-border-strong);
+  margin: 8px 0;
+  padding: 4px 12px;
+  color: var(--vela-text-muted);
+}
+
+/* ─── Inline short disclaimer (under answer) ─────────── */
+.vela-short-disclaimer {
+  font-size: 0.75rem;
+  color: var(--vela-text-subtle);
+  margin: 16px 0 24px;
+}
+
+/* ─── Citations panel ────────────────────────────────── */
+.vela-citations { margin-top: 32px; }
+.vela-citations-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.vela-citations-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--vela-text-muted);
+}
+.vela-source-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.vela-source-chip {
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  background: rgba(255,255,255,0.08);
+  color: var(--vela-text-muted);
+  border-radius: 9999px;
+}
+.vela-citation-card {
+  background: var(--vela-card-bg-hover);
+  border: 1px solid var(--vela-card-border-strong);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 12px;
+  transition: background 0.2s;
+}
+.vela-citation-card:hover { background: rgba(255,255,255,0.1); }
+.vela-citation-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.vela-citation-source { font-weight: 600; font-size: 0.85rem; }
+.vela-credibility-pill {
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.vela-citation-title {
+  color: var(--vela-text-primary);
+  font-weight: 500;
+  font-size: 0.95rem;
+  margin: 4px 0;
+  line-height: 1.4;
+}
+.vela-citation-meta {
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 8px;
+}
+.vela-citation-stars {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.vela-stars-label { font-size: 0.7rem; color: var(--vela-text-muted); }
+.vela-stars svg {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  vertical-align: middle;
+  margin-right: 1px;
+}
+.vela-citation-abstract {
+  font-size: 0.825rem;
+  color: rgba(255,255,255,0.7);
+  line-height: 1.5;
+  margin: 8px 0;
+}
+.vela-citation-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 8px;
+  color: var(--vela-coral);
+  font-size: 0.85rem;
+  text-decoration: none;
+}
+.vela-citation-link:hover { text-decoration: underline; }
+
+/* ─── CTA banner ─────────────────────────────────────── */
+.vela-cta {
+  margin: 32px 0 24px;
+  padding: 24px;
+  background: var(--vela-card-bg);
+  border: 1px solid var(--vela-card-border);
+  border-radius: 12px;
+  text-align: center;
+}
+.vela-cta-title {
+  color: var(--vela-text-primary);
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 16px;
+}
+.vela-cta-button {
+  display: inline-block;
+  padding: 10px 24px;
+  background: linear-gradient(135deg, var(--vela-coral-dark), var(--vela-coral));
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: 12px;
+  text-decoration: none;
+  box-shadow: 0 0 28px rgba(255,107,107,0.4);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.vela-cta-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 36px rgba(255,107,107,0.55);
+}
+
+/* ─── Notice (revoked / flagged) ─────────────────────── */
+.vela-notice {
+  background: var(--vela-card-bg);
+  border: 1px solid var(--vela-card-border);
+  border-radius: 12px;
+  padding: 32px 24px;
+  text-align: center;
+  color: var(--vela-text-body);
+  font-size: 1rem;
+  margin: 48px 0;
+}
 </style>
 </head>
 <body>
-<header><a href="/">Vela</a></header>
-<main>
+<header class="vela-header">
+  <div class="vela-header-inner">
+    <a class="vela-logo-link" href="/" title="Vela">
+      <img src="/coral_logo.png" alt="Vela" width="60" height="60">
+    </a>
+    <span class="vela-tagline">{{ s.headerTagline }}</span>
+  </div>
+</header>
+<main class="vela-main">
 {% block content %}{% endblock %}
 </main>
-<footer>
-<p>{{ s.publicDisclaimer }}</p>
-<p><a href="/privacy">{{ s.privacyLink }}</a><a href="/terms">{{ s.termsLink }}</a></p>
+<footer class="vela-footer">
+  <p class="vela-footer-disclaimer">{{ s.publicDisclaimer }}</p>
+  <div class="vela-footer-links">
+    <a href="/privacy">{{ s.privacyLink }}</a> · <a href="/terms">{{ s.termsLink }}</a>
+  </div>
+  <p class="vela-footer-copy">© 2026 Vela · an-tho.com</p>
 </footer>
 </body>
 </html>

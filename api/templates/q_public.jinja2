@@ -18,32 +18,81 @@
 {% endblock %}
 
 {% block content %}
-<h1 class="query">{{ query_text }}</h1>
-<div class="answer">{{ answer_text }}</div>
+<h1 class="vela-query-title">{{ query_text }}</h1>
+
+<div class="vela-answer-stack">
+  {% for section in sections %}
+  <div class="vela-evidence-card" style="border-left-color: {{ section.border_color }};">
+    {% if section.title %}
+    <p class="vela-evidence-title">{% if section.marker %}{{ section.marker }} {% endif %}{{ section.title }}</p>
+    {% endif %}
+    <div class="vela-prose">{{ section.html }}</div>
+  </div>
+  {% endfor %}
+</div>
+
+<p class="vela-short-disclaimer">{{ s.publicShortDisclaimer }}</p>
 
 {% if citations %}
-<div class="citations">
-<h3>{{ s.citationsHeading }}</h3>
-<ol>
-{% for c in citations %}
-<li>
-{% if c.url %}<a href="{{ c.url }}" target="_blank" rel="noopener nofollow">{{ c.title or c.url }}</a>{% else %}{{ c.title or c.text or "Reference" }}{% endif %}
-</li>
-{% endfor %}
-</ol>
-</div>
+<section class="vela-citations">
+  <div class="vela-citations-header">
+    <span class="vela-citations-title">{{ s.citationsHeading }} ({{ citations | length }})</span>
+    {% if source_chips %}
+    <div class="vela-source-chips">
+      {% for chip in source_chips %}
+      <span class="vela-source-chip">{{ chip.label }}: {{ chip.count }}</span>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+  {% for c in citations %}
+  <div class="vela-citation-card">
+    <div class="vela-citation-header">
+      <span class="vela-citation-source" style="color: {{ c.source_color }};">[{{ loop.index }}] {{ c.source_label }}</span>
+      {% if c.cred_label %}
+      <span class="vela-credibility-pill" style="background: {{ c.cred_bg }}; color: {{ c.cred_color }};">{{ c.cred_label }}</span>
+      {% endif %}
+    </div>
+    {% if c.title %}<h4 class="vela-citation-title">{{ c.title }}</h4>{% endif %}
+    {% if c.authors or c.journal or c.year %}
+    <div class="vela-citation-meta">
+      {%- if c.authors %}{{ c.authors }}{% endif -%}
+      {%- if c.authors and (c.journal or c.year) %} • {% endif -%}
+      {%- if c.journal %}{{ c.journal }}{% endif -%}
+      {%- if c.year %} ({{ c.year }}){% endif -%}
+    </div>
+    {% endif %}
+    {% if c.cred_label %}
+    <div class="vela-citation-stars">
+      <span class="vela-stars-label">{{ s.credibilityLabel }}</span>
+      <span class="vela-stars">{{ c.stars_html }}</span>
+    </div>
+    {% endif %}
+    {% if c.abstract_truncated %}
+    <p class="vela-citation-abstract">{{ c.abstract_truncated }}</p>
+    {% endif %}
+    {% if c.url %}
+    <a class="vela-citation-link" href="{{ c.url }}" target="_blank" rel="noopener nofollow"
+       data-citation-source="{{ c.source_type }}" data-citation-id="{{ loop.index }}">
+      {{ s.viewSource }} ↗
+    </a>
+    {% endif %}
+  </div>
+  {% endfor %}
+</section>
 {% endif %}
 
-<div class="cta">
-<p class="cta-title">{{ s.publicCtaTitle }}</p>
-<a class="cta-button" href="/?from_share={{ share_id }}">{{ s.publicCtaButton }}</a>
+<div class="vela-cta">
+  <p class="vela-cta-title">{{ s.publicCtaTitle }}</p>
+  <a class="vela-cta-button" href="/?from_share={{ share_id }}">{{ s.publicCtaButton }}</a>
 </div>
+
 <span id="vela-share-render-ts" data-ts="{{ render_timestamp_ms }}" hidden></span>
 <script>
 // PRD § 4.5 PHASE B Step 3 — share_link_visited fires from the
-// public page (per PRD 修訂 7), forwarded through a backend
-// endpoint so that switching to a server-side PostHog client later
-// is a one-line change. Failures are silent — the page still works.
+// public page (per PRD 修訂 7), forwarded through a backend endpoint
+// so that switching to a server-side PostHog client later is a
+// one-line change. Failures are silent — the page still works.
 (function () {
   document.addEventListener('DOMContentLoaded', function () {
     try {
@@ -60,7 +109,6 @@
       var isFirstView = visited.indexOf(sid) === -1;
       if (isFirstView) {
         visited.push(sid);
-        // Cap to 500 entries to keep localStorage bounded.
         if (visited.length > 500) visited = visited.slice(-500);
         try { localStorage.setItem(KEY, JSON.stringify(visited)); } catch (e) {}
       }
@@ -72,8 +120,6 @@
         }
       } catch (e) { referrerDomain = null; }
 
-      // Cookie marker so /?from_share landing can estimate dwell time
-      // without a server round-trip — set on every visit.
       try {
         document.cookie = 'vela_share_render_ts=' + Date.now() + '; path=/; max-age=600; SameSite=Lax';
       } catch (e) {}
@@ -84,19 +130,47 @@
         is_first_view: isFirstView,
       });
       var url = '/api/share/track-visit';
-      // sendBeacon survives navigation away; fall back to fetch where unsupported.
       if (navigator.sendBeacon) {
         try {
           navigator.sendBeacon(url, new Blob([payload], { type: 'application/json' }));
-          return;
-        } catch (e) {}
+        } catch (e) {
+          fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: payload, keepalive: true })
+            .catch(function () {});
+        }
+      } else {
+        fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: payload, keepalive: true })
+          .catch(function () {});
       }
-      fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: payload,
-        keepalive: true,
-      }).catch(function () { /* swallow */ });
+
+      // PRD § 4.5 UX polish 1 — citation_clicked beacon. One per
+      // visitor click on a "View source" link. Server-side log only
+      // for now (no PostHog backend client wired); the contract is
+      // stable so swapping to PostHog later is a one-line change.
+      var links = document.querySelectorAll('.vela-citation-link');
+      for (var i = 0; i < links.length; i++) {
+        (function (link) {
+          link.addEventListener('click', function () {
+            try {
+              var citePayload = JSON.stringify({
+                share_id: sid,
+                source_type: link.dataset.citationSource || 'other',
+                citation_id: link.dataset.citationId || null,
+                url: link.href,
+              });
+              if (navigator.sendBeacon) {
+                navigator.sendBeacon('/api/share/track-citation-click', new Blob([citePayload], { type: 'application/json' }));
+              } else {
+                fetch('/api/share/track-citation-click', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: citePayload,
+                  keepalive: true,
+                }).catch(function () {});
+              }
+            } catch (e) { /* never block navigation */ }
+          });
+        })(links[i]);
+      }
     } catch (e) { /* swallow — never break the page */ }
   });
 })();

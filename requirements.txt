@@ -38,6 +38,10 @@ jinja2==3.1.4
 # Pillow generates the OG card PNG (api/services/og_image.py).
 # CJK glyphs require fonts-noto-cjk installed in Dockerfile stage 2.
 pillow==10.4.0
+# Markdown rendering for the public Jinja2 page — the LLM answer is
+# markdown and we render it server-side per parsed evidence section
+# (api/services/share_renderer.parse_research_sections).
+markdown==3.6
 
 # -- Utilities ----------------------------------------------------
 python-dotenv==1.0.1
