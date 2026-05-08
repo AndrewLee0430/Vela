@@ -15,7 +15,7 @@ export default function Privacy() {
 
             <div className="container mx-auto px-4 py-12 max-w-3xl">
                 <h1 className="text-3xl font-bold text-white mb-2">Privacy Policy</h1>
-                <p className="text-sm mb-8" style={{ color: "rgba(255,255,255,0.4)" }}>Last updated: March 2026</p>
+                <p className="text-sm mb-8" style={{ color: "rgba(255,255,255,0.4)" }}>Last updated: 2026-05-08</p>
 
                 <div className="space-y-8 text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.75)" }}>
 
@@ -64,12 +64,19 @@ export default function Privacy() {
                     </section>
 
                     <section>
-                        <h2 className="text-lg font-semibold text-white mb-3">7. Data Deletion</h2>
+                        <h2 className="text-lg font-semibold text-white mb-3">7. Public Sharing</h2>
+                        <p className="mb-3">When you choose to share a query and answer via Vela&rsquo;s Share feature, the shared content (the query text, the answer, and citations) becomes publicly accessible at a share URL. We do not consider publicly shared content to be personal information, but you remain responsible for ensuring no patient identifiers or personal health information is included before you share. Vela does not actively monitor or pre-screen all publicly shared content.</p>
+                        <p className="mb-3">You retain the ability to revoke any share at any time via Settings → Manage shares. After revocation, the public page will display a &ldquo;share has been revoked&rdquo; notice and we will stop serving the original content. However, third-party caches (search engines, social media platforms) may retain previews for some time after revocation; we cannot control these external caches.</p>
+                        <p>We track aggregate view counts on shared pages for service quality and abuse prevention purposes; we do not associate visitor identity with shared page views beyond what is required for rate limiting.</p>
+                    </section>
+
+                    <section>
+                        <h2 className="text-lg font-semibold text-white mb-3">8. Data Deletion</h2>
                         <p>To request deletion of your account and associated data, email us at <a href="mailto:support@an-tho.com" className="underline" style={{ color: "#ff8e6e" }}>support@an-tho.com</a>. We will process your request within 30 days.</p>
                     </section>
 
                     <section>
-                        <h2 className="text-lg font-semibold text-white mb-3">8. Contact</h2>
+                        <h2 className="text-lg font-semibold text-white mb-3">9. Contact</h2>
                         <p>For privacy-related inquiries: <a href="mailto:support@an-tho.com" className="underline" style={{ color: "#ff8e6e" }}>support@an-tho.com</a></p>
                     </section>
                 </div>

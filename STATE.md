@@ -12,7 +12,7 @@ None active. Awaiting next-task selection per Path B execution order (user-confi
 
 ## Next Up (Phase 0 remaining, Path B execution order)
 
-1. **§ 4.5 Share Answer 公開連結** — 🟡 IN PROGRESS. PHASE A + B + UX polish 1/2/2.5/3 + C shipped (2026-05-05 → 2026-05-08). Remaining: PHASE D (legal text in /terms + /privacy) + PHASE E (acceptance + LinkedIn / Twitter / Google validators).
+1. **§ 4.5 Share Answer 公開連結** — 🟡 IN PROGRESS. PHASE A + B + UX polish 1/2/2.5/3 + C + D shipped (2026-05-05 → 2026-05-08). Remaining: PHASE E only (acceptance + LinkedIn / Twitter / Google validators + production deploy checklist).
 2. **§ 4.6 SEO Explore Pages** — PRD v1.3 Phase 0 末段, shares §4.5 Public Query Page renderer (SSR + OG + JSON-LD pipeline).
 3. **§ 2.1 Model Provider Refactor** — 5-7 days, 9 files, largest remaining Phase 0 block.
 4. **§ 3.1 User Context schema** — blocks Phase 1A.
@@ -40,7 +40,8 @@ None known.
 
 ## Recently Shipped (last 7 days)
 
-- **2026-05-08** § 4.5 PHASE C — Settings 「我的分享」 tab — /settings page + tab nav + MyShares list/revoke + Navbar dropdown entry + 16-locale i18n (this commit)
+- **2026-05-08** § 4.5 PHASE D — Share clauses (en) added to /terms + /privacy + Navbar dropdown menu label "Settings" → "Manage shares" (16 locales) + PRD inline note + P2 TECH_DEBT for legal-page i18n retrofit (this commit)
+- **2026-05-08** § 4.5 PHASE C — Settings 「我的分享」 tab — /settings page + tab nav + MyShares list/revoke + Navbar dropdown entry + 16-locale i18n (6f7a154)
 - **2026-05-07** § 4.5 UX polish 3/3 — PRD inline notes + TECH_DEBT entries (768dc0b)
 - **2026-05-07** § 4.5 UX polish 2.5 — Navbar ShareButton tone-down + i18n 16-locale rollout (b378659)
 - **2026-05-07** § 4.5 UX polish 2/3 — ShareButton to Navbar via ShareContext + QR removal (ca571ce)

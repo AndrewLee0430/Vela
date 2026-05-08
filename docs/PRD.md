@@ -1338,6 +1338,7 @@ table: SharedQuery
   - **(2026-05-05 修訂)** 實作:擴充既有 `api/middleware/phi_handler.py` 的 `PHIDetector.detect(text, mode='guard'|'share')`。預設 `mode='guard'` 保留所有現有 caller 行為(Research / Verify / Explain / feedback / bug-report PHI gate);新模式 `mode='share'` 在現有 10 個 PHI 模式之上加 NHI(健保號)+ 姓名+年齡 combo patterns,locale-aware 套用範圍同上。**不**新建獨立 module,避免 PHI 偵測邏輯散落兩處。
 - Share 後使用者可在 Settings 新增頁籤「我的分享」(列表 + 撤回按鈕),撤回後 `is_public = false`,公開頁顯示「此分享已被撤回」
 - Settings 頁籤 v1.3 範圍只做「列表 + 撤回」,「我的分享」分析(view_count 等)推遲至後續版本
+- **(2026-05-08 修訂)** Navbar gear-dropdown menu item label 從原 spec 隱含的「設定」改為「管理分享」(en: "Manage shares")。理由:dropdown 內既有 「管理訂閱」「取消訂閱」 等 menu items 皆為動詞+受詞精準描述「點下去做什麼」,「設定」此抽象詞不符合該命名慣例,使用者需多一步認知才能定位。Settings page H1 與路由名稱維持「設定 / Settings」(預期未來 §4.3 Phase 1A user_context tab 將加入,屆時 menu item 拆為 「管理分享」+「個人偏好」 兩條)。
 
 **需求 6:防 abuse**
 

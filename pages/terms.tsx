@@ -15,7 +15,7 @@ export default function Terms() {
 
             <div className="container mx-auto px-4 py-12 max-w-3xl">
                 <h1 className="text-3xl font-bold text-white mb-2">Terms of Service</h1>
-                <p className="text-sm mb-8" style={{ color: "rgba(255,255,255,0.4)" }}>Last updated: March 2026</p>
+                <p className="text-sm mb-8" style={{ color: "rgba(255,255,255,0.4)" }}>Last updated: 2026-05-08</p>
 
                 <div className="space-y-8 text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.75)" }}>
 
@@ -60,12 +60,19 @@ export default function Terms() {
                     </section>
 
                     <section>
-                        <h2 className="text-lg font-semibold text-white mb-3">8. Governing Law</h2>
+                        <h2 className="text-lg font-semibold text-white mb-3">8. Public Sharing</h2>
+                        <p className="mb-3">When you create a public share link via the Share feature, you grant Vela a non-exclusive, worldwide, royalty-free license to display the shared query and its answer on the public page accessible via the share URL. Vela reserves the right to remove any shared content that violates these Terms or our content policies, at our sole discretion and without prior notice.</p>
+                        <p className="mb-3">You are responsible for ensuring that any query you choose to share publicly does not contain personal health information, patient identifiers, or other sensitive data. Once shared, the content becomes accessible to anyone with the share URL.</p>
+                        <p>You may revoke a share at any time via Settings → Manage shares. Revocation will cause the public page to display a &ldquo;share has been revoked&rdquo; notice. Cached previews on third-party platforms (e.g. social media link cards) may continue to display for some time after revocation.</p>
+                    </section>
+
+                    <section>
+                        <h2 className="text-lg font-semibold text-white mb-3">9. Governing Law</h2>
                         <p>These terms are governed by the laws of Taiwan (R.O.C.), without regard to conflict of law principles.</p>
                     </section>
 
                     <section>
-                        <h2 className="text-lg font-semibold text-white mb-3">9. Contact</h2>
+                        <h2 className="text-lg font-semibold text-white mb-3">10. Contact</h2>
                         <p>For questions about these terms, contact us at <a href="mailto:support@an-tho.com" className="underline" style={{ color: "#ff8e6e" }}>support@an-tho.com</a>.</p>
                     </section>
                 </div>

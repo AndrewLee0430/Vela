@@ -19,7 +19,8 @@ When new entries are added: keep one-liner format, no detail. For full context, 
 
 ## 2026-05-08
 
-- `[PRD §4.5]` PHASE C — Settings 「我的分享」 tab — new `pages/settings.tsx` + tab nav scaffolding (extensible) + `components/MySharesTab.tsx` (list / copy / revoke with optimistic UI / PostHog events) + Navbar gear-dropdown Settings entry + 7 new i18n keys × 16 locales. Pure frontend; consumes existing PHASE B endpoints. Intl.RelativeTimeFormat for time-ago (no custom i18n).
+- `[PRD §4.5]` PHASE D — Share clauses (en-only) added to /terms § 8 Public Sharing + /privacy § 7 Public Sharing per 需求 9 spec. Navbar gear-dropdown menu item label "Settings / 設定" → "Manage shares / 管理分享" (16-locale rename in `utils/i18n-share.ts`: `settingsNavLink` → `navbarManageSharesMenuItem`). PRD §4.5 (2026-05-08 修訂) inline note documenting the menu label decision. New P2 TECH_DEBT entry: /terms + /privacy en-only — 16-locale i18n retrofit pending before non-en GTM expansion. "Last updated" bumped to 2026-05-08 in both legal pages.
+- `[PRD §4.5]` PHASE C — Settings 「我的分享」 tab — new `pages/settings.tsx` + tab nav scaffolding (extensible) + `components/MySharesTab.tsx` (list / copy / revoke with optimistic UI / PostHog events) + Navbar gear-dropdown Settings entry + 7 new i18n keys × 16 locales. Pure frontend; consumes existing PHASE B endpoints. Intl.RelativeTimeFormat for time-ago (no custom i18n). (6f7a154)
 
 ---
 

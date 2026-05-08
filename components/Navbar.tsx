@@ -301,7 +301,7 @@ export default function Navbar({ activePage }: NavbarProps) {
                                                 className="block w-full text-left px-4 py-2 text-sm transition-colors hover:bg-white/5"
                                                 style={{ color: 'rgba(255,255,255,0.7)' }}
                                             >
-                                                {share.settingsNavLink}
+                                                {share.navbarManageSharesMenuItem}
                                             </Link>
                                             <div className="border-b" style={{ borderColor: 'rgba(255,255,255,0.07)' }} />
 

@@ -202,6 +202,13 @@ When entries are resolved, move to ARCHIVE.md (note discovery + resolution dates
   - **Priority**: P2 — gates non-en/zh-TW/ja Share traffic; not blocking en/zh-TW soft launch.
   - **Discovered**: 2026-05-06 during §4.5 UX polish 2.5 i18n rollout.
 
+- **[P2]** /terms + /privacy pages are en-only — i18n retrofit pending
+  - **現況**: pages/terms.tsx + pages/privacy.tsx are hardcoded English JSX with no i18n infrastructure (no useLang(), no per-locale dict, no markdown content). Both predate the §4.5 share i18n 16-locale rollout (commit b378659). 17 sections total (9 Terms + 8 Privacy) are en-only despite the rest of the product being 16-locale.
+  - **Risk**: legal compliance — non-en/zh-TW users see the entire ToS + Privacy Policy in English regardless of their UI locale, which weakens consent validity in jurisdictions requiring local-language disclosure (notably zh-TW, ja, ko per Vela's Tier 1 GTM target). Discovered 2026-05-08 during §4.5 PHASE D when Share clauses were added en-only to match existing pattern.
+  - **Resolution**: dedicated commit to refactor /terms + /privacy to 16-locale i18n. Approximately 238 legal-weighted strings (17 sections × 14 added locales). Translation should be reviewed by qualified legal translator per locale, NOT machine-translation baseline (this is a hard commitment to users, unlike share i18n strings which are UI labels). Native-speaker review process should align with existing P2 entry "Native-speaker review pending for share i18n legal-weighted strings".
+  - **Priority**: P2 — gates non-en production traffic at scale (Tier 1 GTM expansion to JP/KR/ID/VN/PH would require this). Not blocking soft launch in en + zh-TW markets if both legal pages have at least zh-TW translation by then. Consider doing zh-TW first as a Phase 1A gate (since zh-TW is Vela's home market), then ja + ko before Phase 1B Tier 1 expansion.
+  - **Discovered**: 2026-05-08 during §4.5 PHASE D recon (commit 6f7a154 follow-up).
+
 - **[P3]** scripts/cost_report_7d.py untracked file
   - **現況**: `git status` consistently shows `scripts/cost_report_7d.py` as untracked across multiple §4.5 commits (PHASE B onward). Out of §4.5 scope; not committed nor gitignored.
   - **Risk**: minor — untracked file accumulates noise in `git status`. Could be ops tooling, dead exploration, or pending feature.
