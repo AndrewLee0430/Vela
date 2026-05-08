@@ -1257,7 +1257,7 @@ Phase 1A 讓使用者感覺「這個產品為我設計」,Phase 1B 真正做出�
 | pharmacist Free → Pro 轉換率 | ≥ 其他角色 2 倍 | 達成即 PMF 訊號 |
 | 處方分析後 thumbs_up 率 | > 70% | 低於此代表輸出品質需提升 |
 
-**4.5 Share Answer 公開連結(v1.3 新增)** 🟡 IN PROGRESS (PHASE A + B SHIPPED 2026-05-05/06; PHASE C/D/E remain)
+**4.5 Share Answer 公開連結(v1.3 新增)** 🟡 IN PROGRESS (PHASE A + B + UX polish 1-3 + C SHIPPED 2026-05-05 → 2026-05-08; PHASE D 法務文字 + PHASE E acceptance + 驗證器 remain)
 
 讓使用者把自己得到的查詢結果產生一組公開可訪問 URL,分享給同行或社群。對齊 GTM_V1 § 5.4 L3 word-of-mouth 機制,把「使用者得到答案」這個原本封閉於登入後的事件轉成可被 forward 的公開資產。
 

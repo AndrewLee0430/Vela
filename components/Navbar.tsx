@@ -12,6 +12,7 @@ import { useShareContext } from '../contexts/ShareContext';
 import { useLang } from '../utils/LangContext';
 import { getUI } from '../utils/i18n-ui';
 import { getExtra } from '../utils/i18n-extra';
+import { getShare } from '../utils/i18n-share';
 
 const BG = 'linear-gradient(135deg, #0a1628 0%, #0f2040 45%, #1a1035 75%, #0d1a2e 100%)';
 
@@ -22,7 +23,8 @@ const LINK_COLORS: Record<string, string> = {
     history:  '#ffffff',
 };
 
-type ActivePage = 'research' | 'verify' | 'explain' | 'history';
+type ActivePage = 'research' | 'verify' | 'explain' | 'history' | 'settings';
+type NavLinkPage = 'research' | 'verify' | 'explain' | 'history';
 
 interface NavbarProps {
     activePage?: ActivePage;
@@ -58,7 +60,8 @@ export default function Navbar({ activePage }: NavbarProps) {
     const { lang } = useLang();
     const ui = getUI(lang);
     const extra = getExtra(lang);
-    const navLabels: Record<ActivePage, string> = {
+    const share = getShare(lang);
+    const navLabels: Record<NavLinkPage, string> = {
         research: extra.navResearch,
         verify: extra.navVerify,
         explain: extra.navExplain,
@@ -290,6 +293,17 @@ export default function Navbar({ activePage }: NavbarProps) {
                                                     />
                                                 </div>
                                             </div>
+
+                                            {/* Settings link — opens /settings (PRD §4.5 PHASE C) */}
+                                            <Link
+                                                href="/settings"
+                                                onClick={() => setSettingsOpen(false)}
+                                                className="block w-full text-left px-4 py-2 text-sm transition-colors hover:bg-white/5"
+                                                style={{ color: 'rgba(255,255,255,0.7)' }}
+                                            >
+                                                {share.settingsNavLink}
+                                            </Link>
+                                            <div className="border-b" style={{ borderColor: 'rgba(255,255,255,0.07)' }} />
 
                                             {/* Actions */}
                                             {plan === 'pro' ? (

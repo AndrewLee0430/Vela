@@ -1,6 +1,6 @@
 # STATE.md — Vela Current Development Focus
 
-**Last updated**: 2026-05-05 (post advisor roadmap integration cleanup + ADR 003+004)
+**Last updated**: 2026-05-08 (post §4.5 PHASE C ship)
 
 ## Phase
 
@@ -12,7 +12,7 @@ None active. Awaiting next-task selection per Path B execution order (user-confi
 
 ## Next Up (Phase 0 remaining, Path B execution order)
 
-1. **§ 4.5 Share Answer 公開連結** — PRD v1.3 Phase 0 末段. User-triggered anonymous public URL for a single query result. Aligns GTM_V1 § 5.4 L3 word-of-mouth.
+1. **§ 4.5 Share Answer 公開連結** — 🟡 IN PROGRESS. PHASE A + B + UX polish 1/2/2.5/3 + C shipped (2026-05-05 → 2026-05-08). Remaining: PHASE D (legal text in /terms + /privacy) + PHASE E (acceptance + LinkedIn / Twitter / Google validators).
 2. **§ 4.6 SEO Explore Pages** — PRD v1.3 Phase 0 末段, shares §4.5 Public Query Page renderer (SSR + OG + JSON-LD pipeline).
 3. **§ 2.1 Model Provider Refactor** — 5-7 days, 9 files, largest remaining Phase 0 block.
 4. **§ 3.1 User Context schema** — blocks Phase 1A.
@@ -22,11 +22,11 @@ None active. Awaiting next-task selection per Path B execution order (user-confi
 
 Week 4-8 work queue (post Phase 0 Retrospective):
 
-- **Week 4**: Verify 強制英文 (ADR 003) — 1.5-2 days
+- **Week 4**: Verify 強制英文 (ADR 003) + system prompt polish — 2-2.5 days
 - **Week 4-5**: DailyMed API — 2-3 days
 - **Week 5-6**: 在地差異提示 Tier 1 6國 — 6-7 days
 - **Week 7**: Anonymous Trial Flow polish — 2 days
-- **Week 7-8**: Phase 1B integration test + polish — 2-3 days
+- **Week 7-8**: Phase 1B integration test + polish + citation retrieval ranking evaluation — 2-3 days
 
 Detail: see BACKLOG.md Phase 1B section.
 
@@ -40,7 +40,13 @@ None known.
 
 ## Recently Shipped (last 7 days)
 
-- **2026-05-06** § 4.5 PHASE B — Share API (create / revoke / list / track-visit) + PHIDetector mode='share' + ShareButton/ShareModal + 4 mount surfaces + /?from_share handler (this commit)
+- **2026-05-08** § 4.5 PHASE C — Settings 「我的分享」 tab — /settings page + tab nav + MyShares list/revoke + Navbar dropdown entry + 16-locale i18n (this commit)
+- **2026-05-07** § 4.5 UX polish 3/3 — PRD inline notes + TECH_DEBT entries (768dc0b)
+- **2026-05-07** § 4.5 UX polish 2.5 — Navbar ShareButton tone-down + i18n 16-locale rollout (b378659)
+- **2026-05-07** § 4.5 UX polish 2/3 — ShareButton to Navbar via ShareContext + QR removal (ca571ce)
+- **2026-05-07** § 4.5 UX polish 1/3 — public page visual alignment to main site (a5da1c5)
+- **2026-05-07** [bug] Verify short disclaimer i18n alignment (30bd0b5)
+- **2026-05-06** § 4.5 PHASE B — Share API + PHIDetector mode='share' + ShareButton/ShareModal + 4 mount surfaces + /?from_share handler (f04068d)
 - **2026-05-05** Advisor roadmap integration cleanup — v0.4 archive removed + reference scrub across ADRs/BACKLOG/PRD/STATE/FEATURE_AUDIT
 - **2026-05-04** Advisor roadmap integration — ADR 003 drug name resolution + ADR 004 prescription parser deferral + multi-file sync (commits 394545e, 96eb13b, 3e2f384, 7eda124)
 - **2026-04-30** Doc reorganization Stage 2 — drift sync (3fdeddc), architecture extract (59002d1), structural reorg (5ced91a), PRD markers (aaa95de), ADR 002 (0305817)

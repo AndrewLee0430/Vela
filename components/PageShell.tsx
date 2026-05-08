@@ -5,7 +5,7 @@ import MobileNav from './MobileNav';
 import BugReportButton from './BugReportButton';
 import { ShareProvider } from '../contexts/ShareContext';
 
-type ActivePage = 'research' | 'verify' | 'explain' | 'history';
+type ActivePage = 'research' | 'verify' | 'explain' | 'history' | 'settings';
 
 interface PageShellProps {
     activePage: ActivePage;

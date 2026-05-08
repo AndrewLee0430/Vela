@@ -17,6 +17,25 @@ When new entries are added: keep one-liner format, no detail. For full context, 
 
 ---
 
+## 2026-05-08
+
+- `[PRD §4.5]` PHASE C — Settings 「我的分享」 tab — new `pages/settings.tsx` + tab nav scaffolding (extensible) + `components/MySharesTab.tsx` (list / copy / revoke with optimistic UI / PostHog events) + Navbar gear-dropdown Settings entry + 7 new i18n keys × 16 locales. Pure frontend; consumes existing PHASE B endpoints. Intl.RelativeTimeFormat for time-ago (no custom i18n).
+
+---
+
+## 2026-05-07
+
+- `[PRD §4.5]` UX polish 3/3 — PRD §4.5 inline (2026-05-06 修訂) notes + TECH_DEBT entries (Arial body font / native-speaker review / cost_report_7d / dotenv loader); priority-tier ladder extended with P3 (768dc0b)
+- `[PRD §4.5]` UX polish 2.5 — Navbar ShareButton color tone-down (coral → neutral) + i18n full 16-locale rollout (b378659)
+- `[PRD §4.5]` UX polish 2/3 — ShareButton to Navbar via new ShareContext + ShareModal QR removal + qrcode.react dep dropped + toast color brand-aligned (ca571ce)
+- `[PRD §4.5]` UX polish 1/3 — public page visual alignment to main site (dark gradient, evidence cards, hand-rolled CitationPanel HTML, coral CTA, dual disclaimer); parseResearchSections() Python port; markdown==3.6 dep added (a5da1c5)
+- `[bug]` Verify short disclaimer missing i18n — backend `get_verify_disclaimer()` helper + 16-locale dict + handler wires localized string into all 3 VerifyResponse return points (30bd0b5)
+- `[PRD §4.5]` Dev quality-of-life — Next.js rewrites for /q/* and /api/share/* (e042efc)
+- `[docs]` BACKLOG WHO API integration entry → Phase 1C (4fe0d7b)
+- `[docs]` PRD §2.10 source strategy + BACKLOG dogfooding/source-weight sub-tasks (92dbe9b)
+
+---
+
 ## 2026-05-06
 
 - `[PRD §4.5]` PHASE B Share API + Modal + sensitive detection + history button — 3 endpoints (create/revoke/list) + track-visit, PHIDetector mode='share' (NHI + name+age combos for zh-TW/en/ja), ShareButton/ShareModal mounted on research/verify/explain/history, /?from_share handler in pages/index.tsx, qrcode.react dep added, SHARE_CREATED_BY_SALT env var introduced

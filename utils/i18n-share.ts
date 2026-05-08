@@ -43,6 +43,14 @@ export interface ShareTranslations {
   settingsRevokeButton: string;    // share.settings.revoke_button
   settingsRevokeConfirm: string;   // confirm-revoke prompt
   settingsEmpty: string;           // empty state when no shares
+  // PHASE C: /settings page chrome + MyShares tab states
+  settingsPageTitle: string;       // /settings page <h1>
+  settingsNavLink: string;         // Settings link inside Navbar gear dropdown
+  mySharesLoading: string;         // list-fetch loading state
+  mySharesError: string;           // generic load failure
+  mySharesRetry: string;           // retry button on load error
+  mySharesRevoking: string;        // revoke button label while POST in flight
+  mySharesRevokedBadge: string;    // badge on rows where is_public=false
 }
 
 const en: ShareTranslations = {
@@ -81,6 +89,13 @@ const en: ShareTranslations = {
   settingsRevokeButton: 'Revoke',
   settingsRevokeConfirm: 'Revoke this public link? New visitors will see a revoked notice, but preview cards already cached by social platforms or other parties may continue to display for some time.',
   settingsEmpty: "You haven't shared anything yet.",
+  settingsPageTitle: 'Settings',
+  settingsNavLink: 'Settings',
+  mySharesLoading: 'Loading…',
+  mySharesError: 'Could not load your shares. Please try again.',
+  mySharesRetry: 'Retry',
+  mySharesRevoking: 'Revoking…',
+  mySharesRevokedBadge: 'Revoked',
 };
 
 const zhTW: ShareTranslations = {
@@ -114,6 +129,13 @@ const zhTW: ShareTranslations = {
   settingsRevokeButton: '撤回',
   settingsRevokeConfirm: '要撤回此公開連結嗎?新訪客會看到「已撤回」訊息,但已被社群平台或他人快取的預覽卡片可能繼續顯示一段時間。',
   settingsEmpty: '你還沒有任何公開分享。',
+  settingsPageTitle: '設定',
+  settingsNavLink: '設定',
+  mySharesLoading: '載入中…',
+  mySharesError: '無法載入你的分享,請稍後再試。',
+  mySharesRetry: '重試',
+  mySharesRevoking: '撤回中…',
+  mySharesRevokedBadge: '已撤回',
 };
 
 const zhCN: ShareTranslations = {
@@ -147,6 +169,13 @@ const zhCN: ShareTranslations = {
   settingsRevokeButton: '撤回',
   settingsRevokeConfirm: '要撤回此公开链接吗?新访客会看到「已撤回」提示,但已被社交平台或他人缓存的预览卡片可能继续显示一段时间。',
   settingsEmpty: '你还没有任何公开分享。',
+  settingsPageTitle: '设置',
+  settingsNavLink: '设置',
+  mySharesLoading: '加载中…',
+  mySharesError: '无法加载你的分享,请稍后再试。',
+  mySharesRetry: '重试',
+  mySharesRevoking: '撤回中…',
+  mySharesRevokedBadge: '已撤回',
 };
 
 const ja: ShareTranslations = {
@@ -180,6 +209,13 @@ const ja: ShareTranslations = {
   settingsRevokeButton: '取り消す',
   settingsRevokeConfirm: 'この公開リンクを取り消しますか?新しい訪問者には取り消しの通知が表示されますが、ソーシャルプラットフォームや第三者によって既にキャッシュされたプレビューカードはしばらく表示され続ける場合があります。',
   settingsEmpty: 'まだ何も共有していません。',
+  settingsPageTitle: '設定',
+  settingsNavLink: '設定',
+  mySharesLoading: '読み込み中…',
+  mySharesError: '共有の読み込みに失敗しました。もう一度お試しください。',
+  mySharesRetry: '再試行',
+  mySharesRevoking: '取り消し中…',
+  mySharesRevokedBadge: '取り消し済み',
 };
 
 const ko: ShareTranslations = {
@@ -213,6 +249,13 @@ const ko: ShareTranslations = {
   settingsRevokeButton: '취소',
   settingsRevokeConfirm: '이 공개 링크를 취소하시겠습니까? 새 방문자에게는 취소 알림이 표시되지만, 소셜 플랫폼이나 제3자가 이미 캐시한 미리보기 카드는 한동안 계속 표시될 수 있습니다.',
   settingsEmpty: '아직 공유한 내용이 없습니다.',
+  settingsPageTitle: '설정',
+  settingsNavLink: '설정',
+  mySharesLoading: '로딩 중…',
+  mySharesError: '공유를 불러올 수 없습니다. 다시 시도해 주세요.',
+  mySharesRetry: '다시 시도',
+  mySharesRevoking: '취소 중…',
+  mySharesRevokedBadge: '취소됨',
 };
 
 const es: ShareTranslations = {
@@ -246,6 +289,13 @@ const es: ShareTranslations = {
   settingsRevokeButton: 'Revocar',
   settingsRevokeConfirm: '¿Revocar este enlace público? Los nuevos visitantes verán un aviso de revocación, pero las tarjetas de vista previa ya almacenadas en caché por plataformas sociales u otros pueden seguir mostrándose durante un tiempo.',
   settingsEmpty: 'Aún no has compartido nada.',
+  settingsPageTitle: 'Ajustes',
+  settingsNavLink: 'Ajustes',
+  mySharesLoading: 'Cargando…',
+  mySharesError: 'No se pudieron cargar tus enlaces compartidos. Inténtalo de nuevo.',
+  mySharesRetry: 'Reintentar',
+  mySharesRevoking: 'Revocando…',
+  mySharesRevokedBadge: 'Revocado',
 };
 
 const fr: ShareTranslations = {
@@ -279,6 +329,13 @@ const fr: ShareTranslations = {
   settingsRevokeButton: 'Révoquer',
   settingsRevokeConfirm: 'Révoquer ce lien public ? Les nouveaux visiteurs verront un avis de révocation, mais les cartes de prévisualisation déjà mises en cache par les plateformes sociales ou des tiers peuvent continuer à s\'afficher pendant un certain temps.',
   settingsEmpty: "Vous n'avez encore rien partagé.",
+  settingsPageTitle: 'Paramètres',
+  settingsNavLink: 'Paramètres',
+  mySharesLoading: 'Chargement…',
+  mySharesError: 'Impossible de charger vos partages. Veuillez réessayer.',
+  mySharesRetry: 'Réessayer',
+  mySharesRevoking: 'Révocation…',
+  mySharesRevokedBadge: 'Révoqué',
 };
 
 const de: ShareTranslations = {
@@ -312,6 +369,13 @@ const de: ShareTranslations = {
   settingsRevokeButton: 'Widerrufen',
   settingsRevokeConfirm: 'Diesen öffentlichen Link widerrufen? Neue Besucher sehen einen Widerrufshinweis, aber Vorschaukarten, die bereits von sozialen Plattformen oder Dritten zwischengespeichert wurden, können noch eine Weile angezeigt werden.',
   settingsEmpty: 'Sie haben noch nichts geteilt.',
+  settingsPageTitle: 'Einstellungen',
+  settingsNavLink: 'Einstellungen',
+  mySharesLoading: 'Wird geladen…',
+  mySharesError: 'Ihre Freigaben konnten nicht geladen werden. Bitte versuchen Sie es erneut.',
+  mySharesRetry: 'Erneut versuchen',
+  mySharesRevoking: 'Wird widerrufen…',
+  mySharesRevokedBadge: 'Widerrufen',
 };
 
 const it: ShareTranslations = {
@@ -345,6 +409,13 @@ const it: ShareTranslations = {
   settingsRevokeButton: 'Revoca',
   settingsRevokeConfirm: 'Revocare questo link pubblico? I nuovi visitatori vedranno un avviso di revoca, ma le anteprime già memorizzate nella cache da piattaforme social o altri potrebbero continuare a essere visualizzate per un certo periodo.',
   settingsEmpty: 'Non hai ancora condiviso nulla.',
+  settingsPageTitle: 'Impostazioni',
+  settingsNavLink: 'Impostazioni',
+  mySharesLoading: 'Caricamento…',
+  mySharesError: 'Impossibile caricare le tue condivisioni. Riprova.',
+  mySharesRetry: 'Riprova',
+  mySharesRevoking: 'Revoca in corso…',
+  mySharesRevokedBadge: 'Revocato',
 };
 
 const pt: ShareTranslations = {
@@ -378,6 +449,13 @@ const pt: ShareTranslations = {
   settingsRevokeButton: 'Revogar',
   settingsRevokeConfirm: 'Revogar este link público? Novos visitantes verão um aviso de revogação, mas os cartões de pré-visualização já armazenados em cache por plataformas sociais ou terceiros podem continuar a ser exibidos por algum tempo.',
   settingsEmpty: 'Você ainda não compartilhou nada.',
+  settingsPageTitle: 'Configurações',
+  settingsNavLink: 'Configurações',
+  mySharesLoading: 'Carregando…',
+  mySharesError: 'Não foi possível carregar seus compartilhamentos. Tente novamente.',
+  mySharesRetry: 'Tentar novamente',
+  mySharesRevoking: 'Revogando…',
+  mySharesRevokedBadge: 'Revogado',
 };
 
 const th: ShareTranslations = {
@@ -411,6 +489,13 @@ const th: ShareTranslations = {
   settingsRevokeButton: 'ยกเลิก',
   settingsRevokeConfirm: 'ยกเลิกลิงก์สาธารณะนี้หรือไม่? ผู้เยี่ยมชมรายใหม่จะเห็นประกาศการยกเลิก แต่การ์ดดูตัวอย่างที่แพลตฟอร์มโซเชียลหรือบุคคลอื่นแคชไว้แล้วอาจยังคงแสดงต่อไปอีกระยะหนึ่ง',
   settingsEmpty: 'คุณยังไม่ได้แชร์อะไรเลย',
+  settingsPageTitle: 'การตั้งค่า',
+  settingsNavLink: 'การตั้งค่า',
+  mySharesLoading: 'กำลังโหลด…',
+  mySharesError: 'ไม่สามารถโหลดรายการแชร์ของคุณได้ กรุณาลองอีกครั้ง',
+  mySharesRetry: 'ลองอีกครั้ง',
+  mySharesRevoking: 'กำลังยกเลิก…',
+  mySharesRevokedBadge: 'ยกเลิกแล้ว',
 };
 
 const ar: ShareTranslations = {
@@ -444,6 +529,13 @@ const ar: ShareTranslations = {
   settingsRevokeButton: 'إلغاء',
   settingsRevokeConfirm: 'إلغاء هذا الرابط العلني؟ سيرى الزوار الجدد إشعار الإلغاء، لكن بطاقات المعاينة التي تم تخزينها مسبقاً بواسطة منصات التواصل الاجتماعي أو أطراف أخرى قد تستمر في الظهور لبعض الوقت.',
   settingsEmpty: 'لم تشارك أي شيء بعد.',
+  settingsPageTitle: 'الإعدادات',
+  settingsNavLink: 'الإعدادات',
+  mySharesLoading: 'جارٍ التحميل…',
+  mySharesError: 'تعذر تحميل المشاركات. يرجى المحاولة مرة أخرى.',
+  mySharesRetry: 'إعادة المحاولة',
+  mySharesRevoking: 'جارٍ الإلغاء…',
+  mySharesRevokedBadge: 'تم الإلغاء',
 };
 
 const hi: ShareTranslations = {
@@ -477,6 +569,13 @@ const hi: ShareTranslations = {
   settingsRevokeButton: 'रद्द करें',
   settingsRevokeConfirm: 'इस सार्वजनिक लिंक को रद्द करें? नए विज़िटर एक रद्दीकरण सूचना देखेंगे, लेकिन सोशल प्लेटफ़ॉर्म या अन्य पक्षों द्वारा पहले से कैश किए गए पूर्वावलोकन कार्ड कुछ समय तक प्रदर्शित होते रह सकते हैं।',
   settingsEmpty: 'आपने अभी तक कुछ साझा नहीं किया है।',
+  settingsPageTitle: 'सेटिंग्स',
+  settingsNavLink: 'सेटिंग्स',
+  mySharesLoading: 'लोड हो रहा है…',
+  mySharesError: 'आपके साझाकरण लोड नहीं हो सके। कृपया पुनः प्रयास करें।',
+  mySharesRetry: 'पुनः प्रयास करें',
+  mySharesRevoking: 'रद्द कर रहे हैं…',
+  mySharesRevokedBadge: 'रद्द किया गया',
 };
 
 const bn: ShareTranslations = {
@@ -510,6 +609,13 @@ const bn: ShareTranslations = {
   settingsRevokeButton: 'প্রত্যাহার করুন',
   settingsRevokeConfirm: 'এই সর্বজনীন লিঙ্কটি প্রত্যাহার করবেন? নতুন দর্শকরা একটি প্রত্যাহার বিজ্ঞপ্তি দেখতে পাবেন, তবে সামাজিক প্ল্যাটফর্ম বা অন্যান্য পক্ষ দ্বারা ইতিমধ্যে ক্যাশ করা পূর্বরূপ কার্ডগুলি কিছু সময়ের জন্য প্রদর্শিত হতে পারে।',
   settingsEmpty: 'আপনি এখনও কিছু শেয়ার করেননি।',
+  settingsPageTitle: 'সেটিংস',
+  settingsNavLink: 'সেটিংস',
+  mySharesLoading: 'লোড হচ্ছে…',
+  mySharesError: 'আপনার শেয়ার লোড করা যায়নি। আবার চেষ্টা করুন।',
+  mySharesRetry: 'আবার চেষ্টা করুন',
+  mySharesRevoking: 'প্রত্যাহার করা হচ্ছে…',
+  mySharesRevokedBadge: 'প্রত্যাহার করা হয়েছে',
 };
 
 const he: ShareTranslations = {
@@ -543,6 +649,13 @@ const he: ShareTranslations = {
   settingsRevokeButton: 'בטל',
   settingsRevokeConfirm: 'לבטל את הקישור הציבורי הזה? מבקרים חדשים יראו הודעת ביטול, אך כרטיסי תצוגה מקדימה שכבר נשמרו במטמון על ידי פלטפורמות חברתיות או צדדים אחרים עשויים להמשיך להופיע לזמן מה.',
   settingsEmpty: 'עדיין לא שיתפת דבר.',
+  settingsPageTitle: 'הגדרות',
+  settingsNavLink: 'הגדרות',
+  mySharesLoading: 'טוען…',
+  mySharesError: 'לא ניתן לטעון את השיתופים. אנא נסה שוב.',
+  mySharesRetry: 'נסה שוב',
+  mySharesRevoking: 'מבטל…',
+  mySharesRevokedBadge: 'בוטל',
 };
 
 const vi: ShareTranslations = {
@@ -576,6 +689,13 @@ const vi: ShareTranslations = {
   settingsRevokeButton: 'Thu hồi',
   settingsRevokeConfirm: 'Thu hồi liên kết công khai này? Khách truy cập mới sẽ thấy thông báo thu hồi, nhưng các thẻ xem trước đã được lưu trữ trong bộ nhớ đệm bởi các nền tảng xã hội hoặc các bên khác có thể tiếp tục hiển thị trong một thời gian.',
   settingsEmpty: 'Bạn chưa chia sẻ bất kỳ điều gì.',
+  settingsPageTitle: 'Cài đặt',
+  settingsNavLink: 'Cài đặt',
+  mySharesLoading: 'Đang tải…',
+  mySharesError: 'Không thể tải các chia sẻ. Vui lòng thử lại.',
+  mySharesRetry: 'Thử lại',
+  mySharesRevoking: 'Đang thu hồi…',
+  mySharesRevokedBadge: 'Đã thu hồi',
 };
 
 const TRANSLATIONS: Record<LangCode, ShareTranslations> = {

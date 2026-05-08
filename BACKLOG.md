@@ -616,9 +616,12 @@ Execution sequence:
               JSON-LD pipeline reused by § 4.6) — SHIPPED 2026-05-05 (ef0d375)
       Phase B: Share Modal + privacy gate + sensitive detection +
               ShareButton mounts on 4 surfaces — SHIPPED 2026-05-06
-      Phase C: Settings 「我的分享」tab (list + revoke only; analytics
-              like view_count deferred per PRD § 4.5 需求 5) — consumes
-              the existing /api/share/list + /revoke endpoints
+              (f04068d) + UX polish 1/3 (a5da1c5) + 2/3 (ca571ce) +
+              2.5 (b378659) + 3/3 docs (768dc0b)
+      Phase C: Settings 「我的分享」 tab — SHIPPED 2026-05-08 (this commit).
+              List + copy + revoke (with confirm + optimistic UI),
+              Navbar gear-dropdown entry, 16-locale i18n. view_count
+              column intentionally deferred per PRD § 4.5 需求 5.
       Phase D: Legal ToS / Privacy Policy revision (parallel — does
               not block engineering ship)
       Phase E: i18n 16 languages + integration test (LinkedIn Post
