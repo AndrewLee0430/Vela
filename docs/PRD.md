@@ -1257,7 +1257,9 @@ Phase 1A 讓使用者感覺「這個產品為我設計」,Phase 1B 真正做出�
 | pharmacist Free → Pro 轉換率 | ≥ 其他角色 2 倍 | 達成即 PMF 訊號 |
 | 處方分析後 thumbs_up 率 | > 70% | 低於此代表輸出品質需提升 |
 
-**4.5 Share Answer 公開連結(v1.3 新增)** 🟡 IN PROGRESS (PHASE A + B + UX polish 1-3 + C SHIPPED 2026-05-05 → 2026-05-08; PHASE D 法務文字 + PHASE E acceptance + 驗證器 remain)
+**4.5 Share Answer 公開連結(v1.3 新增)** 🟡 IMPLEMENTATION COMPLETE — DEPLOY PENDING (2026-05-08)
+
+**(2026-05-08 status)** PHASE A-D shipped (commits ef0d375 / f04068d / e042efc / 30bd0b5 / a5da1c5 / ca571ce / b378659 / 768dc0b / 4fe0d7b / 92dbe9b / 6f7a154 / ad506db plus UX polish run). PHASE E (acceptance criteria validation via LinkedIn Post Inspector / Twitter Card Validator / Google Rich Results Test, real anon 403 verification, OG image production render check, PostHog 6-event verification) deferred — blocked on production deploy. See **Production Deploy Checklist (PHASE E.2)** below.
 
 讓使用者把自己得到的查詢結果產生一組公開可訪問 URL,分享給同行或社群。對齊 GTM_V1 § 5.4 L3 word-of-mouth 機制,把「使用者得到答案」這個原本封閉於登入後的事件轉成可被 forward 的公開資產。
 
@@ -1385,6 +1387,44 @@ table: SharedQuery
 - ToS 新增條款:「分享公開連結即代表使用者授權 Vela 在公開頁面顯示該 query 與答案。Vela 保留下架不當內容權利。」
 - Privacy Policy 新增段落:「公開分享的 query 不視為個人資訊,但仍受『不含個資』規範約束。Vela 不主動審核所有公開內容。」
 - 此兩處文字需法律 review,review 完成才能上線。建議 review 與工程平行,不阻塞工程進度。
+
+**Production Deploy Checklist (PHASE E.2)**
+
+Execute IMMEDIATELY AFTER Phase 0 末段 production deploy. Tasks:
+
+**Pre-deploy secret setup**
+
+- [ ] Generate `SHARE_CREATED_BY_SALT` via `python -c "import secrets; print(secrets.token_urlsafe(32))"` — store value securely
+- [ ] `fly secrets set SHARE_CREATED_BY_SALT=<value>` on production app
+- [ ] Verify `SENTRY_DSN` production set (existing requirement, paranoid double-check pre-deploy)
+
+**Post-deploy verification**
+
+- [ ] `curl -X POST https://vela.an-tho.com/api/share/create -H "Content-Type: application/json" -d '{...}'` WITHOUT Clerk JWT — expect HTTP 403 (real anon gating active per ADR scope, NOT just localhost dev rewrites)
+- [ ] Sign in to production, create one real share via /research → /verify → /explain (one each, 3 total). Note the 3 share URLs.
+- [ ] Visit each share URL in incognito window — verify Public Query Page renders correctly with: dark gradient body, evidence cards (research only), citation panel, coral CTA, footer disclaimer in correct locale, OG meta tags in HTML source.
+- [ ] LinkedIn Post Inspector (https://linkedin.com/post-inspector/) — paste a production share URL, verify: title (query text), description, image (OG), no warnings.
+- [ ] Twitter Card Validator (https://cards-dev.twitter.com/validator) — paste production share URL, verify `summary_large_image` renders with title + description + image.
+- [ ] Google Rich Results Test (https://search.google.com/test/rich-results) — paste production share URL, verify QAPage schema detected and validates without errors.
+- [ ] Verify OG image PNG actually loads from production (`curl https://vela.an-tho.com/static/og/<share_id>.png` returns 200 + 1200×630 image).
+- [ ] Revoke one of the 3 test shares via Settings → Manage shares. Verify revoked URL displays 「已撤回」 / "share has been revoked" page.
+- [ ] PostHog dashboard — verify 6 share events firing in production: `share_modal_opened` / `share_link_generated` / `share_link_copied` / `share_link_visited` / `share_to_query_clicked` / `share_revoked`.
+
+**Closeout**
+
+- [ ] Update PRD §4.5 status: 🟡 → ✅ SHIPPED `<deploy_date>`
+- [ ] Update STATE.md: §4.5 PHASE E moves from "Deferred" → Recently Shipped
+- [ ] Update ARCHIVE.md: append PHASE E entry
+- [ ] Append `docs/decisions/` ADR if any of the validator runs surface unexpected gaps requiring design changes (not expected — but possible)
+
+**Failure modes**
+
+- 403 fail (e.g. anon CAN create share) → CRITICAL, block §4.5 launch, hotfix Clerk gate before exposing publicly
+- LinkedIn / Twitter / Google validator warnings → assess severity, possible follow-up commit
+- OG image fails to load → likely Pillow / font pipeline regression in prod, urgent fix
+- PostHog events missing → likely env var or analytics.ts wiring issue, fixable post-launch
+
+**Why deferred**: Phase 0 末段 deploys §4.5 + §4.6 + §2.1 + §3.1 together in a single production push (avoids multiple Phase 0 deploy cycles). User may revise to standalone §4.5 deploy if GTM L3 word-of-mouth validation desired sooner — in that case, run this checklist immediately post-deploy regardless of whether other Phase 0 work has shipped.
 
 **驗收標準**
 

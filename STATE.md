@@ -1,6 +1,6 @@
 # STATE.md — Vela Current Development Focus
 
-**Last updated**: 2026-05-08 (post §4.5 PHASE C ship)
+**Last updated**: 2026-05-08 (post §4.5 PHASE E.1 closeout — implementation complete, deploy pending)
 
 ## Phase
 
@@ -8,15 +8,15 @@ Phase 0 — in progress (started 2026-04-17)
 
 ## Current Focus
 
-None active. Awaiting next-task selection per Path B execution order (user-confirmed 2026-04-30: §4.5 → §4.6 → §2.1 → Phase 0 Retrospective).
+None active. §4.5 Share Answer implementation (PHASE A-D) shipped; PHASE E (acceptance + validators) deferred until production deploy. Next active task = §4.6 SEO Explore Pages.
 
 ## Next Up (Phase 0 remaining, Path B execution order)
 
-1. **§ 4.5 Share Answer 公開連結** — 🟡 IN PROGRESS. PHASE A + B + UX polish 1/2/2.5/3 + C + D shipped (2026-05-05 → 2026-05-08). Remaining: PHASE E only (acceptance + LinkedIn / Twitter / Google validators + production deploy checklist).
-2. **§ 4.6 SEO Explore Pages** — PRD v1.3 Phase 0 末段, shares §4.5 Public Query Page renderer (SSR + OG + JSON-LD pipeline).
-3. **§ 2.1 Model Provider Refactor** — 5-7 days, 9 files, largest remaining Phase 0 block.
-4. **§ 3.1 User Context schema** — blocks Phase 1A.
-5. **Phase 0 Retrospective** — final gate before Phase 1A; produces `docs/decisions/005-phase-0-retrospective.md` (003+004 claimed by advisor roadmap integration — see ADR 003 + ADR 004).
+1. **§ 4.6 SEO Explore Pages** — PRD v1.3 Phase 0 末段, shares §4.5 Public Query Page renderer (SSR + OG + JSON-LD pipeline).
+2. **§ 2.1 Model Provider Refactor** — 5-7 days, 9 files, largest remaining Phase 0 block.
+3. **§ 3.1 User Context schema** — blocks Phase 1A.
+4. **Phase 0 Retrospective** — final gate before Phase 1A; produces `docs/decisions/005-phase-0-retrospective.md` (003+004 claimed by advisor roadmap integration — see ADR 003 + ADR 004).
+5. **§ 4.5 PHASE E** — DEFERRED. Execute immediately after Phase 0 末段 production deploy, NOT in main critical path. Tasks: SHARE_CREATED_BY_SALT secret setup, real anon 403 verification, LinkedIn / Twitter / Google validators, OG image production render check, PostHog 6-event verification, revocation flow on production. Detailed checklist in PRD §4.5 "Production Deploy Checklist (PHASE E.2)".
 
 ## Phase 1B preview (per advisor discussion + ADR 003+004)
 
@@ -40,22 +40,19 @@ None known.
 
 ## Recently Shipped (last 7 days)
 
-- **2026-05-08** § 4.5 PHASE D — Share clauses (en) added to /terms + /privacy + Navbar dropdown menu label "Settings" → "Manage shares" (16 locales) + PRD inline note + P2 TECH_DEBT for legal-page i18n retrofit (this commit)
+- **2026-05-08** § 4.5 PHASE E.1 — Documentation closeout: PRD status marker 🟡 IMPL COMPLETE / DEPLOY PENDING + Production Deploy Checklist subsection + STATE/BACKLOG sync (this commit)
+- **2026-05-08** § 4.5 PHASE D — Share clauses (en) added to /terms + /privacy + Navbar dropdown menu label "Settings" → "Manage shares" (16 locales) + PRD inline note + P2 TECH_DEBT for legal-page i18n retrofit (ad506db)
 - **2026-05-08** § 4.5 PHASE C — Settings 「我的分享」 tab — /settings page + tab nav + MyShares list/revoke + Navbar dropdown entry + 16-locale i18n (6f7a154)
+- **2026-05-07** PRD §2.10 source strategy + BACKLOG dogfooding/source-weight sub-tasks (92dbe9b)
+- **2026-05-07** BACKLOG WHO API integration entry → Phase 1C (4fe0d7b)
 - **2026-05-07** § 4.5 UX polish 3/3 — PRD inline notes + TECH_DEBT entries (768dc0b)
 - **2026-05-07** § 4.5 UX polish 2.5 — Navbar ShareButton tone-down + i18n 16-locale rollout (b378659)
 - **2026-05-07** § 4.5 UX polish 2/3 — ShareButton to Navbar via ShareContext + QR removal (ca571ce)
 - **2026-05-07** § 4.5 UX polish 1/3 — public page visual alignment to main site (a5da1c5)
 - **2026-05-07** [bug] Verify short disclaimer i18n alignment (30bd0b5)
+- **2026-05-07** Next.js dev rewrites for /q/* + /api/share/* + /static/og/* (e042efc)
 - **2026-05-06** § 4.5 PHASE B — Share API + PHIDetector mode='share' + ShareButton/ShareModal + 4 mount surfaces + /?from_share handler (f04068d)
-- **2026-05-05** Advisor roadmap integration cleanup — v0.4 archive removed + reference scrub across ADRs/BACKLOG/PRD/STATE/FEATURE_AUDIT
-- **2026-05-04** Advisor roadmap integration — ADR 003 drug name resolution + ADR 004 prescription parser deferral + multi-file sync (commits 394545e, 96eb13b, 3e2f384, 7eda124)
-- **2026-04-30** Doc reorganization Stage 2 — drift sync (3fdeddc), architecture extract (59002d1), structural reorg (5ced91a), PRD markers (aaa95de), ADR 002 (0305817)
-- **2026-04-30** § 2.7 Steps 7-8 acceptance protocol + M06 fix + docs sync (c5b3a09 ExplainJudge class, 64c72f2 TEST_MODE rate-limit bypass, fa80ff9 acceptance integration, a52bf9f M06, dffd015 docs)
-- **2026-04-29** Path 1 RAG defense (3-layer + UX banner + tooltip Bug X1/X2/X3, bebf099, daaf4be)
-- **2026-04-29** Generic error UX 6-codes (a8eb6e8)
-- **2026-04-28** PRD bump v1.2 → v1.3 — added § 4.5 Share Answer + § 4.6 SEO Explore (06a9605)
-- **2026-04-27** § 2.7 Steps 1-6 Explain 臨床推理強化 + Phase 1A polish completion-event telemetry (cd697d1..dd128e2, 19 commits)
+- **2026-05-05** § 4.5 PHASE A — Public Query Page renderer + SharedQuery DB migration (ef0d375)
 
 For older work see ARCHIVE.md.
 

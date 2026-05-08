@@ -596,13 +596,13 @@ Execution sequence:
 
 ### § 4.5 Share Answer 公開連結
 
-- [ ] Implement § 4.5 per PRD v1.3 spec
+- [~] Implement § 4.5 per PRD v1.3 spec — PHASE A-D shipped, E deferred to post-deploy
       **Reference:** PRD.md § 4.5 (full functional spec — 9 functional
       requirements + SharedQuery schema + privacy gate + anti-abuse +
       6 PostHog events + i18n 16 languages + legal/ToS impacts +
-      acceptance criteria)
+      acceptance criteria + Production Deploy Checklist)
 
-      **Pre-implementation gates:**
+      **Pre-implementation gates** (all met):
       - § 2.7 Step 8 acceptance protocol passed
       - Backend Postgres migration capability confirmed (SharedQuery
         table creation)
@@ -611,22 +611,28 @@ Execution sequence:
         prepared for 繁中 / 英 / 日 (other locales fallback to stronger
         warning)
 
-      **Implementation phases (detailed at execution time):**
-      Phase A: Public Query Page renderer (shared infra — SSR + OG +
-              JSON-LD pipeline reused by § 4.6) — SHIPPED 2026-05-05 (ef0d375)
+      **Implementation phases:**
+      Phase A: Public Query Page renderer — SHIPPED 2026-05-05 (ef0d375)
       Phase B: Share Modal + privacy gate + sensitive detection +
-              ShareButton mounts on 4 surfaces — SHIPPED 2026-05-06
-              (f04068d) + UX polish 1/3 (a5da1c5) + 2/3 (ca571ce) +
-              2.5 (b378659) + 3/3 docs (768dc0b)
-      Phase C: Settings 「我的分享」 tab — SHIPPED 2026-05-08 (this commit).
-              List + copy + revoke (with confirm + optimistic UI),
-              Navbar gear-dropdown entry, 16-locale i18n. view_count
-              column intentionally deferred per PRD § 4.5 需求 5.
-      Phase D: Legal ToS / Privacy Policy revision (parallel — does
-              not block engineering ship)
-      Phase E: i18n 16 languages + integration test (LinkedIn Post
-              Inspector / Twitter Card Validator / Google Rich
-              Results Test per PRD § 4.5 驗收標準)
+              ShareButton mounts on 4 surfaces — SHIPPED 2026-05-06 (f04068d)
+      Phase B-followup: 9 commits — Next.js dev rewrites for /q/* +
+              /api/share/* + /static/og/*, UX polish 1/3 + 2/3 + 2.5 +
+              3/3, Verify disclaimer i18n bug fix, PRD §2.10 source
+              strategy housekeeping, BACKLOG WHO API entry —
+              e042efc / a5da1c5 / 30bd0b5 / ca571ce / b378659 / 768dc0b /
+              4fe0d7b / 92dbe9b
+      Phase C: Settings 「我的分享」 tab + Navbar gear-dropdown
+              integration — SHIPPED 2026-05-07 (6f7a154)
+      Phase D: Legal ToS / Privacy share clauses (en) + dropdown
+              menu label fix + legal i18n TECH_DEBT — SHIPPED
+              2026-05-08 (ad506db)
+      Phase E: Acceptance + LinkedIn Post Inspector / Twitter Card
+              Validator / Google Rich Results Test + real anon 403
+              verification + OG image production render check +
+              PostHog 6-event verification — DEFERRED to post-deploy.
+              Detailed checklist in PRD §4.5 "Production Deploy
+              Checklist (PHASE E.2)". E.1 documentation closeout
+              shipped 2026-05-08 (this commit).
 
 ### § 4.6 SEO Explore Pages
 
