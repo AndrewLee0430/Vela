@@ -2,6 +2,10 @@
 
 Renders /explore/{slug} via FastAPI TestClient against a temp SQLite DB.
 Seeds 1 published + 1 draft fixture row + 1 published hreflang sibling.
+
+For dev environment live testing (uvicorn against Neon Postgres),
+use scripts/seed_explore_dev.py instead — that script targets the
+real DATABASE_URL and is idempotent.
 """
 from __future__ import annotations
 
