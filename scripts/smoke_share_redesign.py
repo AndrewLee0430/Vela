@@ -158,7 +158,8 @@ all_ok &= case("PubMed source label color", 'color: #68d391' in html)
 all_ok &= case("FDA source label color", 'color: #63b3ed' in html)
 all_ok &= case("Peer reviewed pill bg", 'rgba(255,142,110,0.15)' in html)
 all_ok &= case("Official pill bg", 'rgba(99,179,237,0.15)' in html)
-all_ok &= case("Star SVG present", 'fill="#facc15"' in html)
+all_ok &= case("No star SVG (dogfooding fix 2026-05-08)",
+               'fill="#facc15"' not in html and 'vela-citation-stars' not in html)
 all_ok &= case("Truncated abstract …", '…' in html)
 all_ok &= case("Citation link with data-source",
                'data-citation-source="pubmed"' in html and 'data-citation-source="fda"' in html)

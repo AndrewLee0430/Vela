@@ -62,12 +62,6 @@
       {%- if c.year %} ({{ c.year }}){% endif -%}
     </div>
     {% endif %}
-    {% if c.cred_label %}
-    <div class="vela-citation-stars">
-      <span class="vela-stars-label">{{ s.credibilityLabel }}</span>
-      <span class="vela-stars">{{ c.stars_html }}</span>
-    </div>
-    {% endif %}
     {% if c.abstract_truncated %}
     <p class="vela-citation-abstract">{{ c.abstract_truncated }}</p>
     {% endif %}

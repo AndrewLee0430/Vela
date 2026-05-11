@@ -14,7 +14,12 @@ UX polish 1 (2026-05-07): full alignment with main-site design system.
   left-border treatment.
 - Augments citations with the source-type / credibility config tables
   ported from components/CitationPanel.tsx so visitor sees the same
-  source label color, credibility pill, and star rating.
+  source label color and credibility pill.
+
+Dogfooding fix (2026-05-08): 5-star credibility rendering removed
+from both frontend and server-side per advisor feedback. The
+backend `credibility` field is preserved for Phase 1B evidence-tier
+classification work — only the visual block was dropped.
 """
 
 from __future__ import annotations
@@ -190,47 +195,23 @@ _SOURCE_TYPE_CONFIG: dict[str, dict[str, str]] = {
     "other":          {"label": "Source",      "color": "#a0aec0"},
 }
 
-_CRED_CONFIG: dict[str, dict[str, str | int]] = {
+_CRED_CONFIG: dict[str, dict[str, str]] = {
     "peer-reviewed": {
         "label_key": "peerReviewed",
         "bg": "rgba(255,142,110,0.15)",
         "color": "#ff8e6e",
-        "stars": 5,
     },
     "official": {
         "label_key": "official",
         "bg": "rgba(99,179,237,0.15)",
         "color": "#63b3ed",
-        "stars": 5,
     },
     "internal": {
         "label_key": "internal",
         "bg": "rgba(160,174,192,0.15)",
         "color": "#a0aec0",
-        "stars": 3,
     },
 }
-
-
-# Star path replicated from components/CitationPanel.tsx StarRating
-# (lines 94-108): a 20×20 SVG with an empty/filled fill.
-_STAR_PATH = (
-    "M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0"
-    "l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"
-)
-
-
-def _render_stars_html(filled: int, total: int = 5) -> str:
-    """5 inline SVGs: `filled` golden, rest gray. Matches the visual
-    in CitationPanel.tsx without bringing in any client JS."""
-    parts: list[str] = []
-    for i in range(total):
-        color = "#facc15" if i < filled else "#4b5563"  # yellow-400 / gray-600
-        parts.append(
-            f'<svg viewBox="0 0 20 20" fill="{color}" aria-hidden="true">'
-            f'<path d="{_STAR_PATH}"/></svg>'
-        )
-    return "".join(parts)
 
 
 def _detect_source_type(citation: dict[str, Any]) -> str:
@@ -320,8 +301,7 @@ def _augment_citations(
     Each augmented citation carries the precomputed display-only fields
     the template needs so the Jinja layer stays trivial: source_type
     (slug), source_label, source_color, credibility (raw key),
-    cred_label, cred_bg, cred_color, stars (int), stars_html,
-    abstract_truncated.
+    cred_label, cred_bg, cred_color, abstract_truncated.
     """
     if not citations:
         return [], []
@@ -339,7 +319,6 @@ def _augment_citations(
         cred_label = s.get(cred["label_key"], cred_raw) if cred else None
         cred_bg = cred["bg"] if cred else None
         cred_color = cred["color"] if cred else None
-        stars = int(cred["stars"]) if cred else 0
         # citations from ChatHistory may not include `snippet`;
         # ShareCreate's payload uses whatever the ChatHistory schema
         # carried. Try a few common keys.
@@ -358,8 +337,6 @@ def _augment_citations(
             "cred_label": cred_label,
             "cred_bg": cred_bg,
             "cred_color": cred_color,
-            "stars": stars,
-            "stars_html": Markup(_render_stars_html(stars)) if cred else Markup(""),
             "abstract_truncated": _truncate_abstract(abstract),
         })
         type_counter[sconf["label"]] += 1

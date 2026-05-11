@@ -70,9 +70,9 @@ function useCredibilityConfig() {
     const { lang } = useLang();
     const ui = getUI(lang);
     return {
-        'peer-reviewed': { label: ui.peerReviewed, bg: 'rgba(255,142,110,0.15)', color: '#ff8e6e', stars: 5, tooltip: ui.peerReviewedTip },
-        'official':      { label: ui.official,       bg: 'rgba(99,179,237,0.15)',  color: '#63b3ed', stars: 5, tooltip: ui.officialTip },
-        'internal':      { label: ui.internal,       bg: 'rgba(160,174,192,0.15)', color: '#a0aec0', stars: 3, tooltip: ui.internalTip },
+        'peer-reviewed': { label: ui.peerReviewed, bg: 'rgba(255,142,110,0.15)', color: '#ff8e6e', tooltip: ui.peerReviewedTip },
+        'official':      { label: ui.official,       bg: 'rgba(99,179,237,0.15)',  color: '#63b3ed', tooltip: ui.officialTip },
+        'internal':      { label: ui.internal,       bg: 'rgba(160,174,192,0.15)', color: '#a0aec0', tooltip: ui.internalTip },
     };
 }
 
@@ -90,22 +90,6 @@ const sourceTypeConfig: Record<CitationSourceType, { label: string; color: strin
     'localauthority':{ label: 'Local',       color: '#a0aec0' },
     'other':         { label: 'Source',      color: '#a0aec0' },
 };
-
-function StarRating({ count }: { count: number }) {
-    return (
-        <span>
-            {Array.from({ length: 5 }).map((_, i) => (
-                <svg
-                    key={i}
-                    className={`inline w-4 h-4 ${i < count ? 'fill-yellow-400' : 'fill-gray-600'}`}
-                    viewBox="0 0 20 20"
-                >
-                    <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
-                </svg>
-            ))}
-        </span>
-    );
-}
 
 function extractAbstract(raw: string): string {
     const lines = raw.split('\n');
@@ -196,12 +180,6 @@ function CitationCard({ citation, position }: { citation: Citation; position: nu
                 {citation.authors && <span>{citation.authors}</span>}
                 {citation.journal && <span> • {citation.journal}</span>}
                 {citation.year    && <span> ({citation.year})</span>}
-            </div>
-
-            {/* Credibility stars */}
-            <div className="flex items-center gap-2 mb-3">
-                <span className="text-xs" style={{ color: "rgba(255,255,255,0.7)" }}>{ui.credibilityLabel}</span>
-                <StarRating count={credConfig.stars} />
             </div>
 
             {/* Abstract */}
