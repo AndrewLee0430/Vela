@@ -693,6 +693,12 @@ Phase 1B work items per advisor discussion 2026-05-04 (preserved in git commit 3
   - Citation ⓘ tooltip 加 4 source 短說明 (PubMed / DailyMed / WHO 預留位 / FDA fallback),16 語言。預留 WHO 條目 (Phase 1C 啟用) 避免日後重做 i18n。
   - Verify pipeline FDA OpenFDA → DailyMed 主從切換的 retrieval ranking 驗證 (5 個典型藥物交互作用 query 比對 before/after)
   - PRD §2.3 source_type enum 'DailyMed' 啟用 + Citation chip 顏色 token 確認
+- **Evidence tier classification at retrieve-time (per PRD §2.10.6, 2026-05-08 顧問 dogfooding 回饋):**
+  - PubMed retrieval 增加 `publication_type` metadata extraction (e.g. `Practice Guideline` / `Systematic Review` / `Randomized Controlled Trial` / `Observational Study`)
+  - 實作 5-tier classifier:Tier 1 (international guideline) / Tier 2 (systematic review + meta-analysis) / Tier 3 (RCT + large cohort) / Tier 4 (observational + commentary) / Tier 5 (survey + knowledge research)
+  - Retrieval ranking 加入 tier_weight 因子 (Tier 1 × 2.0, Tier 2 × 1.5, Tier 3 × 1.2, Tier 4 × 1.0 baseline, Tier 5 × 0.7) 與既有 source_weight 複合
+  - Frontend CitationPanel 顯示 Tier label 取代之前的 5 星 UI (e.g. 「Tier 2 / Systematic Review」)
+  - i18n keys: 5 個 tier label × 16 語言 (可 repurpose 現有 dormant credibilityLabel 系列 keys)
 
 ### [P0] 在地差異提示 Tier 1 (TW/JP/KR/SG/MY/TH)
 - **Source**: ADR 004 (advisor discussion in git commit 394545e § 5.3 — advanced from Phase 1C to 1B per 護城河 rebalance)
@@ -723,12 +729,17 @@ Phase 1B work items per advisor discussion 2026-05-04 (preserved in git commit 3
   2. **禁忌 / 黑框警告類專測**: 「Warfarin + Aspirin 安全嗎」「metformin 禁忌症」等,確認 DailyMed FDA label 沒被 PubMed studies 擠下去
   3. **最新研究類專測**: 「最新阿茲海默症療法」「SGLT2 inhibitor 心衰研究」等,確認 PubMed 沒被 DailyMed/FDA 靜態 label 擠下去
   4. **跨語言 query**: 5 query × 3 locale (zh-TW / ja / ko),確認語言切換後 retrieval source 分布不退化
+  5. **International guideline vs single-country research test** (per 2026-05-08 顧問 dogfooding case): query about pediatric topic (e.g. fluoride toothpaste concentration for children) — verify retrieval surfaces AAPD / NHS / EAPD international guidelines in top 3, NOT single-country observational studies (e.g. Israel Avidana 2025). Test against the actual dogfooding case "小孩牙膏如何挑選" as baseline.
 - **Source weight 初始假設 (待 dogfooding 驗證):**
   - DailyMed / FDA: × 1.5 (權威 source 加權)
   - WHO 全球指引: × 1.3 (Phase 1C 才適用)
   - PubMed (RCT / meta-analysis): × 1.0 (baseline)
   - PubMed (個別 case report): × 0.7 (低證據等級)
   - 風險: 上述為 hypothesis,實際數值需看 dogfooding 結果調整
+  - **2026-05-08 修訂**: 證據 tier weight 加入 ranking formula 後,完整公式為:
+    `semantic_similarity × source_weight × tier_weight × recency_factor`
+    Tier weights: Tier 1 × 2.0, Tier 2 × 1.5, Tier 3 × 1.2, Tier 4 × 1.0, Tier 5 × 0.7
+    詳見 PRD §2.10.6.
 - **Decision tree (evaluate 完看):**
   - 若 4 條測試全部 source 分布合理 → 不動 reranker,只記文件 (low priority Phase 1C)
   - 若僅 「禁忌 / 黑框」類失準 → 動 source-weighted scoring,不動 BM25
@@ -770,6 +781,24 @@ Phase 1B work items per advisor discussion 2026-05-04 (preserved in git commit 3
 - **Distinct from existing [P1] WHO ICD-11 API integration entry above**: that item is about ICD-11 anchor codes (cross-language disease term alignment, Wedge 1). This item is about WHO content ingestion as RAG documents.
 - **Estimated**: 2-3 days
 - **Discovered**: 2026-05-06 — user-flagged BACKLOG gap during §4.5 UX polish closing review
+
+### [P2] Guideline document ingestion pipeline (AAPD / NHS / SDCEP / EAPD / WHO 等)
+- **Background**: 2026-05-08 顧問 dogfooding 回饋 揭示 international clinical practice guideline (AAPD / NHS / SDCEP / EAPD / WHO 等) 不在 PubMed 主索引 — 很多是 PDF / website / 機構出版物。即使 PRD §2.10.6 證據分層把 Tier 1 weight × 2.0,如果 retrieval 根本撈不到 Tier 1 文件,classifier 也沒用。
+- **Scope**: Build ingestion pipeline for guideline documents from authoritative bodies:
+  - **Pediatric**: AAPD (American Academy of Pediatric Dentistry), EAPD (European Academy of Paediatric Dentistry)
+  - **Dental general**: ADA (American Dental Association)
+  - **Public health**: NHS (UK), SDCEP (Scottish), WHO global guidelines (already P2 in BACKLOG)
+  - 各 guideline document 拉進 RAG corpus,標 source_type='Guideline' + tier=1
+- **Why Phase 1C, not Phase 1B**:
+  - Each guideline source has different format (PDF / HTML / DOCX); 新 parsing pipeline
+  - 授權狀況 varies (AAPD 商業授權 / NHS 公開 / WHO 公開) — 須 case-by-case review
+  - Multi-week effort,Phase 1B 已滿載
+- **Pre-implementation gates**:
+  - PRD §2.10.6 evidence tier classification shipped (Phase 1B)
+  - Tier 1 weight × 2.0 validated against Phase 1B Week 7-8 dogfooding eval
+- **Distinct from existing [P2] WHO API integration entry**: that one ingests WHO global treatment guidelines + GHO statistics. This entry covers professional society guidelines (AAPD / ADA / EAPD / NHS / SDCEP) — different authorities, may share infrastructure but content scope distinct.
+- **Estimated**: 4-6 days (depends on # of guideline sources targeted in MVP — recommend MVP = AAPD + NHS + 1 more, expand later)
+- **Discovered**: 2026-05-08 — 顧問 dogfooding case revealed retrieval missing international guideline tier of evidence
 
 ---
 

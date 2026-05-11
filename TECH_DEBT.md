@@ -223,3 +223,10 @@ When entries are resolved, move to ARCHIVE.md (note discovery + resolution dates
   - **Related backend latent bug**: `VELA_PUBLIC_BASE_URL` fallback when unset defaults to production URL. Should fall back to `http://localhost:3000` if `TEST_MODE=true` and not set. Bundle the fix with (a).
   - **Priority**: P3 — dev-only.
   - **Discovered**: 2026-05-06 during §4.5 PHASE B smoke test 8l.
+
+- **[P3]** components/Untitled stale backup file
+  - **現況**: `components/Untitled` is a tracked file containing an old copy of CitationPanel.tsx with the StarRating component still defined and referenced. Discovered 2026-05-08 during Commit 211d9f7 (5-star UI removal) — the active CitationPanel.tsx was cleaned but the Untitled backup still has the dead code.
+  - **Risk**: minor — stale backup files clutter codebase grep results and risk being mistaken for the active component. No runtime impact (file is not imported by any active code).
+  - **Resolution**: at Phase 0 Retrospective, delete `components/Untitled` (or rename to `.bak` and gitignore). Verify it's truly orphaned via `git grep "Untitled" -- '*.tsx' '*.ts'` first.
+  - **Priority**: P3 — codebase hygiene.
+  - **Discovered**: 2026-05-08 during dogfooding star-removal commit.

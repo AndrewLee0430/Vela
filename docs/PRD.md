@@ -892,6 +892,48 @@ Latency 影響可忽略 (asyncio.gather 並行)。Top-K=8 不變,LLM 看到的 e
 真實 candidate pool 變大的數據還沒有 (DailyMed/WHO 都還沒接),現在動 reranker 是猜。
 原則:**先量再動,別先動再量。**
 
+**2.10.6 證據分層 (Evidence Tier Classification, 2026-05-08 補充)**
+
+> **背景**: §2.10.1-2.10.5 處理「不同 source 之間」的權威分層 (PubMed / DailyMed / WHO 等)。但**同一 source 內**也有權威差異 — PubMed 收錄的論文,從 international clinical practice guideline 到 single-country survey research 都在,權威性差 1-2 個量級。2026-05-08 外部顧問 dogfooding feedback 揭示此問題:Vela retrieval 把以色列 Avidana 2025 observational study (Tier 4) 與 Wright 2014 JADA systematic review (Tier 2) 視為等同證據,且 5 顆星 credibility UI 強化了這個錯誤等同性(該 UI 已於 commit 211d9f7 移除)。
+
+**證據分層 (5 Tier)**
+
+| Tier | 證據類型 | 範例 | 適用情境 |
+| --- | --- | --- | --- |
+| 1 | International clinical practice guideline | AAPD / ADA / NHS / SDCEP / EAPD / WHO | 「現行國際共識」、「主流臨床指引」 |
+| 2 | Systematic review / meta-analysis | Cochrane review / JAMA systematic review | 「現有證據綜合結論」、量化結論 |
+| 3 | RCT / large prospective cohort study | NEJM RCT / large registry study | 「個別介入效果」、新療法評估 |
+| 4 | Observational study / commentary review | Cross-sectional / case-control / 雜誌 commentary | 「方向性 association」、背景脈絡 |
+| 5 | Survey / knowledge-attitude research | 醫師 / 家長認知調查 | 「人群認知現況」,非建議本身依據 |
+
+**Retrieval ranking weights (per Tier, hypothesis)**
+
+```
+Tier 1 (guideline)         × 2.0
+Tier 2 (systematic review) × 1.5
+Tier 3 (RCT / cohort)      × 1.2
+Tier 4 (observational)     × 1.0  (baseline)
+Tier 5 (survey)            × 0.7
+```
+
+複合 weight: 最終 ranking score = `semantic_similarity × source_weight × tier_weight × recency_factor`
+
+其中 `source_weight` 來自 §2.10.3 (DailyMed/FDA × 1.5, WHO 全球指引 × 1.3, PubMed × 1.0),`tier_weight` 為本節新增層級。
+
+**設計原則 (2.10.6 補)**
+
+1. **Tier classification 必須在 retrieve-time 完成,不在 generation time** — LLM 在看到 candidate 之前就已經 reranked,確保 Tier 1 evidence 真正進入 top 8 context。
+2. **跨 Tier divergence 須在答案中明示** — 當 retrieve 結果同時包含 Tier 1 (例如 AAPD ≥1000 ppm) 與 Tier 4 (例如以色列 < 500 ppm),system prompt 須要求 LLM **explicitly 列出國際分歧**,而非取 majority。對齊 ADR 003 system prompt polish。
+3. **Citation card 顯示 Tier label,移除 credibility 星等** — `Tier 1 / Clinical Guideline`、`Tier 2 / Systematic Review` 等取代之前的 5 星 UI(已於 commit 211d9f7 移除)。Tier label 在 Phase 1B 實作。
+4. **Tier classification 來源**: PubMed publication_type metadata (e.g. `Practice Guideline`, `Systematic Review`, `Randomized Controlled Trial`) + journal metadata (Cochrane Library, JAMA, NEJM) + 標題 keyword fallback (e.g. "systematic review", "meta-analysis")。具體實作見 BACKLOG [P0] DailyMed entry sub-task。
+5. **不適用於非-PubMed source**: DailyMed (Tier 2 by default, official label)、FDA OpenFDA (Tier 2)、WHO 全球指引 (Tier 1)、LOINC/RxNorm (參考資料,不參與 tier 排序)。
+
+**2.10.6 對 §2.10.3-2.10.5 的影響**
+
+§2.10.3 設計原則 #3 「權威性差異需在 retrieval ranking 反映」 範圍擴大:不只 source weight,還包含 tier weight。完整 ranking 公式如上。
+
+§2.10.5 「為什麼不在 v1.3 動 RAG」 仍適用 — Phase 1B Week 7-8 evaluate 階段同時驗證 source weight + tier weight 兩層,先看 dogfooding 數據,再決定具體 weight 數值。
+
 **三、Phase 1A — 定位落地**
 
 Phase 1A 不做新功能,只做「感知層」——讓使用者進來的前 30 秒立刻感覺「這個產品為我設計」。
