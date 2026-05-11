@@ -1,70 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:xhtml="http://www.w3.org/1999/xhtml">
-  <url>
-    <loc>https://vela.an-tho.com/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://vela.an-tho.com/"/>
-    <xhtml:link rel="alternate" hreflang="zh-TW" href="https://vela.an-tho.com/"/>
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://vela.an-tho.com/"/>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://vela.an-tho.com/"/>
-    <xhtml:link rel="alternate" hreflang="ko" href="https://vela.an-tho.com/"/>
-    <xhtml:link rel="alternate" hreflang="es" href="https://vela.an-tho.com/"/>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://vela.an-tho.com/"/>
-    <xhtml:link rel="alternate" hreflang="de" href="https://vela.an-tho.com/"/>
-    <xhtml:link rel="alternate" hreflang="it" href="https://vela.an-tho.com/"/>
-    <xhtml:link rel="alternate" hreflang="pt" href="https://vela.an-tho.com/"/>
-    <xhtml:link rel="alternate" hreflang="th" href="https://vela.an-tho.com/"/>
-    <xhtml:link rel="alternate" hreflang="ar" href="https://vela.an-tho.com/"/>
-    <xhtml:link rel="alternate" hreflang="hi" href="https://vela.an-tho.com/"/>
-    <xhtml:link rel="alternate" hreflang="bn" href="https://vela.an-tho.com/"/>
-    <xhtml:link rel="alternate" hreflang="he" href="https://vela.an-tho.com/"/>
-    <xhtml:link rel="alternate" hreflang="vi" href="https://vela.an-tho.com/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://vela.an-tho.com/"/>
-  </url>
-  <url>
-    <loc>https://vela.an-tho.com/pricing</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://vela.an-tho.com/pricing"/>
-    <xhtml:link rel="alternate" hreflang="zh-TW" href="https://vela.an-tho.com/pricing"/>
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://vela.an-tho.com/pricing"/>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://vela.an-tho.com/pricing"/>
-    <xhtml:link rel="alternate" hreflang="ko" href="https://vela.an-tho.com/pricing"/>
-    <xhtml:link rel="alternate" hreflang="es" href="https://vela.an-tho.com/pricing"/>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://vela.an-tho.com/pricing"/>
-    <xhtml:link rel="alternate" hreflang="de" href="https://vela.an-tho.com/pricing"/>
-    <xhtml:link rel="alternate" hreflang="it" href="https://vela.an-tho.com/pricing"/>
-    <xhtml:link rel="alternate" hreflang="pt" href="https://vela.an-tho.com/pricing"/>
-    <xhtml:link rel="alternate" hreflang="th" href="https://vela.an-tho.com/pricing"/>
-    <xhtml:link rel="alternate" hreflang="ar" href="https://vela.an-tho.com/pricing"/>
-    <xhtml:link rel="alternate" hreflang="hi" href="https://vela.an-tho.com/pricing"/>
-    <xhtml:link rel="alternate" hreflang="bn" href="https://vela.an-tho.com/pricing"/>
-    <xhtml:link rel="alternate" hreflang="he" href="https://vela.an-tho.com/pricing"/>
-    <xhtml:link rel="alternate" hreflang="vi" href="https://vela.an-tho.com/pricing"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://vela.an-tho.com/pricing"/>
-  </url>
-  <url>
-    <loc>https://vela.an-tho.com/faq</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://vela.an-tho.com/faq"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://vela.an-tho.com/faq"/>
-  </url>
-  <url>
-    <loc>https://vela.an-tho.com/terms</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://vela.an-tho.com/privacy</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://vela.an-tho.com/refund</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-</urlset>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <sitemap>
+    <loc>https://vela.an-tho.com/sitemap-main.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://vela.an-tho.com/sitemap-explore.xml</loc>
+  </sitemap>
+</sitemapindex>

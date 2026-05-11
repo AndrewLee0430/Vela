@@ -651,10 +651,11 @@ Execution sequence:
 
       **Implementation phases:**
       Phase A: ExplorePage schema + slug routing (`/explore/{slug}`
-              + hreflang group support) — SHIPPED 2026-05-08 (TBD SHA)
+              + hreflang group support) — SHIPPED 2026-05-11 (bc171a1)
+              followups: d324389 (dev rewrites) + ce2225a (seed script)
       Phase B: Sitemap auto-generation (sitemap-explore.xml) +
               hreflang logic (group siblings + missing-locale
-              skip rule per PRD § 4.6 需求 6)
+              skip rule per PRD § 4.6 需求 6) — SHIPPED 2026-05-11 (TBD SHA)
       Phase C: Content import CLI / Notion sync tool
       Phase D: Related queries + breadcrumb UI (PRD § 4.6 需求 4) +
               3 PostHog events (explore_page_viewed /

@@ -2021,6 +2021,22 @@ async def serve_explore_page(slug: str, request: Request, locale: str | None = N
 
 
 # ============================================================
+# Sitemap — PRD § 4.6 PHASE B
+# /sitemap-explore.xml is a dynamic FastAPI route that queries the
+# ExplorePage table. No rate limit (crawler-friendly). public/sitemap.xml
+# (Next.js static) is the sitemap INDEX referencing this + the main
+# static sitemap.
+# ============================================================
+from api.services import sitemap_explore as _sitemap_explore
+
+
+@app.get("/sitemap-explore.xml")
+async def sitemap_explore_xml(db: Session = Depends(get_db)):
+    xml = _sitemap_explore.generate_explore_sitemap(db)
+    return Response(content=xml, media_type="application/xml; charset=utf-8")
+
+
+# ============================================================
 # Share API — PRD § 4.5 PHASE B
 # Endpoints: POST /api/share/create, POST /api/share/{id}/revoke,
 #            GET  /api/share/list,    POST /api/share/track-visit

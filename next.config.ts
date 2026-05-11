@@ -20,6 +20,7 @@ const nextConfig: NextConfig = {
     return [
       { source: '/q/:share_id', destination: `${backend}/q/:share_id` },
       { source: '/explore/:slug', destination: `${backend}/explore/:slug` },
+      { source: '/sitemap-explore.xml', destination: `${backend}/sitemap-explore.xml` },
       { source: '/api/share/:path*', destination: `${backend}/api/share/:path*` },
       { source: '/static/og/:filename', destination: `${backend}/static/og/:filename` },
       { source: '/static/og/explore/:filename', destination: `${backend}/static/og/explore/:filename` },
