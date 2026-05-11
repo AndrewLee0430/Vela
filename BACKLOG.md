@@ -655,8 +655,11 @@ Execution sequence:
               followups: d324389 (dev rewrites) + ce2225a (seed script)
       Phase B: Sitemap auto-generation (sitemap-explore.xml) +
               hreflang logic (group siblings + missing-locale
-              skip rule per PRD § 4.6 需求 6) — SHIPPED 2026-05-11 (TBD SHA)
-      Phase C: Content import CLI / Notion sync tool
+              skip rule per PRD § 4.6 需求 6) — SHIPPED 2026-05-11 (8fb10ca)
+      Phase C: Content import CLI (markdown → DB sync) — SHIPPED
+              2026-05-11 (TBD SHA). Notion sync DEFERRED indefinitely
+              per editorial decision (markdown + git workflow preferred).
+              Admin UI DEFERRED indefinitely (CLI sufficient).
       Phase D: Related queries + breadcrumb UI (PRD § 4.6 需求 4) +
               3 PostHog events (explore_page_viewed /
               explore_cta_clicked / explore_citation_clicked) wired
