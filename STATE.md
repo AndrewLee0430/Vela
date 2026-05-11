@@ -1,6 +1,6 @@
 # STATE.md — Vela Current Development Focus
 
-**Last updated**: 2026-05-08 (post §4.5 PHASE E.1 closeout — implementation complete, deploy pending)
+**Last updated**: 2026-05-11 (post §4.6 PHASE A — Explore data model + slug routing shipped)
 
 ## Phase
 
@@ -8,15 +8,18 @@ Phase 0 — in progress (started 2026-04-17)
 
 ## Current Focus
 
-None active. §4.5 Share Answer implementation (PHASE A-D) shipped; PHASE E (acceptance + validators) deferred until production deploy. Next active task = §4.6 SEO Explore Pages.
+§4.6 SEO Explore Pages — PHASE A shipped (schema + /explore/{slug} routing reusing §4.5 renderer). Next active task = §4.6 PHASE B (sitemap-explore.xml auto-generation + hreflang validator logic).
 
 ## Next Up (Phase 0 remaining, Path B execution order)
 
-1. **§ 4.6 SEO Explore Pages** — PRD v1.3 Phase 0 末段, shares §4.5 Public Query Page renderer (SSR + OG + JSON-LD pipeline).
-2. **§ 2.1 Model Provider Refactor** — 5-7 days, 9 files, largest remaining Phase 0 block.
-3. **§ 3.1 User Context schema** — blocks Phase 1A.
-4. **Phase 0 Retrospective** — final gate before Phase 1A; produces `docs/decisions/005-phase-0-retrospective.md` (003+004 claimed by advisor roadmap integration — see ADR 003 + ADR 004).
-5. **§ 4.5 PHASE E** — DEFERRED. Execute immediately after Phase 0 末段 production deploy, NOT in main critical path. Tasks: SHARE_CREATED_BY_SALT secret setup, real anon 403 verification, LinkedIn / Twitter / Google validators, OG image production render check, PostHog 6-event verification, revocation flow on production. Detailed checklist in PRD §4.5 "Production Deploy Checklist (PHASE E.2)".
+1. **§ 4.6 PHASE B** — sitemap-explore.xml auto-generation + hreflang missing-locale skip rule (PRD §4.6 需求 6).
+2. **§ 4.6 PHASE C** — content import CLI / Notion sync tool (5-10 seed pages before launch — empty-shell pages get GSC penalty).
+3. **§ 4.6 PHASE D** — Related queries + breadcrumb UI (PRD §4.6 需求 4) + 3 PostHog events wired.
+4. **§ 4.6 PHASE E** — integration test (Google Rich Results Test / robots.txt / hreflang validator).
+5. **§ 2.1 Model Provider Refactor** — 5-7 days, 9 files, largest remaining Phase 0 block.
+6. **§ 3.1 User Context schema** — blocks Phase 1A.
+7. **Phase 0 Retrospective** — final gate before Phase 1A; produces `docs/decisions/005-phase-0-retrospective.md` (003+004 claimed by advisor roadmap integration — see ADR 003 + ADR 004).
+8. **§ 4.5 PHASE E** — DEFERRED. Execute immediately after Phase 0 末段 production deploy, NOT in main critical path. Tasks: SHARE_CREATED_BY_SALT secret setup, real anon 403 verification, LinkedIn / Twitter / Google validators, OG image production render check, PostHog 6-event verification, revocation flow on production. Detailed checklist in PRD §4.5 "Production Deploy Checklist (PHASE E.2)".
 
 ## Phase 1B preview (per advisor discussion + ADR 003+004)
 
@@ -40,7 +43,10 @@ None known.
 
 ## Recently Shipped (last 7 days)
 
-- **2026-05-08** § 4.5 PHASE E.1 — Documentation closeout: PRD status marker 🟡 IMPL COMPLETE / DEPLOY PENDING + Production Deploy Checklist subsection + STATE/BACKLOG sync (this commit)
+- **2026-05-11** § 4.6 PHASE A — ExplorePage schema + /explore/{slug} routing reusing §4.5 renderer (this commit)
+- **2026-05-08** [docs] PRD §2.10.6 evidence tier classification + BACKLOG dogfooding follow-ups (9834d85)
+- **2026-05-08** [bug] CitationPanel — remove credibility 5-star UI per advisor dogfooding feedback (211d9f7)
+- **2026-05-08** § 4.5 PHASE E.1 — Documentation closeout: PRD status marker 🟡 IMPL COMPLETE / DEPLOY PENDING + Production Deploy Checklist subsection + STATE/BACKLOG sync (f495a41)
 - **2026-05-08** § 4.5 PHASE D — Share clauses (en) added to /terms + /privacy + Navbar dropdown menu label "Settings" → "Manage shares" (16 locales) + PRD inline note + P2 TECH_DEBT for legal-page i18n retrofit (ad506db)
 - **2026-05-08** § 4.5 PHASE C — Settings 「我的分享」 tab — /settings page + tab nav + MyShares list/revoke + Navbar dropdown entry + 16-locale i18n (6f7a154)
 - **2026-05-07** PRD §2.10 source strategy + BACKLOG dogfooding/source-weight sub-tasks (92dbe9b)

@@ -636,7 +636,7 @@ Execution sequence:
 
 ### § 4.6 SEO Explore Pages
 
-- [ ] Implement § 4.6 per PRD v1.3 spec
+- [~] Implement § 4.6 per PRD v1.3 spec — PHASE A shipped, B-E pending
       **Reference:** PRD.md § 4.6 (full functional spec — 8 functional
       requirements + ExplorePage schema + content workflow + 3
       PostHog events + sitemap/hreflang + acceptance criteria)
@@ -651,12 +651,14 @@ Execution sequence:
 
       **Implementation phases:**
       Phase A: ExplorePage schema + slug routing (`/explore/{slug}`
-              + hreflang group support)
+              + hreflang group support) — SHIPPED 2026-05-08 (TBD SHA)
       Phase B: Sitemap auto-generation (sitemap-explore.xml) +
               hreflang logic (group siblings + missing-locale
               skip rule per PRD § 4.6 需求 6)
       Phase C: Content import CLI / Notion sync tool
-      Phase D: Related queries + breadcrumb UI (PRD § 4.6 需求 4)
+      Phase D: Related queries + breadcrumb UI (PRD § 4.6 需求 4) +
+              3 PostHog events (explore_page_viewed /
+              explore_cta_clicked / explore_citation_clicked) wired
       Phase E: Integration test (Google Rich Results Test /
               robots.txt / hreflang validator)
 

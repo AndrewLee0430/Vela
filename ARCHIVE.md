@@ -17,8 +17,15 @@ When new entries are added: keep one-liner format, no detail. For full context, 
 
 ---
 
+## 2026-05-11
+
+- `[PRD §4.6]` PHASE A — ExplorePage schema + /explore/{slug} routing (reuses §4.5 renderer). New migrations/005_add_explore_page.sql + ExplorePage SQLAlchemy model with composite PK (slug, locale) + api/services/explore_renderer.py reusing share_renderer helpers (parse_research_sections / _augment_citations / _markdown_to_html / _MARKER_BORDER_COLORS) + api/templates/explore_base.jinja2 + q_explore.jinja2 (team-content semantics: no "shared by" framing, breadcrumb + related-queries slots for PHASE D, hreflang siblings in <head>) + api/i18n/explore_strings.py (16 locales, en + zh-TW first-class) + /explore/{slug} route registered before Next.js catch-all with in-handler rate limit (60/min). 23 smoke assertions PASS.
+
 ## 2026-05-08
 
+- `[docs]` PRD §2.10.6 evidence tier classification (within-source 5-tier model — international guideline / systematic review / RCT / observational / survey) + BACKLOG dogfooding follow-ups (DailyMed entry sub-task / Citation ranking 5th test / Phase 1C Guideline ingestion entry) + TECH_DEBT [P3] components/Untitled stale backup file (9834d85)
+- `[bug]` CitationPanel — remove credibility 5-star UI per external advisor dogfooding feedback (2026-05-08). 5-star + "Credibility:" label removed from frontend CitationPanel + server-side share_renderer.py / q_public.jinja2 / q_base.jinja2. Backend Citation.credibility field preserved for Phase 1B evidence-tier classification repurpose. (211d9f7)
+- `[PRD §4.5]` PHASE E.1 — Documentation closeout (pre-production-deploy): PRD §4.5 status marker bumped to 🟡 IMPLEMENTATION COMPLETE — DEPLOY PENDING (2026-05-08); new "Production Deploy Checklist (PHASE E.2)" subsection (14 checkboxes across 3 groups); STATE.md / BACKLOG.md sync. PHASE E.2 deferred to post-production-deploy. (f495a41)
 - `[PRD §4.5]` PHASE D — Share clauses (en-only) added to /terms § 8 Public Sharing + /privacy § 7 Public Sharing per 需求 9 spec. Navbar gear-dropdown menu item label "Settings / 設定" → "Manage shares / 管理分享" (16-locale rename in `utils/i18n-share.ts`: `settingsNavLink` → `navbarManageSharesMenuItem`). PRD §4.5 (2026-05-08 修訂) inline note documenting the menu label decision. New P2 TECH_DEBT entry: /terms + /privacy en-only — 16-locale i18n retrofit pending before non-en GTM expansion. "Last updated" bumped to 2026-05-08 in both legal pages.
 - `[PRD §4.5]` PHASE C — Settings 「我的分享」 tab — new `pages/settings.tsx` + tab nav scaffolding (extensible) + `components/MySharesTab.tsx` (list / copy / revoke with optimistic UI / PostHog events) + Navbar gear-dropdown Settings entry + 7 new i18n keys × 16 locales. Pure frontend; consumes existing PHASE B endpoints. Intl.RelativeTimeFormat for time-ago (no custom i18n). (6f7a154)
 

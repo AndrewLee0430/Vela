@@ -1,0 +1,91 @@
+{% extends "explore_base.jinja2" %}
+
+{% block jsonld %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "QAPage",
+  "mainEntity": {
+    "@type": "Question",
+    "name": {{ query_text | tojson }},
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": {{ answer_text | tojson }}
+    }
+  }
+}
+</script>
+{% endblock %}
+
+{% block content %}
+<h1 class="vela-query-title">{{ query_text }}</h1>
+
+<div class="vela-answer-stack">
+  {% for section in sections %}
+  <div class="vela-evidence-card" style="border-left-color: {{ section.border_color }};">
+    {% if section.title %}
+    <p class="vela-evidence-title">{% if section.marker %}{{ section.marker }} {% endif %}{{ section.title }}</p>
+    {% endif %}
+    <div class="vela-prose">{{ section.html }}</div>
+  </div>
+  {% endfor %}
+</div>
+
+<p class="vela-short-disclaimer">{{ s.publicShortDisclaimer }}</p>
+
+{% if citations %}
+<section class="vela-citations">
+  <div class="vela-citations-header">
+    <span class="vela-citations-title">{{ s.citationsHeading }} ({{ citations | length }})</span>
+    {% if source_chips %}
+    <div class="vela-source-chips">
+      {% for chip in source_chips %}
+      <span class="vela-source-chip">{{ chip.label }}: {{ chip.count }}</span>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+  {% for c in citations %}
+  <div class="vela-citation-card">
+    <div class="vela-citation-header">
+      <span class="vela-citation-source" style="color: {{ c.source_color }};">[{{ loop.index }}] {{ c.source_label }}</span>
+      {% if c.cred_label %}
+      <span class="vela-credibility-pill" style="background: {{ c.cred_bg }}; color: {{ c.cred_color }};">{{ c.cred_label }}</span>
+      {% endif %}
+    </div>
+    {% if c.title %}<h4 class="vela-citation-title">{{ c.title }}</h4>{% endif %}
+    {% if c.authors or c.journal or c.year %}
+    <div class="vela-citation-meta">
+      {%- if c.authors %}{{ c.authors }}{% endif -%}
+      {%- if c.authors and (c.journal or c.year) %} • {% endif -%}
+      {%- if c.journal %}{{ c.journal }}{% endif -%}
+      {%- if c.year %} ({{ c.year }}){% endif -%}
+    </div>
+    {% endif %}
+    {% if c.abstract_truncated %}
+    <p class="vela-citation-abstract">{{ c.abstract_truncated }}</p>
+    {% endif %}
+    {% if c.url %}
+    <a class="vela-citation-link" href="{{ c.url }}" target="_blank" rel="noopener nofollow"
+       data-citation-source="{{ c.source_type }}" data-citation-id="{{ loop.index }}">
+      {{ s.viewSource }} ↗
+    </a>
+    {% endif %}
+  </div>
+  {% endfor %}
+</section>
+{% endif %}
+
+<div class="vela-cta">
+  <p class="vela-cta-title">{{ s.cta_banner_title }}</p>
+  <a class="vela-cta-button" href="{{ from_explore_link }}">{{ s.cta_banner_button }}</a>
+</div>
+
+{# PRD § 4.6 PHASE D — PostHog events to be wired:
+   - explore_page_viewed   (on DOMContentLoaded, with {slug, locale, category})
+   - explore_cta_clicked   (on .vela-cta-button click)
+   - explore_citation_clicked (on .vela-citation-link click)
+   PHASE A leaves placeholder TODOs; no backend posthog client exists yet
+   (utils/analytics.ts is frontend-only — same constraint as /q/{share_id}).
+#}
+{% endblock %}

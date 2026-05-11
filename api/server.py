@@ -1957,6 +1957,70 @@ async def serve_share_page(share_id: str, request: Request, db: Session = Depend
 
 
 # ============================================================
+# Explore Pages — PRD § 4.6 PHASE A
+# Team-curated public SEO pages at /explore/{slug}. Reuses share_renderer
+# helpers and follows the same registration ordering rule as /q/{share_id}
+# above (before the Next.js catch-all). Uses Option B (in-handler) rate
+# limit matching /q/. PHASE B-E add sitemap, content import CLI,
+# breadcrumb UI, and PostHog wiring.
+# ============================================================
+from api.services import explore_renderer as _explore_renderer
+from fastapi import HTTPException as _HTTPException
+
+_EXPLORE_VIEW_LIMIT = 60
+_EXPLORE_VIEW_WINDOW = 60  # seconds
+
+
+def _resolve_explore_locale_from_request(request: Request, query_locale: str | None) -> str:
+    """Prefer ?locale= querystring (explicit), fall back to Accept-Language,
+    default 'en'. PHASE A first-class locales: en + zh-TW; others ship
+    machine-baseline copy and degrade to en at the renderer."""
+    if query_locale:
+        return query_locale
+    accept = (request.headers.get("accept-language") or "").lower()
+    if "zh-tw" in accept or "zh-hant" in accept:
+        return "zh-TW"
+    return "en"
+
+
+@app.get("/explore/{slug}")
+async def serve_explore_page(slug: str, request: Request, locale: str | None = None, db: Session = Depends(get_db)):
+    # Per-IP rate limit (Option B, in-handler — same pattern as /q/{share_id})
+    if not TEST_MODE:
+        ip = _get_client_ip(request)
+        key = f"{ip}:/explore/"
+        now = _time.time()
+        _rate_store[key] = [t for t in _rate_store[key] if now - t < _EXPLORE_VIEW_WINDOW]
+        if len(_rate_store[key]) >= _EXPLORE_VIEW_LIMIT:
+            return JSONResponse(
+                status_code=429,
+                content={"detail": f"Rate limit exceeded. Max {_EXPLORE_VIEW_LIMIT} requests per {_EXPLORE_VIEW_WINDOW}s."},
+            )
+        _rate_store[key].append(now)
+
+    resolved_locale = _resolve_explore_locale_from_request(request, locale)
+
+    try:
+        html, page = _explore_renderer.render_explore_page(db, slug, resolved_locale)
+    except _HTTPException as e:
+        return JSONResponse(status_code=e.status_code, content={"detail": e.detail})
+
+    # Non-blocking view_count + last_updated_at NOT touched (last_updated_at
+    # is content-update timestamp, not view timestamp).
+    try:
+        page.view_count = (page.view_count or 0) + 1
+        db.commit()
+    except Exception as e:
+        logger.warning("[explore] view_count update failed for %s/%s: %s", slug, resolved_locale, e)
+        try:
+            db.rollback()
+        except Exception:
+            pass
+
+    return Response(content=html, media_type="text/html; charset=utf-8")
+
+
+# ============================================================
 # Share API — PRD § 4.5 PHASE B
 # Endpoints: POST /api/share/create, POST /api/share/{id}/revoke,
 #            GET  /api/share/list,    POST /api/share/track-visit

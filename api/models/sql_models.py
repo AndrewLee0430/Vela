@@ -128,3 +128,28 @@ class SharedQuery(Base):
     last_viewed_at = Column(DateTime, nullable=True)
     flagged = Column(Boolean, nullable=False, default=False, index=True)
     locale = Column(String, nullable=True)                     # renderer i18n hint
+
+
+class ExplorePage(Base):
+    """PRD § 4.6 — Team-curated public SEO page at /explore/{slug}.
+
+    Reuses § 4.5 PHASE A's public-page renderer infrastructure
+    (share_renderer parse_research_sections / _augment_citations /
+    _markdown_to_html). Composite PK (slug, locale) allows the same
+    slug to ship in multiple languages linked via hreflang_group.
+    """
+    __tablename__ = "explore_page"
+
+    slug = Column(String, primary_key=True)
+    locale = Column(String, primary_key=True)
+    query_text = Column(Text, nullable=False)
+    answer_text = Column(Text, nullable=False)
+    citations = Column(JSON, nullable=False)                   # jsonb in Postgres
+    meta_title = Column(Text, nullable=False)
+    meta_description = Column(Text, nullable=False)
+    category = Column(String, nullable=True, index=True)
+    hreflang_group = Column(String, nullable=True, index=True)
+    status = Column(String, nullable=False, default="draft", index=True)
+    published_at = Column(DateTime, nullable=True)
+    last_updated_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+    view_count = Column(Integer, nullable=False, default=0)
