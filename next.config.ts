@@ -19,8 +19,10 @@ const nextConfig: NextConfig = {
     const backend = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
     return [
       { source: '/q/:share_id', destination: `${backend}/q/:share_id` },
+      { source: '/explore/:slug', destination: `${backend}/explore/:slug` },
       { source: '/api/share/:path*', destination: `${backend}/api/share/:path*` },
       { source: '/static/og/:filename', destination: `${backend}/static/og/:filename` },
+      { source: '/static/og/explore/:filename', destination: `${backend}/static/og/explore/:filename` },
     ];
   },
 };
