@@ -275,33 +275,107 @@ body {
 }
 .vela-citation-link:hover { text-decoration: underline; }
 
-/* Breadcrumb (PHASE A: placeholder slot; PHASE D fills with full UI) */
+/* Breadcrumb — PRD § 4.6 PHASE D */
 .vela-breadcrumb {
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   color: var(--vela-text-muted);
-  margin: 16px 0 0;
+  margin: 16px 0 8px;
+  line-height: 1.5;
 }
 .vela-breadcrumb a {
-  color: var(--vela-text-muted);
+  color: var(--vela-coral);
   text-decoration: none;
 }
-.vela-breadcrumb a:hover { color: var(--vela-text-primary); }
+.vela-breadcrumb a:hover { text-decoration: underline; }
+.vela-breadcrumb-sep {
+  margin: 0 6px;
+  color: var(--vela-text-subtle);
+}
+.vela-breadcrumb-current {
+  color: var(--vela-text-body);
+}
 
-/* Related queries (PHASE A: placeholder slot; PHASE D fills with full UI) */
+/* Related queries — PRD § 4.6 PHASE D */
 .vela-related-queries {
-  margin: 32px 0 24px;
+  margin: 32px 0;
+  padding: 24px 0 0;
+  border-top: 1px solid var(--vela-card-border);
+}
+.vela-related-queries-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 16px;
+  color: var(--vela-text-body);
+}
+.vela-related-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 12px;
+}
+.vela-related-card {
+  display: block;
   padding: 16px;
   background: var(--vela-card-bg);
   border: 1px solid var(--vela-card-border);
-  border-radius: 12px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background 0.15s, border-color 0.15s;
 }
-.vela-related-queries-title {
+.vela-related-card:hover {
+  background: var(--vela-card-bg-hover);
+  border-color: var(--vela-card-border-strong);
+}
+.vela-related-card-query {
+  margin: 0;
+  color: var(--vela-text-body);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+.vela-related-card-locale {
+  display: inline-block;
+  margin-top: 8px;
   font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
   color: var(--vela-text-muted);
+}
+
+/* Category listing — PRD § 4.6 PHASE D */
+.vela-category-list { margin: 16px 0 24px; }
+.vela-category-card {
+  display: block;
+  padding: 16px;
+  background: var(--vela-card-bg);
+  border: 1px solid var(--vela-card-border);
+  border-radius: 8px;
+  text-decoration: none;
+  margin-bottom: 12px;
+  transition: background 0.15s, border-color 0.15s;
+}
+.vela-category-card:hover {
+  background: var(--vela-card-bg-hover);
+  border-color: var(--vela-card-border-strong);
+}
+.vela-category-card h3 {
   margin: 0 0 8px;
+  color: var(--vela-text-primary);
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+.vela-category-card p {
+  margin: 0;
+  color: var(--vela-text-muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+.vela-category-card-meta {
+  display: block;
+  margin-top: 8px;
+  color: var(--vela-text-subtle);
+  font-size: 0.75rem;
+}
+.vela-category-empty {
+  color: var(--vela-text-muted);
+  font-size: 0.95rem;
+  padding: 24px 0;
 }
 
 /* CTA banner */

@@ -660,11 +660,20 @@ Execution sequence:
               2026-05-11 (TBD SHA). Notion sync DEFERRED indefinitely
               per editorial decision (markdown + git workflow preferred).
               Admin UI DEFERRED indefinitely (CLI sufficient).
-      Phase D: Related queries + breadcrumb UI (PRD § 4.6 需求 4) +
-              3 PostHog events (explore_page_viewed /
-              explore_cta_clicked / explore_citation_clicked) wired
+      Phase D: Breadcrumb + Category listing (/explore/category/{cat})
+              + Related queries (3-tier hreflang/category) UI +
+              3 PostHog events (explore_page_visited /
+              explore_to_query_clicked / explore_related_clicked)
+              wired via inline window.posthog (no-op until init
+              exposed) — SHIPPED 2026-05-12 (SHA pending). Known gap:
+              /explore index page (breadcrumb 'Explore' link target)
+              not built — defer to PHASE E follow-up.
       Phase E: Integration test (Google Rich Results Test /
-              robots.txt / hreflang validator)
+              robots.txt / hreflang validator) + 4-week GSC monitoring
+              after deploy. Follow-ups: /explore index page; expose
+              NEXT_PUBLIC_POSTHOG_KEY to Jinja2 template context so
+              PHASE D event snippet actually fires capture (currently
+              no-op).
 
       **Note:** PRD § 4.4 處方解析 MVP 的 share / explore 機制
       v1.3 不啟用 (per § 4.5 + § 4.6 對既有 PRD 章節的影響 § 4.4

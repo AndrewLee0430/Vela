@@ -1485,9 +1485,11 @@ Execute IMMEDIATELY AFTER Phase 0 末段 production deploy. Tasks:
 
 ---
 
-**4.6 SEO Explore Pages(v1.3 新增)** 🟡 PHASE A SHIPPED (2026-05-11) — PHASE B-E PENDING
+**4.6 SEO Explore Pages(v1.3 新增)** 🟡 PHASE A+B+C+D SHIPPED (2026-05-11~2026-05-12) — PHASE E PENDING
 
-> **(2026-05-11 PHASE A 修訂)** PHASE A 已 ship — ExplorePage schema (`migrations/005_add_explore_page.sql`) + /explore/{slug} routing + Jinja2 templates 重用 §4.5 PHASE A 的 share_renderer 助手 (parse_research_sections / _augment_citations / _markdown_to_html)。Slug pattern (lowercase + hyphens + ASCII alphanumeric, ≤ 80 chars) 在 route handler 強制驗證,違反 → 400。Draft / archived → 404 (避免揭露未公開頁面存在)。OG image 寫入 `static/og/explore/{slug}-{locale}.png` 與 §4.5 share OG 分離。PHASE B-E 仍 pending — sitemap-explore.xml、content import CLI、breadcrumb + related queries UI、3 PostHog events、Google Rich Results Test integration。
+> **(2026-05-12 PHASE D 修訂)** PHASE D 已 ship — Breadcrumb (Vela › Explore › {category} › {query})、Category listing route (`/explore/category/{category}`,registered BEFORE /explore/{slug} for path priority)、Related queries section (3-tier hreflang/category priority,8 cards cap)、3 PostHog events (`explore_page_visited` / `explore_to_query_clicked` / `explore_related_clicked`) 全部 wired。Events 透過 inline `window.posthog.capture()` with existence guard,在 init 未 expose 到 public Jinja2 template context 之前皆為 no-op (PHASE E candidate)。
+>
+> **(2026-05-11 PHASE A 修訂)** PHASE A 已 ship — ExplorePage schema (`migrations/005_add_explore_page.sql`) + /explore/{slug} routing + Jinja2 templates 重用 §4.5 PHASE A 的 share_renderer 助手 (parse_research_sections / _augment_citations / _markdown_to_html)。Slug pattern (lowercase + hyphens + ASCII alphanumeric, ≤ 80 chars) 在 route handler 強制驗證,違反 → 400。Draft / archived → 404 (避免揭露未公開頁面存在)。OG image 寫入 `static/og/explore/{slug}-{locale}.png` 與 §4.5 share OG 分離。PHASE E 仍 pending — Google Rich Results Test / robots.txt / hreflang validator + 4-week GSC monitoring + 兩個 PHASE D 留下的 known gap(/explore index page + PostHog init expose 到 public templates)。
 
 主動建立一組公開、SEO 優化的查詢頁面,佔據長尾搜尋,把 Google 流量導入 Vela。對齊 GTM_V1 § 5.4 L3「SEO 自然流量」機制,並利用 4.5 同一基礎設施。
 

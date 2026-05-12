@@ -18,6 +18,18 @@
 {% endblock %}
 
 {% block content %}
+<nav class="vela-breadcrumb" aria-label="Breadcrumb">
+  <a href="/">{{ s.breadcrumb_home }}</a>
+  <span class="vela-breadcrumb-sep">›</span>
+  <a href="/explore">{{ s.breadcrumb_explore }}</a>
+  {% if category %}
+  <span class="vela-breadcrumb-sep">›</span>
+  <a href="/explore/category/{{ category }}?locale={{ locale }}">{{ category }}</a>
+  {% endif %}
+  <span class="vela-breadcrumb-sep">›</span>
+  <span class="vela-breadcrumb-current">{{ query_text|truncate(60) }}</span>
+</nav>
+
 <h1 class="vela-query-title">{{ query_text }}</h1>
 
 <div class="vela-answer-stack">
@@ -76,16 +88,117 @@
 </section>
 {% endif %}
 
+{% if related_queries %}
+<section class="vela-related-queries">
+  <h2 class="vela-related-queries-title">{{ s.related_queries_title }}</h2>
+  <div class="vela-related-grid">
+    {% for related in related_queries %}
+    <a class="vela-related-card"
+       href="/explore/{{ related.slug }}?locale={{ related.locale }}"
+       data-from-slug="{{ slug }}"
+       data-to-slug="{{ related.slug }}"
+       data-link-type="{{ related.link_type }}">
+      <p class="vela-related-card-query">{{ related.query_text|truncate(80) }}</p>
+      {% if related.locale != locale %}
+      <span class="vela-related-card-locale">{{ s.related_queries_locale_badge_fmt.format(locale_name=related.locale) }}</span>
+      {% endif %}
+    </a>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
 <div class="vela-cta">
   <p class="vela-cta-title">{{ s.cta_banner_title }}</p>
   <a class="vela-cta-button" href="{{ from_explore_link }}">{{ s.cta_banner_button }}</a>
 </div>
 
-{# PRD § 4.6 PHASE D — PostHog events to be wired:
-   - explore_page_viewed   (on DOMContentLoaded, with {slug, locale, category})
-   - explore_cta_clicked   (on .vela-cta-button click)
-   - explore_citation_clicked (on .vela-citation-link click)
-   PHASE A leaves placeholder TODOs; no backend posthog client exists yet
-   (utils/analytics.ts is frontend-only — same constraint as /q/{share_id}).
-#}
+<script>
+(function () {
+  // PRD § 4.6 PHASE D — PostHog events.
+  // SSR Jinja2 pages don't load the React posthog-js init from
+  // pages/_app.tsx, so window.posthog may not exist. Events no-op
+  // until init is exposed to public templates (PHASE E candidate);
+  // the contract stays stable so the swap is one line.
+  var slug = {{ slug | tojson }};
+  var locale = {{ locale | tojson }};
+  var pageLoadAt = Date.now();
+  var maxScrollDepth = 0;
+
+  function getScrollDepth() {
+    var doc = document.documentElement;
+    var h = doc.scrollHeight || 1;
+    var v = (window.scrollY + window.innerHeight) / h;
+    return Math.min(1.0, v);
+  }
+
+  function fireEvent(name, props) {
+    try {
+      if (typeof window.posthog !== 'undefined' &&
+          typeof window.posthog.capture === 'function') {
+        window.posthog.capture(name, props);
+      }
+    } catch (e) { /* never break the page */ }
+  }
+
+  // explore_page_visited
+  document.addEventListener('DOMContentLoaded', function () {
+    var visitedKey = 'vela_visited_explores';
+    var visited = [];
+    try {
+      var raw = localStorage.getItem(visitedKey);
+      if (raw) visited = JSON.parse(raw) || [];
+    } catch (e) { visited = []; }
+
+    var isFirstView = visited.indexOf(slug) === -1;
+    if (isFirstView) {
+      visited.push(slug);
+      if (visited.length > 100) visited = visited.slice(-100);
+      try { localStorage.setItem(visitedKey, JSON.stringify(visited)); } catch (e) {}
+    }
+
+    var referrerDomain = '';
+    try {
+      if (document.referrer) referrerDomain = new URL(document.referrer).hostname || '';
+    } catch (e) {}
+
+    fireEvent('explore_page_visited', {
+      slug: slug,
+      locale: locale,
+      referrer_domain: referrerDomain,
+      is_first_view: isFirstView,
+    });
+  });
+
+  // Track max scroll depth
+  window.addEventListener('scroll', function () {
+    var d = getScrollDepth();
+    if (d > maxScrollDepth) maxScrollDepth = d;
+  }, { passive: true });
+
+  // Delegated click handler — CTA + related cards
+  document.addEventListener('click', function (e) {
+    var t = e.target;
+    if (!t || !t.closest) return;
+
+    var cta = t.closest('.vela-cta-button');
+    if (cta) {
+      fireEvent('explore_to_query_clicked', {
+        slug: slug,
+        time_on_page_sec: Math.round((Date.now() - pageLoadAt) / 1000),
+        scroll_depth: Math.round(maxScrollDepth * 100) / 100,
+      });
+    }
+
+    var related = t.closest('.vela-related-card');
+    if (related) {
+      fireEvent('explore_related_clicked', {
+        from_slug: related.getAttribute('data-from-slug') || slug,
+        to_slug: related.getAttribute('data-to-slug') || '',
+        link_type: related.getAttribute('data-link-type') || 'category',
+      });
+    }
+  });
+})();
+</script>
 {% endblock %}

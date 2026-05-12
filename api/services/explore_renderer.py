@@ -190,11 +190,18 @@ def render_explore_page(db, slug: str, requested_locale: str | None) -> tuple[st
 
     hreflang_alternates = _hreflang_alternates(db, page, locale)
 
+    related_queries = get_related_queries(
+        db, slug, locale,
+        getattr(page, "category", None),
+        getattr(page, "hreflang_group", None),
+    )
+
     ctx = {
         "html_lang": _HTML_LANG_MAP.get(locale, "en"),
         "s": s,
         "slug": slug,
         "locale": locale,
+        "category": getattr(page, "category", None) or "",
         "query_text": page.query_text or "",
         "answer_text": page.answer_text or "",
         "meta_title": page.meta_title or page.query_text or "Vela",
@@ -207,6 +214,7 @@ def render_explore_page(db, slug: str, requested_locale: str | None) -> tuple[st
         "citations": augmented,
         "source_chips": source_chips,
         "hreflang_alternates": hreflang_alternates,
+        "related_queries": related_queries,
         "from_explore_link": f"/?from_explore={slug}",
     }
 
@@ -221,3 +229,172 @@ def _share_renderer_locale(locale: str) -> str:
     the explore page-level strings still localize via explore_strings.
     """
     return "zh-TW" if locale == "zh-TW" else "en"
+
+
+_RELATED_QUERIES_CAP = 8
+
+
+def get_related_queries(db, current_slug: str, current_locale: str,
+                        category: str | None, hreflang_group: str | None) -> list[dict]:
+    """PRD § 4.6 PHASE D — pick up to 8 related ExplorePage rows.
+
+    3-tier priority:
+      Tier 1 (link_type='hreflang'): same hreflang_group, different locale.
+      Tier 2 (link_type='category'): same category, different slug, current locale.
+      Tier 3 (link_type='category'): same category, different slug, any locale
+                                     (fallback when Tier 2 is sparse).
+
+    Returns list of dicts ready for the template:
+      {slug, locale, query_text, meta_description, link_type}
+    """
+    from api.models.sql_models import ExplorePage as _ExplorePage
+
+    out: list[dict] = []
+    seen: set[tuple[str, str]] = {(current_slug, current_locale)}
+
+    # Tier 1 — hreflang siblings (cross-locale).
+    if hreflang_group:
+        tier1 = (
+            db.query(_ExplorePage)
+            .filter(
+                _ExplorePage.hreflang_group == hreflang_group,
+                _ExplorePage.status == "published",
+                _ExplorePage.locale != current_locale,
+            )
+            .all()
+        )
+        for r in tier1:
+            key = (r.slug, r.locale)
+            if key in seen:
+                continue
+            seen.add(key)
+            out.append({
+                "slug": r.slug,
+                "locale": r.locale,
+                "query_text": r.query_text or "",
+                "meta_description": r.meta_description or "",
+                "link_type": "hreflang",
+            })
+            if len(out) >= _RELATED_QUERIES_CAP:
+                return out
+
+    # Tier 2 — same category, current locale.
+    if category:
+        tier2 = (
+            db.query(_ExplorePage)
+            .filter(
+                _ExplorePage.category == category,
+                _ExplorePage.locale == current_locale,
+                _ExplorePage.status == "published",
+                _ExplorePage.slug != current_slug,
+            )
+            .order_by(_ExplorePage.last_updated_at.desc())
+            .all()
+        )
+        for r in tier2:
+            key = (r.slug, r.locale)
+            if key in seen:
+                continue
+            seen.add(key)
+            out.append({
+                "slug": r.slug,
+                "locale": r.locale,
+                "query_text": r.query_text or "",
+                "meta_description": r.meta_description or "",
+                "link_type": "category",
+            })
+            if len(out) >= _RELATED_QUERIES_CAP:
+                return out
+
+        # Tier 3 — same category, any locale (fallback if Tier 2 sparse).
+        tier3 = (
+            db.query(_ExplorePage)
+            .filter(
+                _ExplorePage.category == category,
+                _ExplorePage.status == "published",
+                _ExplorePage.slug != current_slug,
+            )
+            .order_by(_ExplorePage.last_updated_at.desc())
+            .all()
+        )
+        for r in tier3:
+            key = (r.slug, r.locale)
+            if key in seen:
+                continue
+            seen.add(key)
+            out.append({
+                "slug": r.slug,
+                "locale": r.locale,
+                "query_text": r.query_text or "",
+                "meta_description": r.meta_description or "",
+                "link_type": "category",
+            })
+            if len(out) >= _RELATED_QUERIES_CAP:
+                return out
+
+    return out
+
+
+def render_category_listing(db, category: str, requested_locale: str | None) -> str:
+    """PRD § 4.6 PHASE D — list all published pages in a category.
+
+    Returns HTML. Raises HTTPException(400) for invalid category slug,
+    HTTPException(404) when no published rows match.
+
+    Category slug uses the SAME pattern as explore page slug
+    (lowercase + hyphens, ≤80 chars) — content authors are expected
+    to enter URL-safe categories at import time.
+    """
+    validate_slug(category)
+    locale = _resolve_explore_locale(requested_locale)
+
+    from api.i18n.explore_strings import get_explore_strings
+    from api.models.sql_models import ExplorePage as _ExplorePage
+
+    rows = (
+        db.query(_ExplorePage)
+        .filter(
+            _ExplorePage.category == category,
+            _ExplorePage.status == "published",
+        )
+        .order_by(_ExplorePage.last_updated_at.desc())
+        .all()
+    )
+    if not rows:
+        raise HTTPException(status_code=404, detail="Not found.")
+
+    s = get_explore_strings(locale)
+    base = _base_url()
+
+    pages: list[dict[str, Any]] = []
+    for r in rows:
+        pages.append({
+            "slug": r.slug,
+            "locale": r.locale,
+            "query_text": r.query_text or "",
+            "meta_description": _truncate(r.meta_description or "", 160),
+            "last_updated_at": r.last_updated_at.strftime("%Y-%m-%d") if r.last_updated_at else "",
+        })
+
+    title = s.get("category_listing_title", "{category} pages").format(category=category)
+
+    ctx = {
+        "html_lang": _HTML_LANG_MAP.get(locale, "en"),
+        "s": s,
+        "category": category,
+        "locale": locale,
+        "pages": pages,
+        "meta_title": f"{title} | Vela",
+        "meta_description": _truncate(title, 160),
+        "og_title": _truncate(title, 80) + " · Vela",
+        "og_description": _truncate(title, 160),
+        # Category listings reuse the explore-folder placeholder OG; no
+        # per-category OG image in PHASE D.
+        "og_image": f"{base}/static/og/explore/default.png",
+        "canonical_url": f"{base}/explore/category/{category}",
+        # Category listings have no multi-locale siblings to advertise.
+        "hreflang_alternates": [],
+        "category_title": title,
+    }
+
+    return _env.get_template("category_listing.jinja2").render(**ctx)

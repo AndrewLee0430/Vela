@@ -1983,6 +1983,37 @@ def _resolve_explore_locale_from_request(request: Request, query_locale: str | N
     return "en"
 
 
+@app.get("/explore/category/{category}")
+async def serve_explore_category(category: str, request: Request, locale: str | None = None, db: Session = Depends(get_db)):
+    """PRD § 4.6 PHASE D — category listing page.
+
+    Registered BEFORE /explore/{slug} so FastAPI's path-matching
+    priority resolves /explore/category/foo to this handler (not to
+    /explore/{slug=category} which would 400 on validate_slug if
+    `category` contained dots/etc).
+    """
+    if not TEST_MODE:
+        ip = _get_client_ip(request)
+        key = f"{ip}:/explore/category/"
+        now = _time.time()
+        _rate_store[key] = [t for t in _rate_store[key] if now - t < _EXPLORE_VIEW_WINDOW]
+        if len(_rate_store[key]) >= _EXPLORE_VIEW_LIMIT:
+            return JSONResponse(
+                status_code=429,
+                content={"detail": f"Rate limit exceeded. Max {_EXPLORE_VIEW_LIMIT} requests per {_EXPLORE_VIEW_WINDOW}s."},
+            )
+        _rate_store[key].append(now)
+
+    resolved_locale = _resolve_explore_locale_from_request(request, locale)
+
+    try:
+        html = _explore_renderer.render_category_listing(db, category, resolved_locale)
+    except _HTTPException as e:
+        return JSONResponse(status_code=e.status_code, content={"detail": e.detail})
+
+    return Response(content=html, media_type="text/html; charset=utf-8")
+
+
 @app.get("/explore/{slug}")
 async def serve_explore_page(slug: str, request: Request, locale: str | None = None, db: Session = Depends(get_db)):
     # Per-IP rate limit (Option B, in-handler — same pattern as /q/{share_id})

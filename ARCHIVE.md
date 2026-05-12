@@ -17,6 +17,12 @@ When new entries are added: keep one-liner format, no detail. For full context, 
 
 ---
 
+## 2026-05-12
+
+- `[PRD §4.6]` PHASE D — Breadcrumb + Category listing + Related queries + 3 PostHog events. Breadcrumb (Vela › Explore › {category} › {query}) inserted at top of /explore/{slug}; category segment links to new /explore/category/{category} listing route (registered BEFORE /explore/{slug} for path priority). render_category_listing() lists all published rows in a category (ORDER BY last_updated_at DESC), 404 when empty, 400 for invalid category slug. get_related_queries() picks up to 8 siblings with 3-tier priority: Tier 1 same hreflang_group (different locale, link_type='hreflang' + locale badge), Tier 2 same category + current locale (link_type='category'), Tier 3 same category + any locale (fallback). Section hidden when 0 related. New category_listing.jinja2 extends explore_base.jinja2; q_explore.jinja2 grows breadcrumb + related-queries section + inline PostHog event script. Three events fire via window.posthog.capture() with existence guard (no-op until init exposed to public templates — PHASE E candidate): explore_page_visited {slug, locale, referrer_domain, is_first_view via vela_visited_explores localStorage flag} on DOMContentLoaded; explore_to_query_clicked {slug, time_on_page_sec, scroll_depth} on .vela-cta-button click; explore_related_clicked {from_slug, to_slug, link_type} on .vela-related-card click via data-* attributes. explore_strings.py +3 new keys (category_listing_title / category_listing_empty / related_queries_locale_badge_fmt) × 16 locales. scripts/smoke_explore_phase_d.py — 20 assertions PASS. Known gap: /explore index page (breadcrumb 'Explore' link) returns 404 until PHASE E follow-up. (SHA pending)
+
+---
+
 ## 2026-05-11
 
 - `[PRD §4.6]` PHASE C — Content import CLI. New scripts/explore_cli.py with 6 subcommands (sync / list / publish / unpublish / archive / from-vela). Markdown frontmatter (YAML) → ExplorePage DB UPSERT, idempotent via md5 content hash. `from-vela` calls the Vela research pipeline in-process via TestClient (no uvicorn dep) and writes a draft markdown stub with status='draft' hardcoded (editorial gate, never auto-publishes). content/explore/.gitkeep + README.md scaffold the authoring directory. scripts/smoke_explore_phase_c.py — 27 assertions PASS covering sync INSERT/UPDATE/Unchanged/Errored, list, status transitions, validation errors (missing field / invalid slug / filename mismatch). Verified `list` against live Neon DB (2 dev-seed rows visible).
