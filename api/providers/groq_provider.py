@@ -23,6 +23,7 @@ from api.providers.base import (
     ProviderCapability,
     CompletionRequest,
     CompletionResponse,
+    StreamChunk,
     EmbeddingRequest,
     EmbeddingResponse,
 )
@@ -86,12 +87,14 @@ class GroqProvider(Provider):
         except APIError as e:
             raise VelaError(VelaErrorCode.LLM_PROVIDER_UNAVAILABLE, str(e), "groq", req.model, e)
 
-    async def stream(self, req: CompletionRequest) -> AsyncIterator[str]:
+    async def stream(self, req: CompletionRequest) -> AsyncIterator[StreamChunk]:
         try:
             kwargs = {
                 "model": req.model,
                 "messages": req.messages,
                 "stream": True,
+                # Groq is OpenAI-compatible; same usage-in-stream contract.
+                "stream_options": {"include_usage": True},
             }
             if req.temperature is not None:
                 kwargs["temperature"] = req.temperature
@@ -102,8 +105,14 @@ class GroqProvider(Provider):
             stream = await self._client.chat.completions.create(**kwargs)
             async for chunk in stream:
                 delta = chunk.choices[0].delta.content if chunk.choices else None
-                if delta:
-                    yield delta
+                usage = None
+                if getattr(chunk, "usage", None):
+                    usage = {
+                        "prompt_tokens": chunk.usage.prompt_tokens,
+                        "completion_tokens": chunk.usage.completion_tokens,
+                    }
+                if delta is not None or usage is not None:
+                    yield StreamChunk(delta=delta, usage=usage)
         except RateLimitError as e:
             raise VelaError(VelaErrorCode.LLM_RATE_LIMITED, str(e), "groq", req.model, e)
         except AuthenticationError as e:

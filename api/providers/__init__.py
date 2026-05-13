@@ -12,7 +12,7 @@ Usage:
     response = await provider.generate(...)
 """
 
-from api.providers.base import Provider, ProviderCapability
+from api.providers.base import Provider, ProviderCapability, StreamChunk, CompletionRequest, CompletionResponse, EmbeddingRequest, EmbeddingResponse
 from api.providers.errors import VelaError, VelaErrorCode
 from api.providers.factory import (
     get_generator_provider,

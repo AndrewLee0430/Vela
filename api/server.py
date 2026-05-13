@@ -44,7 +44,6 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from fastapi_clerk_auth import ClerkConfig, ClerkHTTPBearer, HTTPAuthorizationCredentials
-from openai import OpenAI, AsyncOpenAI
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
 
@@ -448,10 +447,32 @@ retriever = HybridRetriever(
     enable_pubmed=True,
     enable_fda=True
 )
-generator = AnswerGenerator(model="gpt-4.1")
+generator = AnswerGenerator()
 fda_client = FDAClient()
-openai_async_client = AsyncOpenAI()
 _judge = LLMJudge()
+
+# §2.1 PHASE D (PRD v1.4 + ADR 005): module-level lazy bindings for the
+# Verify and Vision task layers. Replaces former openai_async_client
+# singleton. Each binding is created on first use (cached for the process).
+from api.providers import get_verify_provider, get_vision_provider
+from api.providers.base import CompletionRequest
+
+_verify_binding = None
+_vision_binding = None
+
+
+def _get_verify():
+    global _verify_binding
+    if _verify_binding is None:
+        _verify_binding = get_verify_provider()
+    return _verify_binding
+
+
+def _get_vision():
+    global _vision_binding
+    if _vision_binding is None:
+        _vision_binding = get_vision_provider()
+    return _vision_binding
 
 
 async def _run_judge_background(audit_id: str, query: str, answer: str, documents: list):
@@ -579,7 +600,9 @@ async def research_query(
                 used=ANONYMOUS_DAILY_LIMIT - remaining,
                 limit=ANONYMOUS_DAILY_LIMIT,
             )
-        model_override: Optional[str] = "gpt-4.1-mini"
+        # §2.1 PHASE D: anon path uses GENERATOR_FALLBACK_MODEL (default gpt-4.1-mini)
+        # so the literal stays env-var-driven. Preserves Decision 001 v0.3 A8 intent.
+        model_override: Optional[str] = generator._fallback_model
     else:
         logger.info("[Research] user=%s query_length=%d", user_id, len(body.question))
         if not TEST_MODE:
@@ -833,15 +856,17 @@ async def verify_drug_interaction(
                 f"Context: {body.patient_context or 'None'}\n"
                 "(No FDA label data available — rely on general clinical pharmacology knowledge.)"
             )
-            fb = await openai_async_client.chat.completions.create(
-                model="gpt-4.1-mini",
+            verify_binding = _get_verify()
+            fb_req = CompletionRequest(
+                model=verify_binding.model,
                 messages=[
                     {"role": "system", "content": fallback_system},
                     {"role": "user", "content": fb_user_content}
                 ],
-                response_format={"type": "json_object"}
+                response_format={"type": "json_object"},
             )
-            fb_data = json.loads(fb.choices[0].message.content)
+            fb = await verify_binding.provider.complete(fb_req)
+            fb_data = json.loads(fb.content)
             fb_interactions = [
                 DrugInteraction(
                     drug_pair=tuple(item["drugs"][:2]),
@@ -864,9 +889,9 @@ async def verify_drug_interaction(
                 try:
                     from api.services.cost_tracker import log_api_cost
                     await log_api_cost(
-                        db, None, "verify", "gpt-4.1-mini",
-                        fb.usage.prompt_tokens,
-                        fb.usage.completion_tokens,
+                        db, None, "verify", verify_binding.model,
+                        fb.input_tokens,
+                        fb.output_tokens,
                     )
                 except Exception as e:
                     logger.error("Cost log error (verify fallback anon): %s", e)
@@ -875,9 +900,9 @@ async def verify_drug_interaction(
                 try:
                     from api.services.cost_tracker import log_api_cost
                     await log_api_cost(
-                        db, user_id, "verify", "gpt-4.1-mini",
-                        fb.usage.prompt_tokens,
-                        fb.usage.completion_tokens,
+                        db, user_id, "verify", verify_binding.model,
+                        fb.input_tokens,
+                        fb.output_tokens,
                     )
                 except Exception as e:
                     logger.error("Cost log error (verify fallback): %s", e)
@@ -925,17 +950,19 @@ async def verify_drug_interaction(
         f"FDA Data:\n{fda_context}"
     )
 
+    verify_binding = _get_verify()
     for attempt in range(2):
         try:
-            completion = await openai_async_client.chat.completions.create(
-                model="gpt-4.1-mini",
+            main_req = CompletionRequest(
+                model=verify_binding.model,
                 messages=[
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": main_user_content}
                 ],
-                response_format={"type": "json_object"}
+                response_format={"type": "json_object"},
             )
-            analysis = json.loads(completion.choices[0].message.content)
+            completion = await verify_binding.provider.complete(main_req)
+            analysis = json.loads(completion.content)
             temp = []
             for item in analysis.get("interactions", []):
                 drugs = item.get("drugs", [])
@@ -993,7 +1020,7 @@ async def verify_drug_interaction(
     else:
         await deduct_credits(db, user_id, "verify")
 
-    # Cost logging（Verify 用 gpt-4.1-mini，從 completion 取得 usage; v0.4 A10: anon → user_id=None）
+    # Cost logging (§2.1 PHASE D: model from verify_binding; v0.4 A10: anon → user_id=None)
     try:
         from api.services.cost_tracker import log_api_cost
         if analysis_success and 'completion' in locals():
@@ -1001,9 +1028,9 @@ async def verify_drug_interaction(
                 db,
                 None if is_anonymous else user_id,
                 "verify",
-                "gpt-4.1-mini",
-                completion.usage.prompt_tokens,
-                completion.usage.completion_tokens
+                verify_binding.model,
+                completion.input_tokens,
+                completion.output_tokens,
             )
     except Exception as e:
         logger.error("Cost log error: %s", e)
@@ -1099,7 +1126,8 @@ async def explain_report(
                         if usage:
                             await log_api_cost(
                                 db, user_id, "explain",
-                                usage.get("model", "gpt-4.1"),
+                                # Default to generator model (Explain Stage 3 uses GENERATOR_* per PHASE B).
+                                usage.get("model", generator.model),
                                 usage.get("prompt_tokens", 0),
                                 usage.get("completion_tokens", 0)
                             )
@@ -1189,8 +1217,9 @@ async def explain_extract_image(
     media_type = file.content_type or "image/jpeg"
 
     try:
-        response = await openai_async_client.chat.completions.create(
-            model="gpt-4o",
+        vision_binding = _get_vision()
+        vision_req = CompletionRequest(
+            model=vision_binding.model,
             messages=[
                 {
                     "role": "system",
@@ -1209,7 +1238,8 @@ async def explain_extract_image(
             max_tokens=4000,
             temperature=0,
         )
-        extracted = response.choices[0].message.content or ""
+        response = await vision_binding.provider.complete(vision_req)
+        extracted = response.content or ""
         return {"text": extracted.strip()}
     except Exception as e:
         logger.error("Image extraction error: %s", type(e).__name__)

@@ -16,6 +16,7 @@ from api.providers.base import (
     ProviderCapability,
     CompletionRequest,
     CompletionResponse,
+    StreamChunk,
     EmbeddingRequest,
     EmbeddingResponse,
 )
@@ -77,24 +78,34 @@ class OpenAIProvider(Provider):
         except APIError as e:
             raise VelaError(VelaErrorCode.LLM_PROVIDER_UNAVAILABLE, str(e), "openai", req.model, e)
 
-    async def stream(self, req: CompletionRequest) -> AsyncIterator[str]:
+    async def stream(self, req: CompletionRequest) -> AsyncIterator[StreamChunk]:
         try:
             kwargs = {
                 "model": req.model,
                 "messages": req.messages,
                 "stream": True,
+                # Surface final usage chunk so callers can log cost-tracking
+                # metrics. The final SSE chunk has choices=[] and usage set.
+                "stream_options": {"include_usage": True},
             }
             if req.temperature is not None:
                 kwargs["temperature"] = req.temperature
             if req.max_tokens is not None:
                 kwargs["max_tokens"] = req.max_tokens
+            # Caller-provided extra wins (allows opting out / overriding stream_options).
             kwargs.update(req.extra)
 
             stream = await self._client.chat.completions.create(**kwargs)
             async for chunk in stream:
                 delta = chunk.choices[0].delta.content if chunk.choices else None
-                if delta:
-                    yield delta
+                usage = None
+                if getattr(chunk, "usage", None):
+                    usage = {
+                        "prompt_tokens": chunk.usage.prompt_tokens,
+                        "completion_tokens": chunk.usage.completion_tokens,
+                    }
+                if delta is not None or usage is not None:
+                    yield StreamChunk(delta=delta, usage=usage)
         except RateLimitError as e:
             raise VelaError(VelaErrorCode.LLM_RATE_LIMITED, str(e), "openai", req.model, e)
         except AuthenticationError as e:

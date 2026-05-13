@@ -5,11 +5,17 @@ v2.5 改進：
 2. 所有路徑（RAG / Fallback / non-stream）明確注入語言指令
 3. FALLBACK_PROMPTS 支援所有 10 種語言
 4. 偵測不到語言時，不強制注入，讓 system prompt 自然處理
+
+§2.1 PHASE D (PRD v1.4 + ADR 005): wired through api.providers via
+get_generator_provider(). Primary model + fallback model both come
+from the binding (GENERATOR_PROVIDER / GENERATOR_MODEL /
+GENERATOR_FALLBACK_MODEL env vars). Module-level RAG_MODEL +
+FALLBACK_MODEL constants removed.
 """
 
 import logging
 from typing import List, AsyncGenerator, Optional
-from openai import AsyncOpenAI
+
 from api.models.schemas import (
     RetrievedDocument,
     Citation,
@@ -17,12 +23,10 @@ from api.models.schemas import (
     StreamEventType
 )
 from api.utils.language_detector import detect_language, get_language_instruction
+from api.providers import get_generator_provider
+from api.providers.base import CompletionRequest
 
 logger = logging.getLogger(__name__)
-
-# 模型設定
-RAG_MODEL      = "gpt-4.1"
-FALLBACK_MODEL = "gpt-4.1-mini"
 
 ERROR_MESSAGES = {
     "error": (
@@ -105,9 +109,12 @@ IMPORTANT: Respond in the SAME language as the visit notes. Never switch to Engl
 
 class AnswerGenerator:
 
-    def __init__(self, model: str = RAG_MODEL):
-        self.model  = model
-        self.client = AsyncOpenAI()
+    def __init__(self, model: Optional[str] = None):
+        binding = get_generator_provider()
+        self._provider = binding.provider
+        # Explicit constructor model wins over factory default (test-friendly).
+        self.model = model or binding.model
+        self._fallback_model = binding.fallback_model or binding.model
 
     # ─── Public: streaming ──────────────────────────────────────────────────
 
@@ -141,35 +148,33 @@ class AnswerGenerator:
         citations     = [doc.to_citation(citation_id=i + 1) for i, doc in enumerate(documents)]
 
         try:
-            stream = await self.client.chat.completions.create(
+            req = CompletionRequest(
                 model=effective_model,
                 messages=[
                     {"role": "system", "content": system_prompt},
                     {"role": "user",   "content": user_prompt}
                 ],
-                stream=True,
-                stream_options={"include_usage": True},
                 temperature=0.2,
-                max_tokens=2500
+                max_tokens=2500,
             )
-            async for chunk in stream:
-                # 最後一個 chunk choices 可能是空的（usage chunk）
-                if chunk.choices and chunk.choices[0].delta.content:
+            async for chunk in self._provider.stream(req):
+                if chunk.delta:
                     yield StreamEvent(
                         type=StreamEventType.ANSWER,
-                        content=chunk.choices[0].delta.content
+                        content=chunk.delta
                     )
-                # 最後一個 chunk 包含 usage
                 if chunk.usage and usage_out is not None:
                     usage_out.append({
                         "model": effective_model,
-                        "prompt_tokens": chunk.usage.prompt_tokens,
-                        "completion_tokens": chunk.usage.completion_tokens
+                        "prompt_tokens": chunk.usage["prompt_tokens"],
+                        "completion_tokens": chunk.usage["completion_tokens"]
                     })
             yield StreamEvent(type=StreamEventType.CITATIONS, content=citations)
             yield StreamEvent(type=StreamEventType.DONE)
 
         except Exception as e:
+            # Broad Exception catches VelaError (provider errors) + anything
+            # else. Preserves fail-CLOSED behavior: stream emits error event.
             yield StreamEvent(type=StreamEventType.ERROR, content=ERROR_MESSAGES["error"])
             logger.error("Generation error: %s", e, exc_info=True)
             yield StreamEvent(type=StreamEventType.DONE)
@@ -197,16 +202,17 @@ class AnswerGenerator:
                 lang_instruction = get_language_instruction(resolved_lang)
                 user_content     = f"{question}\n\n{lang_instruction}" if lang_instruction else question
 
-                completion = await self.client.chat.completions.create(
-                    model=FALLBACK_MODEL,
+                req = CompletionRequest(
+                    model=self._fallback_model,
                     messages=[
                         {"role": "system", "content": system_prompt},
                         {"role": "user",   "content": user_content}
                     ],
                     temperature=0.2,
-                    max_tokens=2500
+                    max_tokens=2500,
                 )
-                return completion.choices[0].message.content, []
+                completion = await self._provider.complete(req)
+                return completion.content, []
             except Exception as e:
                 logger.error("Fallback generation error (non-stream): %s", e, exc_info=True)
                 return ERROR_MESSAGES["error"], []
@@ -218,16 +224,17 @@ class AnswerGenerator:
         citations     = [doc.to_citation(citation_id=i + 1) for i, doc in enumerate(documents)]
 
         try:
-            completion = await self.client.chat.completions.create(
+            req = CompletionRequest(
                 model=effective_model,
                 messages=[
                     {"role": "system", "content": system_prompt},
                     {"role": "user",   "content": user_prompt}
                 ],
                 temperature=0.2,
-                max_tokens=2500
+                max_tokens=2500,
             )
-            return completion.choices[0].message.content, citations
+            completion = await self._provider.complete(req)
+            return completion.content, citations
         except Exception as e:
             logger.error("Generation error (non-stream): %s", e, exc_info=True)
             return ERROR_MESSAGES["error"], citations
@@ -249,28 +256,26 @@ class AnswerGenerator:
         try:
             yield StreamEvent(type=StreamEventType.FALLBACK, content="no_literature")
 
-            stream = await self.client.chat.completions.create(
-                model=FALLBACK_MODEL,
+            req = CompletionRequest(
+                model=self._fallback_model,
                 messages=[
                     {"role": "system", "content": system_prompt},
                     {"role": "user",   "content": user_content}
                 ],
-                stream=True,
-                stream_options={"include_usage": True},
                 temperature=0.2,
-                max_tokens=2500
+                max_tokens=2500,
             )
-            async for chunk in stream:
-                if chunk.choices and chunk.choices[0].delta.content:
+            async for chunk in self._provider.stream(req):
+                if chunk.delta:
                     yield StreamEvent(
                         type=StreamEventType.ANSWER,
-                        content=chunk.choices[0].delta.content
+                        content=chunk.delta
                     )
                 if chunk.usage and usage_out is not None:
                     usage_out.append({
-                        "model": FALLBACK_MODEL,
-                        "prompt_tokens": chunk.usage.prompt_tokens,
-                        "completion_tokens": chunk.usage.completion_tokens
+                        "model": self._fallback_model,
+                        "prompt_tokens": chunk.usage["prompt_tokens"],
+                        "completion_tokens": chunk.usage["completion_tokens"]
                     })
             yield StreamEvent(type=StreamEventType.CITATIONS, content=[])
             yield StreamEvent(type=StreamEventType.DONE)

@@ -50,6 +50,21 @@ class CompletionResponse:
 
 
 @dataclass
+class StreamChunk:
+    """One unit yielded from Provider.stream().
+
+    Most chunks carry a token `delta`. The final chunk carries `usage` only
+    (delta is None) when the provider supports usage-in-stream (OpenAI's
+    stream_options={"include_usage": True} contract; Groq same on OpenAI-compat).
+
+    Callers should treat delta and usage independently: a chunk may have one,
+    the other, or in some providers both.
+    """
+    delta: str | None = None
+    usage: dict[str, int] | None = None  # {"prompt_tokens": N, "completion_tokens": N} on final chunk
+
+
+@dataclass
 class EmbeddingRequest:
     """Embedding request."""
     model: str
@@ -82,8 +97,13 @@ class Provider(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def stream(self, req: CompletionRequest) -> AsyncIterator[str]:
-        """Streaming completion. Used for generator (RAG)."""
+    async def stream(self, req: CompletionRequest) -> AsyncIterator[StreamChunk]:
+        """Streaming completion. Used for generator (RAG).
+
+        Yields StreamChunk objects. Token chunks have `delta` set; the final
+        chunk (when the provider supports it) has `usage` set so callers can
+        log cost-tracking metrics accurately.
+        """
         raise NotImplementedError
 
     @abstractmethod
