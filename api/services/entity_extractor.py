@@ -1,15 +1,20 @@
 """
 Explain Feature — Stage 1: Entity Extraction
-Uses GPT-4.1-mini to extract medical entities with bilingual output
+
+§2.1 PHASE B (PRD v1.4 + ADR 005): wired through api.providers via
+get_lightweight_provider(). Model + provider configurable via
+LIGHTWEIGHT_PROVIDER / LIGHTWEIGHT_MODEL env vars.
 """
 
 import json
 import logging
-from openai import AsyncOpenAI
+
 from api.models.explain_schemas import (
     ExtractedEntities, LabTestEntity, MedicationEntity,
     DiagnosisEntity, VitalSignEntity
 )
+from api.providers import get_lightweight_provider
+from api.providers.base import CompletionRequest
 
 logger = logging.getLogger(__name__)
 
@@ -41,34 +46,42 @@ Rules:
 - detect input_language from the primary language of the input text"""
 
 
-async def extract_entities(report_text: str, openai_client: AsyncOpenAI) -> ExtractedEntities:
+async def extract_entities(report_text: str) -> ExtractedEntities:
     """
     Stage 1: Extract structured medical entities from free-text report.
     Returns bilingual entity list for API lookups.
-    """
-    try:
-        response = await openai_client.chat.completions.create(
-            model="gpt-4.1-mini",
-            max_tokens=2000,
-            temperature=0,
-            messages=[
-                {"role": "system", "content": ENTITY_EXTRACTION_PROMPT},
-                {"role": "user", "content": report_text}
-            ]
-        )
 
-        # Cost tracking
+    Uses LIGHTWEIGHT_PROVIDER / LIGHTWEIGHT_MODEL per PRD §2.1 v1.4 needs 6.
+    """
+    binding = get_lightweight_provider()
+    req = CompletionRequest(
+        model=binding.model,
+        messages=[
+            {"role": "system", "content": ENTITY_EXTRACTION_PROMPT},
+            {"role": "user", "content": report_text}
+        ],
+        temperature=0,
+        max_tokens=2000,
+    )
+
+    try:
+        response = await binding.provider.complete(req)
+
+        # Cost tracking — use the actual model from binding so future Groq
+        # swap stays accurate. TODO Phase 1B: cost_tracker.py model-price
+        # table needs Groq entries before LIGHTWEIGHT_PROVIDER=groq activation
+        # (see PRD §2.1 v1.4 需求 5 note).
         try:
             from api.services.cost_tracker import log_api_cost_standalone
-            if response.usage:
+            if response.input_tokens or response.output_tokens:
                 await log_api_cost_standalone(
-                    "system", "explain/entity_extraction", "gpt-4.1-mini",
-                    response.usage.prompt_tokens, response.usage.completion_tokens
+                    "system", "explain/entity_extraction", binding.model,
+                    response.input_tokens, response.output_tokens
                 )
         except Exception:
             pass
 
-        raw = response.choices[0].message.content.strip()
+        raw = response.content.strip()
         logger.info("[EntityExtractor] Raw GPT response length: %d chars", len(raw))
 
         # Strip markdown fences if LLM adds them despite instruction
@@ -95,8 +108,8 @@ async def extract_entities(report_text: str, openai_client: AsyncOpenAI) -> Extr
         # error_code via the Stage 1 entity-count check.
         logger.warning(f"Entity extraction parse error: {e}. Falling back to empty entities.")
         return ExtractedEntities()
-    # Note: OpenAI errors (APIError/APITimeoutError/RateLimitError) are NOT
-    # caught here — they propagate to run_explain_pipeline which converts
-    # them to the openai_api_error SSE event (Generic error UX, 2026-04-29).
+    # Note: Provider errors (VelaError) are NOT caught here — they propagate
+    # to run_explain_pipeline which converts them to the openai_api_error
+    # SSE event (Generic error UX, 2026-04-29).
     # Other unexpected exceptions also propagate to the server.py catchall
     # which emits the `generic` error_code.

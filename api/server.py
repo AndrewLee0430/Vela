@@ -1070,7 +1070,6 @@ async def explain_report(
 
             async for event in run_explain_pipeline(
                 report_text=body.report_text,
-                openai_client=openai_async_client,
                 response_language=response_language,
             ):
                 # Serialize structured result for ChatHistory.answer text column

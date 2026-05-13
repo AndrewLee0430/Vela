@@ -374,15 +374,15 @@ class HybridRetriever:
     # ─────────────────────────────────────────────
 
     async def _search_local(self, query: str, max_results: int) -> list[RetrievedDocument]:
+        # §2.1 PHASE B (PRD v1.4): VectorStore.search() is now native async
+        # (was sync + run_in_executor). EmbedderProvider performs the embedding
+        # call asynchronously; the cosine-similarity math is pure CPU work and
+        # fast enough to stay on the event loop.
         try:
-            loop = asyncio.get_event_loop()
-            documents = await loop.run_in_executor(
-                None,
-                lambda: self.vector_store.search(
-                    query=query,
-                    n_results=max_results,
-                    min_score=self.local_threshold
-                )
+            documents = await self.vector_store.search(
+                query=query,
+                n_results=max_results,
+                min_score=self.local_threshold
             )
             return documents
         except Exception as e:

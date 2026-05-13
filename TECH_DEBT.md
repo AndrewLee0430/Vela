@@ -255,3 +255,10 @@ When entries are resolved, move to ARCHIVE.md (note discovery + resolution dates
   - **Resolution**: at Phase 0 production deploy checklist — implement locale fallback chain. Recommended order: requested locale → en (universal fallback). For zh-* variants: zh-CN → zh-TW → en. Implement in the Next.js `/explore/[slug]` page resolver or middleware. Verify with Google Rich Results Test (PHASE E acceptance) hitting from multiple Accept-Language headers.
   - **Priority**: P2 — production SEO blocker for non-Tier-1 locales; must resolve before soft launch if non-en/zh-TW indexing is desired.
   - **Discovered**: 2026-05-13 during §4.6 PHASE D live test (Accept-Language testing).
+
+- **[P3]** `api/providers/factory.py` creates a new Provider instance on every `get_xxx_provider()` call
+  - **現況**: Each call to `get_generator_provider()` / `get_lightweight_provider()` / `get_embedder_provider()` etc. instantiates a fresh `OpenAIProvider` / `GroqProvider` (which constructs a new `AsyncOpenAI` httpx client). Acceptable for current call frequency — most call sites cache the binding at module load or class `__init__` (e.g. `VectorStore.__init__`).
+  - **Risk**: minor — if any hot path repeatedly calls a factory (e.g. inside a per-request loop), HTTP client churn could hurt latency. No such hot path exists today.
+  - **Resolution**: at Phase 0 Retrospective or next opportunity, consider `functools.lru_cache` on factory functions, or module-level singletons keyed by `(provider_name, model)`. Validate via profiling before optimizing.
+  - **Priority**: P3 — quality-of-life / future maintenance.
+  - **Discovered**: 2026-05-13 during §2.1 PHASE B (wiring 3 Low files to Provider abstraction).

@@ -3,6 +3,11 @@ Explain Feature — 3-Stage Pipeline
 Stage 1: Extract entities (entity_extractor.py)
 Stage 2: Parallel API lookups (LOINC, RxNorm, MedlinePlus, FDA)
 Stage 3: Generate plain-language explanation (streaming)
+
+§2.1 PHASE B (PRD v1.4 + ADR 005): Stage 3 generation wired through
+api.providers via get_generator_provider(). Model + provider configurable
+via GENERATOR_PROVIDER / GENERATOR_MODEL env vars. Stage 1 (entity
+extraction) uses LIGHTWEIGHT_PROVIDER via entity_extractor.py.
 """
 
 import asyncio
@@ -12,8 +17,6 @@ import time
 from enum import Enum
 from pathlib import Path
 from typing import AsyncGenerator, Optional
-import openai
-from openai import AsyncOpenAI
 from pydantic import ValidationError
 
 from api.models.explain_schemas import (
@@ -30,6 +33,8 @@ from api.i18n.explain_strings import (
     get_downgrade_item_note,
     get_downgrade_corr_note,
 )
+from api.providers import get_generator_provider, VelaError
+from api.providers.base import CompletionRequest
 
 logger = logging.getLogger(__name__)
 
@@ -321,7 +326,6 @@ async def generate_explanation(
     report_text: str,
     entities: ExtractedEntities,
     context: str,
-    openai_client: AsyncOpenAI,
     response_language: Optional[str] = None,
     sources: Optional[list[ExplainSource]] = None,
 ) -> dict:
@@ -333,6 +337,8 @@ async def generate_explanation(
     `response_language` (BCP-47, e.g. "zh-TW") drives server-side disclaimer
     and downgrade-note locale lookups (PRD § 2.7 Step 5). Falls back to
     English if missing.
+
+    Uses GENERATOR_PROVIDER / GENERATOR_MODEL per PRD §2.1 v1.4 needs 6.
     """
     locale = response_language or "en"
     user_content = f"""Response language: {locale}
@@ -347,18 +353,20 @@ Verified reference data from official sources:
 
 Input language (for entity-to-source matching only, NOT for output): {entities.input_language}"""
 
-    response = await openai_client.chat.completions.create(
-        model="gpt-4.1",
-        max_tokens=1500,
-        temperature=0.3,
-        response_format={"type": "json_object"},
+    binding = get_generator_provider()
+    req = CompletionRequest(
+        model=binding.model,
         messages=[
             {"role": "system", "content": EXPLAIN_GENERATION_PROMPT},
             {"role": "user", "content": user_content}
-        ]
+        ],
+        temperature=0.3,
+        max_tokens=1500,
+        response_format={"type": "json_object"},
     )
+    response = await binding.provider.complete(req)
 
-    raw_content = response.choices[0].message.content or ""
+    raw_content = response.content or ""
 
     try:
         parsed = json.loads(raw_content)
@@ -441,7 +449,6 @@ Input language (for entity-to-source matching only, NOT for output): {entities.i
 
 async def run_explain_pipeline(
     report_text: str,
-    openai_client: AsyncOpenAI,
     response_language: Optional[str] = None,
 ) -> AsyncGenerator[dict, None]:
     """
@@ -487,13 +494,15 @@ async def run_explain_pipeline(
     logger.info(f"[Explain] Language instruction for GPT: {lang_instruction or '(none - English default)'}")
     yield {"type": "status", "content": "Analyzing your report..."}
     try:
-        entities = await extract_entities(report_text, openai_client)
-    except (openai.APIError, openai.APITimeoutError, openai.RateLimitError) as e:
-        logger.warning("[Explain] OpenAI API error in Stage 1: %s: %s", type(e).__name__, e)
+        entities = await extract_entities(report_text)
+    except VelaError as e:
+        # §2.1 PHASE B: provider layer wraps openai.APIError / RateLimitError /
+        # timeout into VelaError before reaching here.
+        logger.warning("[Explain] Provider error in Stage 1: %s", e)
         yield {
             "type": "error",
             "code": ExplainErrorCode.OPENAI_API_ERROR.value,
-            "message": "OpenAI service unavailable",
+            "message": "LLM service unavailable",
         }
         return
     logger.info(f"[Explain] entities.input_language = {entities.input_language}")
@@ -597,16 +606,17 @@ async def run_explain_pipeline(
     yield {"type": "status", "content": "Generating explanation..."}
     try:
         result = await generate_explanation(
-            report_text, entities, context, openai_client,
+            report_text, entities, context,
             response_language=response_language,
             sources=sources,
         )
-    except (openai.APIError, openai.APITimeoutError, openai.RateLimitError) as e:
-        logger.warning("[Explain] OpenAI API error in Stage 3: %s: %s", type(e).__name__, e)
+    except VelaError as e:
+        # §2.1 PHASE B: provider layer wraps openai.APIError into VelaError.
+        logger.warning("[Explain] Provider error in Stage 3: %s", e)
         yield {
             "type": "error",
             "code": ExplainErrorCode.OPENAI_API_ERROR.value,
-            "message": "OpenAI service unavailable",
+            "message": "LLM service unavailable",
         }
         return
     except ValueError as e:

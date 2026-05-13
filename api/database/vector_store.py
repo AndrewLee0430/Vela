@@ -1,20 +1,24 @@
 """
 Vector Store - NumPy 向量搜尋（取代 ChromaDB）
 使用 OpenAI embedding + cosine similarity，零外部 C 依賴
+
+§2.1 PHASE B (PRD v1.4 + ADR 005): now wired through api.providers via
+get_embedder_provider(). Embedding model + provider configurable via
+EMBEDDER_PROVIDER / EMBEDDER_MODEL env vars. search() is now async.
 """
 
-import os
 import json
 import numpy as np
 from typing import Optional
 from pathlib import Path
-from openai import OpenAI
 
 from api.models.schemas import (
     RetrievedDocument,
     SourceType,
     CredibilityLevel
 )
+from api.providers import get_embedder_provider
+from api.providers.base import EmbeddingRequest
 
 
 class VectorStore:
@@ -25,7 +29,9 @@ class VectorStore:
         index_path: str = "data/drug_vectordb/index.json",
     ):
         self.index_path = index_path
-        self.openai = OpenAI()
+        binding = get_embedder_provider()
+        self._embedder = binding.provider
+        self._embedder_model = binding.model
         self.documents = []
         self.embeddings = None  # np.ndarray, shape (n, dim)
 
@@ -45,15 +51,13 @@ class VectorStore:
         self.embeddings = np.array(data["embeddings"], dtype=np.float32)
         print(f"✅ Vector store loaded: {len(self.documents)} documents, dim={self.embeddings.shape[1]}")
 
-    def _get_embedding(self, text: str) -> np.ndarray:
-        """取得文字的 embedding"""
-        response = self.openai.embeddings.create(
-            model="text-embedding-3-small",
-            input=text
-        )
-        return np.array(response.data[0].embedding, dtype=np.float32)
+    async def _get_embedding(self, text: str) -> np.ndarray:
+        """取得文字的 embedding（透過 EmbedderProvider）"""
+        req = EmbeddingRequest(model=self._embedder_model, input=text)
+        resp = await self._embedder.embed(req)
+        return np.array(resp.embeddings[0], dtype=np.float32)
 
-    def search(
+    async def search(
         self,
         query: str,
         n_results: int = 10,
@@ -75,7 +79,7 @@ class VectorStore:
         if self.embeddings is None or len(self.documents) == 0:
             return []
 
-        query_emb = self._get_embedding(query)
+        query_emb = await self._get_embedding(query)
 
         # Cosine similarity: dot(q, d) / (|q| * |d|)
         norms = np.linalg.norm(self.embeddings, axis=1)
