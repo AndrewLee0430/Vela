@@ -230,3 +230,28 @@ When entries are resolved, move to ARCHIVE.md (note discovery + resolution dates
   - **Resolution**: at Phase 0 Retrospective, delete `components/Untitled` (or rename to `.bak` and gitignore). Verify it's truly orphaned via `git grep "Untitled" -- '*.tsx' '*.ts'` first.
   - **Priority**: P3 — codebase hygiene.
   - **Discovered**: 2026-05-08 during dogfooding star-removal commit.
+
+- **[P2 → Phase 0 production deploy checklist]** `/explore/category/:category` dev rewrites gap
+  - **現況**: §4.6 PHASE D shipped category listing pages at `/explore/category/:category` (commit a8361f5). The Next.js static export rewrites work in production via Fly.io / CDN, but `npm run dev` does not rewrite `/explore/category/foo` → the category listing page. During PHASE D live test, navigation from breadcrumb category link 404'd on localhost.
+  - **影響範圍**: dev-only — production unaffected (static export + edge rewrites resolve correctly). Affects local dogfooding + future development of Explore category UI.
+  - **Resolution**: ~15 min followup commit — add `rewrites()` config in `next.config.js` (or equivalent middleware) so `/explore/category/:category` resolves to the static page in dev. Gate on Phase 0 production deploy checklist so dev + prod parity is verified before soft launch.
+  - **Priority**: P2 — not blocking production ship; blocks local dogfooding of category listing UI.
+  - **Discovered**: 2026-05-13 during §4.6 PHASE D live test (PHASE D dogfooding).
+
+- **[P2 → Phase 0 production deploy checklist]** CLI sync overwrites DB status with markdown status, silently un-publishing pages
+  - **現況**: `scripts/explore_cli.py` (PHASE C, commit 0f139d2) sync command reads the `status:` frontmatter from each markdown file and writes it to the `explore_page.status` DB column. If a markdown file was created with `status: draft` and the DB row was later flipped to `published` (via direct SQL or admin UI), the next CLI sync silently overwrites `published` → `draft`, un-publishing the page without warning.
+  - **影響範圍**: caused live test case (a) FAIL during PHASE D dogfooding — `/explore/metformin-contraindications-renal` returned 404 until the markdown `status:` was bumped to `published` and re-synced. Could silently break published pages in production if CLI is run after a manual DB status change.
+  - **3 candidate fixes** (decide at Phase 0 deploy checkpoint):
+    1. **Markdown-as-source-of-truth (current behavior, make explicit)**: keep current logic but log a WARNING when CLI flips a DB `published` → `draft`. Force a `--force-unpublish` flag to actually demote. Safest if content workflow is "markdown is authoritative".
+    2. **DB-as-source-of-truth for status**: CLI never writes `status` column; only writes content fields. Status is managed via separate admin UI / SQL. Requires admin tooling.
+    3. **Two-way merge**: CLI writes markdown `status` only if DB row is missing OR DB `status='draft'`. Never demote `published` → `draft` via CLI. Compromise — keeps markdown as primary source for new content while preventing silent unpublish.
+  - **Resolution**: pick one of the 3 fixes at Phase 0 production deploy checkpoint, before any production content is published via CLI. Recommendation: fix #3 (two-way merge, no demote) is least surprising and requires no new tooling.
+  - **Priority**: P2 — silent data corruption potential; not blocking ship but must resolve before production content sync.
+  - **Discovered**: 2026-05-13 during §4.6 PHASE D live test case (a) FAIL diagnosis.
+
+- **[P2 → Phase 0 production deploy checklist]** Locale fallback — Accept-Language non-en/zh-TW returns 404 on /explore pages
+  - **現況**: §4.6 PHASE B sitemap-explore.xml hreflang logic skips missing locales (commit 8fb10ca). Explore pages exist in en + zh-TW only at PHASE D ship. When a user (or SEO crawler) hits `/explore/<slug>` with `Accept-Language: ja` / `ko` / `es` / etc., the server returns 404 instead of falling back to en (or zh-TW for zh-* variants).
+  - **影響範圍**: production blocker for SEO crawler discovery in non-Tier-1 locales. Google / Bing crawlers identifying as non-en locales (e.g. Googlebot-Mobile crawling from JP region) would see 404 and drop the page from index. Also blocks human users from non-Tier-1 locales reading existing en content while translations are pending.
+  - **Resolution**: at Phase 0 production deploy checklist — implement locale fallback chain. Recommended order: requested locale → en (universal fallback). For zh-* variants: zh-CN → zh-TW → en. Implement in the Next.js `/explore/[slug]` page resolver or middleware. Verify with Google Rich Results Test (PHASE E acceptance) hitting from multiple Accept-Language headers.
+  - **Priority**: P2 — production SEO blocker for non-Tier-1 locales; must resolve before soft launch if non-en/zh-TW indexing is desired.
+  - **Discovered**: 2026-05-13 during §4.6 PHASE D live test (Accept-Language testing).
