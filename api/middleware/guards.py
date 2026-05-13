@@ -13,9 +13,24 @@ import re
 import base64
 import json
 import logging
-from openai import OpenAI
+
+from api.providers import get_guard_provider
+from api.providers.base import CompletionRequest
 
 logger = logging.getLogger(__name__)
+
+# §2.1 PHASE C (PRD v1.4 + ADR 005): module-level binding for the guard
+# task layer. Both check_indirect_injection and check_medical_intent share
+# it. Also fixes CLAUDE.md Rule 3 violation (was sync OpenAI() inside
+# async def — now async provider.complete()).
+_guard_binding = None
+
+
+def _get_guard_binding():
+    global _guard_binding
+    if _guard_binding is None:
+        _guard_binding = get_guard_provider()
+    return _guard_binding
 
 # ============================================================
 # 1. Prompt Injection patterns
@@ -146,22 +161,25 @@ async def check_indirect_injection(text: str) -> tuple[bool, str]:
     if len(text) < 100:
         return False, ""
     try:
-        client = OpenAI()
-        response = client.chat.completions.create(
-            model="gpt-4.1-mini",
+        binding = _get_guard_binding()
+        req = CompletionRequest(
+            model=binding.model,
             messages=[
                 {"role": "system", "content": INDIRECT_INJECTION_PROMPT},
                 {"role": "user",   "content": text[:2000]}
             ],
             response_format={"type": "json_object"},
             temperature=0,
-            max_tokens=80
+            max_tokens=80,
         )
-        result = json.loads(response.choices[0].message.content)
+        response = await binding.provider.complete(req)
+        result = json.loads(response.content)
         if result.get("is_injection"):
             return True, result.get("reason", "indirect injection detected")
         return False, ""
     except Exception as e:
+        # Preserved fail-CLOSED behavior: any error blocks the request.
+        # VelaError (from provider layer) is caught by this broad Exception.
         logger.error("Indirect injection check failed (blocking request): %s", e)
         return True, "Security check temporarily unavailable. Please try again."
 
@@ -234,22 +252,25 @@ async def check_medical_intent(text: str) -> tuple[bool, str]:
         return True, ""
 
     try:
-        client = OpenAI()
-        response = client.chat.completions.create(
-            model="gpt-4.1-mini",
+        binding = _get_guard_binding()
+        req = CompletionRequest(
+            model=binding.model,
             messages=[
                 {"role": "system", "content": INTENT_SYSTEM_PROMPT},
                 {"role": "user",   "content": text[:500]}
             ],
             response_format={"type": "json_object"},
             temperature=0,
-            max_tokens=60
+            max_tokens=60,
         )
-        result = json.loads(response.choices[0].message.content)
+        response = await binding.provider.complete(req)
+        result = json.loads(response.content)
         if result.get("intent") == "medical":
             return True, ""
         return False, result.get("reason", "non-medical query")
     except Exception as e:
+        # Preserved fail-CLOSED behavior: any error rejects the request.
+        # VelaError (from provider layer) is caught by this broad Exception.
         logger.error("Intent check failed (blocking request): %s", e)
         return False, "Security check temporarily unavailable. Please try again."
 

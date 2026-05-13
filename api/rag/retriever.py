@@ -5,18 +5,26 @@ Hybrid Retriever - v2.2
 v2.2 新增：
 1. Query Rewriting - 將口語/非英文查詢改寫為 3 個精確醫學術語查詢，並行檢索
 2. 其餘邏輯（去重、年份加權、相關性驗證）完全不變
+
+§2.1 PHASE C (PRD v1.4 + ADR 005): all 5 LLM call sites (query rewrite,
+translate fallback, relevance filter, 2 cost-logs) wired through
+api.providers via get_lightweight_provider(). Model + provider configurable
+via LIGHTWEIGHT_PROVIDER / LIGHTWEIGHT_MODEL env vars.
+PHASE B fix at _search_local() preserved (VectorStore.search now async).
 """
 
 import asyncio
 import json
 import logging
 from typing import Optional
-from openai import AsyncOpenAI
+
 from api.models.schemas import RetrievedDocument, SourceType, CredibilityLevel
 from api.database.vector_store import get_vector_store
 from api.data_sources.pubmed import PubMedClient
 from api.data_sources.fda import FDAClient
 from api.rag.reranker import Reranker
+from api.providers import get_lightweight_provider
+from api.providers.base import CompletionRequest
 
 logger = logging.getLogger(__name__)
 
@@ -55,7 +63,9 @@ class HybridRetriever:
         self.vector_store = get_vector_store() if enable_local else None
         self.pubmed = PubMedClient() if enable_pubmed else None
         self.fda = FDAClient() if enable_fda else None
-        self.llm = AsyncOpenAI()
+        binding = get_lightweight_provider()
+        self._provider = binding.provider
+        self._model = binding.model
         self.reranker = Reranker(top_k=8)
 
     # ─────────────────────────────────────────────
@@ -165,8 +175,8 @@ class HybridRetriever:
              "antithrombotic combination therapy clinical guidelines"]
         """
         try:
-            response = await self.llm.chat.completions.create(
-                model="gpt-4.1-mini",
+            req = CompletionRequest(
+                model=self._model,
                 messages=[
                     {
                         "role": "system",
@@ -203,21 +213,22 @@ class HybridRetriever:
                 ],
                 temperature=0,
                 max_tokens=150,
-                response_format={"type": "json_object"}
+                response_format={"type": "json_object"},
             )
+            response = await self._provider.complete(req)
 
-            # Cost tracking
+            # Cost tracking — use self._model so future Groq swap stays accurate.
             try:
                 from api.services.cost_tracker import log_api_cost_standalone
-                if response.usage:
+                if response.input_tokens or response.output_tokens:
                     await log_api_cost_standalone(
-                        "system", "research/rewrite_query", "gpt-4.1-mini",
-                        response.usage.prompt_tokens, response.usage.completion_tokens
+                        "system", "research/rewrite_query", self._model,
+                        response.input_tokens, response.output_tokens
                     )
             except Exception:
                 pass
 
-            raw = response.choices[0].message.content.strip()
+            raw = response.content.strip()
             parsed = json.loads(raw)
 
             # 支援 {"queries": [...]} 或直接 [...]
@@ -248,8 +259,8 @@ class HybridRetriever:
             return query.strip()
 
         try:
-            response = await self.llm.chat.completions.create(
-                model="gpt-4.1-mini",
+            req = CompletionRequest(
+                model=self._model,
                 messages=[
                     {
                         "role": "system",
@@ -263,9 +274,10 @@ class HybridRetriever:
                     {"role": "user", "content": query}
                 ],
                 temperature=0,
-                max_tokens=50
+                max_tokens=50,
             )
-            translated = response.choices[0].message.content.strip()
+            response = await self._provider.complete(req)
+            translated = response.content.strip()
             return translated if translated else query
 
         except Exception as e:
@@ -293,8 +305,8 @@ class HybridRetriever:
         docs_text = "\n".join(doc_summaries)
 
         try:
-            response = await self.llm.chat.completions.create(
-                model="gpt-4.1-mini",
+            req = CompletionRequest(
+                model=self._model,
                 messages=[
                     {
                         "role": "system",
@@ -318,21 +330,22 @@ class HybridRetriever:
                     }
                 ],
                 temperature=0,
-                max_tokens=100
+                max_tokens=100,
             )
+            response = await self._provider.complete(req)
 
-            # Cost tracking
+            # Cost tracking — use self._model so future Groq swap stays accurate.
             try:
                 from api.services.cost_tracker import log_api_cost_standalone
-                if response.usage:
+                if response.input_tokens or response.output_tokens:
                     await log_api_cost_standalone(
-                        "system", "research/relevance_filter", "gpt-4.1-mini",
-                        response.usage.prompt_tokens, response.usage.completion_tokens
+                        "system", "research/relevance_filter", self._model,
+                        response.input_tokens, response.output_tokens
                     )
             except Exception:
                 pass
 
-            raw = response.choices[0].message.content.strip()
+            raw = response.content.strip()
             raw = raw.replace("```json", "").replace("```", "").strip()
             relevant_indices = json.loads(raw)
 

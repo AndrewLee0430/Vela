@@ -451,7 +451,7 @@ retriever = HybridRetriever(
 generator = AnswerGenerator(model="gpt-4.1")
 fda_client = FDAClient()
 openai_async_client = AsyncOpenAI()
-_judge = LLMJudge(client=openai_async_client)
+_judge = LLMJudge()
 
 
 async def _run_judge_background(audit_id: str, query: str, answer: str, documents: list):

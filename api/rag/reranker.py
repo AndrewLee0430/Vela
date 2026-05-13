@@ -1,6 +1,6 @@
 """
 Reranker - v1.0
-用 GPT-4o-mini 對召回文件重新評分排序
+用 LLM 對召回文件重新評分排序
 
 原理：
 向量相似度只看「語意相近」，不看「是否真的能回答這個問題」
@@ -8,29 +8,36 @@ Reranker 讓 LLM 直接判斷每份文件對這個 query 的有用程度 (0-100)
 排序後只保留最高分的 top_k 份文件給 Generator
 
 位置：在 _filter_by_relevance 之後、Generator 之前
+
+§2.1 PHASE C (PRD v1.4 + ADR 005): wired through api.providers via
+get_reranker_provider(). Model + provider configurable via
+RERANKER_PROVIDER / RERANKER_MODEL env vars.
 """
 
 import logging
-from openai import AsyncOpenAI
-from api.models.schemas import RetrievedDocument
 import json
+
+from api.models.schemas import RetrievedDocument
+from api.providers import get_reranker_provider
+from api.providers.base import CompletionRequest
 
 logger = logging.getLogger(__name__)
 
 
 class Reranker:
     """
-    GPT-based Reranker
+    LLM-based Reranker
 
     流程：
-    1. 把所有候選文件和 query 一起送給 GPT
-    2. GPT 對每份文件打 0-100 的相關性分數
+    1. 把所有候選文件和 query 一起送給 LLM
+    2. LLM 對每份文件打 0-100 的相關性分數
     3. 按分數重新排序，只保留 top_k
     """
 
-    def __init__(self, model: str = "gpt-4o-mini", top_k: int = 5):
-        self.llm = AsyncOpenAI()
-        self.model = model
+    def __init__(self, top_k: int = 5):
+        binding = get_reranker_provider()
+        self._provider = binding.provider
+        self.model = binding.model
         self.top_k = top_k
 
     async def rerank(
@@ -83,7 +90,7 @@ Output ONLY a JSON array with scores in order, e.g.: [85, 40, 92, 60, 75]
 One score per document, same order as input."""
 
         try:
-            response = await self.llm.chat.completions.create(
+            req = CompletionRequest(
                 model=self.model,
                 messages=[
                     {
@@ -93,21 +100,22 @@ One score per document, same order as input."""
                     {"role": "user", "content": prompt}
                 ],
                 temperature=0,
-                max_tokens=200
+                max_tokens=200,
             )
+            response = await self._provider.complete(req)
 
-            # Cost tracking
+            # Cost tracking — use self.model so future Groq swap stays accurate.
             try:
                 from api.services.cost_tracker import log_api_cost_standalone
-                if response.usage:
+                if response.input_tokens or response.output_tokens:
                     await log_api_cost_standalone(
                         "system", "research/rerank", self.model,
-                        response.usage.prompt_tokens, response.usage.completion_tokens
+                        response.input_tokens, response.output_tokens
                     )
             except Exception:
                 pass
 
-            raw = response.choices[0].message.content.strip()
+            raw = response.content.strip()
             raw = raw.replace("```json", "").replace("```", "").strip()
             scores = json.loads(raw)
 

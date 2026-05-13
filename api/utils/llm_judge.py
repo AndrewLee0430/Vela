@@ -7,6 +7,11 @@ Two judges in this module:
 - ExplainJudge: Explain feature (§ 2.7 Step 7), 7 pass/fail dimensions,
   gpt-4.1, acceptance-only (not wired into prod request flow). Prompt
   loaded from api/prompts/explain_judge.md.
+
+§2.1 PHASE C (PRD v1.4 + ADR 005): both judges wired through api.providers.
+LLMJudge uses get_research_judge_provider() — RESEARCH_JUDGE_PROVIDER/MODEL.
+ExplainJudge uses get_explain_judge_provider() — EXPLAIN_JUDGE_PROVIDER/MODEL.
+§2.7 acceptance baseline (gpt-4.1 for ExplainJudge) preserved via factory default.
 """
 
 import json
@@ -14,7 +19,9 @@ import logging
 from pathlib import Path
 from typing import List, Dict, Optional
 from dataclasses import dataclass
-from openai import AsyncOpenAI
+
+from api.providers import get_research_judge_provider, get_explain_judge_provider
+from api.providers.base import CompletionRequest
 
 logger = logging.getLogger("vela")
 
@@ -52,8 +59,10 @@ class LLMJudge:
 
     THRESHOLDS = {"high": 80, "medium": 60, "low": 0}
 
-    def __init__(self, client: Optional[AsyncOpenAI] = None):
-        self._client = client or AsyncOpenAI()
+    def __init__(self):
+        binding = get_research_judge_provider()
+        self._provider = binding.provider
+        self._model = binding.model
 
     def _build_prompt(self, query: str, answer: str, sources: List[Source]) -> str:
         sources_text = "\n\n".join(
@@ -98,8 +107,8 @@ Return ONLY valid JSON (no markdown):
     async def evaluate(self, query: str, answer: str, sources: List[Source]) -> Dict:
         prompt = self._build_prompt(query, answer, sources)
         try:
-            response = await self._client.chat.completions.create(
-                model="gpt-4.1-mini",
+            req = CompletionRequest(
+                model=self._model,
                 messages=[
                     {"role": "system", "content": "You are a medical fact-checking expert. Respond ONLY with valid JSON."},
                     {"role": "user",   "content": prompt},
@@ -107,18 +116,19 @@ Return ONLY valid JSON (no markdown):
                 temperature=0.3,
                 max_tokens=600,
             )
-            # Cost tracking
+            response = await self._provider.complete(req)
+            # Cost tracking — use self._model so future swaps stay accurate.
             try:
                 from api.services.cost_tracker import log_api_cost_standalone
-                if response.usage:
+                if response.input_tokens or response.output_tokens:
                     await log_api_cost_standalone(
-                        "system", "research/llm_judge", "gpt-4.1-mini",
-                        response.usage.prompt_tokens, response.usage.completion_tokens
+                        "system", "research/llm_judge", self._model,
+                        response.input_tokens, response.output_tokens
                     )
             except Exception:
                 pass
 
-            content = response.choices[0].message.content.strip()
+            content = response.content.strip()
             # Strip optional markdown fences
             if content.startswith("```"):
                 content = content.split("\n", 1)[-1]
@@ -188,20 +198,17 @@ class ExplainJudge:
         "\"issues\": [...], \"explanation\": \"...\"}. Output JSON only."
     )
 
-    def __init__(
-        self,
-        client: Optional[AsyncOpenAI] = None,
-        model: str = "gpt-4.1",
-    ):
-        self._client = client or AsyncOpenAI()
-        self._model = model
+    def __init__(self):
+        binding = get_explain_judge_provider()
+        self._provider = binding.provider
+        self._model = binding.model
         try:
             self._system_prompt = self._PROMPT_PATH.read_text(encoding="utf-8")
-            logger.info("[ExplainJudge] prompt loaded from %s", self._PROMPT_PATH)
+            logger.info("[ExplainJudge] prompt loaded from %s (model=%s)", self._PROMPT_PATH, self._model)
         except FileNotFoundError:
             logger.warning(
-                "[ExplainJudge] prompt file missing (%s) — using inline fallback",
-                self._PROMPT_PATH,
+                "[ExplainJudge] prompt file missing (%s) — using inline fallback (model=%s)",
+                self._PROMPT_PATH, self._model,
             )
             self._system_prompt = self._PROMPT_FALLBACK
 
@@ -259,7 +266,7 @@ class ExplainJudge:
             report_text, explain_response, retrieved_sources, response_language
         )
         try:
-            response = await self._client.chat.completions.create(
+            req = CompletionRequest(
                 model=self._model,
                 messages=[
                     {"role": "system", "content": self._system_prompt},
@@ -269,18 +276,19 @@ class ExplainJudge:
                 max_tokens=800,
                 response_format={"type": "json_object"},
             )
+            response = await self._provider.complete(req)
 
             try:
                 from api.services.cost_tracker import log_api_cost_standalone
-                if response.usage:
+                if response.input_tokens or response.output_tokens:
                     await log_api_cost_standalone(
                         "system", "explain/llm_judge", self._model,
-                        response.usage.prompt_tokens, response.usage.completion_tokens,
+                        response.input_tokens, response.output_tokens,
                     )
             except Exception:
                 pass
 
-            raw = (response.choices[0].message.content or "").strip()
+            raw = (response.content or "").strip()
             if raw.startswith("```"):
                 raw = raw.split("\n", 1)[-1]
             if raw.endswith("```"):
