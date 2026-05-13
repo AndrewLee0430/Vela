@@ -1,6 +1,6 @@
 # STATE.md — Vela Current Development Focus
 
-**Last updated**: 2026-05-12 (post §4.6 PHASE D — Breadcrumb + Category listing + Related queries + 3 PostHog events shipped)
+**Last updated**: 2026-05-13 (post §2.1 Model Provider Refactor — all 5 sub-phases shipped, 9/9 backend files migrated to Provider abstraction)
 
 ## Phase
 
@@ -8,15 +8,30 @@ Phase 0 — in progress (started 2026-04-17)
 
 ## Current Focus
 
-§4.6 SEO Explore Pages — PHASE A + B + C + D shipped. Next active task = §4.6 PHASE E (integration test: Google Rich Results / robots.txt / hreflang validator + post-deploy GSC monitoring).
+§2.1 Model Provider Refactor — ALL 5 sub-phases shipped (see Recently Shipped). 9/9 backend files migrated to Provider abstraction. Groq framework-ready; Phase 1B activation per ADR 006.
+
+Next active task = §4.6 PHASE E (integration test: Google Rich Results / robots.txt / hreflang validator + post-deploy GSC monitoring).
 
 ## Next Up (Phase 0 remaining, Path B execution order)
 
 1. **§ 4.6 PHASE E** — integration test (Google Rich Results Test / robots.txt / hreflang validator + 4-week GSC monitoring after deploy). Includes follow-up: build /explore index page (breadcrumb 'Explore' link gap from PHASE D).
-2. **§ 2.1 Model Provider Refactor** — 4-5 days (per v1.4 spec, 2026-05-13), 9 files + new api/providers/, 19 env vars across 9 task layers (OpenAI + Groq providers). Largest remaining Phase 0 block. See PRD §2.1 v1.4 + ADR 005.
-3. **§ 3.1 User Context schema** — blocks Phase 1A.
-4. **Phase 0 Retrospective** — final gate before Phase 1A; produces `docs/decisions/005-phase-0-retrospective.md` (003+004 claimed by advisor roadmap integration — see ADR 003 + ADR 004).
-5. **§ 4.5 PHASE E** — DEFERRED. Execute immediately after Phase 0 末段 production deploy, NOT in main critical path. Tasks: SHARE_CREATED_BY_SALT secret setup, real anon 403 verification, LinkedIn / Twitter / Google validators, OG image production render check, PostHog 6-event verification, revocation flow on production. Detailed checklist in PRD §4.5 "Production Deploy Checklist (PHASE E.2)".
+2. **§ 3.1 User Context schema** — blocks Phase 1A.
+3. **Phase 0 Retrospective** — final gate before Phase 1A; ADR number TBD (005 taken by 2.1 Groq decision, 006 taken by Phase 1B activation checklist).
+4. **§ 4.5 PHASE E** — DEFERRED. Execute immediately after Phase 0 末段 production deploy, NOT in main critical path. Tasks: SHARE_CREATED_BY_SALT secret setup, real anon 403 verification, LinkedIn / Twitter / Google validators, OG image production render check, PostHog 6-event verification, revocation flow on production. Detailed checklist in PRD §4.5 "Production Deploy Checklist (PHASE E.2)".
+
+## Completed: §2.1 Model Provider Refactor (2026-05-13)
+
+✅ **COMPLETE** — 7 commits, 1 day, 4-5d v1.4 estimate hit.
+
+- 9/9 backend files migrated through Provider abstraction
+- 21/21 unit tests green (tests/providers/test_factory_swap.py)
+- Live smoke verified all 3 production surfaces in PHASE D
+  (Research SSE 519 chunks 23s / Verify 7.9s / Explain 20.6s)
+- Phase 0 ship state: 100% OpenAI defaults preserved
+- Groq framework-ready; activation procedure in ADR 006
+- §2.7 acceptance baseline (gpt-4.1 ExplainJudge) preserved
+
+See ARCHIVE.md 2026-05-13 entry for full commit list + acceptance.
 
 ## Phase 1B preview (per advisor discussion + ADR 003+004)
 

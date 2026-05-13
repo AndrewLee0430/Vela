@@ -462,6 +462,13 @@ _vision_binding = None
 
 
 def _get_verify():
+    """Module-level cached binding for the Verify task layer.
+
+    First call resolves VERIFY_PROVIDER / VERIFY_MODEL env vars via the factory;
+    subsequent calls reuse the binding for the lifetime of the process. Shared
+    across all Verify call sites (main + fallback + cost-log paths) so a single
+    provider+model decision applies per process.
+    """
     global _verify_binding
     if _verify_binding is None:
         _verify_binding = get_verify_provider()
@@ -469,6 +476,12 @@ def _get_verify():
 
 
 def _get_vision():
+    """Module-level cached binding for the Vision (OCR) task layer.
+
+    First call resolves VISION_PROVIDER / VISION_MODEL env vars via the factory;
+    subsequent calls reuse the binding. Single call site today
+    (/api/explain/extract-image); helper exists for symmetry with _get_verify.
+    """
     global _vision_binding
     if _vision_binding is None:
         _vision_binding = get_vision_provider()
