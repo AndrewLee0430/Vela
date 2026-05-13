@@ -145,3 +145,13 @@ media/
 .tmp-docs/
 
 .claude/settings.local.json
+
+# ==========================================
+# Local dev artifacts
+# ==========================================
+# Debug HTML dumps from smoke tests (curl > artifacts/*.html)
+artifacts/
+
+# Local OG image cache from dev runs of api/services/og_image.py
+# (production OG images go to R2/CDN, not local filesystem)
+static/og/
