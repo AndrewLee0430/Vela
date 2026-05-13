@@ -1,4 +1,4 @@
-**Vela Master PRD v1.3**
+**Vela Master PRD v1.4**
 
 *Ask in your language. Verified by official sources. Answered in yours. · Updated 2026-04-28*
 
@@ -208,6 +208,8 @@ FEATURE_AUDIT.md 第 4 節發現:整個 repo 只有 1 處 posthog.capture(),就�
 
 **v1.1 策略決策:**做完整版抽象層,但預設 Provider 維持 OpenAI、模型名維持現有。測試過品質可以,不改現況。架構彈性與品質穩定兩者兼得。
 
+**(2026-05-13 v1.4 修訂):** secondary provider 從 Anthropic 改為 Groq,理由見 docs/decisions/005-prd-2-1-groq-vs-anthropic.md。Anthropic 與 OpenRouter 延後至 Phase 1B+ 真實需求出現後評估。
+
 **背景(v1.1 更新)**
 
 - 目前 Generator 和 Guard 都綁定 OpenAI API,供應商風險高
@@ -220,11 +222,11 @@ FEATURE_AUDIT.md 第 4 節發現:整個 repo 只有 1 處 posthog.capture(),就�
 - 統一 Provider interface,至少包含 generate() 和 stream()
 - 統一 input/output schema
 - 各供應商特有參數透過 provider-specific config 傳入
-**需求 2:實作兩個 Provider**
+**需求 2:實作兩個 Provider(2026-05-13 v1.4 修訂)**
 
-- OpenAIProvider:現有邏輯重構進這個類別
-- AnthropicProvider:支援 Claude Haiku / Sonnet / Opus
-- 兩個 provider 的錯誤處理一致
+- OpenAIProvider:現有 OpenAI 邏輯重構進這個類別
+- GroqProvider:支援 Llama 3.1 8B / GPT-OSS 120B / Llama 3.3 70B 等 open-weight model,Phase 1B 起 Lightweight / Guard / Reranker 任務評估切換,Phase 0 預設不啟用
+- 兩個 provider 的錯誤處理一致(透過 VelaError schema)
 **需求 3:環境變數切換**
 
 - 應用啟動時讀取環境變數,決定實例化哪個 provider
@@ -242,29 +244,40 @@ Provider 抽象層 refactor 必須涵蓋以下所有檔案:
 | api/middleware/guards.py | Guard + medical intent | 兩處 client = OpenAI() 改 Provider.get_guard(). model 字面量改 env var |
 | api/rag/retriever.py | 檢索相關 LLM | 改 Provider.get_retriever() 或 get_generator() |
 | api/rag/reranker.py | Reranking | 預設 model="gpt-4o-mini" 改 env var RERANKER_MODEL |
-| api/services/explain_service.py | Explain 功能 | 改 Provider.get_generator() |
-| api/services/entity_extractor.py | 實體抽取 | 改 Provider.get_lightweight() |
-| api/utils/llm_judge.py | LLM 品質判斷 | 改 Provider.get_judge() |
-| api/database/vector_store.py | 向量存儲 | Embedding 透過 Provider,可能需獨立 get_embedder() |
-| api/server.py | 主 server | model="gpt-4o" 字面量改 env var,審視整個 server.py |
+| api/services/explain_service.py | Explain 功能 | (2026-05-13 audit 修正)已是 DI pattern(client 為函數參數),refactor 為 config swap only。EXPLAIN_GENERATION model 字面量改 env var |
+| api/services/entity_extractor.py | 實體抽取 | (2026-05-13 audit 修正)已是 DI pattern(client 為函數參數),refactor 為 config swap only。改用 LIGHTWEIGHT_* env vars |
+| api/utils/llm_judge.py | LLM 品質判斷 | (2026-05-13 v1.4 修訂)兩個 class 分別接 RESEARCH_JUDGE_* / EXPLAIN_JUDGE_* env vars |
+| api/database/vector_store.py | 向量存儲 | Embedding 透過 Provider,獨立 get_embedder() |
+| api/server.py | 主 server(Verify 4 sites + OCR) | Verify 4 個 gpt-4.1-mini call 改 VERIFY_* env var;OCR `model="gpt-4o"` 字面量改 VISION_* env var(新 task layer) |
+| api/server.py:1194 | OCR / Vision(2026-05-13 新增) | gpt-4o 字面量改 env var VISION_MODEL,新 task layer(原 PRD §2.1 task taxonomy 漏列) |
 
-**需求 6(v1.1 新增):環境變數清單**
+**(2026-05-13 audit 補充):** api/services/cost_tracker.py 的 model-cost 表(L13-16)硬編 OpenAI 4 個 model 價格,Phase 1B 切 Groq 前需擴充。Phase 0 §2.1 範圍內**不擋 ship**,寫為 Phase 1B 切換 first task。
+
+**需求 6(v1.1 新增,v1.4 重寫):環境變數清單**
 
 | **環境變數** | **預設值** | **用途** |
 | --- | --- | --- |
-| GENERATOR_PROVIDER | openai | RAG Generator provider |
+| GENERATOR_PROVIDER | openai | RAG Generator provider(api/rag/generator.py) |
 | GENERATOR_MODEL | gpt-4.1 | RAG Generator 主要模型 |
 | GENERATOR_FALLBACK_MODEL | gpt-4.1-mini | RAG Generator 降級模型 |
-| GUARD_PROVIDER | openai | Guard provider |
-| GUARD_MODEL | gpt-4.1-mini | Guard 模型 |
-| RERANKER_PROVIDER | openai | Reranker provider |
+| GUARD_PROVIDER | openai | Guard provider(api/middleware/guards.py) |
+| GUARD_MODEL | gpt-4.1-mini | Guard 模型(indirect injection + medical intent) |
+| RERANKER_PROVIDER | openai | Reranker provider(api/rag/reranker.py) |
 | RERANKER_MODEL | gpt-4o-mini | Reranker 模型 |
-| LIGHTWEIGHT_PROVIDER | openai | 輕量呼叫 |
-| LIGHTWEIGHT_MODEL | gpt-4o-mini | 輕量呼叫模型 |
-| JUDGE_PROVIDER | openai | LLM judge provider |
-| JUDGE_MODEL | gpt-4o | LLM judge 模型 |
-| EMBEDDER_PROVIDER | openai | Embedding provider |
+| LIGHTWEIGHT_PROVIDER | openai | 輕量呼叫 provider(api/rag/retriever.py + api/services/entity_extractor.py) |
+| LIGHTWEIGHT_MODEL | gpt-4.1-mini | 輕量呼叫模型(5 retriever sites + entity extractor) |
+| RESEARCH_JUDGE_PROVIDER | openai | Research LLMJudge provider(api/utils/llm_judge.py) |
+| RESEARCH_JUDGE_MODEL | gpt-4.1-mini | Research judge 模型 |
+| EXPLAIN_JUDGE_PROVIDER | openai | Explain Judge provider(api/utils/llm_judge.py,§2.7 acceptance baseline) |
+| EXPLAIN_JUDGE_MODEL | gpt-4.1 | Explain judge 模型 |
+| VISION_PROVIDER | openai | Vision / OCR provider(api/server.py:1194,醫療報告影像萃取) |
+| VISION_MODEL | gpt-4o | Vision / OCR 模型 |
+| VERIFY_PROVIDER | openai | Verify provider(api/server.py 4 sites,藥物交互作用分析) |
+| VERIFY_MODEL | gpt-4.1-mini | Verify 模型 |
+| EMBEDDER_PROVIDER | openai | Embedding provider(api/database/vector_store.py) |
 | EMBEDDER_MODEL | text-embedding-3-small | Embedding 模型 |
+
+**(2026-05-13 v1.4 修訂):** 從 13 vars 擴為 19 vars(9 個 task layer × 2 + 1 個 generator fallback model)。新增 VISION_*(OCR task layer)+ VERIFY_*(獨立於 generator)+ 原 JUDGE_* 拆分為 RESEARCH_JUDGE_* / EXPLAIN_JUDGE_*。理由見 ADR 005。
 
 **需求 7(v1.1 新增):Regression 測試清單**
 
@@ -286,26 +299,30 @@ Refactor 後必須逐項驗證:
 - invalid request → VelaError code='LLM_INVALID_REQUEST', retryable=false
 - auth failure → VelaError code='LLM_AUTH_FAILED', severity='critical'
 - service unavailable → VelaError code='LLM_PROVIDER_UNAVAILABLE', severity='critical'
-**驗收標準**
+**驗收標準(2026-05-13 v1.4 修訂)**
 
-- 環境變數切換 openai ↔ anthropic,同一查詢拿到正常回應
-- Generator 用 OpenAI、Guard 用 Anthropic,混合模式正常
+- 環境變數切換 LIGHTWEIGHT_PROVIDER=openai → groq,同一查詢拿到正常回應且 sanity check pass(不要求逐字相同,但 evidence tier + risk marker 結構一致)
+- Generator 用 OpenAI、Guard 用 Groq(混合 provider),正常運作(verify abstraction layer 解耦)
 - 現有測試全部通過(無 regression)
 - Provider 錯誤正確轉換為 VelaError
-- 8 個 backend 檔案都不直接 import openai,改透過 Provider
+- 9 個 backend 檔案(原 8 + api/server.py:1194 vision call)都不直接 import openai,改透過 Provider
 **不做什麼**
 
 - 不做本地模型(Llama、Mistral)支援
 - 不做動態 provider 切換(運行時切換)
 - 不做 cost tracking dashboard
-**工期(v1.1 校準)**
+**工期(v1.1 校準,2026-05-13 v1.4 修訂)**
 
 - Provider Interface 設計:0.5 天
-- OpenAIProvider 實作(8 檔案 refactor):2-3 天
-- AnthropicProvider 實作:1 天
+- OpenAIProvider 實作(9 檔案 refactor):2-3 天
+- GroqProvider 實作:0.5 天(原 AnthropicProvider 1 天)
 - 錯誤處理統一:1 天
 - Regression 測試:1-1.5 天
-- 總計:5-7 天
+- 總計:**4-5 天**(原 5-7 天)
+  - Anthropic 砍掉 -1d
+  - GroqProvider 加上 +0.5d
+  - entity_extractor / explain_service DI 已存在(audit 發現) -1d
+  - VISION + VERIFY layer 新增 +0.5d
 **2.2 query_id 關聯系統(v1.1 修正)** ✅ SHIPPED 2026-04-19 (1737683, 04aae40)
 
 **目標**
@@ -2030,7 +2047,7 @@ Phase 1C 本版不做 Tier 3 使用者貢獻功能,但保留擴充點:
 為避免 refactor 後命名混亂,所有 Model Provider 相關程式遵循:
 
 - Provider interface:api/providers/base.py,class Provider(ABC)
-- 實作類別:api/providers/openai_provider.py、anthropic_provider.py
+- 實作類別:api/providers/openai_provider.py、groq_provider.py(Phase 0 §2.1 範圍);anthropic_provider.py / openrouter_provider.py 為 Phase 1B+ 候選
 - Factory:api/providers/factory.py,export get_generator()、get_guard()、get_reranker() 等
 - 錯誤類別:api/providers/errors.py,export VelaError 與各 LLM_* 錯誤碼
 **七、Out of Scope(此版本不做)**
@@ -2231,7 +2248,36 @@ pharmacist Free → Pro 轉換率 ≥ 其他角色 2 倍是 PMF 達成的主要�
 
 **十、更新記錄**
 
-**10.1 v1.2 → v1.3 變更(2026-04-28)**
+**10.1 v1.3 → v1.4 變更(2026-05-13)**
+
+| **變更類型** | **內容** |
+| --- | --- |
+| §2.1 修訂 | Secondary provider 從 Anthropic 改為 Groq。理由:Anthropic 無省錢動機,Phase 1B 不會啟用,等同死碼;Groq 在 Lightweight/Guard/Reranker 任務有 8-30x 省錢路徑。詳見 ADR 005。 |
+| §2.1 新增 | VISION_PROVIDER / VISION_MODEL task layer。理由:api/server.py:1194 用 gpt-4o 處理醫療報告 OCR,原 PRD §2.1 task taxonomy 漏列。Default openai / gpt-4o。 |
+| §2.1 新增 | VERIFY_PROVIDER / VERIFY_MODEL task layer。理由:Verify 4 call sites 用 gpt-4.1-mini 但與 generator 性質不同,獨立 layer 允許未來分別切換。Default openai / gpt-4.1-mini。 |
+| §2.1 修訂 | JUDGE_* 拆為 RESEARCH_JUDGE_* + EXPLAIN_JUDGE_*。理由:LLMJudge (gpt-4.1-mini) 與 ExplainJudge (gpt-4.1) 是兩個 class,§2.7 Step 7 acceptance baseline 是 gpt-4.1,不可強制統一。 |
+| §2.1 修訂 | 環境變數總數從 13 → 19 個(9 個 task layer × 2 + 1 個 generator fallback model)。 |
+| §2.1 工期校準 | 從 5-7 天調整為 4-5 天。淨減 1-2 天。理由:Anthropic 砍掉 -1d,entity_extractor / explain_service DI 已存在 -1d,VISION + VERIFY layer +0.5d,Groq +0.5d。 |
+| §6.6 命名對齊 | api/providers/anthropic_provider.py → groq_provider.py。anthropic_provider.py / openrouter_provider.py 為 Phase 1B+ 候選。 |
+
+**v1.4 決策依據(solo founder PM call,2026-05-13)**
+
+OpenAI 系列目前運作穩定且 §2.7 Step 7-8 acceptance baseline 已 verified。Anthropic 加入只是「未來換 provider 的 fallback target」,但在 Phase 0-1B 期間無實際切換動機(同 tier 同 price,無 lightweight 替代,主力切換需重做 acceptance)。
+
+Groq 在輕量任務有明確省錢路徑:Llama 3.1 8B at $0.05/$0.08 vs gpt-4.1-mini at $0.40/$1.60 = 8-20x 便宜,且 LPU 硬體 inference 速度快 8x。Guard / Reranker / Retriever 等不直接 user-facing 答案的任務適合切換,品質風險低。
+
+接受的取捨:
+
+- Groq 半年內 deprecate 6 個 model(lineup 不穩),但 Provider abstraction 保護 — env var 改一行即可重新部署
+- 失去 Anthropic Claude long-context 即時 option(Phase 1B+ 補)
+
+否決的替代方案:
+
+- **Anthropic**(原 PRD v1.3 規格):無省錢動機,Phase 0-1B 不會啟用,實作後形同死碼
+- **OpenRouter**(gateway / router 層):5.5% credit fee,Phase 0 預設不需 routing fallback,Phase 1B 撥開關時邊際工程量 < 30 min,延後加
+- **Phase 0 三 provider(OpenAI + Anthropic + Groq)**:blast radius 大,工程量 +1d,Anthropic 仍然死碼,得不償失
+
+**10.2 v1.2 → v1.3 變更(2026-04-28)**
 
 | **變更類型** | **內容** |
 | --- | --- |
@@ -2257,7 +2303,7 @@ soft launch(= Phase 0 ship gate)需要 word-of-mouth 工具(§ 4.5)與 SEO 內�
 - Phase 1A 末段(post soft launch)— 否決,理由同上
 - 只做 4.5 延後 4.6 — 否決,理由:4.6 重用 4.5 共用基礎設施,邊際工程成本低;延後 4.6 等於放棄內容團隊 6-12 個月累積期的起跑點
 
-**10.2 v1.1 → v1.2 變更(2026-04-17)**
+**10.3 v1.1 → v1.2 變更(2026-04-17)**
 
 | **變更類型** | **內容** |
 | --- | --- |
@@ -2272,12 +2318,12 @@ soft launch(= Phase 0 ship gate)需要 word-of-mouth 工具(§ 4.5)與 SEO 內�
 | 調整:附錄 A.2 章節對照 | 新增 2.7 與 5.1.1 的 FEATURE_AUDIT 對照行。 |
 | 調整:附錄 A.1 範例 prompt | 改以 2.7 為範例任務。 |
 
-**10.2.1 v1.2 post-release 變更記錄(非正式 bump 版號)**
+**10.3.1 v1.2 post-release 變更記錄(非正式 bump 版號)**
 
 - 2026-04-18:新增 § 2.8 Anonymous Trial Flow(discovered gap,見 ADR 001)
 - 2026-04-20:新增 § 2.9 Verify 輸出語言對齊 user locale(discovered gap,solo review Accepted,post-2.4 smoke test)
 
-**10.3 v1.0 → v1.1 變更(2026-04-17)**
+**10.4 v1.0 → v1.1 變更(2026-04-17)**
 
 | **變更類型** | **內容** |
 | --- | --- |
@@ -2294,8 +2340,8 @@ soft launch(= Phase 0 ship gate)需要 word-of-mouth 工具(§ 4.5)與 SEO 內�
 | 校準:Phase 0 時程 | 從 2 週延長為 2-2.5 週(10-13 工作天)。九章時程總覽對應調整。 |
 | 新增:附錄 A PRD 使用說明 | 提供 Claude Code 工作流程範例 + PRD vs FEATURE_AUDIT vs GTM vs 維運計畫的文件關係說明。 |
 
-**10.4 v1.0 版本(保留)**
+**10.5 v1.0 版本(保留)**
 
 v1.0 涵蓋 Phase 0 / 1A / 1B / 1C 初版規格,包括:Model Provider 抽象(初版 2 檔案)、query_id 關聯、Citation 追蹤、Onboarding 三問、首頁動態範例、Privacy 四接觸點、FeedbackBar 原因 chip、Citation ⓘ、Settings user_context、處方解析 MVP、在地差異提示分層、跨語言橋接面板。
 
-*Vela · vela.an-tho.com · Master PRD v1.3 · Updated 2026-04-28*
+*Vela · vela.an-tho.com · Master PRD v1.4 · Updated 2026-05-13*

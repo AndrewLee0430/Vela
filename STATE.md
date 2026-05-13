@@ -13,7 +13,7 @@ Phase 0 — in progress (started 2026-04-17)
 ## Next Up (Phase 0 remaining, Path B execution order)
 
 1. **§ 4.6 PHASE E** — integration test (Google Rich Results Test / robots.txt / hreflang validator + 4-week GSC monitoring after deploy). Includes follow-up: build /explore index page (breadcrumb 'Explore' link gap from PHASE D).
-2. **§ 2.1 Model Provider Refactor** — 5-7 days, 9 files, largest remaining Phase 0 block.
+2. **§ 2.1 Model Provider Refactor** — 4-5 days (per v1.4 spec, 2026-05-13), 9 files + new api/providers/, 19 env vars across 9 task layers (OpenAI + Groq providers). Largest remaining Phase 0 block. See PRD §2.1 v1.4 + ADR 005.
 3. **§ 3.1 User Context schema** — blocks Phase 1A.
 4. **Phase 0 Retrospective** — final gate before Phase 1A; produces `docs/decisions/005-phase-0-retrospective.md` (003+004 claimed by advisor roadmap integration — see ADR 003 + ADR 004).
 5. **§ 4.5 PHASE E** — DEFERRED. Execute immediately after Phase 0 末段 production deploy, NOT in main critical path. Tasks: SHARE_CREATED_BY_SALT secret setup, real anon 403 verification, LinkedIn / Twitter / Google validators, OG image production render check, PostHog 6-event verification, revocation flow on production. Detailed checklist in PRD §4.5 "Production Deploy Checklist (PHASE E.2)".
