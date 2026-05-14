@@ -1,6 +1,6 @@
 # STATE.md — Vela Current Development Focus
 
-**Last updated**: 2026-05-13 (post §2.1 Model Provider Refactor — all 5 sub-phases shipped, 9/9 backend files migrated to Provider abstraction)
+**Last updated**: 2026-05-14 (Next Up reorder — §3.1 audit promoted to active, §4.6 PHASE E marked deferred-parallel)
 
 ## Phase
 
@@ -8,16 +8,18 @@ Phase 0 — in progress (started 2026-04-17)
 
 ## Current Focus
 
-§2.1 Model Provider Refactor — ALL 5 sub-phases shipped (see Recently Shipped). 9/9 backend files migrated to Provider abstraction. Groq framework-ready; Phase 1B activation per ADR 006.
+§3.1 User Context Schema audit — Phase 0 closeout → Phase 1A bridge task. Audit-first per CLAUDE.md #2 (verify codebase before acting on spec assumptions). Blocks Phase 1A. Audit output → PRD §3.1 修訂 + phasing plan + ADR 007 (if needed); audit report stays in chat (precedent: §2.1 audit, no repo artifact).
 
-Next active task = §4.6 PHASE E (integration test: Google Rich Results / robots.txt / hreflang validator + post-deploy GSC monitoring).
+Last shipped: §2.1 Model Provider Refactor (2026-05-13) — see Completed section below + ARCHIVE.md.
 
-## Next Up (Phase 0 remaining, Path B execution order)
+## Next Up (Phase 0 closeout + Phase 1A bridge, Path B execution order)
 
-1. **§ 4.6 PHASE E** — integration test (Google Rich Results Test / robots.txt / hreflang validator + 4-week GSC monitoring after deploy). Includes follow-up: build /explore index page (breadcrumb 'Explore' link gap from PHASE D).
-2. **§ 3.1 User Context schema** — blocks Phase 1A.
-3. **Phase 0 Retrospective** — final gate before Phase 1A; ADR number TBD (005 taken by 2.1 Groq decision, 006 taken by Phase 1B activation checklist).
-4. **§ 4.5 PHASE E** — DEFERRED. Execute immediately after Phase 0 末段 production deploy, NOT in main critical path. Tasks: SHARE_CREATED_BY_SALT secret setup, real anon 403 verification, LinkedIn / Twitter / Google validators, OG image production render check, PostHog 6-event verification, revocation flow on production. Detailed checklist in PRD §4.5 "Production Deploy Checklist (PHASE E.2)".
+1. **§ 3.1 User Context Schema audit** — ACTIVE. Audit-only first pass (no production code); produces PRD §3.1 修訂建議 + draft phasing plan. Schema spec: localStorage key `vela_user_context` (workplace / role / work_language / locale / onboarding_completed / version) + Pro-only server table `user_profile` storing SHA-256(context)[:16] hash + locale. Blocks Phase 1A.
+2. **§ 4.6 PHASE E** — DEFERRED-PARALLEL: wall-clock gated until production deploy + 4-week GSC indexing window. Pre-deploy work (Google Rich Results Test / robots.txt / hreflang validator) can run locally anytime; post-deploy work (4-week GSC monitoring) requires production deploy first. Includes follow-up: build /explore index page (breadcrumb 'Explore' link gap from PHASE D). Can run in parallel with §3.1 + §3.2 engineering.
+3. **§ 3.2 Onboarding 三問改版** — depends on §3.1 schema landing. Frontend 3-step flow (workplace → role → work_language) + 隱私聲明卡, writes to `vela_user_context` localStorage. Existing OnboardingOverlay (4-step SVG mask tour) is an independent component and unaffected — see §3.1 audit checklist C for naming boundary check.
+4. **Phase 0 Retrospective** — final gate before Phase 1A bulk. ADR number TBD (005 taken by 2.1 Groq decision, 006 taken by Phase 1B activation checklist, 007 reserved if §3.1 audit produces a decision-worthy outcome).
+5. **Production deploy** — Phase 0 末段 production push. Triggers §4.5 PHASE E execution window + §4.6 PHASE E 4-week GSC monitoring window.
+6. **§ 4.5 PHASE E** — DEFERRED to post-deploy, NOT in main critical path. Tasks: SHARE_CREATED_BY_SALT secret setup, real anon 403 verification, LinkedIn / Twitter / Google validators, OG image production render check, PostHog 6-event verification, revocation flow on production. Detailed checklist in PRD §4.5 "Production Deploy Checklist (PHASE E.2)".
 
 ## Completed: §2.1 Model Provider Refactor (2026-05-13)
 
