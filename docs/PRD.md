@@ -1316,7 +1316,7 @@ Phase 1A 讓使用者感覺「這個產品為我設計」,Phase 1B 真正做出�
 | pharmacist Free → Pro 轉換率 | ≥ 其他角色 2 倍 | 達成即 PMF 訊號 |
 | 處方分析後 thumbs_up 率 | > 70% | 低於此代表輸出品質需提升 |
 
-**4.5 Share Answer 公開連結(v1.3 新增)** 🟡 IMPLEMENTATION COMPLETE — DEPLOY PENDING (2026-05-08)
+**4.5 Share Answer 公開連結(v1.3 新增)** ✅ SHIPPED 2026-05-19 (v164, a63b304 + PHASE A-D commits ef0d375..6f7a154 — see ARCHIVE.md 2026-05-19 entry for two-cycle deploy + OG image fix-forward)
 
 **(2026-05-08 status)** PHASE A-D shipped (commits ef0d375 / f04068d / e042efc / 30bd0b5 / a5da1c5 / ca571ce / b378659 / 768dc0b / 4fe0d7b / 92dbe9b / 6f7a154 / ad506db plus UX polish run). PHASE E (acceptance criteria validation via LinkedIn Post Inspector / Twitter Card Validator / Google Rich Results Test, real anon 403 verification, OG image production render check, PostHog 6-event verification) deferred — blocked on production deploy. See **Production Deploy Checklist (PHASE E.2)** below.
 
@@ -1471,10 +1471,10 @@ Execute IMMEDIATELY AFTER Phase 0 末段 production deploy. Tasks:
 
 **Closeout**
 
-- [ ] Update PRD §4.5 status: 🟡 → ✅ SHIPPED `<deploy_date>`
-- [ ] Update STATE.md: §4.5 PHASE E moves from "Deferred" → Recently Shipped
-- [ ] Update ARCHIVE.md: append PHASE E entry
-- [ ] Append `docs/decisions/` ADR if any of the validator runs surface unexpected gaps requiring design changes (not expected — but possible)
+- [x] Update PRD §4.5 status: 🟡 → ✅ SHIPPED 2026-05-19 (this commit)
+- [x] Update STATE.md: §4.5 PHASE E moves from "Deferred" → Recently Shipped (49309eb)
+- [x] Update ARCHIVE.md: append PHASE E entry (07b2c0a)
+- [ ] Append `docs/decisions/` ADR if any of the validator runs surface unexpected gaps requiring design changes (not expected — but possible) — N/A, no design-change gap surfaced. OG image fix was a wiring bug (StaticFiles mount double-prefix), addressed via fix-forward commit a63b304 with 12 LoC patch + 3 unit tests. Ephemeral filesystem (Hypothesis C) deferred to Phase 1A entry, may warrant ADR at that point.
 
 **Failure modes**
 
@@ -1502,7 +1502,7 @@ Execute IMMEDIATELY AFTER Phase 0 末段 production deploy. Tasks:
 
 ---
 
-**4.6 SEO Explore Pages(v1.3 新增)** 🟡 PHASE A+B+C+D SHIPPED (2026-05-11~2026-05-12) — PHASE E PENDING
+**4.6 SEO Explore Pages(v1.3 新增)** ✅ SHIPPED 2026-05-19 (PHASE A-D 2026-05-11~2026-05-12 commits bc171a1..(PHASE D SHA pending); PHASE E production deploy 2026-05-19 v164 — GSC 4-week indexing window opened, monitor weekly. /explore index page 404 known gap, follow-up within 1 week. See ARCHIVE.md 2026-05-19 entry + docs/retrospectives/phase-0-2026-05.md § 5)
 
 > **(2026-05-12 PHASE D 修訂)** PHASE D 已 ship — Breadcrumb (Vela › Explore › {category} › {query})、Category listing route (`/explore/category/{category}`,registered BEFORE /explore/{slug} for path priority)、Related queries section (3-tier hreflang/category priority,8 cards cap)、3 PostHog events (`explore_page_visited` / `explore_to_query_clicked` / `explore_related_clicked`) 全部 wired。Events 透過 inline `window.posthog.capture()` with existence guard,在 init 未 expose 到 public Jinja2 template context 之前皆為 no-op (PHASE E candidate)。
 >
