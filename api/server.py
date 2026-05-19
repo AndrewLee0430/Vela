@@ -2237,6 +2237,10 @@ async def share_create(
         .first()
     )
     if existing is not None:
+        try:
+            _generate_og_png(existing.share_id, existing.query_text)
+        except Exception as e:
+            logger.warning(f"OG regenerate failed for existing share {existing.share_id}: {e}")
         return JSONResponse(
             status_code=200,
             content={
@@ -2408,6 +2412,14 @@ async def share_track_citation_click(body: TrackCitationClickRequest, request: R
 # 靜態檔案服務
 static_path = Path("static")
 if static_path.exists():
+    # Dedicated mount for OG PNGs (PRD § 4.5). Registered BEFORE the
+    # catch-all so /static/og/<id>.png resolves to static/og/<id>.png
+    # on disk — the root mount's directory="static" would otherwise
+    # double-prefix and look for static/static/og/<id>.png.
+    og_dir = static_path / "og"
+    og_dir.mkdir(parents=True, exist_ok=True)
+    app.mount("/static/og", StaticFiles(directory=str(og_dir)), name="og_images")
+
     @app.get("/")
     async def serve_root():
         return FileResponse(static_path / "index.html")
