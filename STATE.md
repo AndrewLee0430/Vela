@@ -1,6 +1,6 @@
 # STATE.md — Vela Current Development Focus
 
-**Last updated**: 2026-05-19 (Phase 0 production deploy completed — v164 / commit a63b304)
+**Last updated**: 2026-05-19 (Phase 0 production deploy + post-deploy [docs] batch completed — v164 / final docs SHA a155c4a)
 
 ## Phase
 
@@ -10,17 +10,16 @@ Phase 0 — production shipped 2026-05-19 (started 2026-04-17, deploy commit a63
 
 Phase 0 production deployed 2026-05-19 (v164, commit a63b304). All 🔴 CRITICAL ship gates passed: server health, vector store (690 docs), Clerk auth, anon share 403, §2.7 Explain canonical (K=6.8 case), §2.8 anon trial quota (6/8 modal), §2.9 multilingual response, §2.0 PostHog events. One 🟡 HIGH fix-forward landed: OG image URL/path mismatch in StaticFiles mount (commit a63b304).
 
-Next focus: post-deploy doc closeout batch + Phase 1A entry preparation.
+Next focus: Phase 1A entry preparation (§3.1 PRD revision can run parallel with §4.6 PHASE E 4-week GSC indexing window). Post-deploy [docs] batch completed 2026-05-19 in 5 commits: 49309eb → 07b2c0a → de4e7d4 → 3c48433 → a155c4a.
 
 Last shipped: §2.1 Model Provider Refactor (2026-05-13) + Phase 0 production deploy (2026-05-19).
 
-## Next Up (post-deploy doc closeout → Phase 1A entry)
+## Next Up (Phase 1A entry)
 
-1. **Post-deploy [docs] batch** — ACTIVE. 4 remaining commits after this one: ARCHIVE.md deploy entry / `docs/retrospectives/phase-0-2026-05.md` / PRD §4.5+§4.6 status markers / TECH_DEBT+BACKLOG updates. Estimated 0.5d total.
-2. **§4.6 PHASE E 4-week GSC indexing window** — passive, monitored weekly. Started 2026-05-19 with production deploy. `/explore` index page follow-up can land during this window.
-3. **§3.1 PRD revision (v1.4 → v1.5)** — docs commit only. Integrates 10 revisions from §3.1 audit Section H + decisions on Open Questions (E1–E4, F1, G3, G4, G7). Can run parallel with #1. Estimated 0.5d.
-4. **§3.1 implementation + §3.2 Onboarding Wizard (Phase 1A start)** — sequence: PHASE B (backend) → PHASE C (frontend hook + LangContext write-through) → PHASE D (`OnboardingWizard.tsx` = §3.2, distinct from existing `OnboardingOverlay.tsx`) → PHASE E (Settings §4.3 tab + role_category + §3.3 basic examples). Estimated 4d.
-5. **Phase 0 Retrospective writing follow-up findings** — addressed by post-deploy [docs] batch #1; integrate findings into Phase 1A planning.
+1. **§4.6 PHASE E 4-week GSC indexing window** — passive, monitored weekly. Started 2026-05-19 with production deploy. `/explore` index page follow-up can land during this window.
+2. **§3.1 PRD revision (v1.4 → v1.5)** — docs commit only. Integrates 10 revisions from §3.1 audit Section H + decisions on Open Questions (E1–E4, F1, G3, G4, G7). Can run parallel with #1. Estimated 0.5d.
+3. **§3.1 implementation + §3.2 Onboarding Wizard (Phase 1A start)** — sequence: PHASE B (backend) → PHASE C (frontend hook + LangContext write-through) → PHASE D (`OnboardingWizard.tsx` = §3.2, distinct from existing `OnboardingOverlay.tsx`) → PHASE E (Settings §4.3 tab + role_category + §3.3 basic examples). Estimated 4d.
+4. **Phase 0 Retrospective integration into Phase 1A planning** — retrospective.md complete (de4e7d4); surface findings (Clerk publicMetadata dormant, user.deleted webhook gap, OG image ephemeral fs, 5 dogfooding nuance issues) during §3.1 PRD revision + §3.2 design phase. No standalone deliverable, embedded in #2 + #3 work.
 
 ## Completed: §2.1 Model Provider Refactor (2026-05-13)
 
