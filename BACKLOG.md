@@ -825,3 +825,53 @@ Phase 1B work items per advisor discussion 2026-05-04 (preserved in git commit 3
 - **Prescription clipboard paste with OCR** (was tied to prescription parser) — removed.
 
 If user behavior over time creates strong signal for prescription/Rx workflow (e.g. Verify monthly active users > 1,000 with > 50 user requests for prescription parsing), revisit will trigger fresh design — not 2026-05-04 advisor spec resurrection.
+
+---
+
+## Phase 0 deploy retrospective follow-ups
+
+Captured 2026-05-19 from production deploy + retrospective. See docs/retrospectives/phase-0-2026-05.md § 5 for full context.
+
+- [ ] **[P2 → Phase 1A entry, ADR candidate] OG image persistent storage decision — Fly volume vs R2/CDN**
+      
+      Current state: `/static/og/*` PNGs live on Fly's ephemeral filesystem; lost on every machine restart, redeploy, or auto-stop wake event. `.gitignore` comment promises "production OG images go to R2/CDN, not local filesystem" but R2/CDN integration was never built. Wiring fix (commit a63b304, 2026-05-19) addressed URL/path mismatch but not persistence.
+      
+      Soft launch impact: Low — bot fetches (LinkedIn / Twitter / Google crawler) typically happen within seconds-to-minutes of share creation while PNG still exists. Risk surfaces for shares re-fetched after machine restart (rare for short-lived viral shares, more likely for evergreen explore pages).
+      
+      Decision tradeoff:
+      - **Fly volume**: ~5 LoC fly.toml `[mounts]` section. Single-region pinning. Simpler to ship. Compatible with current single-machine production. Migration to multi-region later requires volume-per-machine + share-affinity routing.
+      - **R2 / Cloudflare CDN**: Larger scope (boto3 + R2 creds + upload-on-create + URL change from `/static/og/<id>.png` to `<r2-bucket>.r2.cloudflarestorage.com/og/<id>.png` or CDN-fronted URL). Survives multi-region / multi-machine. Matches .gitignore comment intent.
+      
+      Decision likely warrants ADR (007 or 008 — number TBD based on §3.1 PRD revision decisions). Should be made before Phase 1A §3.1 ship to avoid retrofitting OG paths twice.
+      
+      Same root cause affects landing page `/og-image.png` (currently served from build-time COPY into image, so survives machine restart but not editable without redeploy).
+
+- [ ] **[P3 → Phase 1B post-soft-launch] Dodo test/live env separation audit**
+      
+      Discovered during pre-deploy 2026-05-19 audit: 1 production user_usage row had `dodo_customer_id = test_cust_c53dfaa8cd4b` from 2026-03-19. Safety scan `WHERE dodo_customer_id LIKE 'test_%' OR dodo_subscription_id LIKE 'test_%'` returned 1 row only; no broader sandbox bleed. Row cleaned.
+      
+      Hypothesis: Either Dodo webhook handler accepted a test customer in production, or production DATABASE_URL was used during sandbox dev work. Single occurrence in 2 months suggests latter (one-off dev pollution), but worth auditing webhook handler logic in `api/services/dodo_webhook.py` (or equivalent) to confirm:
+      - Webhook verifies request signature against `DODO_WEBHOOK_SECRET` (live key, not test)
+      - Handler rejects events where customer prefix is `test_*`
+      - No code path allows `dodo_customer_id LIKE 'test_%'` to be written to production
+      
+      Schedule: After Phase 0 soft launch starts producing real Dodo subscriptions (Phase 1B opening). Monitor user_usage for any new `test_*` rows for 4 weeks post-deploy as canary.
+
+- [ ] **[P3 → Phase 1B post-soft-launch] Dodo webhook real-subscription canary monitoring**
+      
+      Production currently has 2 Pro users, both self-comp (Andrew personal + TEST_MODE marker), neither flowed through Dodo checkout. So Dodo webhook real-subscription path (subscription.created → user_usage.plan_type='pro' with dodo_subscription_id + current_period_end populated) has never been exercised in production.
+      
+      First real Dodo subscription post-soft-launch is implicit canary. Monitor for:
+      - Webhook signature verification passes
+      - user_usage row created with plan_type='pro', non-null dodo_subscription_id, non-null current_period_end
+      - PostHog `subscription_started` event fires with correct properties
+      - Backend gates correctly recognize the new Pro user (Explain unlocks, quota changes)
+      - Subsequent webhook events (renewal, cancellation) flow correctly
+      
+      Schedule: Active monitoring starts day-1 of soft launch. Alert on first paid user in PostHog + Dodo Dashboard cross-check.
+
+- [ ] **[P3 → next opportunity] share_revoked PostHog event verification follow-up**
+      
+      During PART C.1.6 PostHog Live Events verification on 2026-05-19, `share_revoked` event was not visible in the 30-minute window after revoking a test share. Possible causes: (a) event was truncated outside 30-min window in PostHog default view, (b) revoke action's PostHog capture call has a wiring gap. PRD §4.5 PHASE B lists 6 share events; only 5 were directly verified.
+      
+      Resolution: Next dogfooding session, revoke a fresh share and immediately check PostHog Live Events panel filtered on user clerk_id. If absent, grep frontend `MySharesTab.tsx` (or wherever revoke action lives) for `posthog.capture('share_revoked'` to confirm wire-up.
