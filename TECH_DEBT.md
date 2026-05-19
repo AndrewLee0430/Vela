@@ -288,3 +288,20 @@ When entries are resolved, move to ARCHIVE.md (note discovery + resolution dates
   - **影響範圍**: Currently fine while migration count is low (5 migrations total). Fragile as migration count grows: "what's applied" inferred from side-effects, easy to lose track during a multi-day deploy or rollback scenario. Phase 1A §3.1 introduces migration 006 (user_profile) — natural point to add lightweight introspection.
   - **Resolution**: Add a minimal `schema_versions(filename TEXT PRIMARY KEY, applied_at TIMESTAMPTZ DEFAULT NOW())` table in a new migration (could bundle with 006). Update existing `migrations/00X.sql` files to `INSERT INTO schema_versions (filename) VALUES ('00X_name.sql') ON CONFLICT DO NOTHING;` at end. Backfill 002-005 entries manually in production. Eliminates "is X migration applied" guesswork forever.
   - **Discovered**: 2026-05-19 pre-deploy state audit (Claude Code investigation found no alembic_version table and inferred migration state from public schema table list)
+
+- **[P3 → Phase 1B Week 4] Research response missing canonical clinical terms — 4 WARN pattern (2026-05-19 golden run)**
+  - **背景**: 2026-05-19 golden eval 4 個 WARN 中 3 個(R03/R09/R20)為 Research response 漏掉 canonical clinical 元素:
+    - R03: AFib anticoagulation indications 沒提 CHA2DS2-VASc(THE stroke risk scoring tool)
+    - R09: Lithium therapy monitoring 沒提 thyroid function(standard protocol — 30% 引起 subclinical hypothyroidism per literature)
+    - R20: ACE-I in pregnancy 沒提 safer alternatives(methyldopa / labetalol — physician 自然 follow-up question after "contraindicated")
+  - **第 4 個 WARN(E26)**: empty_input error 路徑正確(blocked = ✅),wording 觸發 fuzzy must_contain miss,unrelated 議題,low priority
+  - **Pattern**: Research generator / RAG retrieval 可能對「canonical scoring tools」「standard monitoring protocols」「alternative drug recommendations」有 systematic under-coverage。3/3 Research WARN 都是 "missing canonical term" 而非 hallucination / fabrication / off-topic — pattern 一致。
+  - **Hypothesis**:
+    - (a) RAG retrieval 偏向 high-citation general papers,specialty-specific scoring tool papers ranking 較低 — retrieval-side gap
+    - (b) Generator prompt 沒明確要求「contraindicated → suggest alternatives」/「monitoring → list all canonical parameters」logical chain — prompt-side gap
+    - (c) Token limit 截斷 detail — output-length gap (less likely given other detail present)
+  - **影響範圍**: Medium for clinical user trust. Physicians expect canonical terms (CHA2DS2-VASc, MELD, BISAP, INR target ranges, etc.) — their absence reads as "incomplete answer" even if the medical content is correct.
+  - **Resolution**: Phase 1B Week 4 Verify 強制英文 + system prompt polish window,順手 evaluate Research prompt 是否需要 reinforcement on canonical terms。Candidate intervention: Research system prompt 加一段「if answer involves treatment decision, always mention canonical scoring tools (e.g. CHA2DS2-VASc for AFib, MELD for liver), standard monitoring protocols (e.g. thyroid for lithium, INR for warfarin), or alternative drugs when stating contraindication」.
+  - **驗證方法**: Phase 1B Week 4 fix 後重跑 R03 / R09 / R20,目標全 PASS (min_score ≥ 70). 如果還 WARN 表示 root cause 是 retrieval 不是 prompt,需要 deeper RAG eval (Hypothesis a).
+  - **Related**: Synergy with TECH_DEBT entry "Verify 答案品質 nuance issues — dogfooding 發現 (2026-05-06)" Task A which also addresses Verify/Research system prompt polish in Week 4. Both can share the same work session.
+  - **Discovered**: 2026-05-19 post-deploy golden eval run (96.7% overall pass rate, 4 WARN, 0 FAIL — no regression)
