@@ -1,27 +1,26 @@
 # STATE.md — Vela Current Development Focus
 
-**Last updated**: 2026-05-14 (Next Up retighten — Phase 0 production deploy promoted to #1 per PRD v1.3 ship gate sequence; §3.1 moved to Phase 1A entry; Retrospective moved post-verification per session decision)
+**Last updated**: 2026-05-19 (Phase 0 production deploy completed — v164 / commit a63b304)
 
 ## Phase
 
-Phase 0 — code-complete, awaiting production deploy (started 2026-04-17)
+Phase 0 — production shipped 2026-05-19 (started 2026-04-17, deploy commit a63b304, v164)
 
 ## Current Focus
 
-Phase 0 production deploy + post-deploy verification + Phase 0 Retrospective. Ship gate sequence per PRD v1.3 §二 NOTE: `§2.7 → §4.5 → §4.6 → [DEPLOY] → §4.5/§4.6 PHASE E verification → Phase 0 Retrospective`.
+Phase 0 production deployed 2026-05-19 (v164, commit a63b304). All 🔴 CRITICAL ship gates passed: server health, vector store (690 docs), Clerk auth, anon share 403, §2.7 Explain canonical (K=6.8 case), §2.8 anon trial quota (6/8 modal), §2.9 multilingual response, §2.0 PostHog events. One 🟡 HIGH fix-forward landed: OG image URL/path mismatch in StaticFiles mount (commit a63b304).
 
-§3.1 audit completed 2026-05-14 (report in chat); §3.1 PRD v1.5 revision + implementation deferred to Phase 1A entry per PRD §3.1 marker (Phase 1A scope, not Phase 0 closeout).
+Next focus: post-deploy doc closeout batch + Phase 1A entry preparation.
 
-Last shipped: §2.1 Model Provider Refactor (2026-05-13) — see Completed section below + ARCHIVE.md.
+Last shipped: §2.1 Model Provider Refactor (2026-05-13) + Phase 0 production deploy (2026-05-19).
 
-## Next Up (Phase 0 production ship → Phase 1A entry, retightened to PRD v1.3 spec)
+## Next Up (post-deploy doc closeout → Phase 1A entry)
 
-1. **Production deploy** — ACTIVE. Pre-deploy checklist generation pending (separate prompt). Phase 0 code-complete state: §2.0 / §2.1 / §2.2 / §2.3 / §2.4 / §2.5 / §2.6 / §2.7 / §2.8 / §2.9 + §4.5 PHASE A–D + §4.6 PHASE A–D all shipped.
-2. **§4.5 PHASE E.2 + §4.6 PHASE E post-deploy verification** — immediate post-deploy. §4.5: PRD §4.5 "Production Deploy Checklist PHASE E.2" (real anon 403 + LinkedIn / Twitter / Google validators + OG image production render + PostHog 6-event verification + revocation flow). §4.6: Google Rich Results Test + robots.txt + hreflang validator + `/explore` index page build (breadcrumb 'Explore' link gap follow-up). Estimated 0.5–1d.
-3. **§4.6 PHASE E 4-week GSC indexing window** — passive, parallel-running with #4 and #5. Monitored weekly. Starts on deploy.
-4. **Phase 0 Retrospective** — write `docs/retrospectives/phase-0-2026-05.md` covering 2026-04-17 → deploy date period. MUST include deploy process lessons + §4.5/§4.6 PHASE E verification findings (reason this is post-verification, not pre-deploy). NOT ADR — ADR 007 reserved for actual architecture decisions. Estimated 0.5d.
-5. **§3.1 PRD revision (v1.4 → v1.5)** — can parallel with #4. Docs commit only. Integrates 10 revisions from §3.1 audit Section H + decisions on Open Questions (E1–E4, F1, G3, G4, G7). No ADR. Estimated 0.5d.
-6. **§3.1 implementation + §3.2 Onboarding Wizard (Phase 1A start)** — sequence: PHASE B (backend) → PHASE C (frontend hook + LangContext write-through) → PHASE D (`OnboardingWizard.tsx` = §3.2, distinct from existing `OnboardingOverlay.tsx`) → PHASE E (Settings §4.3 tab + role_category + §3.3 basic examples). Estimated 4d.
+1. **Post-deploy [docs] batch** — ACTIVE. 4 remaining commits after this one: ARCHIVE.md deploy entry / `docs/retrospectives/phase-0-2026-05.md` / PRD §4.5+§4.6 status markers / TECH_DEBT+BACKLOG updates. Estimated 0.5d total.
+2. **§4.6 PHASE E 4-week GSC indexing window** — passive, monitored weekly. Started 2026-05-19 with production deploy. `/explore` index page follow-up can land during this window.
+3. **§3.1 PRD revision (v1.4 → v1.5)** — docs commit only. Integrates 10 revisions from §3.1 audit Section H + decisions on Open Questions (E1–E4, F1, G3, G4, G7). Can run parallel with #1. Estimated 0.5d.
+4. **§3.1 implementation + §3.2 Onboarding Wizard (Phase 1A start)** — sequence: PHASE B (backend) → PHASE C (frontend hook + LangContext write-through) → PHASE D (`OnboardingWizard.tsx` = §3.2, distinct from existing `OnboardingOverlay.tsx`) → PHASE E (Settings §4.3 tab + role_category + §3.3 basic examples). Estimated 4d.
+5. **Phase 0 Retrospective writing follow-up findings** — addressed by post-deploy [docs] batch #1; integrate findings into Phase 1A planning.
 
 ## Completed: §2.1 Model Provider Refactor (2026-05-13)
 
