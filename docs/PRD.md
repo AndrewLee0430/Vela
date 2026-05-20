@@ -94,7 +94,7 @@ Vela 採用 Privacy-first 定位,採取「透明定義」做法。以下清單�
 - **Provider-agnostic 架構:**所有 LLM 呼叫透過 Provider interface,可隨時切換。Generator 和 Guard 可獨立切換 provider。
 - **i18n-first:**所有使用者可見字串透過 i18n key 處理,16 語言同步。新增功能必須同時加入 i18n key。
 - **Citation-mandatory:**所有醫療回答必須包含引用來源。無引用不輸出。
-- **Degrade-gracefully:**非關鍵 API 失敗不 block 使用者流程(specialty 送出失敗、PostHog 失敗)。但關鍵查詢失敗需要明確錯誤提示。
+- **Degrade-gracefully:**非關鍵 API 失敗不 block 使用者流程(user_context 送出失敗、PostHog 失敗)。但關鍵查詢失敗需要明確錯誤提示。
 **一、開發 Phase 總覽**
 
 本 PRD 涵蓋四個 Phase,依順序執行。每個 Phase 都有明確的目標與驗收標準。
@@ -186,7 +186,7 @@ FEATURE_AUDIT.md 第 4 節發現:整個 repo 只有 1 處 posthog.capture(),就�
 | --- | --- | --- | --- |
 | query_id | string │ null | session memory | 當前查詢的 ID(backend 產生,SSE 傳回,見 2.2) |
 | session_id | string | session storage | 整個瀏覽器 session 的 UUID |
-| user_context_hash | string │ null | localStorage | workplace + role + work_language 的 SHA-256 前 16 字元 |
+| user_context_hash | string │ null | localStorage | workplace + role + work_language 的 SHA-256 前 16 字元 (v1.5 補充: writer 見 §3.1 schema, derived from workplace/role/work_language) |
 | locale | string │ null | localStorage | TW、JP、KR 等國家代碼 |
 | plan_type | string | Clerk / backend | free │ pro |
 | work_language | string │ null | localStorage | zh-TW、ja、ko 等 |
@@ -957,6 +957,8 @@ Phase 1A 不做新功能,只做「感知層」——讓使用者進來的前 30 
 
 **3.1 User Context 資料模型** ❌ PENDING (Phase 1A — blocks Phase 1A)
 
+**(v1.5 修訂 2026-05-20)** 此節整合 2026-05-14 §3.1 User Context Schema audit 結果(retrospective.md § 2):8 個 Open Question decisions (E1–E4, F1, G3, G4, G7) + 5 個 critical findings (A, F1, G2, G3, G6)。主要變更:Schema 增加 user_context_hash 作為第 7 個 derived localStorage field(F1 Option α)、API endpoints 明示 free-user 403 + rate limit + UPSERT 語意、role_category 4-bucket 映射規則新增、specialty terminology reframe(G2)。Cross-section 連動 §2.0.2 / §3.2 Step 3 / §4.3 Settings tab。
+
 **核心設計**
 
 - Local-first 儲存:user_context 預設存在 localStorage
@@ -972,6 +974,28 @@ Key: 'vela_user_context',結構:
 - onboarding_completed: boolean
 - onboarding_completed_at: ISO datetime
 - version: schema 版本(目前為 1)
+- user_context_hash: string | null — SHA-256 derived from workplace/role/work_language (見下方 derivation rule)
+
+**Hash derivation rule (v1.5)**
+
+`user_context_hash` 為 derived field,計算規則:
+
+```
+user_context_hash = SHA-256(
+  [f for f in (workplace, role, work_language) if f is not None]
+    .join('|')
+)[:16]
+```
+
+- Join character: `|` (pipe)
+- Null filtering: 缺失欄位不參與 hash(避免 sentinel 與 collision 風險)
+- Locale 不在 hash inputs(locale 是 UI 偏好,與 user identity 正交)
+- Edge case: 三個欄位皆 null → hash 為 empty-string SHA-256 前 16 字元 (`e3b0c44298fc1c149af`),語意為「未 onboarding」sentinel
+
+**Self-repair rule (v1.5)**
+
+讀取時:若 `user_context_hash` 缺失或與目前 workplace/role/work_language 即時計算結果不符,以重算結果為準並寫回 localStorage。防止 stale hash silent drift。
+
 **Role enum**
 
 根據 workplace 動態:
@@ -981,25 +1005,55 @@ Key: 'vela_user_context',結構:
 - student: medical_student / resident / intern / other_student
 - research: researcher / other_research
 - fallback: other
-**後端 Schema(選填,只有訂閱使用者)**
 
-Table: user_profile(新表,不混在 user_usage 裡):
+**Role category mapping (v1.5, G7 decision)**
 
-- user_id VARCHAR(64) PRIMARY KEY
-- user_context_hash VARCHAR(16) — SHA-256 前 16 字元
-- locale VARCHAR(8) — 用於推送在地提示
-- created_at, updated_at
-只存 hash,不存原始 context。原始只在 localStorage。
+`role_category` 為 derived value(不存 localStorage,計算於 PostHog identify 時),4-bucket 映射:
+
+| role_category | 包含的 role values |
+|---------------|-------------------|
+| `clinical` | community/* + hospital/* (所有臨床角色) |
+| `research` | research/researcher |
+| `student` | student/medical_student + student/resident + student/intern |
+| `other` | 所有 `other_*` fallback values + 無法分類者 |
+
+`role_category` 不在 hash inputs(它是 role 的 derived bucketing)。僅用於 §2.0.1 PostHog Super properties 的 `role_category` 欄位 (line 177);Settings UI 不顯示。
+
+**Table: user_profile** (新增,migration `006_add_user_profile.sql`)
+
+| Column | Type | Constraint |
+|--------|------|------------|
+| user_id | VARCHAR(64) | PRIMARY KEY (Clerk user_id string) |
+| user_context_hash | VARCHAR(16) | NOT NULL |
+| locale | VARCHAR(8) | NULLABLE |
+| created_at | TIMESTAMPTZ | DEFAULT NOW() |
+| updated_at | TIMESTAMPTZ | DEFAULT NOW(), app-level bump on UPSERT |
+
+只存 hash + locale,不存原始 workplace/role/work_language。原始 context 只在 localStorage,符合 local-first 原則。
+
+**Idempotency note (E3)**: UPSERT 行為 — 即使 payload 與既有 row 完全相同,`updated_at` 也應 bump 一次,語意為「使用者最後一次驗證 context」。應用層在 INSERT ... ON CONFLICT DO UPDATE 時明確 SET `updated_at = NOW()`,不依賴 DB trigger。
 
 **API Endpoints**
 
 只有訂閱使用者才需要:
 
-- POST /api/user/context/hash:UPSERT into user_profile,回 { ok: true }
-- GET /api/user/context/hash:讀取 user_context_hash 和 locale(跨裝置恢復用)
+**POST /api/user/context/hash**
+
+- Auth: Pro user only
+- Body: `{ workplace, role, work_language, locale, user_context_hash }`
+- 200 OK: UPSERT into user_profile,即使 hash 未變也 bump `updated_at` 作為「最後一次驗證時間」(idempotent — 多次相同 payload 不報錯)
+- 403 `{type: "upgrade_required"}`: free user 呼叫時 backend 直接拒絕,不依賴 frontend gate(dual-layer defense)
+- 429 `{type: "RATE_LIMITED_USER"}`: 10/hour/user,reuse 既有 §6.3 rate limit mechanism
+
+**GET /api/user/context/hash**
+
+- Auth: Pro user only
+- 200 OK: `{ user_context_hash, locale, updated_at }`
+- 404: 該使用者尚未 POST 過(首次 sign-in 場景)
+- Trigger: 前端 Clerk session restore 時 dual-trigger 之一(見 §4.3 需求 5)
 **3.2 Onboarding 三問改版** ❌ PENDING (Phase 1A)
 
-取代「單一專科 dropdown」,改為三步驟:工作場域 → 角色 → 工作語言。每一步可略過,結束時顯示隱私聲明卡。
+建立 onboarding 三步驟流程(Phase 1A 首次實作,無前身 UI 取代):工作場域 → 角色 → 工作語言。每一步可略過,結束時顯示隱私聲明卡。
 
 **關鍵設計原則**
 
@@ -1033,6 +1087,15 @@ Table: user_profile(新表,不混在 user_usage 裡):
 - UI:dropdown,16 種語言
 - 補充提示:「我們會用這個語言回答,但會幫你檢索英文文獻」
 - 預設值:根據瀏覽器 Accept-Language
+
+**儲存規則 (v1.5, G3 decision)**
+
+完成 Step 3 時,將選擇 dual-write to:
+- `vela_lang` (legacy LanguageContext localStorage key,backward compat)
+- `vela_user_context.work_language` (canonical §3.1 field)
+
+LangContext 讀取順序:先 `vela_user_context.work_language`,fallback `vela_lang`(支援尚未完成 onboarding 的使用者)。Dual-write 在 Phase 1A §3.1 + §3.2 ship 後可考慮 Phase 1B / 1C deprecate `vela_lang`。
+
 **Step 4:隱私聲明卡**
 
 三步完成後顯示:
@@ -1247,6 +1310,30 @@ Phase 1A 讓使用者感覺「這個產品為我設計」,Phase 1B 真正做出�
 - 「匯出我的偏好」→ 下載 JSON
 - 「清除我的偏好」→ 確認後清空 localStorage
 - 若訂閱,「清除訂閱關聯資料」
+
+**需求 5: 從 backend 同步恢復 (v1.5, E2 decision)**
+
+Pro 使用者有兩個 trigger 從 backend 恢復 user_context:
+
+**Trigger A — Sign-in transition (passive auto)**
+
+Clerk session restore 時,前端 call GET /api/user/context/hash:
+- localStorage 為空 + backend 有 hash → banner 提示「請重新完成 Onboarding 以恢復偏好」(因 hash 不可逆,無法重建原始 workplace/role/work_language)
+- localStorage hash 與 backend hash 不符 → banner 提示「偵測到偏好變更,確認後可以重新 Onboarding 或保留目前設定」
+- 一致或皆空 → 無 banner
+
+**Trigger B — Settings restore button (manual)**
+
+Settings 頁面有「從上次同步恢復」按鈕,行為同 Trigger A 但使用者主動觸發。適用情境:跨裝置登入後想恢復另一台裝置的偏好。
+
+**Limitation note**: backend 只存 hash + locale。原始 workplace/role/work_language 無法從 hash 重建。Trigger A/B 能恢復:
+- locale (從 backend GET response)
+- hash 驗證(確認 localStorage 是否與另一裝置一致)
+
+不能恢復:workplace/role/work_language 三欄(需重新 Onboarding)。
+
+**role_category cross-reference**: role_category 映射規則見 §3.1 Role enum block;Settings UI 不直接顯示 role_category,只用於 PostHog Super properties。
+
 **4.4 處方解析 MVP(藥師殺手級功能)** 🧊 OUT OF SCOPE (per ADR 004, 2026-05-04)
 
 > **Status update 2026-05-04**: This feature is permanently removed from the active roadmap per [ADR 004](decisions/004-prescription-parser-deferral.md). No Phase 2 candidate spec; spec body below preserved as historical reference. If future market/competitive conditions warrant revisit, the feature will be re-designed from scratch — not resurrected from this spec. Source: ADR 004 + advisor discussion notes (git commit 394545e § 0, § 3).
@@ -2227,7 +2314,7 @@ pharmacist Free → Pro 轉換率 ≥ 其他角色 2 倍是 PMF 達成的主要�
 | 2.5 Landing SEO | 新發現 | isLoaded gate 導致 SSG 出 spinner shell |
 | 2.6 hreflang | 新發現 | repo 無 hreflang,16 語言 SEO 為零 |
 | 2.7 Explain 強化(v1.2) | 第 6 項 | explain_service.py 只翻譯數值,無組合推理 |
-| 3.1 user_context schema | 第 1 項 | user_usage 無 specialty/role/workplace 欄位 |
+| 3.1 user_context schema | 第 1 項 | user_usage 無 user_context 欄位 (workplace / role / work_language / locale) |
 | 3.2 Onboarding 三問 | 第 2 項 | 既有 OnboardingOverlay 僅 4 步導覽 |
 | 3.4 Privacy Policy i18n | 第 10 項 | 僅英文 |
 | 4.1 FeedbackBar reason | 第 11 項 | UserFeedback 表有 feedback_text 永遠 null |
