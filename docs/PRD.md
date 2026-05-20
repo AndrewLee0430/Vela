@@ -957,6 +957,8 @@ Phase 1A 不做新功能,只做「感知層」——讓使用者進來的前 30 
 
 **3.1 User Context 資料模型** ❌ PENDING (Phase 1A — blocks Phase 1A)
 
+**(v1.6 修訂 2026-05-20)** §3.1 API endpoints 兩處修正,先於 PHASE B 實作:(1) POST 403 error type 從 `upgrade_required` 統一為 `pro_required`,對齊既有 `/api/explain/extract-image` 的 free-user→Pro 慣例,frontend 重用同一 handler,避免 error-type 同義詞 drift(override v1.5 E1)。(2) POST body 從送 raw (`workplace`/`role`/`work_language`)收斂為只送 `user_context_hash` + `locale`;raw context 永不離開裝置,貼合 §0.3 Privacy-first 定位,hash integrity 由本節 read-time self-repair rule 保證,server 端重算為冗餘故移除。
+
 **(v1.5 修訂 2026-05-20)** 此節整合 2026-05-14 §3.1 User Context Schema audit 結果(retrospective.md § 2):8 個 Open Question decisions (E1–E4, F1, G3, G4, G7) + 5 個 critical findings (A, F1, G2, G3, G6)。主要變更:Schema 增加 user_context_hash 作為第 7 個 derived localStorage field(F1 Option α)、API endpoints 明示 free-user 403 + rate limit + UPSERT 語意、role_category 4-bucket 映射規則新增、specialty terminology reframe(G2)。Cross-section 連動 §2.0.2 / §3.2 Step 3 / §4.3 Settings tab。
 
 **核心設計**
@@ -1040,9 +1042,9 @@ user_context_hash = SHA-256(
 **POST /api/user/context/hash**
 
 - Auth: Pro user only
-- Body: `{ workplace, role, work_language, locale, user_context_hash }`
+- Body: `{ user_context_hash, locale }`
 - 200 OK: UPSERT into user_profile,即使 hash 未變也 bump `updated_at` 作為「最後一次驗證時間」(idempotent — 多次相同 payload 不報錯)
-- 403 `{type: "upgrade_required"}`: free user 呼叫時 backend 直接拒絕,不依賴 frontend gate(dual-layer defense)
+- 403 `{type: "pro_required"}`: free user 呼叫時 backend 直接拒絕,不依賴 frontend gate(dual-layer defense)
 - 429 `{type: "RATE_LIMITED_USER"}`: 10/hour/user,reuse 既有 §6.3 rate limit mechanism
 
 **GET /api/user/context/hash**
