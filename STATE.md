@@ -1,6 +1,6 @@
 # STATE.md — Vela Current Development Focus
 
-**Last updated**: 2026-05-19 (Phase 0 production deploy + post-deploy [docs] batch completed — v164 / final docs SHA a155c4a)
+**Last updated**: 2026-05-20 (§3.1 PRD v1.5 revision shipped — bf446e3)
 
 ## Phase
 
@@ -10,16 +10,15 @@ Phase 0 — production shipped 2026-05-19 (started 2026-04-17, deploy commit a63
 
 Phase 0 production deployed 2026-05-19 (v164, commit a63b304). All 🔴 CRITICAL ship gates passed: server health, vector store (690 docs), Clerk auth, anon share 403, §2.7 Explain canonical (K=6.8 case), §2.8 anon trial quota (6/8 modal), §2.9 multilingual response, §2.0 PostHog events. One 🟡 HIGH fix-forward landed: OG image URL/path mismatch in StaticFiles mount (commit a63b304).
 
-Next focus: Phase 1A entry preparation (§3.1 PRD revision can run parallel with §4.6 PHASE E 4-week GSC indexing window). Post-deploy [docs] batch completed 2026-05-19 in 5 commits: 49309eb → 07b2c0a → de4e7d4 → 3c48433 → a155c4a.
+Next focus: Phase 1A §3.1 implementation (PHASE B backend → C frontend → D OnboardingWizard → E Settings). §3.1 PRD v1.5 revision shipped 2026-05-20 (bf446e3) integrating all 8 audit decisions + 5 findings + self-repair rule. §4.6 PHASE E 4-week GSC indexing window running in background.
 
 Last shipped: §2.1 Model Provider Refactor (2026-05-13) + Phase 0 production deploy (2026-05-19).
 
-## Next Up (Phase 1A entry)
+## Next Up (Phase 1A start)
 
 1. **§4.6 PHASE E 4-week GSC indexing window** — passive, monitored weekly. Started 2026-05-19 with production deploy. `/explore` index page follow-up can land during this window.
-2. **§3.1 PRD revision (v1.4 → v1.5)** — docs commit only. Integrates 10 revisions from §3.1 audit Section H + decisions on Open Questions (E1–E4, F1, G3, G4, G7). Can run parallel with #1. Estimated 0.5d.
-3. **§3.1 implementation + §3.2 Onboarding Wizard (Phase 1A start)** — sequence: PHASE B (backend) → PHASE C (frontend hook + LangContext write-through) → PHASE D (`OnboardingWizard.tsx` = §3.2, distinct from existing `OnboardingOverlay.tsx`) → PHASE E (Settings §4.3 tab + role_category + §3.3 basic examples). Estimated 4d.
-4. **Phase 0 Retrospective integration into Phase 1A planning** — retrospective.md complete (de4e7d4); surface findings (Clerk publicMetadata dormant, user.deleted webhook gap, OG image ephemeral fs, 5 dogfooding nuance issues) during §3.1 PRD revision + §3.2 design phase. No standalone deliverable, embedded in #2 + #3 work.
+2. **§3.1 implementation + §3.2 Onboarding Wizard (Phase 1A start)** — sequence: PHASE B (backend schema + migration 006 + endpoints) → PHASE C (frontend hook + LangContext write-through + analytics.ts writer) → PHASE D (`OnboardingWizard.tsx` = §3.2, distinct from existing `OnboardingOverlay.tsx`) → PHASE E (Settings §4.3 tab including 需求 5 dual-trigger restore + role_category + §3.3 basic examples). Spec reference: PRD §3.1 v1.5 (bf446e3). Estimated 4d.
+3. **Phase 0 Retrospective integration into Phase 1A planning** — retrospective.md complete (de4e7d4); surface findings (Clerk publicMetadata dormant, user.deleted webhook gap, OG image ephemeral fs, 5 dogfooding nuance issues) during #2 implementation. No standalone deliverable, embedded in PHASE B/C/D/E work.
 
 ## Completed: §2.1 Model Provider Refactor (2026-05-13)
 
@@ -57,27 +56,17 @@ None known.
 
 ## Recently Shipped (last 7 days)
 
-- **2026-05-12** § 4.6 PHASE D — Breadcrumb + Category listing (/explore/category/{category}) + Related queries (3-tier hreflang/category) + 3 PostHog events (explore_page_visited / explore_to_query_clicked / explore_related_clicked) wired inline in Jinja2 with window.posthog guard (PHASE E follow-up: posthog init for public pages) (SHA pending)
-- **2026-05-11** § 4.6 PHASE C — Content import CLI (scripts/explore_cli.py: sync/list/publish/unpublish/archive/from-vela) + content/explore/ scaffolding (this commit)
-- **2026-05-11** § 4.6 PHASE B — sitemap-explore.xml + hreflang missing-locale skip rule + sitemap index conversion (8fb10ca)
-- **2026-05-11** [bug] Dev seed script for §4.6 PHASE A explore_page table (ce2225a)
-- **2026-05-11** [bug] Next.js dev rewrites — add /explore/:slug + /static/og/explore/ proxies (d324389)
-- **2026-05-11** § 4.6 PHASE A — ExplorePage schema + /explore/{slug} routing reusing §4.5 renderer (bc171a1)
-- **2026-05-08** [docs] PRD §2.10.6 evidence tier classification + BACKLOG dogfooding follow-ups (9834d85)
-- **2026-05-08** [bug] CitationPanel — remove credibility 5-star UI per advisor dogfooding feedback (211d9f7)
-- **2026-05-08** § 4.5 PHASE E.1 — Documentation closeout: PRD status marker 🟡 IMPL COMPLETE / DEPLOY PENDING + Production Deploy Checklist subsection + STATE/BACKLOG sync (f495a41)
-- **2026-05-08** § 4.5 PHASE D — Share clauses (en) added to /terms + /privacy + Navbar dropdown menu label "Settings" → "Manage shares" (16 locales) + PRD inline note + P2 TECH_DEBT for legal-page i18n retrofit (ad506db)
-- **2026-05-08** § 4.5 PHASE C — Settings 「我的分享」 tab — /settings page + tab nav + MyShares list/revoke + Navbar dropdown entry + 16-locale i18n (6f7a154)
-- **2026-05-07** PRD §2.10 source strategy + BACKLOG dogfooding/source-weight sub-tasks (92dbe9b)
-- **2026-05-07** BACKLOG WHO API integration entry → Phase 1C (4fe0d7b)
-- **2026-05-07** § 4.5 UX polish 3/3 — PRD inline notes + TECH_DEBT entries (768dc0b)
-- **2026-05-07** § 4.5 UX polish 2.5 — Navbar ShareButton tone-down + i18n 16-locale rollout (b378659)
-- **2026-05-07** § 4.5 UX polish 2/3 — ShareButton to Navbar via ShareContext + QR removal (ca571ce)
-- **2026-05-07** § 4.5 UX polish 1/3 — public page visual alignment to main site (a5da1c5)
-- **2026-05-07** [bug] Verify short disclaimer i18n alignment (30bd0b5)
-- **2026-05-07** Next.js dev rewrites for /q/* + /api/share/* + /static/og/* (e042efc)
-- **2026-05-06** § 4.5 PHASE B — Share API + PHIDetector mode='share' + ShareButton/ShareModal + 4 mount surfaces + /?from_share handler (f04068d)
-- **2026-05-05** § 4.5 PHASE A — Public Query Page renderer + SharedQuery DB migration (ef0d375)
+- **2026-05-20** [docs] PRD §3.1 v1.5 — User Context Schema audit integration (bf446e3). Integrates 8 audit decisions (E1–E4, F1, G3, G4, G7) + 5 findings (A, F1, G2, G3, G6) + self-repair derivation rule into §3.1 spec. Cross-section additions: §2.0.2 reciprocity pointer, §3.2 Step 3 dual-write spec, §4.3 需求 5 dual-trigger restore. +100/-13 lines, scope-tight to §3.1 ecosystem.
+- **2026-05-19** [docs] CLAUDE.md Rule 17 (test intent) + Rule 18 (fail loud) appended (27572c8)
+- **2026-05-19** [docs] TECH_DEBT — Research WARN pattern from 2026-05-19 golden eval (69e2cd0)
+- **2026-05-19** [docs] STATE.md drift fix — Next Up #1 removed, #2-5 renumbered (bd7b22f)
+- **2026-05-19** [docs] TECH_DEBT + BACKLOG — Phase 0 deploy retrospective follow-ups (a155c4a)
+- **2026-05-19** [docs] PRD §4.5 + §4.6 status → ✅ SHIPPED (3c48433)
+- **2026-05-19** [docs] docs/retrospectives/phase-0-2026-05.md — 346 lines (de4e7d4)
+- **2026-05-19** [docs] ARCHIVE.md Phase 0 entries + 2026-05-14 audit-planning (07b2c0a)
+- **2026-05-19** [docs] STATE.md Phase 0 production shipped marker (49309eb)
+- **2026-05-19** [deploy] Phase 0 production deploy completed — v164 from a63b304 ✅ SHIPPED
+- **2026-05-19** [fix 4.5] OG image URL/path mismatch in StaticFiles mount (a63b304)
 
 For older work see ARCHIVE.md.
 
