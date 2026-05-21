@@ -8,6 +8,8 @@ import UpgradeModal from '../components/UpgradeModal';
 import ProFeatureOverlay from '../components/ProFeatureOverlay';
 import PageShell from '../components/PageShell';
 import ShareButton, { type ShareFeature } from '../components/ShareButton';
+import ExplainItemCard, { type ExplainItem } from '../components/ExplainItemCard';
+import ClinicalCorrelationCard, { type ClinicalCorrelation } from '../components/ClinicalCorrelationCard';
 import { useLang } from '../utils/LangContext';
 import { getUI } from '../utils/i18n-ui';
 import { getExtra } from '../utils/i18n-extra';
@@ -305,22 +307,56 @@ function HistoryList() {
                                     </div>
                                 )}
 
-                                {/* Explain */}
-                                {item.session_type === 'explain' && (
-                                    <div 
-                                        className="prose max-w-none prose-sm prose-headings:font-semibold"
-                                        style={{
-                                            color: "rgba(255,255,255,0.8)",
-                                            '--tw-prose-headings': '#ffffff',
-                                            '--tw-prose-bold': '#ffffff',
-                                            '--tw-prose-bullets': 'rgba(255,255,255,0.5)',
-                                        } as React.CSSProperties}
-                                    >
-                                        <p className="whitespace-pre-wrap text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.75)" }}>
-                                            {item.answer}
-                                        </p>
-                                    </div>
-                                )}
+                                {/* Explain — §2.7 structured JSON: {items, clinical_correlations, disclaimer}.
+                                    Safe-parse + fallback to plain text for legacy pre-§2.7 records. */}
+                                {item.session_type === 'explain' && (() => {
+                                    let parsed: { items?: ExplainItem[]; clinical_correlations?: ClinicalCorrelation[]; disclaimer?: string } | null = null;
+                                    try {
+                                        parsed = JSON.parse(item.answer);
+                                    } catch {
+                                        parsed = null;
+                                    }
+                                    if (parsed && Array.isArray(parsed.items)) {
+                                        return (
+                                            <div>
+                                                {parsed.disclaimer && (
+                                                    <p className="text-xs mb-4 text-center" style={{ color: "rgba(255,255,255,0.35)" }}>
+                                                        {parsed.disclaimer}
+                                                    </p>
+                                                )}
+                                                {parsed.items.map((it, i) => (
+                                                    <ExplainItemCard key={`item-${i}`} item={it} />
+                                                ))}
+                                                {parsed.clinical_correlations && parsed.clinical_correlations.length > 0 && (
+                                                    <div className="mt-6">
+                                                        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
+                                                            {ui.clinicalCorrelations}
+                                                        </p>
+                                                        {parsed.clinical_correlations.map((corr, i) => (
+                                                            <ClinicalCorrelationCard key={`corr-${i}`} correlation={corr} />
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    }
+                                    // Fallback: legacy pre-§2.7 records or malformed JSON — render as plain text.
+                                    return (
+                                        <div
+                                            className="prose max-w-none prose-sm prose-headings:font-semibold"
+                                            style={{
+                                                color: "rgba(255,255,255,0.8)",
+                                                '--tw-prose-headings': '#ffffff',
+                                                '--tw-prose-bold': '#ffffff',
+                                                '--tw-prose-bullets': 'rgba(255,255,255,0.5)',
+                                            } as React.CSSProperties}
+                                        >
+                                            <p className="whitespace-pre-wrap text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.75)" }}>
+                                                {item.answer}
+                                            </p>
+                                        </div>
+                                    );
+                                })()}
 
                                 {/* Verify */}
                                 {(item.session_type === 'verify' || item.session_type === 'research' || item.session_type === 'explain') && (
