@@ -362,7 +362,7 @@ Input language (for entity-to-source matching only, NOT for output): {entities.i
             {"role": "user", "content": user_content}
         ],
         temperature=0.3,
-        max_tokens=1500,
+        max_tokens=8000,
         response_format={"type": "json_object"},
     )
     response = await binding.provider.complete(req)
