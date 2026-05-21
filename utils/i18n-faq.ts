@@ -9,9 +9,9 @@ export const faqSectionsI18n: Record<LangCode, FAQSectionI18n[]> = {
     {
       title: 'About Vela',
       items: [
-        { q: 'What is Vela?', a: "Vela is a clinical knowledge engine for healthcare professionals. It searches PubMed's 36 million+ articles, checks drug interactions against official FDA data, and explains medical reports using LOINC, RxNorm, and MedlinePlus standards \u2014 all in 16 languages." },
+        { q: 'What is Vela?', a: "Vela is a clinical knowledge engine for healthcare professionals. It searches PubMed's 40 million+ articles, checks drug interactions against official FDA data, and explains medical reports using LOINC, RxNorm, and MedlinePlus standards \u2014 all in 16 languages." },
         { q: "Why are Vela's answers cited with sources?", a: 'Every answer in Vela is traced back to PubMed, FDA, or LOINC. You can verify any claim by clicking through to the original source. We believe medical information should always be traceable and independently verifiable.' },
-        { q: 'What data sources does Vela use?', a: 'Vela integrates three authoritative medical databases: PubMed (36M+ peer-reviewed articles from the National Library of Medicine), FDA DailyMed (official drug label and interaction data), and LOINC/MedlinePlus (standardized lab test definitions and health information from NIH).' },
+        { q: 'What data sources does Vela use?', a: 'Vela integrates three authoritative medical databases: PubMed (40M+ peer-reviewed articles from the National Library of Medicine), FDA DailyMed (official drug label and interaction data), and LOINC/MedlinePlus (standardized lab test definitions and health information from NIH).' },
         { q: 'What languages does Vela support?', a: 'Vela supports 16 languages: English, Traditional Chinese, Simplified Chinese, Japanese, Korean, Thai, Spanish, French, German, Portuguese, Indonesian, Vietnamese, Arabic, Hindi, Bengali, and Hebrew. You can ask questions in any of these languages and receive answers in the same language.' },
       ],
     },
@@ -46,9 +46,9 @@ export const faqSectionsI18n: Record<LangCode, FAQSectionI18n[]> = {
     {
       title: '關於 Vela',
       items: [
-        { q: '什麼是 Vela？', a: 'Vela 是為醫療專業人員打造的臨床知識引擎。它搜尋 PubMed 超過 3600 萬篇文章，根據 FDA 官方資料檢查藥物交互作用，並使用 LOINC、RxNorm 和 MedlinePlus 標準解讀醫療報告——支援 16 種語言。' },
+        { q: '什麼是 Vela？', a: 'Vela 是為醫療專業人員打造的臨床知識引擎。它搜尋 PubMed 超過 4000 萬篇文章，根據 FDA 官方資料檢查藥物交互作用，並使用 LOINC、RxNorm 和 MedlinePlus 標準解讀醫療報告——支援 16 種語言。' },
         { q: '為什麼 Vela 的回答都附有來源引用？', a: 'Vela 的每個回答都可追溯至 PubMed、FDA 或 LOINC。您可以點擊原始來源驗證任何說法。我們相信醫療資訊應始終可追溯且可獨立驗證。' },
-        { q: 'Vela 使用哪些資料來源？', a: 'Vela 整合三個權威醫學資料庫：PubMed（美國國家醫學圖書館 3600 萬+篇同儕審查文章）、FDA DailyMed（官方藥物標示與交互作用資料）、以及 LOINC/MedlinePlus（NIH 標準化檢驗定義與健康資訊）。' },
+        { q: 'Vela 使用哪些資料來源？', a: 'Vela 整合三個權威醫學資料庫：PubMed（美國國家醫學圖書館 4000 萬+篇同儕審查文章）、FDA DailyMed（官方藥物標示與交互作用資料）、以及 LOINC/MedlinePlus（NIH 標準化檢驗定義與健康資訊）。' },
         { q: 'Vela 支援哪些語言？', a: 'Vela 支援 16 種語言：英語、繁體中文、簡體中文、日語、韓語、泰語、西班牙語、法語、德語、葡萄牙語、印尼語、越南語、阿拉伯語、印地語、孟加拉語和希伯來語。您可以用任何一種語言提問，並以相同語言收到回答。' },
       ],
     },
@@ -83,9 +83,9 @@ export const faqSectionsI18n: Record<LangCode, FAQSectionI18n[]> = {
     {
       title: '关于 Vela',
       items: [
-        { q: '什么是 Vela？', a: 'Vela 是为医疗专业人员打造的临床知识引擎。它搜索 PubMed 超过 3600 万篇文章，根据 FDA 官方数据检查药物相互作用，并使用 LOINC、RxNorm 和 MedlinePlus 标准解读医疗报告——支持 16 种语言。' },
+        { q: '什么是 Vela？', a: 'Vela 是为医疗专业人员打造的临床知识引擎。它搜索 PubMed 超过 4000 万篇文章，根据 FDA 官方数据检查药物相互作用，并使用 LOINC、RxNorm 和 MedlinePlus 标准解读医疗报告——支持 16 种语言。' },
         { q: '为什么 Vela 的回答都附有来源引用？', a: 'Vela 的每个回答都可追溯至 PubMed、FDA 或 LOINC。您可以点击原始来源验证任何说法。我们相信医疗信息应始终可追溯且可独立验证。' },
-        { q: 'Vela 使用哪些数据来源？', a: 'Vela 整合三个权威医学数据库：PubMed（美国国家医学图书馆 3600 万+篇同行评审文章）、FDA DailyMed（官方药物标签与相互作用数据）、以及 LOINC/MedlinePlus（NIH 标准化检验定义与健康信息）。' },
+        { q: 'Vela 使用哪些数据来源？', a: 'Vela 整合三个权威医学数据库：PubMed（美国国家医学图书馆 4000 万+篇同行评审文章）、FDA DailyMed（官方药物标签与相互作用数据）、以及 LOINC/MedlinePlus（NIH 标准化检验定义与健康信息）。' },
         { q: 'Vela 支持哪些语言？', a: 'Vela 支持 16 种语言：英语、繁体中文、简体中文、日语、韩语、泰语、西班牙语、法语、德语、葡萄牙语、印尼语、越南语、阿拉伯语、印地语、孟加拉语和希伯来语。您可以用任何一种语言提问，并以相同语言收到回答。' },
       ],
     },
@@ -118,9 +118,9 @@ export const faqSectionsI18n: Record<LangCode, FAQSectionI18n[]> = {
   ],
   ja: [
     { title: 'Velaについて', items: [
-      { q: 'Velaとは何ですか？', a: 'Velaは医療専門家向けの臨床知識エンジンです。PubMedの3600万以上の論文を検索し、FDA公式データで薬物相互作用を確認し、LOINC、RxNorm、MedlinePlus標準を使用して医療レポートを解説します——16言語に対応。' },
+      { q: 'Velaとは何ですか？', a: 'Velaは医療専門家向けの臨床知識エンジンです。PubMedの4000万以上の論文を検索し、FDA公式データで薬物相互作用を確認し、LOINC、RxNorm、MedlinePlus標準を使用して医療レポートを解説します——16言語に対応。' },
       { q: 'なぜVelaの回答にはソースが引用されているのですか？', a: 'Velaのすべての回答はPubMed、FDA、またはLOINCに遡ることができます。元のソースをクリックして任意の主張を確認できます。医療情報は常に追跡可能で独立して検証可能であるべきだと考えています。' },
-      { q: 'Velaはどのデータソースを使用していますか？', a: 'Velaは3つの権威ある医学データベースを統合しています：PubMed（米国国立医学図書館の3600万以上の査読済み論文）、FDA DailyMed（公式薬物ラベルと相互作用データ）、LOINC/MedlinePlus（NIHの標準化された検査定義と健康情報）。' },
+      { q: 'Velaはどのデータソースを使用していますか？', a: 'Velaは3つの権威ある医学データベースを統合しています：PubMed（米国国立医学図書館の4000万以上の査読済み論文）、FDA DailyMed（公式薬物ラベルと相互作用データ）、LOINC/MedlinePlus（NIHの標準化された検査定義と健康情報）。' },
       { q: 'Velaはどの言語をサポートしていますか？', a: 'Velaは16言語をサポートしています：英語、繁体字中国語、簡体字中国語、日本語、韓国語、タイ語、スペイン語、フランス語、ドイツ語、ポルトガル語、インドネシア語、ベトナム語、アラビア語、ヒンディー語、ベンガル語、ヘブライ語。これらの言語で質問し、同じ言語で回答を受け取ることができます。' },
     ]},
     { title: '機能', items: [
@@ -143,7 +143,7 @@ export const faqSectionsI18n: Record<LangCode, FAQSectionI18n[]> = {
   ],
   ko: [
     { title: 'Vela 소개', items: [
-      { q: 'Vela란 무엇인가요?', a: 'Vela는 의료 전문가를 위한 임상 지식 엔진입니다. PubMed 3600만+ 논문을 검색하고, FDA 공식 데이터로 약물 상호작용을 확인하며, LOINC, RxNorm, MedlinePlus 표준을 사용하여 의료 보고서를 설명합니다 — 16개 언어를 지원합니다.' },
+      { q: 'Vela란 무엇인가요?', a: 'Vela는 의료 전문가를 위한 임상 지식 엔진입니다. PubMed 4000만+ 논문을 검색하고, FDA 공식 데이터로 약물 상호작용을 확인하며, LOINC, RxNorm, MedlinePlus 표준을 사용하여 의료 보고서를 설명합니다 — 16개 언어를 지원합니다.' },
       { q: 'Vela의 답변에 출처가 인용되는 이유는?', a: 'Vela의 모든 답변은 PubMed, FDA 또는 LOINC로 추적할 수 있습니다. 원본 출처를 클릭하여 모든 주장을 확인할 수 있습니다.' },
       { q: 'Vela는 어떤 데이터 소스를 사용하나요?', a: 'Vela는 세 가지 권위 있는 의학 데이터베이스를 통합합니다: PubMed, FDA DailyMed, LOINC/MedlinePlus.' },
       { q: 'Vela는 어떤 언어를 지원하나요?', a: 'Vela는 16개 언어를 지원합니다: 영어, 번체 중국어, 간체 중국어, 일본어, 한국어, 태국어, 스페인어, 프랑스어, 독일어, 포르투갈어, 인도네시아어, 베트남어, 아랍어, 힌디어, 벵골어, 히브리어.' },
@@ -168,7 +168,7 @@ export const faqSectionsI18n: Record<LangCode, FAQSectionI18n[]> = {
   ],
   es: [
     { title: 'Acerca de Vela', items: [
-      { q: '¿Qué es Vela?', a: 'Vela es un motor de conocimiento clínico para profesionales de la salud. Busca en más de 36 millones de artículos de PubMed, verifica interacciones medicamentosas con datos oficiales de la FDA y explica informes médicos usando estándares LOINC, RxNorm y MedlinePlus — en 16 idiomas.' },
+      { q: '¿Qué es Vela?', a: 'Vela es un motor de conocimiento clínico para profesionales de la salud. Busca en más de 40 millones de artículos de PubMed, verifica interacciones medicamentosas con datos oficiales de la FDA y explica informes médicos usando estándares LOINC, RxNorm y MedlinePlus — en 16 idiomas.' },
       { q: '¿Por qué las respuestas de Vela incluyen fuentes?', a: 'Cada respuesta en Vela es rastreable hasta PubMed, FDA o LOINC. Puede verificar cualquier afirmación haciendo clic en la fuente original.' },
       { q: '¿Qué fuentes de datos usa Vela?', a: 'Vela integra tres bases de datos médicas autorizadas: PubMed, FDA DailyMed y LOINC/MedlinePlus.' },
       { q: '¿Qué idiomas soporta Vela?', a: 'Vela soporta 16 idiomas: inglés, chino tradicional, chino simplificado, japonés, coreano, tailandés, español, francés, alemán, portugués, indonesio, vietnamita, árabe, hindi, bengalí y hebreo.' },
@@ -193,7 +193,7 @@ export const faqSectionsI18n: Record<LangCode, FAQSectionI18n[]> = {
   ],
   fr: [
     { title: 'À propos de Vela', items: [
-      { q: 'Qu\u2019est-ce que Vela ?', a: 'Vela est un moteur de connaissances cliniques pour les professionnels de santé. Il recherche dans plus de 36 millions d\u2019articles PubMed, vérifie les interactions médicamenteuses avec les données officielles de la FDA et explique les rapports médicaux — en 16 langues.' },
+      { q: 'Qu\u2019est-ce que Vela ?', a: 'Vela est un moteur de connaissances cliniques pour les professionnels de santé. Il recherche dans plus de 40 millions d\u2019articles PubMed, vérifie les interactions médicamenteuses avec les données officielles de la FDA et explique les rapports médicaux — en 16 langues.' },
       { q: 'Pourquoi les réponses de Vela sont-elles citées ?', a: 'Chaque réponse est traçable jusqu\u2019à PubMed, FDA ou LOINC. Vous pouvez vérifier toute affirmation en cliquant sur la source originale.' },
       { q: 'Quelles sources de données Vela utilise-t-il ?', a: 'Vela intègre trois bases de données médicales faisant autorité : PubMed, FDA DailyMed et LOINC/MedlinePlus.' },
       { q: 'Quelles langues Vela prend-il en charge ?', a: 'Vela prend en charge 16 langues : anglais, chinois traditionnel, chinois simplifié, japonais, coréen, thaï, espagnol, français, allemand, portugais, indonésien, vietnamien, arabe, hindi, bengali et hébreu.' },
@@ -243,7 +243,7 @@ export const faqSectionsI18n: Record<LangCode, FAQSectionI18n[]> = {
   ],
   it: [
     { title: 'Informazioni su Vela', items: [
-      { q: 'Cos\u2019è Vela?', a: 'Vela è un motore di conoscenza clinica per professionisti sanitari. Cerca in oltre 36 milioni di articoli PubMed, verifica le interazioni farmacologiche con dati FDA ufficiali e spiega i referti medici — in 16 lingue.' },
+      { q: 'Cos\u2019è Vela?', a: 'Vela è un motore di conoscenza clinica per professionisti sanitari. Cerca in oltre 40 milioni di articoli PubMed, verifica le interazioni farmacologiche con dati FDA ufficiali e spiega i referti medici — in 16 lingue.' },
       { q: 'Perché le risposte di Vela citano le fonti?', a: 'Ogni risposta è tracciabile fino a PubMed, FDA o LOINC. È possibile verificare qualsiasi affermazione cliccando sulla fonte originale.' },
       { q: 'Quali fonti di dati utilizza Vela?', a: 'Vela integra tre database medici autorevoli: PubMed, FDA DailyMed e LOINC/MedlinePlus.' },
       { q: 'Quali lingue supporta Vela?', a: 'Vela supporta 16 lingue: inglese, cinese tradizionale, cinese semplificato, giapponese, coreano, tailandese, spagnolo, francese, tedesco, portoghese, indonesiano, vietnamita, arabo, hindi, bengalese ed ebraico.' },
@@ -268,7 +268,7 @@ export const faqSectionsI18n: Record<LangCode, FAQSectionI18n[]> = {
   ],
   pt: [
     { title: 'Sobre o Vela', items: [
-      { q: 'O que é o Vela?', a: 'Vela é um motor de conhecimento clínico para profissionais de saúde. Pesquisa mais de 36 milhões de artigos PubMed, verifica interações medicamentosas com dados oficiais da FDA e explica relatórios médicos — em 16 idiomas.' },
+      { q: 'O que é o Vela?', a: 'Vela é um motor de conhecimento clínico para profissionais de saúde. Pesquisa mais de 40 milhões de artigos PubMed, verifica interações medicamentosas com dados oficiais da FDA e explica relatórios médicos — em 16 idiomas.' },
       { q: 'Por que as respostas do Vela incluem fontes?', a: 'Cada resposta é rastreável até PubMed, FDA ou LOINC. Você pode verificar qualquer afirmação clicando na fonte original.' },
       { q: 'Quais fontes de dados o Vela usa?', a: 'Vela integra três bancos de dados médicos autorizados: PubMed, FDA DailyMed e LOINC/MedlinePlus.' },
       { q: 'Quais idiomas o Vela suporta?', a: 'Vela suporta 16 idiomas: inglês, chinês tradicional, chinês simplificado, japonês, coreano, tailandês, espanhol, francês, alemão, português, indonésio, vietnamita, árabe, hindi, bengali e hebraico.' },
@@ -293,7 +293,7 @@ export const faqSectionsI18n: Record<LangCode, FAQSectionI18n[]> = {
   ],
   th: [
     { title: 'เกี่ยวกับ Vela', items: [
-      { q: 'Vela คืออะไร?', a: 'Vela เป็นเครื่องมือความรู้ทางคลินิกสำหรับบุคลากรทางการแพทย์ ค้นหาบทความ PubMed กว่า 36 ล้านบทความ ตรวจสอบปฏิกิริยาระหว่างยากับข้อมูล FDA อย่างเป็นทางการ และอธิบายรายงานทางการแพทย์ — รองรับ 16 ภาษา' },
+      { q: 'Vela คืออะไร?', a: 'Vela เป็นเครื่องมือความรู้ทางคลินิกสำหรับบุคลากรทางการแพทย์ ค้นหาบทความ PubMed กว่า 40 ล้านบทความ ตรวจสอบปฏิกิริยาระหว่างยากับข้อมูล FDA อย่างเป็นทางการ และอธิบายรายงานทางการแพทย์ — รองรับ 16 ภาษา' },
       { q: 'ทำไมคำตอบของ Vela จึงมีการอ้างอิงแหล่งที่มา?', a: 'ทุกคำตอบสามารถสืบย้อนไปยัง PubMed, FDA หรือ LOINC ได้ คุณสามารถตรวจสอบได้โดยคลิกที่แหล่งที่มาต้นฉบับ' },
       { q: 'Vela ใช้แหล่งข้อมูลใด?', a: 'Vela รวมฐานข้อมูลทางการแพทย์ที่เชื่อถือได้สามแห่ง: PubMed, FDA DailyMed และ LOINC/MedlinePlus' },
       { q: 'Vela รองรับภาษาใดบ้าง?', a: 'Vela รองรับ 16 ภาษา: อังกฤษ, จีนดั้งเดิม, จีนตัวย่อ, ญี่ปุ่น, เกาหลี, ไทย, สเปน, ฝรั่งเศส, เยอรมัน, โปรตุเกส, อินโดนีเซีย, เวียดนาม, อาหรับ, ฮินดี, เบงกาลี และฮีบรู' },
@@ -318,7 +318,7 @@ export const faqSectionsI18n: Record<LangCode, FAQSectionI18n[]> = {
   ],
   ar: [
     { title: 'حول Vela', items: [
-      { q: 'ما هو Vela؟', a: 'Vela هو محرك معرفة سريري لمتخصصي الرعاية الصحية. يبحث في أكثر من 36 مليون مقال في PubMed، ويتحقق من تفاعلات الأدوية مع بيانات FDA الرسمية، ويشرح التقارير الطبية — بـ 16 لغة.' },
+      { q: 'ما هو Vela؟', a: 'Vela هو محرك معرفة سريري لمتخصصي الرعاية الصحية. يبحث في أكثر من 40 مليون مقال في PubMed، ويتحقق من تفاعلات الأدوية مع بيانات FDA الرسمية، ويشرح التقارير الطبية — بـ 16 لغة.' },
       { q: 'لماذا تتضمن إجابات Vela مصادر؟', a: 'كل إجابة قابلة للتتبع إلى PubMed أو FDA أو LOINC. يمكنك التحقق بالنقر على المصدر الأصلي.' },
       { q: 'ما مصادر البيانات التي يستخدمها Vela؟', a: 'يدمج Vela ثلاث قواعد بيانات طبية موثوقة: PubMed و FDA DailyMed و LOINC/MedlinePlus.' },
       { q: 'ما اللغات التي يدعمها Vela؟', a: 'يدعم Vela 16 لغة: الإنجليزية، الصينية التقليدية، الصينية المبسطة، اليابانية، الكورية، التايلاندية، الإسبانية، الفرنسية، الألمانية، البرتغالية، الإندونيسية، الفيتنامية، العربية، الهندية، البنغالية والعبرية.' },
@@ -393,7 +393,7 @@ export const faqSectionsI18n: Record<LangCode, FAQSectionI18n[]> = {
   ],
   he: [
     { title: 'אודות Vela', items: [
-      { q: 'מה זה Vela?', a: 'Vela הוא מנוע ידע קליני לאנשי מקצוע בתחום הבריאות. הוא מחפש ביותר מ-36 מיליון מאמרי PubMed, בודק אינטראקציות תרופתיות עם נתוני FDA רשמיים ומסביר דוחות רפואיים — ב-16 שפות.' },
+      { q: 'מה זה Vela?', a: 'Vela הוא מנוע ידע קליני לאנשי מקצוע בתחום הבריאות. הוא מחפש ביותר מ-40 מיליון מאמרי PubMed, בודק אינטראקציות תרופתיות עם נתוני FDA רשמיים ומסביר דוחות רפואיים — ב-16 שפות.' },
       { q: 'למה תשובות Vela מצוטטות עם מקורות?', a: 'כל תשובה ניתנת למעקב עד PubMed, FDA או LOINC. ניתן לאמת כל טענה בלחיצה על המקור המקורי.' },
       { q: 'באילו מקורות נתונים Vela משתמש?', a: 'Vela משלב שלושה מסדי נתונים רפואיים סמכותיים: PubMed, FDA DailyMed ו-LOINC/MedlinePlus.' },
       { q: 'אילו שפות Vela תומך?', a: 'Vela תומך ב-16 שפות: אנגלית, סינית מסורתית, סינית מפושטת, יפנית, קוריאנית, תאילנדית, ספרדית, צרפתית, גרמנית, פורטוגזית, אינדונזית, וייטנאמית, ערבית, הינדי, בנגלית ועברית.' },
@@ -418,7 +418,7 @@ export const faqSectionsI18n: Record<LangCode, FAQSectionI18n[]> = {
   ],
   vi: [
     { title: 'Về Vela', items: [
-      { q: 'Vela là gì?', a: 'Vela là công cụ tri thức lâm sàng cho chuyên gia y tế. Tìm kiếm hơn 36 triệu bài viết PubMed, kiểm tra tương tác thuốc với dữ liệu FDA chính thức và giải thích báo cáo y tế — hỗ trợ 16 ngôn ngữ.' },
+      { q: 'Vela là gì?', a: 'Vela là công cụ tri thức lâm sàng cho chuyên gia y tế. Tìm kiếm hơn 40 triệu bài viết PubMed, kiểm tra tương tác thuốc với dữ liệu FDA chính thức và giải thích báo cáo y tế — hỗ trợ 16 ngôn ngữ.' },
       { q: 'Tại sao câu trả lời của Vela có trích dẫn nguồn?', a: 'Mọi câu trả lời đều có thể truy nguyên đến PubMed, FDA hoặc LOINC. Bạn có thể xác minh bằng cách nhấp vào nguồn gốc.' },
       { q: 'Vela sử dụng nguồn dữ liệu nào?', a: 'Vela tích hợp ba cơ sở dữ liệu y khoa uy tín: PubMed, FDA DailyMed và LOINC/MedlinePlus.' },
       { q: 'Vela hỗ trợ ngôn ngữ nào?', a: 'Vela hỗ trợ 16 ngôn ngữ: Anh, Trung phồn thể, Trung giản thể, Nhật, Hàn, Thái, Tây Ban Nha, Pháp, Đức, Bồ Đào Nha, Indonesia, Việt, Ả Rập, Hindi, Bengal và Hebrew.' },

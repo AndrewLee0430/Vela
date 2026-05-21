@@ -481,18 +481,17 @@ function LandingPage() {
           {/* v1.1 Value Props */}
           <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-4 mb-10" style={{ maxWidth: '900px' }}>
             {[
-              { icon: '🌐', title: lc.valueProp.language.title, body: lc.valueProp.language.body },
-              { icon: '📚', title: lc.valueProp.sources.title, body: lc.valueProp.sources.body },
-              { icon: '🔒', title: lc.valueProp.anonymous.title, body: lc.valueProp.anonymous.body },
+              { label: lc.valueProp.language.label, body: lc.valueProp.language.body },
+              { label: lc.valueProp.sources.label, body: lc.valueProp.sources.body },
+              { label: lc.valueProp.anonymous.label, body: lc.valueProp.anonymous.body },
             ].map((vp) => (
               <div
-                key={vp.title}
+                key={vp.label}
                 className="rounded-2xl p-5 text-left"
                 style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)' }}
               >
-                <div className="text-2xl mb-2" aria-hidden>{vp.icon}</div>
-                <div className="text-base font-semibold text-white mb-1.5">{vp.title}</div>
-                <p className="text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.6)' }}>{vp.body}</p>
+                <div className="text-xs font-semibold tracking-wider mb-2" style={{ color: 'rgba(255,255,255,0.5)' }}>{vp.label}</div>
+                <p className="text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.7)' }}>{vp.body}</p>
               </div>
             ))}
           </div>

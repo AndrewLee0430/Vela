@@ -110,7 +110,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
     <PostHogProvider client={posthog}>
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta key="description" name="description" content="Research PubMed 36M+, verify drug interactions against FDA, and explain lab results in any language." />
+        <meta key="description" name="description" content="Research PubMed 40M+, verify drug interactions against FDA, and explain lab results in any language." />
         <meta key="og:type" property="og:type" content="website" />
         <meta key="og:site_name" property="og:site_name" content="Vela" />
         <meta key="og:image" property="og:image" content="https://vela.an-tho.com/og-image.png" />

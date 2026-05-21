@@ -86,7 +86,7 @@ const en: Translations = {
   research: 'Research',
   verify: 'Verify',
   explain: 'Explain',
-  researchSub: 'PubMed 36M+',
+  researchSub: 'PubMed 40M+',
   verifySub: 'FDA Official',
   explainSub: 'LOINC + FDA + NLM',
   socialProof: 'Evidence-based answers for everyone, worldwide.',
@@ -125,9 +125,9 @@ export interface LandingContent {
   subtitle: string;
   ctaPrimary: string;
   valueProp: {
-    language: { title: string; body: string };
-    sources: { title: string; body: string };
-    anonymous: { title: string; body: string };
+    language: { label: string; body: string };
+    sources: { label: string; body: string };
+    anonymous: { label: string; body: string };
   };
 }
 
@@ -137,15 +137,15 @@ const landingEn: LandingContent = {
   ctaPrimary: 'Try it free — no sign-up needed',
   valueProp: {
     language: {
-      title: 'Your Language',
-      body: 'Works in 16 languages. Retrieves from 28M+ English articles.',
+      label: 'MULTILINGUAL',
+      body: 'Works in your language. Retrieves from 40M+ articles.',
     },
     sources: {
-      title: 'Official Sources',
+      label: 'VERIFIED SOURCES',
       body: 'Every answer cited. PubMed, FDA, and your local authorities.',
     },
     anonymous: {
-      title: 'Anonymous by Default',
+      label: 'NO ACCOUNT NEEDED',
       body: 'No identity verification. No account required to try.',
     },
   },
@@ -157,15 +157,15 @@ const landingZhTW: LandingContent = {
   ctaPrimary: '免費試用 — 不需註冊',
   valueProp: {
     language: {
-      title: '你的語言',
-      body: '支援 16 種語言。檢索 2800 萬+ 篇英文文獻。',
+      label: 'MULTILINGUAL',
+      body: '支援你的語言。檢索 4000 萬+ 篇文獻。',
     },
     sources: {
-      title: '官方來源',
+      label: 'VERIFIED SOURCES',
       body: '每個回答皆附引用。PubMed、FDA 與你所在地的權威機構。',
     },
     anonymous: {
-      title: '預設匿名',
+      label: 'NO ACCOUNT NEEDED',
       body: '不驗證身分。試用無需註冊帳號。',
     },
   },
@@ -177,15 +177,15 @@ const landingZhCN: LandingContent = {
   ctaPrimary: '免费试用 — 无需注册',
   valueProp: {
     language: {
-      title: '你的语言',
-      body: '支持 16 种语言。检索 2800 万+ 篇英文文献。',
+      label: 'MULTILINGUAL',
+      body: '支持你的语言。检索 4000 万+ 篇文献。',
     },
     sources: {
-      title: '官方来源',
+      label: 'VERIFIED SOURCES',
       body: '每个回答均附引用。PubMed、FDA 及你所在地的权威机构。',
     },
     anonymous: {
-      title: '默认匿名',
+      label: 'NO ACCOUNT NEEDED',
       body: '不验证身份。试用无需注册账号。',
     },
   },
@@ -197,15 +197,15 @@ const landingJa: LandingContent = {
   ctaPrimary: '無料で試す — 登録不要',
   valueProp: {
     language: {
-      title: 'あなたの言語で',
-      body: '16 言語対応。2800 万本以上の英語論文を検索。',
+      label: 'MULTILINGUAL',
+      body: 'あなたの言語に対応。4000 万本以上の論文を検索。',
     },
     sources: {
-      title: '公式ソース',
+      label: 'VERIFIED SOURCES',
       body: 'すべての回答に引用付き。PubMed、FDA、地域の当局。',
     },
     anonymous: {
-      title: 'デフォルトで匿名',
+      label: 'NO ACCOUNT NEEDED',
       body: '本人確認なし。試用にアカウント登録も不要。',
     },
   },
@@ -217,15 +217,15 @@ const landingKo: LandingContent = {
   ctaPrimary: '무료로 시작 — 가입 불필요',
   valueProp: {
     language: {
-      title: '당신의 언어',
-      body: '16개 언어 지원. 2800만+ 편의 영어 논문 검색.',
+      label: 'MULTILINGUAL',
+      body: '당신의 언어 지원. 4000만+ 편의 논문 검색.',
     },
     sources: {
-      title: '공식 출처',
+      label: 'VERIFIED SOURCES',
       body: '모든 답변 인용 포함. PubMed, FDA 및 현지 기관.',
     },
     anonymous: {
-      title: '기본 익명',
+      label: 'NO ACCOUNT NEEDED',
       body: '신분 확인 없음. 체험에 계정 가입 불필요.',
     },
   },
@@ -237,15 +237,15 @@ const landingEs: LandingContent = {
   ctaPrimary: 'Prueba gratis — sin registro',
   valueProp: {
     language: {
-      title: 'Tu idioma',
-      body: 'Funciona en 16 idiomas. Busca entre más de 28 millones de artículos en inglés.',
+      label: 'MULTILINGUAL',
+      body: 'Funciona en tu idioma. Busca entre más de 40 millones de artículos.',
     },
     sources: {
-      title: 'Fuentes oficiales',
+      label: 'VERIFIED SOURCES',
       body: 'Cada respuesta citada. PubMed, FDA y autoridades locales.',
     },
     anonymous: {
-      title: 'Anónimo por defecto',
+      label: 'NO ACCOUNT NEEDED',
       body: 'Sin verificación de identidad. No requiere cuenta para probar.',
     },
   },
@@ -257,15 +257,15 @@ const landingFr: LandingContent = {
   ctaPrimary: 'Essayez gratuitement — sans inscription',
   valueProp: {
     language: {
-      title: 'Votre langue',
-      body: 'Fonctionne en 16 langues. Recherche parmi plus de 28 millions d\'articles en anglais.',
+      label: 'MULTILINGUAL',
+      body: 'Fonctionne dans votre langue. Recherche parmi plus de 40 millions d\'articles.',
     },
     sources: {
-      title: 'Sources officielles',
+      label: 'VERIFIED SOURCES',
       body: 'Chaque réponse citée. PubMed, FDA et autorités locales.',
     },
     anonymous: {
-      title: 'Anonyme par défaut',
+      label: 'NO ACCOUNT NEEDED',
       body: 'Aucune vérification d\'identité. Aucun compte requis pour essayer.',
     },
   },
@@ -277,15 +277,15 @@ const landingDe: LandingContent = {
   ctaPrimary: 'Kostenlos testen — ohne Anmeldung',
   valueProp: {
     language: {
-      title: 'Ihre Sprache',
-      body: 'Funktioniert in 16 Sprachen. Durchsucht über 28 Mio. englische Artikel.',
+      label: 'MULTILINGUAL',
+      body: 'Funktioniert in Ihrer Sprache. Durchsucht über 40 Mio. Artikel.',
     },
     sources: {
-      title: 'Offizielle Quellen',
+      label: 'VERIFIED SOURCES',
       body: 'Jede Antwort mit Quellenangabe. PubMed, FDA und lokale Behörden.',
     },
     anonymous: {
-      title: 'Standardmäßig anonym',
+      label: 'NO ACCOUNT NEEDED',
       body: 'Keine Identitätsprüfung. Kein Konto zum Testen erforderlich.',
     },
   },
@@ -297,15 +297,15 @@ const landingIt: LandingContent = {
   ctaPrimary: 'Prova gratis — senza registrazione',
   valueProp: {
     language: {
-      title: 'La tua lingua',
-      body: 'Funziona in 16 lingue. Cerca tra oltre 28 milioni di articoli in inglese.',
+      label: 'MULTILINGUAL',
+      body: 'Funziona nella tua lingua. Cerca tra oltre 40 milioni di articoli.',
     },
     sources: {
-      title: 'Fonti ufficiali',
+      label: 'VERIFIED SOURCES',
       body: 'Ogni risposta citata. PubMed, FDA e autorità locali.',
     },
     anonymous: {
-      title: 'Anonimo di default',
+      label: 'NO ACCOUNT NEEDED',
       body: 'Nessuna verifica di identità. Nessun account richiesto per provare.',
     },
   },
@@ -317,15 +317,15 @@ const landingPt: LandingContent = {
   ctaPrimary: 'Experimente grátis — sem cadastro',
   valueProp: {
     language: {
-      title: 'Seu idioma',
-      body: 'Funciona em 16 idiomas. Pesquisa mais de 28 milhões de artigos em inglês.',
+      label: 'MULTILINGUAL',
+      body: 'Funciona em seu idioma. Pesquisa mais de 40 milhões de artigos.',
     },
     sources: {
-      title: 'Fontes oficiais',
+      label: 'VERIFIED SOURCES',
       body: 'Toda resposta com citação. PubMed, FDA e autoridades locais.',
     },
     anonymous: {
-      title: 'Anônimo por padrão',
+      label: 'NO ACCOUNT NEEDED',
       body: 'Sem verificação de identidade. Sem conta necessária para testar.',
     },
   },
@@ -337,15 +337,15 @@ const landingTh: LandingContent = {
   ctaPrimary: 'ทดลองใช้ฟรี — ไม่ต้องสมัคร',
   valueProp: {
     language: {
-      title: 'ภาษาของคุณ',
-      body: 'รองรับ 16 ภาษา ค้นหาจากบทความภาษาอังกฤษกว่า 28 ล้านฉบับ',
+      label: 'MULTILINGUAL',
+      body: 'รองรับภาษาของคุณ ค้นหาจากบทความกว่า 40 ล้านฉบับ',
     },
     sources: {
-      title: 'แหล่งข้อมูลทางการ',
+      label: 'VERIFIED SOURCES',
       body: 'ทุกคำตอบมีการอ้างอิง PubMed, FDA และหน่วยงานท้องถิ่น',
     },
     anonymous: {
-      title: 'ไม่ระบุตัวตนโดยค่าเริ่มต้น',
+      label: 'NO ACCOUNT NEEDED',
       body: 'ไม่มีการยืนยันตัวตน ไม่ต้องสมัครบัญชีเพื่อทดลองใช้',
     },
   },
@@ -357,15 +357,15 @@ const landingAr: LandingContent = {
   ctaPrimary: 'جرّب مجاناً — بدون تسجيل',
   valueProp: {
     language: {
-      title: 'لغتك',
-      body: 'يدعم 16 لغة. يبحث في أكثر من 28 مليون مقالة باللغة الإنجليزية.',
+      label: 'MULTILINGUAL',
+      body: 'يدعم لغتك. يبحث في أكثر من 40 مليون مقالة.',
     },
     sources: {
-      title: 'مصادر رسمية',
+      label: 'VERIFIED SOURCES',
       body: 'كل إجابة مع اقتباسات. PubMed وFDA والجهات المحلية.',
     },
     anonymous: {
-      title: 'مجهول الهوية افتراضياً',
+      label: 'NO ACCOUNT NEEDED',
       body: 'لا تحقق من الهوية. لا حاجة لحساب للتجربة.',
     },
   },
@@ -377,15 +377,15 @@ const landingHi: LandingContent = {
   ctaPrimary: 'मुफ़्त आज़माएं — साइन-अप आवश्यक नहीं',
   valueProp: {
     language: {
-      title: 'आपकी भाषा',
-      body: '16 भाषाओं में काम करता है। 2.8 करोड़+ अंग्रेज़ी लेखों से खोज।',
+      label: 'MULTILINGUAL',
+      body: 'आपकी भाषा में काम करता है। 4 करोड़+ लेखों से खोज।',
     },
     sources: {
-      title: 'आधिकारिक स्रोत',
+      label: 'VERIFIED SOURCES',
       body: 'हर उत्तर उद्धृत। PubMed, FDA और आपके स्थानीय प्राधिकरण।',
     },
     anonymous: {
-      title: 'डिफ़ॉल्ट रूप से गुमनाम',
+      label: 'NO ACCOUNT NEEDED',
       body: 'कोई पहचान सत्यापन नहीं। आज़माने के लिए खाता आवश्यक नहीं।',
     },
   },
@@ -397,15 +397,15 @@ const landingBn: LandingContent = {
   ctaPrimary: 'বিনামূল্যে চেষ্টা করুন — সাইন-আপ প্রয়োজন নেই',
   valueProp: {
     language: {
-      title: 'আপনার ভাষা',
-      body: '16টি ভাষায় কাজ করে। 2.8 কোটি+ ইংরেজি নিবন্ধ থেকে অনুসন্ধান।',
+      label: 'MULTILINGUAL',
+      body: 'আপনার ভাষায় কাজ করে। 4 কোটি+ নিবন্ধ থেকে অনুসন্ধান।',
     },
     sources: {
-      title: 'আধিকারিক সূত্র',
+      label: 'VERIFIED SOURCES',
       body: 'প্রতিটি উত্তর উদ্ধৃতিসহ। PubMed, FDA এবং আপনার স্থানীয় কর্তৃপক্ষ।',
     },
     anonymous: {
-      title: 'ডিফল্টভাবে বেনামী',
+      label: 'NO ACCOUNT NEEDED',
       body: 'কোনো পরিচয় যাচাই নেই। চেষ্টা করতে অ্যাকাউন্ট প্রয়োজন নেই।',
     },
   },
@@ -417,15 +417,15 @@ const landingHe: LandingContent = {
   ctaPrimary: 'נסו בחינם — ללא הרשמה',
   valueProp: {
     language: {
-      title: 'השפה שלכם',
-      body: 'עובד ב-16 שפות. מחפש מעל 28 מיליון מאמרים באנגלית.',
+      label: 'MULTILINGUAL',
+      body: 'עובד בשפה שלכם. מחפש מעל 40 מיליון מאמרים.',
     },
     sources: {
-      title: 'מקורות רשמיים',
+      label: 'VERIFIED SOURCES',
       body: 'כל תשובה עם ציטוטים. PubMed, FDA ורשויות מקומיות.',
     },
     anonymous: {
-      title: 'אנונימי כברירת מחדל',
+      label: 'NO ACCOUNT NEEDED',
       body: 'ללא אימות זהות. לא נדרש חשבון כדי לנסות.',
     },
   },
@@ -437,15 +437,15 @@ const landingVi: LandingContent = {
   ctaPrimary: 'Dùng thử miễn phí — không cần đăng ký',
   valueProp: {
     language: {
-      title: 'Ngôn ngữ của bạn',
-      body: 'Hỗ trợ 16 ngôn ngữ. Truy xuất hơn 28 triệu bài báo tiếng Anh.',
+      label: 'MULTILINGUAL',
+      body: 'Hỗ trợ ngôn ngữ của bạn. Truy xuất hơn 40 triệu bài báo.',
     },
     sources: {
-      title: 'Nguồn chính thức',
+      label: 'VERIFIED SOURCES',
       body: 'Mọi câu trả lời đều có trích dẫn. PubMed, FDA và cơ quan địa phương.',
     },
     anonymous: {
-      title: 'Ẩn danh mặc định',
+      label: 'NO ACCOUNT NEEDED',
       body: 'Không xác minh danh tính. Không cần tài khoản để dùng thử.',
     },
   },
@@ -485,7 +485,7 @@ export const translations: Record<LangCode, Translations> = {
     research: '研究',
     verify: '驗證',
     explain: '解讀',
-    researchSub: 'PubMed 3600萬+',
+    researchSub: 'PubMed 4000萬+',
     verifySub: 'FDA 官方',
     explainSub: 'LOINC + FDA + NLM',
     socialProof: '為全球醫療專業人員提供實證醫學解答。',
@@ -527,7 +527,7 @@ export const translations: Record<LangCode, Translations> = {
     research: '研究',
     verify: '验证',
     explain: '解读',
-    researchSub: 'PubMed 3600万+',
+    researchSub: 'PubMed 4000万+',
     verifySub: 'FDA 官方',
     explainSub: 'LOINC + FDA + NLM',
     socialProof: '为全球医疗专业人员提供循证医学解答。',
@@ -569,7 +569,7 @@ export const translations: Record<LangCode, Translations> = {
     research: 'リサーチ',
     verify: '検証',
     explain: '解説',
-    researchSub: 'PubMed 3600万+',
+    researchSub: 'PubMed 4000万+',
     verifySub: 'FDA公式',
     explainSub: 'LOINC + FDA + NLM',
     socialProof: '世界中の医療従事者にエビデンスベースの回答を。',
@@ -611,7 +611,7 @@ export const translations: Record<LangCode, Translations> = {
     research: '리서치',
     verify: '검증',
     explain: '해설',
-    researchSub: 'PubMed 3600만+',
+    researchSub: 'PubMed 4000만+',
     verifySub: 'FDA 공식',
     explainSub: 'LOINC + FDA + NLM',
     socialProof: '전 세계 의료 전문가를 위한 근거 기반 답변.',
@@ -653,7 +653,7 @@ export const translations: Record<LangCode, Translations> = {
     research: 'Investigar',
     verify: 'Verificar',
     explain: 'Explicar',
-    researchSub: 'PubMed 36M+',
+    researchSub: 'PubMed 40M+',
     verifySub: 'FDA Oficial',
     explainSub: 'LOINC + FDA + NLM',
     socialProof: 'Respuestas basadas en evidencia para todos, en todo el mundo.',
@@ -695,7 +695,7 @@ export const translations: Record<LangCode, Translations> = {
     research: 'Rechercher',
     verify: 'Vérifier',
     explain: 'Expliquer',
-    researchSub: 'PubMed 36M+',
+    researchSub: 'PubMed 40M+',
     verifySub: 'FDA Officiel',
     explainSub: 'LOINC + FDA + NLM',
     socialProof: 'Des réponses fondées sur des preuves pour tous, partout dans le monde.',
@@ -737,7 +737,7 @@ export const translations: Record<LangCode, Translations> = {
     research: 'Recherche',
     verify: 'Prüfen',
     explain: 'Erklären',
-    researchSub: 'PubMed 36M+',
+    researchSub: 'PubMed 40M+',
     verifySub: 'FDA Offiziell',
     explainSub: 'LOINC + FDA + NLM',
     socialProof: 'Evidenzbasierte Antworten für alle, weltweit.',
@@ -779,7 +779,7 @@ export const translations: Record<LangCode, Translations> = {
     research: 'Ricerca',
     verify: 'Verifica',
     explain: 'Spiega',
-    researchSub: 'PubMed 36M+',
+    researchSub: 'PubMed 40M+',
     verifySub: 'FDA Ufficiale',
     explainSub: 'LOINC + FDA + NLM',
     socialProof: 'Risposte basate su evidenze per tutti, in tutto il mondo.',
@@ -821,7 +821,7 @@ export const translations: Record<LangCode, Translations> = {
     research: 'Pesquisar',
     verify: 'Verificar',
     explain: 'Explicar',
-    researchSub: 'PubMed 36M+',
+    researchSub: 'PubMed 40M+',
     verifySub: 'FDA Oficial',
     explainSub: 'LOINC + FDA + NLM',
     socialProof: 'Respostas baseadas em evidências para todos, no mundo inteiro.',
@@ -863,7 +863,7 @@ export const translations: Record<LangCode, Translations> = {
     research: 'ค้นคว้า',
     verify: 'ตรวจสอบ',
     explain: 'อธิบาย',
-    researchSub: 'PubMed 36M+',
+    researchSub: 'PubMed 40M+',
     verifySub: 'FDA ทางการ',
     explainSub: 'LOINC + FDA + NLM',
     socialProof: 'คำตอบอิงหลักฐานสำหรับทุกคน ทั่วโลก',
@@ -905,7 +905,7 @@ export const translations: Record<LangCode, Translations> = {
     research: 'بحث',
     verify: 'تحقق',
     explain: 'شرح',
-    researchSub: 'PubMed 36M+',
+    researchSub: 'PubMed 40M+',
     verifySub: 'FDA رسمي',
     explainSub: 'LOINC + FDA + NLM',
     socialProof: 'إجابات مبنية على الأدلة للجميع، حول العالم.',
@@ -947,7 +947,7 @@ export const translations: Record<LangCode, Translations> = {
     research: 'अनुसंधान',
     verify: 'सत्यापन',
     explain: 'व्याख्या',
-    researchSub: 'PubMed 36M+',
+    researchSub: 'PubMed 40M+',
     verifySub: 'FDA आधिकारिक',
     explainSub: 'LOINC + FDA + NLM',
     socialProof: 'दुनिया भर में सभी के लिए साक्ष्य-आधारित उत्तर।',
@@ -989,7 +989,7 @@ export const translations: Record<LangCode, Translations> = {
     research: 'গবেষণা',
     verify: 'যাচাই',
     explain: 'ব্যাখ্যা',
-    researchSub: 'PubMed 36M+',
+    researchSub: 'PubMed 40M+',
     verifySub: 'FDA অফিসিয়াল',
     explainSub: 'LOINC + FDA + NLM',
     socialProof: 'সারা বিশ্বে সবার জন্য প্রমাণ-ভিত্তিক উত্তর।',
@@ -1031,7 +1031,7 @@ export const translations: Record<LangCode, Translations> = {
     research: 'מחקר',
     verify: 'אימות',
     explain: 'הסבר',
-    researchSub: 'PubMed 36M+',
+    researchSub: 'PubMed 40M+',
     verifySub: 'FDA רשמי',
     explainSub: 'LOINC + FDA + NLM',
     socialProof: 'תשובות מבוססות ראיות לכולם, בכל העולם.',
@@ -1073,7 +1073,7 @@ export const translations: Record<LangCode, Translations> = {
     research: 'Nghiên cứu',
     verify: 'Xác minh',
     explain: 'Giải thích',
-    researchSub: 'PubMed 36M+',
+    researchSub: 'PubMed 40M+',
     verifySub: 'FDA Chính thức',
     explainSub: 'LOINC + FDA + NLM',
     socialProof: 'Câu trả lời dựa trên bằng chứng cho mọi người, trên toàn thế giới.',
