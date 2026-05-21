@@ -66,6 +66,7 @@ class OpenAIProvider(Provider):
                 input_tokens=resp.usage.prompt_tokens if resp.usage else 0,
                 output_tokens=resp.usage.completion_tokens if resp.usage else 0,
                 raw=resp,
+                finish_reason=getattr(resp.choices[0], "finish_reason", None) if resp.choices else None,
             )
         except RateLimitError as e:
             raise VelaError(VelaErrorCode.LLM_RATE_LIMITED, str(e), "openai", req.model, e)

@@ -47,6 +47,9 @@ class CompletionResponse:
     input_tokens: int
     output_tokens: int
     raw: Any = None  # provider-specific raw response
+    # "stop" / "length" / "tool_calls" / "content_filter" / None.
+    # Surfaced so callers can detect max_tokens truncation (Rule 18).
+    finish_reason: str | None = None
 
 
 @dataclass

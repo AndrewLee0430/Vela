@@ -47,6 +47,7 @@ class ExplainErrorCode(str, Enum):
     INPUT_TOO_LONG = "input_too_long"
     OPENAI_API_ERROR = "openai_api_error"
     SCHEMA_VALIDATION_FAILED = "schema_validation_failed"
+    OUTPUT_TRUNCATED = "output_truncated"
     GENERIC = "generic"
 
 
@@ -366,6 +367,17 @@ Input language (for entity-to-source matching only, NOT for output): {entities.i
     )
     response = await binding.provider.complete(req)
 
+    # Rule 18: detect max_tokens truncation BEFORE parsing. A truncated
+    # response is invalid JSON by construction; surfacing finish_reason
+    # here gives the user an actionable error instead of a generic
+    # "invalid_json" that obscures the cause (output budget exceeded).
+    if response.finish_reason == "length":
+        logger.error(
+            "[Explain] Stage 3 output truncated by max_tokens (finish_reason=length, "
+            "output_tokens=%d)", response.output_tokens
+        )
+        raise ValueError("output_truncated")
+
     raw_content = response.content or ""
 
     try:
@@ -620,17 +632,25 @@ async def run_explain_pipeline(
         }
         return
     except ValueError as e:
-        # generate_explanation raises ValueError("invalid_json") or
-        # ValueError("schema_validation_failed"). Both surface as the
-        # schema_validation_failed error_code (frontend distinction not
-        # needed — same user-visible recovery: try again).
+        # generate_explanation raises ValueError("invalid_json"),
+        # ValueError("schema_validation_failed"), or
+        # ValueError("output_truncated"). Truncation gets a distinct code
+        # so the frontend can show actionable copy ("split into smaller
+        # sections") instead of the generic schema-validation message.
         inner = str(e)
         logger.error("[Explain] Stage 3 LLM output invalid: %s", inner)
-        yield {
-            "type": "error",
-            "code": ExplainErrorCode.SCHEMA_VALIDATION_FAILED.value,
-            "message": f"LLM output failed validation ({inner})",
-        }
+        if inner == "output_truncated":
+            yield {
+                "type": "error",
+                "code": ExplainErrorCode.OUTPUT_TRUNCATED.value,
+                "message": "LLM output exceeded token budget — report too long for single pass",
+            }
+        else:
+            yield {
+                "type": "error",
+                "code": ExplainErrorCode.SCHEMA_VALIDATION_FAILED.value,
+                "message": f"LLM output failed validation ({inner})",
+            }
         return
 
     yield {"type": "explain_result", "content": result}

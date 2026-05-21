@@ -60,6 +60,7 @@ const ERROR_KEY_MAP: Record<string, keyof UITranslations> = {
     input_too_long: 'explainErrorInputTooLong',
     openai_api_error: 'explainErrorService',
     schema_validation_failed: 'explainErrorSchemaValidation',
+    output_truncated: 'explainErrorTruncated',
     generic: 'explainErrorGeneric',
 };
 
