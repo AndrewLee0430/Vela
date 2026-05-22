@@ -130,6 +130,24 @@ class SharedQuery(Base):
     locale = Column(String, nullable=True)                     # renderer i18n hint
 
 
+class UserProfile(Base):
+    """PRD § 3.1 v1.6 — Pro-only server-side store for the user_context_hash.
+
+    Stores ONLY the hash + locale, never raw workplace/role/work_language —
+    the raw context lives in localStorage (Privacy-first, §0.3). The hash
+    is the leading 16 chars of a client-computed SHA-256 over the joined
+    non-null context fields. Written by POST /api/user/context/hash with
+    an UPSERT that bumps updated_at as "last verified" semantic (E3).
+    """
+    __tablename__ = "user_profile"
+
+    user_id = Column(String(64), primary_key=True)            # Clerk user_id
+    user_context_hash = Column(String(16), nullable=False)
+    locale = Column(String(8), nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
 class ExplorePage(Base):
     """PRD § 4.6 — Team-curated public SEO page at /explore/{slug}.
 
