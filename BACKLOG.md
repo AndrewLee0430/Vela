@@ -685,6 +685,17 @@ Execution sequence:
 
 Phase 1B work items per advisor discussion 2026-05-04 (preserved in git commit 394545e) and ADR 003+004. Slot ranges from Week 4-8 of Phase 1B (5-week timeline).
 
+### [P1] Explain risk-tier over-escalation — magnitude-aware tiering
+- **Source**: production observation 2026-05-21 (solo-founder review)
+- **Observed**: a panel with AST 68 / ALT 92 / Total Bilirubin 2.1 (all mild-moderate elevations, ALT ~2.2× ULN) produced a RED "Consult Immediately" clinical-correlation tier. Individual items correctly showed yellow "Needs Attention", but the correlation escalated to the highest tier purely from multiple simultaneous abnormalities, not from magnitude.
+- **Why this matters**:
+  - (a) risks alarming users / "boy who cried wolf" trust fatigue on a trust-critical medical product
+  - (b) signal mismatch — the correlation's own text said "Further evaluation is recommended" (mild/objective) while the UI badge was RED (emergency)
+- **Fix DIRECTION (not yet designed)**: the risk-tier upgrade logic in `api/prompts/explain_system.md` should weight deviation magnitude (multiples of ULN) — e.g. LFTs <3× ULN → yellow/orange (monitor / outpatient), reserve RED for very high multiples or critical values — rather than escalating on "multiple abnormalities stacked". Consider symptom-conditional escalation (give yellow + a dynamic prompt "if you also have severe abdominal pain / jaundice, seek care now") instead of a static red.
+- **CAUTION**: this edits `api/prompts/explain_system.md` which is covered by the §2.7 20-case ExplainJudge acceptance baseline — any change must re-run that baseline (per PRD §2.7 Step 8 + CLAUDE.md Rule 17).
+- **Slot**: Phase 1B Week 4 (alongside Verify system prompt polish — both touch prompts and share the §2.7 re-baseline gate)
+- **Estimated**: 0.5–1d design + 0.5d re-baseline
+
 ### [P0] Verify 強制英文 + 友善引導 + system prompt polish
 - **Source**: ADR 003 (advisor discussion notes preserved in git commit 394545e § 5.1) + dogfooding TECH_DEBT entry 2026-05-06
 - **Implementation**:

@@ -1,6 +1,6 @@
 # STATE.md — Vela Current Development Focus
 
-**Last updated**: 2026-05-20 (§3.1 PRD v1.6 patch shipped — 603917f, ahead of PHASE B)
+**Last updated**: 2026-05-22 (§3.1 PHASE B code-complete on origin/main — 21645dd + 2d714fd; deploy + migration 006 pending, batched with PHASE C)
 
 ## Phase
 
@@ -10,15 +10,20 @@ Phase 0 — production shipped 2026-05-19 (started 2026-04-17, deploy commit a63
 
 Phase 0 production deployed 2026-05-19 (v164, commit a63b304). All 🔴 CRITICAL ship gates passed: server health, vector store (690 docs), Clerk auth, anon share 403, §2.7 Explain canonical (K=6.8 case), §2.8 anon trial quota (6/8 modal), §2.9 multilingual response, §2.0 PostHog events. One 🟡 HIGH fix-forward landed: OG image URL/path mismatch in StaticFiles mount (commit a63b304).
 
-Next focus: Phase 1A §3.1 implementation (PHASE B backend → C frontend → D OnboardingWizard → E Settings). §3.1 PRD v1.5 revision shipped 2026-05-20 (bf446e3) integrating all 8 audit decisions + 5 findings + self-repair rule. §4.6 PHASE E 4-week GSC indexing window running in background.
+Next focus: §3.1 PHASE C (frontend) → PHASE D (OnboardingWizard) → PHASE E (Settings). §3.1 PHASE B backend is code-complete on origin/main (21645dd migration + UserProfile model; 2d714fd POST/GET /api/user/context/hash endpoints + tests) but NOT yet deployed — deploy + manual migration 006 application to prod Neon are batched with PHASE C. §4.6 PHASE E 4-week GSC indexing window running in background.
+
+**Deploy-prereq**: before the next prod deploy, run `psql $DATABASE_URL -f migrations/006_add_user_profile.sql` against the Neon production DB. There is no auto-migrate runner (TECH_DEBT 2026-05-19 entry on schema_versions); if the migration is not applied first, the new POST/GET endpoints will 500 on the missing `user_profile` table.
 
 Last shipped: §2.1 Model Provider Refactor (2026-05-13) + Phase 0 production deploy (2026-05-19).
 
-## Next Up (Phase 1A start)
+## Next Up (Phase 1A — PHASE C onward)
 
 1. **§4.6 PHASE E 4-week GSC indexing window** — passive, monitored weekly. Started 2026-05-19 with production deploy. `/explore` index page follow-up can land during this window.
-2. **§3.1 implementation + §3.2 Onboarding Wizard (Phase 1A start)** — sequence: PHASE B (backend schema + migration 006 + endpoints) → PHASE C (frontend hook + LangContext write-through + analytics.ts writer) → PHASE D (`OnboardingWizard.tsx` = §3.2, distinct from existing `OnboardingOverlay.tsx`) → PHASE E (Settings §4.3 tab including 需求 5 dual-trigger restore + role_category + §3.3 basic examples). Spec reference: PRD §3.1 v1.5 (bf446e3). Estimated 4d.
-3. **Phase 0 Retrospective integration into Phase 1A planning** — retrospective.md complete (de4e7d4); surface findings (Clerk publicMetadata dormant, user.deleted webhook gap, OG image ephemeral fs, 5 dogfooding nuance issues) during #2 implementation. No standalone deliverable, embedded in PHASE B/C/D/E work.
+2. **§3.1 PHASE C — frontend hook + LangContext write-through + analytics.ts writer** — wire the writer for `user_context_hash` localStorage (resolves §2.0 silent-loss Finding A from retrospective.md § 2), the §3.2-Step-3 dual-write to `vela_lang` + `vela_user_context.work_language` (G3 decision), and the POST call to `/api/user/context/hash` for Pro users on context change. Spec: PRD §3.1 v1.5+v1.6 (bf446e3 + 603917f). Estimated ~1d.
+3. **§3.1 PHASE D — `OnboardingWizard.tsx` (§3.2 three-step flow)** — distinct from existing `OnboardingOverlay.tsx`. Spec: PRD §3.2. Estimated ~1.5d.
+4. **§3.1 PHASE E — Settings §4.3 tab** — including 需求 5 dual-trigger restore (sign-in passive + Settings button), role_category derivation in PostHog identify, §3.3 basic examples. Spec: PRD §4.3 v1.5. Estimated ~1d.
+5. **Deploy batch for §3.1 (B+C+D+E together)** — single prod deploy after PHASE E lands; pre-deploy run migration 006 against Neon (see Deploy-prereq above).
+6. **Phase 0 Retrospective integration into Phase 1A planning** — retrospective.md complete (de4e7d4); surface findings (Clerk publicMetadata dormant, user.deleted webhook gap, OG image ephemeral fs, 5 dogfooding nuance issues) during #2–#4 implementation. No standalone deliverable, embedded in PHASE C/D/E work.
 
 ## Completed: §2.1 Model Provider Refactor (2026-05-13)
 
@@ -56,6 +61,7 @@ None known.
 
 ## Recently Shipped (last 7 days)
 
+- **2026-05-22** [PRD 3.1] PHASE B — backend code-complete on origin/main, NOT yet deployed. Two commits: migration 006 + UserProfile model (21645dd), and POST/GET /api/user/context/hash endpoints + tests (2d714fd). Pro-gated via user_usage.plan_type (G4); atomic UPSERT via pg_insert.on_conflict_do_update with explicit server-side func.now() at both INSERT and on-conflict paths (E3 "last verified"). Rate-limited 10/hour/IP (POST + GET share the bucket per review decision). 31/31 unit tests green (4 new model tests + 27 existing). Endpoint-level TestClient tests deferred per the cp950 import-crash workaround documented in `tests/models/test_user_profile.py`. Deploy + manual `psql -f migrations/006_add_user_profile.sql` batched with PHASE C.
 - **2026-05-20** [docs] PRD §3.1 v1.5 → v1.6 — POST 403 pro_required (overrides E1) + POST body hash-only (raw never leaves device). Ahead of §3.1 PHASE B. (603917f)
 - **2026-05-20** [docs] PRD §3.1 v1.5 — User Context Schema audit integration (bf446e3). Integrates 8 audit decisions (E1–E4, F1, G3, G4, G7) + 5 findings (A, F1, G2, G3, G6) + self-repair derivation rule into §3.1 spec. Cross-section additions: §2.0.2 reciprocity pointer, §3.2 Step 3 dual-write spec, §4.3 需求 5 dual-trigger restore. +100/-13 lines, scope-tight to §3.1 ecosystem.
 - **2026-05-19** [docs] CLAUDE.md Rule 17 (test intent) + Rule 18 (fail loud) appended (27572c8)

@@ -54,6 +54,8 @@ Examples from 2026-04-19 to 2026-04-20 sessions:
    - `docs/PRD.md` status marker: update §X.Y if section-level change (❌ → ✅ SHIPPED `<date>`)
 10. Commit message format: `[PRD X.Y] brief description` (e.g. `[PRD 2.0] Remove temp window.__vela_analytics exposure`)
 
+**Solo-founder STATE discipline**: At minimum, at the end of each task segment, update STATE.md (Next Up + Recently Shipped) even if other docs (ARCHIVE log, PRD marker, BACKLOG removal) are intentionally skipped. STATE.md is the single entry point for "where am I next session"; a stale STATE is the highest-cost drift because it misleads the next work session about what's done vs pending. ARCHIVE / PRD-marker / BACKLOG updates may be batched or skipped at the founder's discretion, but STATE should never silently lag reality.
+
 **Source-of-truth priority**:
 
 - `STATE.md` is the authoritative "what to do now" — not PRD, not BACKLOG

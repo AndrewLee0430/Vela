@@ -64,6 +64,7 @@ When entries are resolved, move to ARCHIVE.md (note discovery + resolution dates
   - `fda_cached.py` 整檔為 dead code (CLAUDE.md 已標),可順手刪除
   - Resolution: 排入 Phase 0 Retrospective 一次清理
   - **2026-05-05 update**: Re-confirmed during §4.5 PHASE A smoke test on Windows local uvicorn — the `print()` at `vector_store.py:46` containing U+2705 (✅) crashes uvicorn boot under cp950 console. Workaround for local dev: `PYTHONIOENCODING=utf-8 PYTHONUTF8=1 uvicorn ...`. Production unaffected (Linux/UTF-8). Fix is still pending — replace with `logging.getLogger(__name__).info(...)` per CLAUDE.md Rule 4.
+  - **2026-05-21 update**: Re-discovered during §3.1 PHASE B test work — the crash is now at `vector_store.py:52` (line shifted; same `print(f"✅ Vector store loaded...")` from commit 3e4471ed). Concrete test impact: blocks `import api.server` from any pytest module on Windows, which prevents constructing a `TestClient(app)` with dependency overrides → blocks endpoint-level integration tests (POST 403 free-user gate, POST 422 missing-field, GET 404, GET 200 round-trip, rate-limit). Workaround used in §3.1 PHASE B: idempotency verified at the SQL layer via `sqlite_insert.on_conflict_do_update` instead of through the endpoint (see `tests/models/test_user_profile.py`). One-line fix still pending; not P0 because production is Linux/UTF-8.
 
 - **[P2] PowerShell 運行 `.env` parse warning**
   - `python-dotenv` 啟動時 warn `could not parse statement starting at line 1/2`
