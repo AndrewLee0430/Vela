@@ -238,6 +238,7 @@ RATE_LIMITS = {
     "/api/subscription/cancel":   (3,  60),
     "/api/explain/extract-image": (10, 60),
     "/api/bug-report":            (5,  3600),
+    "/api/user/context/hash":     (10, 3600),  # PRD §3.1 v1.6 — POST + GET intentionally share this bucket (review decision: middleware is path-keyed, method-agnostic; GET only fires on sign-in transition so 10/hour is ample defense-in-depth).
 }
 
 def _get_client_ip(request: Request) -> str:
@@ -1811,6 +1812,109 @@ async def cancel_subscription(
 
     logger.info("Subscription cancel requested: user=%s, sub=%s", user_id, usage.dodo_subscription_id)
     return {"status": "success", "message": "Subscription cancelled"}
+
+
+# ============================================================
+# PRD § 3.1 v1.6 — User Context Schema (Pro-only hash store)
+# ============================================================
+# Stores ONLY the user_context_hash + locale; raw workplace/role/
+# work_language never leave the device (Privacy-first §0.3). UPSERT
+# bumps updated_at on every call as "last verified" semantic (E3).
+# Rate limit: 10/hour via RATE_LIMITS entry above. Pro-gate uses
+# user_usage.plan_type (G4 decision; do NOT read Clerk publicMetadata).
+#
+# Note (CLAUDE.md Rule #7 deviation): uses pg_insert().on_conflict_do_update()
+# directly instead of _safe_db_write() because the helper is INSERT-only
+# (db.add + commit) and cannot express atomic UPSERT semantics. Extending
+# the helper would change its signature for all 12 existing call sites.
+
+class UserContextHashRequest(BaseModel):
+    """PRD §3.1 v1.6: body carries ONLY the hash + locale. Raw
+    workplace/role/work_language must never reach the server. Pydantic v2
+    default `extra='ignore'` discards any extra fields a client sends."""
+    user_context_hash: str = Field(..., min_length=1, max_length=16)
+    locale: Optional[str] = Field(default=None, max_length=8)
+
+
+def _require_pro(db: Session, user_id: str) -> Optional[JSONResponse]:
+    """Returns a 403 JSONResponse if the user is not Pro, else None.
+
+    G4: user_usage.plan_type is authoritative; Clerk publicMetadata.plan
+    is dormant per TECH_DEBT 2026-05-19. Bypasses gate in TEST_MODE.
+    """
+    if TEST_MODE:
+        return None
+    from api.models.sql_models import UserUsage
+    usage = db.query(UserUsage).filter(UserUsage.clerk_user_id == user_id).first()
+    if not usage or usage.plan_type != "pro":
+        return JSONResponse(status_code=403, content={"type": "pro_required"})
+    return None
+
+
+@app.post("/api/user/context/hash")
+async def user_context_hash_upsert(
+    body: UserContextHashRequest,
+    creds: Optional[HTTPAuthorizationCredentials] = Depends(require_auth),
+    db: Session = Depends(get_db),
+):
+    """Atomic UPSERT of user_context_hash + locale. Bumps updated_at on
+    every call (E3 "last verified" — identical payload still bumps)."""
+    user_id = get_user_id(creds)
+    gate = _require_pro(db, user_id)
+    if gate is not None:
+        return gate
+
+    from sqlalchemy.dialects.postgresql import insert as pg_insert
+    from sqlalchemy import func
+    from api.models.sql_models import UserProfile
+    try:
+        stmt = pg_insert(UserProfile).values(
+            user_id=user_id,
+            user_context_hash=body.user_context_hash,
+            locale=body.locale,
+            created_at=func.now(),   # belt: server-side NOW() at INSERT, not via column DEFAULT
+            updated_at=func.now(),   # belt: server-side NOW() at INSERT, symmetric with on-conflict set_
+        )
+        stmt = stmt.on_conflict_do_update(
+            index_elements=[UserProfile.user_id],
+            set_={
+                "user_context_hash": stmt.excluded.user_context_hash,
+                "locale": stmt.excluded.locale,
+                "updated_at": func.now(),  # E3: explicit app-level bump
+            },
+        )
+        db.execute(stmt)
+        db.commit()
+    except Exception as e:
+        db.rollback()
+        logger.error("UserProfile UPSERT error: %s", type(e).__name__)
+        return JSONResponse(status_code=500, content={"type": "server_error"})
+
+    return {"ok": True}
+
+
+@app.get("/api/user/context/hash")
+async def user_context_hash_get(
+    creds: Optional[HTTPAuthorizationCredentials] = Depends(require_auth),
+    db: Session = Depends(get_db),
+):
+    """Read back hash + locale + updated_at. 404 if never POSTed (first
+    sign-in / new-device restore flow per §4.3 需求 5)."""
+    user_id = get_user_id(creds)
+    gate = _require_pro(db, user_id)
+    if gate is not None:
+        return gate
+
+    from api.models.sql_models import UserProfile
+    row = db.query(UserProfile).filter(UserProfile.user_id == user_id).first()
+    if not row:
+        return JSONResponse(status_code=404, content={"type": "not_found"})
+
+    return {
+        "user_context_hash": row.user_context_hash,
+        "locale": row.locale,
+        "updated_at": row.updated_at.isoformat() if row.updated_at else None,
+    }
 
 
 # ============================================================
