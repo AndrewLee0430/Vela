@@ -2295,6 +2295,59 @@ async def sitemap_blog_xml(db: Session = Depends(get_db)):
 
 
 # ============================================================
+# /llms.txt — site-wide entry point for LLM crawlers (Blog PHASE D, GEO).
+# Lists stable index/feature pages. Per-post URLs live in sitemap-blog.xml
+# (not duplicated here). Static module-level constant — no DB query, no
+# rate limit. Base URL pulled at module import from VELA_PUBLIC_BASE_URL
+# env (defaults to https://vela.an-tho.com — same convention as
+# sitemap_blog / sitemap_explore / share_renderer).
+# ============================================================
+_LLMS_TXT_BASE = os.getenv("VELA_PUBLIC_BASE_URL", "https://vela.an-tho.com").rstrip("/")
+
+_LLMS_TXT = f"""# Vela
+
+> Vela is multilingual medical AI for clinicians: ask in your language, get evidence-cited answers grounded in 40M+ PubMed articles and official FDA drug data. Anonymous-by-default, no account required to try.
+
+Vela serves three workflows for clinicians outside the US English market — physicians, pharmacists, nurses, and allied-health professionals working across Asia and other multilingual regions.
+
+## Main
+
+- [Vela]({_LLMS_TXT_BASE}/): Homepage. Anonymous trial available; sign in to unlock Explain and persistent history.
+
+## Core features
+
+- [Research]({_LLMS_TXT_BASE}/research): Clinical questions in 16 languages; streamed answers cite PubMed sources verbatim. Anonymous trial available (limited daily quota); Pro unlocks unlimited.
+- [Verify]({_LLMS_TXT_BASE}/verify): Drug-interaction checking against FDA DailyMed. Severity-tiered (Critical/Major/Moderate/Minor) with mechanism + clinical recommendation per interaction.
+- [Explain]({_LLMS_TXT_BASE}/explain): Plain-language interpretation of medical reports or lab panels. Structured per-item with risk tiers (green/yellow/red), source citations (LOINC, RxNorm, MedlinePlus), and clinical correlations.
+
+## Content
+
+- [Blog]({_LLMS_TXT_BASE}/blog): Articles on multilingual medical AI, Asian healthcare markets, and clinical workflow design.
+
+## About
+
+- [Pricing]({_LLMS_TXT_BASE}/pricing): Anonymous trial 8 credits/day · Free (signed-in) 10 credits/day · Pro $9.99/month or $89.99/year (unlimited, with a daily safety cap). Credit costs: Research 3 · Verify 1 · Explain 2.
+- [FAQ]({_LLMS_TXT_BASE}/faq): How Vela works, data sources, language support, accuracy limits.
+
+## Data sources
+
+Vela's evidence pipeline retrieves from PubMed (40M+ peer-reviewed articles), FDA DailyMed (official US drug labels and interactions), and NIH LOINC + RxNorm + MedlinePlus (lab/drug/condition standards). Local-regulator augmentation (TFDA/PMDA/MFDS/HSA) is roadmapped.
+
+## Privacy
+
+Vela is anonymous-by-default — no account is required to try Research. User preferences (workplace, role, work language) stay in your browser's localStorage; only an opaque hash reaches the server (Pro cross-device sync). Query content is anonymized and sanitized; PHI (national IDs, medical record numbers, etc.) is blocked at the request boundary. Chat history and audit logs are retained up to 6 months, then automatically deleted; earlier deletion available on request. Queries are never used to train AI models.
+"""
+
+
+@app.get("/llms.txt")
+async def serve_llms_txt():
+    """Site-wide entry point for LLM crawlers (GEO). Static content,
+    no rate limit (LLM bots may poll periodically; rate-limiting would
+    defeat purpose). Mirrors robots.txt / sitemap-*.xml crawler contract."""
+    return Response(content=_LLMS_TXT, media_type="text/plain; charset=utf-8")
+
+
+# ============================================================
 # Share API — PRD § 4.5 PHASE B
 # Endpoints: POST /api/share/create, POST /api/share/{id}/revoke,
 #            GET  /api/share/list,    POST /api/share/track-visit
