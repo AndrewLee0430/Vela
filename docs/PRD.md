@@ -713,10 +713,12 @@ Landing Page 承諾 "No account required to try"(§ 0.3),但實際上點 "Try it
 
 **L1 升級感來源(不靠量,靠解鎖 + 品質)**:
 1. ⭐ Explain 從 L0 完全不開放 → L1 1/day(新功能解鎖)
-2. ⭐ 7 天 history(stateless → persistent)
+2. ⭐ 持久 history(stateless → persistent;Free UI 顯示最近 7 天,Pro 顯示全部 + 搜尋)
 3. ⭐ 跨裝置同步
 4. ⭐ Role-based 個人化範例
 5. ✅ Model 品質升級(mini → GPT-4.1,對使用者包裝為「Enhanced clinical reasoning」)
+
+**(2026-05-25 clarification)** 早期版本此項寫的「7 天 history」為**顯示範圍**(History 頁對 Free 使用者過濾為最近 7 天 — 對齊 `utils/i18n-ui.ts` `pricingFree6: "Last 7 days query history"` + `freeHistoryMsg: "Free plan shows last 7 days."`),非伺服器端 retention 保證。實際伺服器 retention 對 L1 + L2 一律為 180 天(§6.4 已對齊;public privacy.tsx §4 已正確標示「up to 6 months」)。此項與 §6.4 早期「chat_history 僅 Pro 開啟時」內部矛盾,皆於 2026-05-25 reconciled。
 
 **L1 對外 brand naming**:"Vela for Work"(註冊帳號版)
 **對外絕不使用的技術語言**:"GPT-4.1-mini"、"upgraded model"、"LLM"
@@ -2108,12 +2110,21 @@ Phase 1C 本版不做 Tier 3 使用者貢獻功能,但保留擴充點:
 - user_usage(credits 計算)
 - user_profile(訂閱者的 context_hash 和 locale,跨裝置恢復)
 - user_feedback(FeedbackBar 送來的 thumbs + reason)
-- chat_history(僅 Pro 使用者明確開啟時)
+- chat_history(所有已登入使用者 L1 + L2,180 天保留,到期自動刪除)
+
+**(2026-05-25 reconciliation)** 早期版本此處寫的「chat_history 僅 Pro 使用者明確開啟時」為 aspirational claim — 從未實作,無對應的 opt-in toggle / DB 欄位 / Settings UI。實際行為(對齊公開 pages/privacy.tsx §4「up to 6 months ... automatically deleted」):L0 匿名查詢不寫入(stateless),L1 + L2 已登入使用者的 chat_history 一律寫入 180 天後自動刪除(api/server.py:179–197 `_cleanup_old_records`)。 Per-tier retention / opt-in 屬於 Phase 2 候選增強(更貼合 Privacy-first 定位但非 bug)— 見 TECH_DEBT.md 「chat-history privacy model」entry。
+
 **絕不儲存:**
 
-- 處方原始文字
-- 查詢原始文字(Free 使用者)
-- 病人識別資訊(姓名、ID、病歷號)
+- 處方原始文字(完整原文不寫入伺服器)
+- 病人識別資訊(姓名、身分證號、病歷號等;PHIDetector 於 request boundary 阻擋,違規 query 整筆 reject 不進 storage)
+- L0 匿名查詢內容(未綁定帳號,不寫入 chat_history)
+
+**寫入但已脫敏 / 限縮**(對齊 privacy.tsx §1「Anonymized and sanitized query content」):
+
+- Research chat_history.question = `PHIDetector.sanitize_for_log(body.question)` — 已知 PHI patterns scrubbed
+- Verify chat_history.question = `"Drugs: {drug1, drug2, ...}"` — 僅藥名列表,patient_context 不寫入
+- Explain chat_history.question = `body.report_text[:500]` — 前 500 字,且已通過 request-boundary PHI gate
 **6.5 Prompt 管理**
 
 **System prompts 儲存:**
