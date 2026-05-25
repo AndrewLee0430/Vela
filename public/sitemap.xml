@@ -6,4 +6,7 @@
   <sitemap>
     <loc>https://vela.an-tho.com/sitemap-explore.xml</loc>
   </sitemap>
+  <sitemap>
+    <loc>https://vela.an-tho.com/sitemap-blog.xml</loc>
+  </sitemap>
 </sitemapindex>

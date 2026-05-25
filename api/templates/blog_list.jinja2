@@ -1,0 +1,182 @@
+{% extends "explore_base.jinja2" %}
+
+{# Blog list page — card grid, responsive 3/2/1 columns.
+   Emits CollectionPage JSON-LD listing every published post for the locale
+   (GEO bonus alongside the per-post BlogPosting + FAQPage). #}
+
+{% block jsonld %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": {{ meta_title | tojson }},
+  "description": {{ meta_description | tojson }},
+  "url": {{ canonical_url | tojson }},
+  "inLanguage": {{ html_lang | tojson }},
+  "hasPart": [
+    {% for p in posts %}
+    {
+      "@type": "BlogPosting",
+      "headline": {{ p.title | tojson }},
+      "url": {{ (canonical_url + "/" + p.slug) | tojson if false else (canonical_url ~ "/" ~ p.slug) | tojson }}{% if p.published_at_iso %},
+      "datePublished": {{ p.published_at_iso | tojson }}{% endif %}{% if p.summary %},
+      "description": {{ p.summary | tojson }}{% endif %}
+    }{% if not loop.last %},{% endif %}
+    {% endfor %}
+  ]
+}
+</script>
+{% endblock %}
+
+{% block content %}
+<header class="vela-blog-list-header">
+  <h1 class="vela-query-title">{% if locale == 'zh-TW' %}部落格{% else %}Blog{% endif %}</h1>
+  <p class="vela-blog-list-tagline">
+    {%- if locale == 'zh-TW' -%}
+    多語醫療 AI、亞洲健康照護市場與臨床流程的觀點。
+    {%- else -%}
+    Articles on multilingual medical AI, Asian healthcare markets, and clinical workflows.
+    {%- endif -%}
+  </p>
+</header>
+
+{% if posts %}
+<div class="vela-blog-grid">
+  {% for p in posts %}
+  <a class="vela-blog-card" href="{{ p.url }}">
+    <div class="vela-blog-card-cover" style="background: {{ p.theme_color }};">
+      <img src="{{ p.cover_image_url }}" alt="{{ p.title }}" loading="lazy">
+    </div>
+    <div class="vela-blog-card-body">
+      <span class="vela-blog-card-theme" style="background: {{ p.theme_color }};">{{ p.theme }}</span>
+      <h2 class="vela-blog-card-title">{{ p.title }}</h2>
+      {% if p.summary %}
+      <p class="vela-blog-card-summary">{{ p.summary }}</p>
+      {% endif %}
+      <div class="vela-blog-card-footer">
+        {% if p.published_at_date %}
+        <time class="vela-blog-card-date" datetime="{{ p.published_at_iso }}">
+          {%- if locale == 'zh-TW' -%}發布於 {{ p.published_at_date }}{%- else -%}Published {{ p.published_at_date }}{%- endif -%}
+        </time>
+        {% endif %}
+        <span class="vela-blog-card-cta">
+          {%- if locale == 'zh-TW' -%}閱讀更多 →{%- else -%}Read more →{%- endif -%}
+        </span>
+      </div>
+    </div>
+  </a>
+  {% endfor %}
+</div>
+{% else %}
+<p class="vela-blog-empty">
+  {%- if locale == 'zh-TW' -%}尚無文章。{%- else -%}No posts yet.{%- endif -%}
+</p>
+{% endif %}
+
+<style>
+.vela-blog-list-header { margin: 16px 0 24px; }
+.vela-blog-list-tagline {
+  font-size: 0.95rem;
+  color: var(--vela-text-muted);
+  margin: 8px 0 0;
+  line-height: 1.6;
+}
+
+.vela-blog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin: 24px 0;
+}
+
+.vela-blog-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--vela-card-bg);
+  border: 1px solid var(--vela-card-border);
+  border-radius: 12px;
+  overflow: hidden;
+  text-decoration: none;
+  transition: background 0.15s, border-color 0.15s, transform 0.15s;
+}
+.vela-blog-card:hover {
+  background: var(--vela-card-bg-hover);
+  border-color: var(--vela-card-border-strong);
+  transform: translateY(-2px);
+}
+
+.vela-blog-card-cover {
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  position: relative;
+}
+.vela-blog-card-cover img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.vela-blog-card-body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.vela-blog-card-theme {
+  align-self: flex-start;
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 9999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #0a1628;
+}
+
+.vela-blog-card-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--vela-text-primary);
+  margin: 4px 0;
+  line-height: 1.35;
+}
+
+.vela-blog-card-summary {
+  font-size: 0.875rem;
+  color: var(--vela-text-body);
+  line-height: 1.5;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.vela-blog-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--vela-card-border);
+  font-size: 0.75rem;
+}
+.vela-blog-card-date {
+  color: var(--vela-text-subtle);
+}
+.vela-blog-card-cta {
+  color: var(--vela-coral);
+  font-weight: 600;
+}
+
+.vela-blog-empty {
+  text-align: center;
+  color: var(--vela-text-muted);
+  padding: 48px 0;
+}
+</style>
+{% endblock %}

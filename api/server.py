@@ -2184,6 +2184,27 @@ def _resolve_blog_locale_from_request(request: Request, query_locale: str | None
     return "en"
 
 
+@app.get("/blog")
+async def serve_blog_list(request: Request, locale: str | None = None, db: Session = Depends(get_db)):
+    """Blog list page — card grid of published posts for the locale. Declared
+    BEFORE /blog/{slug} so /blog (exact) matches here, not as slug='' edge."""
+    if not TEST_MODE:
+        ip = _get_client_ip(request)
+        key = f"{ip}:/blog/"
+        now = _time.time()
+        _rate_store[key] = [t for t in _rate_store[key] if now - t < _BLOG_VIEW_WINDOW]
+        if len(_rate_store[key]) >= _BLOG_VIEW_LIMIT:
+            return JSONResponse(
+                status_code=429,
+                content={"detail": f"Rate limit exceeded. Max {_BLOG_VIEW_LIMIT} requests per {_BLOG_VIEW_WINDOW}s."},
+            )
+        _rate_store[key].append(now)
+
+    resolved_locale = _resolve_blog_locale_from_request(request, locale)
+    html = _blog_renderer.render_blog_list(db, resolved_locale)
+    return Response(content=html, media_type="text/html; charset=utf-8")
+
+
 @app.get("/blog/{slug}")
 async def serve_blog_post(slug: str, request: Request, locale: str | None = None, db: Session = Depends(get_db)):
     # Per-IP rate limit (Option B, in-handler — same pattern as /q/ and /explore/)
@@ -2259,6 +2280,17 @@ from api.services import sitemap_explore as _sitemap_explore
 @app.get("/sitemap-explore.xml")
 async def sitemap_explore_xml(db: Session = Depends(get_db)):
     xml = _sitemap_explore.generate_explore_sitemap(db)
+    return Response(content=xml, media_type="application/xml; charset=utf-8")
+
+
+# Blog sitemap — Blog PHASE C. Same crawler-friendly contract: no rate
+# limit, referenced from public/sitemap.xml index alongside explore.
+from api.services import sitemap_blog as _sitemap_blog
+
+
+@app.get("/sitemap-blog.xml")
+async def sitemap_blog_xml(db: Session = Depends(get_db)):
+    xml = _sitemap_blog.generate_blog_sitemap(db)
     return Response(content=xml, media_type="application/xml; charset=utf-8")
 
 

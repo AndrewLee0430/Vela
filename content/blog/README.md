@@ -176,6 +176,20 @@ tags: ["medical-ai", "asia", "positioning"]
   written by hand (not Vela-generated). Add new posts by hand under
   `content/blog/`.
 
+## Cover images
+
+PHASE C generates a Pillow cover at `static/og/blog/{slug}-{locale}.png`
+on render (idempotent — second request skips). If `cover_image` is set
+in frontmatter, that path/URL overrides the auto-generated one.
+
+**Ephemeral on Fly.io** — `static/og/` is gitignored and lives on the
+machine's writable layer, so covers are re-generated after machine
+restarts or redeploys. Same inherited limitation as the `/q/*` (share)
+and `/explore/*` OG images; persistent storage (Fly volume vs R2/CDN)
+is a shared infra task covered by the existing BACKLOG entry under §4.5
+"OG image persistent storage decision". Best-effort behavior is
+acceptable for the soft-launch phase.
+
 ## See also
 
 - `docs/Blog_Implementation_Spec.md` — full functional spec
