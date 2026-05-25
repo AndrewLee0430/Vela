@@ -148,6 +148,34 @@ class UserProfile(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 
+class BlogPost(Base):
+    """Vela Blog — DB-backed markdown post rendered at /blog/{slug}.
+
+    Mirrors §4.6 ExplorePage pattern (composite PK slug+locale, JSON
+    fields for jsonb columns, server-side timestamps via migration
+    DEFAULT NOW() + Python-side belt via datetime.utcnow). MVP: en +
+    zh-TW only. `faqs` carries the FAQPage JSON-LD payload; `tags`
+    is editorial metadata. Both round-trip as list under Postgres
+    JSONB but as TEXT under sqlite — blog_renderer normalizes the
+    str → list on read.
+    """
+    __tablename__ = "blog_post"
+
+    slug = Column(String, primary_key=True)
+    locale = Column(String, primary_key=True)
+    title = Column(Text, nullable=False)
+    summary = Column(Text, nullable=True)
+    body_markdown = Column(Text, nullable=False)
+    theme = Column(String, nullable=False, default="strategy")
+    cover_image = Column(String, nullable=True)
+    faqs = Column(JSON, nullable=True)        # list[{"q": str, "a": str}]
+    tags = Column(JSON, nullable=True)        # list[str]
+    status = Column(String, nullable=False, default="draft", index=True)
+    published_at = Column(DateTime, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
 class ExplorePage(Base):
     """PRD § 4.6 — Team-curated public SEO page at /explore/{slug}.
 

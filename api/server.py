@@ -2160,6 +2160,55 @@ async def serve_explore_category(category: str, request: Request, locale: str | 
     return Response(content=html, media_type="text/html; charset=utf-8")
 
 
+# ============================================================
+# Blog Pages — Blog_Implementation_Spec PHASE A
+# Single-post route /blog/{slug}. List page, sitemap, content CLI,
+# and Pillow cover-image generation come in PHASES B-C. Must register
+# BEFORE the Next.js catch-all (serve_nextjs_pages) below; mirrors
+# the §4.5 /q/* and §4.6 /explore/* ordering rule.
+# ============================================================
+from api.services import blog_renderer as _blog_renderer
+
+_BLOG_VIEW_LIMIT = 60
+_BLOG_VIEW_WINDOW = 60  # seconds
+
+
+def _resolve_blog_locale_from_request(request: Request, query_locale: str | None) -> str:
+    """Blog MVP locales: en + zh-TW only. ?locale= wins; else
+    Accept-Language zh-tw/zh-hant → zh-TW; else en."""
+    if query_locale:
+        return query_locale
+    accept = (request.headers.get("accept-language") or "").lower()
+    if "zh-tw" in accept or "zh-hant" in accept:
+        return "zh-TW"
+    return "en"
+
+
+@app.get("/blog/{slug}")
+async def serve_blog_post(slug: str, request: Request, locale: str | None = None, db: Session = Depends(get_db)):
+    # Per-IP rate limit (Option B, in-handler — same pattern as /q/ and /explore/)
+    if not TEST_MODE:
+        ip = _get_client_ip(request)
+        key = f"{ip}:/blog/"
+        now = _time.time()
+        _rate_store[key] = [t for t in _rate_store[key] if now - t < _BLOG_VIEW_WINDOW]
+        if len(_rate_store[key]) >= _BLOG_VIEW_LIMIT:
+            return JSONResponse(
+                status_code=429,
+                content={"detail": f"Rate limit exceeded. Max {_BLOG_VIEW_LIMIT} requests per {_BLOG_VIEW_WINDOW}s."},
+            )
+        _rate_store[key].append(now)
+
+    resolved_locale = _resolve_blog_locale_from_request(request, locale)
+
+    try:
+        html, _post = _blog_renderer.render_blog_post(db, slug, resolved_locale)
+    except _HTTPException as e:
+        return JSONResponse(status_code=e.status_code, content={"detail": e.detail})
+
+    return Response(content=html, media_type="text/html; charset=utf-8")
+
+
 @app.get("/explore/{slug}")
 async def serve_explore_page(slug: str, request: Request, locale: str | None = None, db: Session = Depends(get_db)):
     # Per-IP rate limit (Option B, in-handler — same pattern as /q/{share_id})
