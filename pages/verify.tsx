@@ -277,7 +277,7 @@ function VerifyForm() {
 
     const getInteractionSummary = (interactions: DrugInteraction[]) => {
         if (interactions.length === 0) {
-            return { text: ui.noInteractions, color: 'rgba(255,255,255,0.5)' };
+            return { text: ui.noInteractions, color: 'rgb(var(--color-text) / 0.5)' };
         }
         const severityOrder = ['Critical', 'Major', 'Moderate', 'Minor'];
         // Accumulate counts + carry backend-localized label (severity_label) for formatter
@@ -301,7 +301,7 @@ function VerifyForm() {
         const highest = highestIdx < severityOrder.length ? severityOrder[highestIdx] : 'Minor';
         return {
             text: formatInteractionSummary(lang, interactions.length, breakdown),
-            color: colorMap[highest] || 'rgba(255,255,255,0.5)',
+            color: colorMap[highest] || 'rgb(var(--color-text) / 0.5)',
         };
     };
 
@@ -309,13 +309,13 @@ function VerifyForm() {
         <div className="container mx-auto px-4 py-8 max-w-5xl">
             <div className="flex justify-between items-center mb-6">
                 <div>
-                    <h1 className="text-2xl font-bold tracking-tight" style={{ color: "#ffffff" }}>{ui.verifyTitle}</h1>
-                    <p className="text-sm mt-1" style={{ color: "rgba(255,255,255,0.5)" }}>{ui.verifySubtitle}</p>
+                    <h1 className="text-2xl font-bold tracking-tight" style={{ color: "rgb(var(--color-text))" }}>{ui.verifyTitle}</h1>
+                    <p className="text-sm mt-1" style={{ color: "rgb(var(--color-text) / 0.5)" }}>{ui.verifySubtitle}</p>
                 </div>
                 {(result || drugs) && !loading && (
                     <button onClick={handleReset} className="text-sm font-medium px-3 py-1 rounded-lg transition-all"
-                        style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.3)', color: 'rgba(255,255,255,0.7)' }}
-                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.1)'; }}
+                        style={{ background: 'transparent', border: '1px solid rgb(var(--color-text) / 0.3)', color: 'rgb(var(--color-text) / 0.7)' }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgb(var(--color-text) / 0.1)'; }}
                         onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}>
                         {ui.newBtn}
                     </button>
@@ -331,11 +331,11 @@ function VerifyForm() {
 
             <div className="grid lg:grid-cols-2 gap-6">
                 {/* Input */}
-                <div className="rounded-xl p-6" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}>
+                <div className="rounded-xl p-6" style={{ background: "rgb(var(--color-text) / 0.06)", border: "1px solid rgb(var(--color-text) / 0.1)" }}>
                     <form onSubmit={handleSubmit} className="space-y-5">
                         <div className="space-y-3">
-                            <label className="block text-sm font-medium" style={{ color: "rgba(255,255,255,0.8)" }}>
-                                {ui.drugListLabel} <span className="font-normal" style={{ color: "rgba(255,255,255,0.5)" }}>{ui.drugListHint}</span>
+                            <label className="block text-sm font-medium" style={{ color: "rgb(var(--color-text) / 0.8)" }}>
+                                {ui.drugListLabel} <span className="font-normal" style={{ color: "rgb(var(--color-text) / 0.5)" }}>{ui.drugListHint}</span>
                             </label>
                             {/* Quick-add chips */}
                             <div className="flex flex-wrap gap-2">
@@ -363,7 +363,7 @@ function VerifyForm() {
                                 onChange={(e) => setDrugs(e.target.value)}
                                 disabled={loading}
                                 className="w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 font-mono text-sm disabled:opacity-60 transition-shadow"
-                                style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.85)" }}
+                                style={{ background: "rgb(var(--color-text) / 0.05)", border: "1px solid rgb(var(--color-text) / 0.15)", color: "rgb(var(--color-text) / 0.85)" }}
                                 placeholder={"Metformin\nAspirin\nWarfarin"}
                             />
                         </div>
@@ -392,9 +392,9 @@ function VerifyForm() {
                 </div>
 
                 {/* Results */}
-                <div className="rounded-xl p-6 flex flex-col" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}>
+                <div className="rounded-xl p-6 flex flex-col" style={{ background: "rgb(var(--color-text) / 0.06)", border: "1px solid rgb(var(--color-text) / 0.1)" }}>
                     {!result && !loading && (
-                        <div className="flex items-center justify-center h-full text-sm" style={{ color: "rgba(255,255,255,0.4)" }}>
+                        <div className="flex items-center justify-center h-full text-sm" style={{ color: "rgb(var(--color-text) / 0.4)" }}>
                             {ui.verifyEmpty}
                         </div>
                     )}
@@ -411,7 +411,7 @@ function VerifyForm() {
                             {/* Summary */}
                             <div>
                                 <div className="flex justify-between items-start mb-3">
-                                    <h2 className="text-base font-semibold" style={{ color: "#ffffff" }}>
+                                    <h2 className="text-base font-semibold" style={{ color: "rgb(var(--color-text))" }}>
                                         {ui.analysisSummary}
                                     </h2>
                                     <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium border ${getRiskBadge(result.risk_level)}`}>
@@ -487,8 +487,8 @@ function VerifyForm() {
                 </div>
             </div>
 
-            <div className="mt-8 border-t pt-6 space-y-2 text-xs" style={{ borderColor: "rgba(99,179,237,0.35)", color: "rgba(255,255,255,0.4)" }}>
-                <p className="font-medium" style={{ color: "rgba(255,255,255,0.6)" }}>{ui.dataSourcesTitle}</p>
+            <div className="mt-8 border-t pt-6 space-y-2 text-xs" style={{ borderColor: "rgba(99,179,237,0.35)", color: "rgb(var(--color-text) / 0.4)" }}>
+                <p className="font-medium" style={{ color: "rgb(var(--color-text) / 0.6)" }}>{ui.dataSourcesTitle}</p>
                 <p dangerouslySetInnerHTML={{ __html: ui.verifyAttr1 }} />
                 <p dangerouslySetInnerHTML={{ __html: ui.verifyAttr2 }} />
                 <p dangerouslySetInnerHTML={{ __html: ui.verifyAttr3 }} />

@@ -28,16 +28,16 @@ export default function MarkdownRenderer({
         <div
             className={`prose max-w-none prose-sm prose-headings:font-semibold prose-h2:text-base prose-h2:pb-1 prose-p:leading-relaxed prose-li:leading-relaxed ${className}`}
             style={{
-                color: 'rgba(255,255,255,0.85)',
-                '--tw-prose-headings': '#ffffff',
-                '--tw-prose-bold': '#ffffff',
+                color: 'rgb(var(--color-text) / 0.85)',
+                '--tw-prose-headings': 'rgb(var(--color-text))',
+                '--tw-prose-bold': 'rgb(var(--color-text))',
                 '--tw-prose-links': accentColor,
-                '--tw-prose-bullets': 'rgba(255,255,255,0.5)',
-                '--tw-prose-counters': 'rgba(255,255,255,0.5)',
+                '--tw-prose-bullets': 'rgb(var(--color-text) / 0.5)',
+                '--tw-prose-counters': 'rgb(var(--color-text) / 0.5)',
                 '--tw-prose-code': accentColor,
-                '--tw-prose-hr': 'rgba(255,255,255,0.15)',
+                '--tw-prose-hr': 'rgb(var(--color-text) / 0.15)',
                 '--tw-prose-quote-borders': accentColor,
-                '--tw-prose-captions': 'rgba(255,255,255,0.45)',
+                '--tw-prose-captions': 'rgb(var(--color-text) / 0.45)',
             } as React.CSSProperties}
         >
             <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>

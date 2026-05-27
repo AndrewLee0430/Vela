@@ -5,7 +5,7 @@ import Image from 'next/image';
 export default function Refund() {
     return (
         <main className="min-h-screen bg-app-bg">
-            <nav className="border-b bg-app-bg" style={{ borderColor: "rgba(255,255,255,0.07)" }}>
+            <nav className="border-b bg-app-bg border-text/7">
                 <div className="container mx-auto px-4 py-3 flex items-center">
                     <Link href="/" className="flex items-center">
                         <Image src="/coral_logo.png" alt="Vela" width={40} height={40} style={{ objectFit: 'contain' }} />
@@ -15,9 +15,9 @@ export default function Refund() {
 
             <div className="container mx-auto px-4 py-12 max-w-3xl">
                 <h1 className="text-3xl font-bold text-white mb-2">Refund Policy</h1>
-                <p className="text-sm mb-8" style={{ color: "rgba(255,255,255,0.4)" }}>Last updated: March 2026</p>
+                <p className="text-sm mb-8 text-text/40">Last updated: March 2026</p>
 
-                <div className="space-y-8 text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.75)" }}>
+                <div className="space-y-8 text-sm leading-relaxed text-text/75">
 
                     <section>
                         <h2 className="text-lg font-semibold text-white mb-3">1. 7-Day Money-Back Guarantee</h2>
@@ -55,7 +55,7 @@ export default function Refund() {
                     </section>
                 </div>
 
-                <div className="mt-12 pt-6 flex gap-6 text-xs" style={{ borderTop: "1px solid rgba(255,255,255,0.07)", color: "rgba(255,255,255,0.3)" }}>
+                <div className="mt-12 pt-6 flex gap-6 text-xs border-t border-t-text/7 text-text/30">
                     <Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
                     <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
                     <Link href="/" className="hover:text-white transition-colors">Back to Vela</Link>

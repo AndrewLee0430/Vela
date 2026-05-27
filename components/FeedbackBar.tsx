@@ -49,16 +49,16 @@ export default function FeedbackBar({ query, response, category }: FeedbackBarPr
     };
 
     return (
-        <div className="flex items-center gap-2 mt-4 pt-3 border-t select-none" style={{ borderColor: 'rgba(255,255,255,0.12)' }}>
-            <span className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>{ui.wasHelpful}</span>
+        <div className="flex items-center gap-2 mt-4 pt-3 border-t border-text/12 select-none">
+            <span className="text-xs text-text/50">{ui.wasHelpful}</span>
             <button
                 onClick={handleLike}
                 disabled={status !== 'idle'}
                 title="Helpful"
                 className="w-8 h-8 flex items-center justify-center rounded-lg transition-all text-base disabled:cursor-default"
                 style={{
-                    background: status === 'liked' ? 'rgba(104,211,145,0.2)' : 'rgba(255,255,255,0.06)',
-                    border: `1px solid ${status === 'liked' ? 'rgba(104,211,145,0.5)' : 'rgba(255,255,255,0.12)'}`,
+                    background: status === 'liked' ? 'rgba(104,211,145,0.2)' : 'rgb(var(--color-text) / 0.06)',
+                    border: `1px solid ${status === 'liked' ? 'rgba(104,211,145,0.5)' : 'rgb(var(--color-text) / 0.12)'}`,
                     opacity: status === 'disliked' ? 0.35 : 1,
                 }}
             >
@@ -70,15 +70,15 @@ export default function FeedbackBar({ query, response, category }: FeedbackBarPr
                 title="Not helpful"
                 className="w-8 h-8 flex items-center justify-center rounded-lg transition-all text-base disabled:cursor-default"
                 style={{
-                    background: status === 'disliked' ? 'rgba(252,129,129,0.2)' : 'rgba(255,255,255,0.06)',
-                    border: `1px solid ${status === 'disliked' ? 'rgba(252,129,129,0.5)' : 'rgba(255,255,255,0.12)'}`,
+                    background: status === 'disliked' ? 'rgba(252,129,129,0.2)' : 'rgb(var(--color-text) / 0.06)',
+                    border: `1px solid ${status === 'disliked' ? 'rgba(252,129,129,0.5)' : 'rgb(var(--color-text) / 0.12)'}`,
                     opacity: status === 'liked' ? 0.35 : 1,
                 }}
             >
                 👎
             </button>
             {status !== 'idle' && (
-                <span className="text-xs ml-1" style={{ color: 'rgba(255,255,255,0.4)' }}>{ui.thanks}</span>
+                <span className="text-xs ml-1 text-text/40">{ui.thanks}</span>
             )}
         </div>
     );

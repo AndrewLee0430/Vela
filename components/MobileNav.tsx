@@ -69,7 +69,7 @@ export default function MobileNav() {
       className="md:hidden fixed bottom-0 left-0 right-0 z-50 flex"
       style={{
         background: 'rgba(6, 12, 30, 0.95)',
-        borderTop: '1px solid rgba(255,255,255,0.08)',
+        borderTop: '1px solid rgb(var(--color-text) / 0.08)',
         backdropFilter: 'blur(16px)',
         paddingBottom: 'env(safe-area-inset-bottom, 0px)',
       }}

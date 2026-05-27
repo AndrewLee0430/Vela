@@ -85,9 +85,9 @@ function LanguageSwitcher({ lang, setLang }: { lang: LangCode; setLang: (l: Lang
       <button
         onClick={() => setOpen(o => !o)}
         className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs transition-colors"
-        style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.5)' }}
+        style={{ background: 'rgb(var(--color-text) / 0.08)', border: '1px solid rgb(var(--color-text) / 0.12)', color: 'rgb(var(--color-text) / 0.5)' }}
         onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = 'white'; }}
-        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.5)'; }}
+        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'rgb(var(--color-text) / 0.5)'; }}
       >
         <span>🌐</span>
         <span className="font-medium">{current.short}</span>
@@ -102,7 +102,7 @@ function LanguageSwitcher({ lang, setLang }: { lang: LangCode; setLang: (l: Lang
           style={{
             transform: 'translateX(-50%)',
             background: '#0f1a2e',
-            border: '1px solid rgba(255,255,255,0.12)',
+            border: '1px solid rgb(var(--color-text) / 0.12)',
             boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
             minWidth: '320px',
           }}
@@ -118,7 +118,7 @@ function LanguageSwitcher({ lang, setLang }: { lang: LangCode; setLang: (l: Lang
                   color: l.code === lang ? '#ff8e6e' : 'rgba(255,255,255,0.6)',
                 }}
                 onMouseEnter={e => {
-                  if (l.code !== lang) (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.06)';
+                  if (l.code !== lang) (e.currentTarget as HTMLElement).style.background = 'rgb(var(--color-text) / 0.06)';
                 }}
                 onMouseLeave={e => {
                   if (l.code !== lang) (e.currentTarget as HTMLElement).style.background = 'transparent';
@@ -180,7 +180,7 @@ function ProductShowcase({ t }: { t: typeof translations['en'] }) {
 
   return (
     <div className="w-full" style={{ maxWidth: '780px' }}>
-      <p className="text-center text-sm font-medium mb-5" style={{ color: 'rgba(255,255,255,0.4)' }}>
+      <p className="text-center text-sm font-medium mb-5" style={{ color: 'rgb(var(--color-text) / 0.4)' }}>
         {t.seeHow}
       </p>
       <div className="flex flex-col sm:flex-row gap-3">
@@ -211,7 +211,7 @@ function ProductShowcase({ t }: { t: typeof translations['en'] }) {
                     <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: c.color }}>{c.topLabel}</span>
                     <span
                       className="text-[9px] font-medium px-1.5 py-0.5 rounded-full"
-                      style={{ background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.45)' }}
+                      style={{ background: 'rgb(var(--color-text) / 0.08)', color: 'rgb(var(--color-text) / 0.45)' }}
                     >
                       {c.sub}
                     </span>
@@ -233,7 +233,7 @@ function ProductShowcase({ t }: { t: typeof translations['en'] }) {
                     </p>
                   )}
                   {/* Footer */}
-                  <p className="text-[10px] font-mono mt-auto" style={{ color: 'rgba(255,255,255,0.3)' }}>
+                  <p className="text-[10px] font-mono mt-auto" style={{ color: 'rgb(var(--color-text) / 0.3)' }}>
                     {c.footer}
                   </p>
                   {/* CTA */}
@@ -391,8 +391,8 @@ function LandingPage() {
             <Link href="/sign-in">
               <button
                 className="px-5 py-2 text-sm font-medium text-white rounded-lg transition-all duration-200"
-                style={{ border: '1px solid rgba(255,255,255,0.2)' }}
-                onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.1)')}
+                style={{ border: '1px solid rgb(var(--color-text) / 0.2)' }}
+                onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = 'rgb(var(--color-text) / 0.1)')}
                 onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
               >
                 {t.signIn}
@@ -430,7 +430,7 @@ function LandingPage() {
           >
             {lc.tagline}
           </h1>
-          <p className="text-sm mb-4 max-w-2xl" style={{ color: 'rgba(255,255,255,0.55)' }}>
+          <p className="text-sm mb-4 max-w-2xl" style={{ color: 'rgb(var(--color-text) / 0.55)' }}>
             {lc.subtitle}
           </p>
 
@@ -440,12 +440,12 @@ function LandingPage() {
             dir="ltr"
             style={{
               maxWidth: '680px',
-              background: 'rgba(255,255,255,0.06)',
-              border: '1px solid rgba(255,255,255,0.12)',
+              background: 'rgb(var(--color-text) / 0.06)',
+              border: '1px solid rgb(var(--color-text) / 0.12)',
               backdropFilter: 'blur(12px)',
             }}
           >
-            <p className="text-xs uppercase tracking-widest mb-2 font-medium" style={{ color: 'rgba(255,255,255,0.35)' }}>
+            <p className="text-xs uppercase tracking-widest mb-2 font-medium" style={{ color: 'rgb(var(--color-text) / 0.35)' }}>
               {t.askVelaTo}
             </p>
             <p className="text-lg leading-relaxed min-h-[1.8rem] text-white">
@@ -467,9 +467,9 @@ function LandingPage() {
             <Link
               href="/pricing"
               className="text-sm font-medium rounded-full px-4 py-2 transition-all duration-200 inline-flex items-center"
-              style={{ background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.55)', border: '1px solid rgba(255,255,255,0.1)' }}
-              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.15)'; (e.currentTarget as HTMLElement).style.color = 'white'; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.08)'; (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.55)'; }}
+              style={{ background: 'rgb(var(--color-text) / 0.08)', color: 'rgb(var(--color-text) / 0.55)', border: '1px solid rgb(var(--color-text) / 0.1)' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgb(var(--color-text) / 0.15)'; (e.currentTarget as HTMLElement).style.color = 'white'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgb(var(--color-text) / 0.08)'; (e.currentTarget as HTMLElement).style.color = 'rgb(var(--color-text) / 0.55)'; }}
             >
               {t.seePricing} {arrow}
             </Link>
@@ -485,10 +485,10 @@ function LandingPage() {
               <div
                 key={vp.label}
                 className="rounded-2xl p-5 text-left"
-                style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)' }}
+                style={{ background: 'rgb(var(--color-text) / 0.04)', border: '1px solid rgb(var(--color-text) / 0.1)' }}
               >
-                <div className="text-xs font-semibold tracking-wider mb-2" style={{ color: 'rgba(255,255,255,0.5)' }}>{vp.label}</div>
-                <p className="text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.7)' }}>{vp.body}</p>
+                <div className="text-xs font-semibold tracking-wider mb-2" style={{ color: 'rgb(var(--color-text) / 0.5)' }}>{vp.label}</div>
+                <p className="text-sm leading-relaxed" style={{ color: 'rgb(var(--color-text) / 0.7)' }}>{vp.body}</p>
               </div>
             ))}
           </div>
@@ -508,7 +508,7 @@ function LandingPage() {
             </h2>
             <ul className="space-y-2.5 mb-5">
               {[t.privacyPromise1, t.privacyPromise2, t.privacyPromise3].map((item) => (
-                <li key={item} className="flex items-start gap-2.5 text-sm" style={{ color: 'rgba(255,255,255,0.75)' }}>
+                <li key={item} className="flex items-start gap-2.5 text-sm" style={{ color: 'rgb(var(--color-text) / 0.75)' }}>
                   <span className="mt-0.5 font-bold" style={{ color: '#4ade80' }} aria-hidden>✓</span>
                   <span>{item}</span>
                 </li>
@@ -518,7 +518,7 @@ function LandingPage() {
               <Link
                 href="/privacy"
                 className="text-sm hover:text-white transition-colors"
-                style={{ color: 'rgba(255,255,255,0.55)' }}
+                style={{ color: 'rgb(var(--color-text) / 0.55)' }}
               >
                 {t.privacyPolicyLink}
               </Link>
@@ -529,7 +529,7 @@ function LandingPage() {
         {/* Footer */}
         <div
           className="flex-shrink-0 flex flex-col items-center gap-2 px-4 md:px-10 py-5 text-sm"
-          style={{ borderTop: '1px solid rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.3)' }}
+          style={{ borderTop: '1px solid rgb(var(--color-text) / 0.07)', color: 'rgb(var(--color-text) / 0.3)' }}
         >
           <div className="flex items-center gap-3">
             <span>© {new Date().getFullYear()} Vela. {t.footerCopy} · <a href="https://an-tho.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">an-tho.com</a></span>
@@ -615,7 +615,7 @@ function Dashboard() {
               <div
                 data-onboarding={f.key}
                 className="h-full min-h-[140px] rounded-2xl px-7 py-6 cursor-pointer transition-all duration-300"
-                style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}
+                style={{ background: 'rgb(var(--color-text) / 0.05)', border: '1px solid rgb(var(--color-text) / 0.1)' }}
                 onMouseEnter={e => {
                   const el = e.currentTarget as HTMLElement;
                   el.style.background = f.hoverBg;
@@ -625,8 +625,8 @@ function Dashboard() {
                 }}
                 onMouseLeave={e => {
                   const el = e.currentTarget as HTMLElement;
-                  el.style.background = 'rgba(255,255,255,0.05)';
-                  el.style.border = '1px solid rgba(255,255,255,0.1)';
+                  el.style.background = 'rgb(var(--color-text) / 0.05)';
+                  el.style.border = '1px solid rgb(var(--color-text) / 0.1)';
                   el.style.transform = 'translateY(0)';
                   el.style.boxShadow = 'none';
                 }}
@@ -640,7 +640,7 @@ function Dashboard() {
                     {f.sub}
                   </span>
                 </div>
-                <p className="text-base leading-relaxed" style={{ color: 'rgba(255,255,255,0.45)' }}>{f.desc}</p>
+                <p className="text-base leading-relaxed" style={{ color: 'rgb(var(--color-text) / 0.45)' }}>{f.desc}</p>
               </div>
             </Link>
           ))}
@@ -650,7 +650,7 @@ function Dashboard() {
       {/* Footer */}
       <div
         className="mt-12 flex flex-col items-center gap-2 px-4 md:px-10 py-6 text-sm"
-        style={{ borderTop: '1px solid rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.3)' }}
+        style={{ borderTop: '1px solid rgb(var(--color-text) / 0.07)', color: 'rgb(var(--color-text) / 0.3)' }}
       >
         <div>&copy; {new Date().getFullYear()} Vela. {extra.allRightsReserved}</div>
         <div className="flex flex-wrap justify-center gap-4 text-xs">

@@ -76,7 +76,7 @@ export default function AnonymousUpgradeCTA({ trigger, onDismiss, quotaDetails }
                     <p className="text-sm font-semibold" style={{ color: '#ff8e6e' }}>
                         {cta.thirdQueryTitle}
                     </p>
-                    <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.7)' }}>
+                    <p className="text-xs mt-1 text-text/70">
                         {cta.thirdQueryBody}
                     </p>
                     <div className="mt-3 flex gap-2">
@@ -89,8 +89,7 @@ export default function AnonymousUpgradeCTA({ trigger, onDismiss, quotaDetails }
                         </button>
                         <button
                             onClick={handleDismiss}
-                            className="px-4 py-1.5 text-xs font-medium rounded-lg transition-colors"
-                            style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.2)', color: 'rgba(255,255,255,0.65)' }}
+                            className="px-4 py-1.5 text-xs font-medium rounded-lg transition-colors border border-text/20 text-text/65"
                         >
                             {cta.thirdQueryDismiss}
                         </button>
@@ -103,14 +102,11 @@ export default function AnonymousUpgradeCTA({ trigger, onDismiss, quotaDetails }
     // ── explain_locked: full-area card ──
     if (trigger === 'explain_locked') {
         return (
-            <div
-                className="max-w-xl mx-auto my-16 rounded-2xl p-10 text-center"
-                style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.12)' }}
-            >
-                <h2 className="text-xl font-semibold" style={{ color: '#ffffff' }}>
+            <div className="max-w-xl mx-auto my-16 rounded-2xl p-10 text-center bg-text/4 border border-text/12">
+                <h2 className="text-xl font-semibold text-text">
                     {cta.explainLockedTitle}
                 </h2>
-                <p className="mt-3 text-sm" style={{ color: 'rgba(255,255,255,0.65)' }}>
+                <p className="mt-3 text-sm text-text/65">
                     {cta.explainLockedBody}
                 </p>
                 <button
@@ -134,14 +130,11 @@ export default function AnonymousUpgradeCTA({ trigger, onDismiss, quotaDetails }
             className="fixed inset-0 z-50 flex items-center justify-center p-4"
             style={{ background: 'rgba(0,0,0,0.7)' }}
         >
-            <div
-                className="relative w-full max-w-lg rounded-2xl p-8 bg-bg-2"
-                style={{ border: '1px solid rgba(255,255,255,0.12)' }}
-            >
-                <h2 className="text-lg font-semibold" style={{ color: '#ffffff' }}>
+            <div className="relative w-full max-w-lg rounded-2xl p-8 bg-bg-2 border border-text/12">
+                <h2 className="text-lg font-semibold text-text">
                     {cta.quotaHitTitle}
                 </h2>
-                <p className="mt-3 text-sm" style={{ color: 'rgba(255,255,255,0.7)' }}>
+                <p className="mt-3 text-sm text-text/70">
                     {body}
                 </p>
                 <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -154,8 +147,7 @@ export default function AnonymousUpgradeCTA({ trigger, onDismiss, quotaDetails }
                     </button>
                     <button
                         onClick={handleTomorrow}
-                        className="px-4 py-2.5 text-sm font-medium rounded-lg transition-colors"
-                        style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.2)', color: 'rgba(255,255,255,0.9)' }}
+                        className="px-4 py-2.5 text-sm font-medium rounded-lg transition-colors bg-text/8 border border-text/20 text-text/90"
                     >
                         {cta.quotaHitTomorrow}
                     </button>

@@ -57,8 +57,8 @@ export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-md rounded-2xl p-8"
-        style={{ background: '#0f1f3d', border: '1px solid rgba(255,255,255,0.1)' }}
+        className="relative w-full max-w-md rounded-2xl p-8 border border-text/10"
+        style={{ background: '#0f1f3d' }}
         onClick={e => e.stopPropagation()}
       >
         {/* Close */}
@@ -82,7 +82,7 @@ export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
             <li key={i} className="text-gray-300 text-sm">{f}</li>
           ))}
         </ul>
-        <p className="text-xs mb-4" style={{ color: 'rgba(255,255,255,0.4)' }}>
+        <p className="text-xs mb-4 text-text/40">
           *Daily credit limit resets at midnight UTC. See <a href="/terms" target="_blank" className="underline hover:opacity-80">Terms of Service</a>.
         </p>
 
@@ -94,7 +94,7 @@ export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
         )}
 
         {/* ToS consent */}
-        <p className="text-xs text-center mb-3" style={{ color: 'rgba(255,255,255,0.45)' }}>
+        <p className="text-xs text-center mb-3 text-text/45">
           By upgrading, you agree to our{' '}
           <a href="/terms" target="_blank" className="underline hover:text-white transition-colors">Terms of Service</a>
           {' '}and{' '}

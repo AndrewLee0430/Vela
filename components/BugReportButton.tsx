@@ -129,11 +129,10 @@ export default function BugReportButton() {
         onClick={openModal}
         aria-label={t.fabTooltip}
         title={t.fabTooltip}
-        className="fixed right-5 bottom-24 md:bottom-5 z-40 flex items-center justify-center rounded-full shadow-lg transition-transform hover:scale-105 active:scale-95 bg-slate-600 hover:bg-slate-700 text-white"
+        className="fixed right-5 bottom-24 md:bottom-5 z-40 flex items-center justify-center rounded-full shadow-lg transition-transform hover:scale-105 active:scale-95 bg-slate-600 hover:bg-slate-700 text-white border border-text/15"
         style={{
           width: '3rem',
           height: '3rem',
-          border: '1px solid rgba(255,255,255,0.15)',
         }}
       >
         {/* Chat bubble icon */}
@@ -149,8 +148,8 @@ export default function BugReportButton() {
           onClick={closeModal}
         >
           <div
-            className="relative w-full max-w-lg rounded-2xl p-6 md:p-8"
-            style={{ background: '#0f1f3d', border: '1px solid rgba(255,255,255,0.1)', maxHeight: 'calc(100vh - 2rem)', overflowY: 'auto' }}
+            className="relative w-full max-w-lg rounded-2xl p-6 md:p-8 border border-text/10"
+            style={{ background: '#0f1f3d', maxHeight: 'calc(100vh - 2rem)', overflowY: 'auto' }}
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -167,7 +166,7 @@ export default function BugReportButton() {
               <div className="text-center py-6">
                 <div className="text-4xl mb-3">💬</div>
                 <h2 className="text-xl font-bold text-white mb-2">{t.thanksTitle}</h2>
-                <p className="text-sm" style={{ color: 'rgba(255,255,255,0.7)' }}>{t.thanksBody}</p>
+                <p className="text-sm text-text/70">{t.thanksBody}</p>
                 <button
                   type="button"
                   onClick={closeModal}
@@ -181,16 +180,15 @@ export default function BugReportButton() {
               <>
                 <div className="mb-5">
                   <h2 className="text-xl font-bold text-white mb-1">{t.modalTitle}</h2>
-                  <p className="text-sm" style={{ color: 'rgba(255,255,255,0.6)' }}>{t.modalSubtitle}</p>
+                  <p className="text-sm text-text/60">{t.modalSubtitle}</p>
                 </div>
 
-                <label className="block text-xs font-semibold mb-1" style={{ color: 'rgba(255,255,255,0.8)' }}>{t.issueTypeLabel}</label>
+                <label className="block text-xs font-semibold mb-1 text-text/80">{t.issueTypeLabel}</label>
                 <select
                   value={issueType}
                   onChange={(e) => setIssueType(e.target.value as IssueType)}
                   disabled={status === 'submitting'}
-                  className="w-full mb-4 rounded-lg px-3 py-2 text-sm text-white"
-                  style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}
+                  className="w-full mb-4 rounded-lg px-3 py-2 text-sm text-white bg-text/8 border border-text/15"
                 >
                   <option value="inaccurate" style={{ background: '#0f1f3d' }}>{t.issueTypeInaccurate}</option>
                   <option value="ui_error" style={{ background: '#0f1f3d' }}>{t.issueTypeUiError}</option>
@@ -198,31 +196,29 @@ export default function BugReportButton() {
                   <option value="other" style={{ background: '#0f1f3d' }}>{t.issueTypeOther}</option>
                 </select>
 
-                <label className="block text-xs font-semibold mb-1" style={{ color: 'rgba(255,255,255,0.8)' }}>{t.descriptionLabel}</label>
+                <label className="block text-xs font-semibold mb-1 text-text/80">{t.descriptionLabel}</label>
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value.slice(0, 2000))}
                   placeholder={t.descriptionPlaceholder}
                   disabled={status === 'submitting'}
                   rows={5}
-                  className="w-full mb-1 rounded-lg px-3 py-2 text-sm text-white resize-y"
-                  style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}
+                  className="w-full mb-1 rounded-lg px-3 py-2 text-sm text-white resize-y bg-text/8 border border-text/15"
                 />
-                <p className="text-xs mb-4" style={{ color: 'rgba(255,255,255,0.4)' }}>
+                <p className="text-xs mb-4 text-text/40">
                   {description.length} / 2000 · {t.descriptionHint}
                 </p>
 
-                <label className="block text-xs font-semibold mb-1" style={{ color: 'rgba(255,255,255,0.8)' }}>{t.emailLabel}</label>
+                <label className="block text-xs font-semibold mb-1 text-text/80">{t.emailLabel}</label>
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value.slice(0, 200))}
                   placeholder={t.emailPlaceholder}
                   disabled={status === 'submitting'}
-                  className="w-full rounded-lg px-3 py-2 text-sm text-white"
-                  style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}
+                  className="w-full rounded-lg px-3 py-2 text-sm text-white bg-text/8 border border-text/15"
                 />
-                <p className="text-xs mb-4" style={{ color: 'rgba(255,255,255,0.4)' }}>{t.emailHint}</p>
+                <p className="text-xs mb-4 text-text/40">{t.emailHint}</p>
 
                 {errorMsg && (
                   <p className="text-xs mb-3 px-3 py-2 rounded-lg" style={{ background: 'rgba(239,68,68,0.1)', color: '#ef4444' }}>
@@ -235,8 +231,7 @@ export default function BugReportButton() {
                     type="button"
                     onClick={closeModal}
                     disabled={status === 'submitting'}
-                    className="flex-1 py-2 rounded-xl text-sm font-medium"
-                    style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.85)', border: '1px solid rgba(255,255,255,0.12)' }}
+                    className="flex-1 py-2 rounded-xl text-sm font-medium bg-text/6 text-text/85 border border-text/12"
                   >
                     {t.cancelBtn}
                   </button>

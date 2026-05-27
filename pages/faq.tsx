@@ -30,14 +30,11 @@ function ChevronIcon({ open }: { open: boolean }) {
 
 function Accordion({ item, isOpen, onToggle }: { item: FAQItem; isOpen: boolean; onToggle: () => void }) {
     return (
-        <div
-            className="border-b"
-            style={{ borderColor: 'rgba(255,255,255,0.07)' }}
-        >
+        <div className="border-b border-text/7">
             <button
                 onClick={onToggle}
                 className="w-full flex items-center justify-between gap-4 py-5 text-left cursor-pointer transition-colors hover:text-white"
-                style={{ color: isOpen ? '#fff' : 'rgba(255,255,255,0.85)' }}
+                style={{ color: isOpen ? 'rgb(var(--color-text))' : 'rgb(var(--color-text) / 0.85)' }}
             >
                 <span className="text-sm sm:text-base font-medium">{item.q}</span>
                 <ChevronIcon open={isOpen} />
@@ -49,10 +46,7 @@ function Accordion({ item, isOpen, onToggle }: { item: FAQItem; isOpen: boolean;
                     opacity: isOpen ? 1 : 0,
                 }}
             >
-                <p
-                    className="pb-5 text-sm leading-relaxed"
-                    style={{ color: 'rgba(255,255,255,0.6)' }}
-                >
+                <p className="pb-5 text-sm leading-relaxed text-text/60">
                     {item.a}
                 </p>
             </div>
@@ -79,7 +73,7 @@ export default function FAQ() {
 
             <main className="min-h-screen bg-app-bg">
                 {/* Nav */}
-                <nav className="border-b" style={{ background: 'transparent', borderColor: 'rgba(255,255,255,0.07)' }}>
+                <nav className="border-b border-text/7">
                     <div className="container mx-auto px-4 py-3 flex items-center justify-between">
                         <Link href="/" className="flex items-center">
                             <Image src="/coral_logo.png" alt="Vela" width={40} height={40} style={{ objectFit: 'contain' }} />
@@ -99,7 +93,7 @@ export default function FAQ() {
                     <h1 className="text-3xl sm:text-4xl font-bold text-white mb-3">
                         {ui.faqTitle}
                     </h1>
-                    <p className="text-base" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                    <p className="text-base text-text/50">
                         {ui.faqSubtitle}
                     </p>
                 </div>
@@ -127,17 +121,13 @@ export default function FAQ() {
 
                     {/* CTA */}
                     <div
-                        className="mt-16 text-center text-sm"
-                        style={{ color: 'rgba(255,255,255,0.4)' }}
+                        className="mt-16 text-center text-sm text-text/40"
                         dangerouslySetInnerHTML={{ __html: ui.faqCta }}
                     />
                 </div>
 
                 {/* Footer */}
-                <div
-                    className="flex flex-col items-center gap-2 px-4 md:px-10 py-6 text-sm"
-                    style={{ borderTop: '1px solid rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.3)' }}
-                >
+                <div className="flex flex-col items-center gap-2 px-4 md:px-10 py-6 text-sm border-t border-t-text/7 text-text/30">
                     <div>{ui.faqCopyright.replace('{year}', String(new Date().getFullYear()))}</div>
                     <div className="flex flex-wrap justify-center gap-4 text-xs">
                         <Link href="/terms" className="hover:text-white transition-colors">{ui.termsOfService}</Link>

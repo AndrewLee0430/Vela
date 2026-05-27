@@ -53,17 +53,11 @@ export default function ClinicalCorrelationCard({ correlation, children }: Clini
                 </div>
                 <RiskBadge tier={correlation.risk_tier} />
             </div>
-            <p
-                className="text-sm leading-relaxed whitespace-pre-line"
-                style={{ color: 'rgba(255,255,255,0.85)' }}
-            >
+            <p className="text-sm leading-relaxed whitespace-pre-line text-text/85">
                 {correlation.insight}
             </p>
             {children && (
-                <div
-                    className="mt-3 pt-3"
-                    style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}
-                >
+                <div className="mt-3 pt-3 border-t border-t-text/8">
                     <div className="flex flex-wrap gap-1.5">{children}</div>
                 </div>
             )}

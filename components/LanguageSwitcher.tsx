@@ -29,14 +29,13 @@ export default function LanguageSwitcher({ compact }: LanguageSwitcherProps) {
       <div>
         <button
           onClick={() => setOpen(o => !o)}
-          className="flex items-center gap-1.5 w-full px-4 py-2 text-sm transition-colors"
-          style={{ color: 'rgba(255,255,255,0.7)', background: 'transparent' }}
+          className="flex items-center gap-1.5 w-full px-4 py-2 text-sm transition-colors text-text/70"
           onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.05)'; }}
           onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
         >
           <span>🌐</span>
           <span className="font-medium">{current.short}</span>
-          <span className="ml-auto text-xs" style={{ color: 'rgba(255,255,255,0.4)' }}>{current.label}</span>
+          <span className="ml-auto text-xs text-text/40">{current.label}</span>
           <svg
             width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
             style={{ transform: open ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}
@@ -77,8 +76,7 @@ export default function LanguageSwitcher({ compact }: LanguageSwitcherProps) {
     <div ref={ref} className="relative inline-block">
       <button
         onClick={() => setOpen(o => !o)}
-        className="flex items-center gap-1.5 rounded-lg text-xs transition-colors px-3 py-1.5"
-        style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.5)' }}
+        className="flex items-center gap-1.5 rounded-lg text-xs transition-colors px-3 py-1.5 bg-text/8 border border-text/12 text-text/50"
         onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = 'white'; }}
         onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.5)'; }}
       >
@@ -91,11 +89,10 @@ export default function LanguageSwitcher({ compact }: LanguageSwitcherProps) {
 
       {open && (
         <div
-          className="absolute z-50 rounded-xl p-3 bottom-full left-1/2 mb-2"
+          className="absolute z-50 rounded-xl p-3 bottom-full left-1/2 mb-2 border border-text/12"
           style={{
             transform: 'translateX(-50%)',
             background: '#0f1a2e',
-            border: '1px solid rgba(255,255,255,0.12)',
             boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
             minWidth: '320px',
           }}

@@ -106,7 +106,7 @@ function EvidenceLegend() {
     const [expanded, setExpanded] = useState(false);
     return (
         <div className="mt-4 text-center">
-            <div className="inline-flex items-center gap-4 text-xs" style={{ color: 'rgba(255,255,255,0.45)' }}>
+            <div className="inline-flex items-center gap-4 text-xs" style={{ color: 'rgb(var(--color-text) / 0.45)' }}>
                 {levels.map(({ emoji, label, tip }) => (
                     <span key={emoji} className="relative group">
                         <span className="cursor-help transition-colors hover:text-slate-200">{emoji} {label}</span>
@@ -131,7 +131,7 @@ function EvidenceLegend() {
                 {/* Mobile info toggle */}
                 <button
                     className="md:hidden ml-1 rounded-full"
-                    style={{ color: 'rgba(255,255,255,0.35)' }}
+                    style={{ color: 'rgb(var(--color-text) / 0.35)' }}
                     onClick={() => setExpanded(e => !e)}
                     aria-label="Evidence level info"
                 >
@@ -460,13 +460,13 @@ function ResearchForm() {
             {/* Title row */}
             <div className="flex justify-between items-start">
                 <div>
-                    <h1 className="text-2xl font-bold tracking-tight" style={{ color: "#ffffff" }}>{ui.researchTitle}</h1>
-                    <p className="text-sm mt-1" style={{ color: "rgba(255,255,255,0.5)" }}>{ui.researchSubtitle}</p>
+                    <h1 className="text-2xl font-bold tracking-tight" style={{ color: "rgb(var(--color-text))" }}>{ui.researchTitle}</h1>
+                    <p className="text-sm mt-1" style={{ color: "rgb(var(--color-text) / 0.5)" }}>{ui.researchSubtitle}</p>
                 </div>
                 {(answer || question) && (
                     <button onClick={handleReset} className="text-sm font-medium px-3 py-1 rounded-lg transition-all mt-1"
-                        style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.3)', color: 'rgba(255,255,255,0.7)' }}
-                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.1)'; }}
+                        style={{ background: 'transparent', border: '1px solid rgb(var(--color-text) / 0.3)', color: 'rgb(var(--color-text) / 0.7)' }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgb(var(--color-text) / 0.1)'; }}
                         onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}>
                         {ui.newBtn}
                     </button>
@@ -484,7 +484,7 @@ function ResearchForm() {
             <div className="flex flex-col lg:flex-row gap-6">
                 {/* Left: answer area */}
                 <div className="flex-1 flex flex-col">
-                    <div className="rounded-xl p-6 flex flex-col" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}>
+                    <div className="rounded-xl p-6 flex flex-col" style={{ background: "rgb(var(--color-text) / 0.06)", border: "1px solid rgb(var(--color-text) / 0.1)" }}>
 
                         {phiError && !loading && (
                             <PHIWarning detail={phiError.detail} suggestion={phiError.suggestion} onDismiss={() => setPhiError(null)} />
@@ -500,7 +500,7 @@ function ResearchForm() {
                             {!answer && !loading && (
                                 <div className="text-center py-12">
                                     <div className="space-y-3">
-                                        <p className="text-xs uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.35)" }}>{ui.tryThese}</p>
+                                        <p className="text-xs uppercase tracking-widest" style={{ color: "rgb(var(--color-text) / 0.35)" }}>{ui.tryThese}</p>
                                         <p className="text-xs mb-2" style={{ color: "rgba(148,163,184,0.8)" }}>
                                             {ui.askOneQuestion}
                                         </p>
@@ -519,9 +519,9 @@ function ResearchForm() {
                                                         disabled={loading}
                                                         className="px-3 py-1.5 text-xs rounded-full disabled:opacity-50 transition-all duration-200"
                                                         style={{
-                                                            background: isSelected ? "rgba(255,142,110,0.15)" : "rgba(255,255,255,0.06)",
-                                                            border: `1px solid ${isSelected ? "#ff8e6e" : "rgba(255,255,255,0.15)"}`,
-                                                            color: isSelected ? "#ff8e6e" : "rgba(255,255,255,0.7)",
+                                                            background: isSelected ? "rgba(255,142,110,0.15)" : "rgb(var(--color-text) / 0.06)",
+                                                            border: `1px solid ${isSelected ? "#ff8e6e" : "rgb(var(--color-text) / 0.15)"}`,
+                                                            color: isSelected ? "#ff8e6e" : "rgb(var(--color-text) / 0.7)",
                                                             transform: isSelected ? "scale(1.05)" : "scale(1)",
                                                             opacity: hasSel && !isSelected ? 0.5 : 1,
                                                         }}
@@ -534,8 +534,8 @@ function ResearchForm() {
                                                         }}
                                                         onMouseLeave={e => {
                                                             if (!isSelected) {
-                                                                (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.15)";
-                                                                (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.7)";
+                                                                (e.currentTarget as HTMLElement).style.borderColor = "rgb(var(--color-text) / 0.15)";
+                                                                (e.currentTarget as HTMLElement).style.color = "rgb(var(--color-text) / 0.7)";
                                                                 (e.currentTarget as HTMLElement).style.opacity = hasSel ? "0.5" : "1";
                                                             }
                                                         }}
@@ -550,8 +550,8 @@ function ResearchForm() {
                             )}
 
                             {loading && !answer && statusMsg && (
-                                <div className="flex items-center gap-3 py-8" style={{ color: "rgba(255,255,255,0.5)" }}>
-                                    <div className="w-4 h-4 border-2 border-t-orange-400 rounded-full animate-spin flex-shrink-0" style={{ borderColor: "rgba(255,255,255,0.2)", borderTopColor: "#ff8e6e" }} />
+                                <div className="flex items-center gap-3 py-8" style={{ color: "rgb(var(--color-text) / 0.5)" }}>
+                                    <div className="w-4 h-4 border-2 border-t-orange-400 rounded-full animate-spin flex-shrink-0" style={{ borderColor: "rgb(var(--color-text) / 0.2)", borderTopColor: "#ff8e6e" }} />
                                     <span className="text-sm">{statusMsg}</span>
                                 </div>
                             )}
@@ -563,14 +563,14 @@ function ResearchForm() {
                                         const cleanAnswer = !loading ? stripLlmDisclaimer(answer) : answer;
                                         const sections = !loading ? parseResearchSections(cleanAnswer) : null;
                                         const proseStyle = {
-                                            color: "rgba(255,255,255,0.85)",
-                                            '--tw-prose-headings': '#ffffff',
-                                            '--tw-prose-bold': '#ffffff',
+                                            color: "rgb(var(--color-text) / 0.85)",
+                                            '--tw-prose-headings': 'rgb(var(--color-text))',
+                                            '--tw-prose-bold': 'rgb(var(--color-text))',
                                             '--tw-prose-links': '#ff8e6e',
-                                            '--tw-prose-bullets': 'rgba(255,255,255,0.5)',
-                                            '--tw-prose-counters': 'rgba(255,255,255,0.5)',
+                                            '--tw-prose-bullets': 'rgb(var(--color-text) / 0.5)',
+                                            '--tw-prose-counters': 'rgb(var(--color-text) / 0.5)',
                                             '--tw-prose-code': '#ff8e6e',
-                                            '--tw-prose-hr': 'rgba(255,255,255,0.15)',
+                                            '--tw-prose-hr': 'rgb(var(--color-text) / 0.15)',
                                         } as React.CSSProperties;
 
                                         if (sections && !loading) {
@@ -583,7 +583,7 @@ function ResearchForm() {
                                                             </div>
                                                         </ResearchSection>
                                                     ))}
-                                                    <p className="text-xs mt-3 mb-1" style={{ color: 'rgba(255,255,255,0.35)' }}>
+                                                    <p className="text-xs mt-3 mb-1" style={{ color: 'rgb(var(--color-text) / 0.35)' }}>
                                                         {DISCLAIMERS[detectedLang] || DISCLAIMERS['en']}
                                                     </p>
                                                     <EvidenceLegend />
@@ -597,7 +597,7 @@ function ResearchForm() {
                                                     <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]} rehypePlugins={[rehypeRaw]}>{cleanAnswer}</ReactMarkdown>
                                                 </div>
                                                 {!loading && (
-                                                    <p className="text-xs mt-3" style={{ color: 'rgba(255,255,255,0.35)' }}>
+                                                    <p className="text-xs mt-3" style={{ color: 'rgb(var(--color-text) / 0.35)' }}>
                                                         {DISCLAIMERS[detectedLang] || DISCLAIMERS['en']}
                                                     </p>
                                                 )}
@@ -615,9 +615,9 @@ function ResearchForm() {
                                                     <button
                                                         onClick={() => exportResearchPdf(question, answer, citations)}
                                                         className="inline-flex items-center gap-2 text-xs font-medium px-3 py-1.5 rounded-lg transition-all cursor-pointer"
-                                                        style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.55)' }}
+                                                        style={{ background: 'rgb(var(--color-text) / 0.06)', border: '1px solid rgb(var(--color-text) / 0.15)', color: 'rgb(var(--color-text) / 0.55)' }}
                                                         onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.12)'; (e.currentTarget as HTMLElement).style.color = 'white'; }}
-                                                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.06)'; (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.55)'; }}
+                                                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgb(var(--color-text) / 0.06)'; (e.currentTarget as HTMLElement).style.color = 'rgb(var(--color-text) / 0.55)'; }}
                                                     >
                                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                                                         {ui.exportCitations}
@@ -637,7 +637,7 @@ function ResearchForm() {
                         </div>
 
                         {queryTime && (
-                            <p className="text-xs mb-2" style={{ color: "rgba(255,255,255,0.35)" }}>
+                            <p className="text-xs mb-2" style={{ color: "rgb(var(--color-text) / 0.35)" }}>
                                 {ui.queryTime} {(queryTime / 1000).toFixed(2)}s
                             </p>
                         )}
@@ -650,7 +650,7 @@ function ResearchForm() {
                                 onChange={(e) => { setQuestion(e.target.value); setSelectedSuggestion(null); }}
                                 placeholder={ui.researchPlaceholder}
                                 className="flex-1 px-4 py-2.5 text-sm rounded-lg focus:outline-none transition-shadow"
-                                style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.15)", color: "#ffffff" }}
+                                style={{ background: "rgb(var(--color-text) / 0.07)", border: "1px solid rgb(var(--color-text) / 0.15)", color: "rgb(var(--color-text))" }}
                                 disabled={loading}
                             />
                             <button
@@ -670,20 +670,20 @@ function ResearchForm() {
 
                 {/* Right: citations */}
                 <div className="w-full lg:w-96 flex flex-col">
-                    <div className="rounded-xl p-6 flex-1 overflow-hidden" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}>
+                    <div className="rounded-xl p-6 flex-1 overflow-hidden" style={{ background: "rgb(var(--color-text) / 0.06)", border: "1px solid rgb(var(--color-text) / 0.1)" }}>
                         <CitationPanel citations={citations} isLoading={loading && citations.length === 0} />
                     </div>
                 </div>
             </div>
 
             {answer && (
-            <p className="text-xs mt-4 text-center" style={{ color: "rgba(255,255,255,0.35)" }}>
+            <p className="text-xs mt-4 text-center" style={{ color: "rgb(var(--color-text) / 0.35)" }}>
                 {DISCLAIMERS[detectedLang] || DISCLAIMERS['en']}
             </p>
             )}
 
-            <div className="mt-8 border-t pt-6 space-y-2 text-xs" style={{ borderColor: "rgba(255,142,110,0.35)", color: "rgba(255,255,255,0.4)" }}>
-                <p className="font-medium" style={{ color: "rgba(255,255,255,0.6)" }}>{ui.dataSourcesTitle}</p>
+            <div className="mt-8 border-t pt-6 space-y-2 text-xs" style={{ borderColor: "rgba(255,142,110,0.35)", color: "rgb(var(--color-text) / 0.4)" }}>
+                <p className="font-medium" style={{ color: "rgb(var(--color-text) / 0.6)" }}>{ui.dataSourcesTitle}</p>
                 <p dangerouslySetInnerHTML={{ __html: ui.researchAttr1 }} />
                 <p dangerouslySetInnerHTML={{ __html: ui.researchAttr2 }} />
                 <p dangerouslySetInnerHTML={{ __html: ui.researchAttr3 }} />

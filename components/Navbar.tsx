@@ -161,7 +161,7 @@ export default function Navbar({ activePage }: NavbarProps) {
 
     return (
         <>
-            <nav className="border-b bg-app-bg" style={{ borderColor: 'rgba(255,255,255,0.07)' }}>
+            <nav className="border-b bg-app-bg border-text/7">
                 <div className="container mx-auto px-4 py-3">
                     <div className="flex justify-between items-center">
                         <div className="flex items-center gap-8">
@@ -239,44 +239,43 @@ export default function Navbar({ activePage }: NavbarProps) {
                                     <button
                                         onClick={() => setSettingsOpen(prev => !prev)}
                                         className="p-1.5 rounded-lg transition-all"
-                                        style={{ color: settingsOpen ? 'white' : 'rgba(255,255,255,0.45)', background: settingsOpen ? 'rgba(255,255,255,0.1)' : 'transparent' }}
-                                        onMouseEnter={e => { if (!settingsOpen) (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.8)'; }}
-                                        onMouseLeave={e => { if (!settingsOpen) (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.45)'; }}
+                                        style={{ color: settingsOpen ? 'rgb(var(--color-text))' : 'rgb(var(--color-text) / 0.45)', background: settingsOpen ? 'rgb(var(--color-text) / 0.1)' : 'transparent' }}
+                                        onMouseEnter={e => { if (!settingsOpen) (e.currentTarget as HTMLElement).style.color = 'rgb(var(--color-text) / 0.8)'; }}
+                                        onMouseLeave={e => { if (!settingsOpen) (e.currentTarget as HTMLElement).style.color = 'rgb(var(--color-text) / 0.45)'; }}
                                     >
                                         <Settings size={18} strokeWidth={1.8} />
                                     </button>
 
                                     {settingsOpen && (
                                         <div
-                                            className="absolute right-0 top-full mt-2 rounded-xl shadow-2xl border py-2 z-50"
+                                            className="absolute right-0 top-full mt-2 rounded-xl shadow-2xl border border-text/10 py-2 z-50"
                                             style={{
                                                 width: '280px',
                                                 background: 'rgba(15, 23, 42, 0.98)',
-                                                borderColor: 'rgba(255,255,255,0.1)',
                                                 backdropFilter: 'blur(20px)',
                                             }}
                                         >
                                             {/* Language */}
-                                            <div className="border-b" style={{ borderColor: 'rgba(255,255,255,0.07)' }}>
+                                            <div className="border-b border-text/7">
                                                 <LanguageSwitcher compact />
                                             </div>
 
                                             {/* Plan label */}
-                                            <div className="px-4 py-2 border-b" style={{ borderColor: 'rgba(255,255,255,0.07)' }}>
-                                                <p className="text-xs font-semibold" style={{ color: plan === 'pro' ? '#fbbf24' : 'rgba(255,255,255,0.5)' }}>
+                                            <div className="px-4 py-2 border-b border-text/7">
+                                                <p className="text-xs font-semibold" style={{ color: plan === 'pro' ? '#fbbf24' : 'rgb(var(--color-text) / 0.5)' }}>
                                                     {plan === 'pro' ? ui.proPlan : ui.freePlan}
                                                 </p>
                                             </div>
 
                                             {/* Usage today */}
-                                            <div className="px-4 py-3 border-b" style={{ borderColor: 'rgba(255,255,255,0.07)' }}>
-                                                <p className="text-xs mb-1" style={{ color: 'rgba(255,255,255,0.7)' }}>
+                                            <div className="px-4 py-3 border-b border-text/7">
+                                                <p className="text-xs mb-1 text-text/70">
                                                     {ui.todayCredits} <span className="font-medium text-white">{creditsUsed}</span> / {dailyLimit} {ui.creditsUsed}
                                                 </p>
-                                                <p className="text-xs mb-2" style={{ color: 'rgba(255,255,255,0.4)' }}>
+                                                <p className="text-xs mb-2 text-text/40">
                                                     Research: 3 · Verify: 1 · Explain: 2
                                                 </p>
-                                                <div className="w-full h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.1)' }}>
+                                                <div className="w-full h-1.5 rounded-full overflow-hidden bg-text/10">
                                                     <div
                                                         className="h-full rounded-full transition-all duration-300"
                                                         style={{
@@ -296,20 +295,18 @@ export default function Navbar({ activePage }: NavbarProps) {
                                             <Link
                                                 href="/settings"
                                                 onClick={() => setSettingsOpen(false)}
-                                                className="block w-full text-left px-4 py-2 text-sm transition-colors hover:bg-white/5"
-                                                style={{ color: 'rgba(255,255,255,0.7)' }}
+                                                className="block w-full text-left px-4 py-2 text-sm transition-colors hover:bg-white/5 text-text/70"
                                             >
                                                 {share.navbarManageSharesMenuItem}
                                             </Link>
-                                            <div className="border-b" style={{ borderColor: 'rgba(255,255,255,0.07)' }} />
+                                            <div className="border-b border-text/7" />
 
                                             {/* Actions */}
                                             {plan === 'pro' ? (
                                                 <>
                                                     <button
                                                         onClick={handleManageSubscription}
-                                                        className="w-full text-left px-4 py-2 text-sm transition-colors hover:bg-white/5"
-                                                        style={{ color: 'rgba(255,255,255,0.7)' }}
+                                                        className="w-full text-left px-4 py-2 text-sm transition-colors hover:bg-white/5 text-text/70"
                                                     >
                                                         {ui.manageSubscription}
                                                     </button>
@@ -340,8 +337,7 @@ export default function Navbar({ activePage }: NavbarProps) {
                             <SignedOut>
                                 <Link href="/sign-in">
                                     <button
-                                        className="px-4 py-1.5 text-sm font-medium text-white rounded-lg transition-all duration-200"
-                                        style={{ border: '1px solid rgba(255,255,255,0.2)' }}
+                                        className="px-4 py-1.5 text-sm font-medium text-white rounded-lg transition-all duration-200 border border-text/20"
                                         onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.1)')}
                                         onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
                                     >
@@ -358,10 +354,10 @@ export default function Navbar({ activePage }: NavbarProps) {
             {/* Cancel Subscription Confirmation Dialog */}
             {showCancelConfirm && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }}>
-                    <div className="w-full max-w-md mx-4 rounded-xl p-6 border" style={{ background: 'rgba(15, 23, 42, 0.98)', borderColor: 'rgba(255,255,255,0.1)' }}>
+                    <div className="w-full max-w-md mx-4 rounded-xl p-6 border border-text/10" style={{ background: 'rgba(15, 23, 42, 0.98)' }}>
                         {cancelMessage === 'success' ? (
                             <div className="text-center py-4">
-                                <p className="text-sm" style={{ color: 'rgba(255,255,255,0.8)' }}>
+                                <p className="text-sm text-text/80">
                                     {ui.cancelledMsg}
                                 </p>
                             </div>
@@ -372,8 +368,7 @@ export default function Navbar({ activePage }: NavbarProps) {
                                 </p>
                                 <button
                                     onClick={() => { setShowCancelConfirm(false); setCancelMessage(''); }}
-                                    className="px-4 py-2 text-sm rounded-lg"
-                                    style={{ background: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.7)' }}
+                                    className="px-4 py-2 text-sm rounded-lg bg-text/10 text-text/70"
                                 >
                                     {ui.closeBtn}
                                 </button>
@@ -381,14 +376,13 @@ export default function Navbar({ activePage }: NavbarProps) {
                         ) : (
                             <>
                                 <h3 className="text-lg font-semibold text-white mb-3">{ui.cancelTitle}</h3>
-                                <p className="text-sm mb-6" style={{ color: 'rgba(255,255,255,0.6)' }}>
+                                <p className="text-sm mb-6 text-text/60">
                                     {ui.cancelConfirmMsg}
                                 </p>
                                 <div className="flex gap-3 justify-end">
                                     <button
                                         onClick={() => { setShowCancelConfirm(false); setCancelMessage(''); }}
-                                        className="px-4 py-2 text-sm font-medium rounded-lg transition-colors"
-                                        style={{ background: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.8)' }}
+                                        className="px-4 py-2 text-sm font-medium rounded-lg transition-colors bg-text/10 text-text/80"
                                     >
                                         {ui.keepPro}
                                     </button>

@@ -42,14 +42,13 @@ export default function SettingsPage() {
             </Head>
 
             <div className="container mx-auto px-4 py-8 max-w-3xl">
-                <h1 className="text-2xl font-bold tracking-tight mb-6" style={{ color: '#ffffff' }}>
+                <h1 className="text-2xl font-bold tracking-tight mb-6 text-text">
                     {t.settingsPageTitle}
                 </h1>
 
                 {/* Tab nav — single tab now; designed to scale. */}
                 <div
-                    className="flex gap-2 mb-6 border-b"
-                    style={{ borderColor: 'rgba(255,255,255,0.08)' }}
+                    className="flex gap-2 mb-6 border-b border-text/8"
                     role="tablist"
                 >
                     {tabs.map(tab => {
@@ -63,15 +62,15 @@ export default function SettingsPage() {
                                 onClick={() => setActiveTab(tab.id)}
                                 className="px-4 py-2 text-sm font-medium transition-colors cursor-pointer"
                                 style={{
-                                    color: isActive ? tab.color : 'rgba(255,255,255,0.55)',
+                                    color: isActive ? tab.color : 'rgb(var(--color-text) / 0.55)',
                                     borderBottom: `2px solid ${isActive ? tab.color : 'transparent'}`,
                                     marginBottom: '-1px',
                                 }}
                                 onMouseEnter={e => {
-                                    if (!isActive) (e.currentTarget as HTMLElement).style.color = '#ffffff';
+                                    if (!isActive) (e.currentTarget as HTMLElement).style.color = 'rgb(var(--color-text))';
                                 }}
                                 onMouseLeave={e => {
-                                    if (!isActive) (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.55)';
+                                    if (!isActive) (e.currentTarget as HTMLElement).style.color = 'rgb(var(--color-text) / 0.55)';
                                 }}
                             >
                                 {tab.label}

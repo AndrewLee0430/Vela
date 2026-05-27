@@ -172,7 +172,7 @@ export default function MySharesTab() {
     const content = useMemo(() => {
         if (state.kind === 'idle' || state.kind === 'loading') {
             return (
-                <p className="text-sm" style={{ color: 'rgba(255,255,255,0.55)' }}>
+                <p className="text-sm text-text/55">
                     {t.mySharesLoading}
                 </p>
             );
@@ -184,8 +184,7 @@ export default function MySharesTab() {
                     <button
                         type="button"
                         onClick={fetchShares}
-                        className="mt-3 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors cursor-pointer"
-                        style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.2)', color: 'rgba(255,255,255,0.85)' }}
+                        className="mt-3 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors cursor-pointer bg-text/8 border border-text/20 text-text/85"
                     >
                         {t.mySharesRetry}
                     </button>
@@ -194,7 +193,7 @@ export default function MySharesTab() {
         }
         if (state.shares.length === 0) {
             return (
-                <p className="text-sm" style={{ color: 'rgba(255,255,255,0.55)' }}>
+                <p className="text-sm text-text/55">
                     {t.settingsEmpty}
                 </p>
             );
@@ -207,31 +206,23 @@ export default function MySharesTab() {
                     return (
                         <div
                             key={row.share_id}
-                            className="rounded-lg p-4"
-                            style={{
-                                background: 'rgba(255,255,255,0.06)',
-                                border: '1px solid rgba(255,255,255,0.12)',
-                                opacity: isRevoked ? 0.55 : 1,
-                            }}
+                            className="rounded-lg p-4 bg-text/6 border border-text/12"
+                            style={{ opacity: isRevoked ? 0.55 : 1 }}
                         >
                             <div className="flex flex-wrap items-start justify-between gap-3">
                                 <div className="min-w-0 flex-1">
                                     <div className="flex items-center gap-2 mb-1 flex-wrap">
                                         {isRevoked && (
-                                            <span
-                                                className="text-xs px-2 py-0.5 rounded-full font-medium"
-                                                style={{ background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.6)' }}
-                                            >
+                                            <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-text/8 text-text/60">
                                                 {t.mySharesRevokedBadge}
                                             </span>
                                         )}
-                                        <span className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                                        <span className="text-xs text-text/50">
                                             {relativeTime(row.created_at, lang)}
                                         </span>
                                     </div>
                                     <p
-                                        className="text-sm leading-snug truncate"
-                                        style={{ color: 'rgba(255,255,255,0.85)' }}
+                                        className="text-sm leading-snug truncate text-text/85"
                                         title={row.query_preview}
                                     >
                                         {row.query_preview}
@@ -240,8 +231,7 @@ export default function MySharesTab() {
                                         href={url}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="text-xs mt-1 inline-block hover:underline"
-                                        style={{ color: 'rgba(255,255,255,0.4)' }}
+                                        className="text-xs mt-1 inline-block hover:underline text-text/40"
                                     >
                                         {url}
                                     </a>
@@ -251,12 +241,7 @@ export default function MySharesTab() {
                                         type="button"
                                         onClick={() => handleCopy(row)}
                                         disabled={isRevoked}
-                                        className="px-3 py-1.5 text-xs font-medium rounded-lg transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                                        style={{
-                                            background: 'rgba(255,255,255,0.06)',
-                                            border: '1px solid rgba(255,255,255,0.15)',
-                                            color: 'rgba(255,255,255,0.85)',
-                                        }}
+                                        className="px-3 py-1.5 text-xs font-medium rounded-lg transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed bg-text/6 border border-text/15 text-text/85"
                                     >
                                         {t.modalCopyLink}
                                     </button>
@@ -295,22 +280,20 @@ export default function MySharesTab() {
                     <div
                         role="dialog"
                         aria-modal="true"
-                        className="w-full max-w-md rounded-2xl p-6 bg-bg-2"
-                        style={{ border: '1px solid rgba(255,255,255,0.12)' }}
+                        className="w-full max-w-md rounded-2xl p-6 bg-bg-2 border border-text/12"
                         onClick={e => e.stopPropagation()}
                     >
-                        <h2 className="text-base font-semibold mb-3" style={{ color: '#ffffff' }}>
+                        <h2 className="text-base font-semibold mb-3 text-text">
                             {t.settingsRevokeButton}
                         </h2>
-                        <p className="text-sm mb-5" style={{ color: 'rgba(255,255,255,0.7)' }}>
+                        <p className="text-sm mb-5 text-text/70">
                             {t.settingsRevokeConfirm}
                         </p>
                         <div className="flex justify-end gap-2">
                             <button
                                 type="button"
                                 onClick={() => setRevokeTarget(null)}
-                                className="px-4 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer"
-                                style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.2)', color: 'rgba(255,255,255,0.85)' }}
+                                className="px-4 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer border border-text/20 text-text/85"
                             >
                                 {t.modalCancel}
                             </button>
@@ -328,14 +311,7 @@ export default function MySharesTab() {
             )}
 
             {toast && (
-                <div
-                    className="fixed top-6 right-6 px-4 py-2 text-sm rounded-lg z-50"
-                    style={{
-                        background: 'rgba(255,255,255,0.08)',
-                        border: '1px solid rgba(255,255,255,0.15)',
-                        color: '#ffffff',
-                    }}
-                >
+                <div className="fixed top-6 right-6 px-4 py-2 text-sm rounded-lg z-50 bg-text/8 border border-text/15 text-text">
                     {toast}
                 </div>
             )}

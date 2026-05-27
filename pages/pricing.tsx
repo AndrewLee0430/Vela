@@ -36,7 +36,7 @@ export default function Pricing() {
 
             <main className="min-h-screen flex flex-col bg-app-bg">
                 {/* Nav */}
-                <nav className="border-b" style={{ background: "transparent", borderColor: "rgba(255,255,255,0.07)" }}>
+                <nav className="border-b border-text/7">
                     <div className="container mx-auto px-4 py-3 flex items-center justify-between">
                         <Link href="/" className="flex items-center">
                             <Image src="/coral_logo.png" alt="Vela" width={40} height={40} style={{ objectFit: 'contain' }} />
@@ -54,7 +54,7 @@ export default function Pricing() {
                 {/* Header */}
                 <div className="container mx-auto px-4 pt-16 pb-10 text-center">
                     <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-white">{ui.pricingTitle}</h1>
-                    <p className="mt-3 text-base" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                    <p className="mt-3 text-base text-text/50">
                         {ui.pricingSubtitle}
                     </p>
                 </div>
@@ -64,19 +64,16 @@ export default function Pricing() {
                     <div className="max-w-3xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
 
                         {/* Free Plan */}
-                        <div
-                            className="rounded-xl p-6 flex flex-col"
-                            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)' }}
-                        >
+                        <div className="rounded-xl p-6 flex flex-col bg-text/4 border border-text/10">
                             <h2 className="text-lg font-semibold text-white">Free</h2>
                             <div className="mt-4 mb-6">
                                 <span className="text-3xl font-bold text-white">$0</span>
-                                <span className="text-sm ml-1" style={{ color: 'rgba(255,255,255,0.4)' }}>{ui.perMonth}</span>
+                                <span className="text-sm ml-1 text-text/40">{ui.perMonth}</span>
                             </div>
 
                             <ul className="space-y-3 flex-1">
                                 {FREE_FEATURES.map((f, i) => (
-                                    <li key={i} className="flex items-start gap-2.5 text-sm" style={{ color: 'rgba(255,255,255,0.7)' }}>
+                                    <li key={i} className="flex items-start gap-2.5 text-sm text-text/70">
                                         <CheckIcon />{f}
                                     </li>
                                 ))}
@@ -84,8 +81,7 @@ export default function Pricing() {
 
                             <Link
                                 href="/sign-up"
-                                className="mt-8 block text-center text-sm font-medium py-2.5 rounded-lg transition-all cursor-pointer"
-                                style={{ border: '1px solid rgba(255,255,255,0.2)', color: 'rgba(255,255,255,0.8)', background: 'transparent' }}
+                                className="mt-8 block text-center text-sm font-medium py-2.5 rounded-lg transition-all cursor-pointer border border-text/20 text-text/80"
                                 onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.1)'; }}
                                 onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                             >
@@ -109,15 +105,15 @@ export default function Pricing() {
                             <h2 className="text-lg font-semibold text-white">Pro</h2>
                             <div className="mt-4 mb-1">
                                 <span className="text-3xl font-bold text-white">$9.99</span>
-                                <span className="text-sm ml-1" style={{ color: 'rgba(255,255,255,0.4)' }}>{ui.perMonth}</span>
+                                <span className="text-sm ml-1 text-text/40">{ui.perMonth}</span>
                             </div>
-                            <p className="text-xs mb-6" style={{ color: 'rgba(255,255,255,0.4)' }}>
+                            <p className="text-xs mb-6 text-text/40">
                                 {ui.orYearly}
                             </p>
 
                             <ul className="space-y-3 flex-1">
                                 {PRO_FEATURES.map((f, i) => (
-                                    <li key={i} className="flex items-start gap-2.5 text-sm" style={{ color: 'rgba(255,255,255,0.7)' }}>
+                                    <li key={i} className="flex items-start gap-2.5 text-sm text-text/70">
                                         <CheckIcon />{f}
                                     </li>
                                 ))}
@@ -131,7 +127,7 @@ export default function Pricing() {
                                 {ui.upgradeToPro}
                             </Link>
 
-                            <p className="mt-3 text-xs text-center" style={{ color: 'rgba(255,255,255,0.3)' }}>
+                            <p className="mt-3 text-xs text-center text-text/30">
                                 {ui.subjectToFairUse}
                             </p>
                         </div>
@@ -139,10 +135,7 @@ export default function Pricing() {
                 </div>
 
                 {/* Footer */}
-                <div
-                    className="flex-shrink-0 flex flex-col items-center gap-2 px-4 py-5 text-sm"
-                    style={{ borderTop: '1px solid rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.3)' }}
-                >
+                <div className="flex-shrink-0 flex flex-col items-center gap-2 px-4 py-5 text-sm border-t border-t-text/7 text-text/30">
                     <div>{ui.pricingDisclaimer}</div>
                     <div className="flex flex-wrap justify-center gap-4 text-xs">
                         <Link href="/terms" className="hover:text-white transition-colors">{ui.termsOfService}</Link>

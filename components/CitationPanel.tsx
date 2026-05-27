@@ -142,10 +142,7 @@ function CitationCard({ citation, position }: { citation: Citation; position: nu
     };
 
     return (
-        <div 
-            className="rounded-lg p-4 hover:shadow-md transition-shadow"
-            style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.12)" }}
-        >
+        <div className="rounded-lg p-4 hover:shadow-md transition-shadow bg-text/7 border border-text/12">
             {/* Header */}
             <div className="flex items-start justify-between mb-2">
                 <div className="flex items-center gap-2">
@@ -171,12 +168,12 @@ function CitationCard({ citation, position }: { citation: Citation; position: nu
             </div>
 
             {/* Title */}
-            <h4 className="font-medium mb-1 line-clamp-2" style={{ color: "#ffffff" }}>
+            <h4 className="font-medium mb-1 line-clamp-2 text-text">
                 {citation.title}
             </h4>
 
             {/* Authors / Journal / Year */}
-            <div className="text-sm mb-2" style={{ color: "rgba(255,255,255,0.5)" }}>
+            <div className="text-sm mb-2 text-text/50">
                 {citation.authors && <span>{citation.authors}</span>}
                 {citation.journal && <span> • {citation.journal}</span>}
                 {citation.year    && <span> ({citation.year})</span>}
@@ -184,7 +181,7 @@ function CitationCard({ citation, position }: { citation: Citation; position: nu
 
             {/* Abstract */}
             {display && (
-                <div className="text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.7)" }}>
+                <div className="text-sm leading-relaxed text-text/70">
                     <p>{display}</p>
                     {isLong && (
                         <button
@@ -224,15 +221,15 @@ function LoadingSkeleton() {
     return (
         <div className="space-y-4">
             {[1, 2, 3].map((i) => (
-                <div key={i} className="rounded-lg p-4 animate-pulse" style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.12)" }}>
+                <div key={i} className="rounded-lg p-4 animate-pulse bg-text/7 border border-text/12">
                     <div className="flex items-center gap-2 mb-2">
-                        <div className="w-6 h-6 rounded" style={{ background: "rgba(255,255,255,0.1)" }}></div>
-                        <div className="h-4 rounded w-20" style={{ background: "rgba(255,255,255,0.1)" }}></div>
+                        <div className="w-6 h-6 rounded bg-text/10"></div>
+                        <div className="h-4 rounded w-20 bg-text/10"></div>
                     </div>
-                    <div className="h-4 rounded w-3/4 mb-2" style={{ background: "rgba(255,255,255,0.1)" }}></div>
-                    <div className="h-3 rounded w-1/2 mb-2" style={{ background: "rgba(255,255,255,0.08)" }}></div>
-                    <div className="h-3 rounded w-full" style={{ background: "rgba(255,255,255,0.08)" }}></div>
-                    <div className="h-3 rounded w-full mt-1" style={{ background: "rgba(255,255,255,0.08)" }}></div>
+                    <div className="h-4 rounded w-3/4 mb-2 bg-text/10"></div>
+                    <div className="h-3 rounded w-1/2 mb-2 bg-text/8"></div>
+                    <div className="h-3 rounded w-full bg-text/8"></div>
+                    <div className="h-3 rounded w-full mt-1 bg-text/8"></div>
                 </div>
             ))}
         </div>
@@ -254,7 +251,7 @@ export default function CitationPanel({ citations, isLoading }: CitationPanelPro
     if (citations.length === 0) {
         return (
             <div className="h-full flex items-center justify-center">
-                <p className="text-center text-sm" style={{ color: "rgba(255,255,255,0.4)" }}>{ui.referencesEmpty}</p>
+                <p className="text-center text-sm text-text/40">{ui.referencesEmpty}</p>
             </div>
         );
     }
@@ -274,8 +271,7 @@ export default function CitationPanel({ citations, isLoading }: CitationPanelPro
                 {Object.entries(sourceStats).map(([source, count]) => (
                     <span
                         key={source}
-                        className="px-2 py-1 rounded-full"
-                        style={{ background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.65)" }}
+                        className="px-2 py-1 rounded-full bg-text/8 text-text/65"
                     >
                         {source}: {count}
                     </span>
@@ -288,8 +284,8 @@ export default function CitationPanel({ citations, isLoading }: CitationPanelPro
                 ))}
             </div>
 
-            <div className="mt-4 pt-3" style={{ borderTop: "1px solid rgba(255,255,255,0.1)" }}>
-                <p className="text-xs text-center" style={{ color: "rgba(255,255,255,0.35)" }}>
+            <div className="mt-4 pt-3 border-t border-t-text/10">
+                <p className="text-xs text-center text-text/35">
                     {ui.verifyReference}
                 </p>
             </div>

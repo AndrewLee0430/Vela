@@ -22,6 +22,13 @@ module.exports = {
         backgroundImage: {
           'app-bg': 'linear-gradient(135deg, rgb(var(--color-bg-1)) 0%, rgb(var(--color-bg-2)) 45%, rgb(var(--color-bg-3)) 75%, rgb(var(--color-bg-4)) 100%)',
         },
+        opacity: {
+          '4':  '0.04',
+          '6':  '0.06',
+          '7':  '0.07',
+          '8':  '0.08',
+          '12': '0.12',
+        },
         fontFamily: {
           sans: ['var(--font-sans)', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', '"Noto Sans"', '"Noto Sans CJK TC"', 'sans-serif'],
         },

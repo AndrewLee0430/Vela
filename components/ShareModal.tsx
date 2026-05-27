@@ -195,8 +195,7 @@ export default function ShareModal({
             <div
                 role="dialog"
                 aria-modal="true"
-                className="relative w-full max-w-lg rounded-2xl p-6 bg-bg-2"
-                style={{ border: '1px solid rgba(255,255,255,0.12)' }}
+                className="relative w-full max-w-lg rounded-2xl p-6 bg-bg-2 border border-text/12"
                 onClick={e => e.stopPropagation()}
             >
                 {state.kind !== 'done' ? (
@@ -241,13 +240,10 @@ function PreShareView({ t, state, consent, onConsentChange, queryText, onConfirm
 
     return (
         <>
-            <h2 className="text-lg font-semibold" style={{ color: '#ffffff' }}>{t.modalTitle}</h2>
-            <p className="mt-3 text-sm" style={{ color: 'rgba(255,255,255,0.7)' }}>{t.modalWarning}</p>
+            <h2 className="text-lg font-semibold text-text">{t.modalTitle}</h2>
+            <p className="mt-3 text-sm text-text/70">{t.modalWarning}</p>
 
-            <div
-                className="mt-4 rounded-lg p-3 max-h-32 overflow-auto text-sm whitespace-pre-wrap"
-                style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.85)' }}
-            >
+            <div className="mt-4 rounded-lg p-3 max-h-32 overflow-auto text-sm whitespace-pre-wrap bg-text/6 text-text/85">
                 {queryText}
             </div>
 
@@ -284,7 +280,7 @@ function PreShareView({ t, state, consent, onConsentChange, queryText, onConfirm
                 </div>
             )}
 
-            <label className="mt-4 flex items-start gap-2 text-xs cursor-pointer" style={{ color: 'rgba(255,255,255,0.75)' }}>
+            <label className="mt-4 flex items-start gap-2 text-xs cursor-pointer text-text/75">
                 <input
                     type="checkbox"
                     checked={consent}
@@ -300,8 +296,7 @@ function PreShareView({ t, state, consent, onConsentChange, queryText, onConfirm
                     type="button"
                     onClick={onClose}
                     disabled={submitting}
-                    className="px-4 py-2 text-sm font-medium rounded-lg transition-colors disabled:opacity-50"
-                    style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.2)', color: 'rgba(255,255,255,0.85)' }}
+                    className="px-4 py-2 text-sm font-medium rounded-lg transition-colors disabled:opacity-50 border border-text/20 text-text/85"
                 >
                     {t.modalCancel}
                 </button>
@@ -333,7 +328,7 @@ interface PostShareViewProps {
 function PostShareView({ t, url, socialOrder, onCopy, onSocialClick, onClose, showCopiedToast }: PostShareViewProps) {
     return (
         <>
-            <h2 className="text-lg font-semibold" style={{ color: '#ffffff' }}>{t.modalTitle}</h2>
+            <h2 className="text-lg font-semibold text-text">{t.modalTitle}</h2>
 
             <div className="mt-4 flex items-center gap-2">
                 <input
@@ -341,8 +336,7 @@ function PostShareView({ t, url, socialOrder, onCopy, onSocialClick, onClose, sh
                     readOnly
                     value={url}
                     onFocus={e => e.currentTarget.select()}
-                    className="flex-1 px-3 py-2 text-xs rounded-lg"
-                    style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.9)' }}
+                    className="flex-1 px-3 py-2 text-xs rounded-lg bg-text/6 border border-text/15 text-text/90"
                 />
                 <button
                     type="button"
@@ -355,15 +349,14 @@ function PostShareView({ t, url, socialOrder, onCopy, onSocialClick, onClose, sh
             </div>
 
             <div className="mt-5">
-                <p className="text-xs mb-2" style={{ color: 'rgba(255,255,255,0.55)' }}>{t.modalShareOn}</p>
+                <p className="text-xs mb-2 text-text/55">{t.modalShareOn}</p>
                 <div className="flex flex-wrap gap-2">
                     {socialOrder.map(key => (
                         <button
                             key={key}
                             type="button"
                             onClick={() => onSocialClick(key, url)}
-                            className="px-3 py-1.5 text-xs font-medium rounded-lg transition-colors cursor-pointer"
-                            style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.85)' }}
+                            className="px-3 py-1.5 text-xs font-medium rounded-lg transition-colors cursor-pointer bg-text/6 border border-text/15 text-text/85"
                         >
                             {SOCIAL_LABELS[key]}
                         </button>
@@ -375,22 +368,14 @@ function PostShareView({ t, url, socialOrder, onCopy, onSocialClick, onClose, sh
                 <button
                     type="button"
                     onClick={onClose}
-                    className="px-4 py-2 text-sm font-medium rounded-lg transition-colors"
-                    style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.2)', color: 'rgba(255,255,255,0.85)' }}
+                    className="px-4 py-2 text-sm font-medium rounded-lg transition-colors border border-text/20 text-text/85"
                 >
                     {t.modalCancel}
                 </button>
             </div>
 
             {showCopiedToast && (
-                <div
-                    className="absolute top-4 right-4 px-3 py-1.5 text-xs rounded-lg"
-                    style={{
-                        background: 'rgba(255,255,255,0.08)',
-                        border: '1px solid rgba(255,255,255,0.15)',
-                        color: '#ffffff',
-                    }}
-                >
+                <div className="absolute top-4 right-4 px-3 py-1.5 text-xs rounded-lg bg-text/8 border border-text/15 text-text">
                     {t.modalLinkCopied}
                 </div>
             )}

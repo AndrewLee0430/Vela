@@ -204,7 +204,7 @@ function HistoryList() {
         return (
             <div className="text-center py-16">
                 <p className="text-gray-400 mb-4">{ui.noHistory}</p>
-                <Link href="/research" className="text-sm hover:text-white underline underline-offset-4" style={{ color: "rgba(255,255,255,0.5)" }}>
+                <Link href="/research" className="text-sm hover:text-white underline underline-offset-4" style={{ color: "rgb(var(--color-text) / 0.5)" }}>
                     {ui.startSearch}
                 </Link>
             </div>
@@ -219,8 +219,8 @@ function HistoryList() {
         <div className="space-y-3">
             {/* Free plan banner */}
             {plan === 'free' && (
-                <div className="rounded-xl p-4 text-sm mb-2" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)' }}>
-                    <p style={{ color: 'rgba(255,255,255,0.7)' }}>
+                <div className="rounded-xl p-4 text-sm mb-2" style={{ background: 'rgb(var(--color-text) / 0.05)', border: '1px solid rgb(var(--color-text) / 0.15)' }}>
+                    <p style={{ color: 'rgb(var(--color-text) / 0.7)' }}>
                         {ui.freeHistoryMsg}
                     </p>
                 </div>
@@ -236,9 +236,9 @@ function HistoryList() {
                         onChange={e => setSearchQuery(e.target.value)}
                         disabled={plan !== 'pro'}
                         className="w-full px-4 py-2.5 rounded-lg text-sm focus:outline-none focus:ring-2 disabled:cursor-not-allowed"
-                        style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.85)' }}
+                        style={{ background: 'rgb(var(--color-text) / 0.06)', border: '1px solid rgb(var(--color-text) / 0.12)', color: 'rgb(var(--color-text) / 0.85)' }}
                     />
-                    <svg className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: 'rgba(255,255,255,0.3)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: 'rgb(var(--color-text) / 0.3)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
                 </div>
@@ -252,19 +252,19 @@ function HistoryList() {
                     <div
                         key={item.id}
                         className="rounded-xl overflow-hidden transition-shadow"
-                        style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", borderLeft: `3px solid ${f.color}` }}
+                        style={{ background: "rgb(var(--color-text) / 0.06)", border: "1px solid rgb(var(--color-text) / 0.1)", borderLeft: `3px solid ${f.color}` }}
                     >
                         {/* Header */}
                         <button
                             onClick={() => handleToggle(item)}
                             className="w-full px-6 py-4 flex items-center justify-between transition-colors text-left"
-                            onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.05)"}
+                            onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = "rgb(var(--color-text) / 0.05)"}
                             onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = "transparent"}
                         >
                             <div className="flex items-center gap-3 min-w-0">
                                 <TypeTag type={item.session_type} />
                                 <div className="min-w-0">
-                                    <p className="font-medium truncate text-sm history-question" style={{ color: "rgba(255,255,255,0.85)" }}>
+                                    <p className="font-medium truncate text-sm history-question" style={{ color: "rgb(var(--color-text) / 0.85)" }}>
                                         {item.question.length > 80
                                             ? item.question.slice(0, 80) + '...'
                                             : item.question}
@@ -288,20 +288,20 @@ function HistoryList() {
 
                         {/* Expanded content */}
                         {isExpanded && (
-                            <div className="px-6 py-5 border-t" style={{ borderColor: "rgba(255,255,255,0.08)" }}>
+                            <div className="px-6 py-5 border-t" style={{ borderColor: "rgb(var(--color-text) / 0.08)" }}>
 
                                 {/* Research */}
                                 {item.session_type === 'research' && (
                                     <div 
                                         className="prose max-w-none prose-sm prose-headings:font-semibold"
                                         style={{
-                                            color: "rgba(255,255,255,0.8)",
-                                            '--tw-prose-headings': '#ffffff',
-                                            '--tw-prose-bold': '#ffffff',
-                                            '--tw-prose-bullets': 'rgba(255,255,255,0.5)',
+                                            color: "rgb(var(--color-text) / 0.8)",
+                                            '--tw-prose-headings': 'rgb(var(--color-text))',
+                                            '--tw-prose-bold': 'rgb(var(--color-text))',
+                                            '--tw-prose-bullets': 'rgb(var(--color-text) / 0.5)',
                                         } as React.CSSProperties}
                                     >
-                                        <p className="whitespace-pre-wrap text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.75)" }}>
+                                        <p className="whitespace-pre-wrap text-sm leading-relaxed" style={{ color: "rgb(var(--color-text) / 0.75)" }}>
                                             {item.answer}
                                         </p>
                                     </div>
@@ -320,7 +320,7 @@ function HistoryList() {
                                         return (
                                             <div>
                                                 {parsed.disclaimer && (
-                                                    <p className="text-xs mb-4 text-center" style={{ color: "rgba(255,255,255,0.35)" }}>
+                                                    <p className="text-xs mb-4 text-center" style={{ color: "rgb(var(--color-text) / 0.35)" }}>
                                                         {parsed.disclaimer}
                                                     </p>
                                                 )}
@@ -345,13 +345,13 @@ function HistoryList() {
                                         <div
                                             className="prose max-w-none prose-sm prose-headings:font-semibold"
                                             style={{
-                                                color: "rgba(255,255,255,0.8)",
-                                                '--tw-prose-headings': '#ffffff',
-                                                '--tw-prose-bold': '#ffffff',
-                                                '--tw-prose-bullets': 'rgba(255,255,255,0.5)',
+                                                color: "rgb(var(--color-text) / 0.8)",
+                                                '--tw-prose-headings': 'rgb(var(--color-text))',
+                                                '--tw-prose-bold': 'rgb(var(--color-text))',
+                                                '--tw-prose-bullets': 'rgb(var(--color-text) / 0.5)',
                                             } as React.CSSProperties}
                                         >
-                                            <p className="whitespace-pre-wrap text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.75)" }}>
+                                            <p className="whitespace-pre-wrap text-sm leading-relaxed" style={{ color: "rgb(var(--color-text) / 0.75)" }}>
                                                 {item.answer}
                                             </p>
                                         </div>
@@ -374,20 +374,20 @@ function HistoryList() {
 
                                 {item.session_type === 'verify' && (
                                     <div className="space-y-4">
-                                        <div className="rounded-lg p-4" style={{ background: "rgba(255,255,255,0.05)" }}>
-                                            <p className="text-sm" style={{ color: "rgba(255,255,255,0.75)" }}>{item.answer}</p>
+                                        <div className="rounded-lg p-4" style={{ background: "rgb(var(--color-text) / 0.05)" }}>
+                                            <p className="text-sm" style={{ color: "rgb(var(--color-text) / 0.75)" }}>{item.answer}</p>
                                         </div>
 
                                         {verifyDetails[item.id]?.loading && (
                                             <div className="text-center py-6">
-                                                <div className="animate-spin rounded-full h-6 w-6 border-2 border-t-blue-400 mx-auto" style={{ borderColor: "rgba(255,255,255,0.15)", borderTopColor: "#63b3ed" }} />
-                                                <p className="mt-2 text-xs" style={{ color: "rgba(255,255,255,0.4)" }}>Loading interaction details...</p>
+                                                <div className="animate-spin rounded-full h-6 w-6 border-2 border-t-blue-400 mx-auto" style={{ borderColor: "rgb(var(--color-text) / 0.15)", borderTopColor: "#63b3ed" }} />
+                                                <p className="mt-2 text-xs" style={{ color: "rgb(var(--color-text) / 0.4)" }}>Loading interaction details...</p>
                                             </div>
                                         )}
 
                                         {!verifyDetails[item.id]?.loading && (verifyDetails[item.id]?.interactions?.length ?? 0) > 0 && (
                                             <div className="space-y-3">
-                                                <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.4)" }}>
+                                                <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: "rgb(var(--color-text) / 0.4)" }}>
                                                     Interactions ({verifyDetails[item.id].interactions.length})
                                                 </p>
                                                 {verifyDetails[item.id].interactions.map((interaction, idx) => (
@@ -395,14 +395,14 @@ function HistoryList() {
                                                         key={idx} 
                                                         className="rounded-lg p-4"
                                                         style={{ 
-                                                            background: "rgba(255,255,255,0.05)",
+                                                            background: "rgb(var(--color-text) / 0.05)",
                                                             borderLeft: `3px solid ${getSeverityAccent(interaction.severity)}`,
-                                                            border: `1px solid rgba(255,255,255,0.08)`,
+                                                            border: `1px solid rgb(var(--color-text) / 0.08)`,
                                                             borderLeftColor: getSeverityAccent(interaction.severity),
                                                         }}
                                                     >
                                                         <div className="flex justify-between items-start mb-2">
-                                                            <p className="font-semibold text-sm" style={{ color: "#ffffff" }}>
+                                                            <p className="font-semibold text-sm" style={{ color: "rgb(var(--color-text))" }}>
                                                                 {interaction.drug_pair[0]} ↔ {interaction.drug_pair[1]}
                                                             </p>
                                                             <span 
@@ -415,9 +415,9 @@ function HistoryList() {
                                                                 {interaction.severity}
                                                             </span>
                                                         </div>
-                                                        <p className="text-xs leading-relaxed" style={{ color: "rgba(255,255,255,0.7)" }}>{interaction.description}</p>
+                                                        <p className="text-xs leading-relaxed" style={{ color: "rgb(var(--color-text) / 0.7)" }}>{interaction.description}</p>
                                                         {interaction.clinical_recommendation && (
-                                                            <p className="text-xs mt-2" style={{ color: "rgba(255,255,255,0.5)" }}>
+                                                            <p className="text-xs mt-2" style={{ color: "rgb(var(--color-text) / 0.5)" }}>
                                                                 {interaction.clinical_recommendation}
                                                             </p>
                                                         )}
@@ -455,7 +455,7 @@ export default function History() {
             }
         >
             <div className="container mx-auto px-4 py-10 max-w-3xl">
-                <h1 className="text-2xl font-bold mb-8 tracking-tight" style={{ color: "#ffffff" }}>
+                <h1 className="text-2xl font-bold mb-8 tracking-tight" style={{ color: "rgb(var(--color-text))" }}>
                     {extra.historyPageTitle}
                 </h1>
                 <HistoryList />

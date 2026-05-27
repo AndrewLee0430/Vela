@@ -153,10 +153,9 @@ export default function OnboardingOverlay() {
       {/* ── popover ── */}
       <div
         ref={popoverRef}
-        className="absolute rounded-2xl px-8 py-6 shadow-2xl min-w-[420px]"
+        className="absolute rounded-2xl px-8 py-6 shadow-2xl min-w-[420px] border border-text/12"
         style={{
           background: 'linear-gradient(135deg, #1a2744 0%, #1e2a45 100%)',
-          border: '1px solid rgba(255,255,255,0.12)',
           ...(rect
             ? popoverStyle
             : { top: '50%', left: '50%', transform: 'translate(-50%,-50%)', maxWidth: 480 }),
@@ -178,7 +177,7 @@ export default function OnboardingOverlay() {
         </div>
 
         <p className="text-2xl font-semibold text-white mb-2">{currentTitle}</p>
-        <p className="text-base leading-relaxed whitespace-pre-line" style={{ color: 'rgba(255,255,255,0.6)' }}>
+        <p className="text-base leading-relaxed whitespace-pre-line text-text/60">
           {currentBody}
         </p>
 
@@ -187,16 +186,14 @@ export default function OnboardingOverlay() {
           {!isFirst ? (
             <button
               onClick={() => setStep(s => s - 1)}
-              className="text-sm px-4 py-2 rounded-lg transition-colors"
-              style={{ color: 'rgba(255,255,255,0.5)' }}
+              className="text-sm px-4 py-2 rounded-lg transition-colors text-text/50"
             >
               {ui.onboardingBack}
             </button>
           ) : (
             <button
               onClick={finish}
-              className="text-sm px-4 py-2 rounded-lg transition-colors"
-              style={{ color: 'rgba(255,255,255,0.5)' }}
+              className="text-sm px-4 py-2 rounded-lg transition-colors text-text/50"
             >
               {ui.onboardingSkip}
             </button>

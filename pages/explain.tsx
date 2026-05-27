@@ -533,12 +533,12 @@ function ExplainForm() {
         <div className="container mx-auto px-4 py-8 max-w-3xl">
             <div className="flex justify-between items-start mb-6">
                 <div>
-                    <h1 className="text-2xl font-bold tracking-tight mb-1" style={{ color: "#ffffff" }}>{ui.explainTitle}</h1>
-                    <p className="text-sm mt-1" style={{ color: "rgba(255,255,255,0.5)" }}>{ui.explainSubtitle}</p>
+                    <h1 className="text-2xl font-bold tracking-tight mb-1" style={{ color: "rgb(var(--color-text))" }}>{ui.explainTitle}</h1>
+                    <p className="text-sm mt-1" style={{ color: "rgb(var(--color-text) / 0.5)" }}>{ui.explainSubtitle}</p>
                 </div>
                 {(result || reportText) && (
                     <button onClick={handleReset} className="text-sm font-medium px-3 py-1 rounded-lg transition-all mt-1"
-                        style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.3)', color: 'rgba(255,255,255,0.7)' }}
+                        style={{ background: 'transparent', border: '1px solid rgb(var(--color-text) / 0.3)', color: 'rgb(var(--color-text) / 0.7)' }}
                         onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.1)'; }}
                         onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}>
                         {ui.newBtn}
@@ -561,9 +561,9 @@ function ExplainForm() {
                 <div className="mb-5 p-3 rounded-lg border text-sm" style={{ background: "rgba(252,129,129,0.12)", borderColor: "rgba(252,129,129,0.3)", color: "#fc8181" }}>{resolveErrorMessage(error, ui)}</div>
             )}
 
-            <form onSubmit={handleSubmit} className="rounded-xl p-6 space-y-5" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}>
+            <form onSubmit={handleSubmit} className="rounded-xl p-6 space-y-5" style={{ background: "rgb(var(--color-text) / 0.06)", border: "1px solid rgb(var(--color-text) / 0.1)" }}>
                 <div className="space-y-2">
-                    <label htmlFor="report" className="block text-sm font-medium" style={{ color: "rgba(255,255,255,0.8)" }}>
+                    <label htmlFor="report" className="block text-sm font-medium" style={{ color: "rgb(var(--color-text) / 0.8)" }}>
                         {ui.reportLabel}
                     </label>
 
@@ -593,10 +593,10 @@ function ExplainForm() {
                                             />
                                             <div className="text-2xl mb-2" style={{ opacity: 0.7 }}>📄</div>
                                             <p className="text-sm font-medium" style={{ color: 'rgba(74,222,128,0.9)' }}>{ui.uploadReport}</p>
-                                            <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.4)' }}>{ui.uploadHint}</p>
+                                            <p className="text-xs mt-1" style={{ color: 'rgb(var(--color-text) / 0.4)' }}>{ui.uploadHint}</p>
                                         </div>
                                     </ProFeatureOverlay>
-                                    <p className="text-xs text-center py-1" style={{ color: 'rgba(255,255,255,0.3)' }}>
+                                    <p className="text-xs text-center py-1" style={{ color: 'rgb(var(--color-text) / 0.3)' }}>
                                         ─── {ui.pasteBelow} ───
                                     </p>
                                 </>
@@ -616,7 +616,7 @@ function ExplainForm() {
                                         type="button"
                                         onClick={handleUploadReset}
                                         className="text-xs px-3 py-1 rounded-lg transition-all"
-                                        style={{ border: '1px solid rgba(255,255,255,0.3)', color: 'rgba(255,255,255,0.7)' }}
+                                        style={{ border: '1px solid rgb(var(--color-text) / 0.3)', color: 'rgb(var(--color-text) / 0.7)' }}
                                     >
                                         {ui.tryAgainBtn}
                                     </button>
@@ -629,7 +629,7 @@ function ExplainForm() {
                                         <p className="text-sm font-medium" style={{ color: 'rgba(74,222,128,0.9)' }}>
                                             ✅ {ui.textExtractedFrom} {extractedFileName}
                                         </p>
-                                        <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                                        <p className="text-xs mt-1" style={{ color: 'rgb(var(--color-text) / 0.5)' }}>
                                             {ui.reviewBeforeSubmit}
                                         </p>
                                     </div>
@@ -638,7 +638,7 @@ function ExplainForm() {
                                         value={extractedText}
                                         onChange={e => setExtractedText(e.target.value)}
                                         className="w-full px-3 py-2 rounded-lg font-mono text-xs focus:outline-none focus:ring-2"
-                                        style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.85)', minHeight: '120px' }}
+                                        style={{ background: 'rgb(var(--color-text) / 0.05)', border: '1px solid rgb(var(--color-text) / 0.15)', color: 'rgb(var(--color-text) / 0.85)', minHeight: '120px' }}
                                     />
                                     <p className="text-xs" style={{ color: 'rgba(251,191,36,0.7)' }}>
                                         ⚠️ {ui.imageQualityWarning}
@@ -656,7 +656,7 @@ function ExplainForm() {
                                             type="button"
                                             onClick={handleUploadReset}
                                             className="px-4 py-2 text-sm rounded-lg transition-all"
-                                            style={{ border: '1px solid rgba(255,255,255,0.3)', color: 'rgba(255,255,255,0.7)', background: 'transparent' }}
+                                            style={{ border: '1px solid rgb(var(--color-text) / 0.3)', color: 'rgb(var(--color-text) / 0.7)', background: 'transparent' }}
                                             onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.1)'; }}
                                             onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                                         >
@@ -697,7 +697,7 @@ function ExplainForm() {
                     <textarea
                         id="report" required rows={12} value={reportText}
                         onChange={(e) => setReportText(e.target.value)} disabled={loading}
-                        className="w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 disabled:opacity-60 font-mono text-sm" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.85)" }}
+                        className="w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 disabled:opacity-60 font-mono text-sm" style={{ background: "rgb(var(--color-text) / 0.05)", border: "1px solid rgb(var(--color-text) / 0.15)", color: "rgb(var(--color-text) / 0.85)" }}
                         placeholder={ui.explainPlaceholder}
                     />
                 </div>
@@ -716,19 +716,19 @@ function ExplainForm() {
             </form>
 
             {loading && statusMsg === ui.statusGenerating && (
-                <p className="text-xs mt-2 text-center" style={{ color: "rgba(255,255,255,0.4)" }}>
+                <p className="text-xs mt-2 text-center" style={{ color: "rgb(var(--color-text) / 0.4)" }}>
                     {ui.statusGeneratingHint}
                 </p>
             )}
 
             {result && (
-            <p className="text-xs mt-3 text-center" style={{ color: "rgba(255,255,255,0.35)" }}>
+            <p className="text-xs mt-3 text-center" style={{ color: "rgb(var(--color-text) / 0.35)" }}>
                 {result.disclaimer}
             </p>
             )}
 
             {sources.length > 0 && (
-                <div className="mt-5 rounded-xl p-5" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}>
+                <div className="mt-5 rounded-xl p-5" style={{ background: "rgb(var(--color-text) / 0.06)", border: "1px solid rgb(var(--color-text) / 0.1)" }}>
                     <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">{ui.verifiedSources}</p>
                     <div className="flex flex-wrap gap-2">
                         {sources.map((src, i) => <SourceBadge key={i} source={src} index={i} />)}
@@ -736,7 +736,7 @@ function ExplainForm() {
                     {/* Citation-scope transparency banner (2026-04-29 Path 1 RAG defense). Explains
                         that explanation body is general medical knowledge while citations are limited
                         to verified authoritative sources — preempts "Vela has weak sources" misread. */}
-                    <div className="mt-3 flex items-start gap-2 text-xs leading-relaxed" style={{ color: "rgba(255,255,255,0.35)" }}>
+                    <div className="mt-3 flex items-start gap-2 text-xs leading-relaxed" style={{ color: "rgb(var(--color-text) / 0.35)" }}>
                         <Info className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" aria-hidden="true" />
                         <p>{ui.citationScopeBanner}</p>
                     </div>
@@ -744,9 +744,9 @@ function ExplainForm() {
             )}
 
             {result && (
-                <section className="mt-5 rounded-xl p-6" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}>
+                <section className="mt-5 rounded-xl p-6" style={{ background: "rgb(var(--color-text) / 0.06)", border: "1px solid rgb(var(--color-text) / 0.1)" }}>
                     <div className="mb-4">
-                        <h2 className="text-base font-semibold" style={{ color: "#ffffff" }}>{ui.explanation}</h2>
+                        <h2 className="text-base font-semibold" style={{ color: "rgb(var(--color-text))" }}>{ui.explanation}</h2>
                     </div>
 
                     {/* Per-item / per-correlation citation strips removed (Bug X2/X3, 2026-04-29):
@@ -773,8 +773,8 @@ function ExplainForm() {
                 </section>
             )}
 
-            <div className="mt-8 border-t pt-6 space-y-2 text-xs" style={{ borderColor: "rgba(104,211,145,0.35)", color: "rgba(255,255,255,0.4)" }}>
-                <p className="font-medium" style={{ color: "rgba(255,255,255,0.6)" }}>{ui.dataSourcesTitle}</p>
+            <div className="mt-8 border-t pt-6 space-y-2 text-xs" style={{ borderColor: "rgba(104,211,145,0.35)", color: "rgb(var(--color-text) / 0.4)" }}>
+                <p className="font-medium" style={{ color: "rgb(var(--color-text) / 0.6)" }}>{ui.dataSourcesTitle}</p>
                 <p dangerouslySetInnerHTML={{ __html: ui.explainAttr1 }} />
                 <p dangerouslySetInnerHTML={{ __html: ui.explainAttr2 }} />
                 <p dangerouslySetInnerHTML={{ __html: ui.explainAttr3 }} />
