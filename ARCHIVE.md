@@ -19,6 +19,7 @@ When new entries are added: keep one-liner format, no detail. For full context, 
 
 ## 2026-05-27
 
+- 2026-05-27 [theme] Landing/theme redesign **Stage 1** — design-token refactor — DEPLOYED to prod (fly v169). 6 commits cc6eec6..0e5464d: C1 bfb6295 scaffold dark-theme token system (tailwind darkMode:'class' + .dark CSS vars + bg-app-bg + fontFamily.sans), C2a 7f5ec4d migrate bg-gradient → bg-app-bg, C2b b5c7771 migrate white-base alphas → text/card tokens, C3 fe11e97 collapse feature accents (verify-blue/explain-green) to neutral — brand orange sole accent, C4 e0a6ca2 Arial → Noto Sans, C5 0e5464d severity tokens success/warning/danger + new info + danger-soft. Net: 12-token CSS-var system, 58 hex/rgba consumers migrated. Landing still old dark-blue; warm-orange redesign is Stage 2.
 - 2026-05-27 [theme C4] Body font Arial→Noto Sans (latin) via next/font/google; CJK unchanged; closes TECH_DEBT P3 (Arial override, discovered 2026-05-05)
 
 ---
