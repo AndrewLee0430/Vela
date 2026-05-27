@@ -14,13 +14,6 @@ import { getUI } from '../utils/i18n-ui';
 import { getExtra } from '../utils/i18n-extra';
 import { getShare } from '../utils/i18n-share';
 
-const LINK_COLORS: Record<string, string> = {
-    research: '#ff8e6e',
-    verify:   '#63b3ed',
-    explain:  '#68d391',
-    history:  '#ffffff',
-};
-
 type ActivePage = 'research' | 'verify' | 'explain' | 'history' | 'settings';
 type NavLinkPage = 'research' | 'verify' | 'explain' | 'history';
 
@@ -177,7 +170,7 @@ export default function Navbar({ activePage }: NavbarProps) {
                                         key={page}
                                         href={`/${page}`}
                                         className={activePage === page ? 'font-medium transition-colors' : 'text-gray-400 hover:text-white transition-colors'}
-                                        style={activePage === page ? { color: LINK_COLORS[page] } : {}}
+                                        style={activePage === page ? { color: 'rgb(var(--color-brand))' } : {}}
                                     >
                                         {navLabels[page]}
                                     </Link>
@@ -189,7 +182,7 @@ export default function Navbar({ activePage }: NavbarProps) {
                                             className="text-base font-bold px-2.5 py-1"
                                             style={{ letterSpacing: '0.12em' }}
                                         >
-                                            <span className="bg-gradient-to-r from-[#ff8e6e] to-[#fbbf24] bg-clip-text text-transparent">PRO</span>
+                                            <span className="bg-gradient-to-r from-brand to-[#fbbf24] bg-clip-text text-transparent">PRO</span>
                                         </span>
                                     )}
                                 </SignedIn>
@@ -225,7 +218,7 @@ export default function Navbar({ activePage }: NavbarProps) {
                                         style={{
                                             background: 'rgba(255,107,74,0.15)',
                                             border: '1px solid rgba(255,107,74,0.4)',
-                                            color: '#ff8e6e',
+                                            color: 'rgb(var(--color-brand))',
                                         }}
                                         onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,107,74,0.25)'; }}
                                         onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,107,74,0.15)'; }}
@@ -322,7 +315,7 @@ export default function Navbar({ activePage }: NavbarProps) {
                                                 <button
                                                     onClick={() => { setSettingsOpen(false); setShowUpgradeModal(true); }}
                                                     className="w-full text-left px-4 py-2 text-sm font-medium transition-colors hover:bg-white/5"
-                                                    style={{ color: '#ff8e6e' }}
+                                                    style={{ color: 'rgb(var(--color-brand))' }}
                                                 >
                                                     {ui.upgradeToPro}
                                                 </button>

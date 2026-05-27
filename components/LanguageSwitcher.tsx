@@ -51,11 +51,11 @@ export default function LanguageSwitcher({ compact }: LanguageSwitcherProps) {
                 onClick={() => { setLang(l.code); setOpen(false); }}
                 className="flex items-center gap-1.5 px-2 py-1.5 rounded text-xs text-left transition-colors"
                 style={{
-                  background: l.code === lang ? 'rgba(255,142,110,0.12)' : 'transparent',
-                  color: l.code === lang ? '#ff8e6e' : 'rgba(255,255,255,0.6)',
+                  background: l.code === lang ? 'rgb(var(--color-brand) / 0.12)' : 'transparent',
+                  color: l.code === lang ? 'rgb(var(--color-brand))' : 'rgb(var(--color-text) / 0.6)',
                 }}
                 onMouseEnter={e => {
-                  if (l.code !== lang) (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.06)';
+                  if (l.code !== lang) (e.currentTarget as HTMLElement).style.background = 'rgb(var(--color-text) / 0.06)';
                 }}
                 onMouseLeave={e => {
                   if (l.code !== lang) (e.currentTarget as HTMLElement).style.background = 'transparent';
@@ -104,11 +104,11 @@ export default function LanguageSwitcher({ compact }: LanguageSwitcherProps) {
                 onClick={() => { setLang(l.code); setOpen(false); }}
                 className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-left transition-colors"
                 style={{
-                  background: l.code === lang ? 'rgba(255,142,110,0.12)' : 'transparent',
-                  color: l.code === lang ? '#ff8e6e' : 'rgba(255,255,255,0.6)',
+                  background: l.code === lang ? 'rgb(var(--color-brand) / 0.12)' : 'transparent',
+                  color: l.code === lang ? 'rgb(var(--color-brand))' : 'rgb(var(--color-text) / 0.6)',
                 }}
                 onMouseEnter={e => {
-                  if (l.code !== lang) (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.06)';
+                  if (l.code !== lang) (e.currentTarget as HTMLElement).style.background = 'rgb(var(--color-text) / 0.06)';
                 }}
                 onMouseLeave={e => {
                   if (l.code !== lang) (e.currentTarget as HTMLElement).style.background = 'transparent';

@@ -33,7 +33,7 @@ export function clearPlanCache() {
 const upgradeStyle = {
     background: 'rgba(255,107,74,0.15)',
     border: '1px solid rgba(255,107,74,0.4)',
-    color: '#ff8e6e',
+    color: 'rgb(var(--color-brand))',
 } as const;
 
 export default function PlanBadge({ onUpgrade }: PlanBadgeProps) {
@@ -90,7 +90,7 @@ export default function PlanBadge({ onUpgrade }: PlanBadgeProps) {
     if (plan === 'pro') {
         return (
             <span
-                className="text-base font-bold px-2 py-0.5 rounded mr-2 bg-gradient-to-r from-[#ff8e6e] to-[#fbbf24] bg-clip-text text-transparent"
+                className="text-base font-bold px-2 py-0.5 rounded mr-2 bg-gradient-to-r from-brand to-[#fbbf24] bg-clip-text text-transparent"
                 style={{ letterSpacing: '0.12em' }}
             >
                 PRO

@@ -17,28 +17,25 @@ import { getExtra } from '../utils/i18n-extra';
 import { track } from '../utils/analytics';
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
-const PROMPT_COLORS = ['#ff8e6e', '#63b3ed', '#68d391'] as const;
-
-// ─────────────────────────────────────────────────────────────────────────────
 
 function TypewriterPrompt() {
   const { lang } = useLang();
   const t = translations[lang];
   const prompts = [
-    { text: t.heroPlaceholderResearch, color: PROMPT_COLORS[0] },
-    { text: t.heroPlaceholderVerify,   color: PROMPT_COLORS[1] },
-    { text: t.heroPlaceholderExplain,  color: PROMPT_COLORS[2] },
+    t.heroPlaceholderResearch,
+    t.heroPlaceholderVerify,
+    t.heroPlaceholderExplain,
   ];
   const [index, setIndex] = useState(0);
   const [text, setText] = useState('');
   const [deleting, setDeleting] = useState(false);
-  const current = prompts[index];
+  const currentText = prompts[index];
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
-    if (!deleting && text.length < current.text.length) {
-      timer = setTimeout(() => setText(current.text.slice(0, text.length + 1)), 50);
-    } else if (!deleting && text.length === current.text.length) {
+    if (!deleting && text.length < currentText.length) {
+      timer = setTimeout(() => setText(currentText.slice(0, text.length + 1)), 50);
+    } else if (!deleting && text.length === currentText.length) {
       timer = setTimeout(() => setDeleting(true), 2200);
     } else if (deleting && text.length > 0) {
       timer = setTimeout(() => setText(text.slice(0, -1)), 25);
@@ -47,7 +44,7 @@ function TypewriterPrompt() {
       setIndex((prev) => (prev + 1) % prompts.length);
     }
     return () => clearTimeout(timer);
-  }, [text, deleting, index, current.text, prompts.length]);
+  }, [text, deleting, index, currentText, prompts.length]);
 
   useEffect(() => {
     setText('');
@@ -56,10 +53,10 @@ function TypewriterPrompt() {
   }, [lang]);
 
   return (
-    <span style={{ color: current.color, transition: 'color 0.3s ease' }}>
+    <span style={{ color: 'rgb(var(--color-brand))' }}>
       {text}
       <span
-        style={{ background: current.color }}
+        style={{ background: 'rgb(var(--color-brand))' }}
         className="inline-block w-0.5 h-5 ml-0.5 align-middle animate-pulse"
       />
     </span>
@@ -114,8 +111,8 @@ function LanguageSwitcher({ lang, setLang }: { lang: LangCode; setLang: (l: Lang
                 onClick={() => { setLang(l.code); setOpen(false); }}
                 className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-left transition-colors"
                 style={{
-                  background: l.code === lang ? 'rgba(255,142,110,0.12)' : 'transparent',
-                  color: l.code === lang ? '#ff8e6e' : 'rgba(255,255,255,0.6)',
+                  background: l.code === lang ? 'rgb(var(--color-brand) / 0.12)' : 'transparent',
+                  color: l.code === lang ? 'rgb(var(--color-brand))' : 'rgb(var(--color-text) / 0.6)',
                 }}
                 onMouseEnter={e => {
                   if (l.code !== lang) (e.currentTarget as HTMLElement).style.background = 'rgb(var(--color-text) / 0.06)';
@@ -140,9 +137,9 @@ function ProductShowcase({ t }: { t: typeof translations['en'] }) {
   const cards = [
     {
       href: '/research',
-      color: '#ff8e6e',
-      borderColor: 'rgba(255,142,110,0.3)',
-      hoverBorder: 'rgba(255,142,110,0.6)',
+      color: 'rgb(var(--color-text) / 0.85)',
+      borderColor: 'rgb(var(--color-text) / 0.15)',
+      hoverBorder: 'rgb(var(--color-text) / 0.3)',
       topLabel: t.research,
       sub: t.researchSub,
       question: t.mockupResearchQuery,
@@ -151,9 +148,9 @@ function ProductShowcase({ t }: { t: typeof translations['en'] }) {
     },
     {
       href: '/verify',
-      color: '#63b3ed',
-      borderColor: 'rgba(99,179,237,0.3)',
-      hoverBorder: 'rgba(99,179,237,0.6)',
+      color: 'rgb(var(--color-text) / 0.85)',
+      borderColor: 'rgb(var(--color-text) / 0.15)',
+      hoverBorder: 'rgb(var(--color-text) / 0.3)',
       topLabel: t.verify,
       sub: t.verifySub,
       question: t.mockupVerifyDrugs,
@@ -165,9 +162,9 @@ function ProductShowcase({ t }: { t: typeof translations['en'] }) {
     },
     {
       href: '/explain',
-      color: '#4ade80',
-      borderColor: 'rgba(74,222,128,0.3)',
-      hoverBorder: 'rgba(74,222,128,0.6)',
+      color: 'rgb(var(--color-text) / 0.85)',
+      borderColor: 'rgb(var(--color-text) / 0.15)',
+      hoverBorder: 'rgb(var(--color-text) / 0.3)',
       topLabel: t.explain,
       sub: t.explainSub,
       question: t.mockupExplainValue,
@@ -203,12 +200,12 @@ function ProductShowcase({ t }: { t: typeof translations['en'] }) {
               }}
             >
               <div className="flex h-full">
-                {/* Left color bar */}
-                <div className="w-1 flex-shrink-0" style={{ background: c.color }} />
+                {/* Left color bar — neutral after C3 feature-accent collapse */}
+                <div className="w-1 flex-shrink-0" style={{ background: 'rgb(var(--color-text) / 0.15)' }} />
                 <div className="flex flex-col p-4 gap-2.5 flex-1 min-w-0">
                   {/* Top label + source badge */}
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: c.color }}>{c.topLabel}</span>
+                    <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: 'rgb(var(--color-text) / 0.7)' }}>{c.topLabel}</span>
                     <span
                       className="text-[9px] font-medium px-1.5 py-0.5 rounded-full"
                       style={{ background: 'rgb(var(--color-text) / 0.08)', color: 'rgb(var(--color-text) / 0.45)' }}
@@ -239,7 +236,7 @@ function ProductShowcase({ t }: { t: typeof translations['en'] }) {
                   {/* CTA */}
                   <span
                     className="text-[11px] font-semibold mt-1 inline-flex items-center gap-1 transition-all duration-200 hover:gap-2"
-                    style={{ color: c.color }}
+                    style={{ color: 'rgb(var(--color-text) / 0.85)' }}
                   >
                     {c.cta}
                   </span>
@@ -576,26 +573,26 @@ function Dashboard() {
     {
       href: '/research', key: 'research', label: extra.dashResearchLabel, sub: extra.dashResearchSub,
       desc: extra.dashResearchDesc,
-      accentColor: '#ff8e6e', color: '#ff8e6e',
-      hoverBg: 'rgba(255,142,110,0.12)', hoverBorder: 'rgba(255,142,110,0.45)',
+      color: 'rgb(var(--color-text) / 0.85)',
+      hoverBg: 'rgb(var(--color-text) / 0.08)', hoverBorder: 'rgb(var(--color-text) / 0.2)',
     },
     {
       href: '/verify', key: 'verify', label: extra.dashVerifyLabel, sub: extra.dashVerifySub,
       desc: extra.dashVerifyDesc,
-      accentColor: '#63b3ed', color: '#63b3ed',
-      hoverBg: 'rgba(99,179,237,0.12)', hoverBorder: 'rgba(99,179,237,0.45)',
+      color: 'rgb(var(--color-text) / 0.85)',
+      hoverBg: 'rgb(var(--color-text) / 0.08)', hoverBorder: 'rgb(var(--color-text) / 0.2)',
     },
     {
       href: '/explain', key: 'explain', label: extra.dashExplainLabel, sub: extra.dashExplainSub,
       desc: extra.dashExplainDesc,
-      accentColor: '#68d391', color: '#68d391',
-      hoverBg: 'rgba(104,211,145,0.12)', hoverBorder: 'rgba(104,211,145,0.45)',
+      color: 'rgb(var(--color-text) / 0.85)',
+      hoverBg: 'rgb(var(--color-text) / 0.08)', hoverBorder: 'rgb(var(--color-text) / 0.2)',
     },
     {
       href: '/history', key: 'history', label: extra.dashHistoryLabel, sub: extra.dashHistorySub,
       desc: extra.dashHistoryDesc,
-      accentColor: '#94a3b8', color: '#94a3b8',
-      hoverBg: 'rgba(148,163,184,0.12)', hoverBorder: 'rgba(148,163,184,0.45)',
+      color: 'rgb(var(--color-text) / 0.85)',
+      hoverBg: 'rgb(var(--color-text) / 0.08)', hoverBorder: 'rgb(var(--color-text) / 0.2)',
     },
   ];
 

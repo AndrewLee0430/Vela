@@ -113,7 +113,7 @@ export default function ProFeatureOverlay({ children, featureName, isLocked }: P
                         <button
                             onClick={(e) => { e.stopPropagation(); setShowPopover(false); setShowModal(true); }}
                             className="px-3 py-1 text-xs font-semibold rounded-full text-white transition-opacity hover:opacity-90"
-                            style={{ background: '#ff8e6e' }}
+                            style={{ background: 'rgb(var(--color-brand))' }}
                         >
                             {ui.upgrade}
                         </button>

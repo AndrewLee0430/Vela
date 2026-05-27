@@ -25,8 +25,6 @@ import { useLang } from '../utils/LangContext';
 import { getUI } from '../utils/i18n-ui';
 import { getExtra } from '../utils/i18n-extra';
 
-const ACCENT = '#ff8e6e';
-
 const DISCLAIMERS: Record<string, string> = {
     'en': '\u26A0\uFE0F For informational purposes only. Always verify with clinical guidelines and consult a qualified professional.',
     'zh-TW': '\u26A0\uFE0F 本資訊僅供參考，請依據臨床指引並諮詢合格醫療專業人員。',
@@ -474,8 +472,8 @@ function ResearchForm() {
             </div>
 
             {/* Info box */}
-            <div className="rounded-xl p-4 text-sm" style={{ background: "rgba(255,142,110,0.1)", border: "1px solid rgba(255,142,110,0.35)" }}>
-                <p style={{ color: "rgba(255,142,110,0.95)" }}>
+            <div className="rounded-xl p-4 text-sm bg-text/5 border border-text/12">
+                <p className="text-text/85">
                     <span className="font-semibold">{ui.researchInfoBox}</span>
                 </p>
             </div>
@@ -519,16 +517,16 @@ function ResearchForm() {
                                                         disabled={loading}
                                                         className="px-3 py-1.5 text-xs rounded-full disabled:opacity-50 transition-all duration-200"
                                                         style={{
-                                                            background: isSelected ? "rgba(255,142,110,0.15)" : "rgb(var(--color-text) / 0.06)",
-                                                            border: `1px solid ${isSelected ? "#ff8e6e" : "rgb(var(--color-text) / 0.15)"}`,
-                                                            color: isSelected ? "#ff8e6e" : "rgb(var(--color-text) / 0.7)",
+                                                            background: isSelected ? "rgb(var(--color-brand) / 0.15)" : "rgb(var(--color-text) / 0.06)",
+                                                            border: `1px solid ${isSelected ? "rgb(var(--color-brand))" : "rgb(var(--color-text) / 0.15)"}`,
+                                                            color: isSelected ? "rgb(var(--color-brand))" : "rgb(var(--color-text) / 0.7)",
                                                             transform: isSelected ? "scale(1.05)" : "scale(1)",
                                                             opacity: hasSel && !isSelected ? 0.5 : 1,
                                                         }}
                                                         onMouseEnter={e => {
                                                             if (!isSelected) {
-                                                                (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,142,110,0.6)";
-                                                                (e.currentTarget as HTMLElement).style.color = "#ff8e6e";
+                                                                (e.currentTarget as HTMLElement).style.borderColor = "rgb(var(--color-brand) / 0.6)";
+                                                                (e.currentTarget as HTMLElement).style.color = "rgb(var(--color-brand))";
                                                                 (e.currentTarget as HTMLElement).style.opacity = "1";
                                                             }
                                                         }}
@@ -551,7 +549,7 @@ function ResearchForm() {
 
                             {loading && !answer && statusMsg && (
                                 <div className="flex items-center gap-3 py-8" style={{ color: "rgb(var(--color-text) / 0.5)" }}>
-                                    <div className="w-4 h-4 border-2 border-t-orange-400 rounded-full animate-spin flex-shrink-0" style={{ borderColor: "rgb(var(--color-text) / 0.2)", borderTopColor: "#ff8e6e" }} />
+                                    <div className="w-4 h-4 border-2 border-t-orange-400 rounded-full animate-spin flex-shrink-0" style={{ borderColor: "rgb(var(--color-text) / 0.2)", borderTopColor: "rgb(var(--color-brand))" }} />
                                     <span className="text-sm">{statusMsg}</span>
                                 </div>
                             )}
@@ -566,10 +564,10 @@ function ResearchForm() {
                                             color: "rgb(var(--color-text) / 0.85)",
                                             '--tw-prose-headings': 'rgb(var(--color-text))',
                                             '--tw-prose-bold': 'rgb(var(--color-text))',
-                                            '--tw-prose-links': '#ff8e6e',
+                                            '--tw-prose-links': 'rgb(var(--color-brand))',
                                             '--tw-prose-bullets': 'rgb(var(--color-text) / 0.5)',
                                             '--tw-prose-counters': 'rgb(var(--color-text) / 0.5)',
-                                            '--tw-prose-code': '#ff8e6e',
+                                            '--tw-prose-code': 'rgb(var(--color-brand))',
                                             '--tw-prose-hr': 'rgb(var(--color-text) / 0.15)',
                                         } as React.CSSProperties;
 
@@ -605,7 +603,7 @@ function ResearchForm() {
                                         );
                                     })()}
                                     {loading && answer && (
-                                        <span className="inline-block w-1.5 h-4 rounded-sm animate-pulse ml-0.5" style={{ background: ACCENT }} />
+                                        <span className="inline-block w-1.5 h-4 rounded-sm animate-pulse ml-0.5" style={{ background: 'rgb(var(--color-brand))' }} />
                                     )}
                                     {!loading && answer && !error && (
                                         <>
@@ -657,7 +655,7 @@ function ResearchForm() {
                                 type="submit"
                                 disabled={loading || !question.trim()}
                                 className="px-5 py-2.5 text-white text-sm font-medium rounded-lg transition-opacity disabled:opacity-50"
-                                style={{ background: ACCENT }}
+                                style={{ background: 'rgb(var(--color-brand))' }}
                             >
                                 {loading ? (
                                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -682,7 +680,7 @@ function ResearchForm() {
             </p>
             )}
 
-            <div className="mt-8 border-t pt-6 space-y-2 text-xs" style={{ borderColor: "rgba(255,142,110,0.35)", color: "rgb(var(--color-text) / 0.4)" }}>
+            <div className="mt-8 border-t pt-6 space-y-2 text-xs" style={{ borderColor: "rgb(var(--color-text) / 0.15)", color: "rgb(var(--color-text) / 0.4)" }}>
                 <p className="font-medium" style={{ color: "rgb(var(--color-text) / 0.6)" }}>{ui.dataSourcesTitle}</p>
                 <p dangerouslySetInnerHTML={{ __html: ui.researchAttr1 }} />
                 <p dangerouslySetInnerHTML={{ __html: ui.researchAttr2 }} />

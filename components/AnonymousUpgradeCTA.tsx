@@ -70,10 +70,10 @@ export default function AnonymousUpgradeCTA({ trigger, onDismiss, quotaDetails }
         return (
             <div
                 className="mt-4 flex items-start gap-3 p-4 rounded-xl"
-                style={{ background: 'rgba(255,142,110,0.08)', border: '1px solid rgba(255,142,110,0.3)' }}
+                style={{ background: 'rgb(var(--color-brand) / 0.08)', border: '1px solid rgb(var(--color-brand) / 0.3)' }}
             >
                 <div className="flex-1">
-                    <p className="text-sm font-semibold" style={{ color: '#ff8e6e' }}>
+                    <p className="text-sm font-semibold" style={{ color: 'rgb(var(--color-brand))' }}>
                         {cta.thirdQueryTitle}
                     </p>
                     <p className="text-xs mt-1 text-text/70">
@@ -83,7 +83,7 @@ export default function AnonymousUpgradeCTA({ trigger, onDismiss, quotaDetails }
                         <button
                             onClick={handleSignup}
                             className="px-4 py-1.5 text-xs font-medium rounded-lg transition-opacity"
-                            style={{ background: '#ff8e6e', color: 'white' }}
+                            style={{ background: 'rgb(var(--color-brand))', color: 'white' }}
                         >
                             {cta.quotaHitSignup}
                         </button>
@@ -112,7 +112,7 @@ export default function AnonymousUpgradeCTA({ trigger, onDismiss, quotaDetails }
                 <button
                     onClick={handleSignup}
                     className="mt-6 px-6 py-2.5 text-sm font-medium rounded-lg transition-opacity"
-                    style={{ background: '#ff8e6e', color: 'white' }}
+                    style={{ background: 'rgb(var(--color-brand))', color: 'white' }}
                 >
                     {cta.explainLockedSignup}
                 </button>
@@ -141,7 +141,7 @@ export default function AnonymousUpgradeCTA({ trigger, onDismiss, quotaDetails }
                     <button
                         onClick={handleSignup}
                         className="px-4 py-2.5 text-sm font-medium rounded-lg transition-opacity"
-                        style={{ background: '#ff8e6e', color: 'white' }}
+                        style={{ background: 'rgb(var(--color-brand))', color: 'white' }}
                     >
                         {cta.quotaHitSignup}
                     </button>

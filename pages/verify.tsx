@@ -15,9 +15,6 @@ import { useLang } from '../utils/LangContext';
 import { getUI } from '../utils/i18n-ui';
 import { formatInteractionSummary, getSeverityLabel, getRiskLevelLabel } from '../utils/i18n-verify';
 
-// Verify accent color
-const ACCENT = '#63b3ed';
-
 interface DrugInteraction {
     drug_pair: [string, string];
     severity: string;                 // canonical enum (Critical/Major/Moderate/Minor)
@@ -323,8 +320,8 @@ function VerifyForm() {
             </div>
 
             {/* Language box */}
-            <div className="rounded-xl p-4 text-sm mb-6" style={{ background: 'rgba(56,189,248,0.05)', border: '1px solid rgba(56,189,248,0.3)' }}>
-                <p style={{ color: 'rgba(56,189,248,0.9)' }}>
+            <div className="rounded-xl p-4 text-sm mb-6 bg-text/5 border border-text/12">
+                <p className="text-text/85">
                     <span className="font-semibold">{ui.verifyInfoBox}</span>
                 </p>
             </div>
@@ -347,9 +344,9 @@ function VerifyForm() {
                                         type="button"
                                         onClick={() => setDrugs(prev => prev ? prev + '\n' + drug : drug)}
                                         className="px-3 py-1 text-xs rounded-full transition-all duration-200"
-                                        style={{ background: "rgba(99,179,237,0.1)", border: "1px solid rgba(99,179,237,0.3)", color: "rgba(99,179,237,0.9)" }}
-                                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(99,179,237,0.22)"; }}
-                                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "rgba(99,179,237,0.1)"; }}
+                                        style={{ background: "rgb(var(--color-text) / 0.06)", border: "1px solid rgb(var(--color-text) / 0.15)", color: "rgb(var(--color-text) / 0.7)" }}
+                                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgb(var(--color-text) / 0.12)"; }}
+                                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "rgb(var(--color-text) / 0.06)"; }}
                                     >
                                         + {drug}
                                     </button>
@@ -372,7 +369,7 @@ function VerifyForm() {
                             type="submit"
                             disabled={loading}
                             className="w-full text-white font-medium py-2.5 px-6 rounded-lg transition-opacity disabled:opacity-50 text-sm"
-                            style={{ background: ACCENT }}
+                            style={{ background: 'rgb(var(--color-brand))' }}
                         >
                             {loading ? ui.analyzingBtn : ui.analyzeBtn}
                         </button>
@@ -487,7 +484,7 @@ function VerifyForm() {
                 </div>
             </div>
 
-            <div className="mt-8 border-t pt-6 space-y-2 text-xs" style={{ borderColor: "rgba(99,179,237,0.35)", color: "rgb(var(--color-text) / 0.4)" }}>
+            <div className="mt-8 border-t pt-6 space-y-2 text-xs" style={{ borderColor: "rgb(var(--color-text) / 0.15)", color: "rgb(var(--color-text) / 0.4)" }}>
                 <p className="font-medium" style={{ color: "rgb(var(--color-text) / 0.6)" }}>{ui.dataSourcesTitle}</p>
                 <p dangerouslySetInnerHTML={{ __html: ui.verifyAttr1 }} />
                 <p dangerouslySetInnerHTML={{ __html: ui.verifyAttr2 }} />

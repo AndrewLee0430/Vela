@@ -205,7 +205,7 @@ function CitationCard({ citation, position }: { citation: Citation; position: nu
                 onClick={handleSourceClick}
                 onAuxClick={handleSourceClick}
                 className="inline-flex items-center gap-1 text-sm hover:underline mt-3"
-                style={{ color: "#ff8e6e" }}
+                style={{ color: "rgb(var(--color-brand))" }}
             >
                 {ui.viewSource}
                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">

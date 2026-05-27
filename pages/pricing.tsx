@@ -4,7 +4,7 @@ import Head from 'next/head';
 import { useLang } from '../utils/LangContext';
 import { getUI } from '../utils/i18n-ui';
 
-const ACCENT = '#ff8e6e';
+const ACCENT = 'rgb(var(--color-brand))';
 
 function CheckIcon() {
     return (
@@ -92,7 +92,7 @@ export default function Pricing() {
                         {/* Pro Plan */}
                         <div
                             className="rounded-xl p-6 flex flex-col relative"
-                            style={{ background: 'rgba(255,142,110,0.06)', border: `1px solid rgba(255,142,110,0.35)` }}
+                            style={{ background: 'rgb(var(--color-brand) / 0.06)', border: `1px solid rgb(var(--color-brand) / 0.35)` }}
                         >
                             {/* Badge */}
                             <span

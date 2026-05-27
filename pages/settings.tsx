@@ -31,7 +31,7 @@ export default function SettingsPage() {
     const [activeTab, setActiveTab] = useState<TabId>('my-shares');
 
     const tabs: Tab[] = [
-        { id: 'my-shares', label: t.settingsTabTitle, color: '#ff8e6e' },
+        { id: 'my-shares', label: t.settingsTabTitle, color: 'rgb(var(--color-brand))' },
     ];
 
     return (

@@ -81,7 +81,7 @@ export default function FAQ() {
                         <Link
                             href="/sign-up"
                             className="text-sm font-medium px-4 py-1.5 rounded-lg transition-opacity hover:opacity-90"
-                            style={{ background: '#ff8e6e', color: '#fff' }}
+                            style={{ background: 'rgb(var(--color-brand))', color: '#fff' }}
                         >
                             {ui.getStarted}
                         </Link>

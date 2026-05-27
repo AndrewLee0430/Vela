@@ -305,7 +305,7 @@ function PreShareView({ t, state, consent, onConsentChange, queryText, onConfirm
                     onClick={onConfirm}
                     disabled={!consent || submitting}
                     className="px-4 py-2 text-sm font-medium rounded-lg transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
-                    style={{ background: '#ff8e6e', color: 'white' }}
+                    style={{ background: 'rgb(var(--color-brand))', color: 'white' }}
                 >
                     {submitting ? '…' : t.modalConfirm}
                 </button>
@@ -342,7 +342,7 @@ function PostShareView({ t, url, socialOrder, onCopy, onSocialClick, onClose, sh
                     type="button"
                     onClick={() => onCopy(url)}
                     className="px-3 py-2 text-xs font-medium rounded-lg transition-colors cursor-pointer"
-                    style={{ background: '#ff8e6e', color: 'white' }}
+                    style={{ background: 'rgb(var(--color-brand))', color: 'white' }}
                 >
                     {t.modalCopyLink}
                 </button>

@@ -26,7 +26,7 @@ export default function Refund() {
 
                     <section>
                         <h2 className="text-lg font-semibold text-white mb-3">2. How to Request a Refund</h2>
-                        <p>Email us at <a href="mailto:support@an-tho.com" className="underline" style={{ color: "#ff8e6e" }}>support@an-tho.com</a> with:</p>
+                        <p>Email us at <a href="mailto:support@an-tho.com" className="underline" style={{ color: "rgb(var(--color-brand))" }}>support@an-tho.com</a> with:</p>
                         <ul className="list-disc list-inside space-y-1 mt-2">
                             <li>Your account email address</li>
                             <li>The date of purchase</li>
@@ -41,7 +41,7 @@ export default function Refund() {
 
                     <section>
                         <h2 className="text-lg font-semibold text-white mb-3">4. Cancellation</h2>
-                        <p>You may cancel your subscription at any time through the <strong className="text-white">Dodo Payments Customer Portal</strong> at <a href="https://customer.dodopayments.com" target="_blank" rel="noopener noreferrer" className="underline" style={{ color: "#ff8e6e" }}>customer.dodopayments.com</a> — enter the email address used at purchase to access your account. After cancellation, you retain access until the end of your current billing period. No partial refunds are issued for unused time after the 7-day window.</p>
+                        <p>You may cancel your subscription at any time through the <strong className="text-white">Dodo Payments Customer Portal</strong> at <a href="https://customer.dodopayments.com" target="_blank" rel="noopener noreferrer" className="underline" style={{ color: "rgb(var(--color-brand))" }}>customer.dodopayments.com</a> — enter the email address used at purchase to access your account. After cancellation, you retain access until the end of your current billing period. No partial refunds are issued for unused time after the 7-day window.</p>
                     </section>
 
                     <section>
@@ -51,7 +51,7 @@ export default function Refund() {
 
                     <section>
                         <h2 className="text-lg font-semibold text-white mb-3">6. Contact</h2>
-                        <p>For refund requests or questions: <a href="mailto:support@an-tho.com" className="underline" style={{ color: "#ff8e6e" }}>support@an-tho.com</a></p>
+                        <p>For refund requests or questions: <a href="mailto:support@an-tho.com" className="underline" style={{ color: "rgb(var(--color-brand))" }}>support@an-tho.com</a></p>
                     </section>
                 </div>
 

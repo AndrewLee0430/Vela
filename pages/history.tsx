@@ -15,41 +15,15 @@ import { getUI } from '../utils/i18n-ui';
 import { getExtra } from '../utils/i18n-extra';
 
 // ─── Design System ────────────────────────────────────────────────────────────
-// 顏色對應跨頁面一致，首頁 card / 功能頁 accent / History 標籤全部同色
-const FEATURE = {
-    research: {
-        label: 'Research',
-        color: '#ff8e6e',
-        bg: 'rgba(255,142,110,0.12)',
-        border: 'rgba(255,142,110,0.5)',
-        text: '#ff8e6e',
-    },
-    verify: {
-        label: 'Verify',
-        color: '#63b3ed',
-        bg: 'rgba(99,179,237,0.12)',
-        border: 'rgba(99,179,237,0.5)',
-        text: '#63b3ed',
-    },
-    explain: {
-        label: 'Explain',
-        color: '#68d391',
-        bg: 'rgba(104,211,145,0.12)',
-        border: 'rgba(104,211,145,0.5)',
-        text: '#68d391',
-    },
-} as const;
+// C3: feature accents collapsed — features distinguished by label only, not color.
+const FEATURE_LABELS: Record<string, string> = {
+    research: 'Research',
+    verify:   'Verify',
+    explain:  'Explain',
+};
 
-type FeatureKey = keyof typeof FEATURE;
-
-function getFeature(type: string) {
-    return FEATURE[type as FeatureKey] ?? {
-        label: type.charAt(0).toUpperCase() + type.slice(1),
-        color: '#9ca3af',
-        bg: 'rgba(156,163,175,0.12)',
-        border: 'rgba(156,163,175,0.5)',
-        text: '#4b5563',
-    };
+function getFeatureLabel(type: string): string {
+    return FEATURE_LABELS[type] ?? (type.charAt(0).toUpperCase() + type.slice(1));
 }
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -71,13 +45,9 @@ interface DrugInteraction {
 }
 
 function TypeTag({ type }: { type: string }) {
-    const f = getFeature(type);
     return (
-        <span
-            className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold tracking-wide"
-            style={{ background: f.bg, color: f.text, border: `1px solid ${f.border}` }}
-        >
-            {f.label}
+        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold tracking-wide bg-text/8 text-text/85 border border-text/15">
+            {getFeatureLabel(type)}
         </span>
     );
 }
@@ -245,14 +215,12 @@ function HistoryList() {
             </ProFeatureOverlay>
 
             {filteredHistory.map(item => {
-                const f = getFeature(item.session_type);
                 const isExpanded = expandedId === item.id;
 
                 return (
                     <div
                         key={item.id}
-                        className="rounded-xl overflow-hidden transition-shadow"
-                        style={{ background: "rgb(var(--color-text) / 0.06)", border: "1px solid rgb(var(--color-text) / 0.1)", borderLeft: `3px solid ${f.color}` }}
+                        className="rounded-xl overflow-hidden transition-shadow bg-text/6 border border-text/10"
                     >
                         {/* Header */}
                         <button
@@ -380,7 +348,7 @@ function HistoryList() {
 
                                         {verifyDetails[item.id]?.loading && (
                                             <div className="text-center py-6">
-                                                <div className="animate-spin rounded-full h-6 w-6 border-2 border-t-blue-400 mx-auto" style={{ borderColor: "rgb(var(--color-text) / 0.15)", borderTopColor: "#63b3ed" }} />
+                                                <div className="animate-spin rounded-full h-6 w-6 border-2 border-t-blue-400 mx-auto" style={{ borderColor: "rgb(var(--color-text) / 0.15)", borderTopColor: "rgb(var(--color-brand))" }} />
                                                 <p className="mt-2 text-xs" style={{ color: "rgb(var(--color-text) / 0.4)" }}>Loading interaction details...</p>
                                             </div>
                                         )}

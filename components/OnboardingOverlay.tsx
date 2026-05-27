@@ -144,7 +144,7 @@ export default function OnboardingOverlay() {
           style={{
             top: rect.top - PAD, left: rect.left - PAD,
             width: rect.width + PAD * 2, height: rect.height + PAD * 2,
-            boxShadow: '0 0 0 2px rgba(255,142,110,0.5), 0 0 24px 4px rgba(255,142,110,0.15)',
+            boxShadow: '0 0 0 2px rgb(var(--color-brand) / 0.5), 0 0 24px 4px rgb(var(--color-brand) / 0.15)',
             transition: 'all 0.35s cubic-bezier(.4,0,.2,1)',
           }}
         />
@@ -170,7 +170,7 @@ export default function OnboardingOverlay() {
               className="h-1.5 rounded-full transition-all duration-300"
               style={{
                 width: i === step ? 28 : 10,
-                background: i === step ? '#ff8e6e' : 'rgba(255,255,255,0.2)',
+                background: i === step ? 'rgb(var(--color-brand))' : 'rgb(var(--color-text) / 0.2)',
               }}
             />
           ))}
@@ -201,7 +201,7 @@ export default function OnboardingOverlay() {
           <button
             onClick={next}
             className="text-sm font-semibold px-6 py-2 rounded-lg transition-all"
-            style={{ background: '#ff8e6e', color: '#0a1628' }}
+            style={{ background: 'rgb(var(--color-brand))', color: '#0a1628' }}
           >
             {isLast ? ui.onboardingDone : ui.onboardingNext}
           </button>

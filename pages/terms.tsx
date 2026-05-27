@@ -46,7 +46,7 @@ export default function Terms() {
 
                     <section>
                         <h2 className="text-lg font-semibold text-white mb-3">5. Refund Policy</h2>
-                        <p>We offer a <strong className="text-white">7-day money-back guarantee</strong> from the date of your first subscription payment. To request a refund, email <a href="mailto:support@an-tho.com" className="underline" style={{ color: "#ff8e6e" }}>support@an-tho.com</a> within 7 days of purchase. Refunds are processed by Dodo Payments and typically appear within 5–10 business days. After the 7-day window, subscription payments are non-refundable. For full details, see our <a href="/refund" className="underline" style={{ color: "#ff8e6e" }}>Refund Policy</a>.</p>
+                        <p>We offer a <strong className="text-white">7-day money-back guarantee</strong> from the date of your first subscription payment. To request a refund, email <a href="mailto:support@an-tho.com" className="underline" style={{ color: "rgb(var(--color-brand))" }}>support@an-tho.com</a> within 7 days of purchase. Refunds are processed by Dodo Payments and typically appear within 5–10 business days. After the 7-day window, subscription payments are non-refundable. For full details, see our <a href="/refund" className="underline" style={{ color: "rgb(var(--color-brand))" }}>Refund Policy</a>.</p>
                     </section>
 
                     <section>
@@ -73,7 +73,7 @@ export default function Terms() {
 
                     <section>
                         <h2 className="text-lg font-semibold text-white mb-3">10. Contact</h2>
-                        <p>For questions about these terms, contact us at <a href="mailto:support@an-tho.com" className="underline" style={{ color: "#ff8e6e" }}>support@an-tho.com</a>.</p>
+                        <p>For questions about these terms, contact us at <a href="mailto:support@an-tho.com" className="underline" style={{ color: "rgb(var(--color-brand))" }}>support@an-tho.com</a>.</p>
                     </section>
                 </div>
 

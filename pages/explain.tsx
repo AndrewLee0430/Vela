@@ -28,8 +28,6 @@ import {
 } from '../utils/i18n-ui';
 import { getExtra } from '../utils/i18n-extra';
 
-const ACCENT = '#68d391';
-
 interface ExplainSource {
     source_type: string;
     label: string;
@@ -547,8 +545,8 @@ function ExplainForm() {
             </div>
 
             {/* Language box */}
-            <div className="rounded-xl p-4 text-sm mb-6" style={{ background: 'rgba(74,222,128,0.05)', border: '1px solid rgba(74,222,128,0.3)' }}>
-                <p style={{ color: 'rgba(74,222,128,0.9)' }}>
+            <div className="rounded-xl p-4 text-sm mb-6 bg-text/5 border border-text/12">
+                <p className="text-text/85">
                     <span className="font-semibold">{ui.explainInfoBox}</span>
                 </p>
             </div>
@@ -576,8 +574,8 @@ function ExplainForm() {
                                         <div
                                             className="rounded-lg p-6 text-center cursor-pointer transition-all"
                                             style={{
-                                                border: `2px dashed ${dragOver ? 'rgba(74,222,128,0.7)' : 'rgba(74,222,128,0.4)'}`,
-                                                background: dragOver ? 'rgba(74,222,128,0.1)' : 'rgba(74,222,128,0.05)',
+                                                border: `2px dashed ${dragOver ? 'rgb(var(--color-text) / 0.4)' : 'rgb(var(--color-text) / 0.2)'}`,
+                                                background: dragOver ? 'rgb(var(--color-text) / 0.08)' : 'rgb(var(--color-text) / 0.04)',
                                             }}
                                             onClick={() => plan === 'pro' && fileInputRef.current?.click()}
                                             onDragOver={e => { if (plan === 'pro') { e.preventDefault(); setDragOver(true); } }}
@@ -592,7 +590,7 @@ function ExplainForm() {
                                                 onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f); }}
                                             />
                                             <div className="text-2xl mb-2" style={{ opacity: 0.7 }}>📄</div>
-                                            <p className="text-sm font-medium" style={{ color: 'rgba(74,222,128,0.9)' }}>{ui.uploadReport}</p>
+                                            <p className="text-sm font-medium text-text/85">{ui.uploadReport}</p>
                                             <p className="text-xs mt-1" style={{ color: 'rgb(var(--color-text) / 0.4)' }}>{ui.uploadHint}</p>
                                         </div>
                                     </ProFeatureOverlay>
@@ -603,9 +601,9 @@ function ExplainForm() {
                             )}
 
                             {uploadState === 'uploading' && (
-                                <div className="rounded-lg p-6 text-center" style={{ border: '2px dashed rgba(74,222,128,0.4)', background: 'rgba(74,222,128,0.05)' }}>
-                                    <div className="w-6 h-6 border-2 border-t-transparent rounded-full animate-spin mx-auto mb-2" style={{ borderColor: 'rgba(74,222,128,0.6)', borderTopColor: 'transparent' }} />
-                                    <p className="text-sm" style={{ color: 'rgba(74,222,128,0.9)' }}>{ui.extractingText}</p>
+                                <div className="rounded-lg p-6 text-center" style={{ border: '2px dashed rgb(var(--color-text) / 0.2)', background: 'rgb(var(--color-text) / 0.04)' }}>
+                                    <div className="w-6 h-6 border-2 border-t-transparent rounded-full animate-spin mx-auto mb-2" style={{ borderColor: 'rgb(var(--color-brand) / 0.6)', borderTopColor: 'transparent' }} />
+                                    <p className="text-sm text-text/85">{ui.extractingText}</p>
                                 </div>
                             )}
 
@@ -624,9 +622,9 @@ function ExplainForm() {
                             )}
 
                             {uploadState === 'preview' && (
-                                <div className="rounded-lg p-4 space-y-3" style={{ border: '1px solid rgba(74,222,128,0.3)', background: 'rgba(74,222,128,0.05)' }}>
+                                <div className="rounded-lg p-4 space-y-3" style={{ border: '1px solid rgb(var(--color-text) / 0.15)', background: 'rgb(var(--color-text) / 0.05)' }}>
                                     <div>
-                                        <p className="text-sm font-medium" style={{ color: 'rgba(74,222,128,0.9)' }}>
+                                        <p className="text-sm font-medium text-text/85">
                                             ✅ {ui.textExtractedFrom} {extractedFileName}
                                         </p>
                                         <p className="text-xs mt-1" style={{ color: 'rgb(var(--color-text) / 0.5)' }}>
@@ -648,7 +646,7 @@ function ExplainForm() {
                                             type="button"
                                             onClick={handleUseText}
                                             className="px-4 py-2 text-sm font-medium rounded-lg transition-opacity text-white"
-                                            style={{ background: ACCENT }}
+                                            style={{ background: 'rgb(var(--color-brand))' }}
                                         >
                                             {ui.useThisText}
                                         </button>
@@ -678,14 +676,14 @@ function ExplainForm() {
                                     onClick={() => setReportText(s)}
                                     disabled={loading}
                                     className="px-3 py-1.5 text-xs rounded-full disabled:opacity-50 transition-all duration-200"
-                                    style={{ background: "rgba(104,211,145,0.08)", border: "1px solid rgba(104,211,145,0.3)", color: "rgba(104,211,145,0.85)" }}
+                                    style={{ background: "rgb(var(--color-text) / 0.06)", border: "1px solid rgb(var(--color-text) / 0.15)", color: "rgb(var(--color-text) / 0.7)" }}
                                     onMouseEnter={e => {
-                                        (e.currentTarget as HTMLElement).style.borderColor = "rgba(104,211,145,0.6)";
-                                        (e.currentTarget as HTMLElement).style.background = "rgba(104,211,145,0.18)";
+                                        (e.currentTarget as HTMLElement).style.borderColor = "rgb(var(--color-text) / 0.3)";
+                                        (e.currentTarget as HTMLElement).style.background = "rgb(var(--color-text) / 0.12)";
                                     }}
                                     onMouseLeave={e => {
-                                        (e.currentTarget as HTMLElement).style.borderColor = "rgba(104,211,145,0.3)";
-                                        (e.currentTarget as HTMLElement).style.background = "rgba(104,211,145,0.08)";
+                                        (e.currentTarget as HTMLElement).style.borderColor = "rgb(var(--color-text) / 0.15)";
+                                        (e.currentTarget as HTMLElement).style.background = "rgb(var(--color-text) / 0.06)";
                                     }}
                                 >
                                     {s}
@@ -704,7 +702,7 @@ function ExplainForm() {
                 <button
                     type="submit" disabled={loading || !reportText.trim()}
                     className="w-full text-white font-medium py-2.5 px-6 rounded-lg transition-opacity disabled:opacity-50 text-sm"
-                    style={{ background: ACCENT }}
+                    style={{ background: 'rgb(var(--color-brand))' }}
                 >
                     {loading ? (
                         <span className="flex items-center justify-center gap-2">
@@ -773,7 +771,7 @@ function ExplainForm() {
                 </section>
             )}
 
-            <div className="mt-8 border-t pt-6 space-y-2 text-xs" style={{ borderColor: "rgba(104,211,145,0.35)", color: "rgb(var(--color-text) / 0.4)" }}>
+            <div className="mt-8 border-t pt-6 space-y-2 text-xs" style={{ borderColor: "rgb(var(--color-text) / 0.15)", color: "rgb(var(--color-text) / 0.4)" }}>
                 <p className="font-medium" style={{ color: "rgb(var(--color-text) / 0.6)" }}>{ui.dataSourcesTitle}</p>
                 <p dangerouslySetInnerHTML={{ __html: ui.explainAttr1 }} />
                 <p dangerouslySetInnerHTML={{ __html: ui.explainAttr2 }} />
