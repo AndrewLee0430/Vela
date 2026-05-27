@@ -1,6 +1,7 @@
 import { ClerkProvider, useUser } from '@clerk/nextjs';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
+import { Noto_Sans } from 'next/font/google';
 import posthog from 'posthog-js';
 import { PostHogProvider } from 'posthog-js/react';
 import { useEffect, useRef } from 'react';
@@ -8,6 +9,13 @@ import { useRouter } from 'next/router';
 import { LangProvider } from '../utils/LangContext';
 import { reset as resetAnalytics, identify, track, type Tier } from '../utils/analytics';
 import '../styles/globals.css';
+
+const notoSans = Noto_Sans({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-sans',
+  display: 'swap',
+});
 
 const ANON_ALIASED_KEY = 'vela_anon_aliased';
 
@@ -107,6 +115,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
   const canonicalUrl = `https://vela.an-tho.com${path}`;
 
   return (
+    <div className={`${notoSans.variable} font-sans`}>
     <PostHogProvider client={posthog}>
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -144,5 +153,6 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         </LangProvider>
       </ClerkProvider>
     </PostHogProvider>
+    </div>
   );
 }

@@ -17,6 +17,12 @@ When new entries are added: keep one-liner format, no detail. For full context, 
 
 ---
 
+## 2026-05-27
+
+- 2026-05-27 [theme C4] Body font Arial→Noto Sans (latin) via next/font/google; CJK unchanged; closes TECH_DEBT P3 (Arial override, discovered 2026-05-05)
+
+---
+
 ## 2026-05-20
 
 - `[docs]` PRD §3.1 v1.5 → v1.6 — §3.1 API endpoints contract: POST 403 error type upgrade_required → pro_required (unify existing extract-image free-user→Pro convention, overrides v1.5 E1); POST body slimmed to { user_context_hash, locale } (raw context never leaves device, aligns §0.3, server-recompute redundant with v1.5 self-repair). Ahead of §3.1 PHASE B. +4/-2 docs/PRD.md only. (603917f)

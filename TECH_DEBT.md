@@ -188,14 +188,6 @@ When entries are resolved, move to ARCHIVE.md (note discovery + resolution dates
   - **Priority**: P2(不 block 當前軟啟動;Dodo 付費啟用是 Phase 1A scope)
   - **Discovered**: 2026-04-22 during 2.8 Round 2B Test 5 Clerk JWT Dev/Prod mismatch fix
 
-- **[P3]** Main-site body font-family Arial override
-  - **現況**: `styles/globals.css:27` `body { font-family: Arial, Helvetica, sans-serif; }` overrides the Geist intent declared in `@theme inline { --font-sans: var(--font-geist-sans) }`. All authed pages render Arial instead of Geist.
-  - **Discovered context**: surfaced during §4.5 main-site visual audit (commit a5da1c5). Public Jinja2 page (`api/templates/q_base.jinja2`) intentionally uses `-apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans CJK TC", sans-serif` — does NOT regress to Arial.
-  - **Risk**: minor visual quality regression on main site. Geist (the intended brand typeface) is loaded but never applied. Branding asset wasted. Not blocking ship.
-  - **Resolution**: remove the `body { font-family: Arial, ... }` line from `styles/globals.css`; verify Geist loads correctly via Next.js font subsetting; visual diff main-site pages before/after.
-  - **Priority**: P3 — visual polish only, no functional/legal impact.
-  - **Discovered**: 2026-05-05 during §4.5 PHASE A visual audit.
-
 - **[P2]** Native-speaker review pending for §4.5 share i18n legal-weighted strings
   - **現況**: `utils/i18n-share.ts` ships 16-locale ShareTranslations (commit b378659). en + zh-TW user-reviewed for legal precision; ja user-reviewed PASS during PHASE B live test. Other 12 locales (zh-CN, ko, es, fr, de, it, pt, th, ar, hi, bn, he, vi) are machine-translation baseline.
   - **Risk**: legal-weighted strings — `modalConsentCheckbox` (consent attestation list of identifiers + irrevocability clause), `publicDisclaimer` (visitor-facing AI medical disclaimer), `publicShortDisclaimer`, `settingsRevokeConfirm` — translation accuracy in those 12 locales unverified. Specific identifier list (病患姓名/身分證字號/病歷號/健保號) and "無法完全收回" clause must survive translation in any language Share is opened to.
