@@ -90,4 +90,6 @@ body {
   --color-success: 34 197 94;
   --color-warning: 234 179 8;
   --color-danger: 239 68 68;
+  --color-info: 96 165 250;
+  --color-danger-soft: 252 165 165;
 }

@@ -221,7 +221,7 @@ export default function BugReportButton() {
                 <p className="text-xs mb-4 text-text/40">{t.emailHint}</p>
 
                 {errorMsg && (
-                  <p className="text-xs mb-3 px-3 py-2 rounded-lg" style={{ background: 'rgba(239,68,68,0.1)', color: '#ef4444' }}>
+                  <p className="text-xs mb-3 px-3 py-2 rounded-lg" style={{ background: 'rgb(var(--color-danger) / 0.1)', color: 'rgb(var(--color-danger))' }}>
                     {errorMsg}
                   </p>
                 )}

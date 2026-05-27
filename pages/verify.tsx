@@ -293,7 +293,10 @@ function VerifyForm() {
             .filter(s => buckets[s])
             .map(s => ({ canonical: s, label: buckets[s].label, count: buckets[s].count }));
         const colorMap: Record<string, string> = {
-            Critical: '#f87171', Major: '#f87171', Moderate: '#fbbf24', Minor: '#60a5fa',
+            Critical: 'rgb(var(--color-danger))',
+            Major:    'rgb(var(--color-danger))',
+            Moderate: 'rgb(var(--color-warning))',
+            Minor:    'rgb(var(--color-info))',
         };
         const highest = highestIdx < severityOrder.length ? severityOrder[highestIdx] : 'Minor';
         return {

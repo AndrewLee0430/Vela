@@ -155,8 +155,8 @@ function ProductShowcase({ t }: { t: typeof translations['en'] }) {
       sub: t.verifySub,
       question: t.mockupVerifyDrugs,
       badge: `⚠️ ${t.mockupVerifyBadge}`,
-      badgeBg: 'rgba(239,68,68,0.15)',
-      badgeColor: '#f87171',
+      badgeBg: 'rgb(var(--color-danger) / 0.15)',
+      badgeColor: 'rgb(var(--color-danger))',
       footer: `📄 ${t.mockupVerifySource}`,
       cta: t.tryVerify,
     },
@@ -169,7 +169,7 @@ function ProductShowcase({ t }: { t: typeof translations['en'] }) {
       sub: t.explainSub,
       question: t.mockupExplainValue,
       highlight: `↑ ${t.mockupExplainStatus}`,
-      highlightColor: '#f87171',
+      highlightColor: 'rgb(var(--color-danger))',
       footer: `📄 ${t.mockupExplainSource}`,
       cta: t.tryExplain,
     },
@@ -506,7 +506,7 @@ function LandingPage() {
             <ul className="space-y-2.5 mb-5">
               {[t.privacyPromise1, t.privacyPromise2, t.privacyPromise3].map((item) => (
                 <li key={item} className="flex items-start gap-2.5 text-sm" style={{ color: 'rgb(var(--color-text) / 0.75)' }}>
-                  <span className="mt-0.5 font-bold" style={{ color: '#4ade80' }} aria-hidden>✓</span>
+                  <span className="mt-0.5 font-bold" style={{ color: 'rgb(var(--color-success))' }} aria-hidden>✓</span>
                   <span>{item}</span>
                 </li>
               ))}

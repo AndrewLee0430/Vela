@@ -9,9 +9,9 @@ interface ResearchSectionProps {
 }
 
 const borderColors: Record<string, string> = {
-    '\u{1F7E2}': '#22c55e',
-    '\u{1F7E1}': '#eab308',
-    '\u{1F534}': '#ef4444',
+    '\u{1F7E2}': 'rgb(var(--color-success))',
+    '\u{1F7E1}': 'rgb(var(--color-warning))',
+    '\u{1F534}': 'rgb(var(--color-danger))',
 };
 
 export default function ResearchSection({ title, evidence, children }: ResearchSectionProps) {

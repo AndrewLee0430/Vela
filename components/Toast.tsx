@@ -17,9 +17,9 @@ export default function Toast({ message, onClose, duration = 3000, type = 'succe
     }, [duration, onClose]);
 
     const styles = {
-        success: { bg: '#16a34a', icon: '✅' },
-        warning: { bg: '#d97706', icon: '⚠️' },
-        error:   { bg: '#dc2626', icon: '❌' },
+        success: { bg: 'rgb(var(--color-success))', icon: '✅' },
+        warning: { bg: 'rgb(var(--color-warning))', icon: '⚠️' },
+        error:   { bg: 'rgb(var(--color-danger))',  icon: '❌' },
     };
 
     const { bg, icon } = styles[type];

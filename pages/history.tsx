@@ -153,10 +153,10 @@ function HistoryList() {
 
     const getSeverityAccent = (severity: string) => {
         switch (severity) {
-            case 'Critical': return '#f87171';
-            case 'Major':    return '#f87171';
-            case 'Moderate': return '#facc15';
-            case 'Minor':    return '#60a5fa';
+            case 'Critical': return 'rgb(var(--color-danger))';
+            case 'Major':    return 'rgb(var(--color-danger))';
+            case 'Moderate': return 'rgb(var(--color-warning))';
+            case 'Minor':    return 'rgb(var(--color-info))';
             default:         return '#9ca3af';
         }
     };

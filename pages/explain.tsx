@@ -556,7 +556,7 @@ function ExplainForm() {
             )}
 
             {error && (
-                <div className="mb-5 p-3 rounded-lg border text-sm" style={{ background: "rgba(252,129,129,0.12)", borderColor: "rgba(252,129,129,0.3)", color: "#fc8181" }}>{resolveErrorMessage(error, ui)}</div>
+                <div className="mb-5 p-3 rounded-lg border text-sm" style={{ background: "rgb(var(--color-danger) / 0.12)", borderColor: "rgb(var(--color-danger) / 0.3)", color: "rgb(var(--color-danger-soft))" }}>{resolveErrorMessage(error, ui)}</div>
             )}
 
             <form onSubmit={handleSubmit} className="rounded-xl p-6 space-y-5" style={{ background: "rgb(var(--color-text) / 0.06)", border: "1px solid rgb(var(--color-text) / 0.1)" }}>
@@ -608,8 +608,8 @@ function ExplainForm() {
                             )}
 
                             {uploadState === 'error' && (
-                                <div className="rounded-lg p-4 text-center" style={{ border: '2px dashed rgba(252,129,129,0.4)', background: 'rgba(252,129,129,0.05)' }}>
-                                    <p className="text-sm mb-3" style={{ color: '#fc8181' }}>{uploadError}</p>
+                                <div className="rounded-lg p-4 text-center" style={{ border: '2px dashed rgb(var(--color-danger) / 0.4)', background: 'rgb(var(--color-danger) / 0.05)' }}>
+                                    <p className="text-sm mb-3" style={{ color: 'rgb(var(--color-danger-soft))' }}>{uploadError}</p>
                                     <button
                                         type="button"
                                         onClick={handleUploadReset}
@@ -638,7 +638,7 @@ function ExplainForm() {
                                         className="w-full px-3 py-2 rounded-lg font-mono text-xs focus:outline-none focus:ring-2"
                                         style={{ background: 'rgb(var(--color-text) / 0.05)', border: '1px solid rgb(var(--color-text) / 0.15)', color: 'rgb(var(--color-text) / 0.85)', minHeight: '120px' }}
                                     />
-                                    <p className="text-xs" style={{ color: 'rgba(251,191,36,0.7)' }}>
+                                    <p className="text-xs" style={{ color: 'rgb(var(--color-warning) / 0.7)' }}>
                                         ⚠️ {ui.imageQualityWarning}
                                     </p>
                                     <div className="flex gap-3">

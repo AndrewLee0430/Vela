@@ -88,7 +88,7 @@ export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
 
         {/* Error message */}
         {error && (
-          <p className="text-xs text-center mb-3 px-2 py-2 rounded-lg" style={{ background: 'rgba(239,68,68,0.1)', color: '#ef4444' }}>
+          <p className="text-xs text-center mb-3 px-2 py-2 rounded-lg" style={{ background: 'rgb(var(--color-danger) / 0.1)', color: 'rgb(var(--color-danger))' }}>
             {error}
           </p>
         )}

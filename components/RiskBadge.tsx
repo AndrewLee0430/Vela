@@ -6,9 +6,9 @@ import { getUI } from '../utils/i18n-ui';
 export type RiskTier = 'green' | 'yellow' | 'red';
 
 const RISK_COLORS: Record<RiskTier, { bg: string; text: string; border: string; solid: string }> = {
-    green:  { bg: 'rgba(34,197,94,0.12)', text: '#22c55e', border: 'rgba(34,197,94,0.3)', solid: '#22c55e' },
-    yellow: { bg: 'rgba(234,179,8,0.12)', text: '#eab308', border: 'rgba(234,179,8,0.3)', solid: '#eab308' },
-    red:    { bg: 'rgba(239,68,68,0.12)', text: '#ef4444', border: 'rgba(239,68,68,0.3)', solid: '#ef4444' },
+    green:  { bg: 'rgb(var(--color-success) / 0.12)', text: 'rgb(var(--color-success))', border: 'rgb(var(--color-success) / 0.3)', solid: 'rgb(var(--color-success))' },
+    yellow: { bg: 'rgb(var(--color-warning) / 0.12)', text: 'rgb(var(--color-warning))', border: 'rgb(var(--color-warning) / 0.3)', solid: 'rgb(var(--color-warning))' },
+    red:    { bg: 'rgb(var(--color-danger) / 0.12)',  text: 'rgb(var(--color-danger))',  border: 'rgb(var(--color-danger) / 0.3)',  solid: 'rgb(var(--color-danger))' },
 };
 
 const RISK_EMOJI: Record<RiskTier, string> = {

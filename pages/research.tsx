@@ -157,13 +157,13 @@ function FallbackBanner() {
     const { lang } = useLang();
     const ui = getUI(lang);
     return (
-        <div className="mb-4 flex items-start gap-3 p-4 rounded-lg" style={{ background: "rgba(245,158,11,0.12)", border: "1px solid rgba(245,158,11,0.3)" }}>
-            <span className="text-amber-500 text-sm mt-0.5 font-bold">⚠</span>
+        <div className="mb-4 flex items-start gap-3 p-4 rounded-lg" style={{ background: "rgb(var(--color-warning) / 0.12)", border: "1px solid rgb(var(--color-warning) / 0.3)" }}>
+            <span className="text-sm mt-0.5 font-bold" style={{ color: "rgb(var(--color-warning))" }}>⚠</span>
             <div>
-                <p className="text-sm font-semibold" style={{ color: "#fbbf24" }}>
+                <p className="text-sm font-semibold" style={{ color: "rgb(var(--color-warning))" }}>
                     {ui.noLiteratureFound}
                 </p>
-                <p className="text-sm mt-0.5" style={{ color: "rgba(251,191,36,0.8)" }}>
+                <p className="text-sm mt-0.5" style={{ color: "rgb(var(--color-warning) / 0.8)" }}>
                     {ui.fallbackBasis}
                 </p>
             </div>
@@ -489,7 +489,7 @@ function ResearchForm() {
                         )}
 
                         {error && !loading && (
-                            <div className="mb-4 p-3 rounded-lg border text-sm" style={{ background: "rgba(239,68,68,0.1)", borderColor: "rgba(239,68,68,0.3)", color: "rgba(255,150,150,0.9)" }}>
+                            <div className="mb-4 p-3 rounded-lg border text-sm" style={{ background: "rgb(var(--color-danger) / 0.1)", borderColor: "rgb(var(--color-danger) / 0.3)", color: "rgb(var(--color-danger-soft) / 0.9)" }}>
                                 {error}
                             </div>
                         )}

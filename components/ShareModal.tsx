@@ -250,7 +250,7 @@ function PreShareView({ t, state, consent, onConsentChange, queryText, onConfirm
             {state.kind === 'error_sensitive' && (
                 <div
                     className="mt-3 rounded-lg p-3 text-sm"
-                    style={{ background: 'rgba(248,113,113,0.10)', border: '1px solid rgba(248,113,113,0.4)', color: '#fca5a5' }}
+                    style={{ background: 'rgb(var(--color-danger) / 0.10)', border: '1px solid rgb(var(--color-danger) / 0.4)', color: 'rgb(var(--color-danger-soft))' }}
                 >
                     <p className="font-medium">{t.modalSensitiveBlocked}</p>
                     {state.reasons.length > 0 && (
@@ -266,7 +266,7 @@ function PreShareView({ t, state, consent, onConsentChange, queryText, onConfirm
             {state.kind === 'error_quota' && (
                 <div
                     className="mt-3 rounded-lg p-3 text-sm"
-                    style={{ background: 'rgba(255,200,80,0.10)', border: '1px solid rgba(255,200,80,0.4)', color: '#facc15' }}
+                    style={{ background: 'rgb(var(--color-warning) / 0.10)', border: '1px solid rgb(var(--color-warning) / 0.4)', color: 'rgb(var(--color-warning))' }}
                 >
                     {t.modalQuotaBlocked}
                 </div>
@@ -274,7 +274,7 @@ function PreShareView({ t, state, consent, onConsentChange, queryText, onConfirm
             {state.kind === 'error_other' && (
                 <div
                     className="mt-3 rounded-lg p-3 text-sm"
-                    style={{ background: 'rgba(248,113,113,0.10)', border: '1px solid rgba(248,113,113,0.4)', color: '#fca5a5' }}
+                    style={{ background: 'rgb(var(--color-danger) / 0.10)', border: '1px solid rgb(var(--color-danger) / 0.4)', color: 'rgb(var(--color-danger-soft))' }}
                 >
                     {state.message || t.modalGenericError}
                 </div>

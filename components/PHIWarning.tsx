@@ -12,19 +12,19 @@ export default function PHIWarning({ detail, suggestion, onDismiss }: PHIWarning
     const ui = getUI(lang);
     return (
         <div className="rounded-xl p-4 mb-4" style={{
-            background: 'rgba(239, 68, 68, 0.08)',
-            border: '1px solid rgba(239, 68, 68, 0.25)',
+            background: 'rgb(var(--color-danger) / 0.08)',
+            border: '1px solid rgb(var(--color-danger) / 0.25)',
         }}>
             <div className="flex items-start gap-3">
-                <span className="text-base mt-0.5" style={{ color: '#ef4444' }}>&#x1F512;</span>
+                <span className="text-base mt-0.5" style={{ color: 'rgb(var(--color-danger))' }}>&#x1F512;</span>
                 <div className="flex-1">
-                    <p className="text-sm font-semibold mb-1" style={{ color: '#fca5a5' }}>
+                    <p className="text-sm font-semibold mb-1" style={{ color: 'rgb(var(--color-danger-soft))' }}>
                         {ui.phiDetected}
                     </p>
-                    <p className="text-sm mb-2" style={{ color: 'rgba(252, 165, 165, 0.85)' }}>
+                    <p className="text-sm mb-2" style={{ color: 'rgb(var(--color-danger-soft) / 0.85)' }}>
                         {detail}
                     </p>
-                    <p className="text-xs" style={{ color: 'rgba(252, 165, 165, 0.65)' }}>
+                    <p className="text-xs" style={{ color: 'rgb(var(--color-danger-soft) / 0.65)' }}>
                         {suggestion}
                     </p>
                 </div>
@@ -32,9 +32,9 @@ export default function PHIWarning({ detail, suggestion, onDismiss }: PHIWarning
                     <button
                         onClick={onDismiss}
                         className="text-sm px-2 py-0.5 rounded transition-colors"
-                        style={{ color: 'rgba(252, 165, 165, 0.6)' }}
-                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#fca5a5'; }}
-                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'rgba(252, 165, 165, 0.6)'; }}
+                        style={{ color: 'rgb(var(--color-danger-soft) / 0.6)' }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = 'rgb(var(--color-danger-soft))'; }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'rgb(var(--color-danger-soft) / 0.6)'; }}
                     >
                         &times;
                     </button>

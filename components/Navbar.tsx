@@ -275,9 +275,9 @@ export default function Navbar({ activePage }: NavbarProps) {
                                                             width: `${Math.min((creditsUsed / dailyLimit) * 100, 100)}%`,
                                                             background: (() => {
                                                                 const pct = dailyLimit > 0 ? (creditsUsed / dailyLimit) * 100 : 0;
-                                                                if (pct >= 80) return '#ef4444';
-                                                                if (pct >= 60) return '#f59e0b';
-                                                                return '#22c55e';
+                                                                if (pct >= 80) return 'rgb(var(--color-danger))';
+                                                                if (pct >= 60) return 'rgb(var(--color-warning))';
+                                                                return 'rgb(var(--color-success))';
                                                             })(),
                                                         }}
                                                     />
@@ -306,7 +306,7 @@ export default function Navbar({ activePage }: NavbarProps) {
                                                     <button
                                                         onClick={() => { setSettingsOpen(false); setShowCancelConfirm(true); }}
                                                         className="w-full text-left px-4 py-2 text-sm transition-colors hover:bg-white/5"
-                                                        style={{ color: '#ef4444' }}
+                                                        style={{ color: 'rgb(var(--color-danger))' }}
                                                     >
                                                         {ui.cancelSubscription}
                                                     </button>
@@ -356,7 +356,7 @@ export default function Navbar({ activePage }: NavbarProps) {
                             </div>
                         ) : cancelMessage === 'error' ? (
                             <div className="text-center py-4 space-y-4">
-                                <p className="text-sm" style={{ color: '#ef4444' }}>
+                                <p className="text-sm" style={{ color: 'rgb(var(--color-danger))' }}>
                                     {ui.cancelError}
                                 </p>
                                 <button
@@ -383,7 +383,7 @@ export default function Navbar({ activePage }: NavbarProps) {
                                         onClick={handleCancelSubscription}
                                         disabled={cancelling}
                                         className="px-4 py-2 text-sm font-medium rounded-lg transition-colors disabled:opacity-50"
-                                        style={{ background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)', color: '#ef4444' }}
+                                        style={{ background: 'rgb(var(--color-danger) / 0.15)', border: '1px solid rgb(var(--color-danger) / 0.3)', color: 'rgb(var(--color-danger))' }}
                                     >
                                         {cancelling ? ui.cancellingBtn : ui.cancelSubscription}
                                     </button>

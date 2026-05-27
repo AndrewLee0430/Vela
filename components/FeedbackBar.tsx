@@ -57,8 +57,8 @@ export default function FeedbackBar({ query, response, category }: FeedbackBarPr
                 title="Helpful"
                 className="w-8 h-8 flex items-center justify-center rounded-lg transition-all text-base disabled:cursor-default"
                 style={{
-                    background: status === 'liked' ? 'rgba(104,211,145,0.2)' : 'rgb(var(--color-text) / 0.06)',
-                    border: `1px solid ${status === 'liked' ? 'rgba(104,211,145,0.5)' : 'rgb(var(--color-text) / 0.12)'}`,
+                    background: status === 'liked' ? 'rgb(var(--color-success) / 0.2)' : 'rgb(var(--color-text) / 0.06)',
+                    border: `1px solid ${status === 'liked' ? 'rgb(var(--color-success) / 0.5)' : 'rgb(var(--color-text) / 0.12)'}`,
                     opacity: status === 'disliked' ? 0.35 : 1,
                 }}
             >
@@ -70,8 +70,8 @@ export default function FeedbackBar({ query, response, category }: FeedbackBarPr
                 title="Not helpful"
                 className="w-8 h-8 flex items-center justify-center rounded-lg transition-all text-base disabled:cursor-default"
                 style={{
-                    background: status === 'disliked' ? 'rgba(252,129,129,0.2)' : 'rgb(var(--color-text) / 0.06)',
-                    border: `1px solid ${status === 'disliked' ? 'rgba(252,129,129,0.5)' : 'rgb(var(--color-text) / 0.12)'}`,
+                    background: status === 'disliked' ? 'rgb(var(--color-danger) / 0.2)' : 'rgb(var(--color-text) / 0.06)',
+                    border: `1px solid ${status === 'disliked' ? 'rgb(var(--color-danger) / 0.5)' : 'rgb(var(--color-text) / 0.12)'}`,
                     opacity: status === 'liked' ? 0.35 : 1,
                 }}
             >

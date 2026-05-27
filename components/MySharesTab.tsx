@@ -179,7 +179,7 @@ export default function MySharesTab() {
         }
         if (state.kind === 'error') {
             return (
-                <div className="rounded-lg p-4" style={{ background: 'rgba(248,113,113,0.10)', border: '1px solid rgba(248,113,113,0.4)', color: '#fca5a5' }}>
+                <div className="rounded-lg p-4" style={{ background: 'rgb(var(--color-danger) / 0.10)', border: '1px solid rgb(var(--color-danger) / 0.4)', color: 'rgb(var(--color-danger-soft))' }}>
                     <p className="text-sm">{t.mySharesError}</p>
                     <button
                         type="button"
@@ -252,8 +252,8 @@ export default function MySharesTab() {
                                         className="px-3 py-1.5 text-xs font-medium rounded-lg transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                                         style={{
                                             background: 'transparent',
-                                            border: '1px solid rgba(239,68,68,0.4)',
-                                            color: '#f87171',
+                                            border: '1px solid rgb(var(--color-danger) / 0.4)',
+                                            color: 'rgb(var(--color-danger))',
                                         }}
                                     >
                                         {revokingId === row.share_id ? t.mySharesRevoking : t.settingsRevokeButton}
@@ -301,7 +301,7 @@ export default function MySharesTab() {
                                 type="button"
                                 onClick={handleConfirmRevoke}
                                 className="px-4 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer"
-                                style={{ background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.4)', color: '#f87171' }}
+                                style={{ background: 'rgb(var(--color-danger) / 0.15)', border: '1px solid rgb(var(--color-danger) / 0.4)', color: 'rgb(var(--color-danger))' }}
                             >
                                 {t.settingsRevokeButton}
                             </button>
