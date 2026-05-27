@@ -77,10 +77,7 @@ export default function FAQ() {
                 <meta name="description" content="Frequently asked questions about Vela. Learn about our features, data sources, pricing, and privacy practices." />
             </Head>
 
-            <main
-                className="min-h-screen"
-                style={{ background: 'linear-gradient(135deg, #0a1628 0%, #0f2040 45%, #1a1035 75%, #0d1a2e 100%)' }}
-            >
+            <main className="min-h-screen bg-app-bg">
                 {/* Nav */}
                 <nav className="border-b" style={{ background: 'transparent', borderColor: 'rgba(255,255,255,0.07)' }}>
                     <div className="container mx-auto px-4 py-3 flex items-center justify-between">

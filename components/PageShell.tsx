@@ -18,10 +18,7 @@ export default function PageShell({ activePage, children, extraHead, allowAnonym
     return (
         <>
             {extraHead}
-            <main
-                className="min-h-screen pb-20 md:pb-0"
-                style={{ background: "linear-gradient(135deg, #0a1628 0%, #0f2040 45%, #1a1035 75%, #0d1a2e 100%)" }}
-            >
+            <main className="min-h-screen pb-20 md:pb-0 bg-app-bg">
                 <ShareProvider>
                     <Navbar activePage={activePage} />
                     {allowAnonymous ? (

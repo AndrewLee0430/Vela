@@ -14,8 +14,6 @@ import { getUI } from '../utils/i18n-ui';
 import { getExtra } from '../utils/i18n-extra';
 import { getShare } from '../utils/i18n-share';
 
-const BG = 'linear-gradient(135deg, #0a1628 0%, #0f2040 45%, #1a1035 75%, #0d1a2e 100%)';
-
 const LINK_COLORS: Record<string, string> = {
     research: '#ff8e6e',
     verify:   '#63b3ed',
@@ -163,7 +161,7 @@ export default function Navbar({ activePage }: NavbarProps) {
 
     return (
         <>
-            <nav className="border-b" style={{ background: BG, borderColor: 'rgba(255,255,255,0.07)' }}>
+            <nav className="border-b bg-app-bg" style={{ borderColor: 'rgba(255,255,255,0.07)' }}>
                 <div className="container mx-auto px-4 py-3">
                     <div className="flex justify-between items-center">
                         <div className="flex items-center gap-8">

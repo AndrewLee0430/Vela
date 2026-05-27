@@ -135,8 +135,8 @@ export default function AnonymousUpgradeCTA({ trigger, onDismiss, quotaDetails }
             style={{ background: 'rgba(0,0,0,0.7)' }}
         >
             <div
-                className="relative w-full max-w-lg rounded-2xl p-8"
-                style={{ background: '#0f2040', border: '1px solid rgba(255,255,255,0.12)' }}
+                className="relative w-full max-w-lg rounded-2xl p-8 bg-bg-2"
+                style={{ border: '1px solid rgba(255,255,255,0.12)' }}
             >
                 <h2 className="text-lg font-semibold" style={{ color: '#ffffff' }}>
                     {cta.quotaHitTitle}

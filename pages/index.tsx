@@ -17,8 +17,6 @@ import { getExtra } from '../utils/i18n-extra';
 import { track } from '../utils/analytics';
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
-const BG = 'linear-gradient(135deg, #0a1628 0%, #0f2040 45%, #1a1035 75%, #0d1a2e 100%)';
-
 const PROMPT_COLORS = ['#ff8e6e', '#63b3ed', '#68d391'] as const;
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -382,8 +380,7 @@ function LandingPage() {
       `}</style>
 
       <div
-        className="min-h-screen flex flex-col"
-        style={{ background: BG }}
+        className="min-h-screen flex flex-col bg-app-bg"
         dir={isRtl ? 'rtl' : undefined}
       >
         {/* Nav */}
@@ -603,7 +600,7 @@ function Dashboard() {
   ];
 
   return (
-    <main className="min-h-screen pb-20 md:pb-0" style={{ background: BG }}>
+    <main className="min-h-screen pb-20 md:pb-0 bg-app-bg">
       <Navbar />
 
       <div className="container mx-auto px-4 md:px-10 py-8 max-w-4xl">

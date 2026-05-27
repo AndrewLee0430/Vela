@@ -295,8 +295,8 @@ export default function MySharesTab() {
                     <div
                         role="dialog"
                         aria-modal="true"
-                        className="w-full max-w-md rounded-2xl p-6"
-                        style={{ background: '#0f2040', border: '1px solid rgba(255,255,255,0.12)' }}
+                        className="w-full max-w-md rounded-2xl p-6 bg-bg-2"
+                        style={{ border: '1px solid rgba(255,255,255,0.12)' }}
                         onClick={e => e.stopPropagation()}
                     >
                         <h2 className="text-base font-semibold mb-3" style={{ color: '#ffffff' }}>

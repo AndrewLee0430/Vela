@@ -4,8 +4,8 @@ import Image from 'next/image';
 
 export default function Terms() {
     return (
-        <main className="min-h-screen" style={{ background: "linear-gradient(135deg, #0a1628 0%, #0f2040 45%, #1a1035 75%, #0d1a2e 100%)" }}>
-            <nav className="border-b" style={{ background: "linear-gradient(135deg, #0a1628 0%, #0f2040 45%, #1a1035 75%, #0d1a2e 100%)", borderColor: "rgba(255,255,255,0.07)" }}>
+        <main className="min-h-screen bg-app-bg">
+            <nav className="border-b bg-app-bg" style={{ borderColor: "rgba(255,255,255,0.07)" }}>
                 <div className="container mx-auto px-4 py-3 flex items-center">
                     <Link href="/" className="flex items-center">
                         <Image src="/coral_logo.png" alt="Vela" width={40} height={40} style={{ objectFit: 'contain' }} />
