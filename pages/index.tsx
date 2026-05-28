@@ -439,7 +439,10 @@ function LandingPage() {
                   className="w-full bg-bg-1 text-text rounded-2xl border border-text/15 shadow-sm px-5 py-4 pr-16 text-base focus:outline-none focus:ring-2 focus:ring-brand/30"
                 />
                 {query === '' && !isFocused && (
-                  <div className="absolute inset-0 px-5 py-4 pr-16 flex items-center text-base">
+                  <div
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-0 px-5 py-4 pr-16 flex items-center text-base"
+                  >
                     <TypewriterPrompt />
                   </div>
                 )}
