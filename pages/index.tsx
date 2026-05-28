@@ -144,7 +144,7 @@ function ProductShowcase({ t }: { t: typeof translations['en'] }) {
     {
       href: '/research',
       color: 'rgb(var(--color-text) / 0.85)',
-      borderColor: 'rgb(var(--color-text) / 0.15)',
+      borderColor: 'rgb(var(--color-text) / 0.1)',
       hoverBorder: 'rgb(var(--color-text) / 0.3)',
       topLabel: t.research,
       sub: t.researchSub,
@@ -155,7 +155,7 @@ function ProductShowcase({ t }: { t: typeof translations['en'] }) {
     {
       href: '/verify',
       color: 'rgb(var(--color-text) / 0.85)',
-      borderColor: 'rgb(var(--color-text) / 0.15)',
+      borderColor: 'rgb(var(--color-text) / 0.1)',
       hoverBorder: 'rgb(var(--color-text) / 0.3)',
       topLabel: t.verify,
       sub: t.verifySub,
@@ -169,7 +169,7 @@ function ProductShowcase({ t }: { t: typeof translations['en'] }) {
     {
       href: '/explain',
       color: 'rgb(var(--color-text) / 0.85)',
-      borderColor: 'rgb(var(--color-text) / 0.15)',
+      borderColor: 'rgb(var(--color-text) / 0.1)',
       hoverBorder: 'rgb(var(--color-text) / 0.3)',
       topLabel: t.explain,
       sub: t.explainSub,
@@ -182,7 +182,7 @@ function ProductShowcase({ t }: { t: typeof translations['en'] }) {
   ];
 
   return (
-    <div className="w-full" style={{ maxWidth: '780px' }}>
+    <div className="w-full" style={{ maxWidth: '960px' }}>
       <p className="text-center text-sm font-medium mb-5" style={{ color: 'rgb(var(--color-text) / 0.4)' }}>
         {t.seeHow}
       </p>
@@ -190,8 +190,8 @@ function ProductShowcase({ t }: { t: typeof translations['en'] }) {
         {cards.map(c => (
           <Link key={c.href} href={c.href} className="flex-1">
             <div
-              className="h-full rounded-xl overflow-hidden cursor-pointer transition-all duration-300"
-              style={{ background: 'rgba(15,23,42,0.6)', border: `1px solid ${c.borderColor}` }}
+              className="h-full rounded-2xl overflow-hidden cursor-pointer transition-all duration-300"
+              style={{ background: 'rgba(255,255,255,0.55)', border: `1px solid ${c.borderColor}` }}
               onMouseEnter={e => {
                 const el = e.currentTarget as HTMLElement;
                 el.style.transform = 'scale(1.03)';
@@ -208,7 +208,7 @@ function ProductShowcase({ t }: { t: typeof translations['en'] }) {
               <div className="flex h-full">
                 {/* Left color bar — neutral after C3 feature-accent collapse */}
                 <div className="w-1 flex-shrink-0" style={{ background: 'rgb(var(--color-text) / 0.15)' }} />
-                <div className="flex flex-col p-4 gap-2.5 flex-1 min-w-0">
+                <div className="flex flex-col p-5 gap-2.5 flex-1 min-w-0">
                   {/* Top label + source badge */}
                   <div className="flex items-center gap-2">
                     <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: 'rgb(var(--color-text) / 0.7)' }}>{c.topLabel}</span>
@@ -220,7 +220,7 @@ function ProductShowcase({ t }: { t: typeof translations['en'] }) {
                     </span>
                   </div>
                   {/* Question */}
-                  <p className="text-xs font-mono font-medium text-white leading-snug">{c.question}</p>
+                  <p className="text-xs font-mono font-medium text-text leading-snug">{c.question}</p>
                   {/* Status badge / highlight */}
                   {'badge' in c && (
                     <span
@@ -393,7 +393,7 @@ function LandingPage() {
         {/* Light zone — Stage 2 + 4a: hero (min-h-screen first viewport) + below-fold CTA + value-props + social-proof on warm gradient */}
         <div
           className="light flex flex-col"
-          style={{ background: 'linear-gradient(180deg, #ffffff 0%, #fff3ec 50%, #ffd9c4 100%)' }}
+          style={{ background: 'linear-gradient(180deg, #ffffff 0%, #fff3ec 30%, #ffd9c4 60%, #ffd9c4 100%)' }}
         >
           {/* First viewport: nav + hero */}
           <div className="min-h-screen flex flex-col">
@@ -497,7 +497,7 @@ function LandingPage() {
                 <div
                   key={vp.label}
                   className="rounded-2xl p-5 text-left"
-                  style={{ background: 'rgb(var(--color-text) / 0.04)', border: '1px solid rgb(var(--color-text) / 0.1)' }}
+                  style={{ background: 'rgba(255,255,255,0.55)', border: '1px solid rgb(var(--color-text) / 0.1)' }}
                 >
                   <div className="text-xs font-semibold tracking-wider mb-2" style={{ color: 'rgb(var(--color-text) / 0.5)' }}>{vp.label}</div>
                   <p className="text-sm leading-relaxed" style={{ color: 'rgb(var(--color-text) / 0.7)' }}>{vp.body}</p>
@@ -510,17 +510,15 @@ function LandingPage() {
               {t.socialProof}
             </p>
           </div>
-        </div>
 
-        {/* Dark island — below-fold preserved at today's appearance (Step 4 redesigns) */}
-        <div className="dark bg-app-bg flex flex-col">
-          <div className="flex flex-col items-center px-4 md:px-10 text-center pt-12 pb-4">
+          {/* Showcase + privacy — now in light zone (Step 4b: seam eliminated) */}
+          <div className="flex flex-col items-center px-4 md:px-10 text-center pt-8 pb-12">
             {/* Product showcase */}
             <ProductShowcase t={t} />
 
             {/* v1.1 Privacy-first transparent definition */}
             <section className="w-full mt-14 mb-4 text-left" style={{ maxWidth: '780px' }}>
-              <h2 className="text-xl font-semibold text-white mb-4 text-center">
+              <h2 className="text-xl font-semibold text-text mb-4 text-center">
                 {t.privacyTitle}
               </h2>
               <ul className="space-y-2.5 mb-5">
@@ -534,7 +532,7 @@ function LandingPage() {
               <div className="text-center">
                 <Link
                   href="/privacy"
-                  className="text-sm hover:text-white transition-colors"
+                  className="text-sm hover:text-text transition-colors"
                   style={{ color: 'rgb(var(--color-text) / 0.55)' }}
                 >
                   {t.privacyPolicyLink}
@@ -543,22 +541,22 @@ function LandingPage() {
             </section>
           </div>
 
-          {/* Footer */}
+          {/* Footer — light zone */}
           <div
             className="flex-shrink-0 flex flex-col items-center gap-2 px-4 md:px-10 py-5 text-sm"
             style={{ borderTop: '1px solid rgb(var(--color-text) / 0.07)', color: 'rgb(var(--color-text) / 0.3)' }}
           >
             <div className="flex items-center gap-3">
-              <span>© {new Date().getFullYear()} Vela. {t.footerCopy} · <a href="https://an-tho.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">an-tho.com</a></span>
+              <span>© {new Date().getFullYear()} Vela. {t.footerCopy} · <a href="https://an-tho.com" target="_blank" rel="noopener noreferrer" className="hover:text-text transition-colors">an-tho.com</a></span>
               <LanguageSwitcher lang={lang} setLang={setLang} />
             </div>
             <div>{t.footerDisclaimer}</div>
             <div className="flex flex-wrap justify-center gap-4 text-xs">
-              <Link href="/terms" className="hover:text-white transition-colors">{extra.termsLabel}</Link>
-              <Link href="/privacy" className="hover:text-white transition-colors">{extra.privacyLabel}</Link>
-              <Link href="/refund" className="hover:text-white transition-colors">{extra.refundLabel}</Link>
-              <Link href="/faq" className="hover:text-white transition-colors">FAQ</Link>
-              <a href="mailto:support@an-tho.com" className="hover:text-white transition-colors">support@an-tho.com</a>
+              <Link href="/terms" className="hover:text-text transition-colors">{extra.termsLabel}</Link>
+              <Link href="/privacy" className="hover:text-text transition-colors">{extra.privacyLabel}</Link>
+              <Link href="/refund" className="hover:text-text transition-colors">{extra.refundLabel}</Link>
+              <Link href="/faq" className="hover:text-text transition-colors">FAQ</Link>
+              <a href="mailto:support@an-tho.com" className="hover:text-text transition-colors">support@an-tho.com</a>
             </div>
           </div>
         </div>
