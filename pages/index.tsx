@@ -5,6 +5,7 @@ import { useUser, UserButton } from '@clerk/nextjs';
 import { SignedIn, SignedOut } from '@clerk/nextjs';
 import Link from 'next/link';
 import Image from 'next/image';
+import { ArrowUp } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import MobileNav from '../components/MobileNav';
 import PlanBadge from '../components/PlanBadge';
@@ -53,10 +54,14 @@ function TypewriterPrompt() {
   }, [lang]);
 
   return (
-    <span style={{ color: 'rgb(var(--color-brand))' }}>
+    <span
+      aria-hidden="true"
+      className="pointer-events-none"
+      style={{ color: 'rgb(var(--color-text) / 0.5)' }}
+    >
       {text}
       <span
-        style={{ background: 'rgb(var(--color-brand))' }}
+        style={{ background: 'rgb(var(--color-text) / 0.5)' }}
         className="inline-block w-0.5 h-5 ml-0.5 align-middle animate-pulse"
       />
     </span>
@@ -253,6 +258,8 @@ function ProductShowcase({ t }: { t: typeof translations['en'] }) {
 // ─── Landing Page (unauthenticated) ──────────────────────────────────────────
 function LandingPage() {
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [query, setQuery] = useState<string>('');
+  const [isFocused, setIsFocused] = useState<boolean>(false);
   const { lang, setLang } = useLang();
   const t = translations[lang];
   const lc = landingContent[lang];
@@ -367,178 +374,174 @@ function LandingPage() {
           }}
         />
       </Head>
-      <style>{`
-        @keyframes float {
-          0%   { transform: translateY(0px); }
-          50%  { transform: translateY(-12px); }
-          100% { transform: translateY(0px); }
-        }
-        .logo-float { animation: float 3.5s ease-in-out infinite; }
-      `}</style>
-
       <div
-        className="min-h-screen flex flex-col bg-app-bg"
+        className="min-h-screen flex flex-col"
         dir={isRtl ? 'rtl' : undefined}
       >
-        {/* Nav */}
-        <nav className="flex-shrink-0 flex justify-end items-center gap-2 px-4 md:px-10 py-5">
-          <PlanBadge onUpgrade={() => setShowUpgradeModal(true)} />
-          <SignedIn><UserButton /></SignedIn>
-          <SignedOut>
-            <Link href="/sign-in">
-              <button
-                className="px-5 py-2 text-sm font-medium text-white rounded-lg transition-all duration-200"
-                style={{ border: '1px solid rgb(var(--color-text) / 0.2)' }}
-                onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = 'rgb(var(--color-text) / 0.1)')}
-                onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
-              >
-                {t.signIn}
-              </button>
-            </Link>
-          </SignedOut>
-        </nav>
         <UpgradeModal isOpen={showUpgradeModal} onClose={() => setShowUpgradeModal(false)} />
 
-        {/* Hero */}
-        <div className="flex-1 flex flex-col items-center justify-start px-4 md:px-10 text-center pt-3 pb-4">
-          <div className="flex flex-col items-center mb-2">
-            <div className="logo-float">
-              <Image src="/coral_logo.png" alt="Vela logo" width={120} height={120} style={{ objectFit: 'contain' }} priority />
-            </div>
-            <div
-              className="mt-1 font-black"
-              aria-label="Vela"
-              style={{
-                fontSize: 'clamp(3rem, 7vw, 5rem)',
-                background: 'linear-gradient(90deg, #ff6b6b, #ff8e6e, #ffb347)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                letterSpacing: '0.08em',
-                lineHeight: 1,
-              }}
-            >
-              Vela
-            </div>
-          </div>
-
-          <h1
-            className="font-semibold text-white mb-2 tracking-tight"
-            style={{ fontSize: 'clamp(1.25rem, 2.6vw, 1.875rem)', maxWidth: '780px', lineHeight: 1.25 }}
-          >
-            {lc.tagline}
-          </h1>
-          <p className="text-sm mb-4 max-w-2xl" style={{ color: 'rgb(var(--color-text) / 0.55)' }}>
-            {lc.subtitle}
-          </p>
-
-          {/* Typewriter */}
-          <div
-            className="w-full rounded-2xl px-7 py-5 mb-5 text-left"
-            dir="ltr"
-            style={{
-              maxWidth: '680px',
-              background: 'rgb(var(--color-text) / 0.06)',
-              border: '1px solid rgb(var(--color-text) / 0.12)',
-              backdropFilter: 'blur(12px)',
-            }}
-          >
-            <p className="text-xs uppercase tracking-widest mb-2 font-medium" style={{ color: 'rgb(var(--color-text) / 0.35)' }}>
-              {t.askVelaTo}
-            </p>
-            <p className="text-lg leading-relaxed min-h-[1.8rem] text-white">
-              <TypewriterPrompt />
-            </p>
-          </div>
-
-          {/* CTA */}
-          <div className="flex flex-wrap justify-center gap-3 my-8">
-            <Link href="/research">
-              <button
-                className="group px-6 py-2.5 text-white text-sm font-semibold rounded-xl transition-all duration-300 hover:scale-105 flex items-center gap-2"
-                style={{ background: 'linear-gradient(135deg, #ff6b6b, #ff8e6e)', boxShadow: '0 0 28px rgba(255,107,107,0.4)' }}
-              >
-                {lc.ctaPrimary}
-                <span className="group-hover:translate-x-1 transition-transform">{arrow}</span>
-              </button>
+        {/* Light zone — Stage 2 first viewport (warm-orange gradient) */}
+        <div
+          className="light min-h-screen flex flex-col"
+          style={{ background: 'linear-gradient(180deg, #ffffff 0%, #fff3ec 50%, #ffd9c4 100%)' }}
+        >
+          {/* Top bar */}
+          <nav className="flex-shrink-0 flex justify-between items-center gap-2 px-4 md:px-10 py-4">
+            <Link href="/" className="flex items-center gap-2">
+              <Image src="/coral_logo.png" alt="Vela" width={28} height={28} style={{ objectFit: 'contain' }} priority />
+              <span className="font-semibold text-text text-lg tracking-tight">Vela</span>
             </Link>
-            <Link
-              href="/pricing"
-              className="text-sm font-medium rounded-full px-4 py-2 transition-all duration-200 inline-flex items-center"
-              style={{ background: 'rgb(var(--color-text) / 0.08)', color: 'rgb(var(--color-text) / 0.55)', border: '1px solid rgb(var(--color-text) / 0.1)' }}
-              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgb(var(--color-text) / 0.15)'; (e.currentTarget as HTMLElement).style.color = 'white'; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgb(var(--color-text) / 0.08)'; (e.currentTarget as HTMLElement).style.color = 'rgb(var(--color-text) / 0.55)'; }}
-            >
-              {t.seePricing} {arrow}
-            </Link>
-          </div>
+            <div className="flex items-center gap-2">
+              <PlanBadge onUpgrade={() => setShowUpgradeModal(true)} />
+              <SignedIn><UserButton /></SignedIn>
+              <SignedOut>
+                <Link href="/sign-in">
+                  <button
+                    className="px-5 py-2 text-sm font-medium text-text rounded-lg transition-all duration-200"
+                    style={{ border: '1px solid rgb(var(--color-text) / 0.2)' }}
+                    onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = 'rgb(var(--color-text) / 0.1)')}
+                    onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
+                  >
+                    {t.signIn}
+                  </button>
+                </Link>
+              </SignedOut>
+            </div>
+          </nav>
 
-          {/* v1.1 Value Props */}
-          <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-4 mb-10" style={{ maxWidth: '900px' }}>
-            {[
-              { label: lc.valueProp.language.label, body: lc.valueProp.language.body },
-              { label: lc.valueProp.sources.label, body: lc.valueProp.sources.body },
-              { label: lc.valueProp.anonymous.label, body: lc.valueProp.anonymous.body },
-            ].map((vp) => (
-              <div
-                key={vp.label}
-                className="rounded-2xl p-5 text-left"
-                style={{ background: 'rgb(var(--color-text) / 0.04)', border: '1px solid rgb(var(--color-text) / 0.1)' }}
-              >
-                <div className="text-xs font-semibold tracking-wider mb-2" style={{ color: 'rgb(var(--color-text) / 0.5)' }}>{vp.label}</div>
-                <p className="text-sm leading-relaxed" style={{ color: 'rgb(var(--color-text) / 0.7)' }}>{vp.body}</p>
+          {/* Hero center — lovable.dev-style minimal */}
+          <div className="flex-1 flex flex-col items-center justify-center px-4 text-center pb-12">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-text mb-3 max-w-2xl">
+              {lc.tagline}
+            </h1>
+            <p className="text-base sm:text-lg max-w-xl mb-8" style={{ color: 'rgb(var(--color-text) / 0.6)' }}>
+              {lc.subtitle}
+            </p>
+
+            {/* Real input — submit no-op in Step 2 (Step 3 wires /research?q=&autorun) */}
+            <form onSubmit={(e) => e.preventDefault()} className="w-full max-w-2xl" dir="ltr">
+              <div className="relative">
+                <input
+                  type="text"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  onFocus={() => setIsFocused(true)}
+                  onBlur={() => setIsFocused(false)}
+                  className="w-full bg-bg-1 text-text rounded-2xl border border-text/15 shadow-sm px-5 py-4 pr-16 text-base focus:outline-none focus:ring-2 focus:ring-brand/30"
+                />
+                {query === '' && !isFocused && (
+                  <div className="absolute inset-0 px-5 py-4 pr-16 flex items-center text-base">
+                    <TypewriterPrompt />
+                  </div>
+                )}
+                <button
+                  type="submit"
+                  aria-label="Send"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-brand text-white flex items-center justify-center hover:opacity-90 transition-opacity"
+                >
+                  <ArrowUp size={18} strokeWidth={2.5} />
+                </button>
               </div>
-            ))}
+            </form>
+
+            {/* Scroll hint */}
+            <p className="mt-8 text-sm" style={{ color: 'rgb(var(--color-text) / 0.5)' }}>{t.seeHow}</p>
           </div>
-
-          {/* Social proof */}
-          <p className="text-sm mb-6" style={{ color: 'rgba(148,163,184,0.7)' }}>
-            {t.socialProof}
-          </p>
-
-          {/* Product showcase */}
-          <ProductShowcase t={t} />
-
-          {/* v1.1 Privacy-first transparent definition */}
-          <section className="w-full mt-14 mb-4 text-left" style={{ maxWidth: '780px' }}>
-            <h2 className="text-xl font-semibold text-white mb-4 text-center">
-              {t.privacyTitle}
-            </h2>
-            <ul className="space-y-2.5 mb-5">
-              {[t.privacyPromise1, t.privacyPromise2, t.privacyPromise3].map((item) => (
-                <li key={item} className="flex items-start gap-2.5 text-sm" style={{ color: 'rgb(var(--color-text) / 0.75)' }}>
-                  <span className="mt-0.5 font-bold" style={{ color: 'rgb(var(--color-success))' }} aria-hidden>✓</span>
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-            <div className="text-center">
-              <Link
-                href="/privacy"
-                className="text-sm hover:text-white transition-colors"
-                style={{ color: 'rgb(var(--color-text) / 0.55)' }}
-              >
-                {t.privacyPolicyLink}
-              </Link>
-            </div>
-          </section>
         </div>
 
-        {/* Footer */}
-        <div
-          className="flex-shrink-0 flex flex-col items-center gap-2 px-4 md:px-10 py-5 text-sm"
-          style={{ borderTop: '1px solid rgb(var(--color-text) / 0.07)', color: 'rgb(var(--color-text) / 0.3)' }}
-        >
-          <div className="flex items-center gap-3">
-            <span>© {new Date().getFullYear()} Vela. {t.footerCopy} · <a href="https://an-tho.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">an-tho.com</a></span>
-            <LanguageSwitcher lang={lang} setLang={setLang} />
+        {/* Dark island — below-fold preserved at today's appearance (Step 4 redesigns) */}
+        <div className="dark bg-app-bg flex flex-col">
+          <div className="flex flex-col items-center px-4 md:px-10 text-center pt-12 pb-4">
+            {/* CTA */}
+            <div className="flex flex-wrap justify-center gap-3 my-8">
+              <Link href="/research">
+                <button
+                  className="group px-6 py-2.5 text-white text-sm font-semibold rounded-xl transition-all duration-300 hover:scale-105 flex items-center gap-2"
+                  style={{ background: 'linear-gradient(135deg, #ff6b6b, #ff8e6e)', boxShadow: '0 0 28px rgba(255,107,107,0.4)' }}
+                >
+                  {lc.ctaPrimary}
+                  <span className="group-hover:translate-x-1 transition-transform">{arrow}</span>
+                </button>
+              </Link>
+              <Link
+                href="/pricing"
+                className="text-sm font-medium rounded-full px-4 py-2 transition-all duration-200 inline-flex items-center"
+                style={{ background: 'rgb(var(--color-text) / 0.08)', color: 'rgb(var(--color-text) / 0.55)', border: '1px solid rgb(var(--color-text) / 0.1)' }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgb(var(--color-text) / 0.15)'; (e.currentTarget as HTMLElement).style.color = 'white'; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgb(var(--color-text) / 0.08)'; (e.currentTarget as HTMLElement).style.color = 'rgb(var(--color-text) / 0.55)'; }}
+              >
+                {t.seePricing} {arrow}
+              </Link>
+            </div>
+
+            {/* v1.1 Value Props */}
+            <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-4 mb-10" style={{ maxWidth: '900px' }}>
+              {[
+                { label: lc.valueProp.language.label, body: lc.valueProp.language.body },
+                { label: lc.valueProp.sources.label, body: lc.valueProp.sources.body },
+                { label: lc.valueProp.anonymous.label, body: lc.valueProp.anonymous.body },
+              ].map((vp) => (
+                <div
+                  key={vp.label}
+                  className="rounded-2xl p-5 text-left"
+                  style={{ background: 'rgb(var(--color-text) / 0.04)', border: '1px solid rgb(var(--color-text) / 0.1)' }}
+                >
+                  <div className="text-xs font-semibold tracking-wider mb-2" style={{ color: 'rgb(var(--color-text) / 0.5)' }}>{vp.label}</div>
+                  <p className="text-sm leading-relaxed" style={{ color: 'rgb(var(--color-text) / 0.7)' }}>{vp.body}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Social proof */}
+            <p className="text-sm mb-6" style={{ color: 'rgba(148,163,184,0.7)' }}>
+              {t.socialProof}
+            </p>
+
+            {/* Product showcase */}
+            <ProductShowcase t={t} />
+
+            {/* v1.1 Privacy-first transparent definition */}
+            <section className="w-full mt-14 mb-4 text-left" style={{ maxWidth: '780px' }}>
+              <h2 className="text-xl font-semibold text-white mb-4 text-center">
+                {t.privacyTitle}
+              </h2>
+              <ul className="space-y-2.5 mb-5">
+                {[t.privacyPromise1, t.privacyPromise2, t.privacyPromise3].map((item) => (
+                  <li key={item} className="flex items-start gap-2.5 text-sm" style={{ color: 'rgb(var(--color-text) / 0.75)' }}>
+                    <span className="mt-0.5 font-bold" style={{ color: 'rgb(var(--color-success))' }} aria-hidden>✓</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+              <div className="text-center">
+                <Link
+                  href="/privacy"
+                  className="text-sm hover:text-white transition-colors"
+                  style={{ color: 'rgb(var(--color-text) / 0.55)' }}
+                >
+                  {t.privacyPolicyLink}
+                </Link>
+              </div>
+            </section>
           </div>
-          <div>{t.footerDisclaimer}</div>
-          <div className="flex flex-wrap justify-center gap-4 text-xs">
-            <Link href="/terms" className="hover:text-white transition-colors">{extra.termsLabel}</Link>
-            <Link href="/privacy" className="hover:text-white transition-colors">{extra.privacyLabel}</Link>
-            <Link href="/refund" className="hover:text-white transition-colors">{extra.refundLabel}</Link>
-            <Link href="/faq" className="hover:text-white transition-colors">FAQ</Link>
-            <a href="mailto:support@an-tho.com" className="hover:text-white transition-colors">support@an-tho.com</a>
+
+          {/* Footer */}
+          <div
+            className="flex-shrink-0 flex flex-col items-center gap-2 px-4 md:px-10 py-5 text-sm"
+            style={{ borderTop: '1px solid rgb(var(--color-text) / 0.07)', color: 'rgb(var(--color-text) / 0.3)' }}
+          >
+            <div className="flex items-center gap-3">
+              <span>© {new Date().getFullYear()} Vela. {t.footerCopy} · <a href="https://an-tho.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">an-tho.com</a></span>
+              <LanguageSwitcher lang={lang} setLang={setLang} />
+            </div>
+            <div>{t.footerDisclaimer}</div>
+            <div className="flex flex-wrap justify-center gap-4 text-xs">
+              <Link href="/terms" className="hover:text-white transition-colors">{extra.termsLabel}</Link>
+              <Link href="/privacy" className="hover:text-white transition-colors">{extra.privacyLabel}</Link>
+              <Link href="/refund" className="hover:text-white transition-colors">{extra.refundLabel}</Link>
+              <Link href="/faq" className="hover:text-white transition-colors">FAQ</Link>
+              <a href="mailto:support@an-tho.com" className="hover:text-white transition-colors">support@an-tho.com</a>
+            </div>
           </div>
         </div>
       </div>
