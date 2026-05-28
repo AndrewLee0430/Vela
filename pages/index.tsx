@@ -390,11 +390,13 @@ function LandingPage() {
       >
         <UpgradeModal isOpen={showUpgradeModal} onClose={() => setShowUpgradeModal(false)} />
 
-        {/* Light zone — Stage 2 first viewport (warm-orange gradient) */}
+        {/* Light zone — Stage 2 + 4a: hero (min-h-screen first viewport) + below-fold CTA + value-props + social-proof on warm gradient */}
         <div
-          className="light min-h-screen flex flex-col"
+          className="light flex flex-col"
           style={{ background: 'linear-gradient(180deg, #ffffff 0%, #fff3ec 50%, #ffd9c4 100%)' }}
         >
+          {/* First viewport: nav + hero */}
+          <div className="min-h-screen flex flex-col">
           {/* Top bar */}
           <nav className="flex-shrink-0 flex justify-between items-center gap-2 px-4 md:px-10 py-4">
             <Link href="/" className="flex items-center gap-2">
@@ -459,10 +461,9 @@ function LandingPage() {
             {/* Scroll hint */}
             <p className="mt-8 text-sm" style={{ color: 'rgb(var(--color-text) / 0.5)' }}>{t.seeHow}</p>
           </div>
-        </div>
+          </div>
 
-        {/* Dark island — below-fold preserved at today's appearance (Step 4 redesigns) */}
-        <div className="dark bg-app-bg flex flex-col">
+          {/* Below first-fold — still light zone */}
           <div className="flex flex-col items-center px-4 md:px-10 text-center pt-12 pb-4">
             {/* CTA */}
             <div className="flex flex-wrap justify-center gap-3 my-8">
@@ -479,7 +480,7 @@ function LandingPage() {
                 href="/pricing"
                 className="text-sm font-medium rounded-full px-4 py-2 transition-all duration-200 inline-flex items-center"
                 style={{ background: 'rgb(var(--color-text) / 0.08)', color: 'rgb(var(--color-text) / 0.55)', border: '1px solid rgb(var(--color-text) / 0.1)' }}
-                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgb(var(--color-text) / 0.15)'; (e.currentTarget as HTMLElement).style.color = 'white'; }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgb(var(--color-text) / 0.15)'; (e.currentTarget as HTMLElement).style.color = 'rgb(var(--color-text))'; }}
                 onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgb(var(--color-text) / 0.08)'; (e.currentTarget as HTMLElement).style.color = 'rgb(var(--color-text) / 0.55)'; }}
               >
                 {t.seePricing} {arrow}
@@ -505,10 +506,15 @@ function LandingPage() {
             </div>
 
             {/* Social proof */}
-            <p className="text-sm mb-6" style={{ color: 'rgba(148,163,184,0.7)' }}>
+            <p className="text-sm mb-6" style={{ color: 'rgb(var(--color-text) / 0.5)' }}>
               {t.socialProof}
             </p>
+          </div>
+        </div>
 
+        {/* Dark island — below-fold preserved at today's appearance (Step 4 redesigns) */}
+        <div className="dark bg-app-bg flex flex-col">
+          <div className="flex flex-col items-center px-4 md:px-10 text-center pt-12 pb-4">
             {/* Product showcase */}
             <ProductShowcase t={t} />
 
