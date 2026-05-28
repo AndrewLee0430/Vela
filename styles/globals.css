@@ -93,3 +93,21 @@ body {
   --color-info: 96 165 250;
   --color-danger-soft: 252 165 165;
 }
+
+/* Light-theme tokens — Stage 2 Step 1 (dormant). No element opts into .light
+   until Stage 2 Step 2 adds it on the landing root. Severity values are
+   contrast-shifted for AA legibility on white; revisit when a light-mode
+   surface first consumes them in Stage 2/3. */
+.light {
+  --color-bg-1: 255 255 255;
+  --color-bg-2: 249 250 251;
+  --color-bg-3: 243 244 246;
+  --color-bg-4: 229 231 235;
+  --color-text: 23 23 23;
+  --color-brand: 255 142 110;
+  --color-success: 22 163 74;
+  --color-warning: 202 138 4;
+  --color-danger: 220 38 38;
+  --color-info: 37 99 235;
+  --color-danger-soft: 185 28 28;
+}
