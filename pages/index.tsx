@@ -6,7 +6,8 @@ import { SignedIn, SignedOut } from '@clerk/nextjs';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowUp } from 'lucide-react';
-import { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/router';
+import { useState, useEffect, useRef, FormEvent } from 'react';
 import MobileNav from '../components/MobileNav';
 import PlanBadge from '../components/PlanBadge';
 import UpgradeModal from '../components/UpgradeModal';
@@ -257,6 +258,7 @@ function ProductShowcase({ t }: { t: typeof translations['en'] }) {
 
 // ─── Landing Page (unauthenticated) ──────────────────────────────────────────
 function LandingPage() {
+  const router = useRouter();
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [query, setQuery] = useState<string>('');
   const [isFocused, setIsFocused] = useState<boolean>(false);
@@ -266,6 +268,14 @@ function LandingPage() {
   const extra = getExtra(lang);
   const isRtl = RTL_LANGS.includes(lang);
   const arrow = isRtl ? t.arrowLeft : t.arrowRight;
+
+  const handleHeroSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const trimmed = query.trim();
+    if (!trimmed) return;
+    router.push(`/research?q=${encodeURIComponent(trimmed)}`);
+    setQuery('');
+  };
 
   return (
     <>
@@ -418,8 +428,7 @@ function LandingPage() {
               {lc.subtitle}
             </p>
 
-            {/* Real input — submit no-op in Step 2 (Step 3 wires /research?q=&autorun) */}
-            <form onSubmit={(e) => e.preventDefault()} className="w-full max-w-2xl" dir="ltr">
+            <form onSubmit={handleHeroSubmit} className="w-full max-w-2xl" dir="ltr">
               <div className="relative">
                 <input
                   type="text"

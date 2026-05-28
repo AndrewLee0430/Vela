@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, FormEvent, useRef, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/router';
 import { useAuth, useUser } from '@clerk/nextjs';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -172,6 +173,7 @@ function FallbackBanner() {
 }
 
 function ResearchForm() {
+    const router = useRouter();
     const { getToken } = useAuth();
     const { isSignedIn } = useUser();
     const { lang } = useLang();
@@ -228,6 +230,7 @@ function ResearchForm() {
     const answerRef    = useRef<HTMLDivElement>(null);
     const inputRef     = useRef<HTMLInputElement>(null);
     const isRunningRef = useRef(false);
+    const heroQueryConsumedRef = useRef(false);
     const [selectedSuggestion, setSelectedSuggestion] = useState<string | null>(null);
 
     useEffect(() => {
@@ -447,6 +450,20 @@ function ResearchForm() {
             isRunningRef.current = false;
         }
     }, [getToken, isSignedIn, ui, maybeTriggerThirdQueryCta]);
+
+    useEffect(() => {
+        if (!router.isReady) return;
+        if (heroQueryConsumedRef.current) return;
+        const raw = router.query.q;
+        const q = Array.isArray(raw) ? raw[0] : raw;
+        if (typeof q !== 'string') return;
+        const trimmed = q.trim();
+        if (!trimmed) return;
+        heroQueryConsumedRef.current = true;
+        setQuestion(trimmed);
+        void runSearch(trimmed);
+        router.replace('/research', undefined, { shallow: true });
+    }, [router, runSearch]);
 
     async function handleSubmit(e: FormEvent) {
         e.preventDefault();
