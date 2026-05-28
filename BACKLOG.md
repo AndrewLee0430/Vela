@@ -886,3 +886,17 @@ Captured 2026-05-19 from production deploy + retrospective. See docs/retrospecti
       During PART C.1.6 PostHog Live Events verification on 2026-05-19, `share_revoked` event was not visible in the 30-minute window after revoking a test share. Possible causes: (a) event was truncated outside 30-min window in PostHog default view, (b) revoke action's PostHog capture call has a wiring gap. PRD §4.5 PHASE B lists 6 share events; only 5 were directly verified.
       
       Resolution: Next dogfooding session, revoke a fresh share and immediately check PostHog Live Events panel filtered on user clerk_id. If absent, grep frontend `MySharesTab.tsx` (or wherever revoke action lives) for `posthog.capture('share_revoked'` to confirm wire-up.
+
+---
+
+## Stage 2 landing copy i18n alignment (captured during landing redesign)
+
+Two i18n content drifts surfaced during Stage 2 landing redesign (Steps 2 / 4a / 4b, 2026-05-28 → 2026-05-29). Both are 16-locale content edits in the i18n bundle — same category as blog content authoring (Rule 16: i18n-first). Non-blocking; best done together as one "[i18n] landing copy alignment" pass alongside or before Stage 2 push.
+
+**Redeploy note:** i18n strings are bundled into the Next.js build (not DB-backed like blog content), so this pass WILL trigger a redeploy. Lighter than blog authoring but heavier than a hot config / DB content change.
+
+- [ ] **Hero copy not aligned to STATE.md Stage 2 locked spec**
+      STATE.md "Next Up" Stage 2 locked the hero as: title "Ask in your language." (short, period-terminated) + subtitle "Evidence-cited medical answers from PubMed and the FDA, answered in your language. No account needed to try." Stage 2 Step 2 reused the existing `landingContent.<locale>.tagline` / `.subtitle` values (to preserve 16-locale coverage per Rule 16) which resolve to different strings — observed in en: title "Ask in your language. Verified by official sources. Answered in yours." + subtitle "The AI medical search for healthcare professionals who work beyond English." Aligning to the locked spec means editing `landingContent.tagline` / `.subtitle` across all 16 locales.
+
+- [ ] **ProductShowcase Research mockup query drift**
+      STATE.md Stage 2 locked the Research card snippet as "Metformin + CKD eGFR≥30". Current `t.mockupResearchQuery` resolves to a different query (observed in en: "What are the side effects of Metformin?"). Verify (`t.mockupVerifyDrugs` / `t.mockupVerifyBadge` → "Warfarin + Aspirin Major interaction") and Explain (`t.mockupExplainValue` / `t.mockupExplainStatus` → "TSH 12.5 above-normal") cards ARE already aligned — only Research drifts. Fix means editing the Research mockup query key across all 16 locales.
