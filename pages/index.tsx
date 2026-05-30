@@ -142,7 +142,7 @@ function LanguageSwitcher({ lang, setLang }: { lang: LangCode; setLang: (l: Lang
 function ProductShowcase({ t }: { t: typeof translations['en'] }) {
   const cards = [
     {
-      href: '/research',
+      href: `/research?q=${encodeURIComponent(t.mockupResearchQuery)}`,
       color: 'rgb(var(--color-text) / 0.85)',
       borderColor: 'rgb(var(--color-text) / 0.1)',
       hoverBorder: 'rgb(var(--color-text) / 0.3)',
@@ -168,6 +168,7 @@ function ProductShowcase({ t }: { t: typeof translations['en'] }) {
     },
     {
       href: '/explain',
+      pro: true,
       color: 'rgb(var(--color-text) / 0.85)',
       borderColor: 'rgb(var(--color-text) / 0.1)',
       hoverBorder: 'rgb(var(--color-text) / 0.3)',
@@ -183,9 +184,6 @@ function ProductShowcase({ t }: { t: typeof translations['en'] }) {
 
   return (
     <div className="w-full" style={{ maxWidth: '960px' }}>
-      <p className="text-center text-sm font-medium mb-5" style={{ color: 'rgb(var(--color-text) / 0.4)' }}>
-        {t.seeHow}
-      </p>
       <div className="flex flex-col sm:flex-row gap-3">
         {cards.map(c => (
           <Link key={c.href} href={c.href} className="flex-1">
@@ -218,6 +216,14 @@ function ProductShowcase({ t }: { t: typeof translations['en'] }) {
                     >
                       {c.sub}
                     </span>
+                    {'pro' in c && c.pro && (
+                      <span
+                        className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full"
+                        style={{ background: 'rgb(var(--color-brand) / 0.15)', color: 'rgb(var(--color-brand))' }}
+                      >
+                        Pro
+                      </span>
+                    )}
                   </div>
                   {/* Question */}
                   <p className="text-xs font-mono font-medium text-text leading-snug">{c.question}</p>
@@ -239,13 +245,6 @@ function ProductShowcase({ t }: { t: typeof translations['en'] }) {
                   <p className="text-[10px] font-mono mt-auto" style={{ color: 'rgb(var(--color-text) / 0.3)' }}>
                     {c.footer}
                   </p>
-                  {/* CTA */}
-                  <span
-                    className="text-[11px] font-semibold mt-1 inline-flex items-center gap-1 transition-all duration-200 hover:gap-2"
-                    style={{ color: 'rgb(var(--color-text) / 0.85)' }}
-                  >
-                    {c.cta}
-                  </span>
                 </div>
               </div>
             </div>
@@ -262,12 +261,12 @@ function LandingPage() {
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [query, setQuery] = useState<string>('');
   const [isFocused, setIsFocused] = useState<boolean>(false);
+  const inputRef = useRef<HTMLInputElement>(null);
   const { lang, setLang } = useLang();
   const t = translations[lang];
   const lc = landingContent[lang];
   const extra = getExtra(lang);
   const isRtl = RTL_LANGS.includes(lang);
-  const arrow = isRtl ? t.arrowLeft : t.arrowRight;
 
   const handleHeroSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -275,6 +274,16 @@ function LandingPage() {
     if (!trimmed) return;
     router.push(`/research?q=${encodeURIComponent(trimmed)}`);
     setQuery('');
+  };
+
+  const handleChipClick = (text: string) => {
+    setQuery(text);
+    requestAnimationFrame(() => {
+      const el = inputRef.current;
+      if (!el) return;
+      el.focus();
+      el.setSelectionRange(text.length, text.length);
+    });
   };
 
   return (
@@ -422,7 +431,7 @@ function LandingPage() {
           </nav>
 
           {/* Hero center — lovable.dev-style minimal */}
-          <div className="flex-1 flex flex-col items-center justify-center px-4 text-center pb-12">
+          <div className="flex-1 flex flex-col items-center justify-center px-4 text-center pb-8">
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-text mb-3 max-w-2xl">
               {lc.tagline}
             </h1>
@@ -433,6 +442,7 @@ function LandingPage() {
             <form onSubmit={handleHeroSubmit} className="w-full max-w-2xl" dir="ltr">
               <div className="relative">
                 <input
+                  ref={inputRef}
                   type="text"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
@@ -458,87 +468,35 @@ function LandingPage() {
               </div>
             </form>
 
-            {/* Scroll hint */}
-            <p className="mt-8 text-sm" style={{ color: 'rgb(var(--color-text) / 0.5)' }}>{t.seeHow}</p>
-          </div>
-          </div>
-
-          {/* Below first-fold — still light zone */}
-          <div className="flex flex-col items-center px-4 md:px-10 text-center pt-12 pb-4">
-            {/* CTA */}
-            <div className="flex flex-wrap justify-center gap-3 my-8">
-              <Link href="/research">
+            {/* Suggestion chips — prefill the input, no submit */}
+            <div className="mt-5 flex flex-wrap justify-center gap-2">
+              {[t.heroChip1, t.heroChip2, t.heroChip3].map((chip) => (
                 <button
-                  className="group px-6 py-2.5 text-white text-sm font-semibold rounded-xl transition-all duration-300 hover:scale-105 flex items-center gap-2"
-                  style={{ background: 'linear-gradient(135deg, #ff6b6b, #ff8e6e)', boxShadow: '0 0 28px rgba(255,107,107,0.4)' }}
+                  key={chip}
+                  type="button"
+                  onClick={() => handleChipClick(chip)}
+                  className="px-3 py-1.5 text-xs rounded-full transition-all duration-200"
+                  style={{ background: 'rgb(var(--color-text) / 0.06)', border: '1px solid rgb(var(--color-text) / 0.15)', color: 'rgb(var(--color-text) / 0.6)' }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgb(var(--color-text) / 0.12)'; (e.currentTarget as HTMLElement).style.color = 'rgb(var(--color-text))'; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgb(var(--color-text) / 0.06)'; (e.currentTarget as HTMLElement).style.color = 'rgb(var(--color-text) / 0.6)'; }}
                 >
-                  {lc.ctaPrimary}
-                  <span className="group-hover:translate-x-1 transition-transform">{arrow}</span>
+                  {chip}
                 </button>
-              </Link>
-              <Link
-                href="/pricing"
-                className="text-sm font-medium rounded-full px-4 py-2 transition-all duration-200 inline-flex items-center"
-                style={{ background: 'rgb(var(--color-text) / 0.08)', color: 'rgb(var(--color-text) / 0.55)', border: '1px solid rgb(var(--color-text) / 0.1)' }}
-                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgb(var(--color-text) / 0.15)'; (e.currentTarget as HTMLElement).style.color = 'rgb(var(--color-text))'; }}
-                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgb(var(--color-text) / 0.08)'; (e.currentTarget as HTMLElement).style.color = 'rgb(var(--color-text) / 0.55)'; }}
-              >
-                {t.seePricing} {arrow}
-              </Link>
-            </div>
-
-            {/* v1.1 Value Props */}
-            <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-4 mb-10" style={{ maxWidth: '900px' }}>
-              {[
-                { label: lc.valueProp.language.label, body: lc.valueProp.language.body },
-                { label: lc.valueProp.sources.label, body: lc.valueProp.sources.body },
-                { label: lc.valueProp.anonymous.label, body: lc.valueProp.anonymous.body },
-              ].map((vp) => (
-                <div
-                  key={vp.label}
-                  className="rounded-2xl p-5 text-left"
-                  style={{ background: 'rgba(255,255,255,0.55)', border: '1px solid rgb(var(--color-text) / 0.1)' }}
-                >
-                  <div className="text-xs font-semibold tracking-wider mb-2" style={{ color: 'rgb(var(--color-text) / 0.5)' }}>{vp.label}</div>
-                  <p className="text-sm leading-relaxed" style={{ color: 'rgb(var(--color-text) / 0.7)' }}>{vp.body}</p>
-                </div>
               ))}
             </div>
 
-            {/* Social proof */}
-            <p className="text-sm mb-6" style={{ color: 'rgb(var(--color-text) / 0.5)' }}>
-              {t.socialProof}
+            {/* Three feature cards — clickable entry points */}
+            <div className="mt-8 w-full flex justify-center">
+              <ProductShowcase t={t} />
+            </div>
+
+            {/* Compressed privacy line — replaces Stage 2 privacy section */}
+            <p className="mt-6 text-xs flex flex-wrap justify-center gap-x-3 gap-y-1" style={{ color: 'rgb(var(--color-text) / 0.45)' }}>
+              <span>· {t.privacyPromise1}</span>
+              <span>· {t.privacyPromise2}</span>
+              <span>· {t.privacyPromise3} ·</span>
             </p>
           </div>
-
-          {/* Showcase + privacy — now in light zone (Step 4b: seam eliminated) */}
-          <div className="flex flex-col items-center px-4 md:px-10 text-center pt-8 pb-12">
-            {/* Product showcase */}
-            <ProductShowcase t={t} />
-
-            {/* v1.1 Privacy-first transparent definition */}
-            <section className="w-full mt-14 mb-4 text-left" style={{ maxWidth: '780px' }}>
-              <h2 className="text-xl font-semibold text-text mb-4 text-center">
-                {t.privacyTitle}
-              </h2>
-              <ul className="space-y-2.5 mb-5">
-                {[t.privacyPromise1, t.privacyPromise2, t.privacyPromise3].map((item) => (
-                  <li key={item} className="flex items-start gap-2.5 text-sm" style={{ color: 'rgb(var(--color-text) / 0.75)' }}>
-                    <span className="mt-0.5 font-bold" style={{ color: 'rgb(var(--color-success))' }} aria-hidden>✓</span>
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-              <div className="text-center">
-                <Link
-                  href="/privacy"
-                  className="text-sm hover:text-text transition-colors"
-                  style={{ color: 'rgb(var(--color-text) / 0.55)' }}
-                >
-                  {t.privacyPolicyLink}
-                </Link>
-              </div>
-            </section>
           </div>
 
           {/* Footer — light zone */}
