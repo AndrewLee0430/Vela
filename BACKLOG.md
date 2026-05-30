@@ -900,3 +900,25 @@ Two i18n content drifts surfaced during Stage 2 landing redesign (Steps 2 / 4a /
 
 - [ ] **ProductShowcase Research mockup query drift**
       STATE.md Stage 2 locked the Research card snippet as "Metformin + CKD eGFR≥30". Current `t.mockupResearchQuery` resolves to a different query (observed in en: "What are the side effects of Metformin?"). Verify (`t.mockupVerifyDrugs` / `t.mockupVerifyBadge` → "Warfarin + Aspirin Major interaction") and Explain (`t.mockupExplainValue` / `t.mockupExplainStatus` → "TSH 12.5 above-normal") cards ARE already aligned — only Research drifts. Fix means editing the Research mockup query key across all 16 locales.
+
+---
+
+## Verify/Explain `?prefill=` cross-page auto-run (deferred from Stage 4)
+
+- [ ] **Verify/Explain `?prefill=` cross-page auto-run support**
+      Landing feature cards / chips currently deep-link Verify & Explain to empty
+      state only (Research uses `?q=` auto-run, wired in Stage 2 Step 3). Add a
+      shared prefill-param convention so Verify (drug list) and Explain (report
+      text) can also be pre-populated from an external link. Deferred from Stage 4
+      S4.1 — the S4.1 cards intentionally route `/verify` and `/explain` to their
+      empty states per Andrew's decision; only the Research card carries a query.
+
+      **Scope notes when picked up:**
+      - Verify input is a newline-delimited drug textarea (not a `?q=` string);
+        a prefill param would need to encode a list (e.g. comma → newline split).
+      - Explain is signed-in only (anon blocked client + server); a prefilled
+        link landing an anonymous user still hits `ExplainLockedForAnonymous`.
+      - Mirror Research's `heroQueryConsumedRef` + `router.replace` one-shot
+        consume pattern (`pages/research.tsx`) so the param doesn't re-fire.
+      - i18n-first: any new chip/card content that targets Verify/Explain prefill
+        needs 16-locale keys (Rule 16).
