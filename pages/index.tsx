@@ -402,7 +402,7 @@ function LandingPage() {
         {/* Light zone — Stage 2 + 4a: hero (min-h-screen first viewport) + below-fold CTA + value-props + social-proof on warm gradient */}
         <div
           className="light flex flex-col"
-          style={{ background: 'linear-gradient(180deg, #ffffff 0%, #fff3ec 30%, #ffd9c4 60%, #ffd9c4 100%)' }}
+          style={{ background: 'radial-gradient(ellipse at 50% 45%, #ffd9c4 0%, #fff3ec 30%, #ffffff 70%)' }}
         >
           {/* First viewport: nav + hero */}
           <div className="min-h-screen flex flex-col">
