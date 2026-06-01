@@ -4,9 +4,9 @@ import { useState, useEffect, useRef } from 'react';
 import { SignedIn, SignedOut, UserButton, useAuth, useUser } from '@clerk/nextjs';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Settings } from 'lucide-react';
+import { Settings, Sun, Moon, Monitor } from 'lucide-react';
 import UpgradeModal from './UpgradeModal';
-import LanguageSwitcher from './LanguageSwitcher';
+import { LANGUAGES, type LangCode } from '../utils/i18n';
 import ShareButton from './ShareButton';
 import { useShareContext } from '../contexts/ShareContext';
 import { useLang } from '../utils/LangContext';
@@ -48,7 +48,7 @@ function writeStatusCache(plan: 'free' | 'pro', credits_used_today: number, dail
 }
 
 export default function Navbar({ activePage }: NavbarProps) {
-    const { lang } = useLang();
+    const { lang, setLang } = useLang();
     const ui = getUI(lang);
     const extra = getExtra(lang);
     const share = getShare(lang);
@@ -60,6 +60,7 @@ export default function Navbar({ activePage }: NavbarProps) {
     };
     const [showUpgradeModal, setShowUpgradeModal] = useState(false);
     const [settingsOpen, setSettingsOpen] = useState(false);
+    const [themePref, setThemePref] = useState<'light' | 'dark' | 'system'>('light');
     const settingsRef = useRef<HTMLDivElement>(null);
     const { getToken } = useAuth();
     const { isSignedIn, isLoaded } = useUser();
@@ -241,16 +242,54 @@ export default function Navbar({ activePage }: NavbarProps) {
 
                                     {settingsOpen && (
                                         <div
-                                            className="absolute right-0 top-full mt-2 rounded-xl shadow-2xl border border-text/10 py-2 z-50"
+                                            className="absolute right-0 top-full mt-2 rounded-xl shadow-2xl border border-text/10 py-2 z-50 max-h-[calc(100vh-5rem)] overflow-y-auto"
                                             style={{
-                                                width: '280px',
+                                                width: '300px',
                                                 background: 'rgba(15, 23, 42, 0.98)',
                                                 backdropFilter: 'blur(20px)',
                                             }}
                                         >
+                                            {/* Theme toggle — cosmetic only (Stage 3 wires next-themes useTheme()) */}
+                                            <div className="px-4 py-3 border-b border-text/7">
+                                                <p className="text-xs font-semibold mb-2" style={{ color: 'rgb(var(--color-text) / 0.5)' }}>{ui.theme}</p>
+                                                <div role="radiogroup" aria-label={ui.theme} className="flex gap-2">
+                                                    {([
+                                                        { value: 'light' as const, label: ui.themeLight, Icon: Sun },
+                                                        { value: 'dark' as const, label: ui.themeDark, Icon: Moon },
+                                                        { value: 'system' as const, label: ui.themeSystem, Icon: Monitor },
+                                                    ]).map(({ value, label, Icon }) => {
+                                                        const selected = themePref === value;
+                                                        return (
+                                                            <button
+                                                                key={value}
+                                                                type="button"
+                                                                role="radio"
+                                                                aria-checked={selected}
+                                                                onClick={() => setThemePref(value)}
+                                                                className={`flex-1 flex flex-col items-center gap-1 px-2 py-2 rounded-lg border text-xs transition-all duration-200 ${selected ? 'border-brand bg-brand/10 text-brand' : 'border-text/10 bg-text/[0.04] text-text/60 hover:bg-text/8 hover:border-text/20'}`}
+                                                            >
+                                                                <Icon size={16} strokeWidth={1.8} />
+                                                                <span className="font-medium">{label}</span>
+                                                            </button>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </div>
+
                                             {/* Language */}
-                                            <div className="border-b border-text/7">
-                                                <LanguageSwitcher compact />
+                                            <div className="px-4 py-3 border-b border-text/7">
+                                                <select
+                                                    aria-label="Language"
+                                                    value={lang}
+                                                    onChange={(e) => setLang(e.target.value as LangCode)}
+                                                    className="w-full bg-text/[0.05] border border-text/15 text-text/80 rounded-lg px-3 py-2 text-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand/30"
+                                                >
+                                                    {LANGUAGES.map(l => (
+                                                        <option key={l.code} value={l.code} style={{ background: '#0f172a', color: '#fff' }}>
+                                                            {l.label} ({l.code})
+                                                        </option>
+                                                    ))}
+                                                </select>
                                             </div>
 
                                             {/* Plan label */}
