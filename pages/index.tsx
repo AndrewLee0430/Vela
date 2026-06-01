@@ -475,10 +475,7 @@ function LandingPage() {
                   key={chip}
                   type="button"
                   onClick={() => handleChipClick(chip)}
-                  className="px-3 py-1.5 text-xs rounded-full transition-all duration-200"
-                  style={{ background: 'rgb(var(--color-text) / 0.06)', border: '1px solid rgb(var(--color-text) / 0.15)', color: 'rgb(var(--color-text) / 0.6)' }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgb(var(--color-text) / 0.12)'; (e.currentTarget as HTMLElement).style.color = 'rgb(var(--color-text))'; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgb(var(--color-text) / 0.06)'; (e.currentTarget as HTMLElement).style.color = 'rgb(var(--color-text) / 0.6)'; }}
+                  className="px-3 py-1.5 text-xs rounded-full border border-text/15 bg-text/6 text-text/70 cursor-pointer transition-all duration-200 hover:bg-text/12 hover:border-text/25 hover:text-text active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40"
                 >
                   {chip}
                 </button>
