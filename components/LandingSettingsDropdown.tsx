@@ -42,8 +42,11 @@ export default function LandingSettingsDropdown() {
             </button>
 
             {open && (
+                /* fixed (not absolute) — gear is mid-nav, so absolute right-0 anchors to gear's
+                   right edge ~180px from viewport, overflowing on mobile. fixed anchors to viewport.
+                   top-[72px] matches the current single-row landing nav height; update if nav changes. */
                 <div
-                    className="absolute right-0 top-full mt-2 rounded-xl shadow-2xl border border-text/10 py-2 z-50 max-h-[calc(100vh-5rem)] overflow-y-auto w-[300px] max-w-[calc(100vw-2rem)]"
+                    className="fixed right-4 md:right-10 top-[72px] rounded-xl shadow-2xl border border-text/10 py-2 z-50 max-h-[calc(100vh-5rem)] overflow-y-auto w-[300px] max-w-[calc(100vw-2rem)]"
                     style={{
                         background: 'rgba(255, 255, 255, 0.97)',
                         backdropFilter: 'blur(20px)',
