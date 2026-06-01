@@ -12,6 +12,7 @@ import MobileNav from '../components/MobileNav';
 import PlanBadge from '../components/PlanBadge';
 import UpgradeModal from '../components/UpgradeModal';
 import Navbar from '../components/Navbar';
+import LandingSettingsDropdown from '../components/LandingSettingsDropdown';
 import OnboardingOverlay from '../components/OnboardingOverlay';
 import { translations, LANGUAGES, RTL_LANGS, landingContent, type LangCode } from '../utils/i18n';
 import { useLang } from '../utils/LangContext';
@@ -413,6 +414,7 @@ function LandingPage() {
               <span className="font-semibold text-text text-lg tracking-tight">Vela</span>
             </Link>
             <div className="flex items-center gap-2">
+              <LandingSettingsDropdown />
               <PlanBadge onUpgrade={() => setShowUpgradeModal(true)} />
               <SignedIn><UserButton /></SignedIn>
               <SignedOut>
