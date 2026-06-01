@@ -901,6 +901,22 @@ Two i18n content drifts surfaced during Stage 2 landing redesign (Steps 2 / 4a /
 - [ ] **ProductShowcase Research mockup query drift**
       STATE.md Stage 2 locked the Research card snippet as "Metformin + CKD eGFR≥30". Current `t.mockupResearchQuery` resolves to a different query (observed in en: "What are the side effects of Metformin?"). Verify (`t.mockupVerifyDrugs` / `t.mockupVerifyBadge` → "Warfarin + Aspirin Major interaction") and Explain (`t.mockupExplainValue` / `t.mockupExplainStatus` → "TSH 12.5 above-normal") cards ARE already aligned — only Research drifts. Fix means editing the Research mockup query key across all 16 locales.
 
+- [ ] **Dead landing i18n keys cleanup (post-Stage-4)**
+      Stage 4 S4.1 removed multiple landing UI elements; their i18n keys are
+      now dead. Cleanup pass needs to coordinate across `utils/i18n.ts` (16
+      locales) and `pages/index.tsx`:
+      - Fully unused (`t.*` and `lc.*`, safe to delete from interface + all
+        16 locales): `seeHow`, `socialProof`, `privacyTitle`,
+        `privacyPolicyLink`, `seePricing`, `ctaPrimary`,
+        `valueProp.{language,sources,anonymous}.{label,body}` (6 sub-keys).
+      - Referenced-but-dead (`tryResearch`, `tryVerify`, `tryExplain`):
+        still assigned as `cta:` fields in the ProductShowcase cards array
+        (pages/index.tsx lines ~153/167/181) but never rendered after the
+        per-card CTA `<span>` was removed in S4.1. Must remove the three
+        `cta:` object fields AT THE SAME TIME as deleting the i18n keys,
+        else build fails (TS strict-object initialization). Natural to fold
+        into the same pass as the hero/mockup copy alignment above.
+
 ---
 
 ## Verify/Explain `?prefill=` cross-page auto-run (deferred from Stage 4)
@@ -931,3 +947,24 @@ Two i18n content drifts surfaced during Stage 2 landing redesign (Steps 2 / 4a /
       Stage 4 S4.3 to avoid introducing an untranslated English SR string
       mid-stage. Low priority; chips are currently AA-readable and the chip text
       alone is meaningful.
+
+---
+
+## Tooling / repo hygiene (pre-existing, surfaced during audits)
+
+- [ ] **ESLint flat-config migration (pre-existing tooling debt)**
+      `npm run lint` fails: ESLint 9.37 requires a flat `eslint.config.js`,
+      but the repo has neither `eslint.config.*` nor `.eslintrc*`. Build's
+      own type-check + Next lint succeed, so this only affects the
+      standalone `npm run lint` script. Options: (a) create `eslint.config.js`
+      flat config, (b) pin ESLint to v8 in package.json, (c) change the
+      `lint` script in package.json to `next lint`. Surfaced during Stage 4
+      S4.4 audit. NOT a Stage 4 regression.
+
+- [ ] **Decide fate of `docs/Blog_Implementation_Spec.md`**
+      Untracked since the 2026-05-25 blog feature ship; persisted as
+      untracked across every Stage 2 / Stage 4 commit. Needs a decision:
+      (a) `git add` + commit if intended as repo doc; (b) add to
+      `.gitignore` if intentionally local; (c) delete if obsolete. Currently
+      shows up as `??` in every `git status` and clutters the working-tree
+      check.
