@@ -922,3 +922,12 @@ Two i18n content drifts surfaced during Stage 2 landing redesign (Steps 2 / 4a /
         consume pattern (`pages/research.tsx`) so the param doesn't re-fire.
       - i18n-first: any new chip/card content that targets Verify/Explain prefill
         needs 16-locale keys (Rule 16).
+
+- [ ] **Hero chip screen-reader action-context i18n key (`heroChipAriaPrefix`)**
+      Currently the hero chips have no `aria-label` (their visible text is the
+      accessible name). For richer SR context like "Fill search with: <chip text>",
+      add a `heroChipAriaPrefix` translation key across all 16 locales and wrap
+      chips with `aria-label={`${t.heroChipAriaPrefix}${chip}`}`. Deferred from
+      Stage 4 S4.3 to avoid introducing an untranslated English SR string
+      mid-stage. Low priority; chips are currently AA-readable and the chip text
+      alone is meaningful.
