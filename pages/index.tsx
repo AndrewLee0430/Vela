@@ -399,7 +399,7 @@ function LandingPage() {
       >
         <UpgradeModal isOpen={showUpgradeModal} onClose={() => setShowUpgradeModal(false)} />
 
-        {/* Light zone — Stage 2 + 4a: hero (min-h-screen first viewport) + below-fold CTA + value-props + social-proof on warm gradient */}
+        {/* Light zone — single-fold hero (nav + input + chips + cards + privacy) on radial gradient; footer */}
         <div
           className="light flex flex-col"
           style={{ background: 'radial-gradient(ellipse at 50% 45%, #ffd9c4 0%, #fff3ec 30%, #ffffff 70%)' }}
