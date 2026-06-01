@@ -205,7 +205,7 @@ function ProductShowcase({ t }: { t: typeof translations['en'] }) {
             >
               <div className="flex h-full">
                 {/* Left color bar — neutral after C3 feature-accent collapse */}
-                <div className="w-1 flex-shrink-0" style={{ background: 'rgb(var(--color-text) / 0.15)' }} />
+                <div className="w-1 flex-shrink-0" style={{ background: 'rgb(var(--color-text) / 0.7)' }} />
                 <div className="flex flex-col p-5 gap-2.5 flex-1 min-w-0">
                   {/* Top label + source badge */}
                   <div className="flex items-center gap-2">
