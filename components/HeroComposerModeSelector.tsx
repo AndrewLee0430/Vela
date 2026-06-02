@@ -14,14 +14,15 @@ interface Props {
 
 /**
  * Claude-style in-input mode selector for the landing hero composer (S5.2).
- * Sits at the input wrapper's internal bottom-LEFT; the ArrowUp submit button
- * is its bottom-RIGHT sibling. Selecting a mode is state-only — it never
- * submits; submit routing reads `mode` in LandingPage.handleHeroSubmit.
+ * Sits at the input wrapper's internal bottom-RIGHT, immediately left of the
+ * ArrowUp submit button (both clustered at the right end of the control row).
+ * Selecting a mode is state-only — it never submits; submit routing reads
+ * `mode` in LandingPage.handleHeroSubmit.
  *
  * Surface mirrors LandingSettingsDropdown (white shell on the .light hero
  * zone — NOT the Navbar dark glass). Dropdown pops UPWARD (bottom-full) and is
- * left-aligned so it extends rightward into the input and never overflows the
- * left viewport edge on mobile (trigger is at the input's far left).
+ * right-aligned so it extends leftward from the right-positioned trigger and
+ * never overflows the right viewport edge on mobile.
  */
 export default function HeroComposerModeSelector({ mode, onChange, t }: Props) {
     const [open, setOpen] = useState(false);
@@ -72,7 +73,7 @@ export default function HeroComposerModeSelector({ mode, onChange, t }: Props) {
             {open && (
                 <div
                     role="listbox"
-                    className="absolute bottom-full left-0 mb-2 rounded-xl shadow-2xl border border-text/10 p-1.5 z-50 w-72 max-w-[calc(100vw-2rem)]"
+                    className="absolute bottom-full right-0 mb-2 rounded-xl shadow-2xl border border-text/10 p-1.5 z-50 w-72 max-w-[calc(100vw-2rem)]"
                     style={{ background: 'rgba(255, 255, 255, 0.97)', backdropFilter: 'blur(20px)' }}
                 >
                     {modes.map(m => {
