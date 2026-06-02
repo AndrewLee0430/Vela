@@ -2,6 +2,7 @@
 
 import { useState, FormEvent, useRef, useCallback, useEffect } from 'react';
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 import { useAuth, useUser } from '@clerk/nextjs';
 import FeedbackBar from '../components/FeedbackBar';
 import { useShareContext } from '../contexts/ShareContext';
@@ -37,11 +38,31 @@ interface VerifyResponse {
     query_id?: string | null;
 }
 
+// Split a free-text prefill (e.g. cross-page ?prefill= carry-over) into the
+// newline-delimited drug list this page expects. Symbolic separators only
+// (+, comma, &) — " and " is intentionally excluded (can't distinguish
+// "Drug and Drug" from "Drug and <context>" without NLP). Falls back to the
+// raw string if no confident split; the user reviews before manual submit.
+function splitDrugsForPrefill(raw: string): string {
+    const s = raw.trim();
+    if (!s) return '';
+    const seps = [/\s*\+\s*/, /\s*,\s*/, /\s*&\s*/];
+    for (const sep of seps) {
+        const parts = s.split(sep).map(p => p.trim()).filter(Boolean);
+        if (parts.length >= 2 && parts.every(p => p.length <= 40)) {
+            return parts.join('\n');
+        }
+    }
+    return s;
+}
+
 function VerifyForm() {
     const { getToken } = useAuth();
     const { isSignedIn } = useUser();
     const { lang } = useLang();
     const ui = getUI(lang);
+    const router = useRouter();
+    const prefillConsumedRef = useRef(false);
 
     const [drugs, setDrugs]   = useState('');
     const [result, setResult] = useState<VerifyResponse | null>(null);
@@ -84,6 +105,21 @@ function VerifyForm() {
     useEffect(() => {
         return () => clearShareData();
     }, [clearShareData]);
+
+    // Cross-page ?prefill= receiver — prefill the drugs textarea, no auto-submit.
+    // Mirrors research.tsx's ?q= consume pattern (minus the auto-run).
+    useEffect(() => {
+        if (!router.isReady) return;
+        if (prefillConsumedRef.current) return;
+        const raw = router.query.prefill;
+        const v = Array.isArray(raw) ? raw[0] : raw;
+        if (typeof v !== 'string') return;
+        const trimmed = v.trim();
+        if (!trimmed) return;
+        prefillConsumedRef.current = true;
+        setDrugs(splitDrugsForPrefill(trimmed));
+        router.replace('/verify', undefined, { shallow: true });
+    }, [router]);
 
     const maybeTriggerThirdQueryCta = useCallback(() => {
         if (typeof window === 'undefined') return;

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, FormEvent, useRef, useCallback, DragEvent } from 'react';
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 import { useAuth, useUser } from '@clerk/nextjs';
 import { fetchEventSource } from '@microsoft/fetch-event-source';
 import { FatalError, makeOnOpen, sseOnError } from '../utils/sse';
@@ -214,6 +215,8 @@ function ExplainForm() {
     const { lang } = useLang();
     const ui = getUI(lang);
     const extra = getExtra(lang);
+    const router = useRouter();
+    const prefillConsumedRef = useRef(false);
     const [reportText, setReportText] = useState('');
     const [result, setResult]         = useState<ExplainResponse | null>(null);
     const [sources, setSources]       = useState<ExplainSource[]>([]);
@@ -251,6 +254,22 @@ function ExplainForm() {
     useEffect(() => {
         return () => clearShareData();
     }, [clearShareData]);
+
+    // Cross-page ?prefill= receiver — prefill the report textarea, no auto-submit.
+    // Declared above the isLoaded/!isSignedIn early-return so hook order stays legal;
+    // fires regardless of the anon lock (state is harmlessly set behind it).
+    useEffect(() => {
+        if (!router.isReady) return;
+        if (prefillConsumedRef.current) return;
+        const raw = router.query.prefill;
+        const v = Array.isArray(raw) ? raw[0] : raw;
+        if (typeof v !== 'string') return;
+        const trimmed = v.trim();
+        if (!trimmed) return;
+        prefillConsumedRef.current = true;
+        setReportText(trimmed);
+        router.replace('/explain', undefined, { shallow: true });
+    }, [router]);
     const [plan, setPlan] = useState<'free' | 'pro'>(() => {
         if (typeof window === 'undefined') return 'free';
         try {
