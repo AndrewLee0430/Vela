@@ -6,9 +6,9 @@
 
 | Marker | Meaning |
 |---|---|
-| ✅ SHIPPED <date> (commits) | Fully implemented + production-verified. See ARCHIVE.md for full log. |
+| ✅ SHIPPED <date> (commits) | Fully implemented + production-verified. See `git log` for full log. |
 | 🔧 IN PROGRESS | Actively being worked. See STATE.md for current focus. |
-| 🔬 PARTIAL <date> | Partial implementation. See ARCHIVE.md for what shipped + codebase grep for what remains. |
+| 🔬 PARTIAL <date> | Partial implementation. See `git log` for what shipped + codebase grep for what remains. |
 | ❌ PENDING (phase) | Not yet started. See STATE.md for sequence + BACKLOG.md for queue. |
 | 🧊 OUT OF SCOPE | Explicitly deferred per phase-gate or design decision. |
 
@@ -1407,7 +1407,7 @@ Settings 頁面有「從上次同步恢復」按鈕,行為同 Trigger A 但使�
 | pharmacist Free → Pro 轉換率 | ≥ 其他角色 2 倍 | 達成即 PMF 訊號 |
 | 處方分析後 thumbs_up 率 | > 70% | 低於此代表輸出品質需提升 |
 
-**4.5 Share Answer 公開連結(v1.3 新增)** ✅ SHIPPED 2026-05-19 (v164, a63b304 + PHASE A-D commits ef0d375..6f7a154 — see ARCHIVE.md 2026-05-19 entry for two-cycle deploy + OG image fix-forward)
+**4.5 Share Answer 公開連結(v1.3 新增)** ✅ SHIPPED 2026-05-19 (v164, a63b304 + PHASE A-D commits ef0d375..6f7a154 — see `git log` 2026-05-19 + docs/retrospectives/phase-0-2026-05.md for two-cycle deploy + OG image fix-forward)
 
 **(2026-05-08 status)** PHASE A-D shipped (commits ef0d375 / f04068d / e042efc / 30bd0b5 / a5da1c5 / ca571ce / b378659 / 768dc0b / 4fe0d7b / 92dbe9b / 6f7a154 / ad506db plus UX polish run). PHASE E (acceptance criteria validation via LinkedIn Post Inspector / Twitter Card Validator / Google Rich Results Test, real anon 403 verification, OG image production render check, PostHog 6-event verification) deferred — blocked on production deploy. See **Production Deploy Checklist (PHASE E.2)** below.
 
@@ -1593,7 +1593,7 @@ Execute IMMEDIATELY AFTER Phase 0 末段 production deploy. Tasks:
 
 ---
 
-**4.6 SEO Explore Pages(v1.3 新增)** ✅ SHIPPED 2026-05-19 (PHASE A-D 2026-05-11~2026-05-12 commits bc171a1..(PHASE D SHA pending); PHASE E production deploy 2026-05-19 v164 — GSC 4-week indexing window opened, monitor weekly. /explore index page 404 known gap, follow-up within 1 week. See ARCHIVE.md 2026-05-19 entry + docs/retrospectives/phase-0-2026-05.md § 5)
+**4.6 SEO Explore Pages(v1.3 新增)** ✅ SHIPPED 2026-05-19 (PHASE A-D 2026-05-11~2026-05-12 commits bc171a1..(PHASE D SHA pending); PHASE E production deploy 2026-05-19 v164 — GSC 4-week indexing window opened, monitor weekly. /explore index page 404 known gap, follow-up within 1 week. See `git log` 2026-05-19 + docs/retrospectives/phase-0-2026-05.md § 5)
 
 > **(2026-05-12 PHASE D 修訂)** PHASE D 已 ship — Breadcrumb (Vela › Explore › {category} › {query})、Category listing route (`/explore/category/{category}`,registered BEFORE /explore/{slug} for path priority)、Related queries section (3-tier hreflang/category priority,8 cards cap)、3 PostHog events (`explore_page_visited` / `explore_to_query_clicked` / `explore_related_clicked`) 全部 wired。Events 透過 inline `window.posthog.capture()` with existence guard,在 init 未 expose 到 public Jinja2 template context 之前皆為 no-op (PHASE E candidate)。
 >
@@ -2315,7 +2315,7 @@ pharmacist Free → Pro 轉換率 ≥ 其他角色 2 倍是 PMF 達成的主要�
 
 **A.2 章節對照 FEATURE_AUDIT.md** (歷史快照,2026-04 撰寫時的 audit 對照表)
 
-> **2026-05-05 update**: FEATURE_AUDIT.md 已 deprecated(commit 後續移除)。本表保留為 PRD 撰寫時的 audit 對照歷史紀錄,不再代表現況。當前狀態請查 codebase grep + STATE.md / ARCHIVE.md 中的 PRD § status markers。
+> **2026-05-05 update**: FEATURE_AUDIT.md 已 deprecated(commit 後續移除)。本表保留為 PRD 撰寫時的 audit 對照歷史紀錄,不再代表現況。當前狀態請查 codebase grep + STATE.md 中的 PRD § status markers。
 
 | **PRD 章節** | **FEATURE_AUDIT 對照** | **關係** |
 | --- | --- | --- |
@@ -2341,7 +2341,7 @@ pharmacist Free → Pro 轉換率 ≥ 其他角色 2 倍是 PMF 達成的主要�
 - Master PRD v1.3(本文件):產品功能規格。對應「要做什麼」
 - 維運計畫 v3:上線後監控與運維。對應「如何維護」
 - STATE.md:當前焦點 + Next Up 隊列。對應「現在做哪個」
-- ARCHIVE.md:已 ship 的工作紀錄(chronological)。對應「做過哪些」
+- `git log`:已 ship 的工作紀錄(chronological)。對應「做過哪些」
 - Codebase grep / git log:現狀 ground truth。對應「目前在哪」
 
 開發新功能建議順序:查 STATE.md「Next Up」→ 讀對應 PRD 章節需求 → grep codebase 確認尚未實作 → 交付 Claude Code。

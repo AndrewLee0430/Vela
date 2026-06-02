@@ -6,7 +6,7 @@ This document describes Vela's system architecture, deployed on Fly.io as a sing
 
 - **Repo root**: see CLAUDE.md for build/test/deploy commands
 - **Spec**: see docs/PRD.md for product requirements
-- **State**: see STATE.md for current focus, BACKLOG.md for open work, ARCHIVE.md for shipped log
+- **State**: see STATE.md for current focus, BACKLOG.md for open work, `git log` for shipped log
 - **ADRs**: see docs/decisions/ for major decisions
 
 ## Sections

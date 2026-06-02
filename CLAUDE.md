@@ -23,7 +23,7 @@ Examples from 2026-04-19 to 2026-04-20 sessions:
 | Active rules + workflow (this file) | CLAUDE.md |
 | Current focus + next-up + active acceptance protocols | STATE.md |
 | Open future tasks | BACKLOG.md |
-| Completed work log (chronological) | ARCHIVE.md |
+| Completed/shipped work log (chronological) | `git log` (recent window in STATE "Recently Shipped") |
 | Tech debt entries (active gaps) | TECH_DEBT.md |
 | System architecture (request flow / pipelines / payments / DB / env / frontend / deploy) | docs/architecture.md |
 | Master spec | docs/PRD.md (v1.3) |
@@ -47,14 +47,14 @@ Examples from 2026-04-19 to 2026-04-20 sessions:
 
 **Step 2 — Ship cleanup ritual** (explicit document update sequence):
 
-9. Update 4 docs:
+9. Update 3 docs:
    - `STATE.md`: move task from "Next Up" → "Recently Shipped" (with commit SHA)
-   - `ARCHIVE.md`: append entry with `YYYY-MM-DD [TAG] Title — summary (SHA)`
    - `BACKLOG.md`: remove entry or mark done
    - `docs/PRD.md` status marker: update §X.Y if section-level change (❌ → ✅ SHIPPED `<date>`)
+   - (the chronological shipped entry is auto-recorded by `git log` on commit — no manual append)
 10. Commit message format: `[PRD X.Y] brief description` (e.g. `[PRD 2.0] Remove temp window.__vela_analytics exposure`)
 
-**Solo-founder STATE discipline**: At minimum, at the end of each task segment, update STATE.md (Next Up + Recently Shipped) even if other docs (ARCHIVE log, PRD marker, BACKLOG removal) are intentionally skipped. STATE.md is the single entry point for "where am I next session"; a stale STATE is the highest-cost drift because it misleads the next work session about what's done vs pending. ARCHIVE / PRD-marker / BACKLOG updates may be batched or skipped at the founder's discretion, but STATE should never silently lag reality.
+**Solo-founder STATE discipline**: At minimum, at the end of each task segment, update STATE.md (Next Up + Recently Shipped) even if other docs (PRD marker, BACKLOG removal) are intentionally skipped. STATE.md is the single entry point for "where am I next session"; a stale STATE is the highest-cost drift because it misleads the next work session about what's done vs pending. PRD-marker / BACKLOG updates may be batched or skipped at the founder's discretion, but STATE should never silently lag reality.
 
 **Source-of-truth priority**:
 

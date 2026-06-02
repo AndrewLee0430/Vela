@@ -1,6 +1,6 @@
 # BACKLOG.md — Vela Open Future Work
 
-Open tasks not actively in progress. New items captured here, moved to STATE.md when in focus, archived to ARCHIVE.md when shipped.
+Open tasks not actively in progress. New items captured here, moved to STATE.md when in focus, removed when shipped (git log records it).
 
 For active focus see STATE.md. For tech debt see TECH_DEBT.md.
 

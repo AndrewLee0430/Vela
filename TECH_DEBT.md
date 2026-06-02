@@ -13,7 +13,7 @@ Active tech debt entries identified during shipping. Format preserved verbose be
 - "→ Phase 1A polish" — work after Phase 0 ends
 - "→ next opportunity" — when convenient
 
-When entries are resolved, move to ARCHIVE.md (note discovery + resolution dates).
+When entries are resolved, mark with the resolving commit SHA (git log is the record), then remove.
 
 ---
 

@@ -2,11 +2,11 @@
 
 **Purpose**: Reference for solo founder + Claude.
 **When to read**: When confused about which file holds what info.
-**Last updated**: 2026-05-05 (post FEATURE_AUDIT.md deprecation)
+**Last updated**: 2026-06-02 (post ARCHIVE.md deprecation)
 
 ---
 
-## The 4-Doc Architecture (Living Status)
+## The 3-Doc Architecture (Living Status)
 
 ```
 ┌─────────────────────────────────────────────────────┐
@@ -16,14 +16,6 @@
 │   - Recently Shipped (last 7 days)                  │
 └─────────────────────────────────────────────────────┘
                        ↑ for §-level status & navigation
-
-┌─────────────────────────────────────────────────────┐
-│ ARCHIVE.md = "What's been shipped (chronological)"  │
-│   - 2026-04-30: §2.7 Steps 7-8 + M06                │
-│   - 2026-05-04: v0.4 integration                    │
-│   - 2026-05-05: Doc reorg                           │
-└─────────────────────────────────────────────────────┘
-                       ↑ for historical record
 
 ┌─────────────────────────────────────────────────────┐
 │ PRD.md = "Spec + § status markers"                  │
@@ -37,7 +29,7 @@
 │ Codebase itself = "What's actually implemented"     │
 │   git grep / ls / git log / git show                │
 └─────────────────────────────────────────────────────┘
-                       ↑ for verification (replaced FEATURE_AUDIT.md)
+                       ↑ for verification (replaced FEATURE_AUDIT.md + ARCHIVE.md)
 ```
 
 ---
@@ -55,9 +47,9 @@ When starting a new task (e.g. § 4.5 Share Answer):
 | 0.5 | Verify partial implementation | `git grep` / `ls` (NOT FEATURE_AUDIT) |
 | 1 | Implement | code |
 | 2.1 | Move task Next Up → Recently Shipped | STATE.md |
-| 2.2 | Append shipped entry | ARCHIVE.md |
-| 2.3 | Remove or mark done | BACKLOG.md |
-| 2.4 | Update § status marker | PRD.md |
+| 2.2 | Remove or mark done | BACKLOG.md |
+| 2.3 | Update § status marker | PRD.md |
+| — | Chronological shipped entry | auto-recorded by `git log` on commit |
 
 ---
 
@@ -68,7 +60,7 @@ When starting a new task (e.g. § 4.5 Share Answer):
 | What am I working on **now**? | STATE.md → Current Focus |
 | What's **next**? | STATE.md → Next Up (top of queue) |
 | What did I ship **recently** (last 7 days)? | STATE.md → Recently Shipped |
-| What did I ship **historically**? | ARCHIVE.md |
+| What did I ship **historically**? | git log + git show (commit history) |
 | What does § X.Y spec say? | PRD.md → § X.Y |
 | Is § X.Y shipped? | PRD.md status marker (✅/❌/🧊) |
 | What's open in the backlog? | BACKLOG.md |
@@ -94,7 +86,16 @@ FEATURE_AUDIT.md tried to mirror codebase reality in markdown. Two problems:
 1. **Maintenance discipline didn't execute** — § 2.7 結案 + M06 + Path 1 work (5+ commits) wasn't reflected in FEATURE_AUDIT detail.
 2. **Stale snapshot risk** — readers might trust outdated info and miss recent changes.
 
-Replacement: codebase itself (grep/ls) is source of truth. PRD markers + STATE/ARCHIVE cover § level.
+Replacement: codebase itself (grep/ls) is source of truth. PRD markers + STATE cover § level.
+
+### Why ARCHIVE.md was deprecated (2026-06-02)?
+
+Same failure mode as FEATURE_AUDIT.md — a markdown doc whose maintenance discipline never executed:
+
+1. **Maintenance discipline didn't execute** — the ship ritual's "append to ARCHIVE.md" step was the solo-founder-skippable one, and it WAS skipped consistently. ARCHIVE.md's last meaningful entry was ~2026-05-11 (§4.6 PHASE A/B/C); the entire Stage 1 → Stage 2 → Stage 4 → Step 5 → Stage 5 → Stage 3.1 run (v169 → v171, ~40 commits) never made it in.
+2. **git log is always current** — every commit auto-records a chronological, SHA-traceable entry with zero discipline cost. A hand-maintained parallel log is pure duplication that drifts.
+
+Replacement: **`git log` (+ `git show`) is the chronological historical record; STATE.md "Recently Shipped" covers the recent window.** The ship ritual dropped from 4-doc to 3-doc (STATE + BACKLOG + PRD marker). ADR 002 and the phase-0 retrospective retain their ARCHIVE.md mentions as point-in-time history (not rewritten — same treatment FEATURE_AUDIT.md got).
 
 ### Why ADRs are short (~50 lines)?
 
@@ -126,7 +127,7 @@ Mixing them confuses prioritization (new feature vs cleanup are different decisi
 
 ### Don't write status in two places (without all)
 
-If § 2.7 is shipped, update **PRD.md marker AND STATE.md Recently Shipped AND ARCHIVE.md** — all three. They serve different lookup paths.
+If § 2.7 is shipped, update **PRD.md marker AND STATE.md Recently Shipped** — both (git log records the commit automatically). They serve different lookup paths.
 
 ### Don't reference docs that don't exist
 

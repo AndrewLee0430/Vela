@@ -47,7 +47,7 @@ Last shipped: Stage 3.1 (next-themes infra + FOUC fix) — **DEPLOYED to prod 20
 - Groq framework-ready; activation procedure in ADR 006
 - §2.7 acceptance baseline (gpt-4.1 ExplainJudge) preserved
 
-See ARCHIVE.md 2026-05-13 entry for full commit list + acceptance.
+See `git log` around 2026-05-13 for full commit list + acceptance.
 
 ## Phase 1B preview (per advisor discussion + ADR 003+004)
 
@@ -94,13 +94,13 @@ None known.
 - **2026-05-19** [deploy] Phase 0 production deploy completed — v164 from a63b304 ✅ SHIPPED
 - **2026-05-19** [fix 4.5] OG image URL/path mismatch in StaticFiles mount (a63b304)
 
-For older work see ARCHIVE.md.
+For older work see `git log`.
 
 ## Pointer to Other Docs
 
 - **Active rules + workflow**: CLAUDE.md
 - **Open future tasks**: BACKLOG.md
-- **Completed work log**: ARCHIVE.md
+- **Completed work log**: `git log` (recent window in Recently Shipped above)
 - **Tech debt entries**: TECH_DEBT.md
 - **Spec**: docs/PRD.md (v1.3)
 - **Architecture**: docs/architecture.md

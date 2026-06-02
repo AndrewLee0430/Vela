@@ -45,7 +45,7 @@ If you need to know:
 - **What's the next task to ship?** → ../STATE.md "Next Up" (top of queue)
 - **What's the open backlog?** → ../BACKLOG.md
 - **What's the tech debt?** → ../TECH_DEBT.md
-- **What's already shipped?** → ../ARCHIVE.md
+- **What's already shipped?** → `git log` (recent window in ../STATE.md Recently Shipped)
 - **What's the actual codebase state?** → grep / ls / `git log` (no static snapshot file)
 
 For active rules + workflow, see [../CLAUDE.md](../CLAUDE.md).
