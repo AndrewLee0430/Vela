@@ -1,4 +1,5 @@
 import { ClerkProvider, useUser } from '@clerk/nextjs';
+import { ThemeProvider } from 'next-themes';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import { Noto_Sans } from 'next/font/google';
@@ -147,10 +148,17 @@ export default function MyApp({ Component, pageProps }: AppProps) {
           }
         }}
       >
-        <LangProvider>
-          <AnalyticsAuthBridge />
-          <Component {...pageProps} />
-        </LangProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <LangProvider>
+            <AnalyticsAuthBridge />
+            <Component {...pageProps} />
+          </LangProvider>
+        </ThemeProvider>
       </ClerkProvider>
     </PostHogProvider>
     </div>
