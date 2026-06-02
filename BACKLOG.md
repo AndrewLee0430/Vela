@@ -901,21 +901,24 @@ Two i18n content drifts surfaced during Stage 2 landing redesign (Steps 2 / 4a /
 - [ ] **ProductShowcase Research mockup query drift**
       STATE.md Stage 2 locked the Research card snippet as "Metformin + CKD eGFR≥30". Current `t.mockupResearchQuery` resolves to a different query (observed in en: "What are the side effects of Metformin?"). Verify (`t.mockupVerifyDrugs` / `t.mockupVerifyBadge` → "Warfarin + Aspirin Major interaction") and Explain (`t.mockupExplainValue` / `t.mockupExplainStatus` → "TSH 12.5 above-normal") cards ARE already aligned — only Research drifts. Fix means editing the Research mockup query key across all 16 locales.
 
-- [ ] **Dead landing i18n keys cleanup (post-Stage-4)**
-      Stage 4 S4.1 removed multiple landing UI elements; their i18n keys are
-      now dead. Cleanup pass needs to coordinate across `utils/i18n.ts` (16
-      locales) and `pages/index.tsx`:
-      - Fully unused (`t.*` and `lc.*`, safe to delete from interface + all
-        16 locales): `seeHow`, `socialProof`, `privacyTitle`,
-        `privacyPolicyLink`, `seePricing`, `ctaPrimary`,
+- [ ] **Dead landing i18n keys cleanup (post-Stage-4) — PARTIALLY DONE (S5.2)**
+      Stage 4 S4.1 removed multiple landing UI elements, leaving their i18n
+      keys dead. Stage 5 S5.2 (commit 644e2e8) already cleaned the bulk: when
+      the ProductShowcase cards array was deleted, it removed the three
+      referenced-but-dead `cta:` keys (`tryResearch`, `tryVerify`,
+      `tryExplain`) plus all 8 `mockup*` keys (`mockupResearchQuery`,
+      `mockupResearchSource`, `mockupVerifyDrugs`, `mockupVerifyBadge`,
+      `mockupVerifySource`, `mockupExplainValue`, `mockupExplainStatus`,
+      `mockupExplainSource`) from the `Translations` interface + all 16 locales.
+      - Still present AND dead (audited 2026-06-02 against `utils/i18n.ts` +
+        all `pages/*` / `components/*` — no consumer anywhere): `seeHow`,
+        `socialProof`, `privacyTitle`, `seePricing`, `ctaPrimary`,
         `valueProp.{language,sources,anonymous}.{label,body}` (6 sub-keys).
-      - Referenced-but-dead (`tryResearch`, `tryVerify`, `tryExplain`):
-        still assigned as `cta:` fields in the ProductShowcase cards array
-        (pages/index.tsx lines ~153/167/181) but never rendered after the
-        per-card CTA `<span>` was removed in S4.1. Must remove the three
-        `cta:` object fields AT THE SAME TIME as deleting the i18n keys,
-        else build fails (TS strict-object initialization). Natural to fold
-        into the same pass as the hero/mockup copy alignment above.
+        Safe to delete from the interface + all 16 locales.
+      - STRUCK from this list — NOT dead: `privacyPolicyLink`. It was listed
+        as "fully unused" but became stale when commit dcf890a's
+        `LandingSettingsDropdown` resumed using it for the Privacy-link row
+        (`components/LandingSettingsDropdown.tsx:75`). Leave it.
 
 ---
 
