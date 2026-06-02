@@ -919,26 +919,6 @@ Two i18n content drifts surfaced during Stage 2 landing redesign (Steps 2 / 4a /
 
 ---
 
-## Verify/Explain `?prefill=` cross-page auto-run (deferred from Stage 4)
-
-- [ ] **Verify/Explain `?prefill=` cross-page auto-run support**
-      Landing feature cards / chips currently deep-link Verify & Explain to empty
-      state only (Research uses `?q=` auto-run, wired in Stage 2 Step 3). Add a
-      shared prefill-param convention so Verify (drug list) and Explain (report
-      text) can also be pre-populated from an external link. Deferred from Stage 4
-      S4.1 — the S4.1 cards intentionally route `/verify` and `/explain` to their
-      empty states per Andrew's decision; only the Research card carries a query.
-
-      **Scope notes when picked up:**
-      - Verify input is a newline-delimited drug textarea (not a `?q=` string);
-        a prefill param would need to encode a list (e.g. comma → newline split).
-      - Explain is signed-in only (anon blocked client + server); a prefilled
-        link landing an anonymous user still hits `ExplainLockedForAnonymous`.
-      - Mirror Research's `heroQueryConsumedRef` + `router.replace` one-shot
-        consume pattern (`pages/research.tsx`) so the param doesn't re-fire.
-      - i18n-first: any new chip/card content that targets Verify/Explain prefill
-        needs 16-locale keys (Rule 16).
-
 - [ ] **Hero chip screen-reader action-context i18n key (`heroChipAriaPrefix`)**
       Currently the hero chips have no `aria-label` (their visible text is the
       accessible name). For richer SR context like "Fill search with: <chip text>",
