@@ -13,6 +13,7 @@ import PlanBadge from '../components/PlanBadge';
 import UpgradeModal from '../components/UpgradeModal';
 import Navbar from '../components/Navbar';
 import LandingSettingsDropdown from '../components/LandingSettingsDropdown';
+import HeroComposerModeSelector, { type ComposerMode } from '../components/HeroComposerModeSelector';
 import OnboardingOverlay from '../components/OnboardingOverlay';
 import { translations, LANGUAGES, RTL_LANGS, landingContent, type LangCode } from '../utils/i18n';
 import { useLang } from '../utils/LangContext';
@@ -139,129 +140,13 @@ function LanguageSwitcher({ lang, setLang }: { lang: LangCode; setLang: (l: Lang
   );
 }
 
-// ─── Product Showcase Cards ─────────────────────────────────────────────────
-function ProductShowcase({ t }: { t: typeof translations['en'] }) {
-  const cards = [
-    {
-      href: `/research?q=${encodeURIComponent(t.mockupResearchQuery)}`,
-      color: 'rgb(var(--color-text) / 0.85)',
-      borderColor: 'rgb(var(--color-text) / 0.1)',
-      hoverBorder: 'rgb(var(--color-text) / 0.3)',
-      topLabel: t.research,
-      sub: t.researchSub,
-      question: t.mockupResearchQuery,
-      footer: `📄 ${t.mockupResearchSource}`,
-      cta: t.tryResearch,
-    },
-    {
-      href: '/verify',
-      color: 'rgb(var(--color-text) / 0.85)',
-      borderColor: 'rgb(var(--color-text) / 0.1)',
-      hoverBorder: 'rgb(var(--color-text) / 0.3)',
-      topLabel: t.verify,
-      sub: t.verifySub,
-      question: t.mockupVerifyDrugs,
-      badge: `⚠️ ${t.mockupVerifyBadge}`,
-      badgeBg: 'rgb(var(--color-danger) / 0.15)',
-      badgeColor: 'rgb(var(--color-danger))',
-      footer: `📄 ${t.mockupVerifySource}`,
-      cta: t.tryVerify,
-    },
-    {
-      href: '/explain',
-      pro: true,
-      color: 'rgb(var(--color-text) / 0.85)',
-      borderColor: 'rgb(var(--color-text) / 0.1)',
-      hoverBorder: 'rgb(var(--color-text) / 0.3)',
-      topLabel: t.explain,
-      sub: t.explainSub,
-      question: t.mockupExplainValue,
-      highlight: `↑ ${t.mockupExplainStatus}`,
-      highlightColor: 'rgb(var(--color-danger))',
-      footer: `📄 ${t.mockupExplainSource}`,
-      cta: t.tryExplain,
-    },
-  ];
-
-  return (
-    <div className="w-full" style={{ maxWidth: '960px' }}>
-      <div className="flex flex-col sm:flex-row gap-3">
-        {cards.map(c => (
-          <Link key={c.href} href={c.href} className="flex-1">
-            <div
-              className="h-full rounded-2xl overflow-hidden cursor-pointer transition-all duration-300"
-              style={{ background: 'rgba(255,255,255,0.55)', border: `1px solid ${c.borderColor}` }}
-              onMouseEnter={e => {
-                const el = e.currentTarget as HTMLElement;
-                el.style.transform = 'scale(1.03)';
-                el.style.borderColor = c.hoverBorder;
-                el.style.boxShadow = `0 8px 24px rgba(0,0,0,0.3)`;
-              }}
-              onMouseLeave={e => {
-                const el = e.currentTarget as HTMLElement;
-                el.style.transform = 'scale(1)';
-                el.style.borderColor = c.borderColor;
-                el.style.boxShadow = 'none';
-              }}
-            >
-              <div className="flex h-full">
-                {/* Left color bar — neutral after C3 feature-accent collapse */}
-                <div className="w-1 flex-shrink-0" style={{ background: 'rgb(var(--color-text) / 0.5)' }} />
-                <div className="flex flex-col p-5 gap-2.5 flex-1 min-w-0">
-                  {/* Top label + source badge */}
-                  <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: 'rgb(var(--color-text) / 0.7)' }}>{c.topLabel}</span>
-                    <span
-                      className="text-[9px] font-medium px-1.5 py-0.5 rounded-full"
-                      style={{ background: 'rgb(var(--color-text) / 0.08)', color: 'rgb(var(--color-text) / 0.45)' }}
-                    >
-                      {c.sub}
-                    </span>
-                    {'pro' in c && c.pro && (
-                      <span
-                        className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full"
-                        style={{ background: 'rgb(var(--color-brand) / 0.15)', color: 'rgb(var(--color-brand))' }}
-                      >
-                        Pro
-                      </span>
-                    )}
-                  </div>
-                  {/* Question */}
-                  <p className="text-xs font-mono font-medium text-text leading-snug">{c.question}</p>
-                  {/* Status badge / highlight */}
-                  {'badge' in c && (
-                    <span
-                      className="inline-block self-start text-xs font-semibold px-2.5 py-1 rounded-md"
-                      style={{ background: c.badgeBg, color: c.badgeColor }}
-                    >
-                      {c.badge}
-                    </span>
-                  )}
-                  {'highlight' in c && (
-                    <p className="text-xs font-mono font-semibold" style={{ color: c.highlightColor }}>
-                      {c.highlight}
-                    </p>
-                  )}
-                  {/* Footer */}
-                  <p className="text-[10px] font-mono mt-auto" style={{ color: 'rgb(var(--color-text) / 0.3)' }}>
-                    {c.footer}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </Link>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 // ─── Landing Page (unauthenticated) ──────────────────────────────────────────
 function LandingPage() {
   const router = useRouter();
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [query, setQuery] = useState<string>('');
   const [isFocused, setIsFocused] = useState<boolean>(false);
+  const [mode, setMode] = useState<ComposerMode>('research');
   const inputRef = useRef<HTMLInputElement>(null);
   const { lang, setLang } = useLang();
   const t = translations[lang];
@@ -273,7 +158,12 @@ function LandingPage() {
     e.preventDefault();
     const trimmed = query.trim();
     if (!trimmed) return;
-    router.push(`/research?q=${encodeURIComponent(trimmed)}`);
+    const encoded = encodeURIComponent(trimmed);
+    // Route by selected mode: Research auto-runs via /research?q= (Step 3);
+    // Verify/Explain prefill (no auto-run) via ?prefill= consumed by S5.1.
+    if (mode === 'research') router.push(`/research?q=${encoded}`);
+    else if (mode === 'verify') router.push(`/verify?prefill=${encoded}`);
+    else router.push(`/explain?prefill=${encoded}`);
     setQuery('');
   };
 
@@ -442,31 +332,38 @@ function LandingPage() {
             </p>
 
             <form onSubmit={handleHeroSubmit} className="w-full max-w-2xl" dir="ltr">
-              <div className="relative">
-                <input
-                  ref={inputRef}
-                  type="text"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  onFocus={() => setIsFocused(true)}
-                  onBlur={() => setIsFocused(false)}
-                  className="w-full bg-bg-1 text-text rounded-2xl border border-text/15 shadow-sm px-5 py-4 pr-16 text-base focus:outline-none focus:ring-2 focus:ring-brand/30"
-                />
-                {query === '' && !isFocused && (
-                  <div
-                    aria-hidden="true"
-                    className="pointer-events-none absolute inset-0 px-5 py-4 pr-16 flex items-center text-base"
+              <div className="bg-bg-1 rounded-2xl border border-text/15 shadow-sm transition-shadow focus-within:ring-2 focus-within:ring-brand/30">
+                {/* Input row — typewriter overlay scoped to THIS row only (not the control row) */}
+                <div className="relative">
+                  <input
+                    ref={inputRef}
+                    type="text"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    onFocus={() => setIsFocused(true)}
+                    onBlur={() => setIsFocused(false)}
+                    className="w-full bg-transparent text-text px-5 pt-4 pb-2 text-base focus:outline-none"
+                  />
+                  {query === '' && !isFocused && (
+                    <div
+                      aria-hidden="true"
+                      className="pointer-events-none absolute inset-0 px-5 pt-4 pb-2 flex items-center text-base"
+                    >
+                      <TypewriterPrompt />
+                    </div>
+                  )}
+                </div>
+                {/* Control row — mode selector (bottom-left) + submit (bottom-right) */}
+                <div className="flex items-center justify-between px-3 pb-3 pt-1">
+                  <HeroComposerModeSelector mode={mode} onChange={setMode} t={t} />
+                  <button
+                    type="submit"
+                    aria-label="Send"
+                    className="w-11 h-11 rounded-full bg-brand text-white flex items-center justify-center hover:opacity-90 transition-opacity"
                   >
-                    <TypewriterPrompt />
-                  </div>
-                )}
-                <button
-                  type="submit"
-                  aria-label="Send"
-                  className="absolute right-2 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-brand text-white flex items-center justify-center hover:opacity-90 transition-opacity"
-                >
-                  <ArrowUp size={18} strokeWidth={2.5} />
-                </button>
+                    <ArrowUp size={18} strokeWidth={2.5} />
+                  </button>
+                </div>
               </div>
             </form>
 
@@ -482,11 +379,6 @@ function LandingPage() {
                   {chip}
                 </button>
               ))}
-            </div>
-
-            {/* Three feature cards — clickable entry points */}
-            <div className="mt-8 w-full flex justify-center">
-              <ProductShowcase t={t} />
             </div>
 
             {/* Compressed privacy line — replaces Stage 2 privacy section */}
