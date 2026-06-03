@@ -221,7 +221,21 @@ function LandingPage() {
       >
         <UpgradeModal isOpen={showUpgradeModal} onClose={() => setShowUpgradeModal(false)} />
 
-        {/* Light zone — single-fold hero (nav + input + chips + cards + privacy) on radial gradient; footer */}
+        {/* Landing "light zone" — single-fold hero (nav + input + mode selector +
+            chips + privacy) on a hardcoded warm radial gradient, plus footer.
+            INTENTIONALLY forced light via the `.light` class (Stage 3.3 decision) —
+            this is NOT a missed theme audit. The warm-orange Stage 4 redesign is the
+            deliberate anon brand first-impression, and the gradient below is
+            light-specific (no dark-ready counterpart by design). The `.light` class
+            re-defines the --color-* tokens for this subtree via custom-property
+            inheritance, overriding the root <html> theme class, so the landing stays
+            light even when theme=dark. The site-wide theme toggle (Stage 3.2) is
+            therefore scoped to the FUNCTIONAL pages only; the landing is deliberately
+            excluded (3.4–3.7 audits: skip this surface). Dual-`/` note: the signed-in
+            Dashboard renders on the same `/` path but is a SEPARATE component (uses
+            `bg-app-bg` tokens, not inside this wrapper) and DOES respect the theme.
+            A dark landing would be a future Stage-4-sized effort (dark gradient design
+            + every hero element made dark-ready), not part of Stage 3. */}
         <div
           className="light flex flex-col"
           style={{ background: 'radial-gradient(ellipse at 50% 45%, #ffd9c4 0%, #fff3ec 30%, #ffffff 70%)' }}
