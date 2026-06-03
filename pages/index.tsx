@@ -413,7 +413,7 @@ function Dashboard() {
       <Navbar />
 
       <div className="container mx-auto px-4 md:px-10 py-8 max-w-4xl">
-        <h1 className="text-3xl font-bold tracking-tight mb-2 text-center text-white">{extra.dashWelcome}</h1>
+        <h1 className="text-3xl font-bold tracking-tight mb-2 text-center text-text">{extra.dashWelcome}</h1>
         <p className="text-xl mb-8 font-medium text-center bg-gradient-to-r from-[#ff6b6b] via-[#ff8e6e] to-[#ffb347] bg-clip-text text-transparent">
           {extra.dashWhatToResearch}
         </p>
@@ -441,7 +441,7 @@ function Dashboard() {
                 }}
               >
                 <div className="flex items-center justify-between mb-3">
-                  <p className="text-xl font-semibold text-white">{f.label}</p>
+                  <p className="text-xl font-semibold text-text">{f.label}</p>
                   <span
                     className="text-sm font-medium px-3 py-1 rounded-full"
                     style={{ background: f.hoverBg, color: f.color, border: `1px solid ${f.hoverBorder}` }}
@@ -463,11 +463,11 @@ function Dashboard() {
       >
         <div>&copy; {new Date().getFullYear()} Vela. {extra.allRightsReserved}</div>
         <div className="flex flex-wrap justify-center gap-4 text-xs">
-          <Link href="/terms" className="hover:text-white transition-colors">{extra.termsLabel}</Link>
-          <Link href="/privacy" className="hover:text-white transition-colors">{extra.privacyLabel}</Link>
-          <Link href="/refund" className="hover:text-white transition-colors">{extra.refundLabel}</Link>
-          <Link href="/faq" className="hover:text-white transition-colors">{extra.faqLabel}</Link>
-          <a href="mailto:support@an-tho.com" className="hover:text-white transition-colors">support@an-tho.com</a>
+          <Link href="/terms" className="hover:text-text transition-colors">{extra.termsLabel}</Link>
+          <Link href="/privacy" className="hover:text-text transition-colors">{extra.privacyLabel}</Link>
+          <Link href="/refund" className="hover:text-text transition-colors">{extra.refundLabel}</Link>
+          <Link href="/faq" className="hover:text-text transition-colors">{extra.faqLabel}</Link>
+          <a href="mailto:support@an-tho.com" className="hover:text-text transition-colors">support@an-tho.com</a>
         </div>
       </div>
 
