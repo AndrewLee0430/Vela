@@ -64,7 +64,7 @@ export default function MobileNav() {
     <nav
       className="md:hidden fixed bottom-0 left-0 right-0 z-50 flex"
       style={{
-        background: 'rgba(6, 12, 30, 0.95)',
+        background: 'rgb(var(--color-bg-1) / 0.95)',
         borderTop: '1px solid rgb(var(--color-text) / 0.08)',
         backdropFilter: 'blur(16px)',
         paddingBottom: 'env(safe-area-inset-bottom, 0px)',

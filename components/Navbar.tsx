@@ -169,7 +169,7 @@ export default function Navbar({ activePage }: NavbarProps) {
                                     <Link
                                         key={page}
                                         href={`/${page}`}
-                                        className={activePage === page ? 'font-medium transition-colors' : 'text-gray-400 hover:text-white transition-colors'}
+                                        className={activePage === page ? 'font-medium transition-colors' : 'text-text/50 hover:text-text transition-colors'}
                                         style={activePage === page ? { color: 'rgb(var(--color-brand))' } : {}}
                                     >
                                         {navLabels[page]}
@@ -244,7 +244,7 @@ export default function Navbar({ activePage }: NavbarProps) {
                                             className="absolute right-0 top-full mt-2 rounded-xl shadow-2xl border border-text/10 py-2 z-50 max-h-[calc(100vh-5rem)] overflow-y-auto"
                                             style={{
                                                 width: '300px',
-                                                background: 'rgba(15, 23, 42, 0.98)',
+                                                background: 'rgb(var(--color-bg-1) / 0.98)',
                                                 backdropFilter: 'blur(20px)',
                                             }}
                                         >
@@ -260,7 +260,7 @@ export default function Navbar({ activePage }: NavbarProps) {
                                             {/* Usage today */}
                                             <div className="px-4 py-3 border-b border-text/7">
                                                 <p className="text-xs mb-1 text-text/70">
-                                                    {ui.todayCredits} <span className="font-medium text-white">{creditsUsed}</span> / {dailyLimit} {ui.creditsUsed}
+                                                    {ui.todayCredits} <span className="font-medium text-text">{creditsUsed}</span> / {dailyLimit} {ui.creditsUsed}
                                                 </p>
                                                 <p className="text-xs mb-2 text-text/40">
                                                     Research: 3 · Verify: 1 · Explain: 2
@@ -285,7 +285,7 @@ export default function Navbar({ activePage }: NavbarProps) {
                                             <Link
                                                 href="/settings"
                                                 onClick={() => setSettingsOpen(false)}
-                                                className="block w-full text-left px-4 py-2 text-sm transition-colors hover:bg-white/5 text-text/70"
+                                                className="block w-full text-left px-4 py-2 text-sm transition-colors hover:bg-text/5 text-text/70"
                                             >
                                                 {share.navbarManageSharesMenuItem}
                                             </Link>
@@ -296,13 +296,13 @@ export default function Navbar({ activePage }: NavbarProps) {
                                                 <>
                                                     <button
                                                         onClick={handleManageSubscription}
-                                                        className="w-full text-left px-4 py-2 text-sm transition-colors hover:bg-white/5 text-text/70"
+                                                        className="w-full text-left px-4 py-2 text-sm transition-colors hover:bg-text/5 text-text/70"
                                                     >
                                                         {ui.manageSubscription}
                                                     </button>
                                                     <button
                                                         onClick={() => { setSettingsOpen(false); setShowCancelConfirm(true); }}
-                                                        className="w-full text-left px-4 py-2 text-sm transition-colors hover:bg-white/5"
+                                                        className="w-full text-left px-4 py-2 text-sm transition-colors hover:bg-text/5"
                                                         style={{ color: 'rgb(var(--color-danger))' }}
                                                     >
                                                         {ui.cancelSubscription}
@@ -311,7 +311,7 @@ export default function Navbar({ activePage }: NavbarProps) {
                                             ) : (
                                                 <button
                                                     onClick={() => { setSettingsOpen(false); setShowUpgradeModal(true); }}
-                                                    className="w-full text-left px-4 py-2 text-sm font-medium transition-colors hover:bg-white/5"
+                                                    className="w-full text-left px-4 py-2 text-sm font-medium transition-colors hover:bg-text/5"
                                                     style={{ color: 'rgb(var(--color-brand))' }}
                                                 >
                                                     {ui.upgradeToPro}
@@ -327,7 +327,7 @@ export default function Navbar({ activePage }: NavbarProps) {
                             <SignedOut>
                                 <Link href="/sign-in">
                                     <button
-                                        className="px-4 py-1.5 text-sm font-medium text-white rounded-lg transition-all duration-200 border border-text/20"
+                                        className="px-4 py-1.5 text-sm font-medium text-text rounded-lg transition-all duration-200 border border-text/20"
                                         onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.1)')}
                                         onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = 'transparent')}
                                     >
@@ -344,7 +344,7 @@ export default function Navbar({ activePage }: NavbarProps) {
             {/* Cancel Subscription Confirmation Dialog */}
             {showCancelConfirm && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }}>
-                    <div className="w-full max-w-md mx-4 rounded-xl p-6 border border-text/10" style={{ background: 'rgba(15, 23, 42, 0.98)' }}>
+                    <div className="w-full max-w-md mx-4 rounded-xl p-6 border border-text/10" style={{ background: 'rgb(var(--color-bg-1) / 0.98)' }}>
                         {cancelMessage === 'success' ? (
                             <div className="text-center py-4">
                                 <p className="text-sm text-text/80">
@@ -365,7 +365,7 @@ export default function Navbar({ activePage }: NavbarProps) {
                             </div>
                         ) : (
                             <>
-                                <h3 className="text-lg font-semibold text-white mb-3">{ui.cancelTitle}</h3>
+                                <h3 className="text-lg font-semibold text-text mb-3">{ui.cancelTitle}</h3>
                                 <p className="text-sm mb-6 text-text/60">
                                     {ui.cancelConfirmMsg}
                                 </p>
