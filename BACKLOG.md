@@ -828,6 +828,26 @@ Phase 1B work items per advisor discussion 2026-05-04 (preserved in git commit 3
 
 ---
 
+## Phase 2 candidates (exploratory) — post Phase 1B / post Stage 3, not scheduled
+
+### [P2] Generative UI — structured/interactive answer rendering
+- **Source**: Andrew product exploration 2026-06-02 (generative UI trend research + medical over-trust risk analysis)
+- **Idea**: Render Vela answers as structured/interactive components (React/HTML) instead of plain text/markdown, for more intuitive comprehension. Trend is real (Gartner: ~30% of new apps to use AI-driven adaptive interfaces by 2026; Vercel AI SDK RSC / Google A2UI / CopilotKit AG-UI are mature patterns — LLM emits structured JSON selecting which component to render).
+- **CRITICAL design constraints (the reason this is recorded, not just "do generative UI")**: medical context inverts the usual "rich UI = better" conclusion because of the OVER-TRUST risk (Stanford-Harvard State of Clinical AI 2026 + ECRI 2026 top patient-safety concern: users over-trust confident-looking systems lacking clinical context). Rich/authoritative UI can make a possibly-hallucinated answer LOOK more authoritative, directly undermining Vela's citation-mandatory / anti-hallucination positioning. Therefore:
+  1. **Structured UI ONLY for: source/citation surfacing, numeric values vs ranges, verification paths.** NOT for wrapping prose clinical judgment to make it look more authoritative.
+  2. **Per-mode suitability differs by data shape:**
+     - **Verify (drug interactions)** — BEST fit, lowest over-trust risk. Data is already structured (drug pairs, severity, mechanism, source from FDA/DailyMed). Interaction matrix + severity badge visualizes already-validated structured data, not free-generated prose. The removed ProductShowcase Verify card ("⚠ Major Interaction" badge) was a proto-version.
+     - **Explain (lab results)** — GOOD fit, BUT numeric-mapping correctness is safety-critical: a value→status mapping error (e.g. TSH 12.5 shown as "normal/green") is MORE dangerous than a prose error because visualization makes it look precise. Requires strict correctness validation of the value→status mapping. The removed Explain card ("↑ Above normal range") was a proto-version.
+     - **Research (evidence Q&A)** — WORST fit for charts (prose reasoning forced into visuals = the over-trust trap). BUT citation can be structured (source cards, evidence-tier badges, PubMed links) — that part STRENGTHENS verification, so it's additive.
+  3. **Numeric/status mappings (Explain) need rigorous correctness validation** — wrong mapping in a visual is more dangerous than in prose.
+  4. **Gate on prod data, not trend** — only invest if PostHog shows users struggle with plain-text answers (e.g. high dwell/bounce on Explain lab interpretation). The problem (plain text is hard to comprehend) is unvalidated until there are real users.
+- **Solo-founder cost note**: large effort — component manifest, LLM structured-output prompt engineering + validation, streaming render, per-component 16-locale i18n, a11y, AND medical content correctness validation (heavier than general-purpose apps). Competes with Stage 3 + Phase 1B for resources.
+- **Suggested entry point IF pursued**: narrow PoC on Verify interaction matrix first (most structured data, lowest over-trust risk, existing ProductShowcase proto). NOT a full-app generative UI rewrite.
+- **Estimated**: TBD (PoC ~3-5d; full rollout much larger). Re-scope when prod data justifies.
+- **Slot**: Phase 2 (post Phase 1B, post Stage 3). Not scheduled.
+
+---
+
 ## ❌ Removed from roadmap (per ADR 004)
 
 - **Prescription Parser MVP** (originally PRD § 4.4 Phase 1B 殺手功能) — permanently removed from active roadmap. No Phase 2 candidate spec. If revisited, redesign from scratch.
