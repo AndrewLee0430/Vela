@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useTheme } from 'next-themes';
 import { Sun, Moon, Monitor } from 'lucide-react';
 import { LANGUAGES, type LangCode } from '../utils/i18n';
 import { useLang } from '../utils/LangContext';
@@ -17,14 +18,21 @@ interface SettingsControlsProps {
  * Reused by the functional-pages Navbar dropdown (surface="dark") and the
  * landing settings dropdown (surface="light").
  *
- * Theme toggle is COSMETIC ONLY — local useState, no persistence, no actual
- * theme switching. Stage 3 will replace `themePref` with next-themes useTheme()
- * in this one place.
+ * Theme toggle is wired to next-themes `useTheme()` (Stage 3.2) — selecting a
+ * card persists + switches the theme (`attribute="class"`, defaultTheme="dark").
+ * Selected state derives from `theme` (the user's choice, so "system" highlights
+ * correctly) — NOT `resolvedTheme`. A `mounted` guard avoids a hydration mismatch
+ * since `theme` is undefined on the server (preserves 3.1's zero-warning state).
  */
 export default function SettingsControls({ surface = 'dark' }: SettingsControlsProps) {
     const { lang, setLang } = useLang();
     const ui = getUI(lang);
-    const [themePref, setThemePref] = useState<'light' | 'dark' | 'system'>('light');
+    const { theme, setTheme } = useTheme();
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => setMounted(true), []);
+    // Pre-mount (SSR + first client render) shows 'dark' selected to match
+    // defaultTheme="dark"; post-mount reflects the real stored theme.
+    const current = mounted ? (theme ?? 'dark') : 'dark';
 
     const optionStyle = surface === 'light'
         ? { background: '#ffffff', color: '#171717' }
@@ -41,14 +49,14 @@ export default function SettingsControls({ surface = 'dark' }: SettingsControlsP
                         { value: 'dark' as const, label: ui.themeDark, Icon: Moon },
                         { value: 'system' as const, label: ui.themeSystem, Icon: Monitor },
                     ]).map(({ value, label, Icon }) => {
-                        const selected = themePref === value;
+                        const selected = current === value;
                         return (
                             <button
                                 key={value}
                                 type="button"
                                 role="radio"
                                 aria-checked={selected}
-                                onClick={() => setThemePref(value)}
+                                onClick={() => setTheme(value)}
                                 className={`flex-1 flex flex-col items-center gap-1 px-2 py-2 rounded-lg border text-xs transition-all duration-200 ${selected ? 'border-brand bg-brand/10 text-brand' : 'border-text/10 bg-text/[0.04] text-text/60 hover:bg-text/8 hover:border-text/20'}`}
                             >
                                 <Icon size={16} strokeWidth={1.8} />
