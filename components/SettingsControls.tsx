@@ -8,8 +8,12 @@ import { useLang } from '../utils/LangContext';
 import { getUI } from '../utils/i18n-ui';
 
 interface SettingsControlsProps {
-    /** Surface the controls render on — only affects native <option> styling.
-     *  Theme card + select chrome use design tokens that resolve per .dark/.light zone. */
+    /** Force the native <option> palette to a fixed surface. Omit to follow the
+     *  live resolved theme (functional pages). The landing passes "light" to force
+     *  light options because it is forced-light via its `.light` wrapper while the
+     *  global resolvedTheme may be dark — the override decouples the two.
+     *  Only affects native <option> styling; the <select> chrome + theme cards use
+     *  design tokens that resolve per .dark/.light zone. */
     surface?: 'dark' | 'light';
 }
 
@@ -24,17 +28,22 @@ interface SettingsControlsProps {
  * correctly) — NOT `resolvedTheme`. A `mounted` guard avoids a hydration mismatch
  * since `theme` is undefined on the server (preserves 3.1's zero-warning state).
  */
-export default function SettingsControls({ surface = 'dark' }: SettingsControlsProps) {
+export default function SettingsControls({ surface }: SettingsControlsProps) {
     const { lang, setLang } = useLang();
     const ui = getUI(lang);
-    const { theme, setTheme } = useTheme();
+    const { theme, setTheme, resolvedTheme } = useTheme();
     const [mounted, setMounted] = useState(false);
     useEffect(() => setMounted(true), []);
     // Pre-mount (SSR + first client render) shows 'dark' selected to match
     // defaultTheme="dark"; post-mount reflects the real stored theme.
     const current = mounted ? (theme ?? 'dark') : 'dark';
 
-    const optionStyle = surface === 'light'
+    // Native <option> palette: explicit `surface` (landing forced-light) wins;
+    // otherwise follow the actual resolved theme. Pre-mount = dark to match
+    // defaultTheme="dark", so SSR and first client render agree (no hydration
+    // drift); options only become visible after the dropdown opens (post-mount).
+    const optionSurface = surface ?? (mounted && resolvedTheme === 'light' ? 'light' : 'dark');
+    const optionStyle = optionSurface === 'light'
         ? { background: '#ffffff', color: '#171717' }
         : { background: '#0f172a', color: '#fff' };
 

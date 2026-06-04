@@ -248,7 +248,7 @@ export default function Navbar({ activePage }: NavbarProps) {
                                                 backdropFilter: 'blur(20px)',
                                             }}
                                         >
-                                            <SettingsControls surface="dark" />
+                                            <SettingsControls />
 
                                             {/* Plan label */}
                                             <div className="px-4 py-2 border-b border-text/7">
