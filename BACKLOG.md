@@ -368,9 +368,17 @@ follow-up tightenings discovered during implementation.
       telemetry field that couldn't be implemented cleanly without
       backend support.
 
-- [ ] Verify prompt example value "嚴重" causes severity_label /
+- [x] Verify prompt example value "嚴重" causes severity_label /
       risk_level_label leak in non-zh locales
-      **Priority:** Medium — pre-existing bug since 2026-04-20
+      **RESOLVED 2026-06-04** (frontend-authority fix): `pages/verify.tsx` now
+      derives severity/risk labels ONLY from the canonical enum via i18n-verify
+      (`getSeverityLabel`/`getRiskLevelLabel`/`formatInteractionSummary`), no
+      longer trusting the LLM's `severity_label`/`risk_level_label` free-text —
+      deterministic, locale-correct, immune to LLM mis-localization. Backend
+      hygiene also landed: verify_system.md v2.1→v2.2 + server.py fallback
+      replaced the hardcoded "嚴重" schema example with `<localized … matching
+      {response_language}>` placeholders. Schema fields kept Optional/None.
+      **Priority:** ~~Medium~~ DONE — pre-existing bug since 2026-04-20
       (commit ee055d4 introduced verify_system.md v2.1); ~40%
       reproduction rate (2/5 manual tests on 2026-04-28).
 
@@ -410,6 +418,20 @@ follow-up tightenings discovered during implementation.
       fallback (getSeverityLabel) handles missing-from-backend case
       but not wrong-language-from-backend case. Acceptable for soft
       launch since label is informational, not safety-critical.
+
+- [ ] **i18n enhancement (not a bug): expand Verify severity/risk dict to 16 locales**
+      `utils/i18n-verify.ts` covers 7/16 locales (en, zh-TW, zh-CN, ja, ko, es,
+      de); the other 9 fall back to the English dict. After the 2026-06-04
+      frontend-authority bugfix, severity/risk labels derive ONLY from this dict,
+      so those 9 locales now show ENGLISH severity terms (correct but not
+      localized — safer than the prior unreliable LLM free-text, just untranslated).
+      Add severity (Critical/Major/Moderate/Minor) + riskLevel (those + Low/Unknown)
+      + the `formatSummary` function for: fr, it, pt, th, ar, hi, bn, he, vi.
+      Romance (fr/it/pt) are higher-confidence; **th/ar/hi/bn/he/vi need native
+      medical-terminology review** (severity grading vocabulary, not transliteration
+      — same review gate as the Stage 5 i18n translations). Distinct from the
+      RESOLVED bug above: that fixed wrong-LANGUAGE output; this closes the
+      missing-LANGUAGE coverage gap. Discovered 2026-06-04 during the bugfix.
 
 - [ ] deploy.ps1 "All machines running" false negative when Fly
       machines are stopped

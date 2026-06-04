@@ -1,7 +1,14 @@
 <!--
 PROMPT: verify_system
-VERSION: v2.1 (2026-04-20)
+VERSION: v2.2 (2026-06-04)
 CHANGELOG:
+- v2.2 (2026-06-04, i18n bugfix): Replaced hardcoded "嚴重" values in the Output
+  Format schema example with `<localized … matching {response_language}>`
+  placeholders. gpt-4.1-mini mimicked the literal example, emitting "嚴重" as
+  severity_label/risk_level_label even under en/ja/ko (~40% repro). The Verify
+  frontend now derives these labels deterministically from the canonical enum
+  via i18n-verify (no longer trusts the LLM free-text label), so this is the
+  upstream-hygiene half of the fix.
 - v2.1 (2026-04-20, production follow-up): Added Chinese variant handling section.
   Root cause: v2 produced mixed Simplified/Traditional output for zh-CN users
   (e.g. "嚴重" badge under zh-CN UI). Explicit per-variant character-set rules
@@ -63,14 +70,14 @@ Return valid JSON only, matching this exact schema:
     {{
       "drugs": ["Drug1", "Drug2"],
       "severity": "Major",
-      "severity_label": "嚴重",
+      "severity_label": "<localized severity matching {response_language}>",
       "description": "...",
       "recommendation": "..."
     }}
   ],
   "summary": "...",
   "risk_level": "Major",
-  "risk_level_label": "嚴重"
+  "risk_level_label": "<localized risk_level matching {response_language}>"
 }}
 ```
 

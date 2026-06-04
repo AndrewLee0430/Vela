@@ -100,8 +100,10 @@ _VERIFY_PROMPT_FALLBACK = (
     "`recommendation`, and `summary` must be in {response_language}.\n\n"
     "Return valid JSON only:\n"
     '{{"interactions":[{{"drugs":["Drug1","Drug2"],"severity":"Major",'
-    '"severity_label":"嚴重","description":"...","recommendation":"..."}}],'
-    '"summary":"...","risk_level":"Major","risk_level_label":"嚴重"}}'
+    '"severity_label":"<localized severity matching {response_language}>",'
+    '"description":"...","recommendation":"..."}}],'
+    '"summary":"...","risk_level":"Major",'
+    '"risk_level_label":"<localized risk_level matching {response_language}>"}}'
 )
 
 try:
