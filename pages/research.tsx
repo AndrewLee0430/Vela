@@ -108,7 +108,7 @@ function EvidenceLegend() {
             <div className="inline-flex items-center gap-4 text-xs" style={{ color: 'rgb(var(--color-text) / 0.45)' }}>
                 {levels.map(({ emoji, label, tip }) => (
                     <span key={emoji} className="relative group">
-                        <span className="cursor-help transition-colors hover:text-slate-200">{emoji} {label}</span>
+                        <span className="cursor-help transition-colors hover:text-text">{emoji} {label}</span>
                         {/* Desktop hover tooltip */}
                         <span
                             className="absolute bottom-full left-1/2 mb-2 hidden group-hover:block z-50"
@@ -143,7 +143,7 @@ function EvidenceLegend() {
             {expanded && (
                 <div
                     className="md:hidden mt-2 rounded-lg p-3 text-left text-xs space-y-1.5 mx-auto max-w-sm"
-                    style={{ background: '#1e293b', border: '1px solid #475569', color: '#cbd5e1' }}
+                    style={{ background: 'rgb(var(--color-text) / 0.06)', border: '1px solid rgb(var(--color-text) / 0.15)', color: 'rgb(var(--color-text) / 0.7)' }}
                 >
                     {levels.map(({ emoji, label, tip }) => (
                         <p key={emoji}>{emoji} <span className="font-medium">{label}</span> — {tip}</p>
@@ -516,7 +516,7 @@ function ResearchForm() {
                                 <div className="text-center py-12">
                                     <div className="space-y-3">
                                         <p className="text-xs uppercase tracking-widest" style={{ color: "rgb(var(--color-text) / 0.35)" }}>{ui.tryThese}</p>
-                                        <p className="text-xs mb-2" style={{ color: "rgba(148,163,184,0.8)" }}>
+                                        <p className="text-xs mb-2" style={{ color: "rgb(var(--color-text) / 0.5)" }}>
                                             {ui.askOneQuestion}
                                         </p>
                                         <div className="flex flex-wrap justify-center gap-2">
@@ -566,7 +566,7 @@ function ResearchForm() {
 
                             {loading && !answer && statusMsg && (
                                 <div className="flex items-center gap-3 py-8" style={{ color: "rgb(var(--color-text) / 0.5)" }}>
-                                    <div className="w-4 h-4 border-2 border-t-orange-400 rounded-full animate-spin flex-shrink-0" style={{ borderColor: "rgb(var(--color-text) / 0.2)", borderTopColor: "rgb(var(--color-brand))" }} />
+                                    <div className="w-4 h-4 border-2 rounded-full animate-spin flex-shrink-0" style={{ borderColor: "rgb(var(--color-text) / 0.2)", borderTopColor: "rgb(var(--color-brand))" }} />
                                     <span className="text-sm">{statusMsg}</span>
                                 </div>
                             )}
@@ -631,7 +631,7 @@ function ResearchForm() {
                                                         onClick={() => exportResearchPdf(question, answer, citations)}
                                                         className="inline-flex items-center gap-2 text-xs font-medium px-3 py-1.5 rounded-lg transition-all cursor-pointer"
                                                         style={{ background: 'rgb(var(--color-text) / 0.06)', border: '1px solid rgb(var(--color-text) / 0.15)', color: 'rgb(var(--color-text) / 0.55)' }}
-                                                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.12)'; (e.currentTarget as HTMLElement).style.color = 'white'; }}
+                                                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgb(var(--color-text) / 0.12)'; (e.currentTarget as HTMLElement).style.color = 'rgb(var(--color-text))'; }}
                                                         onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgb(var(--color-text) / 0.06)'; (e.currentTarget as HTMLElement).style.color = 'rgb(var(--color-text) / 0.55)'; }}
                                                     >
                                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
