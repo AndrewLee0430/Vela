@@ -997,6 +997,32 @@ Two i18n content drifts surfaced during Stage 2 landing redesign (Steps 2 / 4a /
       Light is fully coherent. Discovered 2026-06-03 (3.4 Dashboard) + 2026-06-04
       (3.5 Research recon surfaced BugReportButton/AnonymousUpgradeCTA/ProFeatureOverlay/Toast).
 
+- [ ] **OPEN PRODUCT QUESTION: should the Blog (Jinja2) follow the app theme?**
+      Blog is NOT a Next.js page — it's server-rendered by FastAPI/Jinja2
+      (`api/templates/blog_list.jinja2` + `blog_post.jinja2`, `api/services/blog_renderer.py`,
+      route `api/server.py:2211`). It has its OWN self-contained `<style>` block with
+      its own CSS variables (`--vela-text-muted`, `--vela-card-bg`, `--vela-text-primary`,
+      hardcoded `#0a1628` / `rgba(255,255,255,0.08)`) — it does **not** consume the
+      Next.js `--color-*` token system or `.dark`/`.light`, and never participated in
+      next-themes. So Stage 3's "tokenize colors" audit does not apply, and Blog was
+      intentionally left untouched in 3.7. **Heads-up for 3.8 total acceptance:** a
+      Light-theme app user who navigates to `/blog` will see the blog's fixed
+      (currently dark-ish) Jinja2 design — it will NOT visually match app-light.
+      **Decision needed:** make the Jinja2 blog theme-aware (replicate the FOUC head
+      script + token CSS in the template layer — a separate server-side effort) OR
+      keep it a deliberate fixed-design public/SEO surface (like the landing's
+      forced-light stance, but server-rendered). Surfaced 2026-06-04 during 3.7 recon.
+
+- [ ] **Future-polish: restore History severity-badge colored pill (alpha variant)**
+      `pages/history.tsx` interaction badges previously used `` `${getSeverityAccent()}20` ``
+      for a colored pill bg, but that appended `20` to an `rgb(var(--color-…))` string
+      → invalid CSS, silently dropped (token-migration artifact). 3.7 removed the dead
+      line; badges now render as colored-text-only (`color: accent`). To restore a
+      proper colored pill, `getSeverityAccent` needs to expose an alpha variant (e.g.
+      return the bare `var(--color-danger)` channels so callers can do
+      `rgb(var(--color-danger) / 0.12)`). Same future-polish bucket as the 3.5/3.6
+      decorative-accent light-contrast flags. Cosmetic, low priority.
+
 ---
 
 ## Tooling / repo hygiene (pre-existing, surfaced during audits)
