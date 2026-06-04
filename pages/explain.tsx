@@ -556,7 +556,7 @@ function ExplainForm() {
                 {(result || reportText) && (
                     <button onClick={handleReset} className="text-sm font-medium px-3 py-1 rounded-lg transition-all mt-1"
                         style={{ background: 'transparent', border: '1px solid rgb(var(--color-text) / 0.3)', color: 'rgb(var(--color-text) / 0.7)' }}
-                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.1)'; }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgb(var(--color-text) / 0.1)'; }}
                         onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}>
                         {ui.newBtn}
                     </button>
@@ -674,7 +674,7 @@ function ExplainForm() {
                                             onClick={handleUploadReset}
                                             className="px-4 py-2 text-sm rounded-lg transition-all"
                                             style={{ border: '1px solid rgb(var(--color-text) / 0.3)', color: 'rgb(var(--color-text) / 0.7)', background: 'transparent' }}
-                                            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.1)'; }}
+                                            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgb(var(--color-text) / 0.1)'; }}
                                             onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                                         >
                                             {ui.uploadDifferentFile}
@@ -746,7 +746,7 @@ function ExplainForm() {
 
             {sources.length > 0 && (
                 <div className="mt-5 rounded-xl p-5" style={{ background: "rgb(var(--color-text) / 0.06)", border: "1px solid rgb(var(--color-text) / 0.1)" }}>
-                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">{ui.verifiedSources}</p>
+                    <p className="text-xs font-semibold text-text/50 uppercase tracking-wider mb-3">{ui.verifiedSources}</p>
                     <div className="flex flex-wrap gap-2">
                         {sources.map((src, i) => <SourceBadge key={i} source={src} index={i} />)}
                     </div>
@@ -777,7 +777,7 @@ function ExplainForm() {
 
                     {result.clinical_correlations.length > 0 && (
                         <div className="mt-6">
-                            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
+                            <p className="text-xs font-semibold text-text/50 uppercase tracking-wider mb-3">
                                 {ui.clinicalCorrelations}
                             </p>
                             {result.clinical_correlations.map((corr, i) => (
