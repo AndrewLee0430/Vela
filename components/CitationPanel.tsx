@@ -187,9 +187,9 @@ function CitationCard({ citation, position }: { citation: Citation; position: nu
                         <button
                             onClick={() => setExpanded(!expanded)}
                             className="text-xs mt-1 transition-colors"
-                            style={{ color: "rgba(148,163,184,1)" }}
-                            onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = '#e2e8f0'}
-                            onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = 'rgba(148,163,184,1)'}
+                            style={{ color: "rgb(var(--color-text) / 0.5)" }}
+                            onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = 'rgb(var(--color-text))'}
+                            onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = 'rgb(var(--color-text) / 0.5)'}
                         >
                             {expanded ? ui.showLess : ui.showMore}
                         </button>
@@ -263,7 +263,7 @@ export default function CitationPanel({ citations, isLoading }: CitationPanelPro
 
     return (
         <div className="h-full flex flex-col">
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+            <p className="text-xs font-semibold text-text/50 uppercase tracking-wider mb-2">
                 {ui.referencesTitle} ({citations.length})
             </p>
 
