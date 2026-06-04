@@ -313,13 +313,16 @@ function VerifyForm() {
             return { text: ui.noInteractions, color: 'rgb(var(--color-text) / 0.5)' };
         }
         const severityOrder = ['Critical', 'Major', 'Moderate', 'Minor'];
-        // Accumulate counts + carry backend-localized label (severity_label) for formatter
-        const buckets: Record<string, { label?: string; count: number }> = {};
+        // Accumulate counts by canonical severity enum. Labels are resolved
+        // frontend-side from the enum via i18n-verify (NOT the LLM's
+        // severity_label free-text, which leaks wrong-language values — see
+        // the deterministic enum-authority fix below).
+        const buckets: Record<string, { count: number }> = {};
         let highestIdx = severityOrder.length;
         for (const i of interactions) {
             const key = i.severity;
             if (!buckets[key]) {
-                buckets[key] = { label: i.severity_label || undefined, count: 0 };
+                buckets[key] = { count: 0 };
             }
             buckets[key].count += 1;
             const idx = severityOrder.indexOf(key);
@@ -327,7 +330,7 @@ function VerifyForm() {
         }
         const breakdown = severityOrder
             .filter(s => buckets[s])
-            .map(s => ({ canonical: s, label: buckets[s].label, count: buckets[s].count }));
+            .map(s => ({ canonical: s, count: buckets[s].count }));
         const colorMap: Record<string, string> = {
             Critical: 'rgb(var(--color-danger))',
             Major:    'rgb(var(--color-danger))',
@@ -451,7 +454,7 @@ function VerifyForm() {
                                         {ui.analysisSummary}
                                     </h2>
                                     <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium border ${getRiskBadge(result.risk_level)}`}>
-                                        {result.risk_level_label || getRiskLevelLabel(lang, result.risk_level)}
+                                        {getRiskLevelLabel(lang, result.risk_level)}
                                     </span>
                                 </div>
                                 {(() => {
@@ -483,7 +486,7 @@ function VerifyForm() {
                                                         {interaction.drug_pair[0]} ↔ {interaction.drug_pair[1]}
                                                     </p>
                                                     <span className={`px-2 py-0.5 rounded text-xs font-medium ml-2 flex-shrink-0 ${getSeverityBadge(interaction.severity)}`}>
-                                                        {interaction.severity_label || getSeverityLabel(lang, interaction.severity)}
+                                                        {getSeverityLabel(lang, interaction.severity)}
                                                     </span>
                                                 </div>
                                                 <div className="space-y-2 text-sm leading-relaxed text-gray-800 dark:text-gray-200">
