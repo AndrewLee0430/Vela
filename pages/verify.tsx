@@ -277,35 +277,37 @@ function VerifyForm() {
         }
     }
 
+    // Severity → semantic token mapping (flips per theme; AA-tuned in both):
+    // Critical/Major=danger, Moderate=warning, Minor=info, Low=success.
     const getRiskBadge = (level: string) => {
         const map: Record<string, string> = {
-            Critical: 'bg-red-50 text-red-700 border-red-200',
-            Major:    'bg-red-50 text-red-700 border-red-200',
-            Moderate: 'bg-yellow-50 text-yellow-700 border-yellow-200',
-            Minor:    'bg-blue-50 text-blue-700 border-blue-200',
-            Low:      'bg-green-50 text-green-700 border-green-200',
+            Critical: 'bg-danger/10 text-danger border-danger/30',
+            Major:    'bg-danger/10 text-danger border-danger/30',
+            Moderate: 'bg-warning/10 text-warning border-warning/30',
+            Minor:    'bg-info/10 text-info border-info/30',
+            Low:      'bg-success/10 text-success border-success/30',
         };
-        return map[level] ?? 'bg-gray-50 text-gray-700 border-gray-200';
+        return map[level] ?? 'bg-text/8 text-text/70 border-text/15';
     };
 
     const getSeverityStyle = (severity: string) => {
         const map: Record<string, string> = {
-            Critical: 'border-red-400 bg-red-50 dark:bg-red-900/20',
-            Major:    'border-red-400 bg-red-50 dark:bg-red-900/20',
-            Moderate: 'border-yellow-400 bg-yellow-50 dark:bg-yellow-900/20',
-            Minor:    'border-blue-300 bg-blue-50 dark:bg-blue-900/20',
+            Critical: 'border-danger bg-danger/10',
+            Major:    'border-danger bg-danger/10',
+            Moderate: 'border-warning bg-warning/10',
+            Minor:    'border-info bg-info/10',
         };
-        return map[severity] ?? 'border-gray-300 bg-gray-50 dark:bg-gray-700';
+        return map[severity] ?? 'border-text/30 bg-text/5';
     };
 
     const getSeverityBadge = (severity: string) => {
         const map: Record<string, string> = {
-            Critical: 'bg-red-100 text-red-800',
-            Major:    'bg-red-100 text-red-800',
-            Moderate: 'bg-yellow-100 text-yellow-800',
-            Minor:    'bg-blue-100 text-blue-800',
+            Critical: 'bg-danger/15 text-danger',
+            Major:    'bg-danger/15 text-danger',
+            Moderate: 'bg-warning/15 text-warning',
+            Minor:    'bg-info/15 text-info',
         };
-        return map[severity] ?? 'bg-gray-100 text-gray-800';
+        return map[severity] ?? 'bg-text/10 text-text/70';
     };
 
     const getInteractionSummary = (interactions: DrugInteraction[]) => {
@@ -424,7 +426,7 @@ function VerifyForm() {
                     )}
 
                     {error && (
-                        <div className="mt-4 p-3 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 rounded-lg border border-red-100 text-sm">
+                        <div className="mt-4 p-3 bg-danger/10 text-danger rounded-lg border border-danger/20 text-sm">
                             {error}
                         </div>
                     )}
@@ -440,8 +442,8 @@ function VerifyForm() {
 
                     {loading && (
                         <div className="text-center py-16">
-                            <div className="w-8 h-8 border-2 border-gray-200 border-t-blue-400 rounded-full animate-spin mx-auto" />
-                            <p className="mt-4 text-sm text-gray-400">{ui.analyzingMsg}</p>
+                            <div className="w-8 h-8 border-2 border-text/20 border-t-brand rounded-full animate-spin mx-auto" />
+                            <p className="mt-4 text-sm text-text/50">{ui.analyzingMsg}</p>
                         </div>
                     )}
 
@@ -470,7 +472,7 @@ function VerifyForm() {
                                     response={result.summary}
                                     category="verify"
                                 />
-                                <p className="text-xs text-gray-300 dark:text-gray-600 mt-3">
+                                <p className="text-xs text-text/40 mt-3">
                                     {result.drugs_analyzed.join(', ')} · {(result.query_time_ms / 1000).toFixed(2)}s
                                 </p>
                             </div>
@@ -482,19 +484,19 @@ function VerifyForm() {
                                         {result.interactions.map((interaction, idx) => (
                                             <div key={idx} className={`border-l-4 rounded-lg p-4 ${getSeverityStyle(interaction.severity)}`}>
                                                 <div className="flex justify-between items-start mb-2">
-                                                    <p className="font-semibold text-base text-slate-900 dark:text-slate-100">
+                                                    <p className="font-semibold text-base text-text">
                                                         {interaction.drug_pair[0]} ↔ {interaction.drug_pair[1]}
                                                     </p>
                                                     <span className={`px-2 py-0.5 rounded text-xs font-medium ml-2 flex-shrink-0 ${getSeverityBadge(interaction.severity)}`}>
                                                         {getSeverityLabel(lang, interaction.severity)}
                                                     </span>
                                                 </div>
-                                                <div className="space-y-2 text-sm leading-relaxed text-gray-800 dark:text-gray-200">
+                                                <div className="space-y-2 text-sm leading-relaxed text-text/85">
                                                     <p>{interaction.description}</p>
                                                     {interaction.clinical_recommendation && (
                                                         <p className="opacity-90">{interaction.clinical_recommendation}</p>
                                                     )}
-                                                    <p className="text-xs text-gray-600 dark:text-gray-400 italic">
+                                                    <p className="text-xs text-text/55 italic">
                                                         Source:{' '}
                                                         {interaction.source_url ? (
                                                             <a href={interaction.source_url} target="_blank" rel="noopener noreferrer"
@@ -511,7 +513,7 @@ function VerifyForm() {
                             )}
 
                             {result.disclaimer && (
-                                <p className="text-xs text-gray-400 pt-2 border-t border-gray-100 dark:border-gray-700">
+                                <p className="text-xs text-text/40 pt-2 border-t border-text/10">
                                     ⚠️ {result.disclaimer}
                                 </p>
                             )}
