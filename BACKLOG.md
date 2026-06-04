@@ -956,17 +956,24 @@ Two i18n content drifts surfaced during Stage 2 landing redesign (Steps 2 / 4a /
 ## Stage 3 theme follow-ups (captured during light audits)
 
 - [ ] **Shared modals/overlays light-theme audit (before Stage 3 closes)**
-      Stage 3.4 audited the Dashboard + shared chrome (Navbar/MobileNav), but
-      three shared modal/overlay components were deferred and still use
+      Stages 3.4–3.5 audited the page surfaces (Dashboard + shared chrome
+      Navbar/MobileNav; Research body + shared CitationPanel), but several
+      shared modal/overlay/popover components were deferred and still use
       dark-only colors. Once functional pages are light-ready (3.4–3.7) a user
       on Light who triggers any of these would hit a dark modal on a light page:
       - `components/UpgradeModal.tsx` — opens from Navbar (Upgrade) + Dashboard (`?upgrade=true`).
       - `components/OnboardingOverlay.tsx` — first-run overlay on Dashboard.
       - `components/ShareButton.tsx` — share popover/sheet on answer pages.
+      - `components/BugReportButton.tsx` — floating btn + report modal (`#0f1f3d` /
+        `bg-slate-600` / `text-white` / `#1e4a8a`); renders on ALL PageShell pages.
+      - `components/AnonymousUpgradeCTA.tsx` — anon quota/third-query modal overlay (`#2563eb` button).
+      - `components/ProFeatureOverlay.tsx` — Pro-lock popover (`#1e293b`/`#475569`/`#cbd5e1`); **likely keep-dark** (theme-independent popover, tooltip precedent) — shared pass to decide, don't pre-judge.
+      - `components/Toast.tsx` — `text-white` on a colored toast bg; **likely keep** (white-on-colored is theme-independent) — shared pass to confirm.
       Audit each (hardcoded `text-white` / dark-glass `rgba(15,23,42,…)` /
-      `bg-gray-*` → flip-able `text-text` / `bg-bg-*` tokens), same pattern as
-      3.4. Must land before Stage 3.8 (default-theme decision) so Light is
-      fully coherent. Discovered 2026-06-03 during 3.4 Dashboard audit.
+      `bg-gray-*`/`bg-slate-*` → flip-able `text-text` / `bg-bg-*` tokens), same
+      pattern as 3.4/3.5. Must land before Stage 3.8 (default-theme decision) so
+      Light is fully coherent. Discovered 2026-06-03 (3.4 Dashboard) + 2026-06-04
+      (3.5 Research recon surfaced BugReportButton/AnonymousUpgradeCTA/ProFeatureOverlay/Toast).
 
 ---
 
