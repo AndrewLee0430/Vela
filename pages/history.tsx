@@ -157,15 +157,15 @@ function HistoryList() {
             case 'Major':    return 'rgb(var(--color-danger))';
             case 'Moderate': return 'rgb(var(--color-warning))';
             case 'Minor':    return 'rgb(var(--color-info))';
-            default:         return '#9ca3af';
+            default:         return 'rgb(var(--color-text) / 0.4)';
         }
     };
 
     if (loading) {
         return (
             <div className="text-center py-16">
-                <div className="animate-spin rounded-full h-10 w-10 border-2 border-gray-200 border-t-gray-500 mx-auto" />
-                <p className="mt-4 text-sm text-gray-400">{ui.loadingHistory}</p>
+                <div className="animate-spin rounded-full h-10 w-10 border-2 border-text/20 border-t-text/50 mx-auto" />
+                <p className="mt-4 text-sm text-text/50">{ui.loadingHistory}</p>
             </div>
         );
     }
@@ -173,8 +173,8 @@ function HistoryList() {
     if (history.length === 0) {
         return (
             <div className="text-center py-16">
-                <p className="text-gray-400 mb-4">{ui.noHistory}</p>
-                <Link href="/research" className="text-sm hover:text-white underline underline-offset-4" style={{ color: "rgb(var(--color-text) / 0.5)" }}>
+                <p className="text-text/50 mb-4">{ui.noHistory}</p>
+                <Link href="/research" className="text-sm hover:text-text underline underline-offset-4" style={{ color: "rgb(var(--color-text) / 0.5)" }}>
                     {ui.startSearch}
                 </Link>
             </div>
@@ -237,7 +237,7 @@ function HistoryList() {
                                             ? item.question.slice(0, 80) + '...'
                                             : item.question}
                                     </p>
-                                    <p className="text-xs text-gray-400 mt-0.5">
+                                    <p className="text-xs text-text/50 mt-0.5">
                                         {new Date(item.created_at).toLocaleString('en-US', {
                                             year: 'numeric', month: 'short', day: 'numeric',
                                             hour: '2-digit', minute: '2-digit',
@@ -247,7 +247,7 @@ function HistoryList() {
                             </div>
 
                             <svg
-                                className={`w-4 h-4 text-gray-400 flex-shrink-0 ml-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                                className={`w-4 h-4 text-text/50 flex-shrink-0 ml-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
                                 fill="none" stroke="currentColor" viewBox="0 0 24 24"
                             >
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -297,7 +297,7 @@ function HistoryList() {
                                                 ))}
                                                 {parsed.clinical_correlations && parsed.clinical_correlations.length > 0 && (
                                                     <div className="mt-6">
-                                                        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
+                                                        <p className="text-xs font-semibold text-text/50 uppercase tracking-wider mb-3">
                                                             {ui.clinicalCorrelations}
                                                         </p>
                                                         {parsed.clinical_correlations.map((corr, i) => (
@@ -375,8 +375,7 @@ function HistoryList() {
                                                             </p>
                                                             <span 
                                                                 className="text-xs font-medium px-2 py-0.5 rounded-full ml-2 flex-shrink-0"
-                                                                style={{ 
-                                                                    background: `${getSeverityAccent(interaction.severity)}20`,
+                                                                style={{
                                                                     color: getSeverityAccent(interaction.severity)
                                                                 }}
                                                             >
@@ -416,8 +415,8 @@ export default function History() {
                         <meta name="robots" content="noindex, nofollow" />
                     </Head>
                     <style>{`
-                        .history-question::selection { background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.85); }
-                        .history-question::-moz-selection { background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.85); }
+                        .history-question::selection { background: rgb(var(--color-text) / 0.15); color: rgb(var(--color-text) / 0.85); }
+                        .history-question::-moz-selection { background: rgb(var(--color-text) / 0.15); color: rgb(var(--color-text) / 0.85); }
                     `}</style>
                 </>
             }
