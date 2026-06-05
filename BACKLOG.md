@@ -977,25 +977,35 @@ Two i18n content drifts surfaced during Stage 2 landing redesign (Steps 2 / 4a /
 
 ## Stage 3 theme follow-ups (captured during light audits)
 
-- [ ] **Shared modals/overlays light-theme audit (before Stage 3 closes)**
-      Stages 3.4–3.5 audited the page surfaces (Dashboard + shared chrome
-      Navbar/MobileNav; Research body + shared CitationPanel), but several
-      shared modal/overlay/popover components were deferred and still use
-      dark-only colors. Once functional pages are light-ready (3.4–3.7) a user
-      on Light who triggers any of these would hit a dark modal on a light page:
-      - `components/UpgradeModal.tsx` — opens from Navbar (Upgrade) + Dashboard (`?upgrade=true`).
-      - `components/OnboardingOverlay.tsx` — first-run overlay on Dashboard.
-      - `components/ShareButton.tsx` — share popover/sheet on answer pages.
-      - `components/BugReportButton.tsx` — floating btn + report modal (`#0f1f3d` /
-        `bg-slate-600` / `text-white` / `#1e4a8a`); renders on ALL PageShell pages.
-      - `components/AnonymousUpgradeCTA.tsx` — anon quota/third-query modal overlay (`#2563eb` button).
-      - `components/ProFeatureOverlay.tsx` — Pro-lock popover (`#1e293b`/`#475569`/`#cbd5e1`); **likely keep-dark** (theme-independent popover, tooltip precedent) — shared pass to decide, don't pre-judge.
-      - `components/Toast.tsx` — `text-white` on a colored toast bg; **likely keep** (white-on-colored is theme-independent) — shared pass to confirm.
-      Audit each (hardcoded `text-white` / dark-glass `rgba(15,23,42,…)` /
-      `bg-gray-*`/`bg-slate-*` → flip-able `text-text` / `bg-bg-*` tokens), same
-      pattern as 3.4/3.5. Must land before Stage 3.8 (default-theme decision) so
-      Light is fully coherent. Discovered 2026-06-03 (3.4 Dashboard) + 2026-06-04
-      (3.5 Research recon surfaced BugReportButton/AnonymousUpgradeCTA/ProFeatureOverlay/Toast).
+- [x] **Shared modals/overlays light-theme audit (before Stage 3 closes)**
+      **RESOLVED 2026-06-05** (shared-modals pass). Per-component verdicts after recon:
+      - **FLIPPED** to theme tokens (commit `99169f0`):
+        - `components/UpgradeModal.tsx` — card `#0f1f3d`→`bg-2`, gray text→`text-text/α`.
+        - `components/OnboardingOverlay.tsx` — card navy gradient→`bg-2`, title→`text-text`.
+          (Was genuinely broken in light: hardcoded-dark card + token body text → text
+          flipped dark → invisible. The card flip fixes it.)
+        - `components/BugReportButton.tsx` — modal card/inputs/option bgs `#0f1f3d`/`text-white`
+          → `bg-2`/`text-text`. FAB (`bg-slate-600`) kept (neutral, theme-independent).
+      - **KEEP-DARK** (intentional, unchanged): `components/ProFeatureOverlay.tsx` — small
+        Pro-lock popover (`#1e293b`/`#475569`/`#cbd5e1`), same category as the LoincBadge /
+        evidence tooltips kept dark in 3.5/3.6; reads fine on a light page.
+      - **Already token / theme-independent** (no change needed):
+        - `components/Toast.tsx` — white text on `rgb(var(--color-{success,warning,danger}))` bg.
+        - `components/AnonymousUpgradeCTA.tsx` — card already `bg-bg-2`; scrim + `#2563eb` CTA theme-independent.
+        - `components/ShareButton.tsx` → renders `components/ShareModal.tsx`, which is already
+          fully token-based (only its scrim is hardcoded). ShareButton itself has no colors.
+      - **Scrims kept** on all modals (`rgba(0,0,0,0.7)` / `0.72` spotlight) — theme-independent
+        page-dimming, not a dark leak.
+      Discovered 2026-06-03 (3.4 Dashboard) + 2026-06-04 (3.5 Research recon); closed 2026-06-05.
+
+- [ ] **Future-polish: re-unify saturated CTA colors to the brand token**
+      The Pro/upgrade CTA buttons use a hardcoded saturated coral `#ff6b4a` (+ `#cc5533`
+      pressed) and blues `#1e4a8a` / `#2563eb` — `#ff6b4a` ≠ `--color-brand` (255·142·110),
+      a lighter/peachier coral. These are theme-independent colored buttons (white text,
+      readable in both themes) so they were KEPT as-is during the shared-modals pass, not a
+      theme bug. Future visual-consistency pass could unify them to `--color-brand` (+ a
+      brand-pressed/secondary token). Same future-polish bucket as the decorative-accent
+      light-contrast flags (3.5/3.6) and the History severity-pill (3.7). Cosmetic, low priority.
 
 - [ ] **OPEN PRODUCT QUESTION: should the Blog (Jinja2) follow the app theme?**
       Blog is NOT a Next.js page — it's server-rendered by FastAPI/Jinja2
