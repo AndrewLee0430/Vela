@@ -9,6 +9,8 @@ import { useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import { LangProvider } from '../utils/LangContext';
 import { reset as resetAnalytics, identify, track, type Tier } from '../utils/analytics';
+import { clearPlanCache } from '../components/PlanBadge';
+import { ONBOARDING_SEEN_KEY } from '../components/OnboardingOverlay';
 import '../styles/globals.css';
 
 const notoSans = Noto_Sans({
@@ -64,6 +66,10 @@ function AnalyticsAuthBridge() {
     }
     if (prevSignedIn.current && !current) {
       resetAnalytics();
+      // Real signed-in → signed-out transition only (this gate, not mid-session):
+      // drop per-account state so the next account on this browser starts clean.
+      clearPlanCache();                                              // Bug 3: cross-account plan/status cache bleed
+      try { localStorage.removeItem(ONBOARDING_SEEN_KEY); } catch {} // Bug 2: next account re-onboards
     }
     if (!prevSignedIn.current && current) {
       const clerkUserId = user?.id;

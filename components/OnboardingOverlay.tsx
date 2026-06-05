@@ -3,6 +3,10 @@ import { useAuth } from '@clerk/nextjs';
 import { useLang } from '../utils/LangContext';
 import { getUI } from '../utils/i18n-ui';
 
+// Browser-global "already onboarded" flag. Single-sourced so _app.tsx can clear
+// it on sign-out (so a different account on the same browser re-onboards).
+export const ONBOARDING_SEEN_KEY = 'hasSeenOnboarding';
+
 interface Step {
   target: string | null;
   titleKey: 'onboardingWelcome' | 'onboardingResearch' | 'onboardingVerify' | 'onboardingExplain';
@@ -24,7 +28,7 @@ export default function OnboardingOverlay() {
   const [step, setStep] = useState(0);
   const [visible, setVisible] = useState(false);
   const [rect, setRect] = useState<DOMRect | null>(null);
-  const [plan, setPlan] = useState<'free' | 'pro'>('pro'); // optimistic default
+  const [plan, setPlan] = useState<'free' | 'pro'>('free'); // default free; corrected by /api/user/status
   const popoverRef = useRef<HTMLDivElement>(null);
 
   const steps = STEP_DEFS;
@@ -47,7 +51,7 @@ export default function OnboardingOverlay() {
   // ── show only once ────────────────────────────────────────────────────────
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    if (localStorage.getItem('hasSeenOnboarding')) return;
+    if (localStorage.getItem(ONBOARDING_SEEN_KEY)) return;
     const t = setTimeout(() => setVisible(true), 400);
     return () => clearTimeout(t);
   }, []);
@@ -74,7 +78,7 @@ export default function OnboardingOverlay() {
 
   // ── handlers ──────────────────────────────────────────────────────────────
   const finish = () => {
-    localStorage.setItem('hasSeenOnboarding', '1');
+    localStorage.setItem(ONBOARDING_SEEN_KEY, '1');
     setVisible(false);
   };
 
