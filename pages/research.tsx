@@ -57,17 +57,30 @@ interface ParsedSection {
     content: string;
 }
 
+// Language-agnostic header parsing. Matches any "## <header>" line, then extracts
+// the evidence emoji from anywhere in the header and sanitizes the title — so it
+// works whether the LLM emits the clean English form (## Summary 🟢 — English) or
+// the bracketed non-English form (## [臨床注意事項 🟡] / ## [臨床注意事項 🟡 — 繁體中文]).
 function parseResearchSections(text: string): ParsedSection[] | null {
-    // Match headers like: ## Summary 🟢 — English   or   ## 摘要 🟡 — 繁體中文
-    const headerRegex = /^##\s+(.+?)(?:\s+(🟢|🟡|🔴))?\s*(?:—\s*.+)?$/gm;
+    const headerRegex = /^##\s+(.+?)\s*$/gm;
     const matches = [...text.matchAll(headerRegex)];
     if (matches.length === 0) return null;
+
+    const sanitizeTitle = (raw: string): string =>
+        raw
+            .replace(/[🟢🟡🔴]/gu, '')            // strip evidence emoji (any position)
+            .replace(/\s+[—–]\s*.+$/u, '')        // strip " — Lang" suffix (spaced em/en-dash only)
+            .replace(/^[\[【［\s]+/u, '')          // strip leading brackets [ 【 ［
+            .replace(/[\]】］\s]+$/u, '')          // strip trailing brackets ] 】 ］
+            .trim();
 
     const sections: ParsedSection[] = [];
     for (let i = 0; i < matches.length; i++) {
         const match = matches[i];
-        const title = match[1].trim();
-        const evidence = (match[2] as ParsedSection['evidence']) || null;
+        const header = match[1];
+        const emojiMatch = header.match(/[🟢🟡🔴]/u);
+        const evidence = (emojiMatch ? emojiMatch[0] : null) as ParsedSection['evidence'];
+        const title = sanitizeTitle(header);
         const start = match.index! + match[0].length;
         const end = i + 1 < matches.length ? matches[i + 1].index! : text.length;
         // Remove leading --- separator

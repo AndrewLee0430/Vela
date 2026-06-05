@@ -331,13 +331,15 @@ Judge each section independently:
 - 🟡 Moderate — supported by observational study or conditional recommendation
 - 🔴 Limited — based on case report, expert opinion, or insufficient retrieved evidence
 
-## [Summary 🟢 — translated to user's language]
+Header format: translate ONLY the section NAME to the user's language; keep the evidence emoji in the header; do NOT output square brackets around the header.
+
+## Summary 🟢 — translated to user's language
 2-3 sentences: direct answer first, then key mechanism.
 Put the conclusion FIRST. Do not bury it after background.
 
 ---
 
-## [Clinical Notes 🟡 — translated to user's language]
+## Clinical Notes 🟡 — translated to user's language
 Cover ALL of the following in natural prose or structured bullets:
 - Safety warnings and when NOT to use the drug/treatment
 - Key contraindications (cardiac, respiratory, metabolic, drug interactions)
