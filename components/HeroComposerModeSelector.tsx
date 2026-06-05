@@ -74,7 +74,7 @@ export default function HeroComposerModeSelector({ mode, onChange, t }: Props) {
                 <div
                     role="listbox"
                     className="absolute bottom-full right-0 mb-2 rounded-xl shadow-2xl border border-text/10 p-1.5 z-50 w-72 max-w-[calc(100vw-2rem)]"
-                    style={{ background: 'rgba(255, 255, 255, 0.97)', backdropFilter: 'blur(20px)' }}
+                    style={{ background: 'rgb(var(--color-bg-1) / 0.97)', backdropFilter: 'blur(20px)' }}
                 >
                     {modes.map(m => {
                         const active = m.key === mode;

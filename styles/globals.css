@@ -111,3 +111,11 @@ body {
   --color-info: 37 99 235;
   --color-danger-soft: 185 28 28;
 }
+
+/* Landing hero background (Stage 3.8) — class-driven so the FOUC <html> theme
+   class (set in pages/_document.tsx before paint) controls it flicker-free, with
+   no useTheme/mounted logic in LandingPage. Light = the warm-orange Stage-4 brand
+   gradient (the default theme); dark = the standard bg-app-bg token gradient (same
+   as functional pages). */
+.landing-bg { background: radial-gradient(ellipse at 50% 45%, #ffd9c4 0%, #fff3ec 30%, #ffffff 70%); }
+.dark .landing-bg { background: linear-gradient(135deg, rgb(var(--color-bg-1)) 0%, rgb(var(--color-bg-2)) 45%, rgb(var(--color-bg-3)) 75%, rgb(var(--color-bg-4)) 100%); }
