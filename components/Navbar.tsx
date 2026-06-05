@@ -226,8 +226,12 @@ export default function Navbar({ activePage }: NavbarProps) {
                                         {ui.upgrade}
                                     </button>
                                 )}
+                            </SignedIn>
 
-                                {/* 2. Settings gear — opens dropdown */}
+                            {/* Settings gear — rendered for EVERYONE. Anon sees theme + language
+                                (+ a Sign In row); the account rows in the dropdown are <SignedIn>-gated.
+                                Unifies the gear so anon gets the same theme/language access here as
+                                on the landing. */}
                                 <div className="relative" ref={settingsRef}>
                                     <button
                                         onClick={() => setSettingsOpen(prev => !prev)}
@@ -250,6 +254,20 @@ export default function Navbar({ activePage }: NavbarProps) {
                                         >
                                             <SettingsControls />
 
+                                            {/* Anon entry point — mirrors LandingSettingsDropdown */}
+                                            <SignedOut>
+                                                <Link
+                                                    href="/sign-in"
+                                                    onClick={() => setSettingsOpen(false)}
+                                                    className="block w-full text-left px-4 py-2.5 text-sm font-medium transition-colors hover:bg-text/5"
+                                                    style={{ color: 'rgb(var(--color-brand))' }}
+                                                >
+                                                    {ui.signIn}
+                                                </Link>
+                                            </SignedOut>
+
+                                            {/* Account-specific rows — signed-in only (anon never sees plan/credits/shares/subscription) */}
+                                            <SignedIn>
                                             {/* Plan label */}
                                             <div className="px-4 py-2 border-b border-text/7">
                                                 <p className="text-xs font-semibold" style={{ color: plan === 'pro' ? '#fbbf24' : 'rgb(var(--color-text) / 0.5)' }}>
@@ -317,13 +335,15 @@ export default function Navbar({ activePage }: NavbarProps) {
                                                     {ui.upgradeToPro}
                                                 </button>
                                             )}
+                                            </SignedIn>
                                         </div>
                                     )}
                                 </div>
 
-                                {/* 3. Clerk UserButton (avatar) */}
-                                <UserButton />
-                            </SignedIn>
+                                {/* Clerk UserButton (avatar) — signed-in only */}
+                                <SignedIn>
+                                    <UserButton />
+                                </SignedIn>
                             <SignedOut>
                                 <Link href="/sign-in">
                                     <button
