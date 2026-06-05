@@ -77,7 +77,7 @@ function useCredibilityConfig() {
 }
 
 const sourceTypeConfig: Record<CitationSourceType, { label: string; color: string }> = {
-    'pubmed':        { label: 'PubMed',      color: '#68d391' },
+    'pubmed':        { label: 'PubMed',      color: 'rgb(var(--color-success))' },
     'fda':           { label: 'FDA',         color: '#63b3ed' },
     'loinc':         { label: 'LOINC',       color: '#f6ad55' },
     'medlineplus':   { label: 'MedlinePlus', color: '#9f7aea' },

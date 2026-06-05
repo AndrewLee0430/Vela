@@ -98,17 +98,20 @@ function EvidenceLegend() {
     const { lang } = useLang();
     const ui = getUI(lang);
     const levels = [
-        { emoji: '🟢', label: ui.evidenceStrong, tip: ui.evidenceStrongTip },
-        { emoji: '🟡', label: ui.evidenceModerate, tip: ui.evidenceModerateTip },
-        { emoji: '🔴', label: ui.evidenceLimited, tip: ui.evidenceLimitedTip },
+        { color: 'rgb(var(--color-success))', label: ui.evidenceStrong, tip: ui.evidenceStrongTip },
+        { color: 'rgb(var(--color-warning))', label: ui.evidenceModerate, tip: ui.evidenceModerateTip },
+        { color: 'rgb(var(--color-danger))', label: ui.evidenceLimited, tip: ui.evidenceLimitedTip },
     ];
     const [expanded, setExpanded] = useState(false);
     return (
         <div className="mt-4 text-center">
             <div className="inline-flex items-center gap-4 text-xs" style={{ color: 'rgb(var(--color-text) / 0.45)' }}>
-                {levels.map(({ emoji, label, tip }) => (
-                    <span key={emoji} className="relative group">
-                        <span className="cursor-help transition-colors hover:text-text">{emoji} {label}</span>
+                {levels.map(({ color, label, tip }) => (
+                    <span key={label} className="relative group">
+                        <span className="cursor-help transition-colors hover:text-text inline-flex items-center gap-1.5">
+                            <span className="inline-block w-2 h-2 rounded-full shrink-0" style={{ background: color }} />
+                            {label}
+                        </span>
                         {/* Desktop hover tooltip */}
                         <span
                             className="absolute bottom-full left-1/2 mb-2 hidden group-hover:block z-50"
@@ -145,8 +148,11 @@ function EvidenceLegend() {
                     className="md:hidden mt-2 rounded-lg p-3 text-left text-xs space-y-1.5 mx-auto max-w-sm"
                     style={{ background: 'rgb(var(--color-text) / 0.06)', border: '1px solid rgb(var(--color-text) / 0.15)', color: 'rgb(var(--color-text) / 0.7)' }}
                 >
-                    {levels.map(({ emoji, label, tip }) => (
-                        <p key={emoji}>{emoji} <span className="font-medium">{label}</span> — {tip}</p>
+                    {levels.map(({ color, label, tip }) => (
+                        <p key={label} className="flex items-center gap-1.5">
+                            <span className="inline-block w-2 h-2 rounded-full shrink-0" style={{ background: color }} />
+                            <span><span className="font-medium">{label}</span> — {tip}</span>
+                        </p>
                     ))}
                 </div>
             )}
