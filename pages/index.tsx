@@ -84,17 +84,26 @@ function LandingPage() {
   const extra = getExtra(lang);
   const isRtl = RTL_LANGS.includes(lang);
 
+  // T3: the inline composer is Research-only. Picking Verify/Explain navigates to
+  // their dedicated pages on SELECT (see handleModeChange) — their input shapes
+  // (drug list / lab paste) don't fit the landing's single-line box — so `mode`
+  // is always 'research' here. The non-research no-op guard is defensive.
   const handleHeroSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (mode !== 'research') return;
     const trimmed = query.trim();
     if (!trimmed) return;
-    const encoded = encodeURIComponent(trimmed);
-    // Route by selected mode: Research auto-runs via /research?q= (Step 3);
-    // Verify/Explain prefill (no auto-run) via ?prefill= consumed by S5.1.
-    if (mode === 'research') router.push(`/research?q=${encoded}`);
-    else if (mode === 'verify') router.push(`/verify?prefill=${encoded}`);
-    else router.push(`/explain?prefill=${encoded}`);
+    router.push(`/research?q=${encodeURIComponent(trimmed)}`); // Research auto-run (Step 3)
     setQuery('');
+  };
+
+  // T3: Research stays inline; Verify/Explain jump to their dedicated pages
+  // (clean navigate — no ?prefill=, since the single-line input can't represent
+  // a drug list / lab report). Landing-only — this selector isn't used in-app.
+  const handleModeChange = (m: ComposerMode) => {
+    if (m === 'verify')  { router.push('/verify');  return; }
+    if (m === 'explain') { router.push('/explain'); return; }
+    setMode(m); // research
   };
 
   const handleChipClick = (text: string) => {
@@ -292,7 +301,7 @@ function LandingPage() {
                 </div>
                 {/* Control row — mode selector (bottom-left) + submit (bottom-right) */}
                 <div className="flex items-center justify-end gap-2 px-3 pb-3 pt-1">
-                  <HeroComposerModeSelector mode={mode} onChange={setMode} t={t} />
+                  <HeroComposerModeSelector mode={mode} onChange={handleModeChange} t={t} />
                   <button
                     type="submit"
                     aria-label="Send"
