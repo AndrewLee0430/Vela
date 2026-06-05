@@ -937,6 +937,17 @@ Two i18n content drifts surfaced during Stage 2 landing redesign (Steps 2 / 4a /
 
 **Redeploy note:** i18n strings are bundled into the Next.js build (not DB-backed like blog content), so this pass WILL trigger a redeploy. Lighter than blog authoring but heavier than a hot config / DB content change.
 
+- [ ] **Verify hero chip translations — native medical review (th/ar/hi/bn/he/vi)**
+      T2 (2026-06-05) re-authored `heroChip2` ("Can elderly patients take BP meds with
+      calcium?") and `heroChip3` ("Is it safe to use antibiotics during pregnancy?") to
+      all-Research natural-language questions across all 16 locales (`utils/i18n.ts`).
+      The en/zh-TW (Andrew) + zh-CN/ja/ko/es/fr/de/it/pt cells are normal-confidence; the
+      **6 low-confidence locales — th, ar, hi, bn, he, vi (12 cells: 2 chips × 6)** —
+      shipped **best-effort** and need a native-medical-terminology review (same review
+      gate as the Stage 5 i18n + the Verify severity-label dict). RTL (ar/he) stored in
+      logical order; proper nouns (Warfarin/Aspirin/Metformin/DOACs) kept Latin. Cosmetic
+      (sample-query chips), low priority, but flagged so they're not assumed reviewed.
+
 - [ ] **Hero copy not aligned to STATE.md Stage 2 locked spec**
       STATE.md "Next Up" Stage 2 locked the hero as: title "Ask in your language." (short, period-terminated) + subtitle "Evidence-cited medical answers from PubMed and the FDA, answered in your language. No account needed to try." Stage 2 Step 2 reused the existing `landingContent.<locale>.tagline` / `.subtitle` values (to preserve 16-locale coverage per Rule 16) which resolve to different strings — observed in en: title "Ask in your language. Verified by official sources. Answered in yours." + subtitle "The AI medical search for healthcare professionals who work beyond English." Aligning to the locked spec means editing `landingContent.tagline` / `.subtitle` across all 16 locales.
 

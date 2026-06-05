@@ -22,14 +22,19 @@ import { track } from '../utils/analytics';
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
 
+// Multilingual Research prompts for the hero typewriter — the language mix IS the
+// "ask in any language" showcase, so intentionally NOT i18n-translated (copied
+// verbatim from research.tsx defaultSuggestions). Rotates regardless of UI locale.
+const TYPEWRITER_PROMPTS = [
+  'What are the common side effects of Metformin?',
+  '小孩發燒幾度需要看醫生？',
+  'ワルファリンの副作用は何ですか？',
+  '심부전에서 베타차단제는 언제 사용하나요?',
+  'DOACs vs Warfarin — key differences?',
+];
+
 function TypewriterPrompt() {
-  const { lang } = useLang();
-  const t = translations[lang];
-  const prompts = [
-    t.heroPlaceholderResearch,
-    t.heroPlaceholderVerify,
-    t.heroPlaceholderExplain,
-  ];
+  const prompts = TYPEWRITER_PROMPTS;
   const [index, setIndex] = useState(0);
   const [text, setText] = useState('');
   const [deleting, setDeleting] = useState(false);
@@ -49,12 +54,6 @@ function TypewriterPrompt() {
     }
     return () => clearTimeout(timer);
   }, [text, deleting, index, currentText, prompts.length]);
-
-  useEffect(() => {
-    setText('');
-    setDeleting(false);
-    setIndex(0);
-  }, [lang]);
 
   return (
     <span
