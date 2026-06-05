@@ -1,6 +1,7 @@
 // components/UpgradeModal.tsx
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { useAuth } from '@clerk/nextjs';
 import { clearPlanCache } from './PlanBadge';
 import { useLang } from '../utils/LangContext';
@@ -71,7 +72,7 @@ export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
 
         {/* Header */}
         <div className="text-center mb-6">
-          <div className="text-4xl mb-2">🪸</div>
+          <Image src="/coral_logo.png" alt="Vela" width={44} height={44} className="mx-auto mb-2" style={{ objectFit: 'contain' }} />
           <h2 className="text-2xl font-bold text-text mb-1">{ui.upgradeTitle}</h2>
           <p className="text-text/50 text-sm">{ui.upgradeSubtitle}</p>
         </div>
