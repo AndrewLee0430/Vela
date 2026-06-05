@@ -58,13 +58,13 @@ export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
     >
       <div
         className="relative w-full max-w-md rounded-2xl p-8 border border-text/10"
-        style={{ background: '#0f1f3d' }}
+        style={{ background: 'rgb(var(--color-bg-2))' }}
         onClick={e => e.stopPropagation()}
       >
         {/* Close */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-white text-xl"
+          className="absolute top-4 right-4 text-text/50 hover:text-text text-xl"
         >
           ✕
         </button>
@@ -72,14 +72,14 @@ export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
         {/* Header */}
         <div className="text-center mb-6">
           <div className="text-4xl mb-2">🪸</div>
-          <h2 className="text-2xl font-bold text-white mb-1">{ui.upgradeTitle}</h2>
-          <p className="text-gray-400 text-sm">{ui.upgradeSubtitle}</p>
+          <h2 className="text-2xl font-bold text-text mb-1">{ui.upgradeTitle}</h2>
+          <p className="text-text/50 text-sm">{ui.upgradeSubtitle}</p>
         </div>
 
         {/* Features */}
         <ul className="space-y-2 mb-2">
           {[ui.upgradeFeature1, ui.upgradeFeature2, ui.upgradeFeature3, ui.upgradeFeature4].map((f, i) => (
-            <li key={i} className="text-gray-300 text-sm">{f}</li>
+            <li key={i} className="text-text/70 text-sm">{f}</li>
           ))}
         </ul>
         <p className="text-xs mb-4 text-text/40">
@@ -96,9 +96,9 @@ export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
         {/* ToS consent */}
         <p className="text-xs text-center mb-3 text-text/45">
           By upgrading, you agree to our{' '}
-          <a href="/terms" target="_blank" className="underline hover:text-white transition-colors">Terms of Service</a>
+          <a href="/terms" target="_blank" className="underline hover:text-text transition-colors">Terms of Service</a>
           {' '}and{' '}
-          <a href="/refund" target="_blank" className="underline hover:text-white transition-colors">Refund Policy</a>.
+          <a href="/refund" target="_blank" className="underline hover:text-text transition-colors">Refund Policy</a>.
         </p>
 
         {/* Pricing buttons */}
@@ -122,7 +122,7 @@ export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
           </button>
         </div>
 
-        <p className="text-center text-gray-500 text-xs mt-4">
+        <p className="text-center text-text/50 text-xs mt-4">
           {ui.moneyBackGuarantee}
         </p>
       </div>

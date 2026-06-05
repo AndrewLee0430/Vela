@@ -149,7 +149,7 @@ export default function BugReportButton() {
         >
           <div
             className="relative w-full max-w-lg rounded-2xl p-6 md:p-8 border border-text/10"
-            style={{ background: '#0f1f3d', maxHeight: 'calc(100vh - 2rem)', overflowY: 'auto' }}
+            style={{ background: 'rgb(var(--color-bg-2))', maxHeight: 'calc(100vh - 2rem)', overflowY: 'auto' }}
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -157,7 +157,7 @@ export default function BugReportButton() {
               onClick={closeModal}
               disabled={status === 'submitting'}
               aria-label={t.closeBtn}
-              className="absolute top-4 right-4 text-gray-400 hover:text-white text-xl disabled:opacity-50"
+              className="absolute top-4 right-4 text-text/50 hover:text-text text-xl disabled:opacity-50"
             >
               ✕
             </button>
@@ -165,7 +165,7 @@ export default function BugReportButton() {
             {status === 'success' ? (
               <div className="text-center py-6">
                 <div className="text-4xl mb-3">💬</div>
-                <h2 className="text-xl font-bold text-white mb-2">{t.thanksTitle}</h2>
+                <h2 className="text-xl font-bold text-text mb-2">{t.thanksTitle}</h2>
                 <p className="text-sm text-text/70">{t.thanksBody}</p>
                 <button
                   type="button"
@@ -179,7 +179,7 @@ export default function BugReportButton() {
             ) : (
               <>
                 <div className="mb-5">
-                  <h2 className="text-xl font-bold text-white mb-1">{t.modalTitle}</h2>
+                  <h2 className="text-xl font-bold text-text mb-1">{t.modalTitle}</h2>
                   <p className="text-sm text-text/60">{t.modalSubtitle}</p>
                 </div>
 
@@ -188,12 +188,12 @@ export default function BugReportButton() {
                   value={issueType}
                   onChange={(e) => setIssueType(e.target.value as IssueType)}
                   disabled={status === 'submitting'}
-                  className="w-full mb-4 rounded-lg px-3 py-2 text-sm text-white bg-text/8 border border-text/15"
+                  className="w-full mb-4 rounded-lg px-3 py-2 text-sm text-text bg-text/8 border border-text/15"
                 >
-                  <option value="inaccurate" style={{ background: '#0f1f3d' }}>{t.issueTypeInaccurate}</option>
-                  <option value="ui_error" style={{ background: '#0f1f3d' }}>{t.issueTypeUiError}</option>
-                  <option value="feature_request" style={{ background: '#0f1f3d' }}>{t.issueTypeFeatureRequest}</option>
-                  <option value="other" style={{ background: '#0f1f3d' }}>{t.issueTypeOther}</option>
+                  <option value="inaccurate" style={{ background: 'rgb(var(--color-bg-2))' }}>{t.issueTypeInaccurate}</option>
+                  <option value="ui_error" style={{ background: 'rgb(var(--color-bg-2))' }}>{t.issueTypeUiError}</option>
+                  <option value="feature_request" style={{ background: 'rgb(var(--color-bg-2))' }}>{t.issueTypeFeatureRequest}</option>
+                  <option value="other" style={{ background: 'rgb(var(--color-bg-2))' }}>{t.issueTypeOther}</option>
                 </select>
 
                 <label className="block text-xs font-semibold mb-1 text-text/80">{t.descriptionLabel}</label>
@@ -203,7 +203,7 @@ export default function BugReportButton() {
                   placeholder={t.descriptionPlaceholder}
                   disabled={status === 'submitting'}
                   rows={5}
-                  className="w-full mb-1 rounded-lg px-3 py-2 text-sm text-white resize-y bg-text/8 border border-text/15"
+                  className="w-full mb-1 rounded-lg px-3 py-2 text-sm text-text resize-y bg-text/8 border border-text/15"
                 />
                 <p className="text-xs mb-4 text-text/40">
                   {description.length} / 2000 · {t.descriptionHint}
@@ -216,7 +216,7 @@ export default function BugReportButton() {
                   onChange={(e) => setEmail(e.target.value.slice(0, 200))}
                   placeholder={t.emailPlaceholder}
                   disabled={status === 'submitting'}
-                  className="w-full rounded-lg px-3 py-2 text-sm text-white bg-text/8 border border-text/15"
+                  className="w-full rounded-lg px-3 py-2 text-sm text-text bg-text/8 border border-text/15"
                 />
                 <p className="text-xs mb-4 text-text/40">{t.emailHint}</p>
 

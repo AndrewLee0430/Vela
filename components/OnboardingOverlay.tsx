@@ -155,7 +155,7 @@ export default function OnboardingOverlay() {
         ref={popoverRef}
         className="absolute rounded-2xl px-8 py-6 shadow-2xl min-w-[420px] border border-text/12"
         style={{
-          background: 'linear-gradient(135deg, #1a2744 0%, #1e2a45 100%)',
+          background: 'rgb(var(--color-bg-2))',
           ...(rect
             ? popoverStyle
             : { top: '50%', left: '50%', transform: 'translate(-50%,-50%)', maxWidth: 480 }),
@@ -176,7 +176,7 @@ export default function OnboardingOverlay() {
           ))}
         </div>
 
-        <p className="text-2xl font-semibold text-white mb-2">{currentTitle}</p>
+        <p className="text-2xl font-semibold text-text mb-2">{currentTitle}</p>
         <p className="text-base leading-relaxed whitespace-pre-line text-text/60">
           {currentBody}
         </p>
