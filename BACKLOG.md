@@ -1046,7 +1046,54 @@ Two i18n content drifts surfaced during Stage 2 landing redesign (Steps 2 / 4a /
 
 ---
 
+## v172 batch follow-ups (captured 2026-06-05)
+
+- [ ] **Evidence edge-case: undetectable Research query → output-language falls back to `en` instead of UI locale**
+      Research derives the answer language from `detect_language(question)` (server.py),
+      which conflates "user wrote in English" with "input is undetectable" (pure drug names /
+      numeric values / too-short strings). A zh-TW user asking a Research question that is just
+      a drug name (e.g. "Metformin 0.5g") can get an English answer instead of 繁中. Decide: the
+      detector should return `None`/unknown for low-signal input, and the caller falls back to the
+      **UI locale** (same `_resolve_response_language` pattern Verify/Explain already use) rather
+      than defaulting to `en`. **Distinct from the v172 parsing fix** (`afe0bdf`), which made the
+      🟢🟡🔴 section-header parsing language-agnostic — that fixed the *indicator* rendering; this is
+      about the *answer language* selection upstream. Low priority; surfaced during the T1 output-
+      language recon + the evidence-parsing work.
+
+- [ ] **Bug 2/3 cross-account verification under real Clerk (TEST_MODE=false / prod)**
+      The sign-out cleanup (`454fad6` — clears the global `vela_plan_cache`/`vela_status_cache` +
+      the per-user `hasSeenOnboarding` flag on sign-out) was **only dev-verified under TEST_MODE**,
+      where all auth collapses to a single `test_user`, so a true two-account switch was never
+      exercised. Needs a real check: sign out account A → sign in account B and confirm (a) no
+      plan-cache bleed (B doesn't inherit A's Pro/free badge), (b) onboarding re-shows for a fresh
+      account. Do during the next prod dogfooding session post-v172. Verification follow-up, not a
+      code change (unless it surfaces a gap).
+
+- [ ] **Parsing fix — live-verify untested locales (ar / he / th)**
+      The v172 `parseResearchSections` rewrite (`afe0bdf`) is Node-harness-verified language-agnostic
+      (strips `[ ]`/`［］`/`【】` + emoji + `— Lang`, extracts evidence position-independently), but only
+      **en / zh-TW / ja / ko** are on the dev acceptance checklist. Run a Research query in **ar, he
+      (RTL), and th** post-v172 and confirm: clean section titles (no brackets/emoji in text) +
+      correct colored borders. Small dev-verify; expected to pass (the regex is locale-blind) but
+      RTL + Thai script weren't live-run.
+
+---
+
 ## Tooling / repo hygiene (pre-existing, surfaced during audits)
+
+- [ ] **dev/prod DB safety: never point local `.env` at the prod Neon branch**
+      **Surfaced 2026-06-05** (v172 batch, dev-DB work). Local backend `.env` `DATABASE_URL` was
+      found pointing at the **production** Neon branch (`neondb`) during a routine "set test_user →
+      free" task — caught before any write because the endpoint resolved to a prod-associated host.
+      Mitigation applied: created a dedicated dev branch (`ep-spring-voice-a127ye10`), repointed
+      `.env` (gitignored), and did the `test_user` plan write **only** against the confirmed dev
+      endpoint. **Lesson / guardrails to consider:** (a) a pre-write assertion or wrapper that
+      refuses any local dev write when `DATABASE_URL` host matches the known prod endpoint; (b) a
+      `.env.example` / doc note documenting the dev vs prod Neon hosts so the distinction is explicit;
+      (c) optionally a `scripts/` guard that prints the resolved DB branch before any destructive op.
+      **Same test/prod-bleed class** as the existing "Dodo test/live env separation audit" (Phase 0
+      retro follow-up) — worth handling together when ops hardening is scheduled. Priority: Medium
+      (near-miss, no prod write occurred).
 
 - [ ] **ESLint flat-config migration (pre-existing tooling debt)**
       `npm run lint` fails: ESLint 9.37 requires a flat `eslint.config.js`,
