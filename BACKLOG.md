@@ -853,6 +853,39 @@ Phase 1B work items per advisor discussion 2026-05-04 (preserved in git commit 3
 ## Phase 2 candidates (exploratory) — post Phase 1B / post Stage 3, not scheduled
 
 ### [P2] Generative UI — structured/interactive answer rendering
+
+> **Reworked 2026-06-08 into two tiers:** a near-term **Tier 1 Verify PoC** pulled
+> forward to the Phase 1B tail, feeding the go/no-go on the **Tier 2** full rollout
+> (unchanged — still Phase 2, gated on prod data). Every original rationale line +
+> design constraint below is PRESERVED and applies to BOTH tiers.
+
+#### TIER 1 (NEW — near-term): [P2] Verify generative-UI PoC (rich structured rendering)
+- **Scope**: render Verify's EXISTING validated structured output (interaction matrix
+  + severity badge + per-drug info cards + source chips) as interactive components.
+  This is OPTION (i) — rich rendering of already-structured data — NOT the full
+  LLM-component-manifest / component-selection machinery (that stays Tier 2).
+- **Goal**: cheapest path to an experiential signal on whether structured rendering
+  feels better than plain text, before committing to the larger rollout.
+- **Time-box**: ≈ 1-2d. Keep the PoC throwaway-tolerant.
+- **Placement / sequencing gate — Phase 1B TAIL (≈ Week 6+)**: schedule AFTER
+  (a) Verify 強制英文 + drug-name resolution AND DailyMed integration (Week 4-5), so it
+  renders the FINAL stable + richer DailyMed-sourced data contract (don't build on a
+  moving target — same "先量再動" lesson as PRD §2.10.5); AND (b) §5.1 在地差異 6國 moat
+  ships (Week 5-6), so a learning PoC does not displace the PMF-critical path.
+- **Gate-override note**: this PoC INTENTIONALLY overrides this entry's own "gate on
+  prod data, not trend" rule (Tier 2 constraint #4 below). Defensible because Verify is
+  the lowest over-trust-risk mode AND is this entry's own designated "suggested entry
+  point" — a small, time-boxed, throwaway bet is worth an experiential signal before
+  real-user data exists.
+- **Over-trust guardrail (carried over from the constraints below, restated)**: render
+  ONLY already-validated structured data; introduce NO new medical inference; do NOT
+  wrap prose clinical judgment to look more authoritative — consistent with the
+  citation-mandatory / anti-hallucination positioning.
+- **Exit condition**: productionize the PoC AND consider Tier 2 (full generative UI)
+  ONLY if the PoC result + prod data BOTH support it.
+
+#### TIER 2 (UNCHANGED — full generative-UI rollout, Phase 2, gated on prod data)
+> Cross-ref: Tier 1 above is the pulled-forward Verify PoC that feeds this decision.
 - **Source**: Andrew product exploration 2026-06-02 (generative UI trend research + medical over-trust risk analysis)
 - **Idea**: Render Vela answers as structured/interactive components (React/HTML) instead of plain text/markdown, for more intuitive comprehension. Trend is real (Gartner: ~30% of new apps to use AI-driven adaptive interfaces by 2026; Vercel AI SDK RSC / Google A2UI / CopilotKit AG-UI are mature patterns — LLM emits structured JSON selecting which component to render).
 - **CRITICAL design constraints (the reason this is recorded, not just "do generative UI")**: medical context inverts the usual "rich UI = better" conclusion because of the OVER-TRUST risk (Stanford-Harvard State of Clinical AI 2026 + ECRI 2026 top patient-safety concern: users over-trust confident-looking systems lacking clinical context). Rich/authoritative UI can make a possibly-hallucinated answer LOOK more authoritative, directly undermining Vela's citation-mandatory / anti-hallucination positioning. Therefore:
@@ -865,7 +898,7 @@ Phase 1B work items per advisor discussion 2026-05-04 (preserved in git commit 3
   4. **Gate on prod data, not trend** — only invest if PostHog shows users struggle with plain-text answers (e.g. high dwell/bounce on Explain lab interpretation). The problem (plain text is hard to comprehend) is unvalidated until there are real users.
 - **Solo-founder cost note**: large effort — component manifest, LLM structured-output prompt engineering + validation, streaming render, per-component 16-locale i18n, a11y, AND medical content correctness validation (heavier than general-purpose apps). Competes with Stage 3 + Phase 1B for resources.
 - **Suggested entry point IF pursued**: narrow PoC on Verify interaction matrix first (most structured data, lowest over-trust risk, existing ProductShowcase proto). NOT a full-app generative UI rewrite.
-- **Estimated**: TBD (PoC ~3-5d; full rollout much larger). Re-scope when prod data justifies.
+- **Estimated**: full rollout TBD; much larger than Tier 1. (The narrow Verify PoC estimate moved to Tier 1 = 1-2d; the ~3-5d originally noted here referred to that now-Tier-1 PoC.) Re-scope when prod data justifies.
 - **Slot**: Phase 2 (post Phase 1B, post Stage 3). Not scheduled.
 
 ---
