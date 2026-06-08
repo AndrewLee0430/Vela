@@ -1144,3 +1144,11 @@ Two i18n content drifts surfaced during Stage 2 landing redesign (Steps 2 / 4a /
       `.gitignore` if intentionally local; (c) delete if obsolete. Currently
       shows up as `??` in every `git status` and clutters the working-tree
       check.
+
+## §4.3 deferred sub-needs (from §3.1 PHASE E, 2026-06-08)
+
+PHASE E built §4.3 需求1+2 (My-Context editor + save) + 需求5 Trigger A (sign-in restore banner). These two §4.3 sub-needs were explicitly deferred:
+
+- [ ] **§4.3 需求3 — "再問一次" 10th-query role prompt** — after a user's 10th query, show a small banner beside the FeedbackBar; clicking opens a mini modal to pick `role` directly; dismissable, record `dismissed_prompts`. Spec: PRD §4.3 需求3. Not in PHASE E scope. Low priority (engagement nudge).
+- [ ] **§4.3 需求4 — privacy controls (export / clear preferences)** — "Export my preferences" → download the `vela_user_context` blob as JSON; "Clear my preferences" → confirm → clear localStorage; (Pro) "Clear synced data" → DELETE the server hash. Spec: PRD §4.3 需求4. Not in PHASE E scope. Note: a server DELETE would need a new backend endpoint (no migration). Privacy-first nicety.
+- [ ] **§4.3 需求5 Trigger B — Settings "restore from last sync" button** — manual counterpart to PHASE E's Trigger A sign-in banner (same GET + hash-compare, user-initiated from the Settings My-Context tab). Deferred from PHASE E (Trigger A only). Small add once 需求4's Settings section exists.
