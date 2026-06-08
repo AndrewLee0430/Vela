@@ -12,6 +12,8 @@ import { reset as resetAnalytics, identify, track, type Tier } from '../utils/an
 import { clearPlanCache } from '../components/PlanBadge';
 import { ONBOARDING_SEEN_KEY } from '../components/OnboardingOverlay';
 import ContextRestoreBanner from '../components/ContextRestoreBanner';
+import { readRaw } from '../utils/userContext';
+import { roleToCategory } from '../utils/contextOptions';
 import '../styles/globals.css';
 
 const notoSans = Noto_Sans({
@@ -59,7 +61,7 @@ function AnalyticsAuthBridge() {
         if (clerkUserId) {
           const plan = (user?.publicMetadata as { plan?: string } | undefined)?.plan;
           const tier: Tier = plan === 'pro' ? 'L2' : 'L1';
-          identify(clerkUserId, { tier });
+          identify(clerkUserId, { tier, role_category: roleToCategory(readRaw().role) });
         }
       }
       prevSignedIn.current = current;
@@ -97,11 +99,11 @@ function AnalyticsAuthBridge() {
           // eslint-disable-next-line no-console
           console.warn('[analytics] alias failed', err);
         }
-        identify(clerkUserId, { tier });
+        identify(clerkUserId, { tier, role_category: roleToCategory(readRaw().role) });
         track('anonymous_to_registered', { signup_method: 'clerk', anon_id: anonId });
         try { localStorage.setItem(ANON_ALIASED_KEY, '1'); } catch {}
       } else {
-        identify(clerkUserId, { tier });
+        identify(clerkUserId, { tier, role_category: roleToCategory(readRaw().role) });
       }
     }
     prevSignedIn.current = current;
