@@ -15,6 +15,8 @@ import Navbar from '../components/Navbar';
 import LandingSettingsDropdown from '../components/LandingSettingsDropdown';
 import HeroComposerModeSelector, { type ComposerMode } from '../components/HeroComposerModeSelector';
 import OnboardingOverlay from '../components/OnboardingOverlay';
+import OnboardingWizard from '../components/OnboardingWizard';
+import { readRaw } from '../utils/userContext';
 import { translations, RTL_LANGS, landingContent } from '../utils/i18n';
 import { useLang } from '../utils/LangContext';
 import { getExtra } from '../utils/i18n-extra';
@@ -77,6 +79,12 @@ function LandingPage() {
   const [query, setQuery] = useState<string>('');
   const [isFocused, setIsFocused] = useState<boolean>(false);
   const [mode, setMode] = useState<ComposerMode>('research');
+  // §3.2 onboarding wizard — show once for users who haven't completed it. Gate
+  // read post-mount (SSR-safe; readRaw guards isBrowser) so SSG output is stable.
+  const [showWizard, setShowWizard] = useState(false);
+  useEffect(() => {
+    if (!readRaw().onboarding_completed) setShowWizard(true);
+  }, []);
   const inputRef = useRef<HTMLInputElement>(null);
   const { lang } = useLang();
   const t = translations[lang];
@@ -355,6 +363,7 @@ function LandingPage() {
           </div>
         </div>
       </div>
+      {showWizard && <OnboardingWizard onClose={() => setShowWizard(false)} />}
     </>
   );
 }

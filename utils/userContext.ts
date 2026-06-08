@@ -132,6 +132,43 @@ export async function setWorkLanguage(lang: string): Promise<void> {
 }
 
 /**
+ * Onboarding Step 1 — persist workplace + recompute/cache the hash from
+ * (workplace, current role, current work_language). Pass null on skip. PRD §3.2.
+ */
+export async function setWorkplace(workplace: string | null): Promise<void> {
+  if (!isBrowser()) return;
+  const cur = readRaw();
+  const hash = await computeHash(workplace, cur.role ?? null, cur.work_language ?? null);
+  writeMerge({ workplace, user_context_hash: hash });
+}
+
+/**
+ * Onboarding Step 2 — persist role + recompute/cache the hash from
+ * (current workplace, role, current work_language). Pass null on skip. PRD §3.2.
+ */
+export async function setRole(role: string | null): Promise<void> {
+  if (!isBrowser()) return;
+  const cur = readRaw();
+  const hash = await computeHash(cur.workplace ?? null, role, cur.work_language ?? null);
+  writeMerge({ role, user_context_hash: hash });
+}
+
+/**
+ * Mark onboarding finished (PRD §3.2). onboarding_completed / _at are NOT hash
+ * inputs, so the hash is NOT recomputed here. This flag is device-level and
+ * intentionally NOT cleared on sign-out (unlike the tour's `hasSeenOnboarding`)
+ * — context is on-device/local-first per the privacy stance, so a different
+ * account on the same browser keeps the collected context. Do not "fix" this.
+ */
+export function completeOnboarding(): void {
+  if (!isBrowser()) return;
+  writeMerge({
+    onboarding_completed: true,
+    onboarding_completed_at: new Date().toISOString(),
+  });
+}
+
+/**
  * Self-repair: recompute the hash from the blob's CURRENT fields and write it
  * back if it is missing or drifted (prevents stale-hash drift, F1). Creates the
  * blob with the all-null sentinel hash for a context that has no real signals
