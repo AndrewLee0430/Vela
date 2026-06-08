@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { LANGUAGES, type LangCode } from './i18n';
+import { getWorkLanguage, setWorkLanguage, ensureFresh, readRaw } from './userContext';
 
 const STORAGE_KEY = 'vela_lang';
 
@@ -22,18 +23,42 @@ export function LangProvider({ children }: { children: ReactNode }) {
 
   const setLang = (l: LangCode) => {
     setLangState(l);
-    try { localStorage.setItem(STORAGE_KEY, l); } catch {}
+    try { localStorage.setItem(STORAGE_KEY, l); } catch {} // immediate legacy write — UI stays instant
+    // Dual-write the canonical blob + cache the recomputed hash (async, fire-and-forget;
+    // analytics reads the cached hash synchronously). PRD §3.1 PHASE C / G3.
+    void setWorkLanguage(l);
   };
 
-  // Post-mount: hydrate from localStorage if a valid preference is stored.
+  // Post-mount: hydrate from the canonical store. Read order (§2.9 fix):
+  // vela_user_context.work_language first, legacy vela_lang as fallback.
   useEffect(() => {
     try {
-      const stored = localStorage.getItem(STORAGE_KEY);
+      const stored = getWorkLanguage();
       if (!stored) return;
       const isValid = LANGUAGES.some((l) => l.code === stored);
       if (!isValid) return;
       setLangState((prev) => (stored !== prev ? (stored as LangCode) : prev));
     } catch {}
+  }, []);
+
+  // Post-mount migration + self-repair (PRD §3.1 PHASE C). If a legacy vela_lang
+  // exists but the canonical blob has no work_language, migrate it (dual-write +
+  // hash). Otherwise just self-repair the cached hash. No default 'en' is ever
+  // injected — a user who never chose a language keeps work_language null (PHASE
+  // D onboarding populates it); only the derived hash is cached (sentinel when
+  // the context is all-null) so user_context_hash stops shipping null.
+  useEffect(() => {
+    (async () => {
+      try {
+        const legacy = localStorage.getItem(STORAGE_KEY);
+        const blobWorkLang = readRaw().work_language;
+        if (legacy && !blobWorkLang && LANGUAGES.some((l) => l.code === legacy)) {
+          await setWorkLanguage(legacy);
+        } else {
+          await ensureFresh();
+        }
+      } catch {}
+    })();
   }, []);
 
   // Sync across tabs
