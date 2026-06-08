@@ -14,10 +14,12 @@ import { useState } from 'react';
 import Head from 'next/head';
 import PageShell from '../components/PageShell';
 import MySharesTab from '../components/MySharesTab';
+import MyContextTab from '../components/MyContextTab';
 import { useLang } from '../utils/LangContext';
 import { getShare } from '../utils/i18n-share';
+import { getUI } from '../utils/i18n-ui';
 
-type TabId = 'my-shares';
+type TabId = 'my-shares' | 'my-context';
 
 interface Tab {
     id: TabId;
@@ -28,10 +30,12 @@ interface Tab {
 export default function SettingsPage() {
     const { lang } = useLang();
     const t = getShare(lang);
+    const ui = getUI(lang);
     const [activeTab, setActiveTab] = useState<TabId>('my-shares');
 
     const tabs: Tab[] = [
         { id: 'my-shares', label: t.settingsTabTitle, color: 'rgb(var(--color-brand))' },
+        { id: 'my-context', label: ui.myContextTitle, color: 'rgb(var(--color-brand))' },
     ];
 
     return (
@@ -81,6 +85,7 @@ export default function SettingsPage() {
 
                 <div role="tabpanel">
                     {activeTab === 'my-shares' && <MySharesTab />}
+                    {activeTab === 'my-context' && <MyContextTab />}
                 </div>
             </div>
         </PageShell>

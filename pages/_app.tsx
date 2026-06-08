@@ -11,6 +11,7 @@ import { LangProvider } from '../utils/LangContext';
 import { reset as resetAnalytics, identify, track, type Tier } from '../utils/analytics';
 import { clearPlanCache } from '../components/PlanBadge';
 import { ONBOARDING_SEEN_KEY } from '../components/OnboardingOverlay';
+import ContextRestoreBanner from '../components/ContextRestoreBanner';
 import '../styles/globals.css';
 
 const notoSans = Noto_Sans({
@@ -162,6 +163,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         >
           <LangProvider>
             <AnalyticsAuthBridge />
+            <ContextRestoreBanner />
             <Component {...pageProps} />
           </LangProvider>
         </ThemeProvider>

@@ -3,75 +3,26 @@ import { LANGUAGES, type LangCode } from '../utils/i18n';
 import { useLang } from '../utils/LangContext';
 import { getUI } from '../utils/i18n-ui';
 import { track } from '../utils/analytics';
+import { useAuth } from '@clerk/nextjs';
 import {
   setWorkplace,
   setRole,
   setWorkLanguage,
   completeOnboarding,
 } from '../utils/userContext';
+import { postContextHash } from '../utils/contextSync';
+import { WORKPLACES, ROLES_BY_WORKPLACE, FALLBACK_ROLES, nearestLang } from '../utils/contextOptions';
 
 // PRD §3.2 — first-run context collector (workplace / role / answer-language) +
 // a privacy card. SEPARATE from components/OnboardingOverlay.tsx (the signed-in
 // Dashboard feature tour, gated on `hasSeenOnboarding`): this wizard is gated on
 // `vela_user_context.onboarding_completed`, runs for anonymous L0 users (no auth),
-// and writes context THROUGH utils/userContext.ts (no parallel writer).
-
-type UIKey = keyof ReturnType<typeof getUI>;
-
-const WORKPLACES: { value: string; icon: string; labelKey: UIKey }[] = [
-  { value: 'community', icon: '🏥', labelKey: 'onboardingWorkplaceCommunity' },
-  { value: 'hospital', icon: '🏩', labelKey: 'onboardingWorkplaceHospital' },
-  { value: 'student', icon: '🎓', labelKey: 'onboardingWorkplaceStudent' },
-  { value: 'research', icon: '🔬', labelKey: 'onboardingWorkplaceResearch' },
-];
-
-// Step-2 roles are DYNAMIC per Step-1 workplace. Stored value (left) is the full
-// distinct enum; label key (right) may be shared (e.g. hospital roles reuse the
-// Physician/Pharmacist/Nurse labels).
-const ROLES_BY_WORKPLACE: Record<string, { value: string; labelKey: UIKey }[]> = {
-  community: [
-    { value: 'physician', labelKey: 'onboardingRolePhysician' },
-    { value: 'pharmacist', labelKey: 'onboardingRolePharmacist' },
-    { value: 'nurse', labelKey: 'onboardingRoleNurse' },
-    { value: 'physical_therapist', labelKey: 'onboardingRolePT' },
-    { value: 'occupational_therapist', labelKey: 'onboardingRoleOT' },
-    { value: 'speech_language_pathologist', labelKey: 'onboardingRoleSLP' },
-    { value: 'other_clinical', labelKey: 'onboardingRoleOtherClinical' },
-  ],
-  hospital: [
-    { value: 'hospital_physician', labelKey: 'onboardingRolePhysician' },
-    { value: 'hospital_pharmacist', labelKey: 'onboardingRolePharmacist' },
-    { value: 'hospital_nurse', labelKey: 'onboardingRoleNurse' },
-    { value: 'other_hospital', labelKey: 'onboardingRoleOtherHospital' },
-  ],
-  student: [
-    { value: 'medical_student', labelKey: 'onboardingRoleMedStudent' },
-    { value: 'pharmacy_student', labelKey: 'onboardingRolePharmStudent' },
-    { value: 'nursing_student', labelKey: 'onboardingRoleNursingStudent' },
-    { value: 'resident', labelKey: 'onboardingRoleResident' },
-    { value: 'intern', labelKey: 'onboardingRoleIntern' },
-    { value: 'other_student', labelKey: 'onboardingRoleOtherStudent' },
-  ],
-  research: [
-    { value: 'researcher', labelKey: 'onboardingRoleResearcher' },
-    { value: 'other_research', labelKey: 'onboardingRoleOtherResearch' },
-  ],
-};
-const FALLBACK_ROLES: { value: string; labelKey: UIKey }[] = [
-  { value: 'other', labelKey: 'onboardingRoleOther' },
-];
-
-function nearestLang(): LangCode {
-  if (typeof navigator === 'undefined') return 'en';
-  const nav = navigator.language || 'en';
-  if (LANGUAGES.some((l) => l.code === nav)) return nav as LangCode;
-  const primary = nav.split('-')[0];
-  const m = LANGUAGES.find((l) => l.code.split('-')[0] === primary);
-  return (m?.code as LangCode) ?? 'en';
-}
+// and writes context THROUGH utils/userContext.ts (no parallel writer). Option sets
+// live in utils/contextOptions.ts (shared with the Settings My-Context tab).
 
 export default function OnboardingWizard({ onClose }: { onClose: () => void }) {
   const { lang, setLang } = useLang();
+  const { getToken } = useAuth();
   const ui = getUI(lang);
 
   const [step, setStep] = useState(0); // 0=workplace 1=role 2=language 3=privacy
@@ -94,8 +45,11 @@ export default function OnboardingWizard({ onClose }: { onClose: () => void }) {
       total_steps_completed: stepsDone,
       workplace_category: wp, // coarse Step-1 enum or null; NOT role_category (PHASE E)
     });
+    // PHASE E: sync the (already-fresh) hash to the backend. Pro-gated + silent
+    // inside contextSync — anon/free users no-op (no token / not Pro-cached).
+    void postContextHash(() => getToken({ skipCache: true }));
     onClose();
-  }, [onClose]);
+  }, [onClose, getToken]);
 
   // Step 1 — workplace
   const submitWorkplace = async (skipped: boolean) => {

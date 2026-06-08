@@ -85,6 +85,10 @@ function LandingPage() {
   useEffect(() => {
     if (!readRaw().onboarding_completed) setShowWizard(true);
   }, []);
+  // §4.3 需求5 — the sign-in restore banner's re-onboard CTA lands here (?reonboard=1).
+  useEffect(() => {
+    if (router.query.reonboard === '1') setShowWizard(true);
+  }, [router.query.reonboard]);
   const inputRef = useRef<HTMLInputElement>(null);
   const { lang } = useLang();
   const t = translations[lang];
