@@ -88,3 +88,26 @@ export function roleToCategory(role: string | null | undefined): RoleCategory | 
   if (role === "researcher") return "research";
   return "other";
 }
+
+// ── §3.3 role-aware landing examples ──────────────────────────────────────────
+// Collapse the granular role → a coarse example GROUP (PRD §3.3 drafts examples
+// per group, not per granular role). null → general fallback (the existing
+// heroChip1/2/3). Distinct from role_category (analytics bucketing).
+export type ExampleGroup = "pharmacist" | "nurse" | "physician" | "student";
+
+const EXAMPLE_GROUP_BY_ROLE: Record<string, ExampleGroup> = {
+  pharmacist: "pharmacist", hospital_pharmacist: "pharmacist", pharmacy_student: "pharmacist",
+  nurse: "nurse", hospital_nurse: "nurse", nursing_student: "nurse",
+  physician: "physician", hospital_physician: "physician",
+  medical_student: "student", resident: "student", intern: "student",
+};
+
+/**
+ * Map a role → its landing example group, or null for general (→ heroChips):
+ * therapists (PT/OT/SLP), other_clinical, other_hospital, researcher,
+ * other_research, other_student, other, and null/unset all fall back to null.
+ */
+export function roleToExampleGroup(role: string | null | undefined): ExampleGroup | null {
+  if (!role) return null;
+  return EXAMPLE_GROUP_BY_ROLE[role] ?? null;
+}

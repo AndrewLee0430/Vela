@@ -17,6 +17,7 @@ import HeroComposerModeSelector, { type ComposerMode } from '../components/HeroC
 import OnboardingOverlay from '../components/OnboardingOverlay';
 import OnboardingWizard from '../components/OnboardingWizard';
 import { readRaw } from '../utils/userContext';
+import { roleToExampleGroup } from '../utils/contextOptions';
 import { translations, RTL_LANGS, landingContent } from '../utils/i18n';
 import { useLang } from '../utils/LangContext';
 import { getExtra } from '../utils/i18n-extra';
@@ -82,8 +83,13 @@ function LandingPage() {
   // §3.2 onboarding wizard — show once for users who haven't completed it. Gate
   // read post-mount (SSR-safe; readRaw guards isBrowser) so SSG output is stable.
   const [showWizard, setShowWizard] = useState(false);
+  // §3.3 role-aware examples — role read post-mount (SSR-safe; first paint shows
+  // heroChips, then swaps if a role maps to an example group). Re-read on wizard
+  // close so examples update live right after onboarding (no reload).
+  const [role, setRoleState] = useState<string | null>(null);
   useEffect(() => {
     if (!readRaw().onboarding_completed) setShowWizard(true);
+    setRoleState(readRaw().role ?? null);
   }, []);
   // §4.3 需求5 — the sign-in restore banner's re-onboard CTA lands here (?reonboard=1).
   useEffect(() => {
@@ -95,6 +101,17 @@ function LandingPage() {
   const lc = landingContent[lang];
   const extra = getExtra(lang);
   const isRtl = RTL_LANGS.includes(lang);
+
+  // §3.3 — role-filtered example chips; null/unmapped role → heroChip1/2/3 default.
+  const exampleGroup = roleToExampleGroup(role);
+  const chipTexts = exampleGroup
+    ? {
+        pharmacist: [t.egPharmacist1, t.egPharmacist2, t.egPharmacist3],
+        nurse: [t.egNurse1, t.egNurse2, t.egNurse3],
+        physician: [t.egPhysician1, t.egPhysician2, t.egPhysician3],
+        student: [t.egStudent1, t.egStudent2, t.egStudent3],
+      }[exampleGroup]
+    : [t.heroChip1, t.heroChip2, t.heroChip3];
 
   // T3: the inline composer is Research-only. Picking Verify/Explain navigates to
   // their dedicated pages on SELECT (see handleModeChange) — their input shapes
@@ -327,7 +344,7 @@ function LandingPage() {
 
             {/* Suggestion chips — prefill the input, no submit */}
             <div className="mt-5 flex flex-wrap justify-center gap-2">
-              {[t.heroChip1, t.heroChip2, t.heroChip3].map((chip) => (
+              {chipTexts.map((chip) => (
                 <button
                   key={chip}
                   type="button"
@@ -367,7 +384,7 @@ function LandingPage() {
           </div>
         </div>
       </div>
-      {showWizard && <OnboardingWizard onClose={() => setShowWizard(false)} />}
+      {showWizard && <OnboardingWizard onClose={() => { setShowWizard(false); setRoleState(readRaw().role ?? null); }} />}
     </>
   );
 }
