@@ -83,12 +83,7 @@ export default function Privacy() {
                     </section>
 
                     <section>
-                        <h2 className="text-lg font-semibold text-white mb-3">9. Data Deletion</h2>
-                        <p>To request deletion of your account and associated data, email us at <a href="mailto:support@an-tho.com" className="underline" style={{ color: "rgb(var(--color-brand))" }}>support@an-tho.com</a>. We will process your request within 30 days.</p>
-                    </section>
-
-                    <section>
-                        <h2 className="text-lg font-semibold text-white mb-3">10. Contact</h2>
+                        <h2 className="text-lg font-semibold text-white mb-3">9. Contact</h2>
                         <p>For privacy-related inquiries: <a href="mailto:support@an-tho.com" className="underline" style={{ color: "rgb(var(--color-brand))" }}>support@an-tho.com</a></p>
                     </section>
                 </div>
