@@ -90,8 +90,13 @@ class PHIDetector:
         re.IGNORECASE
     )
 
+    # 手機：covers 0912345678, 0912-345-678, 0912 345 678, and +886/886 international
+    # forms (which drop the leading 0). Separators limited to '-' and space (NOT '/')
+    # so '/'-style dates are never caught; the 4-3-3 (09xx-xxx-xxx) shape is phone-
+    # specific and does not occur in lab values / dosages / dates. Shared by both
+    # detect()/_check_phi (input gate) and sanitize_for_log (storage mask).
     TAIWAN_PHONE_PATTERN = re.compile(
-        r'\b09\d{8}\b'  # 手機：09xxxxxxxx
+        r'(?<![\d+])(?:\+?886[-\s]?|0)9\d{2}[-\s]?\d{3}[-\s]?\d{3}(?!\d)'
     )
 
     # ============ 日本 Japan ============
