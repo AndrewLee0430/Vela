@@ -1130,7 +1130,7 @@ async def explain_report(
                     _safe_db_write(db, ChatHistory(
                             user_id=user_id,
                             session_type="explain",
-                            question=body.report_text[:500],
+                            question=PHIDetector.sanitize_for_log(body.report_text[:500]),
                             answer=full_answer
                         ), label="Explain History")
                     # 成功後扣減 credits
