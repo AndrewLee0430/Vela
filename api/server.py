@@ -2337,7 +2337,7 @@ Vela's evidence pipeline retrieves from PubMed (40M+ peer-reviewed articles), FD
 
 ## Privacy
 
-Vela is anonymous-by-default — no account is required to try Research. User preferences (workplace, role, work language) stay in your browser's localStorage; only an opaque hash reaches the server (Pro cross-device sync). Query content is anonymized and sanitized; PHI (national IDs, medical record numbers, etc.) is blocked at the request boundary. Chat history and audit logs are retained up to 6 months, then automatically deleted; earlier deletion available on request. Queries are never used to train AI models.
+Vela is anonymous-by-default — no account is required to try Research. User preferences (workplace, role, work language) stay in your browser's localStorage; only a pseudonymized hash reaches the server (Pro cross-device sync). Query content is de-identified and PHI-masked; PHI (national IDs, medical record numbers, etc.) is blocked at the request boundary. Chat history and audit logs are retained up to 6 months, then automatically deleted; deletion available on request, processed within 30 days. Queries are never used to train AI models.
 """
 
 
