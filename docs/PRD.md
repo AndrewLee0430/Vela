@@ -89,8 +89,8 @@ Vela 採用 Privacy-first 定位,採取「透明定義」做法。以下清單�
 - Payment requires an email for receipts, not linked to your queries(訂閱需要 email 作為收據,不與查詢關聯)
 **0.4 開發原則(Engineering Principles)**
 
-- **Local-first 偏好儲存:**使用者偏好預設存於 localStorage,不存入伺服器。伺服器端只看到匿名 hash 或 session-level metadata。
-- **Stateless 查詢處理:**每次查詢是獨立 session。伺服器處理完後不保留查詢內容。PostHog 只收匿名事件,不收查詢全文。
+- **Local-first 偏好儲存:**使用者偏好預設存於 localStorage,不存入伺服器。伺服器端只看到假名化(去識別化) hash 或 session-level metadata。
+- **查詢資料處理:**L0 匿名查詢不寫入帳號;登入使用者(L1/L2)的查詢與回答以去識別化、PHI 遮罩形式儲存最長 6 個月,可依請求刪除,且永不用於訓練 AI。原始偏好僅存於裝置;Pro 跨裝置同步僅上傳衍生的假名化 hash 與 locale。帳務/用量資料以去識別化形式保留最長 5 年以符合法定財稅義務。(舊版「stateless / 伺服器處理完後不保留查詢內容」敘述不正確,已移除。)
 - **Provider-agnostic 架構:**所有 LLM 呼叫透過 Provider interface,可隨時切換。Generator 和 Guard 可獨立切換 provider。
 - **i18n-first:**所有使用者可見字串透過 i18n key 處理,16 語言同步。新增功能必須同時加入 i18n key。
 - **Citation-mandatory:**所有醫療回答必須包含引用來源。無引用不輸出。
