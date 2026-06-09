@@ -107,6 +107,26 @@ IMPORTANT: Respond in the SAME language as the visit notes. Never switch to Engl
 }
 
 
+def _research_language_instruction(lang: str) -> str:
+    """Research-scoped language anchor.
+
+    Unlike the shared get_language_instruction(), English here gets an EXPLICIT
+    authoritative instruction instead of an empty string. Research is
+    query-follows with NO response_language param, so an English query otherwise
+    leaves the prompt with zero language anchor — the model then picks the output
+    language by inference and drifts non-deterministically (biased toward Chinese
+    by the zh-CN/zh-TW examples in the system prompt) at temperature 0.2.
+
+    Scoped to the Research generator on purpose: Verify/Explain inject
+    response_language into their own system templates and must keep the shared
+    helper's "en"→"" behavior, so this wrapper does NOT touch that helper.
+    """
+    resolved = lang or "en"
+    if resolved == "en":
+        return "LANGUAGE: Respond entirely in English. Do NOT switch to any other language."
+    return get_language_instruction(resolved)
+
+
 class AnswerGenerator:
 
     def __init__(self, model: Optional[str] = None):
@@ -199,7 +219,7 @@ class AnswerGenerator:
         if not documents:
             try:
                 system_prompt    = FALLBACK_PROMPTS.get(query_type, FALLBACK_PROMPTS["research"])
-                lang_instruction = get_language_instruction(resolved_lang)
+                lang_instruction = _research_language_instruction(resolved_lang)
                 user_content     = f"{question}\n\n{lang_instruction}" if lang_instruction else question
 
                 req = CompletionRequest(
@@ -250,7 +270,7 @@ class AnswerGenerator:
     ) -> AsyncGenerator[StreamEvent, None]:
 
         system_prompt    = FALLBACK_PROMPTS.get(query_type, FALLBACK_PROMPTS["research"])
-        lang_instruction = get_language_instruction(lang)
+        lang_instruction = _research_language_instruction(lang)
         user_content     = f"{question}\n\n{lang_instruction}" if lang_instruction else question
 
         try:
@@ -384,7 +404,7 @@ If evidence predates 2020, note it inline. If sources conflict, present both sid
                 "Do NOT include a separate Evidence section."
             )
 
-        lang_instruction = get_language_instruction(lang)
+        lang_instruction = _research_language_instruction(lang)
         lang_line        = f"\n\n{lang_instruction}" if lang_instruction else ""
 
         return f"""Reference documents (with publication year):
