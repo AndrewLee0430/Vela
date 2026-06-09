@@ -1156,3 +1156,24 @@ PHASE E built §4.3 需求1+2 (My-Context editor + save) + 需求5 Trigger A (si
 ## §3.3 full (deferred from the §3.3 basic E-tail, 2026-06-08)
 
 - [ ] **[P2] §3.3 full — rotating pool/shuffle + `example_query_clicked` event + mode-routing chips** — the §3.3 basic ship (commit `1671253`) does role-FILTERED STATIC examples only (3 per group, REPLACE the hero chips, event-free, all run as Research). Full version adds: (a) a rotating 5–8 example pool per role with per-load **shuffle**; (b) the **`example_query_clicked` { example_text, role, position }** PostHog event (1-line add in `handleChipClick`, would also cover heroChips); (c) **mode-routing chips** — examples carry a target mode so a Verify/Explain-flavored example (e.g. "這張處方有交互作用嗎?") routes to `/verify` / `/explain` instead of running as Research (D3: those examples were DROPPED from basic to avoid the affordance mismatch). **Gate on prod data** — only build if PostHog shows onboarding-completion volume + role-set users engaging with the Research-only examples. Spec: PRD §3.3 (L1123–1173).
+
+## Deletion-feature C — account / data hard-delete (COMPLIANCE DEBT · HIGH)
+
+> **The Privacy Policy ALREADY PROMISES email deletion within 30 days** as of the legal-reviewed stopgap shipped 2026-06-09 (`bebe20e`). The implementation is **incomplete → this is compliance debt, NOT a normal feature.** The 30-day obligation is LIVE the moment the stopgap deploys (see the manual-SOP sub-note — required before/at deploy).
+
+- [ ] **Hard-delete cascade on account deletion** — per the lawyer's per-table spec:
+  - **HARD-DELETE:** `chat_history`, `audit_logs`, `user_feedback`, `user_profile` (the PHASE-E Pro context hash), `bug_reports`.
+    - (`bug_reports` option: instead of full delete, **SET NULL on the email field** and keep the anonymized technical fields — note for the implementer.)
+  - **DE-IDENTIFY + RETAIN 5yr (statutory):** `user_usage`, `api_cost_log` — **sever `user_id`/`clerk_user_id`** but keep the payment-provider IDs + plan + numeric usage/cost (statutory financial/tax retention; lawful basis GDPR Art. 6(1)(c), TW Commercial Accounting Act Art. 38).
+  - **`shared_query`:** **SET NULL on `created_by`, KEEP the public page** (locked decision 2026-06-09; stated in Policy §8). (`anonymous_usage` is anon-keyed, not account-linked — n/a.)
+  - **Triggers (recommended = all three):** in-app **"Delete account & data"** button (`DELETE /api/user/account`, Clerk-JWT) + a **history-only** option + a **Clerk `user.deleted` webhook** (`/api/webhooks/clerk`, svix-verified — needs `CLERK_WEBHOOK_SECRET`; closes the orphaned-rows gap when a user deletes via Clerk's own portal).
+  - **Shared helper** `_hard_delete_user(db, user_id)` reused by all triggers (one table list to maintain). No schema/migration needed; the webhook needs the new env var.
+- [ ] **⚠️ MANUAL deletion SOP — REQUIRED NOW (before/at the stopgap deploy).** Until feature C ships, the 30-day promise must be honored by hand: on an email request, the operator runs the deletes/de-identifies across the tables above (hard-delete the 5; sever user_id on the 2 billing tables; SET NULL `shared_query.created_by`). **This SOP must exist as a runbook before the stopgap Policy is live in prod.** (Flagging — not writing the SOP here.)
+- **Discovered:** 2026-06-09 legal review. Related: BACKLOG "§4.3 deferred sub-needs" 需求4 (export/clear prefs) is the lighter in-app preference-clear; C is the full account/data erasure.
+
+## §3.4 Privacy Policy — i18n-refactor + 16-language translation
+
+- [ ] **§3.4 — localize `/privacy` to 16 languages.** **NO LONGER BLOCKED on the English master** (legal-reviewed English stopgap approved + shipped 2026-06-09, `bebe20e`). Still pending two things:
+  - **(i) i18n-refactor:** `pages/privacy.tsx` is hardcoded English JSX → refactor to an i18n-driven page (extract the ~10 sections into the i18n bundle + `useLang`) before any translation. This is **more than pure i18n** (a page restructure).
+  - **(ii) translation-confidence decision:** the 15 non-English versions are **LEGAL + medical** text — decide machine-translated vs human-reviewed (do NOT auto-trust). Ship with the lawyer's **"English version shall prevail"** disclaimer (already in the English page header).
+  - Note: keep the "24h backup / 6h PITR" wording in sync with TECH_DEBT (d) — revise on a Neon paid-plan upgrade.
