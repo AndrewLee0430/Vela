@@ -327,3 +327,6 @@ When entries are resolved, mark with the resolving commit SHA (git log is the re
 
 - **[P2 · R5 privacy] `ChatHistory.answer` stored unsanitized (all features)** (logged 2026-06-08)
   - `ChatHistory.answer` is persisted unsanitized for Research / Verify / Explain — an LLM-generated answer could theoretically echo an identifier from the input. Upstream `_check_phi` (`api/server.py:1088`) blocks identifiable input at the boundary, and "answer unsanitized" is the consistent established behavior across all features, so this is a **broader policy decision** (sanitize ALL stored answers?) — not a one-line fix. Distinct from the Explain `ChatHistory.question` raw-storage gap, which WAS fixed 2026-06-08 (now mirrors AuditLog `sanitize_for_log`). Pending decision; **do NOT auto-fix.**
+
+- **[P2 · R5 privacy] `PHIDetector.sanitize_for_log` misses the Taiwan mobile format** (logged 2026-06-08)
+  - e.g. `0912-345-678` is NOT masked by the shared sanitizer, so it survives into both `AuditLog.query_content` and `ChatHistory.question`. Pre-existing coverage gap (not introduced by the Explain fix `bbc41e9`; the AuditLog copy has the same gap). TW is the core market, so TW phone numbers are real identifiers. Fix = add a TW-mobile regex to the shared sanitizer (one place, covers all callers); no schema/retention change. Pending; **do NOT auto-fix.**
