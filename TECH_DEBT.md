@@ -23,6 +23,12 @@ When entries are resolved, mark with the resolving commit SHA (git log is the re
   - Resolution: drop the 6 interface fields + all 16×6 locale values in one scripted pass at the next i18n-touch opportunity (e.g. the §3.4 i18n-refactor). Verify `npm run build` after (strict interface will catch any miss).
   - Discovered: 2026-06-10 during the evidence-indicator redesign (Sub-task B).
 
+- **[P3 → next opportunity] Dead `statusSearching` / `statusAnalyzingDocs` i18n keys after the multi-step status change (2026-06-10)**
+  - The Research multi-step status change replaced the two single status strings with a 3-step scheme (`statusStepSearch` / `statusStepRank` / `statusStepGenerate`). The old keys `statusSearching` ("Searching medical literature…") and `statusAnalyzingDocs` ("Analyzing documents…") are now **dead** (still declared in the `UITranslations` interface + present in every locale, still referenced as legacy graceful-map fallbacks in `research.tsx` `statusMap`, but the backend no longer emits those strings).
+  - Left in place deliberately (same rationale as the dead `evidence*` keys above): mass-removing across the strict interface + 16 locales is disproportionate churn.
+  - Resolution: drop both interface fields + all 16×2 locale values (and the two legacy `statusMap` fallback lines in `research.tsx`) in the same scripted i18n cleanup pass as the `evidence*` keys. Verify `npm run build` after.
+  - Discovered: 2026-06-10 during the Research multi-step status change.
+
 - **[P2 → Phase 1B Week 4 polish] Verify 答案品質 nuance issues — dogfooding 發現 (2026-05-06)**
   - **背景**: solo founder 2026-05-06 dogfood query「為什麼亞洲老年人 polypharmacy 問題嚴重」的人工 review。所有 4 個 citation 真實存在 (PMID 38368398, 35268461, 37968631, 37574369)，無 hallucination。Retrieval 基礎正常運作。
   - **發現 5 個 nuance issues**:
