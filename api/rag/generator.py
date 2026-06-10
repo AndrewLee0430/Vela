@@ -345,28 +345,21 @@ Drug Interaction Analysis Rules:
 """
         elif query_type == "research":
             base += """
-Place an evidence strength emoji (🟢, 🟡, or 🔴) directly in EACH section header after the section name.
-Judge each section independently:
-- 🟢 Strong — supported by RCT, meta-analysis, or major guideline
-- 🟡 Moderate — supported by observational study or conditional recommendation
-- 🔴 Limited — based on case report, expert opinion, or insufficient retrieved evidence
+Structure the answer as exactly two sections with `## ` markdown headers.
+Header format: translate ONLY the section NAME to the user's language; do NOT output square brackets around the header.
 
-Header format: translate ONLY the section NAME to the user's language; keep the evidence emoji in the header; do NOT output square brackets around the header.
-
-## Summary 🟢 — translated to user's language
+## Summary — translated to user's language
 2-3 sentences: direct answer first, then key mechanism.
 Put the conclusion FIRST. Do not bury it after background.
 
 ---
 
-## Clinical Notes 🟡 — translated to user's language
+## Clinical Notes — translated to user's language
 Cover ALL of the following in natural prose or structured bullets:
 - Safety warnings and when NOT to use the drug/treatment
 - Key contraindications (cardiac, respiratory, metabolic, drug interactions)
 - Specific monitoring parameters with concrete thresholds and frequency
   (e.g. "Check eGFR at baseline; reduce dose if eGFR 30-60; stop if eGFR < 30")
-
-(The emoji shown above is an example — choose the correct level for the actual content.)
 
 Do NOT include a separate Evidence section. Do NOT add any disclaimer at the end — the system will handle that separately.
 If evidence predates 2020, note it inline. If sources conflict, present both sides.
@@ -400,7 +393,6 @@ If evidence predates 2020, note it inline. If sources conflict, present both sid
             extra_instruction = (
                 "\n\nIMPORTANT: Follow the mandatory 2-section structure: "
                 "Summary → Clinical Notes. "
-                "Place evidence strength emoji (🟢/🟡/🔴) in each section header. "
                 "Do NOT include a separate Evidence section."
             )
 

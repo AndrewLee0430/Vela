@@ -27,7 +27,10 @@ export interface Citation {
     title: string;
     snippet: string;
     url: string;
-    credibility: 'peer-reviewed' | 'official' | 'internal';
+    // Full backend CredibilityLevel enum (schemas.py). The retriever currently
+    // only emits peer-reviewed/official, but clinical-trial/review/internal are
+    // valid values — keep the type in sync and fall back safely at lookup time.
+    credibility: 'peer-reviewed' | 'official' | 'clinical-trial' | 'review' | 'internal';
     year?: string;
     authors?: string;
     journal?: string;
@@ -123,7 +126,10 @@ function CitationCard({ citation, position }: { citation: Citation; position: nu
 
     const normalizedSourceType = detectSourceType(citation);
     const sourceConfig = sourceTypeConfig[normalizedSourceType];
-    const credConfig   = credibilityConfig[citation.credibility];
+    // Crash-guard: an unmapped credibility value (e.g. clinical-trial/review,
+    // which the config doesn't carry a label for) falls back to the neutral
+    // 'internal' badge instead of yielding `undefined` → blank/crash.
+    const credConfig   = credibilityConfig[citation.credibility as keyof typeof credibilityConfig] ?? credibilityConfig['internal'];
     const abstract     = extractAbstract(citation.snippet);
     const isLong       = abstract.length > 200;
     const display      = !expanded && isLong ? abstract.slice(0, 200) + '…' : abstract;

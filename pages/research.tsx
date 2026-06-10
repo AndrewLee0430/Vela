@@ -53,14 +53,14 @@ function stripLlmDisclaimer(text: string): string {
 
 interface ParsedSection {
     title: string;
-    evidence: '\u{1F7E2}' | '\u{1F7E1}' | '\u{1F534}' | null;
     content: string;
 }
 
-// Language-agnostic header parsing. Matches any "## <header>" line, then extracts
-// the evidence emoji from anywhere in the header and sanitizes the title — so it
-// works whether the LLM emits the clean English form (## Summary 🟢 — English) or
-// the bracketed non-English form (## [臨床注意事項 🟡] / ## [臨床注意事項 🟡 — 繁體中文]).
+// Language-agnostic header parsing. Matches any "## <header>" line and sanitizes
+// the title — works whether the LLM emits the clean English form (## Summary —
+// English) or the bracketed non-English form (## [臨床注意事項] / ## [臨床注意事項 — 繁體中文]).
+// (Evidence-emoji extraction was removed with the indicator redesign; sanitizeTitle
+// keeps a defensive emoji-strip in case a model still emits one.)
 function parseResearchSections(text: string): ParsedSection[] | null {
     const headerRegex = /^##\s+(.+?)\s*$/gm;
     const matches = [...text.matchAll(headerRegex)];
@@ -78,15 +78,13 @@ function parseResearchSections(text: string): ParsedSection[] | null {
     for (let i = 0; i < matches.length; i++) {
         const match = matches[i];
         const header = match[1];
-        const emojiMatch = header.match(/[🟢🟡🔴]/u);
-        const evidence = (emojiMatch ? emojiMatch[0] : null) as ParsedSection['evidence'];
         const title = sanitizeTitle(header);
         const start = match.index! + match[0].length;
         const end = i + 1 < matches.length ? matches[i + 1].index! : text.length;
         // Remove leading --- separator
         const content = text.slice(start, end).replace(/^\s*---\s*/g, '').trim();
         if (content) {
-            sections.push({ title, evidence, content });
+            sections.push({ title, content });
         }
     }
     return sections.length > 0 ? sections : null;
@@ -107,68 +105,32 @@ const defaultSuggestions = [
     "심부전에서 베타차단제는 언제 사용하나요?",
 ];
 
-function EvidenceLegend() {
+// Per-answer trust signal (design X): provenance derived from REAL retrieved-source
+// counts, not a model self-label. Renders only when there are citations; the
+// no-literature floor is the FallbackBanner (mutually exclusive — see render).
+// Source-type names are proper nouns (PubMed/FDA/…) → kept English, not i18n.
+const PROVENANCE_LABELS: Record<string, string> = {
+    pubmed: 'PubMed', fda: 'FDA', local: 'Local',
+    loinc: 'LOINC', medlineplus: 'MedlinePlus', rxnorm: 'RxNorm',
+};
+
+function ProvenanceLine({ citations }: { citations: Citation[] }) {
     const { lang } = useLang();
     const ui = getUI(lang);
-    const levels = [
-        { color: 'rgb(var(--color-success))', label: ui.evidenceStrong, tip: ui.evidenceStrongTip },
-        { color: 'rgb(var(--color-warning))', label: ui.evidenceModerate, tip: ui.evidenceModerateTip },
-        { color: 'rgb(var(--color-danger))', label: ui.evidenceLimited, tip: ui.evidenceLimitedTip },
-    ];
-    const [expanded, setExpanded] = useState(false);
+    const counts = new Map<string, number>();
+    for (const c of citations) {
+        const key = (c.source_type || '').toString().trim().toLowerCase();
+        const label = PROVENANCE_LABELS[key] || (key ? key.charAt(0).toUpperCase() + key.slice(1) : 'Source');
+        counts.set(label, (counts.get(label) || 0) + 1);
+    }
     return (
-        <div className="mt-4 text-center">
-            <div className="inline-flex items-center gap-4 text-xs" style={{ color: 'rgb(var(--color-text) / 0.45)' }}>
-                {levels.map(({ color, label, tip }) => (
-                    <span key={label} className="relative group">
-                        <span className="cursor-help transition-colors hover:text-text inline-flex items-center gap-1.5">
-                            <span className="inline-block w-2 h-2 rounded-full shrink-0" style={{ background: color }} />
-                            {label}
-                        </span>
-                        {/* Desktop hover tooltip */}
-                        <span
-                            className="absolute bottom-full left-1/2 mb-2 hidden group-hover:block z-50"
-                            style={{ transform: 'translateX(-50%)' }}
-                        >
-                            <span
-                                className="block rounded-lg shadow-lg p-2 text-xs text-left whitespace-normal w-56"
-                                style={{ background: '#1e293b', border: '1px solid #475569', color: '#cbd5e1' }}
-                            >
-                                {tip}
-                            </span>
-                            <span
-                                className="block mx-auto"
-                                style={{ width: 0, height: 0, borderLeft: '5px solid transparent', borderRight: '5px solid transparent', borderTop: '5px solid #475569' }}
-                            />
-                        </span>
-                    </span>
-                ))}
-                {/* Mobile info toggle */}
-                <button
-                    className="md:hidden ml-1 rounded-full"
-                    style={{ color: 'rgb(var(--color-text) / 0.35)' }}
-                    onClick={() => setExpanded(e => !e)}
-                    aria-label="Evidence level info"
-                >
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
-                    </svg>
-                </button>
-            </div>
-            {/* Mobile expanded panel */}
-            {expanded && (
-                <div
-                    className="md:hidden mt-2 rounded-lg p-3 text-left text-xs space-y-1.5 mx-auto max-w-sm"
-                    style={{ background: 'rgb(var(--color-text) / 0.06)', border: '1px solid rgb(var(--color-text) / 0.15)', color: 'rgb(var(--color-text) / 0.7)' }}
-                >
-                    {levels.map(({ color, label, tip }) => (
-                        <p key={label} className="flex items-center gap-1.5">
-                            <span className="inline-block w-2 h-2 rounded-full shrink-0" style={{ background: color }} />
-                            <span><span className="font-medium">{label}</span> — {tip}</span>
-                        </p>
-                    ))}
-                </div>
-            )}
+        <div className="mb-4 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs" style={{ color: 'rgb(var(--color-text) / 0.45)' }}>
+            <span>{ui.provenanceSourced.replace('{count}', String(citations.length))}</span>
+            {[...counts.entries()].map(([label, n]) => (
+                <span key={label} className="px-2 py-0.5 rounded-full" style={{ background: 'rgb(var(--color-text) / 0.08)' }}>
+                    {label} {n}
+                </span>
+            ))}
         </div>
     );
 }
@@ -318,16 +280,16 @@ function ResearchForm() {
         let localCitations: Citation[] = [];
         let localIsFallback = false;
         let localDetectedLang: string | null = null;
-        const computeEvidenceDist = (markdown: string) => {
+        // Telemetry now reflects REAL provenance, not the removed emoji self-label:
+        // section_count (layout) + per-source_type counts from the citations array.
+        const computeResearchTelemetry = (markdown: string, cites: Citation[]) => {
             const sections = parseResearchSections(markdown) ?? [];
-            const dist = { strong: 0, moderate: 0, limited: 0, unmarked: 0 };
-            for (const s of sections) {
-                if (s.evidence === '\u{1F7E2}') dist.strong++;
-                else if (s.evidence === '\u{1F7E1}') dist.moderate++;
-                else if (s.evidence === '\u{1F534}') dist.limited++;
-                else dist.unmarked++;
+            const source_distribution: Record<string, number> = {};
+            for (const c of cites) {
+                const key = (c.source_type || '').toString().trim().toLowerCase() || 'unknown';
+                source_distribution[key] = (source_distribution[key] || 0) + 1;
             }
-            return { sections_count: sections.length, dist };
+            return { sections_count: sections.length, source_distribution };
         };
 
         setAnswer(''); setCitations([]); setQueryTime(null);
@@ -435,11 +397,11 @@ function ResearchForm() {
                             if (queryTimeMs !== null) setQueryTime(queryTimeMs);
                             if (!isSignedIn) maybeTriggerThirdQueryCta();
                             const stripped = stripLlmDisclaimer(localAnswer);
-                            const { sections_count, dist } = computeEvidenceDist(stripped);
+                            const { sections_count, source_distribution } = computeResearchTelemetry(stripped, localCitations);
                             track('research_completed', {
                                 citation_count: localCitations.length,
                                 section_count: sections_count,
-                                evidence_distribution: dist,
+                                source_distribution,
                                 used_fallback: localIsFallback,
                                 input_language: localDetectedLang,
                                 elapsed_ms: Date.now() - t0,
@@ -592,7 +554,10 @@ function ResearchForm() {
 
                             {(answer || loading) && (
                                 <div>
-                                    {isFallback && !loading && <FallbackBanner />}
+                                    {/* Single trust signal, mutually exclusive: 0 sources → FallbackBanner floor (keeps the clinical caveat); ≥1 source → ProvenanceLine. */}
+                                    {!loading && (isFallback
+                                        ? <FallbackBanner />
+                                        : citations.length > 0 ? <ProvenanceLine citations={citations} /> : null)}
                                     {(() => {
                                         const cleanAnswer = !loading ? stripLlmDisclaimer(answer) : answer;
                                         const sections = !loading ? parseResearchSections(cleanAnswer) : null;
@@ -611,7 +576,7 @@ function ResearchForm() {
                                             return (
                                                 <>
                                                     {sections.map((sec, i) => (
-                                                        <ResearchSection key={i} title={sec.title} evidence={sec.evidence}>
+                                                        <ResearchSection key={i} title={sec.title}>
                                                             <div className="prose max-w-none prose-sm prose-headings:font-semibold prose-h2:text-base" style={proseStyle}>
                                                                 <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]} rehypePlugins={[rehypeRaw]}>{sec.content}</ReactMarkdown>
                                                             </div>
@@ -620,7 +585,6 @@ function ResearchForm() {
                                                     <p className="text-xs mt-3 mb-1" style={{ color: 'rgb(var(--color-text) / 0.35)' }}>
                                                         {DISCLAIMERS[detectedLang] || DISCLAIMERS['en']}
                                                     </p>
-                                                    <EvidenceLegend />
                                                 </>
                                             );
                                         }
