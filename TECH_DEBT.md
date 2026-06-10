@@ -17,6 +17,12 @@ When entries are resolved, mark with the resolving commit SHA (git log is the re
 
 ---
 
+- **[P3 → next opportunity] Dead `evidence*` i18n keys after the evidence-indicator redesign (2026-06-10)**
+  - The evidence-indicator redesign (design X) removed `EvidenceLegend` from `pages/research.tsx`; its only consumers — `evidenceStrong` / `evidenceModerate` / `evidenceLimited` + the three `…Tip` variants (6 keys × 16 locales = 96 cells) in `utils/i18n-ui.ts` — are now **dead** (still declared in the `UITranslations` interface + present in every locale, so the build is satisfied; just unused).
+  - Left in place deliberately: mass-removing 6 keys across the strict interface + 16 inline locale objects is a large mechanical diff with breakage risk, disproportionate to a cosmetic cleanup.
+  - Resolution: drop the 6 interface fields + all 16×6 locale values in one scripted pass at the next i18n-touch opportunity (e.g. the §3.4 i18n-refactor). Verify `npm run build` after (strict interface will catch any miss).
+  - Discovered: 2026-06-10 during the evidence-indicator redesign (Sub-task B).
+
 - **[P2 → Phase 1B Week 4 polish] Verify 答案品質 nuance issues — dogfooding 發現 (2026-05-06)**
   - **背景**: solo founder 2026-05-06 dogfood query「為什麼亞洲老年人 polypharmacy 問題嚴重」的人工 review。所有 4 個 citation 真實存在 (PMID 38368398, 35268461, 37968631, 37574369)，無 hallucination。Retrieval 基礎正常運作。
   - **發現 5 個 nuance issues**:
