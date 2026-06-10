@@ -23,6 +23,12 @@ When entries are resolved, mark with the resolving commit SHA (git log is the re
   - Resolution: drop the 6 interface fields + all 16×6 locale values in one scripted pass at the next i18n-touch opportunity (e.g. the §3.4 i18n-refactor). Verify `npm run build` after (strict interface will catch any miss).
   - Discovered: 2026-06-10 during the evidence-indicator redesign (Sub-task B).
 
+- **[P3 → next opportunity] Dead credibility-label i18n keys after the reference badge removal (2026-06-10)**
+  - The Research reference source-label cleanup (A1) removed the credibility badge from `components/CitationPanel.tsx` (and `useCredibilityConfig`). Its label keys — `peerReviewed` / `official` / `internal` + `internalTip` (4 keys × 16 = 64 cells) in `utils/i18n-ui.ts` — are now **dead** (no consumer; Verify/Explain never used them). The tooltip keys `peerReviewedTip` / `officialTip` are **still live** — reused as the source-name tooltips via the shared `utils/sourceLabels.ts` map.
+  - Left in place deliberately (same rationale as the `evidence*` / `status*` keys): mass-removal across the strict interface + 16 locales is disproportionate churn.
+  - Resolution: drop the 4 dead interface fields + their 16×4 locale values in the same scripted i18n cleanup pass as `evidence*` / `status*`. Verify `npm run build` after.
+  - Discovered: 2026-06-10 during the Research reference source-label cleanup.
+
 - **[P3 → next opportunity] Dead `statusSearching` / `statusAnalyzingDocs` i18n keys after the multi-step status change (2026-06-10)**
   - The Research multi-step status change replaced the two single status strings with a 3-step scheme (`statusStepSearch` / `statusStepRank` / `statusStepGenerate`). The old keys `statusSearching` ("Searching medical literature…") and `statusAnalyzingDocs` ("Analyzing documents…") are now **dead** (still declared in the `UITranslations` interface + present in every locale, still referenced as legacy graceful-map fallbacks in `research.tsx` `statusMap`, but the backend no longer emits those strings).
   - Left in place deliberately (same rationale as the dead `evidence*` keys above): mass-removing across the strict interface + 16 locales is disproportionate churn.
