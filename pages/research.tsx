@@ -354,6 +354,11 @@ function ResearchForm() {
                         }
                         else if (data.type === 'status') {
                             const statusMap: Record<string, string> = {
+                                // Multi-step honest status (each backed by a real backend stage)
+                                'Searching the literature': ui.statusStepSearch,
+                                'Checking & ranking sources': ui.statusStepRank,
+                                'Generating answer': ui.statusStepGenerate,
+                                // Legacy strings (pre-multi-step) — kept for graceful mapping
                                 'Searching medical literature...': ui.statusSearching,
                                 'Analyzing documents...': ui.statusAnalyzingDocs,
                             };

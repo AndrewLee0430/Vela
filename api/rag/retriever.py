@@ -16,7 +16,7 @@ PHASE B fix at _search_local() preserved (VectorStore.search now async).
 import asyncio
 import json
 import logging
-from typing import Optional
+from typing import Optional, Callable, Awaitable
 
 from api.models.schemas import RetrievedDocument, SourceType, CredibilityLevel
 from api.database.vector_store import get_vector_store
@@ -76,7 +76,8 @@ class HybridRetriever:
         self,
         query: str,
         max_results: int = 5,
-        source_filter: Optional[list[SourceType]] = None
+        source_filter: Optional[list[SourceType]] = None,
+        on_stage: Optional[Callable[[str], Awaitable[None]]] = None,
     ) -> tuple[list[RetrievedDocument], str]:
         """
         混合檢索（回傳文件列表 + 狀態碼）
@@ -85,6 +86,13 @@ class HybridRetriever:
             (documents, status)
             status: "ok" | "no_results" | "irrelevant" | "error"
         """
+        async def _emit(label: str) -> None:
+            """Surface a real pipeline-stage boundary to the caller (SSE status).
+            No-op when on_stage is not provided — observation only, retrieval
+            logic is unchanged."""
+            if on_stage:
+                await on_stage(label)
+
         # Step 1：Query Rewriting（生成 3 個標準化查詢）
         rewritten_queries = await self._rewrite_query(query)
         logger.info("Query rewritten: '%s'", query)
@@ -134,6 +142,10 @@ class HybridRetriever:
         candidates = unique_docs[:max_results * 4]  # 多取供相關性驗證
 
         # Step 6：相關性驗證
+        # Real stage boundary: fetch produced documents (we're past the
+        # no_results short-circuit above) → the relevance-filter + rerank stages
+        # are about to run. Emit-on-real-start: short-circuited queries never reach here.
+        await _emit("rank")
         relevant_docs = await self._filter_by_relevance(query, candidates)
 
         if not relevant_docs:

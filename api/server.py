@@ -643,15 +643,50 @@ async def research_query(
                 yield f"data: {json.dumps({'type': 'done'})}\n\n"
                 return
 
-            yield f"data: {json.dumps({'type': 'status', 'content': 'Searching medical literature...'}, ensure_ascii=False)}\n\n"
+            # ── Multi-step status (honest, emit-on-real-start) ──
+            # Step 1 (server-direct): retrieval is starting.
+            yield f"data: {json.dumps({'type': 'status', 'content': 'Searching the literature'}, ensure_ascii=False)}\n\n"
 
-            documents, retrieval_status = await retriever.retrieve(
+            # Run retrieval as a task; drain its real-stage markers from a queue while it runs.
+            # The retriever emits "rank" only after fetch produced docs (past its no_results
+            # short-circuit), so a no-literature query never shows Step 2.
+            stage_q: asyncio.Queue[str] = asyncio.Queue()
+            async def on_stage(label: str) -> None:
+                await stage_q.put(label)
+            retrieve_task = asyncio.create_task(retriever.retrieve(
                 query=body.question,
                 max_results=body.max_results or 5,
-                source_filter=body.sources
-            )
+                source_filter=body.sources,
+                on_stage=on_stage,
+            ))
 
-            yield f"data: {json.dumps({'type': 'status', 'content': 'Analyzing documents...'}, ensure_ascii=False)}\n\n"
+            def _status_for(label: str) -> Optional[str]:
+                # Step 2 (from inside retrieval): relevance-filter + rerank about to run.
+                return 'Checking & ranking sources' if label == 'rank' else None
+
+            while True:
+                getter = asyncio.ensure_future(stage_q.get())
+                done, _pending = await asyncio.wait(
+                    {getter, retrieve_task}, return_when=asyncio.FIRST_COMPLETED
+                )
+                if getter in done:
+                    msg = _status_for(getter.result())
+                    if msg:
+                        yield f"data: {json.dumps({'type': 'status', 'content': msg}, ensure_ascii=False)}\n\n"
+                else:
+                    # Retrieval finished — stop draining; flush any straggler markers.
+                    getter.cancel()
+                    while not stage_q.empty():
+                        msg = _status_for(stage_q.get_nowait())
+                        if msg:
+                            yield f"data: {json.dumps({'type': 'status', 'content': msg}, ensure_ascii=False)}\n\n"
+                    break
+
+            # Re-raises any retrieval exception → caught by the outer try/except (error + done).
+            documents, retrieval_status = await retrieve_task
+
+            # Step 3 (server-direct): generation is starting.
+            yield f"data: {json.dumps({'type': 'status', 'content': 'Generating answer'}, ensure_ascii=False)}\n\n"
 
             lang = detect_language(body.question)
             yield f"data: {json.dumps({'type': 'language', 'lang': lang}, ensure_ascii=False)}\n\n"
