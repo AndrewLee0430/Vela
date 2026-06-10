@@ -11,6 +11,7 @@ import Head from 'next/head';
 import { fetchEventSource } from '@microsoft/fetch-event-source';
 import { FatalError, makeOnOpen, sseOnError } from '../utils/sse';
 import CitationPanel, { Citation } from '../components/CitationPanel';
+import { sourceLabelFor } from '../utils/sourceLabels';
 import FeedbackBar from '../components/FeedbackBar';
 import { useShareContext } from '../contexts/ShareContext';
 import UpgradeModal from '../components/UpgradeModal';
@@ -108,19 +109,14 @@ const defaultSuggestions = [
 // Per-answer trust signal (design X): provenance derived from REAL retrieved-source
 // counts, not a model self-label. Renders only when there are citations; the
 // no-literature floor is the FallbackBanner (mutually exclusive — see render).
-// Source-type names are proper nouns (PubMed/FDA/…) → kept English, not i18n.
-const PROVENANCE_LABELS: Record<string, string> = {
-    pubmed: 'PubMed', fda: 'FDA', local: 'Local',
-    loinc: 'LOINC', medlineplus: 'MedlinePlus', rxnorm: 'RxNorm',
-};
-
+// Source names come from the shared sourceLabels map so the line, the reference
+// cards, and the panel sub-header never drift (local + fda merge into one "FDA").
 function ProvenanceLine({ citations }: { citations: Citation[] }) {
     const { lang } = useLang();
     const ui = getUI(lang);
     const counts = new Map<string, number>();
     for (const c of citations) {
-        const key = (c.source_type || '').toString().trim().toLowerCase();
-        const label = PROVENANCE_LABELS[key] || (key ? key.charAt(0).toUpperCase() + key.slice(1) : 'Source');
+        const label = sourceLabelFor(c).label;
         counts.set(label, (counts.get(label) || 0) + 1);
     }
     return (

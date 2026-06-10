@@ -4,21 +4,7 @@ import { useState } from 'react';
 import { useLang } from '../utils/LangContext';
 import { getUI } from '../utils/i18n-ui';
 import { track } from '../utils/analytics';
-
-// PRD 2.3 citation source_type enum (lowercase, canonical)
-export type CitationSourceType =
-    | 'pubmed'
-    | 'fda'
-    | 'loinc'
-    | 'medlineplus'
-    | 'rxnorm'
-    | 'who'
-    | 'nice'
-    | 'ema'
-    | 'cochrane'
-    | 'local'
-    | 'localauthority'
-    | 'other';
+import { detectSourceType, sourceLabelFor } from '../utils/sourceLabels';
 
 export interface Citation {
     id: number;
@@ -36,63 +22,10 @@ export interface Citation {
     journal?: string;
 }
 
-function detectSourceType(citation: Citation): CitationSourceType {
-    const raw = (citation.source_type || '').toString().trim().toLowerCase();
-    const known: CitationSourceType[] = [
-        'pubmed', 'fda', 'loinc', 'medlineplus', 'rxnorm',
-        'who', 'nice', 'ema', 'cochrane', 'local', 'localauthority', 'other',
-    ];
-    if ((known as string[]).includes(raw)) return raw as CitationSourceType;
-
-    const url = (citation.url || '').toLowerCase();
-    try {
-        const host = new URL(citation.url).hostname.toLowerCase();
-        if (host.includes('pubmed.ncbi.nlm.nih.gov') || host.includes('ncbi.nlm.nih.gov/pubmed')) return 'pubmed';
-        if (host.includes('fda.gov') || host.includes('accessdata.fda.gov')) return 'fda';
-        if (host.includes('loinc.org')) return 'loinc';
-        if (host.includes('medlineplus.gov')) return 'medlineplus';
-        if (host.includes('dailymed.nlm.nih.gov') || host.includes('rxnav.nlm.nih.gov')) return 'rxnorm';
-        if (host.includes('who.int')) return 'who';
-        if (host.includes('nice.org.uk')) return 'nice';
-        if (host.includes('ema.europa.eu')) return 'ema';
-        if (host.includes('cochrane.org') || host.includes('cochranelibrary.com')) return 'cochrane';
-    } catch {
-        // URL parse failed — fall through to `other`
-        if (url.includes('pubmed')) return 'pubmed';
-        if (url.includes('fda.gov')) return 'fda';
-    }
-    return 'other';
-}
-
 interface CitationPanelProps {
     citations: Citation[];
     isLoading?: boolean;
 }
-
-function useCredibilityConfig() {
-    const { lang } = useLang();
-    const ui = getUI(lang);
-    return {
-        'peer-reviewed': { label: ui.peerReviewed, bg: 'rgba(255,142,110,0.15)', color: '#ff8e6e', tooltip: ui.peerReviewedTip },
-        'official':      { label: ui.official,       bg: 'rgba(99,179,237,0.15)',  color: '#63b3ed', tooltip: ui.officialTip },
-        'internal':      { label: ui.internal,       bg: 'rgba(160,174,192,0.15)', color: '#a0aec0', tooltip: ui.internalTip },
-    };
-}
-
-const sourceTypeConfig: Record<CitationSourceType, { label: string; color: string }> = {
-    'pubmed':        { label: 'PubMed',      color: 'rgb(var(--color-success))' },
-    'fda':           { label: 'FDA',         color: '#63b3ed' },
-    'loinc':         { label: 'LOINC',       color: '#f6ad55' },
-    'medlineplus':   { label: 'MedlinePlus', color: '#9f7aea' },
-    'rxnorm':        { label: 'RxNorm',      color: '#ed64a6' },
-    'who':           { label: 'WHO',         color: '#4fd1c5' },
-    'nice':          { label: 'NICE',        color: '#90cdf4' },
-    'ema':           { label: 'EMA',         color: '#fbb6ce' },
-    'cochrane':      { label: 'Cochrane',    color: '#b794f4' },
-    'local':         { label: 'Local',       color: '#a0aec0' },
-    'localauthority':{ label: 'Local',       color: '#a0aec0' },
-    'other':         { label: 'Source',      color: '#a0aec0' },
-};
 
 function extractAbstract(raw: string): string {
     const lines = raw.split('\n');
@@ -122,14 +55,10 @@ function CitationCard({ citation, position }: { citation: Citation; position: nu
     const [expanded, setExpanded] = useState(false);
     const { lang } = useLang();
     const ui = getUI(lang);
-    const credibilityConfig = useCredibilityConfig();
 
     const normalizedSourceType = detectSourceType(citation);
-    const sourceConfig = sourceTypeConfig[normalizedSourceType];
-    // Crash-guard: an unmapped credibility value (e.g. clinical-trial/review,
-    // which the config doesn't carry a label for) falls back to the neutral
-    // 'internal' badge instead of yielding `undefined` → blank/crash.
-    const credConfig   = credibilityConfig[citation.credibility as keyof typeof credibilityConfig] ?? credibilityConfig['internal'];
+    const source = sourceLabelFor(citation);                 // one user-language source name (A1)
+    const sourceTooltip = source.tooltipKey ? ui[source.tooltipKey] : undefined;
     const abstract     = extractAbstract(citation.snippet);
     const isLong       = abstract.length > 200;
     const display      = !expanded && isLong ? abstract.slice(0, 200) + '…' : abstract;
@@ -149,27 +78,23 @@ function CitationCard({ citation, position }: { citation: Citation; position: nu
 
     return (
         <div className="rounded-lg p-4 hover:shadow-md transition-shadow bg-text/7 border border-text/12">
-            {/* Header */}
-            <div className="flex items-start justify-between mb-2">
-                <div className="flex items-center gap-2">
-                    <span className="font-semibold" style={{ color: sourceConfig.color }}>
-                        [{citation.id}] {sourceConfig.label}
+            {/* Header — single user-language source name (neutral color). The trust
+                detail that used to be a separate, redundant credibility badge now
+                lives in the source name's hover tooltip. */}
+            <div className="flex items-start mb-2">
+                <span className="relative group">
+                    <span className={`font-semibold ${sourceTooltip ? 'cursor-help' : ''}`} style={{ color: 'rgb(var(--color-text))' }}>
+                        [{citation.id}] {source.label}
                     </span>
-                </div>
-                <span className="relative group flex-shrink-0 ml-2">
-                    <span
-                        className="text-xs px-2 py-1 rounded-full font-medium cursor-help"
-                        style={{ background: credConfig.bg, color: credConfig.color }}
-                    >
-                        {credConfig.label}
-                    </span>
-                    <span className="absolute right-0 top-full mt-2 w-64 bg-white rounded-lg shadow-lg px-4 py-3 z-50 hidden group-hover:block">
-                        <span className="flex items-center gap-2 mb-1">
-                            <svg className="w-4 h-4 text-green-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
-                            <span className="text-sm font-semibold text-gray-800">{credConfig.label}</span>
+                    {sourceTooltip && (
+                        <span className="absolute left-0 top-full mt-2 w-64 bg-white rounded-lg shadow-lg px-4 py-3 z-50 hidden group-hover:block">
+                            <span className="flex items-center gap-2 mb-1">
+                                <svg className="w-4 h-4 text-green-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                                <span className="text-sm font-semibold text-gray-800">{source.label}</span>
+                            </span>
+                            <span className="text-xs text-gray-500 leading-relaxed block">{sourceTooltip}</span>
                         </span>
-                        <span className="text-xs text-gray-500 leading-relaxed block">{credConfig.tooltip}</span>
-                    </span>
+                    )}
                 </span>
             </div>
 
@@ -262,8 +187,11 @@ export default function CitationPanel({ citations, isLoading }: CitationPanelPro
         );
     }
 
+    // Group by the user-facing label (shared map) so local + fda MERGE into one
+    // "FDA" bucket — matching the cards + the answer provenance line.
     const sourceStats = citations.reduce((acc, c) => {
-        acc[c.source_type] = (acc[c.source_type] || 0) + 1;
+        const label = sourceLabelFor(c).label;
+        acc[label] = (acc[label] || 0) + 1;
         return acc;
     }, {} as Record<string, number>);
 
@@ -274,12 +202,12 @@ export default function CitationPanel({ citations, isLoading }: CitationPanelPro
             </p>
 
             <div className="flex gap-2 mb-4 text-xs">
-                {Object.entries(sourceStats).map(([source, count]) => (
+                {Object.entries(sourceStats).map(([label, count]) => (
                     <span
-                        key={source}
+                        key={label}
                         className="px-2 py-1 rounded-full bg-text/8 text-text/65"
                     >
-                        {source}: {count}
+                        {label} {count}
                     </span>
                 ))}
             </div>
