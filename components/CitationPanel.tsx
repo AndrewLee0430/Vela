@@ -83,8 +83,16 @@ function CitationCard({ citation, position }: { citation: Citation; position: nu
                 lives in the source name's hover tooltip. */}
             <div className="flex items-start mb-2">
                 <span className="relative group">
-                    <span className={`font-semibold ${sourceTooltip ? 'cursor-help' : ''}`} style={{ color: 'rgb(var(--color-text))' }}>
+                    <span className={`font-semibold inline-flex items-center gap-1 ${sourceTooltip ? 'cursor-help' : ''}`} style={{ color: 'rgb(var(--color-text))' }}>
                         [{citation.id}] {source.label}
+                        {sourceTooltip && (
+                            // Discoverability affordance: a subtle ⓘ telling users the
+                            // source name is hoverable. Neutral color (no semantic color),
+                            // inside the same group → hovering name OR icon shows the tooltip.
+                            <svg aria-label={ui.moreInfo} role="img" className="w-3 h-3 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'rgb(var(--color-text) / 0.4)' }}>
+                                <circle cx="12" cy="12" r="10" /><line x1="12" y1="16" x2="12" y2="12" /><line x1="12" y1="8" x2="12.01" y2="8" />
+                            </svg>
+                        )}
                     </span>
                     {sourceTooltip && (
                         <span className="absolute left-0 top-full mt-2 w-64 bg-white rounded-lg shadow-lg px-4 py-3 z-50 hidden group-hover:block">
