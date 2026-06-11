@@ -537,7 +537,7 @@ function ExplainForm() {
     const sampleQueries = [
         "eGFR 45 mL/min (ref >60), HbA1c 7.8%, Metformin 1000mg BID",
         "血紅素 10.2 g/dL（參考值 12-16）、白血球 12,500/μL（偏高）",
-        "GOT 68 U/L、GPT 92 U/L、總膽紅素 2.1 mg/dL",
+        "膽固醇 240 mg/dL（偏高）、三酸甘油酯 180 mg/dL、高密度脂蛋白 38 mg/dL（偏低）",
         "Glucosa en ayunas 156 mg/dL (ref 70-110), HbA1c 8.2%",
         "Sodium 138, Potassium 3.3 (LOW), Creatinine 1.5 (HIGH), Glucose 142 (HIGH)",
     ];

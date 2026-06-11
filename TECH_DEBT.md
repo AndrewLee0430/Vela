@@ -17,6 +17,12 @@ When entries are resolved, mark with the resolving commit SHA (git log is the re
 
 ---
 
+- **[P2 → future recon] Explain language resolution may be fragile on mixed CJK+Latin input (2026-06-11)**
+  - Explain resolves the report's language differently from Research: `entities.input_language` from the entity extractor, with a `detect_language` override when they disagree (`api/services/explain_service.py:520-525`). `detect_language`'s script heuristic flips to Chinese on **any** CJK char, so a report that is ~half Latin lab abbreviations (GOT/GPT/HbA1c) + ~half Chinese terms can be mis-resolved → inconsistent EN-vs-ZH answers (the same class of bug fixed for Research in v175).
+  - Real-world relevance: Taiwanese lab reports **routinely** mix Latin abbreviations + Chinese, so this is genuine user input, not just a contrived example. The v177-follow-up only replaced a mixed *example chip* (`pages/explain.tsx`) with a language-clean one — it does **not** address mixed *user* input.
+  - Resolution: a future recon of Explain's language-resolution path (is the `input_language` + override logic robust to balanced CJK+Latin? should it prefer the extractor's judgment, a dominant-script threshold, or an explicit response-language control like Research/Verify?). **Flagged, not fixed** — example-text change only this turn.
+  - Discovered: 2026-06-11 during the Explain example-chip cleanup (Item C).
+
 - **[P3 → next opportunity] Dead `evidence*` i18n keys after the evidence-indicator redesign (2026-06-10)**
   - The evidence-indicator redesign (design X) removed `EvidenceLegend` from `pages/research.tsx`; its only consumers — `evidenceStrong` / `evidenceModerate` / `evidenceLimited` + the three `…Tip` variants (6 keys × 16 locales = 96 cells) in `utils/i18n-ui.ts` — are now **dead** (still declared in the `UITranslations` interface + present in every locale, so the build is satisfied; just unused).
   - Left in place deliberately: mass-removing 6 keys across the strict interface + 16 inline locale objects is a large mechanical diff with breakage risk, disproportionate to a cosmetic cleanup.
