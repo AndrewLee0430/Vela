@@ -688,7 +688,11 @@ async def research_query(
             # Step 3 (server-direct): generation is starting.
             yield f"data: {json.dumps({'type': 'status', 'content': 'Generating answer'}, ensure_ascii=False)}\n\n"
 
-            lang = detect_language(body.question)
+            # Answer + disclaimer language is UI-driven (unified with Verify/Explain).
+            # The resolved lang flows to BOTH the SSE 'language' event (→ disclaimer)
+            # and generate_stream(lang=) (→ answer prose), so they stay aligned.
+            # Retrieval/query-rewrite remain language-agnostic (no detect_language).
+            lang = _resolve_response_language(body.response_language, request)
             yield f"data: {json.dumps({'type': 'language', 'lang': lang}, ensure_ascii=False)}\n\n"
             usage_out = []
             async for event in generator.generate_stream(

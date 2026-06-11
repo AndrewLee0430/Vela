@@ -327,7 +327,7 @@ function ResearchForm() {
                 signal: controller.signal,
                 method: 'POST',
                 headers,
-                body: JSON.stringify({ question: q, max_results: 5 }),
+                body: JSON.stringify({ question: q, max_results: 5, response_language: lang }),
                 openWhenHidden: true,
 
                 onopen: makeOnOpen({

@@ -48,6 +48,10 @@ class ResearchRequest(BaseModel):
         ge=1,
         le=10
     )
+    response_language: Optional[str] = Field(
+        default=None,
+        description="期望的回答語言（UI locale，BCP-47，如 zh-TW）；由 _resolve_response_language 解析，回退 Accept-Language → en"
+    )
 
 
 class FeedbackRequest(BaseModel):
