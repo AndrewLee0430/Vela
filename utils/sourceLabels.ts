@@ -94,3 +94,15 @@ export function detectSourceType(citation: SourceLike): CitationSourceType {
 export function sourceLabelFor(citation: SourceLike): SourceLabel {
     return SOURCE_LABELS[detectSourceType(citation)] ?? SOURCE_LABELS.other;
 }
+
+// Count-chip tooltip formatters. Live here (alongside the label map) so the
+// provenance line AND the panel sub-header substitute {count}/{source} IDENTICALLY
+// — the copy itself is one i18n key, the formatting is this one helper → no drift.
+// Callers pass the resolved template (ui.sourceCountTip / ui.referencesCountTip).
+export function sourceCountTooltip(template: string, sourceLabel: string, count: number): string {
+    return template.replace('{count}', String(count)).replace('{source}', sourceLabel);
+}
+
+export function referencesCountTooltip(template: string, count: number): string {
+    return template.replace('{count}', String(count));
+}

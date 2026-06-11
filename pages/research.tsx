@@ -11,7 +11,7 @@ import Head from 'next/head';
 import { fetchEventSource } from '@microsoft/fetch-event-source';
 import { FatalError, makeOnOpen, sseOnError } from '../utils/sse';
 import CitationPanel, { Citation } from '../components/CitationPanel';
-import { sourceLabelFor } from '../utils/sourceLabels';
+import { sourceLabelFor, sourceCountTooltip } from '../utils/sourceLabels';
 import FeedbackBar from '../components/FeedbackBar';
 import { useShareContext } from '../contexts/ShareContext';
 import UpgradeModal from '../components/UpgradeModal';
@@ -123,8 +123,13 @@ function ProvenanceLine({ citations }: { citations: Citation[] }) {
         <div className="mb-4 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs" style={{ color: 'rgb(var(--color-text) / 0.45)' }}>
             <span>{ui.provenanceSourced.replace('{count}', String(citations.length))}</span>
             {[...counts.entries()].map(([label, n]) => (
-                <span key={label} className="px-2 py-0.5 rounded-full" style={{ background: 'rgb(var(--color-text) / 0.08)' }}>
-                    {label} {n}
+                <span key={label} className="relative group">
+                    <span className="px-2 py-0.5 rounded-full cursor-help inline-block" style={{ background: 'rgb(var(--color-text) / 0.08)' }}>
+                        {label} {n}
+                    </span>
+                    <span className="absolute left-0 top-full mt-2 w-56 bg-white rounded-lg shadow-lg px-3 py-2 z-50 hidden group-hover:block text-xs leading-relaxed text-gray-600">
+                        {sourceCountTooltip(ui.sourceCountTip, label, n)}
+                    </span>
                 </span>
             ))}
         </div>

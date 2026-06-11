@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useLang } from '../utils/LangContext';
 import { getUI } from '../utils/i18n-ui';
 import { track } from '../utils/analytics';
-import { detectSourceType, sourceLabelFor } from '../utils/sourceLabels';
+import { detectSourceType, sourceLabelFor, sourceCountTooltip, referencesCountTooltip } from '../utils/sourceLabels';
 
 export interface Citation {
     id: number;
@@ -205,17 +205,24 @@ export default function CitationPanel({ citations, isLoading }: CitationPanelPro
 
     return (
         <div className="h-full flex flex-col">
-            <p className="text-xs font-semibold text-text/50 uppercase tracking-wider mb-2">
-                {ui.referencesTitle} ({citations.length})
-            </p>
+            <span className="relative group inline-block mb-2">
+                <p className="text-xs font-semibold text-text/50 uppercase tracking-wider cursor-help">
+                    {ui.referencesTitle} ({citations.length})
+                </p>
+                <span className="absolute left-0 top-full mt-1 w-56 bg-white rounded-lg shadow-lg px-3 py-2 z-50 hidden group-hover:block text-xs leading-relaxed text-gray-600 normal-case tracking-normal">
+                    {referencesCountTooltip(ui.referencesCountTip, citations.length)}
+                </span>
+            </span>
 
             <div className="flex gap-2 mb-4 text-xs">
                 {Object.entries(sourceStats).map(([label, count]) => (
-                    <span
-                        key={label}
-                        className="px-2 py-1 rounded-full bg-text/8 text-text/65"
-                    >
-                        {label} {count}
+                    <span key={label} className="relative group">
+                        <span className="px-2 py-1 rounded-full bg-text/8 text-text/65 cursor-help inline-block">
+                            {label} {count}
+                        </span>
+                        <span className="absolute left-0 top-full mt-1 w-56 bg-white rounded-lg shadow-lg px-3 py-2 z-50 hidden group-hover:block text-xs leading-relaxed text-gray-600">
+                            {sourceCountTooltip(ui.sourceCountTip, label, count)}
+                        </span>
                     </span>
                 ))}
             </div>
