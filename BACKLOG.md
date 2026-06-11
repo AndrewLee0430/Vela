@@ -1081,7 +1081,7 @@ Two i18n content drifts surfaced during Stage 2 landing redesign (Steps 2 / 4a /
 
 ## v172 batch follow-ups (captured 2026-06-05)
 
-- [ ] **Evidence edge-case: undetectable Research query → output-language falls back to `en` instead of UI locale**
+- [x] **Evidence edge-case: undetectable Research query → output-language falls back to `en` instead of UI locale** — **✅ RESOLVED v179 (`12e7f4a`, 2026-06-11).** Research's answer/disclaimer language is now UI-driven via `_resolve_response_language` (the exact pattern this item proposed) — it no longer uses `detect_language` for output, so the low-signal "undetectable → en" conflation is gone; output language is the UI locale with an `en` *final* fallback by design. (Diagnosis retained below.)
       Research derives the answer language from `detect_language(question)` (server.py),
       which conflates "user wrote in English" with "input is undetectable" (pure drug names /
       numeric values / too-short strings). A zh-TW user asking a Research question that is just
