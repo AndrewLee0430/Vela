@@ -28,6 +28,12 @@ import hashlib
 import argparse
 from datetime import datetime, timezone
 
+# Make the `api` package importable regardless of CWD — this script lives in
+# scripts/, so the repo root (one level up) must be on sys.path. Self-sufficient:
+# the deletion tool must not depend on the operator setting PYTHONPATH. (Used only
+# by run_execute's api imports; harmless to plan mode, which imports no api.)
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from dotenv import load_dotenv
 
 # Read .env (DATABASE_URL = dev branch) — the same source the app + the 008 dev
