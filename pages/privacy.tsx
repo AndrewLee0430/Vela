@@ -15,7 +15,7 @@ export default function Privacy() {
 
             <div className="container mx-auto px-4 py-12 max-w-3xl">
                 <h1 className="text-3xl font-bold text-white mb-2">Privacy Policy</h1>
-                <p className="text-sm mb-2 text-text/40">Last updated: 2026-06-09</p>
+                <p className="text-sm mb-2 text-text/40">Last updated: 2026-06-12</p>
                 <p className="text-xs mb-8 text-text/40">This Privacy Policy is written in English. Any translation into another language is provided for convenience only. In the event of any inconsistency or conflict between the English version and any translated version, the English version shall prevail and control.</p>
 
                 <div className="space-y-8 text-sm leading-relaxed text-text/75">
@@ -45,9 +45,9 @@ export default function Privacy() {
                     <section>
                         <h2 className="text-lg font-semibold text-white mb-3">4. Data Retention, Deletion, and User Rights</h2>
                         <p className="mb-2">We retain your signed-in chat history and related audit logs (in their de-identified state) for up to 6 months for the sole purposes of providing you with continuity of service, conducting system security audits, and improving user experience. Data is automatically deleted after 6 months.</p>
-                        <p className="mb-2">You have the right to request the deletion of your account and associated personal data at any time. As we are currently in our pre-launch phase, automated in-app deletion is under development. To exercise your right to delete your data, please contact us at <a href="mailto:support@an-tho.com" className="underline" style={{ color: "rgb(var(--color-brand))" }}>support@an-tho.com</a>. We will process your request manually, and all eligible personal or pseudonymized data will be permanently erased from our active systems within 30 days.</p>
-                        <p className="mb-2">Please note that certain transactional, billing, and usage metadata may be retained in an anonymized or de-identified format for up to 5 years solely to comply with applicable statutory financial and tax reporting obligations.</p>
-                        <p>When you delete your account or chat history, the data will be immediately and permanently deleted from our active production databases. Residual copies of this data contained within our automated system backups and transaction histories will naturally expire and be completely overwritten within 24 hours.</p>
+                        <p className="mb-2">You have the right to request the deletion of your account and personal data at any time by contacting us via email at <a href="mailto:support@an-tho.com" className="underline" style={{ color: "rgb(var(--color-brand))" }}>support@an-tho.com</a>. Upon verifying your request, we will permanently erase or de-identify your personal data from our active production systems within 30 days.</p>
+                        <p className="mb-2"><strong className="text-white">Statutory Exception for Financial Records:</strong> Please note that pursuant to Article 38 of the Taiwan Business Accounting Act, GDPR Article 6(1)(c), and applicable tax regulations, we are legally obligated to retain transactional, billing, and usage records (including transaction amounts, plan types, and payment processor identifiers) for a minimum of five (5) years solely for financial auditing and tax compliance purposes. During this statutory retention period, such data will be strictly restricted from any operational or marketing use and will be automatically purged once the legal retention period expires.</p>
+                        <p>When you delete your account or chat history, the eligible personal data (excluding the statutory financial records described above) will be immediately and permanently deleted from our active production databases. Residual copies of this data contained within our automated system backups and transaction histories will naturally expire and be completely overwritten within 24 hours.</p>
                     </section>
 
                     <section>
