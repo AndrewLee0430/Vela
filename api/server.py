@@ -1248,8 +1248,8 @@ async def explain_extract_image(
 
     # Pro-only gate: file upload requires Pro plan
     if not TEST_MODE:
-        from api.models.sql_models import UserUsage
-        usage = db.query(UserUsage).filter(UserUsage.clerk_user_id == user_id).first()
+        from api.services.usage_service import get_active_usage
+        usage = get_active_usage(db, user_id)   # frozen → 403 account_deleted
         if not usage or usage.plan_type != "pro":
             return JSONResponse(status_code=403, content={
                 "type": "pro_required",
@@ -1416,8 +1416,8 @@ async def get_user_history(
     user_id = get_user_id(creds)
 
     # Determine plan type
-    from api.models.sql_models import UserUsage
-    usage = db.query(UserUsage).filter(UserUsage.clerk_user_id == user_id).first()
+    from api.services.usage_service import get_active_usage
+    usage = get_active_usage(db, user_id)   # frozen → 403 account_deleted
     is_pro = usage and usage.plan_type == "pro"
 
     query = db.query(ChatHistory).filter(ChatHistory.user_id == user_id)
@@ -1780,10 +1780,8 @@ async def user_status(
     db: Session = Depends(get_db)
 ):
     user_id = get_user_id(creds)
-    from api.models.sql_models import UserUsage
-    usage = db.query(UserUsage).filter(
-        UserUsage.clerk_user_id == user_id
-    ).first()
+    from api.services.usage_service import get_active_usage
+    usage = get_active_usage(db, user_id)   # frozen → 403 account_deleted
 
     if not usage:
         return {"plan_type": "free", "credits_used_today": 0, "daily_limit": 10}
@@ -1804,10 +1802,8 @@ async def user_portal(
     db: Session = Depends(get_db)
 ):
     user_id = get_user_id(creds)
-    from api.models.sql_models import UserUsage
-    usage = db.query(UserUsage).filter(
-        UserUsage.clerk_user_id == user_id
-    ).first()
+    from api.services.usage_service import get_active_usage
+    usage = get_active_usage(db, user_id)   # frozen → 403 account_deleted
 
     if not usage or usage.plan_type != "pro":
         return JSONResponse(status_code=404, content={"detail": "No active subscription"})
@@ -1885,8 +1881,8 @@ def _require_pro(db: Session, user_id: str) -> Optional[JSONResponse]:
     """
     if TEST_MODE:
         return None
-    from api.models.sql_models import UserUsage
-    usage = db.query(UserUsage).filter(UserUsage.clerk_user_id == user_id).first()
+    from api.services.usage_service import get_active_usage
+    usage = get_active_usage(db, user_id)   # frozen → 403 account_deleted
     if not usage or usage.plan_type != "pro":
         return JSONResponse(status_code=403, content={"type": "pro_required"})
     return None

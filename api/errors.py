@@ -37,6 +37,18 @@ class AnonymousBudgetExceeded(HTTPException):
         )
 
 
+class AccountDeleted(HTTPException):
+    """user_usage row is FROZEN (deleted_at set) — account under/after deletion
+    (design E). The row is retained for statutory billing/audit but denied to
+    all product logic; a frozen account must never be silently re-activated."""
+
+    def __init__(self) -> None:
+        super().__init__(
+            status_code=403,
+            detail={"type": "account_deleted"},
+        )
+
+
 class InvalidFingerprint(HTTPException):
     """X-Anon-Fingerprint header failed validation (Decision 001 v0.3 A2)."""
 

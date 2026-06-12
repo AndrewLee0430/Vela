@@ -57,6 +57,10 @@ class UserUsage(Base):
     dodo_customer_id = Column(String, nullable=True)
     dodo_subscription_id = Column(String, nullable=True)
     current_period_end = Column(DateTime, nullable=True)
+    # Account-deletion design E FREEZE marker: NULL = active, set = frozen
+    # (row retained for the 5yr statutory billing/audit obligation, hidden
+    # from ALL product logic). See get_active_usage / get_or_create_usage.
+    deleted_at = Column(DateTime, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 

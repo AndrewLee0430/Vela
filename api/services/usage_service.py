@@ -1,9 +1,11 @@
 # api/services/usage_service.py
 
+from typing import Optional
 from datetime import datetime, timezone
 from sqlalchemy.orm import Session
 from api.models.sql_models import UserUsage, AnonymousUsage
 from api.services.anonymous_identity import today_utc
+from api.errors import AccountDeleted
 
 # Credit 設定（僅後端，不暴露給前端）
 FREE_DAILY_LIMIT = 10
@@ -21,19 +23,47 @@ CREDIT_COSTS = {
 }
 
 
-async def get_or_create_usage(db: Session, user_id: str) -> UserUsage:
-    """取得或建立用戶的 usage record"""
+def _resolve_usage(db: Session, user_id: str, *, create: bool) -> Optional[UserUsage]:
+    """Single 3-state resolver for user_usage (account-deletion design E).
+
+    - active row (deleted_at IS NULL) → return it
+    - FROZEN row (deleted_at set)     → raise AccountDeleted (403). NEVER serve,
+      NEVER recreate — a frozen account must not be silently re-activated.
+    - no row → create a fresh active row if `create`, else return None.
+
+    The lookup is by clerk_user_id WITHOUT a deleted_at filter on purpose, so a
+    frozen row is always detected (filtering it out would let get_or_create
+    recreate it as active — the re-creation trap).
+    """
     usage = db.query(UserUsage).filter(
         UserUsage.clerk_user_id == user_id
     ).first()
 
-    if not usage:
+    if usage is not None:
+        if usage.deleted_at is not None:
+            raise AccountDeleted()
+        return usage
+
+    if create:
         usage = UserUsage(clerk_user_id=user_id)
         db.add(usage)
         db.commit()
         db.refresh(usage)
+        return usage
 
-    return usage
+    return None
+
+
+async def get_or_create_usage(db: Session, user_id: str) -> UserUsage:
+    """取得或建立用戶的 usage record（frozen → 403 account_deleted）"""
+    return _resolve_usage(db, user_id, create=True)
+
+
+def get_active_usage(db: Session, user_id: str) -> Optional[UserUsage]:
+    """Product-gating read: the active user_usage row, or None if no row.
+    Frozen rows raise AccountDeleted (403) — route every gating read through
+    this so a deleted account is denied everywhere. Sync (callers need no await)."""
+    return _resolve_usage(db, user_id, create=False)
 
 
 async def reset_daily_if_needed(db: Session, usage: UserUsage) -> UserUsage:
