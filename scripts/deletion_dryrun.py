@@ -28,6 +28,14 @@ import hashlib
 import argparse
 from datetime import datetime, timezone
 
+from dotenv import load_dotenv
+
+# Read .env (DATABASE_URL = dev branch) — the same source the app + the 008 dev
+# migration use. load_dotenv only reads the FILE into os.environ; it opens no
+# connection and does NOT weaken the allow-list guard below (the substring check
+# is still applied to whatever URL results — a prod .env would still abort).
+load_dotenv()
+
 # Allow-list: the dev Neon branch substring (covers both pooler + direct hosts).
 DEV_SUBSTR = "ep-spring-voice-a127ye10"
 # A KNOWN test salt for the synthetic shared_query.created_by — NEVER the prod salt.
@@ -189,27 +197,33 @@ def run_execute(url: str) -> None:
 
 def main() -> None:
     ap = argparse.ArgumentParser(description="Dev-only deletion-SOP dry-run (design E).")
-    ap.add_argument("--execute", action="store_true",
-                    help="run on the dev branch (rollback-only); default is --plan read-trace")
+    mode = ap.add_mutually_exclusive_group()
+    mode.add_argument("--plan", action="store_true",
+                      help="read-trace only, opens NO DB connection (DEFAULT)")
+    mode.add_argument("--execute", action="store_true",
+                      help="run on the dev branch (rollback-only); allow-list guarded")
     args = ap.parse_args()
 
-    if not args.execute:
-        # --plan: pure read-trace. Opens NO database connection.
-        url = os.environ.get("DATABASE_URL", "")
-        if DEV_SUBSTR not in url:
-            print(f"[plan] NOTE: DATABASE_URL does not contain '{DEV_SUBSTR}' — "
-                  f"--execute would ABORT (allow-list guard).")
-        ex = "user_DRYRUN_<ts>"
-        print_trace(ex, created_by_hash(TEST_SALT, ex))
-        print("\n[plan] read-trace only — nothing executed, no DB connection opened.")
-        print("[plan] to run for real on dev:")
-        print("       DELETION_DRYRUN_ALLOW=1 python scripts/deletion_dryrun.py --execute")
+    if args.execute:
+        # Guard runs AFTER load_dotenv (module level): allow-list is the absolute
+        # last line of defense before any connection.
+        url = guard()
+        run_execute(url)
         return
 
-    from dotenv import load_dotenv
-    load_dotenv()
-    url = guard()
-    run_execute(url)
+    # no-arg OR --plan: pure read-trace. Opens NO database connection.
+    url = os.environ.get("DATABASE_URL", "")
+    host, dbname = _parse_host_db(url) if url else ("(unset)", "(unset)")
+    if DEV_SUBSTR in url:
+        print(f"[plan] DATABASE_URL → host={host} | db={dbname} (dev branch — --execute would run here)")
+    else:
+        print(f"[plan] NOTE: DATABASE_URL host={host} does not contain '{DEV_SUBSTR}' — "
+              f"--execute would ABORT (allow-list guard).")
+    ex = "user_DRYRUN_<ts>"
+    print_trace(ex, created_by_hash(TEST_SALT, ex))
+    print("\n[plan] read-trace only — nothing executed, no DB connection opened.")
+    print("[plan] to run for real on dev:")
+    print("       DELETION_DRYRUN_ALLOW=1 python scripts/deletion_dryrun.py --execute")
 
 
 if __name__ == "__main__":
