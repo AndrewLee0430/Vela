@@ -381,7 +381,7 @@ def judge_direction(oai, query, claim, pmid, title, abstract):
                 "evidence_quote": "", "reasoning": str(e)}
 
 
-async def main_adversarial(throttle: float = 0.0):
+async def main_adversarial(throttle: float = 0.0, only: set | None = None):
     _guard_env()
     if throttle:
         print(f"[throttle] sleeping {throttle}s between answer generations")
@@ -390,10 +390,18 @@ async def main_adversarial(throttle: float = 0.0):
     pubmed = PubMedClient()
     RESULTS_DIR.mkdir(exist_ok=True)
 
+    # --only: optional subset of case IDs. Absent → full set (default unchanged).
+    cases = [c for c in ADVERSARIAL if not only or c[0] in only]
+    if only:
+        missing = sorted(only - {c[0] for c in ADVERSARIAL})
+        if missing:
+            print(f"[--only] WARNING: unknown IDs ignored: {missing}")
+        print(f"[--only] subset: {[c[0] for c in cases]}")
+
     rows = []
-    print(f"\n=== Generating {len(ADVERSARIAL)} adversarial answers (dev backend) ===")
+    print(f"\n=== Generating {len(cases)} adversarial answers (dev backend) ===")
     async with httpx.AsyncClient() as client:
-        for cid, tag, query, note in ADVERSARIAL:
+        for cid, tag, query, note in cases:
             t0 = time.time()
             try:
                 ans, cits = await gen_answer(client, query)
@@ -495,9 +503,13 @@ if __name__ == "__main__":
                     help="seconds to sleep between answer generations (gentler on API quota; "
                          "bare --throttle = 3s). The back-to-back Stage-1 + Stage-2 load is what "
                          "drained the quota — use this on the re-run.")
+    ap.add_argument("--only", type=str, default=None,
+                    help="comma-separated case IDs to run a subset (e.g. --only C01,C15,H2). "
+                         "Adversarial set only; default (absent) runs the full set unchanged.")
     args = ap.parse_args()
+    _only = {s.strip() for s in args.only.split(",") if s.strip()} if args.only else None
     if args.adversarial:
-        asyncio.run(main_adversarial(throttle=args.throttle))
+        asyncio.run(main_adversarial(throttle=args.throttle, only=_only))
     elif args.run:
         asyncio.run(main_run(throttle=args.throttle))
     else:
