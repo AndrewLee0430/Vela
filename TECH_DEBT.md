@@ -17,6 +17,12 @@ When entries are resolved, mark with the resolving commit SHA (git log is the re
 
 ---
 
+- **[P2 · dependency] openai SDK 1.30.1 predates `max_completion_tokens` / `reasoning_effort` kwargs (2026-06-15)**
+  - `requirements.txt` pins `openai==1.30.1`. Its `chat.completions.create()` signature has `max_tokens` but **not** `max_completion_tokens` / `reasoning_effort`, and **no `**kwargs` passthrough** — so reasoning models (o-series / GPT-5) can't be called with the new param names (raises `TypeError` before the network call; confirmed via an o4-mini probe 2026-06-15).
+  - **Current workaround (shipped, `455bcb5`):** `api/providers/openai_provider.py` `_apply_param_contract()` routes `max_completion_tokens` + `reasoning_effort` through `kwargs["extra_body"]` (the SDK forwards extra_body into the request payload regardless of version). This unblocks the BACKLOG §706a o4-mini eval without an app-wide bump. The gpt-4.1 / default path is unaffected (it never enters the reasoning branch).
+  - **Resolution (future, separate round):** a planned `openai` SDK bump to a version with first-class `max_completion_tokens` / `reasoning_effort`, then drop the `extra_body` indirection. **Blast radius is app-wide** (all providers + embeddings + vision share the SDK), so it needs its own **plan-back + full smoke** — deliberately NOT done this round (no-push/no-deploy exploratory state).
+  - **Discovered**: 2026-06-15 during the BACKLOG §706a stronger-model eval (o4-mini STEP 0 probe).
+
 - **[P0 · medical-safety → gates B2C public launch] Direction-of-effect reversal on counterintuitive findings (CONTRADICTS) — measured 2026-06-13/14**
   - **What**: the answer states the OPPOSITE direction of effect from the cited source on a counterintuitive finding, while citing a real (existing) PMID. The dangerous shape is "reverses a counterintuitive finding *and* cites a real source" — it reads as well-grounded but inverts the evidence.
   - **Measured prevalence** (honest bounds): **~0.6% random lower-bound** (Stage-2 citation-truth: 1/180 claim-citation pairs CONTRADICTS; abstract-only judging over-counts unsupported, so this is a lower bound) … **~18.8% adversarial upper-bound** (Stage-3 adversarial famous-set: 3/16 reversed; the set is loaded toward failure, so this is an upper bound). The true rate sits between. **Reproduced 3×**: C01 polypharmacy/mortality (PMID 35268461 — answer "increased death risk" vs abstract OR 0.78 LOWER), C03 intensive-glucose, C15 DBP J-curve. Cohort-specific adversarial 0/3 is UNDERPOWERED, NOT evidence of safety.
