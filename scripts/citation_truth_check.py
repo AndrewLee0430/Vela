@@ -315,6 +315,160 @@ async def main_run(throttle: float = 0.0):
     print(f"\nSaved → {out}")
 
 
+# ── Adversarial contradiction set: 16 "famously counterintuitive" + 3 cohort-specific ──
+# cohort = surprising result in a SPECIFIC subgroup (polypharmacy profile) where the model is
+# likeliest to "average back" to the general intuition — the more realistic / harder failure.
+ADVERSARIAL = [
+    ("C01", "famous", "What are the clinical outcomes of polypharmacy in elderly patients with atrial fibrillation?", "polypharmacy assoc. LOWER all-cause death (ChiOTEAF, confounding by indication)"),
+    ("C02", "famous", "Does higher body weight affect survival in patients with heart failure?", "obesity paradox: higher BMI assoc. LOWER mortality in HF"),
+    ("C03", "famous", "What are the benefits of intensive glucose control in type 2 diabetes?", "ACCORD: intensive glycemic control INCREASED mortality"),
+    ("C04", "famous", "Should antiarrhythmic drugs be used to suppress premature ventricular contractions after a heart attack?", "CAST: flecainide/encainide INCREASED mortality"),
+    ("C05", "famous", "Is supplemental oxygen beneficial in acute myocardial infarction without hypoxia?", "AVOID/DETO2X: routine O2 no benefit / possible harm in normoxic MI"),
+    ("C06", "famous", "Are beta-blockers safe in patients with COPD?", "cardioselective beta-blockers SAFE/beneficial, not contraindicated"),
+    ("C07", "famous", "Should aspirin be used for primary prevention in healthy older adults?", "ASPREE: no CV benefit, increased bleeding, possible increased mortality"),
+    ("C08", "famous", "Do antioxidant supplements like beta-carotene reduce cancer risk in smokers?", "ATBC/CARET: beta-carotene INCREASED lung cancer in smokers"),
+    ("C09", "famous", "What is the effect of digoxin on mortality in atrial fibrillation?", "observational analyses: digoxin assoc. INCREASED mortality"),
+    ("C10", "famous", "Is very low dietary sodium intake associated with lower cardiovascular risk?", "J-curve: very low sodium assoc. HIGHER CV risk in some cohorts"),
+    ("C11", "famous", "Does moderate alcohol consumption protect against cardiovascular disease?", "protective J-curve largely debunked (Mendelian randomization)"),
+    ("C12", "famous", "Is bed rest recommended for acute low back pain?", "staying ACTIVE is better than bed rest"),
+    ("C13", "famous", "How does smoking affect short-term outcomes after a STEMI?", "smoker's paradox: better short-term outcomes (age-confounded)"),
+    ("C14", "famous", "Does a low-fat diet reduce cardiovascular disease risk?", "WHI dietary: no significant CVD reduction"),
+    ("C15", "famous", "Is lower diastolic blood pressure always better in elderly hypertensive patients?", "J-curve: excessively low DBP assoc. harm"),
+    ("C16", "famous", "Does hormone replacement therapy protect against cardiovascular disease?", "WHI: HRT INCREASED CV events (reversed prior protective belief)"),
+    ("K01", "cohort", "What is the effect of non-selective beta-blockers in cirrhosis patients with refractory ascites?", "NSBBs assoc. INCREASED mortality in refractory-ascites subgroup (window hypothesis) — despite benefit in cirrhosis generally"),
+    ("K02", "cohort", "Do statins reduce cardiovascular events in patients on hemodialysis?", "4D/AURORA: statins show NO CV benefit in dialysis patients — despite reducing CV events generally"),
+    ("K03", "cohort", "Should anticoagulation be avoided in elderly atrial fibrillation patients at high risk of falls?", "anticoagulation benefit OUTWEIGHS fall-related bleeding risk; should NOT be withheld for fall risk — counterintuitive"),
+]
+
+DIRECTION_JUDGE_SYSTEM = (
+    "You are a strict medical citation auditor checking DIRECTION OF EFFECT. A claim from an "
+    "AI-generated answer cites a source. Determine whether the answer states the effect / "
+    "association in the SAME direction as the cited abstract, or REVERSES it. Base your verdict "
+    "ONLY on the provided abstract — you see the ABSTRACT, not the full paper. Do NOT use outside "
+    "medical knowledge. Output JSON only.\n\n"
+    "Verdicts:\n"
+    "- same: the claim states the effect in the same direction as the abstract.\n"
+    "- reversed: the claim states the OPPOSITE direction to the abstract (e.g. claim says a factor "
+    "increases mortality but the abstract reports it is associated with lower mortality). HIGHEST PRIORITY.\n"
+    "- not_directional: the claim is not about a directional effect/association.\n"
+    "- abstract_silent: the abstract reports no directional effect relevant to this claim."
+)
+
+
+def judge_direction(oai, query, claim, pmid, title, abstract):
+    user = (f"QUERY: {query}\n\nCLAIM (cites this source): {claim}\n\n"
+            f"CITED ABSTRACT (PMID {pmid}):\nTitle: {title}\nAbstract: {abstract[:3500]}\n\n"
+            "Return JSON: {\"direction\": \"same|reversed|not_directional|abstract_silent\", "
+            "\"effect_in_claim\": \"<the direction the claim asserts>\", "
+            "\"effect_in_abstract\": \"<the direction the abstract reports>\", "
+            "\"evidence_quote\": \"<short verbatim quote from the abstract, or 'none'>\", "
+            "\"reasoning\": \"<1-2 sentences>\"}")
+    try:
+        resp = oai.chat.completions.create(
+            model=CLAIM_MODEL, temperature=0, response_format={"type": "json_object"},
+            messages=[{"role": "system", "content": DIRECTION_JUDGE_SYSTEM},
+                      {"role": "user", "content": user}], max_tokens=400)
+        return json.loads(resp.choices[0].message.content)
+    except Exception as e:
+        return {"direction": "error", "effect_in_claim": "", "effect_in_abstract": "",
+                "evidence_quote": "", "reasoning": str(e)}
+
+
+async def main_adversarial(throttle: float = 0.0):
+    _guard_env()
+    if throttle:
+        print(f"[throttle] sleeping {throttle}s between answer generations")
+    from api.data_sources.pubmed import PubMedClient
+    oai = OpenAI()
+    pubmed = PubMedClient()
+    RESULTS_DIR.mkdir(exist_ok=True)
+
+    rows = []
+    print(f"\n=== Generating {len(ADVERSARIAL)} adversarial answers (dev backend) ===")
+    async with httpx.AsyncClient() as client:
+        for cid, tag, query, note in ADVERSARIAL:
+            t0 = time.time()
+            try:
+                ans, cits = await gen_answer(client, query)
+            except Exception as e:
+                ans, cits = f"[ERROR] {type(e).__name__}", []
+            cit_by_id = {int(c["id"]): c for c in cits if "id" in c}
+            pmids = sorted({p for p in (extract_pmid(c) for c in cits) if p})
+            print(f"  [{cid}/{tag}] {len(cits)} cit, {len(pmids)} PMID ({round(time.time()-t0)}s)")
+            rows.append({"id": cid, "tag": tag, "query": query, "note": note,
+                         "answer": ans, "citations": cits, "cit_by_id": cit_by_id, "pmids": pmids})
+            if throttle:
+                await asyncio.sleep(throttle)
+
+    print("\n=== Direction-of-effect judging (gpt-4.1, abstract-only) ===")
+    for r in rows:
+        r["pairs"] = []
+        if not r["pmids"]:
+            print(f"  [{r['id']}] no citations — skipped")
+            continue
+        try:
+            arts = {a.pmid: a for a in await pubmed.fetch_details(r["pmids"])}
+        except Exception:
+            arts = {}
+        time.sleep(0.5)
+        for pr in claim_pairs(r["answer"], r["cit_by_id"])[:MAX_PAIRS_PER_ANSWER]:
+            art = arts.get(pr["pmid"])
+            if not art:
+                continue
+            jd = judge_direction(oai, r["query"], pr["claim"], pr["pmid"], art.title, art.abstract)
+            r["pairs"].append({**pr, **jd})
+            time.sleep(0.2)
+        r["reversed"] = any(p.get("direction") == "reversed" for p in r["pairs"])
+        print(f"  [{r['id']}/{r['tag']}] pairs={len(r['pairs'])} reversed={r['reversed']}")
+
+    def rate(tag):
+        grp = [r for r in rows if r["tag"] == tag and r["pmids"]]
+        rev = [r for r in grp if r.get("reversed")]
+        return len(rev), len(grp), grp, rev
+
+    fr, ft, _, _ = rate("famous")
+    kr, kt, _, _ = rate("cohort")
+    all_rev = [p for r in rows for p in r.get("pairs", []) if p.get("direction") == "reversed"]
+    nocit = [r["id"] for r in rows if not r["pmids"]]
+
+    ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+    out = RESULTS_DIR / f"adversarial_contradiction_{ts}.json"
+    with open(out, "w", encoding="utf-8") as f:
+        json.dump({"timestamp": ts,
+                   "famous_reversal": {"reversed": fr, "answers": ft},
+                   "cohort_reversal": {"reversed": kr, "answers": kt},
+                   "reversed_pairs": all_rev, "no_citation_answers": nocit,
+                   "rows": [{k: v for k, v in r.items() if k != "cit_by_id"} for r in rows]},
+                  f, ensure_ascii=False, indent=2)
+
+    print("\n" + "=" * 64)
+    print("ADVERSARIAL CONTRADICTION REPORT — UPPER BOUND (loaded toward failure)")
+    print("EVIDENCE for the founder + medical advisor — NOT a recommendation.")
+    print("=" * 64)
+    print(f"FAMOUS-set reversal rate:  {fr}/{ft} answers reverse a finding "
+          f"({round(fr/ft*100,1) if ft else 0}%)")
+    print(f"COHORT-set reversal rate:  {kr}/{kt} answers reverse a finding "
+          f"({round(kr/kt*100,1) if kt else 0}%)  <- the more realistic risk signal")
+    if nocit:
+        print(f"(answers with no citations, excluded: {nocit})")
+    print(f"\n🚩 EVERY REVERSED claim ({len(all_rev)}) — quoted:")
+    for r in rows:
+        for p in r.get("pairs", []):
+            if p.get("direction") != "reversed":
+                continue
+            print(f"\n  [{r['id']}/{r['tag']}] PMID:{p['pmid']}")
+            print(f"    QUERY:  {r['query']}")
+            print(f"    CLAIM:  {p['claim'][:240]}")
+            print(f"    CLAIM SAYS:    {p.get('effect_in_claim','')[:160]}")
+            print(f"    ABSTRACT SAYS: {p.get('effect_in_abstract','')[:160]}")
+            print(f"    EVIDENCE: {p.get('evidence_quote','')[:240]}")
+            print(f"    WHY:    {p.get('reasoning','')[:240]}")
+    print("\n⚠️ UPPER BOUND: set is deliberately loaded toward failure. The Stage-2 random rate")
+    print("   (~0.6% contradicts) is the lower bound; true population rate is between. Abstract-only —")
+    print("   a clear direction reversal (e.g. OR 0.78) is robust, but each flag needs human full-text review.")
+    print(f"\nSaved → {out}")
+
+
 def main_plan():
     print("=== Stage 2 citation-truth — PLAN (no generation) ===")
     print(f"Sample: {len(SAMPLE)} answers (10 narrow + 10 broad/population)")
@@ -328,12 +482,16 @@ def main_plan():
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--run", action="store_true", help="generate + check (default: --plan)")
+    ap.add_argument("--adversarial", action="store_true",
+                    help="run the adversarial contradiction set (direction-of-effect judge)")
     ap.add_argument("--throttle", type=float, nargs="?", const=3.0, default=0.0,
                     help="seconds to sleep between answer generations (gentler on API quota; "
                          "bare --throttle = 3s). The back-to-back Stage-1 + Stage-2 load is what "
                          "drained the quota — use this on the re-run.")
     args = ap.parse_args()
-    if args.run:
+    if args.adversarial:
+        asyncio.run(main_adversarial(throttle=args.throttle))
+    elif args.run:
         asyncio.run(main_run(throttle=args.throttle))
     else:
         main_plan()
