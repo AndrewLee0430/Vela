@@ -484,6 +484,67 @@ async def main_adversarial(throttle: float = 0.0, only: set | None = None):
     print(f"\nSaved → {out}")
 
 
+async def main_recheck(query: str, runs: int = 3, throttle: float = 0.0):
+    """Persisted Stage-2 recheck of a SINGLE query (e.g. a loaded-framing probe).
+
+    Generates `query` `runs` times and judges each claim-citation pair with the
+    Stage-2 claim judge (gpt-4.1, CLAIM_MODEL) — and SAVES the full answer prose +
+    every pair (claim text, paired PMID, verdict, evidence) to tests/results/, so a
+    loaded-query recheck is auditable, not stdout-only. (Root-cause fix for the lost
+    original B01 prose — see TECH_DEBT.)
+    """
+    _guard_env()
+    from api.data_sources.pubmed import PubMedClient
+    oai = OpenAI()
+    pubmed = PubMedClient()
+    RESULTS_DIR.mkdir(exist_ok=True)
+
+    out_runs = []
+    print(f"\n=== Stage-2 recheck: {runs}× (judge={CLAIM_MODEL}) ===\nQUERY: {query}")
+    async with httpx.AsyncClient() as client:
+        for run in range(1, runs + 1):
+            ans, cits = await gen_answer(client, query)
+            if ans.startswith("[ERROR]"):
+                print(f"  run{run}: [ERROR] generation — recorded (not judged)")
+                out_runs.append({"run": run, "answer": ans, "citations": cits,
+                                 "pmids": [], "pairs": [], "support_distribution": {}})
+                if throttle:
+                    await asyncio.sleep(throttle)
+                continue
+            cit_by_id = {int(c["id"]): c for c in cits if "id" in c}
+            pmids = sorted({p for p in (extract_pmid(c) for c in cits) if p})
+            try:
+                arts = {a.pmid: a for a in await pubmed.fetch_details(pmids)}
+            except Exception:
+                arts = {}
+            time.sleep(0.5)
+            pairs, dist = [], {}
+            for pr in claim_pairs(ans, cit_by_id)[:MAX_PAIRS_PER_ANSWER]:
+                art = arts.get(pr["pmid"])
+                if not art:
+                    continue
+                jc = judge_claim(oai, query, pr["claim"], pr["pmid"], art.title, art.abstract)
+                v = jc.get("verdict", "error")
+                dist[v] = dist.get(v, 0) + 1
+                pairs.append({"claim": pr["claim"], "pmid": pr["pmid"], "verdict": v,
+                              "evidence_quote": jc.get("evidence_quote", ""),
+                              "scope_note": jc.get("scope_note", ""),
+                              "reasoning": jc.get("reasoning", "")})
+                time.sleep(0.2)
+            out_runs.append({"run": run, "answer": ans, "citations": cits,
+                             "pmids": pmids, "pairs": pairs, "support_distribution": dist})
+            print(f"  run{run}: {len(cits)} cit, {len(pmids)} PMID, {len(pairs)} pairs, dist={dist}")
+            if throttle:
+                await asyncio.sleep(throttle)
+
+    ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+    out = RESULTS_DIR / f"recheck_{ts}.json"
+    with open(out, "w", encoding="utf-8") as f:
+        json.dump({"timestamp": ts, "query": query, "claim_model": CLAIM_MODEL,
+                   "runs": out_runs}, f, ensure_ascii=False, indent=2)
+    print(f"\nSaved → {out}  (full answer prose + per-pair verdicts persisted)")
+
+
 def main_plan():
     print("=== Stage 2 citation-truth — PLAN (no generation) ===")
     print(f"Sample: {len(SAMPLE)} answers (10 narrow + 10 broad/population)")
@@ -506,9 +567,15 @@ if __name__ == "__main__":
     ap.add_argument("--only", type=str, default=None,
                     help="comma-separated case IDs to run a subset (e.g. --only C01,C15,H2). "
                          "Adversarial set only; default (absent) runs the full set unchanged.")
+    ap.add_argument("--recheck", type=str, default=None, metavar="QUERY",
+                    help="Stage-2 recheck a single query N times (--runs), SAVING full answer "
+                         "prose + per-pair verdicts to tests/results/ (loaded-framing audits).")
+    ap.add_argument("--runs", type=int, default=3, help="number of --recheck runs (default 3)")
     args = ap.parse_args()
     _only = {s.strip() for s in args.only.split(",") if s.strip()} if args.only else None
-    if args.adversarial:
+    if args.recheck:
+        asyncio.run(main_recheck(args.recheck, runs=args.runs, throttle=args.throttle))
+    elif args.adversarial:
         asyncio.run(main_adversarial(throttle=args.throttle, only=_only))
     elif args.run:
         asyncio.run(main_run(throttle=args.throttle))
