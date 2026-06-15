@@ -703,6 +703,13 @@ Execution sequence:
 
 ---
 
+## Task-A direction-of-effect reversal — durable-fix candidates (2026-06-15)
+
+Follow-ups to the **TECH_DEBT P0 "Direction-of-effect reversal on counterintuitive findings (CONTRADICTS)"** entry, after the prompt-fix (`96806b5`) measured as PARTIAL (resolves neutral-framed reversers C01/C13 but NOT loaded-framing — Stage-2 B01 still CONTRADICTS PMID 35268461). Both gate the OPEN B2C decision; cross-ref the TECH_DEBT P0 entry's "Resolution DIRECTION".
+
+- [ ] **(a) Stronger-model vs framing-sensitivity validation** — evaluate a stronger generation model via the existing §2.1 **Provider abstraction** (`GENERATOR_PROVIDER` / `GENERATOR_MODEL`; a binding swap, no code rewrite) against the framing-sensitivity failure. Cheapest durable-fix candidate to validate first. **Method:** a PRECISE small set (B01 loaded-premise + C01 neutral control + C15 conflicting + a few holdout), **3 runs**, before any full 24-case spend; reuse `scripts/citation_truth_check.py --adversarial` + the B01 Stage-2 recheck. **PREREQUISITE:** OpenAI auto-recharge ON / balance sufficient (TECH_DEBT P0 ops — credit-zero voids runs with `[ERROR]`). Success = B01 loaded-framing stops contradicting while C01/holdout stay faithful and `same` does not collapse into `not_directional`. This is STATE "Next Up TOP".
+- [ ] **(b) Full-text NLI post-hoc direction checker** — compares each answer claim against the cited source's direction of effect and flags reversals. **Constraint (per TECH_DEBT "Contradiction / NLI gate" entry):** post-hoc / **flag-only** — streaming streams answer tokens before citations resolve, so there is **no clean pre-return chokepoint** to hard-block; abstract-only judging can't reliably separate `contradicts` from terse-abstract (false-positive killer) → needs **full-text**, not abstract-only. Maps to the advisor's Phase-2 contradiction circuit-breaker. Build size M–L. Validate only after (a) shows whether a model swap alone suffices.
+
 ## Phase 1B (post Phase 0 Retrospective) — per advisor discussion + ADR 003+004
 
 Phase 1B work items per advisor discussion 2026-05-04 (preserved in git commit 394545e) and ADR 003+004. Slot ranges from Week 4-8 of Phase 1B (5-week timeline).
