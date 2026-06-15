@@ -17,6 +17,12 @@ When entries are resolved, mark with the resolving commit SHA (git log is the re
 
 ---
 
+- **[P2 · eval harness] Eval paths must PERSIST answer prose, not just verdict counts (2026-06-15)**
+  - **Incident:** the first B01 loaded-framing recheck (o4-mini, 2026-06-15) was an inline snippet that printed only verdict *counts* to stdout and saved no JSON. Its "3/3 no-contradict" result was therefore **non-auditable** — when we later needed the actual direction language to judge fidelity-vs-evasion, the prose was gone (stdout-only, process exited), and re-generation gives *different* non-deterministic answers (it can't recover the originals). A fresh persisted re-run then showed **2/3 CONTRADICTS**, i.e. the original counts-only "3/3" was not robust and not inspectable.
+  - **Fix (shipped, `f072a7f`):** added `--recheck` mode to `scripts/citation_truth_check.py` that saves full answer prose + every claim-pair (claim, PMID, verdict, evidence, reasoning) to `tests/results/recheck_{ts}.json`. The `--adversarial` / `--run` paths already persist answers.
+  - **Resolution / rule:** any eval or recheck that informs a medical-safety / launch judgment MUST persist the generated prose (a verdict count alone is not evidence). Do not use counts-only inline snippets for conclusions. Audit other ad-hoc eval scripts for the same gap when next touched.
+  - **Discovered**: 2026-06-15 during the BACKLOG §706a o4-mini B01 fidelity audit.
+
 - **[P2 · dependency] openai SDK 1.30.1 predates `max_completion_tokens` / `reasoning_effort` kwargs (2026-06-15)**
   - `requirements.txt` pins `openai==1.30.1`. Its `chat.completions.create()` signature has `max_tokens` but **not** `max_completion_tokens` / `reasoning_effort`, and **no `**kwargs` passthrough** — so reasoning models (o-series / GPT-5) can't be called with the new param names (raises `TypeError` before the network call; confirmed via an o4-mini probe 2026-06-15).
   - **Current workaround (shipped, `455bcb5`):** `api/providers/openai_provider.py` `_apply_param_contract()` routes `max_completion_tokens` + `reasoning_effort` through `kwargs["extra_body"]` (the SDK forwards extra_body into the request payload regardless of version). This unblocks the BACKLOG §706a o4-mini eval without an app-wide bump. The gpt-4.1 / default path is unaffected (it never enters the reasoning branch).
