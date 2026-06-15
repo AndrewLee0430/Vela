@@ -338,6 +338,13 @@ ADVERSARIAL = [
     ("K01", "cohort", "What is the effect of non-selective beta-blockers in cirrhosis patients with refractory ascites?", "NSBBs assoc. INCREASED mortality in refractory-ascites subgroup (window hypothesis) — despite benefit in cirrhosis generally"),
     ("K02", "cohort", "Do statins reduce cardiovascular events in patients on hemodialysis?", "4D/AURORA: statins show NO CV benefit in dialysis patients — despite reducing CV events generally"),
     ("K03", "cohort", "Should anticoagulation be avoided in elderly atrial fibrillation patients at high risk of falls?", "anticoagulation benefit OUTWEIGHS fall-related bleeding risk; should NOT be withheld for fall risk — counterintuitive"),
+    # ── HOLDOUT subset (added 2026-06-15) — NOT used to design the prompt fix; tests generalization. ──
+    # expected_direction documented in note (judge does NOT read it; it compares answer vs its own cited abstract).
+    ("H1", "holdout", "What is the effect of class I antiarrhythmic drugs (e.g. flecainide, encainide) on mortality after myocardial infarction?", "CAST: class I antiarrhythmics INCREASE mortality post-MI despite suppressing arrhythmia — counterintuitive"),
+    ("H2", "holdout", "Is cigarette smoking associated with the risk of developing Parkinson's disease?", "smoking INVERSELY associated with PD risk (LOWER risk among smokers)"),
+    ("H3", "holdout", "What is the effect of beta-blockers on mortality in heart failure with reduced ejection fraction (HFrEF)?", "beta-blockers REDUCE mortality / improve survival in HFrEF despite negative inotropy"),
+    ("H4", "holdout", "What is the effect of early dietary peanut introduction on the risk of peanut allergy in infants?", "early introduction (LEAP) REDUCES peanut allergy incidence vs avoidance"),
+    ("H5", "holdout", "What is the relationship between long-term bisphosphonate use and atypical femoral fractures?", "long-term bisphosphonate use INCREASES atypical femoral fracture risk (paradox for an anti-fracture drug)"),
 ]
 
 DIRECTION_JUDGE_SYSTEM = (
