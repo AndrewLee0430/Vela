@@ -53,11 +53,17 @@ def _apply_param_contract(kwargs: dict, req, model: str) -> dict:
             kwargs["max_tokens"] = req.max_tokens
         return kwargs
     # reasoning branch (GPT-5 / o-series)
-    kwargs["max_completion_tokens"] = max(req.max_tokens or 0, _reasoning_min_completion_tokens())
+    # Route reasoning-only params through extra_body: openai SDK 1.30.1 has no
+    # top-level max_completion_tokens / reasoning_effort kwarg (see TECH_DEBT).
+    # setdefault merges rather than overwrites any pre-existing extra_body.
+    body = kwargs.setdefault("extra_body", {})
+    body["max_completion_tokens"] = max(req.max_tokens or 0, _reasoning_min_completion_tokens())
     effort = os.getenv("REASONING_EFFORT", "medium")
     if effort:  # empty string → omit reasoning_effort (no-code escape hatch)
-        kwargs["reasoning_effort"] = effort
-    # temperature intentionally dropped — reasoning models accept only default(1)
+        body["reasoning_effort"] = effort
+    # top-level max_tokens intentionally NOT set here (default branch only) — sending
+    # both max_tokens + max_completion_tokens 400s. temperature also dropped (reasoning
+    # models accept only default(1)).
     # NOTE: o1 maps params correctly here but does NOT support system messages —
     #       not an eval target this round.
     return kwargs
