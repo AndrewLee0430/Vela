@@ -17,6 +17,42 @@ When entries are resolved, mark with the resolving commit SHA (git log is the re
 
 ---
 
+- **[P0 · medical-safety → gates B2C public launch] Direction-of-effect reversal on counterintuitive findings (CONTRADICTS) — measured 2026-06-13/14**
+  - **What**: the answer states the OPPOSITE direction of effect from the cited source on a counterintuitive finding, while citing a real (existing) PMID. The dangerous shape is "reverses a counterintuitive finding *and* cites a real source" — it reads as well-grounded but inverts the evidence.
+  - **Measured prevalence** (honest bounds): **~0.6% random lower-bound** (Stage-2 citation-truth: 1/180 claim-citation pairs CONTRADICTS; abstract-only judging over-counts unsupported, so this is a lower bound) … **~18.8% adversarial upper-bound** (Stage-3 adversarial famous-set: 3/16 reversed; the set is loaded toward failure, so this is an upper bound). The true rate sits between. **Reproduced 3×**: C01 polypharmacy/mortality (PMID 35268461 — answer "increased death risk" vs abstract OR 0.78 LOWER), C03 intensive-glucose, C15 DBP J-curve. Cohort-specific adversarial 0/3 is UNDERPOWERED, NOT evidence of safety.
+  - **Advisor verdict**: rejected direct B2C public launch in this state (clinically + legally unacceptable — TW 醫師法 §28 密醫罪, FDA device exposure).
+  - **Resolution DIRECTION (not yet built; record-only)**: (1) prompt instruction to report the source's direction-of-effect faithfully (never reverse a counterintuitive finding) + re-measure against the adversarial set — the queued next action; (2) durable mitigation = contradiction circuit-breaker (advisor Phase 2) — see the NLI-gate feasibility entry below.
+  - **Related**: the 2026-05-06 dogfooding entry "Verify 答案品質 nuance issues" issue #4 ("Counterintuitive finding 缺乏 mechanism explanation") — same family, now *measured as a direction reversal*, not merely missing mechanism.
+  - **Discovered**: 2026-06-13/14 during Task-A answer-quality QA (Stage 2 + Stage 3).
+
+- **[P1 · evidence contract] Confident zero-citation answer (B07) — retrieval miss / ungrounded assertion**
+  - Stage-2 citation-truth surfaced B07: a confident, definitive-reading AF stroke-prevention answer returned with **0 citations**. For an "evidence-based" product this violates the evidence-cited contract — the failure is *absence* of grounding on a confident clinical claim (distinct from fabrication; no fake PMID was emitted).
+  - **Resolution (record-only)**: retrieval-side investigation (why no docs retrieved for this query) + a "no citations → degrade/withhold confidence (or withhold the answer)" guard so a confident tone never ships ungrounded.
+  - **Discovered**: 2026-06-14 during Task-A QA Stage 2 (`citation_truth_20260614_113716.json`).
+
+- **[P2 → Phase 1B Week 4] R10 digoxin toxicity answer completeness**
+  - Stage-1 golden eval: the digoxin-toxicity answer omits canonical toxicity features — nausea/vomiting + visual disturbances. Same family as the canonical-term under-coverage entry below; batch into the Week-4 Research system-prompt polish.
+  - **Discovered**: 2026-06-13 during Task-A QA Stage 1 (`golden_results_20260613_144748.json`).
+
+- **[P2 · test infra] Golden-runner `response_language` staleness after the v179 UI-language change**
+  - v179 made Research's answer language UI-driven (`response_language`), so the golden runner must **send `response_language`** before any multilingual-number / language-assertion case is valid. Not doing so produced **6 false FAILs** in Stage-1 (harness artifact, NOT a product regression — part of the 22/24 contaminated FAILs).
+  - **Resolution (record-only)**: thread `response_language` for all multilingual cases + an audit that flags any multilingual golden case missing it. Cross-ref BACKLOG "Test infra — multilingual response_language assertion completeness" (same root, now with a concrete failure count).
+  - **Discovered**: 2026-06-13 during Task-A QA Stage 1.
+
+- **[P2 · access/UX — decision needed] Guard over-block of colloquial symptom queries**
+  - The input guard blocked **11** colloquial symptom-phrased queries in Stage-1 (counted as FAILs but actually guard behavior, not content failure — part of the 22/24 contaminated FAILs). **Open call**: is blocking colloquial symptom phrasing the correct safety behavior, or an access regression that frustrates real users (esp. B2C lay phrasing)? Needs a product/safety decision, NOT a silent fix. Decide before launch.
+  - **Discovered**: 2026-06-13 during Task-A QA Stage 1.
+
+- **[P1 · mitigation feasibility — assessed, NOT built] Contradiction / NLI gate**
+  - **Verdict: PARTIAL mitigation, not reliable catching.** The streaming architecture streams answer tokens to the client while citations are only resolved at the end of the stream — so there is no clean pre-return choke point. A gate must either **buffer** the whole answer before returning (kills the streaming UX) or run **post-hoc** (flag-only — can surface a warning but cannot block the already-streamed answer). Abstract-only judging also can't reliably separate *contradicts* from *terse-abstract* → a false-positive killer if used as a hard gate. Build size **M–L**. (Confirm exact `server.py` stream/citation line refs at build time.)
+  - Maps to advisor **Phase-2 "contradiction circuit-breaker."** Recorded as feasibility context for the OPEN route decision — not a committed build.
+  - **Discovered**: 2026-06-14 during Task-A QA (gate feasibility assessment).
+
+- **[P0 · ops/stability — pre-launch] OpenAI auto-recharge OFF + prepaid credit EXPIRES**
+  - Auto-recharge is OFF and prepaid credit expires (Andrew already lost ~$28 to expired grants). Credit-zero = the WHOLE service returns `[ERROR]` to ALL users — every Research/Verify/Explain call hits OpenAI. A public-traffic stability risk for **either** B2C or B2B.
+  - **Resolution (record-only)**: enable auto-recharge before any launch; add a low-balance alert.
+  - **Discovered**: 2026-06-15 during Task-A QA session (ops review).
+
 - **[P2 → future recon] Explain language resolution may be fragile on mixed CJK+Latin input (2026-06-11)**
   - Explain resolves the report's language differently from Research: `entities.input_language` from the entity extractor, with a `detect_language` override when they disagree (`api/services/explain_service.py:520-525`). `detect_language`'s script heuristic flips to Chinese on **any** CJK char, so a report that is ~half Latin lab abbreviations (GOT/GPT/HbA1c) + ~half Chinese terms can be mis-resolved → inconsistent EN-vs-ZH answers (the same class of bug fixed for Research in v175).
   - Real-world relevance: Taiwanese lab reports **routinely** mix Latin abbreviations + Chinese, so this is genuine user input, not just a contrived example. The v177-follow-up only replaced a mixed *example chip* (`pages/explain.tsx`) with a language-clean one — it does **not** address mixed *user* input.
@@ -323,6 +359,7 @@ When entries are resolved, mark with the resolving commit SHA (git log is the re
   - **驗證方法**: Phase 1B Week 4 fix 後重跑 R03 / R09 / R20,目標全 PASS (min_score ≥ 70). 如果還 WARN 表示 root cause 是 retrieval 不是 prompt,需要 deeper RAG eval (Hypothesis a).
   - **Related**: Synergy with TECH_DEBT entry "Verify 答案品質 nuance issues — dogfooding 發現 (2026-05-06)" Task A which also addresses Verify/Research system prompt polish in Week 4. Both can share the same work session.
   - **Discovered**: 2026-05-19 post-deploy golden eval run (96.7% overall pass rate, 4 WARN, 0 FAIL — no regression)
+  - **2026-06-13 re-measurement (Task-A QA Stage 1, `golden_results_20260613_144748.json`)**: pattern persists. **R09 (lithium/thyroid) now PASS** (improved). **R03 still omits CHA₂DS₂-VASc**; **R16/R20 still under-cover safer alternatives** (R20 ACE-I-in-pregnancy alternatives; R16 added to the same family). The "canonical scoring tools / standard monitoring protocols / alternative drugs" under-coverage is now confirmed across two golden runs ~1 month apart → reinforces the Week-4 Research system-prompt reinforcement candidate above. (R10 digoxin completeness is logged as its own entry at the top of this file.)
 
 - **[P2 → Phase 2 candidate] chat-history privacy model — docs were stale + behavior is "honest but not maximal"**
   - **Discovered**: 2026-05-25 during blog llms.txt fact-check (the public-facing privacy claim audit that preceded /llms.txt copy).
