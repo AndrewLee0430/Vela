@@ -23,6 +23,46 @@ from api.providers.base import (
 from api.providers.errors import VelaError, VelaErrorCode
 
 
+_REASONING_PREFIXES = ("o1", "o3", "o4", "gpt-5")
+
+
+def _is_reasoning_model(model: str) -> bool:
+    return model.startswith(_REASONING_PREFIXES)
+
+
+def _reasoning_min_completion_tokens() -> int:
+    try:
+        return int(os.getenv("REASONING_MIN_COMPLETION_TOKENS", "10000"))
+    except ValueError:
+        return 10000  # malformed env must not block boot
+
+
+def _apply_param_contract(kwargs: dict, req, model: str) -> dict:
+    """Map temperature/max_tokens onto the API kwargs per the model's contract.
+
+    Default (gpt-4.1 etc.): byte-identical to the legacy inline mapping.
+    Reasoning models (GPT-5 / o-series): use max_completion_tokens (max_tokens
+    is rejected), apply reasoning_effort, and omit temperature (only default(1)
+    accepted).
+    """
+    if not _is_reasoning_model(model):
+        # default branch — gpt-4.1 path BYTE-IDENTICAL, do NOT touch
+        if req.temperature is not None:
+            kwargs["temperature"] = req.temperature
+        if req.max_tokens is not None:
+            kwargs["max_tokens"] = req.max_tokens
+        return kwargs
+    # reasoning branch (GPT-5 / o-series)
+    kwargs["max_completion_tokens"] = max(req.max_tokens or 0, _reasoning_min_completion_tokens())
+    effort = os.getenv("REASONING_EFFORT", "medium")
+    if effort:  # empty string → omit reasoning_effort (no-code escape hatch)
+        kwargs["reasoning_effort"] = effort
+    # temperature intentionally dropped — reasoning models accept only default(1)
+    # NOTE: o1 maps params correctly here but does NOT support system messages —
+    #       not an eval target this round.
+    return kwargs
+
+
 class OpenAIProvider(Provider):
     name = "openai"
     capabilities = {
@@ -51,10 +91,7 @@ class OpenAIProvider(Provider):
                 "model": req.model,
                 "messages": req.messages,
             }
-            if req.temperature is not None:
-                kwargs["temperature"] = req.temperature
-            if req.max_tokens is not None:
-                kwargs["max_tokens"] = req.max_tokens
+            _apply_param_contract(kwargs, req, req.model)
             if req.response_format is not None:
                 kwargs["response_format"] = req.response_format
             kwargs.update(req.extra)
@@ -89,10 +126,7 @@ class OpenAIProvider(Provider):
                 # metrics. The final SSE chunk has choices=[] and usage set.
                 "stream_options": {"include_usage": True},
             }
-            if req.temperature is not None:
-                kwargs["temperature"] = req.temperature
-            if req.max_tokens is not None:
-                kwargs["max_tokens"] = req.max_tokens
+            _apply_param_contract(kwargs, req, req.model)
             # Caller-provided extra wins (allows opting out / overriding stream_options).
             kwargs.update(req.extra)
 

@@ -14,6 +14,12 @@ MODEL_COSTS = {
     "gpt-4.1-mini": {"input": 0.40, "output": 1.60},
     "gpt-4o-mini":  {"input": 0.15, "output": 0.60},
     "gpt-4o":       {"input": 2.50, "output": 10.00},
+    # Reasoning / GPT-5-era models (exact-key match; reasoning tokens billed as output).
+    # Prices per 1M tokens, fetched 2026-06-15 (o4-mini: OpenRouter/TokenCost; gpt-5.4: OpenAI pricing page).
+    # Literal "gpt-5" no longer exists — current family is gpt-5.4 / gpt-5.5 / gpt-5.4-mini;
+    # the _REASONING_PREFIXES predicate catches them all, but each variant needs its own row here.
+    "o4-mini":      {"input": 1.10, "output": 4.40},
+    "gpt-5.4":      {"input": 2.50, "output": 15.00},
 }
 
 
