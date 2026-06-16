@@ -545,6 +545,83 @@ async def main_recheck(query: str, runs: int = 3, throttle: float = 0.0):
     print(f"\nSaved → {out}  (full answer prose + per-pair verdicts persisted)")
 
 
+def _eval_set_cases(path: str):
+    """Flatten an eval-set JSON into [(id, section, query)] — clean + holdout +
+    confounded; mixed_direction_future is intentionally skipped (different criterion)."""
+    with open(path, encoding="utf-8") as f:
+        spec = json.load(f)
+    cases = []
+    for t in spec.get("clean_topics", []):
+        for c in t["cases"]:
+            cases.append((c["id"], "clean", c["query"]))
+    for c in spec.get("holdouts", {}).get("cases", []):
+        cases.append((c["id"], "holdout", c["query"]))
+    for c in spec.get("confounded", {}).get("cases", []):
+        cases.append((c["id"], "confounded", c["query"]))
+    return cases
+
+
+async def main_eval_set(path: str, tag: str = "", throttle: float = 0.0):
+    """Run every case in an eval-set JSON ONCE, judging each claim-citation pair with
+    the Stage-2 claim judge (gpt-4.1, CLAIM_MODEL), and SAVE full answer prose + every
+    pair (claim, PMID, verdict, evidence, reasoning) to tests/results/evalrun_*.json.
+    The model is whatever the TEST_BASE_URL backend runs; `tag` labels the output file."""
+    _guard_env()
+    from api.data_sources.pubmed import PubMedClient
+    oai = OpenAI()
+    pubmed = PubMedClient()
+    RESULTS_DIR.mkdir(exist_ok=True)
+
+    cases = _eval_set_cases(path)
+    print(f"\n=== Eval-set run: {len(cases)} cases (tag={tag or 'n/a'}, backend={BASE_URL}, judge={CLAIM_MODEL}) ===")
+    out_cases = []
+    async with httpx.AsyncClient() as client:
+        for cid, section, query in cases:
+            ans, cits = await gen_answer(client, query)
+            if ans.startswith("[ERROR]"):
+                print(f"  [{cid}/{section}] [ERROR] generation — recorded (not judged)")
+                out_cases.append({"id": cid, "section": section, "query": query,
+                                  "answer": ans, "citations": cits, "pmids": [],
+                                  "pairs": [], "support_distribution": {}})
+                if throttle:
+                    await asyncio.sleep(throttle)
+                continue
+            cit_by_id = {int(c["id"]): c for c in cits if "id" in c}
+            pmids = sorted({p for p in (extract_pmid(c) for c in cits) if p})
+            try:
+                arts = {a.pmid: a for a in await pubmed.fetch_details(pmids)}
+            except Exception:
+                arts = {}
+            time.sleep(0.5)
+            pairs, dist = [], {}
+            for pr in claim_pairs(ans, cit_by_id)[:MAX_PAIRS_PER_ANSWER]:
+                art = arts.get(pr["pmid"])
+                if not art:
+                    continue
+                jc = judge_claim(oai, query, pr["claim"], pr["pmid"], art.title, art.abstract)
+                v = jc.get("verdict", "error")
+                dist[v] = dist.get(v, 0) + 1
+                pairs.append({"claim": pr["claim"], "pmid": pr["pmid"], "verdict": v,
+                              "evidence_quote": jc.get("evidence_quote", ""),
+                              "scope_note": jc.get("scope_note", ""),
+                              "reasoning": jc.get("reasoning", "")})
+                time.sleep(0.2)
+            out_cases.append({"id": cid, "section": section, "query": query,
+                              "answer": ans, "citations": cits, "pmids": pmids,
+                              "pairs": pairs, "support_distribution": dist})
+            print(f"  [{cid}/{section}] {len(cits)} cit, {len(pmids)} PMID, {len(pairs)} pairs, dist={dist}")
+            if throttle:
+                await asyncio.sleep(throttle)
+
+    ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+    safe_tag = re.sub(r"[^A-Za-z0-9._-]", "_", tag) or "untagged"
+    out = RESULTS_DIR / f"evalrun_{safe_tag}_{ts}.json"
+    with open(out, "w", encoding="utf-8") as f:
+        json.dump({"timestamp": ts, "tag": tag, "eval_set": path, "backend": BASE_URL,
+                   "claim_model": CLAIM_MODEL, "cases": out_cases}, f, ensure_ascii=False, indent=2)
+    print(f"\nSaved → {out}  (full prose + per-pair verdicts; {len(out_cases)} cases)")
+
+
 def main_plan():
     print("=== Stage 2 citation-truth — PLAN (no generation) ===")
     print(f"Sample: {len(SAMPLE)} answers (10 narrow + 10 broad/population)")
@@ -571,9 +648,14 @@ if __name__ == "__main__":
                     help="Stage-2 recheck a single query N times (--runs), SAVING full answer "
                          "prose + per-pair verdicts to tests/results/ (loaded-framing audits).")
     ap.add_argument("--runs", type=int, default=3, help="number of --recheck runs (default 3)")
+    ap.add_argument("--eval-set", dest="eval_set", type=str, default=None, metavar="JSONFILE",
+                    help="run every case in an eval-set JSON once, persisting full prose + per-pair verdicts")
+    ap.add_argument("--tag", type=str, default="", help="label for the --eval-set output filename (e.g. o4-mini)")
     args = ap.parse_args()
     _only = {s.strip() for s in args.only.split(",") if s.strip()} if args.only else None
-    if args.recheck:
+    if args.eval_set:
+        asyncio.run(main_eval_set(args.eval_set, tag=args.tag, throttle=args.throttle))
+    elif args.recheck:
         asyncio.run(main_recheck(args.recheck, runs=args.runs, throttle=args.throttle))
     elif args.adversarial:
         asyncio.run(main_adversarial(throttle=args.throttle, only=_only))
