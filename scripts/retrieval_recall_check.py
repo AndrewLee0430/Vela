@@ -34,6 +34,10 @@ QUERIES = [
     ("OB-L0", "37290898", "What are the clinical outcomes of higher body weight (overweight or obesity) in patients with heart failure?"),
     ("OB-L1", "37290898", "Is overweight or obesity associated with worse survival in patients with heart failure?"),
     ("OB-L2", "37290898", "Why is obesity a serious problem that worsens survival in patients with heart failure?"),
+    # Holdout controls (neutral, not loaded) — regression guard: neutralization must NOT worsen these.
+    ("HD-BB",     "29040525", "What is the effect of beta-blockers on mortality in heart failure with reduced ejection fraction?"),
+    ("HD-PEANUT", "25705822", "What is the effect of early dietary peanut introduction on the risk of peanut allergy in infants?"),
+    ("HD-BISPH",  "28760963", "What is the relationship between long-term bisphosphonate use and atypical femoral fractures?"),
 ]
 
 
