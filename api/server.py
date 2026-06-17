@@ -520,6 +520,37 @@ async def _run_judge_background(audit_id: str, query: str, answer: str, document
         logger.error("[LLMJudge] background task failed: %s", e)
 
 
+async def _run_direction_check_background(audit_id: str, query: str, answer: str, documents: list):
+    """SHADOW C1 (③ direction-checker). Behind the DIRECTION_CHECK_SHADOW flag (default OFF).
+
+    Flag-only: logs a DirectionFlag to a sink (logger + AuditLog.extra_data['direction_flag']).
+    Mirrors _run_judge_background exactly — fired downstream of the generator as a non-blocking
+    background task. It touches NO SSE stream and changes NO answer (CLAUDE.md rule 13/18 safe:
+    exception-swallowed, never blocks the response). A2 (withhold/block) is route-gated, out of scope.
+    """
+    try:
+        from api.services import direction_checker as dc
+        sources = dc.cited_sources_from_documents(documents)
+        if not sources:
+            return  # no PubMed-cited sources -> nothing to direction-check
+        flag = await dc.check(dc.make_lightweight_llm(),
+                              answer=answer, question=query, cited_sources=sources)
+        logger.info("[DirectionCheck] audit_id=%s flagged=%s verdict=%s anchor=%s",
+                    audit_id, flag.flagged, flag.verdict, flag.selected_anchor_pmid)
+        db = SessionLocal()
+        try:
+            log = db.query(AuditLog).filter(AuditLog.id == audit_id).first()
+            if log:
+                extra = dict(log.extra_data or {})
+                extra["direction_flag"] = flag.to_sink_dict()
+                log.extra_data = extra
+                db.commit()
+        finally:
+            db.close()
+    except Exception as e:
+        logger.error("[DirectionCheck] background task failed: %s", e)
+
+
 # ============================================================
 # Middleware: PHI 防護 (feedback only — SSE endpoints use inline checks)
 # ============================================================
@@ -752,6 +783,13 @@ async def research_query(
                         if audit_id and full_answer:
                             asyncio.create_task(
                                 _run_judge_background(audit_id, body.question, full_answer, documents)
+                            )
+                        # SHADOW C1 (③) direction-checker — flag-only, behind a flag (default OFF).
+                        # Non-blocking; touches no SSE stream / no answer (A1 shadow build).
+                        if (audit_id and full_answer
+                                and os.getenv("DIRECTION_CHECK_SHADOW", "").lower() == "true"):
+                            asyncio.create_task(
+                                _run_direction_check_background(audit_id, body.question, full_answer, documents)
                             )
                     yield f"data: {json.dumps({'type': 'done', 'query_time_ms': elapsed_ms}, ensure_ascii=False)}\n\n"
 
