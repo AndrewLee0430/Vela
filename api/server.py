@@ -551,6 +551,37 @@ async def _run_direction_check_background(audit_id: str, query: str, answer: str
         logger.error("[DirectionCheck] background task failed: %s", e)
 
 
+async def _run_retrieval_refusal_background(audit_id: str, query: str, documents: list):
+    """SHADOW retrieval-recall REFUSAL detector. Behind RETRIEVAL_REFUSAL_SHADOW (default OFF).
+
+    Decision-only: logs a RetrievalRefusalDecision to a sink (logger + AuditLog.extra_data
+    ['retrieval_refusal']). Reads the FINAL pool (documents) the generator saw — covers the
+    retrieval-miss case ③ is blind to. Mirrors _run_direction_check_background: non-blocking, touches
+    NO SSE stream / NO answer. Enforcement is A2 / route-gated (out of scope this round).
+    """
+    try:
+        from api.services import retrieval_refusal as rr
+        sources = rr.pool_sources_from_documents(documents)
+        if len(sources) < 2:
+            return  # need a pool to assess one-sidedness
+        decision = await rr.assess(rr.make_strong_llm(), question=query, pool_sources=sources)
+        logger.info("[RetrievalRefusal] audit_id=%s refuse=%s one_sided=%s counter=%s factor=%s",
+                    audit_id, decision.refuse, decision.one_sided, decision.counter_plausible,
+                    decision.factor)
+        db = SessionLocal()
+        try:
+            log = db.query(AuditLog).filter(AuditLog.id == audit_id).first()
+            if log:
+                extra = dict(log.extra_data or {})
+                extra["retrieval_refusal"] = decision.to_sink_dict()
+                log.extra_data = extra
+                db.commit()
+        finally:
+            db.close()
+    except Exception as e:
+        logger.error("[RetrievalRefusal] background task failed: %s", e)
+
+
 # ============================================================
 # Middleware: PHI 防護 (feedback only — SSE endpoints use inline checks)
 # ============================================================
@@ -790,6 +821,14 @@ async def research_query(
                                 and os.getenv("DIRECTION_CHECK_SHADOW", "").lower() == "true"):
                             asyncio.create_task(
                                 _run_direction_check_background(audit_id, body.question, full_answer, documents)
+                            )
+                        # SHADOW retrieval-recall refusal detector — decision-only, behind a flag
+                        # (default OFF). Reads the retrieved pool; covers the retrieval-miss case ③
+                        # is blind to. Non-blocking; touches no SSE stream / no answer.
+                        if (audit_id
+                                and os.getenv("RETRIEVAL_REFUSAL_SHADOW", "").lower() == "true"):
+                            asyncio.create_task(
+                                _run_retrieval_refusal_background(audit_id, body.question, documents)
                             )
                     yield f"data: {json.dumps({'type': 'done', 'query_time_ms': elapsed_ms}, ensure_ascii=False)}\n\n"
 

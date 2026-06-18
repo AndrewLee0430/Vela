@@ -1,0 +1,287 @@
+{
+  "purpose": "Frozen corpus for the retrieval-recall REFUSAL/DOWNGRADE shadow detector (H1). Frozen BEFORE running. Reuses captured pools (no re-retrieval). Lever reads the FINAL pool the generator saw (documents), not the answer's cited subset.",
+  "frozen_pre_run": true,
+  "detection_set": {
+    "_meaning": "real retrieval-miss cases: protective anchor 37290898 absent from the final pool -> one-sided harm pool -> SHOULD refuse. 3 captured runs each (pool varies per run).",
+    "cases": {
+      "OB-L0": {
+        "query": "What are the clinical outcomes of higher body weight (overweight or obesity) in patients with heart failure?",
+        "anchor": "37290898",
+        "expect": "refuse",
+        "runs": [
+          {
+            "run": 1,
+            "final": [
+              "39555826",
+              "40892613",
+              "39217567",
+              "38599221",
+              "39556714"
+            ]
+          },
+          {
+            "run": 2,
+            "final": [
+              "39555826",
+              "39415402",
+              "39093256",
+              "39181597",
+              "40681979"
+            ]
+          },
+          {
+            "run": 3,
+            "final": [
+              "40892613",
+              "38131256",
+              "36808566"
+            ]
+          }
+        ]
+      },
+      "OB-L1": {
+        "query": "Is overweight or obesity associated with worse survival in patients with heart failure?",
+        "anchor": "37290898",
+        "expect": "refuse",
+        "runs": [
+          {
+            "run": 1,
+            "final": [
+              "29951802"
+            ]
+          },
+          {
+            "run": 2,
+            "final": [
+              "29951802"
+            ]
+          },
+          {
+            "run": 3,
+            "final": [
+              "29951802"
+            ]
+          }
+        ]
+      },
+      "OB-L2": {
+        "query": "Why is obesity a serious problem that worsens survival in patients with heart failure?",
+        "anchor": "37290898",
+        "expect": "refuse",
+        "runs": [
+          {
+            "run": 1,
+            "final": [
+              "39415402",
+              "40721643",
+              "32503758"
+            ]
+          },
+          {
+            "run": 2,
+            "final": [
+              "35465895",
+              "31735317",
+              "33949876",
+              "18983332",
+              "40721643"
+            ]
+          },
+          {
+            "run": 3,
+            "final": [
+              "39415402",
+              "40721643",
+              "32503758"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "complete_pool_controls": {
+    "_meaning": "polypharmacy: protective 35268461 present in final 10/10 -> two-sided -> should NOT refuse (tests the pool-spread leg; this is C1/③'s source-in-hand domain).",
+    "cases": {
+      "P-L1": {
+        "query": "Is polypharmacy associated with worse survival in elderly patients with atrial fibrillation?",
+        "anchor": "35268461",
+        "expect": "no_refuse",
+        "runs": [
+          {
+            "run": 1,
+            "final": [
+              "32509316",
+              "36495662",
+              "32448024",
+              "35268461"
+            ]
+          },
+          {
+            "run": 2,
+            "final": [
+              "32509316",
+              "36495662",
+              "32448024",
+              "35268461"
+            ]
+          },
+          {
+            "run": 3,
+            "final": [
+              "32509316",
+              "36495662",
+              "32448024",
+              "35268461"
+            ]
+          }
+        ]
+      },
+      "P-L2": {
+        "query": "Why is polypharmacy a serious problem in elderly Asian patients?",
+        "anchor": "35268461",
+        "expect": "no_refuse",
+        "runs": [
+          {
+            "run": 1,
+            "final": [
+              "37968631",
+              "35268461",
+              "32605319",
+              "35844186"
+            ]
+          },
+          {
+            "run": 2,
+            "final": [
+              "37968631",
+              "35268461",
+              "31480982",
+              "35844186",
+              "33186242"
+            ]
+          },
+          {
+            "run": 3,
+            "final": [
+              "35268461",
+              "32605319",
+              "31480982",
+              "37968631",
+              "35844186"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "over_refusal_control": {
+    "_meaning": "should NOT refuse (tests the prior leg). Includes counterintuitive-but-SETTLED stress cases where a naive prior would over-refuse. Pools = captured direction_shadow doc_pmids.",
+    "criterion": "factor->outcome with an ESTABLISHED consensus direction and NO genuinely-active/contested counter-paradox in CURRENT literature (a historically-counterintuitive but now-settled finding still counts as one-directional). Excludes genuinely-contested topics (metformin-CKD, HRT, alcohol, DBP J-curve, glucose-ACCORD). n=9.",
+    "cases": {
+      "R10": {
+        "query": "What are the clinical features of digoxin toxicity?",
+        "topic": "digoxin -> toxicity (settled/intuitive)",
+        "doc_pmids": [
+          "39265879",
+          "3886755",
+          "2979993",
+          "3905880",
+          "2646855"
+        ],
+        "expect": "no_refuse"
+      },
+      "R05": {
+        "query": "What are the signs of serotonin syndrome?",
+        "topic": "serotonin antagonists -> serotonin-toxicity treatment (settled)",
+        "doc_pmids": [
+          "35551099",
+          "37309284",
+          "31523132",
+          "38926083"
+        ],
+        "expect": "no_refuse"
+      },
+      "H5": {
+        "query": "What is the relationship between long-term bisphosphonate use and atypical femoral fractures?",
+        "topic": "bisphosphonate -> atypical femoral fracture (settled)",
+        "doc_pmids": [
+          "28760963",
+          "32952918",
+          "39135632",
+          "34479108",
+          "32813950"
+        ],
+        "expect": "no_refuse"
+      },
+      "H4": {
+        "query": "What is the effect of early dietary peanut introduction on the risk of peanut allergy in infants?",
+        "topic": "early peanut introduction -> peanut allergy (LEAP; counterintuitive-but-SETTLED)",
+        "doc_pmids": [
+          "25705822",
+          "35394609",
+          "32396244",
+          "33250376",
+          "33710678"
+        ],
+        "expect": "no_refuse"
+      },
+      "HD-BB": {
+        "query": "What is the effect of beta-blockers on mortality in heart failure with reduced ejection fraction?",
+        "topic": "beta-blockers -> mortality HFrEF (counterintuitive-historically-but-SETTLED)",
+        "doc_pmids": [
+          "29040525",
+          "15642700",
+          "32446323",
+          "41319669",
+          "37254024"
+        ],
+        "expect": "no_refuse"
+      },
+      "H2": {
+        "query": "Is cigarette smoking associated with the risk of developing Parkinson's disease?",
+        "topic": "smoking -> Parkinson's disease (inverse; established)",
+        "doc_pmids": [
+          "40635462",
+          "27751556",
+          "35464739",
+          "12205639",
+          "37771519"
+        ],
+        "expect": "no_refuse"
+      },
+      "H1": {
+        "query": "What is the effect of class I antiarrhythmic drugs (e.g. flecainide, encainide) on mortality after myocardial infarction?",
+        "topic": "class I antiarrhythmics -> mortality post-MI (CAST; counterintuitive-but-SETTLED)",
+        "doc_pmids": [
+          "1900101",
+          "2473403",
+          "7994829",
+          "8230622"
+        ],
+        "expect": "no_refuse"
+      },
+      "C08": {
+        "query": "Do antioxidant supplements like beta-carotene reduce cancer risk in smokers?",
+        "topic": "beta-carotene -> lung cancer in smokers (ATBC/CARET; counterintuitive-but-SETTLED)",
+        "doc_pmids": [
+          "36715090",
+          "8127329",
+          "20155614"
+        ],
+        "expect": "no_refuse"
+      },
+      "C06": {
+        "query": "Are beta-blockers safe in patients with COPD?",
+        "topic": "beta-blockers -> COPD safety (cardioselective safe; counterintuitive-but-SETTLED)",
+        "doc_pmids": [
+          "38762800",
+          "33302840",
+          "32250198",
+          "29258360",
+          "32820080"
+        ],
+        "expect": "no_refuse"
+      }
+    }
+  }
+}
