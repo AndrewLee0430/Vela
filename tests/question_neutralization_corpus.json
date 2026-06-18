@@ -1,0 +1,149 @@
+{
+  "purpose": "Frozen corpus for Lever 2 (front-end question-neutralization) A/B shadow validation. Frozen BEFORE generating. The harness retrieves each topic's loaded query ONCE, freezes the context, confirms anchor_in_pool (source-in-hand gate), then generates BOTH arms (loaded vs neutralized question) on the SAME frozen context, N samples each. Reuses citation_truth_check.judge_direction for reversal ground truth.",
+  "frozen_pre_run": true,
+  "design": "detect-then-neutralize (primary; both evaluated in the harness). Rewrite targets the INTERNAL generator question only; retrieval + user-facing question untouched.",
+  "n_samples_per_framing": 3,
+  "loaded_topics": {
+    "_criterion": "source-in-hand reversal-prone topics: a counterintuitive/protective anchor that IS retrievable under the loaded query (else it is a Lever-1 retrieval-miss, excluded). 2 loaded framings each (directional presupposition). Mix of protective-pushed-harm and harmful-pushed-benefit.",
+    "polypharmacy": {
+      "anchor": "35268461",
+      "factor": "polypharmacy",
+      "outcome": "all-cause mortality in elderly patients with atrial fibrillation",
+      "correct_direction": "decreases (protective; OR 0.78 lower all-cause death)",
+      "reversal_push": "harm (intuitive 'more drugs = worse')",
+      "retrieval_query": "Why is polypharmacy a serious problem in elderly Asian patients?",
+      "loaded_framings": [
+        {
+          "id": "POLY-LA",
+          "query": "Why is polypharmacy a serious problem in elderly patients with atrial fibrillation?"
+        },
+        {
+          "id": "POLY-LB",
+          "query": "Why is polypharmacy so concerning for elderly patients with atrial fibrillation?"
+        }
+      ],
+      "framing_style": "vague-loaded (harm/benefit presupposition WITHOUT explicit direction word; the probe found explicit framings self-correct, only vague ones reverse)"
+    },
+    "beta_blockers_hfref": {
+      "anchor": "29040525",
+      "factor": "beta-blockers",
+      "outcome": "mortality in heart failure with reduced ejection fraction",
+      "correct_direction": "decreases (protective; reduce mortality in HFrEF)",
+      "reversal_push": "harm (historical 'contraindicated in HF')",
+      "retrieval_query": "Why are beta-blockers dangerous in heart failure with reduced ejection fraction?",
+      "loaded_framings": [
+        {
+          "id": "BB-LA",
+          "query": "Why are beta-blockers a concern in patients with heart failure with reduced ejection fraction?"
+        },
+        {
+          "id": "BB-LB",
+          "query": "Why should clinicians be cautious about using beta-blockers in reduced ejection fraction heart failure?"
+        }
+      ],
+      "framing_style": "vague-loaded (harm/benefit presupposition WITHOUT explicit direction word; the probe found explicit framings self-correct, only vague ones reverse)"
+    },
+    "peanut_leap": {
+      "anchor": "25705822",
+      "factor": "early dietary peanut introduction",
+      "outcome": "peanut allergy in infants",
+      "correct_direction": "decreases (protective; LEAP ~80% relative reduction)",
+      "reversal_push": "harm (allergen-avoidance intuition)",
+      "retrieval_query": "Why is early peanut introduction dangerous for infants?",
+      "loaded_framings": [
+        {
+          "id": "PEA-LA",
+          "query": "Why is early dietary peanut introduction a concern for infants?"
+        },
+        {
+          "id": "PEA-LB",
+          "query": "Why are parents often worried about introducing peanuts to infants early?"
+        }
+      ],
+      "framing_style": "vague-loaded (harm/benefit presupposition WITHOUT explicit direction word; the probe found explicit framings self-correct, only vague ones reverse)"
+    },
+    "beta_carotene_smokers": {
+      "anchor": "8127329",
+      "factor": "beta-carotene supplementation",
+      "outcome": "lung cancer in smokers",
+      "correct_direction": "increases (harmful; ATBC beta-carotene raised lung cancer in smokers)",
+      "reversal_push": "benefit (antioxidant-is-protective intuition)",
+      "retrieval_query": "Why are antioxidant supplements like beta-carotene protective against lung cancer in smokers?",
+      "loaded_framings": [
+        {
+          "id": "BCAR-LA",
+          "query": "Why are antioxidant supplements like beta-carotene popular for lung health in smokers?"
+        },
+        {
+          "id": "BCAR-LB",
+          "query": "Why do many smokers take beta-carotene supplements for their lungs?"
+        }
+      ],
+      "framing_style": "vague-loaded (harm/benefit presupposition WITHOUT explicit direction word; the probe found explicit framings self-correct, only vague ones reverse)"
+    },
+    "cast_antiarrhythmics": {
+      "anchor": "1900101",
+      "factor": "class I antiarrhythmic drugs (flecainide/encainide) for PVC suppression",
+      "outcome": "mortality after myocardial infarction",
+      "correct_direction": "increases (harmful; CAST raised mortality)",
+      "reversal_push": "benefit (suppress-arrhythmia-is-good intuition)",
+      "retrieval_query": "Why is suppressing premature ventricular contractions with antiarrhythmic drugs after a heart attack beneficial?",
+      "loaded_framings": [
+        {
+          "id": "CAST-LA",
+          "query": "Why are antiarrhythmic drugs used to suppress premature ventricular contractions in patients after a heart attack?"
+        },
+        {
+          "id": "CAST-LB",
+          "query": "Why is suppressing premature ventricular contractions considered important in patients after a myocardial infarction?"
+        }
+      ],
+      "framing_style": "vague-loaded (harm/benefit presupposition WITHOUT explicit direction word; the probe found explicit framings self-correct, only vague ones reverse)"
+    }
+  },
+  "clean_control": {
+    "_criterion": "Already-neutral, information-seeking framing with NO directional presupposition; produces a faithful answer. Includes qualifier-bearing items (>=5) to test don't-over-sanitize (the rewriter must retain elderly/AF/HFrEF/infants/renal-impairment/diabetic). The detector should classify ALL of these as NEUTRAL (over-trigger test); the rewriter run on them must not drop qualifiers or change answer correctness.",
+    "cases": [
+      {
+        "id": "CLN-1",
+        "query": "What are the clinical outcomes of polypharmacy in elderly patients with atrial fibrillation?",
+        "qualifier": "elderly + atrial fibrillation"
+      },
+      {
+        "id": "CLN-2",
+        "query": "What is the effect of beta-blockers on mortality in heart failure with reduced ejection fraction?",
+        "qualifier": "heart failure with reduced ejection fraction"
+      },
+      {
+        "id": "CLN-3",
+        "query": "What is the effect of early dietary peanut introduction on the risk of peanut allergy in infants?",
+        "qualifier": "infants"
+      },
+      {
+        "id": "CLN-4",
+        "query": "What are the side effects of metformin in patients with renal impairment?",
+        "qualifier": "renal impairment"
+      },
+      {
+        "id": "CLN-5",
+        "query": "What is the first-line treatment for hypertension in diabetic patients?",
+        "qualifier": "diabetic"
+      },
+      {
+        "id": "CLN-6",
+        "query": "What monitoring is required for patients on lithium therapy?",
+        "qualifier": "lithium therapy"
+      },
+      {
+        "id": "CLN-7",
+        "query": "What are the clinical features of digoxin toxicity?",
+        "qualifier": "(none critical)"
+      },
+      {
+        "id": "CLN-8",
+        "query": "What is the recommended dose of aspirin for cardiovascular prevention?",
+        "qualifier": "(none critical)"
+      }
+    ]
+  }
+}

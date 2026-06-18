@@ -756,9 +756,25 @@ async def research_query(
             # Retrieval/query-rewrite remain language-agnostic (no detect_language).
             lang = _resolve_response_language(body.response_language, request)
             yield f"data: {json.dumps({'type': 'language', 'lang': lang}, ensure_ascii=False)}\n\n"
+
+            # Lever 2 — front-end question-neutralization (SHADOW; QUESTION_NEUTRALIZATION_SHADOW
+            # default OFF → generator question UNCHANGED). When ON: detect-then-neutralize the INTERNAL
+            # generator question only (retrieval + the user-facing question are untouched; both would
+            # share the already-frozen `documents`). Fail-open to the original question — never block.
+            gen_question = body.question
+            if os.getenv("QUESTION_NEUTRALIZATION_SHADOW", "").lower() == "true":
+                try:
+                    from api.services import question_neutralization as qn
+                    _nq = await qn.neutralize_if_loaded(qn.make_strong_llm(), body.question)
+                    if _nq:
+                        gen_question = _nq
+                        logger.info("[QNeutralize] rewrote loaded generator question")
+                except Exception as e:
+                    logger.error("[QNeutralize] failed (fail-open to original): %s", e)
+
             usage_out = []
             async for event in generator.generate_stream(
-                question=body.question,
+                question=gen_question,
                 documents=documents,
                 retrieval_status=retrieval_status,
                 query_type="research",
