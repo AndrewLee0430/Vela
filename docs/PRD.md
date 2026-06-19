@@ -106,6 +106,8 @@ Vela 採用 Privacy-first 定位,採取「透明定義」做法。以下清單�
 | Phase 1B | Week 5-8 | 差異化功能 | 處方解析 MVP、FeedbackBar 原因 chip、Citation ⓘ、Settings |
 | Phase 1C | Week 9-12 | 護城河啟動 | 在地差異提示(YAML 知識庫 + Tier 1 6 國 + Tier 2)、跨語言橋接面板 |
 
+> **⚠️ Roadmap table above is SUPERSEDED for Phase 1B/1C by ADR 003 + ADR 004 (2026-05-04) — authoritative scope is `BACKLOG.md` "Phase 1B" section.** Corrections: (1) **處方解析 MVP REMOVED** from Phase 1B (ADR 004 — permanently out of scope, PRD §4.4 marked 🧊). (2) **在地差異提示 Tier 1 (6國) ADVANCED from Phase 1C → Phase 1B** (ADR 004 護城河 rebalance; the §5.1.1 YAML schema + 6-country data are Phase 1B, the +6 expansion stays 1C). (3) Actual Phase 1B = Verify force-English + system-prompt polish (ADR 003) · DailyMed integration + 5-tier evidence classifier · 在地差異 Tier 1 · Anonymous-Trial-Flow polish · Citation-ranking eval · Explain risk-tier magnitude-aware tiering. (4) "Week N" numbering is a 2026-05 planning artifact — Phase 1A + the reversal-defense week have since elapsed; treat as relative slots, not calendar dates.
+
 **Phase 0 的執行優先級(v1.2 更新):**
 
 - P0(最優先,Day 1 就做):2.5 Landing Page SEO 修復 — GTM 啟動前必須先止血
