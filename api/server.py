@@ -2447,7 +2447,7 @@ Vela serves three workflows for clinicians outside the US English market — phy
 ## Core features
 
 - [Research]({_LLMS_TXT_BASE}/research): Clinical questions in 16 languages; streamed answers cite PubMed sources verbatim. Anonymous trial available (limited daily quota); Pro unlocks unlimited.
-- [Verify]({_LLMS_TXT_BASE}/verify): Drug-interaction checking against FDA DailyMed. Severity-tiered (Critical/Major/Moderate/Minor) with mechanism + clinical recommendation per interaction.
+- [Verify]({_LLMS_TXT_BASE}/verify): Drug-interaction checking against FDA drug labels. Severity-tiered (Critical/Major/Moderate/Minor) with mechanism + clinical recommendation per interaction.
 - [Explain]({_LLMS_TXT_BASE}/explain): Plain-language interpretation of medical reports or lab panels. Structured per-item with risk tiers (green/yellow/red), source citations (LOINC, RxNorm, MedlinePlus), and clinical correlations.
 
 ## Content
@@ -2461,7 +2461,7 @@ Vela serves three workflows for clinicians outside the US English market — phy
 
 ## Data sources
 
-Vela's evidence pipeline retrieves from PubMed (40M+ peer-reviewed articles), FDA DailyMed (official US drug labels and interactions), and NIH LOINC + RxNorm + MedlinePlus (lab/drug/condition standards). Local-regulator augmentation (TFDA/PMDA/MFDS/HSA) is roadmapped.
+Vela's evidence pipeline retrieves from PubMed (40M+ peer-reviewed articles), FDA drug labels (official US drug labels and interactions, via OpenFDA), and NIH LOINC + RxNorm + MedlinePlus (lab/drug/condition standards). FDA DailyMed and local-regulator augmentation (TFDA/PMDA/MFDS/HSA) are roadmapped.
 
 ## Privacy
 
