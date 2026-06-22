@@ -842,6 +842,12 @@ Phase 1B work items per advisor discussion 2026-05-04 (preserved in git commit 3
 - **Slot**: Phase 1C Week 9
 - **Pre-action**: Apply for OAuth client_id NOW (per advisor discussion git commit 394545e § 10.1)
 
+### [P2] Taiwan brand-name → ingredient grounding (deterministic lookup, NOT LLM memory) — NOT near-term
+- **Source**: TECH_DEBT 2026-06-22 (post-deploy click-test of piece (A): 「冠脂妥」 confidently mis-identified as Simvastatin; it is rosuvastatin).
+- **Problem**: even with piece (A)'s force-English guard, the "仍要送出（不建議）" proceed-anyway path lets the LLM confident-wrong map a Chinese brand→ingredient and present the wrong-drug analysis as authoritative. Brand→ingredient is a **factual-lookup** problem, not a reasoning one — LLM memory on Taiwan long-tail brands is inherently unreliable.
+- **Fix-direction**: ground brand→ingredient in a REAL table — TFDA drug-license data (商品名↔成分) if a dataset/API exists (deterministic); else a hand-curated Taiwan-common brand→ingredient YAML (same pattern as 在地差異). **GUARDRAIL: do NOT model-swap or prompt-tune — it changes the error rate, not the reliability.** See TECH_DEBT 2026-06-22.
+- **Slot**: **Phase 1C (or whenever 在地差異 grows a drug-name component) — FOLD into the 在地差異 / local-augmentation effort; do NOT insert as a near-term Phase 1B task (breaks current 1B ordering).**
+
 ### [P1] 在地差異提示 Tier 1 expansion (VN/PH/ID/HK/SA/AE)
 - **Source**: advisor discussion notes (git commit 394545e § 6.2)
 - **Implementation**: Same YAML schema as Tier 1 initial 6; backend/frontend already built in Phase 1B
