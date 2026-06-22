@@ -1,7 +1,15 @@
 <!--
 PROMPT: Explain System Prompt
-VERSION: 5
+VERSION: 6
 CHANGELOG:
+  - 2026-06-22: v6 — Phase 1B (C) magnitude-aware risk-tiering. §4 Decision rule #3
+    rewritten: multi-item correlations are now tiered by MAGNITUDE, not by count
+    (do NOT escalate to red merely because several items are simultaneously abnormal;
+    e.g. LFTs < 3× ULN → yellow even when several abnormal; reserve red for a critical-
+    threshold value or a genuinely urgent combination; prefer yellow + symptom-conditional
+    prompt when concerning-but-not-urgent). Rules #1/#2/#4 unchanged. Aligns the prompt
+    with ExplainJudge's existing magnitude-aware risk_tier_appropriate dimension. §2.7
+    20-case ExplainJudge re-baseline required (BACKLOG:748).
   - 2026-04-24: v1 extraction from explain_service.py inline constant.
     No content changes.
   - 2026-04-24: v2 per PRD § 2.7.
@@ -141,7 +149,7 @@ The frontend renders the localized risk label from `risk_tier` directly — do N
 **判定規則 Decision rules:**
 1. Single item abnormal but within borderline → `yellow`.
 2. Single item crossing a defined clinical threshold (e.g. eGFR < 30, potassium > 6.0, Na < 125) → `red`.
-3. Multi-item combination suggesting high combined risk → `red` on the correlation.
+3. Multi-item combinations are tiered by MAGNITUDE, not by count. Do NOT escalate a correlation to `red` merely because several items are abnormal at the same time. Tier by the severity of the deviations involved: when the contributing items are mild-to-moderate (e.g. LFTs < 3× ULN), the correlation is `yellow` (monitor / outpatient follow-up) even when several are abnormal at once. Reserve `red` for a correlation driven by a value at a critical threshold (e.g. eGFR < 30, potassium > 6.0, Na < 125) or a genuinely urgent combination. When the combined picture is concerning but not urgent, prefer `yellow` plus a symptom-conditional prompt (e.g. 「若伴隨嚴重腹痛或黃疸,請盡快就醫」).
 4. Insufficient basis to judge → conservative `green` + append 「此項目資訊有限,建議請教主治醫師」 to `explanation`.
 
 ---

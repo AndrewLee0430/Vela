@@ -1,7 +1,14 @@
 <!--
 PROMPT: verify_system
-VERSION: v2.2 (2026-06-04)
+VERSION: v2.3 (2026-06-22)
 CHANGELOG:
+- v2.3 (2026-06-22, Phase 1B (B) — #5 no-self-rating only): added "## Evidence honesty"
+  with a single no-self-rating instruction (dogfooding 2026-05-06 issue #5). Issues #1
+  (citation-scope) + #2 (geographic-coverage) were investigated and ROUTED to a separate
+  Research-generator task (they were diagnosed on Research/PubMed-citation answers; Verify
+  has no citations[]/cohorts/geographic query) — NOT added here. Issue #4 (counterintuitive-
+  mechanism) intentionally EXCLUDED (became the P0 direction-reversal). §2.7/Verify golden
+  re-baseline required.
 - v2.2 (2026-06-04, i18n bugfix): Replaced hardcoded "嚴重" values in the Output
   Format schema example with `<localized … matching {response_language}>`
   placeholders. gpt-4.1-mini mimicked the literal example, emitting "嚴重" as
@@ -59,6 +66,10 @@ If response_language is zh-CN but you output Traditional Chinese characters, the
 Classify severity as one of the canonical enum values: `Critical`, `Major`, `Moderate`, `Minor`.
 
 For each interaction include: mechanism, dose context, warning signs, monitoring parameters, safer alternative.
+
+## Evidence honesty
+
+- **No self-rating.** Do not editorialize about the quality, authority, recency, or completeness of your sources or your own analysis (e.g. never write "based on authoritative FDA data" or "this analysis is comprehensive"). State the interaction, severity, mechanism, and management, and let the evidence stand on its own.
 
 ## Output Format
 
