@@ -9,12 +9,21 @@ import { useShareContext } from '../contexts/ShareContext';
 import UpgradeModal from '../components/UpgradeModal';
 import Toast from '../components/Toast';
 import PHIWarning from '../components/PHIWarning';
+import NonEnglishDrugWarning from '../components/NonEnglishDrugWarning';
 import PageShell from '../components/PageShell';
 import AnonymousUpgradeCTA from '../components/AnonymousUpgradeCTA';
 import { setQueryId, getAnonFingerprint, track } from '../utils/analytics';
 import { useLang } from '../utils/LangContext';
 import { getUI } from '../utils/i18n-ui';
 import { formatInteractionSummary, getSeverityLabel, getRiskLevelLabel } from '../utils/i18n-verify';
+
+// ADR 003 — flag a drug line as non-English ONLY if it contains a non-Latin SCRIPT
+// (CJK / kana / Hangul / Cyrillic / Hebrew / Arabic / Thai / Devanagari / Bengali).
+// Accented-Latin INNs (à, é, ñ, ø … in Latin-1/Extended) must NOT trigger.
+const NON_LATIN_SCRIPT = /[　-〿぀-ヿ㐀-䶿一-鿿豈-﫿가-힯ᄀ-ᇿ㄰-㆏Ѐ-ӿ֐-׿؀-ۿݐ-ݿ฀-๿ऀ-ॿঀ-৿]/;
+function hasNonLatinScript(drugList: string[]): boolean {
+    return drugList.some(d => NON_LATIN_SCRIPT.test(d));
+}
 
 interface DrugInteraction {
     drug_pair: [string, string];
@@ -70,6 +79,10 @@ function VerifyForm() {
     const [error, setError]   = useState('');
 
     const isRunningRef = useRef(false);
+    // ADR 003 — force-English guidance state
+    const [nonEnglishWarn, setNonEnglishWarn] = useState(false);
+    const wasWarnedRef = useRef(false);          // showed the warning this attempt-cycle
+    const drugsTextareaRef = useRef<HTMLTextAreaElement>(null);
     const [showUpgradeModal, setShowUpgradeModal] = useState(false);
     const [showDailyCapToast, setShowDailyCapToast] = useState(false);
     const [anonNoticeMsg, setAnonNoticeMsg] = useState<string | null>(null);
@@ -79,7 +92,7 @@ function VerifyForm() {
     const [localQueryId, setLocalQueryId] = useState<string | null>(null);
     const { setShareData, clearShareData } = useShareContext();
 
-    const handleReset = () => { setDrugs(''); setResult(null); setError(''); setPhiError(null); setQueryId(null); setLocalQueryId(null); };
+    const handleReset = () => { setDrugs(''); setResult(null); setError(''); setPhiError(null); setNonEnglishWarn(false); wasWarnedRef.current = false; setQueryId(null); setLocalQueryId(null); };
 
     // PRD § 4.5 UX polish 2/3 — Navbar Share button via ShareContext.
     useEffect(() => {
@@ -144,6 +157,37 @@ function VerifyForm() {
             setError(ui.enterTwoDrugs);
             return;
         }
+
+        // ADR 003 — force-English guard: block submit on non-Latin script, guide
+        // the user to the English INN BEFORE the (English-indexed) backend runs.
+        if (hasNonLatinScript(drugList)) {
+            wasWarnedRef.current = true;
+            setNonEnglishWarn(true);
+            track('non_english_input_detected', { feature: 'verify', drug_line_count: drugList.length });
+            return;
+        }
+        // Clean entry after a prior warning → the user corrected it.
+        if (wasWarnedRef.current) {
+            track('non_english_input_corrected', { feature: 'verify' });
+            wasWarnedRef.current = false;
+        }
+
+        await doVerify(drugList);
+    }
+
+    // "Submit anyway (not recommended)" — bypass the guard, use the EXISTING
+    // Verify pipeline unchanged (ADR 003: the proceed path is the normal flow).
+    function handleProceedAnyway() {
+        setNonEnglishWarn(false);
+        wasWarnedRef.current = false;
+        track('non_english_input_proceeded_anyway', { feature: 'verify' });
+        const drugList = drugs.split('\n').map(d => d.trim()).filter(Boolean);
+        if (drugList.length < 2) { setError(ui.enterTwoDrugs); return; }
+        void doVerify(drugList);
+    }
+
+    async function doVerify(drugList: string[]) {
+        if (isRunningRef.current) return;
 
         const t0 = Date.now();
         const computeSeverityDist = (interactions: DrugInteraction[]) => {
@@ -397,6 +441,7 @@ function VerifyForm() {
                                 ))}
                             </div>
                             <textarea
+                                ref={drugsTextareaRef}
                                 id="drugs"
                                 required
                                 rows={6}
@@ -407,6 +452,10 @@ function VerifyForm() {
                                 style={{ background: "rgb(var(--color-text) / 0.05)", border: "1px solid rgb(var(--color-text) / 0.15)", color: "rgb(var(--color-text) / 0.85)" }}
                                 placeholder={"Metformin\nAspirin\nWarfarin"}
                             />
+                            {/* ADR 003 — always-visible English-input nudge (shown before any error) */}
+                            <p className="text-xs" style={{ color: "rgb(var(--color-text) / 0.55)" }}>
+                                {ui.verifyInputHint} <span style={{ color: "rgb(var(--color-text) / 0.4)" }}>{ui.verifyInputExample}</span>
+                            </p>
                         </div>
 
                         <button
@@ -418,6 +467,18 @@ function VerifyForm() {
                             {loading ? ui.analyzingBtn : ui.analyzeBtn}
                         </button>
                     </form>
+
+                    {nonEnglishWarn && !loading && (
+                        <div className="mt-4">
+                            <NonEnglishDrugWarning
+                                onModify={() => {
+                                    setNonEnglishWarn(false);
+                                    drugsTextareaRef.current?.focus();
+                                }}
+                                onProceed={handleProceedAnyway}
+                            />
+                        </div>
+                    )}
 
                     {phiError && !loading && (
                         <div className="mt-4">
