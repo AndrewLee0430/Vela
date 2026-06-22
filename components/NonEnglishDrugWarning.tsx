@@ -10,9 +10,10 @@ import { track } from '../utils/analytics';
 // Each entry links to an official/authoritative DRUG-LOOKUP page (not a homepage).
 // `label` is a proper noun (kept in English per CLAUDE.md Rule 16).
 const HELP_LINKS: { label: string; url: string }[] = [
-    // Taiwan FDA 西藥許可證查詢 (drug-license search). NOTE: curl could not verify
-    // (HTTP 000 — gov server blocks automated probes; parent fda.gov.tw is live 200).
-    { label: 'TFDA', url: 'https://info.fda.gov.tw/MLMS/H0001.aspx' },
+    // Taiwan FDA official drug-info search platform (藥品仿單查詢平台). Public, no login,
+    // searches Chinese AND English drug names. Verified live 200 (2026-06; replaced the
+    // dead info.fda.gov.tw/MLMS subdomain, which now NXDOMAINs).
+    { label: 'TFDA', url: 'https://mcp.fda.gov.tw/' },
     // Drugs.com Drug Interactions Checker (most relevant for Verify).
     { label: 'Drugs.com', url: 'https://www.drugs.com/drug_interactions.html' },
     // PMDA (Japan) approved drug information (English). Verified 200.
