@@ -368,6 +368,8 @@ Cover ALL of the following in natural prose or structured bullets:
 
 Do NOT include a separate Evidence section. Do NOT add any disclaimer at the end — the system will handle that separately.
 If evidence predates 2020, note it inline. If sources conflict, present both sides.
+Before relying on a cited source for a population or setting, check that the source's study cohort matches the question's scope; if it differs (a different region, ethnicity, age group, or care setting), say so explicitly rather than presenting it as directly-applicable evidence.
+For questions spanning a broad geography (e.g. "Asia", "globally", "East Asia"), state which regions your cited evidence actually covers and which it does not, instead of generalizing a narrow evidence base to the whole region.
 """
         return base
 
