@@ -20,6 +20,8 @@ import PHIWarning from '../components/PHIWarning';
 import PageShell from '../components/PageShell';
 import ProFeatureOverlay from '../components/ProFeatureOverlay';
 import ResearchSection from '../components/ResearchSection';
+import LocaleHintPanel from '../components/LocaleHintPanel';
+import { detectLocaleCategories } from '../utils/localeHint';
 import AnonymousUpgradeCTA from '../components/AnonymousUpgradeCTA';
 import { exportResearchPdf } from '../utils/exportPdf';
 import { setQueryId, getAnonFingerprint, track } from '../utils/analytics';
@@ -179,6 +181,20 @@ function ResearchForm() {
     const [detectedLang, setDetectedLang] = useState<string>('en');
     const [localQueryId, setLocalQueryId] = useState<string | null>(null);
     const { setShareData, clearShareData } = useShareContext();
+
+    // 在地差異提示 (Probe 1) — gated OFF for real users by default. Enabled via build-time
+    // NEXT_PUBLIC_LOCALE_HINT_ENABLED='true', or per-browser via localStorage preview hatch
+    // (read in an effect to avoid an SSR/hydration mismatch on the static-exported page).
+    const [localeHintPreview, setLocaleHintPreview] = useState(false);
+    useEffect(() => {
+        if (typeof window !== 'undefined' && localStorage.getItem('vela_locale_hint_preview') === '1') {
+            setLocaleHintPreview(true);
+        }
+    }, []);
+    const localeHintEnabled = process.env.NEXT_PUBLIC_LOCALE_HINT_ENABLED === 'true' || localeHintPreview;
+    const localeHintCategories = (localeHintEnabled && lang === 'zh-TW' && !loading && answer)
+        ? detectLocaleCategories(question + '\n' + answer)
+        : [];
 
     const [plan, setPlan] = useState<'free' | 'pro'>(() => {
         if (typeof window === 'undefined') return 'free';
@@ -679,6 +695,10 @@ function ResearchForm() {
                     </div>
                 </div>
             </div>
+
+            {/* 在地差異提示 (Probe 1) — renders only when enabled + zh-TW + ≥1 category matched;
+                otherwise renders nothing (no layout shift). Does not alter answer/citations/disclaimer. */}
+            <LocaleHintPanel matchedCategories={localeHintCategories} lang={lang} />
 
             {answer && (
             <p className="text-xs mt-4 text-center" style={{ color: "rgb(var(--color-text) / 0.35)" }}>
