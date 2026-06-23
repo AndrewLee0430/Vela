@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, FormEvent, useRef, useEffect, useCallback } from 'react';
+import { useState, FormEvent, useRef, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/router';
 import { useAuth, useUser } from '@clerk/nextjs';
 import ReactMarkdown from 'react-markdown';
@@ -192,9 +192,12 @@ function ResearchForm() {
         }
     }, []);
     const localeHintEnabled = process.env.NEXT_PUBLIC_LOCALE_HINT_ENABLED === 'true' || localeHintPreview;
-    const localeHintCategories = (localeHintEnabled && lang === 'zh-TW' && !loading && answer)
-        ? detectLocaleCategories(question + '\n' + answer)
-        : [];
+    // Recompute against the COMPLETE final answer once streaming finishes. useMemo keyed on
+    // [answer, loading, …] guarantees a recompute when `answer` finalizes (gate requires !loading).
+    const localeHintCategories = useMemo(() => {
+        if (!(localeHintEnabled && lang === 'zh-TW' && !loading && answer)) return [];
+        return detectLocaleCategories(question + '\n' + answer);
+    }, [localeHintEnabled, lang, loading, question, answer]);
 
     const [plan, setPlan] = useState<'free' | 'pro'>(() => {
         if (typeof window === 'undefined') return 'free';
@@ -698,7 +701,7 @@ function ResearchForm() {
 
             {/* 在地差異提示 (Probe 1) — renders only when enabled + zh-TW + ≥1 category matched;
                 otherwise renders nothing (no layout shift). Does not alter answer/citations/disclaimer. */}
-            <LocaleHintPanel matchedCategories={localeHintCategories} lang={lang} />
+            <LocaleHintPanel matchedCategories={localeHintCategories} lang={lang} resetKey={localQueryId} />
 
             {answer && (
             <p className="text-xs mt-4 text-center" style={{ color: "rgb(var(--color-text) / 0.35)" }}>

@@ -12,8 +12,6 @@ import {
 // the dimensions that may differ in Taiwan and POINTS to TFDA/NHI for the user to verify —
 // it asserts no clinical fact and implies no TFDA/NHI integration (see localeHint.note).
 
-const DISMISS_KEY = 'vela_locale_hint_dismissed';
-
 const CAT_LABEL_KEY: Record<LocaleCategory, 'localeHintCatDosing' | 'localeHintCatReimbursement' | 'localeHintCatIndication' | 'localeHintCatContraindication'> = {
   dosing: 'localeHintCatDosing',
   reimbursement: 'localeHintCatReimbursement',
@@ -24,21 +22,20 @@ const CAT_LABEL_KEY: Record<LocaleCategory, 'localeHintCatDosing' | 'localeHintC
 interface LocaleHintPanelProps {
   matchedCategories: LocaleCategory[];
   lang: string;
+  resetKey?: string | null;   // changes per new query → re-shows a dismissed panel
 }
 
-export default function LocaleHintPanel({ matchedCategories, lang }: LocaleHintPanelProps) {
+export default function LocaleHintPanel({ matchedCategories, lang, resetKey }: LocaleHintPanelProps) {
   const ui = getUI(lang as LangCode);
   const authorities = getAuthoritiesForCategories(matchedCategories);
 
-  // Persisted dismissal across sessions (PRD §5.1).
+  // Dismissal is per-query: dismissing hides the CURRENT panel, but a NEW query (resetKey change)
+  // re-shows it. (Deliberate dogfood scoping — NOT the PRD §5.1 cross-session persistence, which
+  // permanently suppressed every later query and caused the "fires once then never again" bug.)
   const [dismissed, setDismissed] = useState(false);
-  useEffect(() => {
-    if (typeof window !== 'undefined' && localStorage.getItem(DISMISS_KEY) === '1') {
-      setDismissed(true);
-    }
-  }, []);
+  useEffect(() => { setDismissed(false); }, [resetKey]);
 
-  // Fire the display event once per mount of a rendered panel.
+  // Fire the display event once per query the panel is shown for.
   useEffect(() => {
     if (dismissed || !matchedCategories.length || !authorities.length) return;
     track('locale_hint_displayed', {
@@ -47,12 +44,11 @@ export default function LocaleHintPanel({ matchedCategories, lang }: LocaleHintP
       authorities_shown: authorities.map(a => a.short_name),
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dismissed]);
+  }, [resetKey, dismissed]);
 
   if (dismissed || !matchedCategories.length || !authorities.length) return null;
 
   const onDismiss = () => {
-    if (typeof window !== 'undefined') localStorage.setItem(DISMISS_KEY, '1');
     setDismissed(true);
     track('locale_hint_dismissed', { locale: 'TW' });
   };
