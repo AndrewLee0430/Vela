@@ -786,6 +786,15 @@ Phase 1B work items per advisor discussion 2026-05-04 (preserved in git commit 3
   - Frontend CitationPanel 顯示 Tier label 取代之前的 5 星 UI (e.g. 「Tier 2 / Systematic Review」)
   - i18n keys: 5 個 tier label × 16 語言 (可 repurpose 現有 dormant credibilityLabel 系列 keys)
 
+### [P2] Full-site DailyMed over-claim sweep (honesty) — NEAR-TERM, independent of DailyMed integration
+- **Source**: v184 post-deploy (C) check (2026-06-23) — the founder saw a signed-in Explain result whose footer "Data Sources & Attribution" still claims **"Drug label data from DailyMed (FDA/NLM)."** But DailyMed is **NOT integrated** — the real source is OpenFDA / FDA drug labels. Same overclaim already fixed in `/llms.txt` earlier today (`6d4ff86`, "FDA DailyMed" → "FDA drug labels"); that fix was **incomplete** — the Explain page footer (likely a SHARED component) + probably other surfaces still claim DailyMed.
+- **Why it matters**: honesty / accuracy — claiming an unintegrated data source misleads users / crawlers / B2B clients (same principle as `6d4ff86`). Doubly irrelevant on **Explain**, which interprets lab reports (LOINC / MedlinePlus / RxNorm) and does NOT use drug labels at all.
+- **Scope (FULL-SITE sweep, not page-by-page)**: grep the whole codebase for "DailyMed" overclaims (footer component, Verify page, landing, any served copy / attribution) and remove/soften each to the real sources (OpenFDA / FDA drug labels). One sweep — `/llms.txt` was fixed while the Explain footer was missed, so do it once across all surfaces.
+- **⚠️ TIMING — two SEPARATE sweeps doing OPPOSITE things; do NOT conflate or defer this to the integration:**
+  - **NOW (this item):** a current FALSE claim live in prod → REMOVE / soften the DailyMed attribution everywhere. Independent near-term honesty fix. **Do NOT wait for DailyMed integration** (Phase 1C+, may be reprioritized or never happen if OpenFDA suffices → deferring would leave a false claim live indefinitely).
+  - **LATER (when DailyMed is actually integrated — the [P0] DailyMed API integration item above):** the REVERSE — ADD/UPDATE real DailyMed attribution + `source_type` enum + frontend labels. This is **inherent to that integration task** (a feature launch updates its own public copy), so no separate task is recorded for it — but note this "removal" fix will be **SUPERSEDED** by a "correct attribution" step at integration time.
+- **Slot**: near-term (next docs/copy pass); cross-ref TECH_DEBT 2026-06-23 + `6d4ff86`.
+
 ### [P0] 在地差異提示 Tier 1 (TW/JP/KR/SG/MY/TH)
 - **Source**: ADR 004 (advisor discussion in git commit 394545e § 5.3 — advanced from Phase 1C to 1B per 護城河 rebalance)
 - **Why advanced**: Removing prescription parser frees 5-7 days; 在地差異 is core 護城河 (per ADR 004 wedge 2)
