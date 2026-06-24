@@ -194,10 +194,13 @@ function ResearchForm() {
     const localeHintEnabled = process.env.NEXT_PUBLIC_LOCALE_HINT_ENABLED === 'true' || localeHintPreview;
     // Recompute against the COMPLETE final answer once streaming finishes. useMemo keyed on
     // [answer, loading, …] guarantees a recompute when `answer` finalizes (gate requires !loading).
+    // Suppressed on no-retrieval/fallback answers (isFallback) — on those the answer is ungrounded
+    // ("基於一般醫學知識"), and the panel would lend it false local-authority credibility (stopgap;
+    // the deeper generator fix is a separate task).
     const localeHintCategories = useMemo(() => {
-        if (!(localeHintEnabled && lang === 'zh-TW' && !loading && answer)) return [];
+        if (!(localeHintEnabled && lang === 'zh-TW' && !loading && !isFallback && answer)) return [];
         return detectLocaleCategories(question + '\n' + answer);
-    }, [localeHintEnabled, lang, loading, question, answer]);
+    }, [localeHintEnabled, lang, loading, isFallback, question, answer]);
 
     const [plan, setPlan] = useState<'free' | 'pro'>(() => {
         if (typeof window === 'undefined') return 'free';

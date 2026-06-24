@@ -52,16 +52,22 @@ export const TW_AUTHORITIES: LocaleAuthorities = {
   ],
 };
 
-// v0 STARTING POINT keyword map — these are MEANT TO BE TUNED during dogfood (see
-// docs/locale_hint_dogfood_queries.md). Keep each category's list editable here in one place.
+// Keyword map — TUNED BY DOGFOOD (see docs/locale_hint_dogfood_queries.md). Keep each category's
+// list editable here in one place. PRECISION over coverage.
 // NOTE: '交互作用' (interaction) and '不良反應/副作用' (adverse-effects/side-effects) are
-// DELIBERATELY excluded for v0 — they appear in many general answers and would over-fire.
-// The dogfood "TRICKY" cases probe exactly this boundary; we decide after eyeballing.
+// DELIBERATELY excluded — they appear in many general answers and would over-fire.
+// 2026-06-24 NARROWING (dogfood: v0 over-fired — any sufficiently complete drug answer contains a
+// number or a boilerplate 禁忌 section, so the panel read as wallpaper). Dosing/contraindication
+// were narrowed to DECISION/STRONG-signal terms only:
+//  - dosing: dropped the over-broad 劑量/用量/dose/dosage/mg/劑型 (mere mention of a number) — kept
+//    only decision-oriented terms (起始/最大/調整 劑量, titrat, regimen).
+//  - contraindication: dropped the over-broad 禁忌/禁忌症/注意事項/警語/contraindicat/warning
+//    (boilerplate "禁忌與警示" sections) — kept only strong, locally-relevant ones (黑框警告 / boxed warning).
 const KEYWORDS: Record<LocaleCategory, string[]> = {
-  dosing: ['劑量', '用量', '劑型', '起始劑量', '最大劑量', '調整劑量', '每日劑量', 'dose', 'dosage', 'titrat', 'mg', 'regimen'],
+  dosing: ['起始劑量', '最大劑量', '調整劑量', '劑量調整', '每日劑量', 'titrat', 'regimen'],
   reimbursement: ['給付', '健保', '自費', '給付條件', '給付規定', '部分負擔', '事前審查', 'health insurance', 'reimburse', 'coverage', 'formulary', 'copay'],
   indication: ['適應症', '核准適應症', '仿單', '許可證', '核准用途', '標示外', 'indication', 'approved use', 'label', 'off-label', 'licensed'],
-  contraindication: ['禁忌', '禁忌症', '黑框', '黑框警告', '警語', '注意事項', 'contraindicat', 'black box', 'boxed warning', 'warning'],
+  contraindication: ['黑框', '黑框警告', 'black box', 'boxed warning'],
 };
 
 const CATEGORY_ORDER: LocaleCategory[] = ['dosing', 'reimbursement', 'indication', 'contraindication'];
