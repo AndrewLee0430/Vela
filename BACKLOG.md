@@ -795,11 +795,25 @@ Phase 1B work items per advisor discussion 2026-05-04 (preserved in git commit 3
   - **LATER (when DailyMed is actually integrated — the [P0] DailyMed API integration item above):** the REVERSE — ADD/UPDATE real DailyMed attribution + `source_type` enum + frontend labels. This is **inherent to that integration task** (a feature launch updates its own public copy), so no separate task is recorded for it — but note this "removal" fix will be **SUPERSEDED** by a "correct attribution" step at integration time.
 - **Slot**: near-term (next docs/copy pass); cross-ref TECH_DEBT 2026-06-23 + `6d4ff86`.
 
+### [P1] Research fabricates Taiwan reimbursement/regulatory specifics on no-retrieval (isFallback) answers (honesty / medical-safety) — Q2-a next-task candidate, DO NOT implement yet
+- **Source**: 在地差異 Probe 1 dogfooding (2026-06-24). Query 「warfarin 健保給付」 returned a **no-retrieval (`isFallback`) answer** — the 「未找到相關文獻 / 基於一般醫學知識」 banner WAS shown — yet the answer body still enumerated specific Taiwan 健保 details (**適應症範圍 / 給付限制 / 申請程序**) generated from model memory. So Research asserts fabricated Taiwan reimbursement/regulatory rules as fact even when it retrieved NOTHING and has already told the user so.
+- **Why it matters (honesty + medical-safety — same family as the DailyMed over-claim above)**: reimbursement/regulatory specifics are exactly the locally-variable, high-confidence-wrong facts an LLM should NOT invent — a wrong 給付條件 or 申請程序 is directly actionable and harmful, and emitting it UNDER a 「未找到相關文獻」 banner is internally contradictory (the banner says "no evidence" while the body asserts specifics). This is the **backend/LLM counterpart** to the frontend 在地差異提示 panel: the panel correctly says "verify with NHI", but the answer body is the thing doing the fabricating.
+- **Scope / fix-direction (NOT decided — Q2 task)**: when an answer is `isFallback` (no retrieval), the generator should **SUPPRESS or heavily hedge** locale-specific regulatory/reimbursement specifics (適應症範圍 / 給付限制 / 申請程序 / dosing thresholds) instead of emitting them from memory — a no-retrieval reimbursement/regulatory question should decline the specifics and point to the authority, not list invented rules. Mechanism (generator prompt vs post-filter) is for the Q2 task to decide.
+- **⚠️ DO NOT implement now** — recorded as the **Q2-a next-task candidate**. Distinct from the 在地差異 Tier 1 item below (that's the frontend pointer panel; THIS is the backend fabrication). Cross-ref the DailyMed over-claim sweep above (same honesty principle) + the reversal-defense retrieval-miss family (no-retrieval answers are the fragile path).
+- **Slot**: Q2 (next-task candidate); NOT Phase 1B Week-scheduled.
+
 ### [P0] 在地差異提示 Tier 1 (TW/JP/KR/SG/MY/TH)
 - **Source**: ADR 004 (advisor discussion in git commit 394545e § 5.3 — advanced from Phase 1C to 1B per 護城河 rebalance)
 - **Why advanced**: Removing prescription parser frees 5-7 days; 在地差異 is core 護城河 (per ADR 004 wedge 2)
+- **Status (2026-06-24) — only a thin Probe-1 slice is done; the shippable Tier 1 is NOT done.** A FRONTEND-ONLY **Probe 1** dogfood slice is DEPLOYED flag-OFF (v186→v188, invisible to all real users): **Taiwan ONLY · Research ONLY · a frontend TypeScript constant (`utils/localeHint.ts`) NOT a YAML backend · i18n only zh-TW+en filled (other 14 langs are EN placeholders w/ `// TODO i18n`) · flag `NEXT_PUBLIC_LOCALE_HINT_ENABLED` OFF**. Deterministic keyword trigger + frontend panel (`components/LocaleHintPanel.tsx`), dogfood-validated (eval set `docs/locale_hint_dogfood_queries.md`); **NO LLM classifier needed**. This is a probe to de-risk the UX/trigger, NOT the shippable Tier 1.
+- **Remaining to ship Tier 1 (re-prioritizable — NOT a fixed order):**
+  - **(a) enable-for-all-zh-TW** — flip `NEXT_PUBLIC_LOCALE_HINT_ENABLED` ON, but ONLY after the full **human-eye acceptance gate** (`docs/locale_hint_dogfood_queries.md`) passes. The flag is the switch; the gate is the precondition.
+  - **(b) expand to JP/KR/SG/MY/TH** — ⚠️ the current `lang==='zh-TW'` gate is a **response-language proxy, NOT a locale**: it can't distinguish SG/MY (English-speaking locales) and would mis-target. A real **locale-detection waterfall** (explicit user locale → … → response-language fallback) must be built FIRST, before adding the other 5 countries' authorities.
+  - **(c) extend to Verify + Explain** — Probe 1 is Research-only; the panel/trigger need wiring into the other two features.
+  - **(d) complete all 16 i18n languages** — only zh-TW + en are real copy today; the other 14 are EN placeholders.
+  - **(e) promote the TS constant → YAML backend data layer** with curation + a healthcheck (the data was deliberately schema-shaped in `localeHint.ts` to port cleanly; the authority URLs need periodic review).
 - **Implementation**: YAML schema design + 6-country data curation + backend retrieval integration + frontend UI (side panel + tooltip) + 16-lang i18n
-- **Estimated**: 6-7 days
+- **Estimated**: 6-7 days (Probe 1 slice already spent on the frontend trigger/panel/UX)
 - **Slot**: Phase 1B Week 5-6
 - **Integration scope**: Augments Research/Verify/Explain (not new tab) — show "在地差異提示" alongside results
 

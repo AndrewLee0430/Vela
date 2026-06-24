@@ -17,6 +17,12 @@ When entries are resolved, mark with the resolving commit SHA (git log is the re
 
 ---
 
+- **[P2 · tooling / lint] ESLint v9 config-migration breakage — `npm run lint` fails repo-wide (pre-existing, not a code error) (2026-06-24)**
+  - **What:** the installed ESLint is 9.x (flat-config era) but the repo still carries the old `.eslintrc`-style config. ESLint 9 expects an `eslint.config.js` flat config and errors out before linting, so `npm run lint` exits 2 **repo-wide** — it fails on files we never touched (e.g. `pages/verify.tsx`). This is a **config-migration breakage, NOT a code lint error**: the failure is the same on a clean checkout regardless of the diff under review.
+  - **Impact:** the lint safety net is **effectively disabled repo-wide** — `npm run lint` can't be used to gate any change until the config is migrated. **`next build` is unaffected/green** and remains the real deploy gate (TypeScript + build errors still caught), so this does NOT block deploys; it only removes the ESLint layer.
+  - **Fix-direction:** migrate `.eslintrc` → `eslint.config.js` (flat config) OR pin ESLint back to 8.x — a deliberate tooling task, not urgent. Until then, do not read a red `npm run lint` as a signal about the change under review.
+  - **Discovered:** 2026-06-24 during the 在地差異提示 Probe 1 deploys (ran `npm run lint` on the frontend-only diff; it failed on unrelated pre-existing files).
+
 - **[P2 · honesty / public-copy accuracy] Incomplete DailyMed over-claim fix — Explain footer (+ likely a shared component) still claims DailyMed as a current source (2026-06-23)**
   - **What:** the `/llms.txt` honesty fix earlier today (`6d4ff86`, "FDA DailyMed" → "FDA drug labels", because the real source is OpenFDA not DailyMed) was **incomplete**. During the v184 post-deploy (C) check, a signed-in Explain footer "Data Sources & Attribution" still claims **"Drug label data from DailyMed (FDA/NLM)."** The footer is likely a SHARED component, so other surfaces (Verify page, landing) probably carry the same overclaim.
   - **Framing:** same honesty principle as `6d4ff86` — do not claim a data source we don't have (misleads users / crawlers / B2B). Doubly irrelevant on Explain, which uses LOINC/MedlinePlus/RxNorm and no drug labels at all.
