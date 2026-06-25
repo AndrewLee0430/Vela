@@ -17,13 +17,13 @@ When entries are resolved, mark with the resolving commit SHA (git log is the re
 
 ---
 
-- **[P2 · tooling / lint] ESLint v9 config-migration breakage — `npm run lint` fails repo-wide (pre-existing, not a code error) (2026-06-24)**
-  - **What:** the installed ESLint is 9.x (flat-config era) but the repo still carries the old `.eslintrc`-style config. ESLint 9 expects an `eslint.config.js` flat config and errors out before linting, so `npm run lint` exits 2 **repo-wide** — it fails on files we never touched (e.g. `pages/verify.tsx`). This is a **config-migration breakage, NOT a code lint error**: the failure is the same on a clean checkout regardless of the diff under review.
-  - **Impact:** the lint safety net is **effectively disabled repo-wide** — `npm run lint` can't be used to gate any change until the config is migrated. **`next build` is unaffected/green** and remains the real deploy gate (TypeScript + build errors still caught), so this does NOT block deploys; it only removes the ESLint layer.
-  - **Fix-direction:** migrate `.eslintrc` → `eslint.config.js` (flat config) OR pin ESLint back to 8.x — a deliberate tooling task, not urgent. Until then, do not read a red `npm run lint` as a signal about the change under review.
-  - **Discovered:** 2026-06-24 during the 在地差異提示 Probe 1 deploys (ran `npm run lint` on the frontend-only diff; it failed on unrelated pre-existing files).
+- **[P2 · tooling / lint] ESLint flat-config breakage — `npm run lint` failed repo-wide — ✅ RESOLVED 2026-06-25 (`eslint.config.mjs` added)**
+  - **Correct cause (the earlier 2026-06-24 note MISDIAGNOSED this as "repo still carries the old `.eslintrc`" — verified WRONG: there was NO `.eslintrc*` AND NO `eslint.config.*` of any kind):** ESLint 9 + a bare `"lint": "eslint"` script + **no config file at all** → ESLint 9 errors before linting, so `npm run lint` exited non-zero repo-wide (NOT a code lint error — identical on a clean checkout). The repo already shipped the flat-config deps (`@eslint/eslintrc` FlatCompat shim + `eslint-config-next` 15.5.5); only the config file was missing.
+  - **Fix (this commit):** added the standard Next.js 15 flat config `eslint.config.mjs` (FlatCompat → `next/core-web-vitals` + `next/typescript`, plus a build-artifact `ignores` block) + set `eslint.ignoreDuringBuilds: true` in `next.config.ts` so `next build` keeps its pre-existing behavior (it did NOT run ESLint while the config was missing → build stays the deploy gate, lint is a standalone net). `npm run lint` now RUNS.
+  - **NEW follow-up (separate task — deliberately NOT fixed here):** with lint working again it surfaces **7 errors + 14 warnings of PRE-EXISTING lint debt** (e.g. `@typescript-eslint/no-explicit-any` in `explain.tsx`/`research.tsx`/`verify.tsx`; `react/no-unescaped-entities` + `@next/next/no-html-link-for-pages` in `terms.tsx`; assorted unused-vars / `react-hooks/exhaustive-deps` warnings). Real findings in existing code, left for a dedicated lint-cleanup pass. Do NOT mass-autofix.
+  - **Was DUPLICATED** in BACKLOG "ESLint flat-config migration" (Stage-4 S4.4) — that entry described the cause correctly; consolidated here, removed there.
 
-- **[P2 · honesty / public-copy accuracy] Incomplete DailyMed over-claim fix — Explain footer (+ likely a shared component) still claims DailyMed as a current source (2026-06-23)**
+- **[P2 · honesty / public-copy accuracy] Incomplete DailyMed over-claim fix — Explain footer (+ likely a shared component) still claims DailyMed as a current source (2026-06-23)** — **[ONE task tracked in two docs: this ↔ BACKLOG [P2] "Full-site DailyMed over-claim sweep"; do the sweep once. Copy deliberately NOT changed in the 2026-06-25 cleanup. Verified 2026-06-25: "DailyMed" still in `i18n-ui.ts` / `sourceLabels.ts` / `pages/explain.tsx` / `i18n-faq.ts`.]**
   - **What:** the `/llms.txt` honesty fix earlier today (`6d4ff86`, "FDA DailyMed" → "FDA drug labels", because the real source is OpenFDA not DailyMed) was **incomplete**. During the v184 post-deploy (C) check, a signed-in Explain footer "Data Sources & Attribution" still claims **"Drug label data from DailyMed (FDA/NLM)."** The footer is likely a SHARED component, so other surfaces (Verify page, landing) probably carry the same overclaim.
   - **Framing:** same honesty principle as `6d4ff86` — do not claim a data source we don't have (misleads users / crawlers / B2B). Doubly irrelevant on Explain, which uses LOINC/MedlinePlus/RxNorm and no drug labels at all.
   - **⚠️ Two-sweeps timing (do NOT conflate):** **remove-NOW** (a current false claim → near-term honesty fix, independent of integration; do NOT defer to "whenever DailyMed is integrated" — that's Phase 1C+ and may never happen, which would leave the false claim live indefinitely) vs **add-real-AT-integration** (when DailyMed actually lands, the reverse step — add correct attribution + enum + labels — is inherent to that task and supersedes this removal).
@@ -107,7 +107,7 @@ When entries are resolved, mark with the resolving commit SHA (git log is the re
   - Stage-1 golden eval: the digoxin-toxicity answer omits canonical toxicity features — nausea/vomiting + visual disturbances. Same family as the canonical-term under-coverage entry below; batch into the Week-4 Research system-prompt polish.
   - **Discovered**: 2026-06-13 during Task-A QA Stage 1 (`golden_results_20260613_144748.json`).
 
-- **[P2 · test infra] Golden-runner `response_language` staleness after the v179 UI-language change**
+- **[P2 · test infra] Golden-runner `response_language` staleness after the v179 UI-language change** — **[ONE item with BACKLOG "Test infra — multilingual response_language assertion completeness" (same root: thread `response_language` for all multilingual cases + an audit net); track as one.]**
   - v179 made Research's answer language UI-driven (`response_language`), so the golden runner must **send `response_language`** before any multilingual-number / language-assertion case is valid. Not doing so produced **6 false FAILs** in Stage-1 (harness artifact, NOT a product regression — part of the 22/24 contaminated FAILs).
   - **Resolution (record-only)**: thread `response_language` for all multilingual cases + an audit that flags any multilingual golden case missing it. Cross-ref BACKLOG "Test infra — multilingual response_language assertion completeness" (same root, now with a concrete failure count).
   - **Discovered**: 2026-06-13 during Task-A QA Stage 1.
@@ -116,7 +116,7 @@ When entries are resolved, mark with the resolving commit SHA (git log is the re
   - The input guard blocked **11** colloquial symptom-phrased queries in Stage-1 (counted as FAILs but actually guard behavior, not content failure — part of the 22/24 contaminated FAILs). **Open call**: is blocking colloquial symptom phrasing the correct safety behavior, or an access regression that frustrates real users (esp. B2C lay phrasing)? Needs a product/safety decision, NOT a silent fix. Decide before launch.
   - **Discovered**: 2026-06-13 during Task-A QA Stage 1.
 
-- **[P1 · mitigation feasibility — assessed, NOT built] Contradiction / NLI gate**
+- **[P1 · mitigation feasibility — assessed, NOT built] Contradiction / NLI gate** — **[= the same mitigation as BACKLOG §706a (b) post-hoc direction checker, which is the AUTHORITATIVE tracker (built + shadow-validated → FAILED real-data 2026-06-17, needs rework/reroute). This entry is the original feasibility note; defer to §706a + the P0 "Direction-of-effect reversal" entry.]**
   - **Verdict: PARTIAL mitigation, not reliable catching.** The streaming architecture streams answer tokens to the client while citations are only resolved at the end of the stream — so there is no clean pre-return choke point. A gate must either **buffer** the whole answer before returning (kills the streaming UX) or run **post-hoc** (flag-only — can surface a warning but cannot block the already-streamed answer). Abstract-only judging also can't reliably separate *contradicts* from *terse-abstract* → a false-positive killer if used as a hard gate. Build size **M–L**. (Confirm exact `server.py` stream/citation line refs at build time.)
   - Maps to advisor **Phase-2 "contradiction circuit-breaker."** Recorded as feasibility context for the OPEN route decision — not a committed build.
   - **Discovered**: 2026-06-14 during Task-A QA (gate feasibility assessment).
@@ -152,30 +152,8 @@ When entries are resolved, mark with the resolving commit SHA (git log is the re
   - Resolution: drop both interface fields + all 16×2 locale values (and the two legacy `statusMap` fallback lines in `research.tsx`) in the same scripted i18n cleanup pass as the `evidence*` keys. Verify `npm run build` after.
   - Discovered: 2026-06-10 during the Research multi-step status change.
 
-- **[P2 → Phase 1B Week 4 polish] Verify 答案品質 nuance issues — dogfooding 發現 (2026-05-06)**
-  - **背景**: solo founder 2026-05-06 dogfood query「為什麼亞洲老年人 polypharmacy 問題嚴重」的人工 review。所有 4 個 citation 真實存在 (PMID 38368398, 35268461, 37968631, 37574369)，無 hallucination。Retrieval 基礎正常運作。
-  - **發現 5 個 nuance issues**:
-    1. **Citation scope mismatch detection**: retrieval 取回的 citation population scope 與 query population scope 不 match 時，LLM 沒識別、沒 flag，silent 混入結論。範例：query「亞洲老年人」、retrieval 取回 PMID 37968631 (UK 東倫敦巴基斯坦移民老年人)，LLM 把它當作亞洲在地 evidence 引用。
-    2. **Geographic over-generalization**: query 涉及廣域地理 (亞洲、全球、東亞)，LLM 沒 flag「我有哪些地區的 evidence、沒有哪些」。範例：query「亞洲老年人」、evidence 只覆蓋中國 + 馬來西亞 + 東倫敦巴基斯坦移民，沒有日韓泰越，但答案 framing 為通用「亞洲」結論。
-    3. **Citation ranking bias toward recency over scope match**: 對 query 最 match 的 citation 沒被推到 anchor 位置。範例：query「亞洲社區老年人 polypharmacy」最 match 的是 PMID 37574369 (馬來西亞 primary care 393 人)，但 ranking 在第 4 位，前 3 位是中國 inpatient research，scope 較窄。
-    4. **Counterintuitive finding 缺乏 mechanism explanation**: statistical association 直接呈現給使用者，沒附背後的 mechanism。範例：「多重用藥與死亡率略低相關」一般使用者會誤讀為「多吃藥較好」，實際 ChiOTEAF 研究的 mechanism 是「房顫族群中積極治療反映」。
-    5. **LLM 自我評價字句**: 答案結尾出現「參考文獻均來自 2022 年以後，證據屬於近期且具代表性」這類 LLM 自評。應禁止 LLM 評價自己引用的品質。
-  - **影響範圍**: 對藥師讀者影響 medium (會自己判讀)，對一般使用者影響 high (誤導風險)。不是 broken system，是 polish issue。
-  - **Resolution**: 拆兩個 task 對應 Phase 1B
-    - **Task A (Week 4)**: issue #1, #2, #4, #5 為 system prompt 類，順手放進 Verify 強制英文 + drug name resolution (ADR 003) 的 verify_system.md 修改階段。預估 system prompt polish 工時 +0.5-1 天 (Week 4 從 1.5-2 天延長到 2-2.5 天)。
-    - **Task B (Week 7-8)**: issue #3 為 RAG retrieval ranking 改進，需單獨 evaluate。風險：改 ranking 演算法會影響所有 query 的答案，需要 regression test。建議在 Week 7-8 polish 階段 evaluate，視 risk 決定 Phase 1B vs Phase 1C 排程。
-  - **驗證方法**: 持續 dogfooding 累積 5-10 個 query 樣本，混合 narrow query (e.g. metformin 腎功能調整) + broad query (e.g. 亞洲心血管疾病) + 邊緣 query (e.g. 越南藥品 BPOM 等同)，確認上述 issue 是系統性問題或 edge case。
-  - **與顧問視角的對齊**: 另一顧問 review 同一份答案認為品質「臨床產品水準、零幻覺」。本 entry 不否定該視角 (retrieval 基礎沒壞、citation 真實、訊息萃取成功)，但採嚴格標準 polish 以對齊 PRD § 0.1 醫療專業者 TA 的 evidence rigour 期待。對 B2C 受眾另一顧問標準也合理。
-  - **Discovered**: 2026-05-06 during solo founder dogfooding session
-
-- **[P0 — Must resolve in 2.8]** localhost Clerk sign-in flow missing
-  - **Partial progress**: Auth split (require_auth + require_auth_or_anonymous) completed in Round 1 (7a8c5a8). Remaining 3 items for Round 2 (frontend sign-in pages + ClerkProvider config + Clerk SDK config verification).
-  - Root cause: `_app.tsx` ClerkProvider 使用 Clerk Hosted mode (no `signInUrl` / `signUpUrl` props), localhost 無法登入建立 session
-  - Evidence: 2.4 localhost testing 時,前端無法登入;curl 用 production `await Clerk.session.getToken()` 取新鮮 JWT 測試後端,user_id 正確寫入 DB (user_3BQM...) → 證明 code 正確,只是環境限制
-  - Resolution in 2.8:
-    1. 加 `pages/sign-in/[[...index]].tsx` 和 `pages/sign-up/[[...index]].tsx`
-    2. `_app.tsx` ClerkProvider 加 `signInUrl="/sign-in"` / `signUpUrl="/sign-up"` / fallback redirect URLs
-    3. 補 AUTHORIZED_PARTIES config if Clerk SDK 要求
+- **[P2 → mostly SHIPPED] Verify 答案品質 nuance issues — dogfooding 發現 (2026-05-06) — 4/5 DONE, only #3 survives**
+  - The 2026-05-06 dogfooding 5-issue set (query「為什麼亞洲老年人 polypharmacy 問題嚴重」, all citations real / 0 hallucination) is mostly shipped: **#1 citation-scope-mismatch + #2 geographic-coverage → Research v185 (`20a84c9`)**; **#5 no-self-rating → Verify v184 (`bf1c5ec`)**; **#4 counterintuitive-mechanism → absorbed by the reversal-defense direction-of-effect chain** (see the TECH_DEBT P0 "Direction-of-effect reversal" entry + BACKLOG §706a). **Only #3 survives** = citation-ranking bias toward recency over scope-match (the best-match PMID 37574369, Malaysia primary-care 393pt, ranked 4th behind narrower China inpatient studies) → tracked as **BACKLOG [P2] "Citation retrieval ranking evaluation"** (pre-req: 5-10 dogfooding samples) + the related "Research canonical-term under-coverage" entry below. (Original 5-issue diagnosis preserved in git history pre-trim.)
 
 - **[P1 → Round 2B + 3 完成後一起 E2E 測試]** Clerk email sign-up/sign-in end-to-end 驗證
   - **背景**: 2026-04-22 localhost /sign-in 已確認 Clerk Development instance 有 email input(切 Dev instance + 啟用 email code verification 後解決)。Production instance email 設定也已確認 ON。
@@ -337,13 +315,6 @@ When entries are resolved, mark with the resolving commit SHA (git log is the re
   - **Priority**: P2 — gates non-en production traffic at scale (Tier 1 GTM expansion to JP/KR/ID/VN/PH would require this). Not blocking soft launch in en + zh-TW markets if both legal pages have at least zh-TW translation by then. Consider doing zh-TW first as a Phase 1A gate (since zh-TW is Vela's home market), then ja + ko before Phase 1B Tier 1 expansion.
   - **Discovered**: 2026-05-08 during §4.5 PHASE D recon (commit 6f7a154 follow-up).
 
-- **[P3]** scripts/cost_report_7d.py untracked file
-  - **現況**: `git status` consistently shows `scripts/cost_report_7d.py` as untracked across multiple §4.5 commits (PHASE B onward). Out of §4.5 scope; not committed nor gitignored.
-  - **Risk**: minor — untracked file accumulates noise in `git status`. Could be ops tooling, dead exploration, or pending feature.
-  - **Resolution**: at Phase 0 Retrospective, decide one of: (a) commit if it's wanted ops tooling, (b) `.gitignore` if it's dev-only artifact, (c) delete if dead.
-  - **Priority**: P3 — quality-of-life only.
-  - **Discovered**: 2026-05-05 during §4.5 PHASE B; persisted through subsequent commits.
-
 - **[P3]** Backend dotenv loader doesn't read .env.local
   - **現況**: FastAPI backend reads `.env` but NOT `.env.local`. During §4.5 PHASE B local dev, user set `VELA_PUBLIC_BASE_URL=http://localhost:3000` in `.env.local` (Next.js convention) but backend continued falling back to production URL hardcoded default. User had to set `$env:VELA_PUBLIC_BASE_URL` via PowerShell process env to override.
   - **Risk**: dev quality-of-life paper cut. Easy to accidentally generate share URLs pointing to production from localhost. (Did happen once during this work — user spent 30min debugging "share URL goes to production landing page" before identifying the env-loading mismatch.)
@@ -391,14 +362,14 @@ When entries are resolved, mark with the resolving commit SHA (git log is the re
   - **Priority**: P3 — quality-of-life / future maintenance.
   - **Discovered**: 2026-05-13 during §2.1 PHASE B (wiring 3 Low files to Provider abstraction).
 
-- **[P2 → Phase 1A §3.1] Clerk publicMetadata.plan dormant dual-source vs user_usage.plan_type — discovered 2026-05-19 pre-deploy audit**
+- **[P2 → Phase 1A §3.1] Clerk publicMetadata.plan dormant dual-source vs user_usage.plan_type — discovered 2026-05-19 pre-deploy audit** — **[CONSOLIDATED: 1 of 3 user-lifecycle-governance items (this + the `user.deleted` webhook entry below + BACKLOG "Deletion-feature C", the superset); resolve together under one user-lifecycle ADR per §3.1.]**
   - **背景**: Frontend `_app.tsx` PostHog identify() reads `publicMetadata.plan` and forwards as person property. Backend gating uses `user_usage.plan_type` exclusively. Manual Clerk Dashboard inspection of the only real Pro user (user_3BN1HkLU7kw7458c351oqMVwmv9, Andrew personal) confirmed `publicMetadata.plan` has never been written. TypeScript signature suggests alternative source-of-truth that doesn't exist in practice.
   - **影響範圍**: No active drift today (publicMetadata.plan reads `undefined` → fallback path). Risk surfaces if any external system (Clerk Dashboard rule, future webhook, manual admin action) writes `publicMetadata.plan` without coordinating with user_usage. Then frontend identify() and backend gate disagree on plan_type, silently. PostHog person properties become unreliable for plan-segmented analytics.
   - **Resolution**: Phase 1A §3.1 audit decision G4 already taken: user_usage.plan_type is authoritative; drop publicMetadata.plan read path from `_app.tsx::identify()`. Concrete change: remove `plan` property from `publicMetadata` TypeScript signature in `types/clerk.ts` (or equivalent); update `_app.tsx::identify()` to source plan_type from backend `/api/user/usage` instead.
   - **驗證方法**: After fix, verify `_app.tsx` no longer references `publicMetadata.plan`; PostHog identify event includes `plan_type` from backend response.
   - **Discovered**: 2026-05-19 pre-deploy DB state audit (3 Pro users in user_usage: 1 real + 1 orphan-now-cleaned + 1 TEST_MODE marker; orphan row had `dodo_customer_id = test_cust_*` Dodo sandbox leftover, cleaned same session)
 
-- **[P2 → Phase 1A §3.1] Clerk user.deleted webhook → user_usage cleanup not wired — discovered 2026-05-19**
+- **[P2 → Phase 1A §3.1] Clerk user.deleted webhook → user_usage cleanup not wired — discovered 2026-05-19** — **[CONSOLIDATED: the Clerk `user.deleted` webhook is also one of the 3 Triggers in BACKLOG "Deletion-feature C" (the superset record); this entry = the `user_usage`-cleanup slice. Verified 2026-06-25: still no `/api/webhooks/clerk` handler. Pair with the publicMetadata.plan entry above under one user-lifecycle ADR.]**
   - **背景**: user_3B939OrkarbJWpfTT8nCi9kDJ1B was deleted from Clerk Dashboard at unknown earlier date but user_usage row persisted with plan_type='pro'. No automatic sync between Clerk user.deleted webhook and user_usage table. Manually cleaned 2026-05-19 via psycopg2 transaction; full backup preserved in docs/retrospectives/phase-0-2026-05.md § 1.2.
   - **影響範圍**: Low for current production scale (1 known orphan row in 2 months). Risk compounds over time + after soft launch: deleted users leave dangling user_usage rows skewing plan_type distribution analytics, holding stale Dodo customer references, no path for Right-to-Erasure GDPR compliance.
   - **Resolution**: Phase 1A §3.1 scope. Wire Clerk webhook `user.deleted` event to a new handler in `api/server.py` that performs (soft-delete vs hard-delete decision TBD during §3.1 work) on the user_usage row. Decision tradeoff: hard-delete simpler but loses analytics history; soft-delete (e.g. `deleted_at` timestamp column) preserves history but adds complexity to all queries.

@@ -745,29 +745,12 @@ Follow-ups to the **TECH_DEBT P0 "Direction-of-effect reversal on counterintuiti
 
 Phase 1B work items per advisor discussion 2026-05-04 (preserved in git commit 394545e) and ADR 003+004. Slot ranges from Week 4-8 of Phase 1B (5-week timeline).
 
-### [P1] Explain risk-tier over-escalation — magnitude-aware tiering
-- **Source**: production observation 2026-05-21 (solo-founder review)
-- **Observed**: a panel with AST 68 / ALT 92 / Total Bilirubin 2.1 (all mild-moderate elevations, ALT ~2.2× ULN) produced a RED "Consult Immediately" clinical-correlation tier. Individual items correctly showed yellow "Needs Attention", but the correlation escalated to the highest tier purely from multiple simultaneous abnormalities, not from magnitude.
-- **Why this matters**:
-  - (a) risks alarming users / "boy who cried wolf" trust fatigue on a trust-critical medical product
-  - (b) signal mismatch — the correlation's own text said "Further evaluation is recommended" (mild/objective) while the UI badge was RED (emergency)
-- **Fix DIRECTION (not yet designed)**: the risk-tier upgrade logic in `api/prompts/explain_system.md` should weight deviation magnitude (multiples of ULN) — e.g. LFTs <3× ULN → yellow/orange (monitor / outpatient), reserve RED for very high multiples or critical values — rather than escalating on "multiple abnormalities stacked". Consider symptom-conditional escalation (give yellow + a dynamic prompt "if you also have severe abdominal pain / jaundice, seek care now") instead of a static red.
-- **CAUTION**: this edits `api/prompts/explain_system.md` which is covered by the §2.7 20-case ExplainJudge acceptance baseline — any change must re-run that baseline (per PRD §2.7 Step 8 + CLAUDE.md Rule 17).
-- **Slot**: Phase 1B Week 4 (alongside Verify system prompt polish — both touch prompts and share the §2.7 re-baseline gate)
-- **Estimated**: 0.5–1d design + 0.5d re-baseline
+### [P1] Explain risk-tier over-escalation — magnitude-aware tiering — ✅ SHIPPED v184 (2026-06-23, `bf1c5ec`)
+- **DONE.** `explain_system.md` v6 §4 rule #3 made correlation tiering magnitude-aware (multi-item correlations tiered by SEVERITY not count; LFTs <3× ULN → yellow even when several abnormal; reserve red for critical-threshold/urgent values; yellow + symptom-conditional otherwise). The documented AST 68/ALT 92/Bili 2.1 panel that v5 over-escalated to RED now tiers the correlation YELLOW + symptom-conditional (live-confirmed). §2.7 Explain re-baseline 19/20 = 95.0% gate held; founder clinical eyeball accepted on prod. (STATE Recently-Shipped v184.)
 
-### [P0] Verify 強制英文 + 友善引導 + system prompt polish
-- **Source**: ADR 003 (advisor discussion notes preserved in git commit 394545e § 5.1) + dogfooding TECH_DEBT entry 2026-05-06
-- **Implementation**:
-  - Frontend input field guard + non-English detection + inline warning UI + 7 i18n keys × 16 languages + 4 PostHog events (per ADR 003)
-  - System prompt polish (per dogfooding TECH_DEBT 2026-05-06 issues #1, #2, #4, #5):
-    - Citation scope mismatch flagging (LLM 在使用每個 citation 前須 explicit assess population scope match)
-    - 廣域地理 query 須明確列出 evidence 涵蓋區域 vs 缺口區域
-    - Counterintuitive finding 須附 plausible mechanism，不能只給 statistical association
-    - 禁止 LLM 自評引用品質 (例如「證據屬於近期且具代表性」字句)
-- **Estimated**: 2-2.5 days (原 1.5-2 days + system prompt polish 0.5 day)
-- **Slot**: Phase 1B Week 4
-- **External help links**: TFDA / Drugs.com / PMDA / MFDS (read-only links, NOT API integration)
+### [P0] Verify 強制英文 + 友善引導 + system prompt polish — ✅ SHIPPED (v183 + v184/v185)
+- **DONE.** Force-English input guard + non-Latin detection + inline warning UI + 7 i18n keys × 16 + 4 PostHog events → **v183 (`cee0b9f`/`8509441`)**. System-prompt polish: **#1 citation-scope + #2 geographic-coverage → Research v185 (`20a84c9`)**; **#5 no-self-rating → Verify v184 (`bf1c5ec`)**; **#4 counterintuitive-mechanism → absorbed by the reversal-defense direction-of-effect chain** (BACKLOG §706a). (STATE Recently-Shipped v183/v184/v185.)
+- **Residual — STILL OPEN, tracked separately (do NOT close with this item):** the "仍要送出（不建議）" proceed-anyway path still lets the LLM confident-wrong map a Chinese brand→ingredient (e.g. 冠脂妥 → rosuvastatin, mis-identified as simvastatin). That's a deterministic-lookup grounding task → **Phase 1C "Taiwan brand-name → ingredient grounding"** + TECH_DEBT 2026-06-22.
 
 ### [P0] DailyMed API integration
 - **Source**: advisor discussion notes (git commit 394545e § 5.2)
@@ -1051,8 +1034,7 @@ Two i18n content drifts surfaced during Stage 2 landing redesign (Steps 2 / 4a /
 - [ ] **Hero copy not aligned to STATE.md Stage 2 locked spec**
       STATE.md "Next Up" Stage 2 locked the hero as: title "Ask in your language." (short, period-terminated) + subtitle "Evidence-cited medical answers from PubMed and the FDA, answered in your language. No account needed to try." Stage 2 Step 2 reused the existing `landingContent.<locale>.tagline` / `.subtitle` values (to preserve 16-locale coverage per Rule 16) which resolve to different strings — observed in en: title "Ask in your language. Verified by official sources. Answered in yours." + subtitle "The AI medical search for healthcare professionals who work beyond English." Aligning to the locked spec means editing `landingContent.tagline` / `.subtitle` across all 16 locales.
 
-- [ ] **ProductShowcase Research mockup query drift**
-      STATE.md Stage 2 locked the Research card snippet as "Metformin + CKD eGFR≥30". Current `t.mockupResearchQuery` resolves to a different query (observed in en: "What are the side effects of Metformin?"). Verify (`t.mockupVerifyDrugs` / `t.mockupVerifyBadge` → "Warfarin + Aspirin Major interaction") and Explain (`t.mockupExplainValue` / `t.mockupExplainStatus` → "TSH 12.5 above-normal") cards ARE already aligned — only Research drifts. Fix means editing the Research mockup query key across all 16 locales.
+- [x] **ProductShowcase Research mockup query drift — ✅ OBSOLETE/SUPERSEDED 2026-06-25.** The `mockup*` keys + the ProductShowcase cards were deleted in Stage-5 S5.2 (`644e2e8`); verified `mockupResearchQuery` has 0 matches in `utils/i18n.ts` and no `ProductShowcase` component exists, so the drift this described can no longer occur.
 
 - [ ] **Dead landing i18n keys cleanup (post-Stage-4) — PARTIALLY DONE (S5.2)**
       Stage 4 S4.1 removed multiple landing UI elements, leaving their i18n
@@ -1195,14 +1177,11 @@ Two i18n content drifts surfaced during Stage 2 landing redesign (Steps 2 / 4a /
       retro follow-up) — worth handling together when ops hardening is scheduled. Priority: Medium
       (near-miss, no prod write occurred).
 
-- [ ] **ESLint flat-config migration (pre-existing tooling debt)**
-      `npm run lint` fails: ESLint 9.37 requires a flat `eslint.config.js`,
-      but the repo has neither `eslint.config.*` nor `.eslintrc*`. Build's
-      own type-check + Next lint succeed, so this only affects the
-      standalone `npm run lint` script. Options: (a) create `eslint.config.js`
-      flat config, (b) pin ESLint to v8 in package.json, (c) change the
-      `lint` script in package.json to `next lint`. Surfaced during Stage 4
-      S4.4 audit. NOT a Stage 4 regression.
+- [x] **ESLint flat-config migration — ✅ RESOLVED 2026-06-25.** Added `eslint.config.mjs`
+      (standard Next 15 flat config) + `eslint.ignoreDuringBuilds: true`; `npm run lint` runs
+      again. Consolidated into the single authoritative record in **TECH_DEBT** ("ESLint
+      flat-config breakage"), which also logs the 7 errors + 14 warnings of pre-existing lint
+      debt now surfaced (separate cleanup task). (Was duplicated across both docs.)
 
 - [ ] **Decide fate of `docs/Blog_Implementation_Spec.md`**
       Untracked since the 2026-05-25 blog feature ship; persisted as

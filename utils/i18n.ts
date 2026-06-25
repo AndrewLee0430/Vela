@@ -33,7 +33,6 @@ export interface Translations {
   getStarted: string;
   openApp: string;
   tryIt: string;
-  seePricing: string;
   askVelaTo: string;
   signIn: string;
   research: string;
@@ -42,8 +41,6 @@ export interface Translations {
   researchSub: string;
   verifySub: string;
   explainSub: string;
-  socialProof: string;
-  seeHow: string;
   footerCopy: string;
   footerDisclaimer: string;
   // Hero suggestion chips (S4.1) — all Research-flavored (T2)
@@ -69,7 +66,6 @@ export interface Translations {
   composerModeDescVerify: string;
   composerModeDescExplain: string;
   // Privacy section (compact 3-bullet + policy link)
-  privacyTitle: string;
   privacyPromise1: string;
   privacyPromise2: string;
   privacyPromise3: string;
@@ -86,7 +82,6 @@ const en: Translations = {
   getStarted: 'Get Started Free',
   openApp: 'Open App',
   tryIt: 'Try it now',
-  seePricing: 'See pricing',
   askVelaTo: 'Ask Vela to',
   signIn: 'Sign In',
   research: 'Research',
@@ -95,8 +90,6 @@ const en: Translations = {
   researchSub: 'PubMed 40M+',
   verifySub: 'FDA Official',
   explainSub: 'LOINC + FDA + NLM',
-  socialProof: 'Evidence-based answers for everyone, worldwide.',
-  seeHow: 'See how Vela works',
   footerCopy: 'All rights reserved.',
   footerDisclaimer: 'Vela is a research tool, not a medical device. It does not provide medical advice.',
   heroChip1: 'Metformin in CKD (eGFR ≥30)',
@@ -117,7 +110,6 @@ const en: Translations = {
   composerModeDescResearch: 'Evidence from PubMed and clinical sources',
   composerModeDescVerify: 'Interactions from FDA, DailyMed, and more',
   composerModeDescExplain: 'Lab results decoded with LOINC',
-  privacyTitle: 'What "Privacy-first" means at Vela',
   privacyPromise1: 'No identity or license verification required',
   privacyPromise2: 'Anonymous by default — no real name required',
   privacyPromise3: 'Your data is never shared, sold, or used to train AI',
@@ -133,332 +125,86 @@ const en: Translations = {
 export interface LandingContent {
   tagline: string;
   subtitle: string;
-  ctaPrimary: string;
-  valueProp: {
-    language: { label: string; body: string };
-    sources: { label: string; body: string };
-    anonymous: { label: string; body: string };
-  };
 }
 
 const landingEn: LandingContent = {
   tagline: 'Ask in your language. Verified by official sources. Answered in yours.',
   subtitle: 'The AI medical search for healthcare professionals who work beyond English.',
-  ctaPrimary: 'Try it free — no sign-up needed',
-  valueProp: {
-    language: {
-      label: 'MULTILINGUAL',
-      body: 'Works in your language. Retrieves from 40M+ articles.',
-    },
-    sources: {
-      label: 'VERIFIED SOURCES',
-      body: 'Every answer cited. PubMed, FDA, and your local authorities.',
-    },
-    anonymous: {
-      label: 'NO ACCOUNT NEEDED',
-      body: 'No identity verification. No account required to try.',
-    },
-  },
 };
 
 const landingZhTW: LandingContent = {
   tagline: '用你的語言提問。以官方來源驗證。用你的語言回答。',
   subtitle: '為跨語言工作的醫療專業人員打造的 AI 醫學搜尋。',
-  ctaPrimary: '免費試用 — 不需註冊',
-  valueProp: {
-    language: {
-      label: 'MULTILINGUAL',
-      body: '支援你的語言。檢索 4000 萬+ 篇文獻。',
-    },
-    sources: {
-      label: 'VERIFIED SOURCES',
-      body: '每個回答皆附引用。PubMed、FDA 與你所在地的權威機構。',
-    },
-    anonymous: {
-      label: 'NO ACCOUNT NEEDED',
-      body: '不驗證身分。試用無需註冊帳號。',
-    },
-  },
 };
 
 const landingZhCN: LandingContent = {
   tagline: '用你的语言提问。由官方来源验证。以你的语言回答。',
   subtitle: '为跨语言工作的医疗专业人员打造的 AI 医学搜索。',
-  ctaPrimary: '免费试用 — 无需注册',
-  valueProp: {
-    language: {
-      label: 'MULTILINGUAL',
-      body: '支持你的语言。检索 4000 万+ 篇文献。',
-    },
-    sources: {
-      label: 'VERIFIED SOURCES',
-      body: '每个回答均附引用。PubMed、FDA 及你所在地的权威机构。',
-    },
-    anonymous: {
-      label: 'NO ACCOUNT NEEDED',
-      body: '不验证身份。试用无需注册账号。',
-    },
-  },
 };
 
 const landingJa: LandingContent = {
   tagline: 'あなたの言語で質問。公式ソースで検証。あなたの言語で回答。',
   subtitle: '英語以外でも働く医療従事者のための AI 医学検索。',
-  ctaPrimary: '無料で試す — 登録不要',
-  valueProp: {
-    language: {
-      label: 'MULTILINGUAL',
-      body: 'あなたの言語に対応。4000 万本以上の論文を検索。',
-    },
-    sources: {
-      label: 'VERIFIED SOURCES',
-      body: 'すべての回答に引用付き。PubMed、FDA、地域の当局。',
-    },
-    anonymous: {
-      label: 'NO ACCOUNT NEEDED',
-      body: '本人確認なし。試用にアカウント登録も不要。',
-    },
-  },
 };
 
 const landingKo: LandingContent = {
   tagline: '당신의 언어로 질문. 공식 출처로 검증. 당신의 언어로 답변.',
   subtitle: '영어권 밖에서 일하는 의료 전문가를 위한 AI 의학 검색.',
-  ctaPrimary: '무료로 시작 — 가입 불필요',
-  valueProp: {
-    language: {
-      label: 'MULTILINGUAL',
-      body: '당신의 언어 지원. 4000만+ 편의 논문 검색.',
-    },
-    sources: {
-      label: 'VERIFIED SOURCES',
-      body: '모든 답변 인용 포함. PubMed, FDA 및 현지 기관.',
-    },
-    anonymous: {
-      label: 'NO ACCOUNT NEEDED',
-      body: '신분 확인 없음. 체험에 계정 가입 불필요.',
-    },
-  },
 };
 
 const landingEs: LandingContent = {
   tagline: 'Pregunta en tu idioma. Verificado por fuentes oficiales. Respondido en el tuyo.',
   subtitle: 'La búsqueda médica con IA para profesionales sanitarios que trabajan más allá del inglés.',
-  ctaPrimary: 'Prueba gratis — sin registro',
-  valueProp: {
-    language: {
-      label: 'MULTILINGUAL',
-      body: 'Funciona en tu idioma. Busca entre más de 40 millones de artículos.',
-    },
-    sources: {
-      label: 'VERIFIED SOURCES',
-      body: 'Cada respuesta citada. PubMed, FDA y autoridades locales.',
-    },
-    anonymous: {
-      label: 'NO ACCOUNT NEEDED',
-      body: 'Sin verificación de identidad. No requiere cuenta para probar.',
-    },
-  },
 };
 
 const landingFr: LandingContent = {
   tagline: 'Posez la question dans votre langue. Vérifié par des sources officielles. Réponse dans la vôtre.',
   subtitle: 'La recherche médicale par IA pour les professionnels de santé qui travaillent au-delà de l\'anglais.',
-  ctaPrimary: 'Essayez gratuitement — sans inscription',
-  valueProp: {
-    language: {
-      label: 'MULTILINGUAL',
-      body: 'Fonctionne dans votre langue. Recherche parmi plus de 40 millions d\'articles.',
-    },
-    sources: {
-      label: 'VERIFIED SOURCES',
-      body: 'Chaque réponse citée. PubMed, FDA et autorités locales.',
-    },
-    anonymous: {
-      label: 'NO ACCOUNT NEEDED',
-      body: 'Aucune vérification d\'identité. Aucun compte requis pour essayer.',
-    },
-  },
 };
 
 const landingDe: LandingContent = {
   tagline: 'Fragen Sie in Ihrer Sprache. Geprüft von offiziellen Quellen. Antwort in Ihrer Sprache.',
   subtitle: 'Die KI-Medizinsuche für medizinische Fachkräfte, die jenseits von Englisch arbeiten.',
-  ctaPrimary: 'Kostenlos testen — ohne Anmeldung',
-  valueProp: {
-    language: {
-      label: 'MULTILINGUAL',
-      body: 'Funktioniert in Ihrer Sprache. Durchsucht über 40 Mio. Artikel.',
-    },
-    sources: {
-      label: 'VERIFIED SOURCES',
-      body: 'Jede Antwort mit Quellenangabe. PubMed, FDA und lokale Behörden.',
-    },
-    anonymous: {
-      label: 'NO ACCOUNT NEEDED',
-      body: 'Keine Identitätsprüfung. Kein Konto zum Testen erforderlich.',
-    },
-  },
 };
 
 const landingIt: LandingContent = {
   tagline: 'Chiedi nella tua lingua. Verificato da fonti ufficiali. Risposta nella tua.',
   subtitle: 'La ricerca medica con IA per i professionisti sanitari che lavorano oltre l\'inglese.',
-  ctaPrimary: 'Prova gratis — senza registrazione',
-  valueProp: {
-    language: {
-      label: 'MULTILINGUAL',
-      body: 'Funziona nella tua lingua. Cerca tra oltre 40 milioni di articoli.',
-    },
-    sources: {
-      label: 'VERIFIED SOURCES',
-      body: 'Ogni risposta citata. PubMed, FDA e autorità locali.',
-    },
-    anonymous: {
-      label: 'NO ACCOUNT NEEDED',
-      body: 'Nessuna verifica di identità. Nessun account richiesto per provare.',
-    },
-  },
 };
 
 const landingPt: LandingContent = {
   tagline: 'Pergunte no seu idioma. Verificado por fontes oficiais. Respondido no seu.',
   subtitle: 'A pesquisa médica com IA para profissionais de saúde que trabalham além do inglês.',
-  ctaPrimary: 'Experimente grátis — sem cadastro',
-  valueProp: {
-    language: {
-      label: 'MULTILINGUAL',
-      body: 'Funciona em seu idioma. Pesquisa mais de 40 milhões de artigos.',
-    },
-    sources: {
-      label: 'VERIFIED SOURCES',
-      body: 'Toda resposta com citação. PubMed, FDA e autoridades locais.',
-    },
-    anonymous: {
-      label: 'NO ACCOUNT NEEDED',
-      body: 'Sem verificação de identidade. Sem conta necessária para testar.',
-    },
-  },
 };
 
 const landingTh: LandingContent = {
   tagline: 'ถามในภาษาของคุณ ตรวจสอบโดยแหล่งข้อมูลทางการ ตอบในภาษาของคุณ',
   subtitle: 'การค้นหาทางการแพทย์ด้วย AI สำหรับบุคลากรทางการแพทย์ที่ทำงานนอกเหนือภาษาอังกฤษ',
-  ctaPrimary: 'ทดลองใช้ฟรี — ไม่ต้องสมัคร',
-  valueProp: {
-    language: {
-      label: 'MULTILINGUAL',
-      body: 'รองรับภาษาของคุณ ค้นหาจากบทความกว่า 40 ล้านฉบับ',
-    },
-    sources: {
-      label: 'VERIFIED SOURCES',
-      body: 'ทุกคำตอบมีการอ้างอิง PubMed, FDA และหน่วยงานท้องถิ่น',
-    },
-    anonymous: {
-      label: 'NO ACCOUNT NEEDED',
-      body: 'ไม่มีการยืนยันตัวตน ไม่ต้องสมัครบัญชีเพื่อทดลองใช้',
-    },
-  },
 };
 
 const landingAr: LandingContent = {
   tagline: 'اسأل بلغتك. متحقق من مصادر رسمية. الإجابة بلغتك.',
   subtitle: 'البحث الطبي بالذكاء الاصطناعي لمهنيي الرعاية الصحية الذين يعملون خارج اللغة الإنجليزية.',
-  ctaPrimary: 'جرّب مجاناً — بدون تسجيل',
-  valueProp: {
-    language: {
-      label: 'MULTILINGUAL',
-      body: 'يدعم لغتك. يبحث في أكثر من 40 مليون مقالة.',
-    },
-    sources: {
-      label: 'VERIFIED SOURCES',
-      body: 'كل إجابة مع اقتباسات. PubMed وFDA والجهات المحلية.',
-    },
-    anonymous: {
-      label: 'NO ACCOUNT NEEDED',
-      body: 'لا تحقق من الهوية. لا حاجة لحساب للتجربة.',
-    },
-  },
 };
 
 const landingHi: LandingContent = {
   tagline: 'अपनी भाषा में पूछें। आधिकारिक स्रोतों से सत्यापित। आपकी भाषा में उत्तर।',
   subtitle: 'अंग्रेज़ी से परे काम करने वाले स्वास्थ्य पेशेवरों के लिए AI चिकित्सा खोज।',
-  ctaPrimary: 'मुफ़्त आज़माएं — साइन-अप आवश्यक नहीं',
-  valueProp: {
-    language: {
-      label: 'MULTILINGUAL',
-      body: 'आपकी भाषा में काम करता है। 4 करोड़+ लेखों से खोज।',
-    },
-    sources: {
-      label: 'VERIFIED SOURCES',
-      body: 'हर उत्तर उद्धृत। PubMed, FDA और आपके स्थानीय प्राधिकरण।',
-    },
-    anonymous: {
-      label: 'NO ACCOUNT NEEDED',
-      body: 'कोई पहचान सत्यापन नहीं। आज़माने के लिए खाता आवश्यक नहीं।',
-    },
-  },
 };
 
 const landingBn: LandingContent = {
   tagline: 'আপনার ভাষায় জিজ্ঞাসা করুন। আধিকারিক সূত্র দ্বারা যাচাইকৃত। আপনার ভাষায় উত্তর।',
   subtitle: 'ইংরেজির বাইরে কাজ করা স্বাস্থ্য পেশাদারদের জন্য AI চিকিৎসা অনুসন্ধান।',
-  ctaPrimary: 'বিনামূল্যে চেষ্টা করুন — সাইন-আপ প্রয়োজন নেই',
-  valueProp: {
-    language: {
-      label: 'MULTILINGUAL',
-      body: 'আপনার ভাষায় কাজ করে। 4 কোটি+ নিবন্ধ থেকে অনুসন্ধান।',
-    },
-    sources: {
-      label: 'VERIFIED SOURCES',
-      body: 'প্রতিটি উত্তর উদ্ধৃতিসহ। PubMed, FDA এবং আপনার স্থানীয় কর্তৃপক্ষ।',
-    },
-    anonymous: {
-      label: 'NO ACCOUNT NEEDED',
-      body: 'কোনো পরিচয় যাচাই নেই। চেষ্টা করতে অ্যাকাউন্ট প্রয়োজন নেই।',
-    },
-  },
 };
 
 const landingHe: LandingContent = {
   tagline: 'שאלו בשפה שלכם. מאומת ממקורות רשמיים. תשובה בשפתכם.',
   subtitle: 'חיפוש רפואי מבוסס AI לאנשי מקצוע רפואיים שעובדים מחוץ לאנגלית.',
-  ctaPrimary: 'נסו בחינם — ללא הרשמה',
-  valueProp: {
-    language: {
-      label: 'MULTILINGUAL',
-      body: 'עובד בשפה שלכם. מחפש מעל 40 מיליון מאמרים.',
-    },
-    sources: {
-      label: 'VERIFIED SOURCES',
-      body: 'כל תשובה עם ציטוטים. PubMed, FDA ורשויות מקומיות.',
-    },
-    anonymous: {
-      label: 'NO ACCOUNT NEEDED',
-      body: 'ללא אימות זהות. לא נדרש חשבון כדי לנסות.',
-    },
-  },
 };
 
 const landingVi: LandingContent = {
   tagline: 'Hỏi bằng ngôn ngữ của bạn. Được kiểm chứng từ nguồn chính thức. Trả lời bằng ngôn ngữ của bạn.',
   subtitle: 'Công cụ tìm kiếm y khoa AI dành cho nhân viên y tế làm việc ngoài tiếng Anh.',
-  ctaPrimary: 'Dùng thử miễn phí — không cần đăng ký',
-  valueProp: {
-    language: {
-      label: 'MULTILINGUAL',
-      body: 'Hỗ trợ ngôn ngữ của bạn. Truy xuất hơn 40 triệu bài báo.',
-    },
-    sources: {
-      label: 'VERIFIED SOURCES',
-      body: 'Mọi câu trả lời đều có trích dẫn. PubMed, FDA và cơ quan địa phương.',
-    },
-    anonymous: {
-      label: 'NO ACCOUNT NEEDED',
-      body: 'Không xác minh danh tính. Không cần tài khoản để dùng thử.',
-    },
-  },
 };
 
 export const landingContent: Record<LangCode, LandingContent> = {
@@ -489,7 +235,6 @@ export const translations: Record<LangCode, Translations> = {
     getStarted: '免費開始使用',
     openApp: '開啟應用',
     tryIt: '立即試用',
-    seePricing: '查看方案',
     askVelaTo: '讓 Vela 幫你',
     signIn: '登入',
     research: '研究',
@@ -498,8 +243,6 @@ export const translations: Record<LangCode, Translations> = {
     researchSub: 'PubMed 4000萬+',
     verifySub: 'FDA 官方',
     explainSub: 'LOINC + FDA + NLM',
-    socialProof: '為全球醫療專業人員提供實證醫學解答。',
-    seeHow: '看看 Vela 怎麼運作',
     footerCopy: '版權所有',
     footerDisclaimer: 'Vela 為研究工具，非醫療器材，不提供醫療建議。',
     heroChip1: 'Metformin 用於 CKD（eGFR ≥30）',
@@ -520,7 +263,6 @@ export const translations: Record<LangCode, Translations> = {
     composerModeDescResearch: '來自 PubMed 與臨床來源的實證',
     composerModeDescVerify: 'FDA、DailyMed 等來源的交互作用',
     composerModeDescExplain: '以 LOINC 解讀檢驗報告',
-    privacyTitle: 'Vela 所謂「隱私優先」的定義',
     privacyPromise1: '不需驗證身分或執照',
     privacyPromise2: '預設匿名，不要求真實姓名',
     privacyPromise3: '資料不外流、不販售、不用於訓練 AI 模型',
@@ -535,7 +277,6 @@ export const translations: Record<LangCode, Translations> = {
     getStarted: '免费开始使用',
     openApp: '打开应用',
     tryIt: '立即试用',
-    seePricing: '查看方案',
     askVelaTo: '让 Vela 帮你',
     signIn: '登录',
     research: '研究',
@@ -544,8 +285,6 @@ export const translations: Record<LangCode, Translations> = {
     researchSub: 'PubMed 4000万+',
     verifySub: 'FDA 官方',
     explainSub: 'LOINC + FDA + NLM',
-    socialProof: '为全球医疗专业人员提供循证医学解答。',
-    seeHow: '看看 Vela 怎么运作',
     footerCopy: '版权所有',
     footerDisclaimer: 'Vela 为研究工具，非医疗器械，不提供医疗建议。',
     heroChip1: 'Metformin 用于 CKD（eGFR ≥30）',
@@ -566,7 +305,6 @@ export const translations: Record<LangCode, Translations> = {
     composerModeDescResearch: '来自 PubMed 与临床来源的循证依据',
     composerModeDescVerify: '来自 FDA、DailyMed 等的药物相互作用',
     composerModeDescExplain: '用 LOINC 解读检验结果',
-    privacyTitle: 'Vela 所谓"隐私优先"的定义',
     privacyPromise1: '无需验证身份或执照',
     privacyPromise2: '默认匿名，不要求真实姓名',
     privacyPromise3: '数据不外流、不贩售、不用于训练 AI 模型',
@@ -581,7 +319,6 @@ export const translations: Record<LangCode, Translations> = {
     getStarted: '無料で始める',
     openApp: 'アプリを開く',
     tryIt: '今すぐ試す',
-    seePricing: '料金を見る',
     askVelaTo: 'Vela に聞いてみよう',
     signIn: 'ログイン',
     research: 'リサーチ',
@@ -590,8 +327,6 @@ export const translations: Record<LangCode, Translations> = {
     researchSub: 'PubMed 4000万+',
     verifySub: 'FDA公式',
     explainSub: 'LOINC + FDA + NLM',
-    socialProof: '世界中の医療従事者にエビデンスベースの回答を。',
-    seeHow: 'Vela の仕組みを見る',
     footerCopy: '全著作権所有',
     footerDisclaimer: 'Vela は研究ツールであり、医療機器ではありません。医療アドバイスは提供しません。',
     heroChip1: 'CKD での Metformin（eGFR ≥30）',
@@ -612,7 +347,6 @@ export const translations: Record<LangCode, Translations> = {
     composerModeDescResearch: 'PubMed と臨床ソースに基づくエビデンス',
     composerModeDescVerify: 'FDA・DailyMed などの相互作用',
     composerModeDescExplain: 'LOINC で検査結果を解読',
-    privacyTitle: 'Vela における「プライバシー優先」の定義',
     privacyPromise1: '身分証明や資格の確認は不要',
     privacyPromise2: 'デフォルトで匿名 — 本名は不要',
     privacyPromise3: 'データは共有・販売せず、AI の学習にも使用しません',
@@ -627,7 +361,6 @@ export const translations: Record<LangCode, Translations> = {
     getStarted: '무료로 시작하기',
     openApp: '앱 열기',
     tryIt: '지금 사용해 보기',
-    seePricing: '요금제 보기',
     askVelaTo: 'Vela에게 물어보세요',
     signIn: '로그인',
     research: '리서치',
@@ -636,8 +369,6 @@ export const translations: Record<LangCode, Translations> = {
     researchSub: 'PubMed 4000만+',
     verifySub: 'FDA 공식',
     explainSub: 'LOINC + FDA + NLM',
-    socialProof: '전 세계 의료 전문가를 위한 근거 기반 답변.',
-    seeHow: 'Vela 작동 방식 보기',
     footerCopy: '모든 권리 보유',
     footerDisclaimer: 'Vela는 연구 도구이며 의료기기가 아닙니다. 의학적 조언을 제공하지 않습니다.',
     heroChip1: 'CKD에서 Metformin (eGFR ≥30)',
@@ -658,7 +389,6 @@ export const translations: Record<LangCode, Translations> = {
     composerModeDescResearch: 'PubMed 및 임상 자료 기반 근거',
     composerModeDescVerify: 'FDA, DailyMed 등의 상호작용',
     composerModeDescExplain: 'LOINC로 해독한 검사 결과',
-    privacyTitle: 'Vela의 "프라이버시 우선" 원칙이란',
     privacyPromise1: '신분증이나 자격 확인이 필요 없습니다',
     privacyPromise2: '기본 익명 — 실명을 요구하지 않습니다',
     privacyPromise3: '데이터를 공유·판매하지 않으며, AI 학습에도 사용하지 않습니다',
@@ -673,7 +403,6 @@ export const translations: Record<LangCode, Translations> = {
     getStarted: 'Comienza Gratis',
     openApp: 'Abrir App',
     tryIt: 'Pruébalo ahora',
-    seePricing: 'Ver precios',
     askVelaTo: 'Pídele a Vela',
     signIn: 'Iniciar sesión',
     research: 'Investigar',
@@ -682,8 +411,6 @@ export const translations: Record<LangCode, Translations> = {
     researchSub: 'PubMed 40M+',
     verifySub: 'FDA Oficial',
     explainSub: 'LOINC + FDA + NLM',
-    socialProof: 'Respuestas basadas en evidencia para todos, en todo el mundo.',
-    seeHow: 'Mira cómo funciona Vela',
     footerCopy: 'Todos los derechos reservados',
     footerDisclaimer: 'Vela es una herramienta de investigación, no un dispositivo médico. No proporciona asesoramiento médico.',
     heroChip1: 'Metformin en CKD (eGFR ≥30)',
@@ -704,7 +431,6 @@ export const translations: Record<LangCode, Translations> = {
     composerModeDescResearch: 'Evidencia de PubMed y fuentes clínicas',
     composerModeDescVerify: 'Interacciones de FDA, DailyMed y más',
     composerModeDescExplain: 'Resultados de laboratorio descifrados con LOINC',
-    privacyTitle: 'Lo que significa "Privacidad primero" en Vela',
     privacyPromise1: 'No se requiere verificación de identidad ni licencia',
     privacyPromise2: 'Anónimo por defecto — sin nombre real requerido',
     privacyPromise3: 'Tus datos nunca se comparten, venden ni se usan para entrenar IA',
@@ -719,7 +445,6 @@ export const translations: Record<LangCode, Translations> = {
     getStarted: 'Commencer Gratuitement',
     openApp: 'Ouvrir l\'App',
     tryIt: 'Essayez maintenant',
-    seePricing: 'Voir les tarifs',
     askVelaTo: 'Demandez à Vela',
     signIn: 'Se connecter',
     research: 'Rechercher',
@@ -728,8 +453,6 @@ export const translations: Record<LangCode, Translations> = {
     researchSub: 'PubMed 40M+',
     verifySub: 'FDA Officiel',
     explainSub: 'LOINC + FDA + NLM',
-    socialProof: 'Des réponses fondées sur des preuves pour tous, partout dans le monde.',
-    seeHow: 'Découvrez comment Vela fonctionne',
     footerCopy: 'Tous droits réservés',
     footerDisclaimer: 'Vela est un outil de recherche, pas un dispositif médical. Il ne fournit pas de conseils médicaux.',
     heroChip1: 'Metformin dans la CKD (eGFR ≥30)',
@@ -750,7 +473,6 @@ export const translations: Record<LangCode, Translations> = {
     composerModeDescResearch: 'Preuves issues de PubMed et de sources cliniques',
     composerModeDescVerify: 'Interactions de la FDA, DailyMed et plus',
     composerModeDescExplain: 'Résultats de laboratoire décodés avec LOINC',
-    privacyTitle: 'Ce que signifie « Confidentialité d\'abord » chez Vela',
     privacyPromise1: 'Aucune vérification d\'identité ni de licence requise',
     privacyPromise2: 'Anonyme par défaut — aucun nom réel requis',
     privacyPromise3: 'Vos données ne sont jamais partagées, vendues ni utilisées pour entraîner l\'IA',
@@ -765,7 +487,6 @@ export const translations: Record<LangCode, Translations> = {
     getStarted: 'Kostenlos Starten',
     openApp: 'App Öffnen',
     tryIt: 'Jetzt ausprobieren',
-    seePricing: 'Preise ansehen',
     askVelaTo: 'Fragen Sie Vela',
     signIn: 'Anmelden',
     research: 'Recherche',
@@ -774,8 +495,6 @@ export const translations: Record<LangCode, Translations> = {
     researchSub: 'PubMed 40M+',
     verifySub: 'FDA Offiziell',
     explainSub: 'LOINC + FDA + NLM',
-    socialProof: 'Evidenzbasierte Antworten für alle, weltweit.',
-    seeHow: 'So funktioniert Vela',
     footerCopy: 'Alle Rechte vorbehalten',
     footerDisclaimer: 'Vela ist ein Forschungstool, kein Medizinprodukt. Es bietet keine medizinische Beratung.',
     heroChip1: 'Metformin bei CKD (eGFR ≥30)',
@@ -796,7 +515,6 @@ export const translations: Record<LangCode, Translations> = {
     composerModeDescResearch: 'Evidenz aus PubMed und klinischen Quellen',
     composerModeDescVerify: 'Wechselwirkungen aus FDA, DailyMed und mehr',
     composerModeDescExplain: 'Laborwerte entschlüsselt mit LOINC',
-    privacyTitle: 'Was „Datenschutz zuerst" bei Vela bedeutet',
     privacyPromise1: 'Keine Identitäts- oder Lizenzprüfung erforderlich',
     privacyPromise2: 'Standardmäßig anonym — kein Klarname erforderlich',
     privacyPromise3: 'Ihre Daten werden nicht geteilt, verkauft oder zum KI-Training verwendet',
@@ -811,7 +529,6 @@ export const translations: Record<LangCode, Translations> = {
     getStarted: 'Inizia Gratis',
     openApp: 'Apri App',
     tryIt: 'Provalo ora',
-    seePricing: 'Vedi i prezzi',
     askVelaTo: 'Chiedi a Vela',
     signIn: 'Accedi',
     research: 'Ricerca',
@@ -820,8 +537,6 @@ export const translations: Record<LangCode, Translations> = {
     researchSub: 'PubMed 40M+',
     verifySub: 'FDA Ufficiale',
     explainSub: 'LOINC + FDA + NLM',
-    socialProof: 'Risposte basate su evidenze per tutti, in tutto il mondo.',
-    seeHow: 'Scopri come funziona Vela',
     footerCopy: 'Tutti i diritti riservati',
     footerDisclaimer: 'Vela è uno strumento di ricerca, non un dispositivo medico. Non fornisce consulenza medica.',
     heroChip1: 'Metformin nella CKD (eGFR ≥30)',
@@ -842,7 +557,6 @@ export const translations: Record<LangCode, Translations> = {
     composerModeDescResearch: 'Prove da PubMed e fonti cliniche',
     composerModeDescVerify: 'Interazioni da FDA, DailyMed e altro',
     composerModeDescExplain: 'Risultati di laboratorio decodificati con LOINC',
-    privacyTitle: 'Cosa significa "Privacy prima di tutto" per Vela',
     privacyPromise1: 'Nessuna verifica di identità o licenza richiesta',
     privacyPromise2: 'Anonimo di default — nessun nome reale richiesto',
     privacyPromise3: 'I tuoi dati non vengono mai condivisi, venduti o usati per addestrare IA',
@@ -857,7 +571,6 @@ export const translations: Record<LangCode, Translations> = {
     getStarted: 'Comece Grátis',
     openApp: 'Abrir App',
     tryIt: 'Experimente agora',
-    seePricing: 'Ver preços',
     askVelaTo: 'Pergunte ao Vela',
     signIn: 'Entrar',
     research: 'Pesquisar',
@@ -866,8 +579,6 @@ export const translations: Record<LangCode, Translations> = {
     researchSub: 'PubMed 40M+',
     verifySub: 'FDA Oficial',
     explainSub: 'LOINC + FDA + NLM',
-    socialProof: 'Respostas baseadas em evidências para todos, no mundo inteiro.',
-    seeHow: 'Veja como o Vela funciona',
     footerCopy: 'Todos os direitos reservados',
     footerDisclaimer: 'Vela é uma ferramenta de pesquisa, não um dispositivo médico. Não fornece aconselhamento médico.',
     heroChip1: 'Metformin na CKD (eGFR ≥30)',
@@ -888,7 +599,6 @@ export const translations: Record<LangCode, Translations> = {
     composerModeDescResearch: 'Evidências do PubMed e fontes clínicas',
     composerModeDescVerify: 'Interações da FDA, DailyMed e mais',
     composerModeDescExplain: 'Resultados de exames decodificados com LOINC',
-    privacyTitle: 'O que significa "Privacidade em primeiro lugar" na Vela',
     privacyPromise1: 'Sem verificação de identidade ou licença',
     privacyPromise2: 'Anônimo por padrão — nome real não é necessário',
     privacyPromise3: 'Seus dados nunca são compartilhados, vendidos ou usados para treinar IA',
@@ -903,7 +613,6 @@ export const translations: Record<LangCode, Translations> = {
     getStarted: 'เริ่มใช้งานฟรี',
     openApp: 'เปิดแอป',
     tryIt: 'ลองเลย',
-    seePricing: 'ดูราคา',
     askVelaTo: 'ถาม Vela',
     signIn: 'เข้าสู่ระบบ',
     research: 'ค้นคว้า',
@@ -912,8 +621,6 @@ export const translations: Record<LangCode, Translations> = {
     researchSub: 'PubMed 40M+',
     verifySub: 'FDA ทางการ',
     explainSub: 'LOINC + FDA + NLM',
-    socialProof: 'คำตอบอิงหลักฐานสำหรับทุกคน ทั่วโลก',
-    seeHow: 'ดูวิธีการทำงานของ Vela',
     footerCopy: 'สงวนลิขสิทธิ์',
     footerDisclaimer: 'Vela เป็นเครื่องมือวิจัย ไม่ใช่อุปกรณ์การแพทย์ ไม่ได้ให้คำแนะนำทางการแพทย์',
     heroChip1: 'Metformin ใน CKD (eGFR ≥30)',
@@ -934,7 +641,6 @@ export const translations: Record<LangCode, Translations> = {
     composerModeDescResearch: 'หลักฐานจาก PubMed และแหล่งข้อมูลทางคลินิก',
     composerModeDescVerify: 'ปฏิกิริยาระหว่างยาจาก FDA, DailyMed และอื่นๆ',
     composerModeDescExplain: 'แปลผลตรวจแล็บด้วย LOINC',
-    privacyTitle: 'ความหมายของ "ความเป็นส่วนตัวมาก่อน" ที่ Vela',
     privacyPromise1: 'ไม่ต้องยืนยันตัวตนหรือใบอนุญาต',
     privacyPromise2: 'ไม่ระบุตัวตนโดยค่าเริ่มต้น — ไม่ต้องใช้ชื่อจริง',
     privacyPromise3: 'ข้อมูลของคุณจะไม่ถูกแชร์ ขาย หรือนำไปฝึก AI',
@@ -949,7 +655,6 @@ export const translations: Record<LangCode, Translations> = {
     getStarted: 'ابدأ مجاناً',
     openApp: 'فتح التطبيق',
     tryIt: 'جرّبه الآن',
-    seePricing: 'عرض الأسعار',
     askVelaTo: 'اسأل Vela',
     signIn: 'تسجيل الدخول',
     research: 'بحث',
@@ -958,8 +663,6 @@ export const translations: Record<LangCode, Translations> = {
     researchSub: 'PubMed 40M+',
     verifySub: 'FDA رسمي',
     explainSub: 'LOINC + FDA + NLM',
-    socialProof: 'إجابات مبنية على الأدلة للجميع، حول العالم.',
-    seeHow: 'شاهد كيف يعمل Vela',
     footerCopy: 'جميع الحقوق محفوظة',
     footerDisclaimer: 'Vela أداة بحث وليست جهازاً طبياً. لا تقدم استشارات طبية.',
     heroChip1: 'Metformin في CKD (eGFR ≥30)',
@@ -980,7 +683,6 @@ export const translations: Record<LangCode, Translations> = {
     composerModeDescResearch: 'أدلة من PubMed والمصادر السريرية',
     composerModeDescVerify: 'تفاعلات من FDA وDailyMed والمزيد',
     composerModeDescExplain: 'نتائج المختبر مفسّرة باستخدام LOINC',
-    privacyTitle: 'ما الذي تعنيه "الخصوصية أولاً" في Vela',
     privacyPromise1: 'لا حاجة للتحقق من الهوية أو الترخيص',
     privacyPromise2: 'مجهول الهوية افتراضياً — لا يلزم الاسم الحقيقي',
     privacyPromise3: 'لا تُشارك بياناتك أو تُباع أو تُستخدم لتدريب الذكاء الاصطناعي',
@@ -995,7 +697,6 @@ export const translations: Record<LangCode, Translations> = {
     getStarted: 'मुफ़्त शुरू करें',
     openApp: 'ऐप खोलें',
     tryIt: 'अभी आज़माएं',
-    seePricing: 'मूल्य देखें',
     askVelaTo: 'Vela से पूछें',
     signIn: 'साइन इन',
     research: 'अनुसंधान',
@@ -1004,8 +705,6 @@ export const translations: Record<LangCode, Translations> = {
     researchSub: 'PubMed 40M+',
     verifySub: 'FDA आधिकारिक',
     explainSub: 'LOINC + FDA + NLM',
-    socialProof: 'दुनिया भर में सभी के लिए साक्ष्य-आधारित उत्तर।',
-    seeHow: 'देखें Vela कैसे काम करता है',
     footerCopy: 'सर्वाधिकार सुरक्षित',
     footerDisclaimer: 'Vela एक शोध उपकरण है, चिकित्सा उपकरण नहीं। यह चिकित्सा सलाह प्रदान नहीं करता।',
     heroChip1: 'CKD में Metformin (eGFR ≥30)',
@@ -1026,7 +725,6 @@ export const translations: Record<LangCode, Translations> = {
     composerModeDescResearch: 'PubMed और नैदानिक स्रोतों से प्रमाण',
     composerModeDescVerify: 'FDA, DailyMed और अन्य से दवा पारस्परिक क्रियाएँ',
     composerModeDescExplain: 'LOINC से व्याख्या किए गए लैब परिणाम',
-    privacyTitle: 'Vela में "प्राइवेसी पहले" का अर्थ',
     privacyPromise1: 'पहचान या लाइसेंस सत्यापन की आवश्यकता नहीं',
     privacyPromise2: 'डिफ़ॉल्ट रूप से गुमनाम — असली नाम आवश्यक नहीं',
     privacyPromise3: 'आपका डेटा कभी साझा, बेचा या AI प्रशिक्षण के लिए उपयोग नहीं किया जाता',
@@ -1041,7 +739,6 @@ export const translations: Record<LangCode, Translations> = {
     getStarted: 'বিনামূল্যে শুরু করুন',
     openApp: 'অ্যাপ খুলুন',
     tryIt: 'এখনই চেষ্টা করুন',
-    seePricing: 'মূল্য দেখুন',
     askVelaTo: 'Vela-কে জিজ্ঞাসা করুন',
     signIn: 'সাইন ইন',
     research: 'গবেষণা',
@@ -1050,8 +747,6 @@ export const translations: Record<LangCode, Translations> = {
     researchSub: 'PubMed 40M+',
     verifySub: 'FDA অফিসিয়াল',
     explainSub: 'LOINC + FDA + NLM',
-    socialProof: 'সারা বিশ্বে সবার জন্য প্রমাণ-ভিত্তিক উত্তর।',
-    seeHow: 'দেখুন Vela কীভাবে কাজ করে',
     footerCopy: 'সর্বস্বত্ব সংরক্ষিত',
     footerDisclaimer: 'Vela একটি গবেষণা সরঞ্জাম, চিকিৎসা যন্ত্র নয়। এটি চিকিৎসা পরামর্শ প্রদান করে না।',
     heroChip1: 'CKD-তে Metformin (eGFR ≥30)',
@@ -1072,7 +767,6 @@ export const translations: Record<LangCode, Translations> = {
     composerModeDescResearch: 'PubMed ও ক্লিনিক্যাল উৎস থেকে প্রমাণ',
     composerModeDescVerify: 'FDA, DailyMed এবং আরও থেকে মিথস্ক্রিয়া',
     composerModeDescExplain: 'LOINC দিয়ে বিশ্লেষিত ল্যাব ফলাফল',
-    privacyTitle: 'Vela-তে "গোপনীয়তা প্রথম" মানে কী',
     privacyPromise1: 'পরিচয় বা লাইসেন্স যাচাইয়ের প্রয়োজন নেই',
     privacyPromise2: 'ডিফল্টভাবে বেনামী — প্রকৃত নাম প্রয়োজন নেই',
     privacyPromise3: 'আপনার ডেটা কখনও শেয়ার, বিক্রি বা AI প্রশিক্ষণে ব্যবহৃত হয় না',
@@ -1087,7 +781,6 @@ export const translations: Record<LangCode, Translations> = {
     getStarted: 'התחילו בחינם',
     openApp: 'פתח אפליקציה',
     tryIt: 'נסו עכשיו',
-    seePricing: 'צפו במחירים',
     askVelaTo: 'שאלו את Vela',
     signIn: 'התחברות',
     research: 'מחקר',
@@ -1096,8 +789,6 @@ export const translations: Record<LangCode, Translations> = {
     researchSub: 'PubMed 40M+',
     verifySub: 'FDA רשמי',
     explainSub: 'LOINC + FDA + NLM',
-    socialProof: 'תשובות מבוססות ראיות לכולם, בכל העולם.',
-    seeHow: 'ראו כיצד Vela עובד',
     footerCopy: 'כל הזכויות שמורות',
     footerDisclaimer: 'Vela הוא כלי מחקר, לא מכשיר רפואי. אינו מספק ייעוץ רפואי.',
     heroChip1: 'Metformin ב-CKD (eGFR ≥30)',
@@ -1118,7 +809,6 @@ export const translations: Record<LangCode, Translations> = {
     composerModeDescResearch: 'ראיות מ-PubMed וממקורות קליניים',
     composerModeDescVerify: 'אינטראקציות מ-FDA, DailyMed ועוד',
     composerModeDescExplain: 'תוצאות מעבדה מפוענחות עם LOINC',
-    privacyTitle: 'המשמעות של "פרטיות תחילה" ב-Vela',
     privacyPromise1: 'אין צורך באימות זהות או רישיון',
     privacyPromise2: 'אנונימי כברירת מחדל — אין צורך בשם אמיתי',
     privacyPromise3: 'הנתונים שלך לעולם לא משותפים, נמכרים או משמשים לאימון AI',
@@ -1133,7 +823,6 @@ export const translations: Record<LangCode, Translations> = {
     getStarted: 'Bắt Đầu Miễn Phí',
     openApp: 'Mở Ứng Dụng',
     tryIt: 'Thử ngay',
-    seePricing: 'Xem giá',
     askVelaTo: 'Hỏi Vela',
     signIn: 'Đăng nhập',
     research: 'Nghiên cứu',
@@ -1142,8 +831,6 @@ export const translations: Record<LangCode, Translations> = {
     researchSub: 'PubMed 40M+',
     verifySub: 'FDA Chính thức',
     explainSub: 'LOINC + FDA + NLM',
-    socialProof: 'Câu trả lời dựa trên bằng chứng cho mọi người, trên toàn thế giới.',
-    seeHow: 'Xem cách Vela hoạt động',
     footerCopy: 'Đã đăng ký bản quyền',
     footerDisclaimer: 'Vela là công cụ nghiên cứu, không phải thiết bị y tế. Không cung cấp tư vấn y khoa.',
     heroChip1: 'Metformin trong CKD (eGFR ≥30)',
@@ -1164,7 +851,6 @@ export const translations: Record<LangCode, Translations> = {
     composerModeDescResearch: 'Bằng chứng từ PubMed và các nguồn lâm sàng',
     composerModeDescVerify: 'Tương tác từ FDA, DailyMed và nhiều hơn nữa',
     composerModeDescExplain: 'Kết quả xét nghiệm được giải mã bằng LOINC',
-    privacyTitle: 'Ý nghĩa của "Quyền riêng tư trên hết" tại Vela',
     privacyPromise1: 'Không yêu cầu xác minh danh tính hoặc giấy phép',
     privacyPromise2: 'Ẩn danh theo mặc định — không cần tên thật',
     privacyPromise3: 'Dữ liệu của bạn không bao giờ được chia sẻ, bán hoặc dùng để huấn luyện AI',

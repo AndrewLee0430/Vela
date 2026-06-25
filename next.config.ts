@@ -6,6 +6,13 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true  // Required for static export
   },
+  // Lint is a STANDALONE safety net (`npm run lint`), not a build gate — `next build`
+  // is the deploy gate (TypeScript + build errors). This preserves the pre-existing
+  // behavior (build did not run ESLint while the flat config was missing) so adding
+  // eslint.config.mjs does not suddenly fail the build on pre-existing lint debt.
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   // PRD § 4.5 — dev quality-of-life: forward /q/* and /api/share/* to
   // FastAPI on :8000 so localhost:3000 (next dev) can render the
   // public Jinja2 page without a separate proxy. Production is static
