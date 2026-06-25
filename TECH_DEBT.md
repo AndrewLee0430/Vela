@@ -17,6 +17,17 @@ When entries are resolved, mark with the resolving commit SHA (git log is the re
 
 ---
 
+- **[P2 · honesty / consistency] DailyMed outbound-link chip label + host-mapping inconsistency (deferred from the 2026-06-25 DailyMed sweep)**
+  - **(i) chip label reads like an integrated source:** `utils/sourceLabels.ts:52` maps source_type `dailymed` → chip label **'DailyMed'** (with `officialTip`). It's "reserved (Phase 1B)" and effectively **dormant today** (Explain's RxNorm badge keeps `source_type:'rxnorm'`, so the host-detection branch rarely/never fires), BUT if any citation is ever tagged `dailymed` the chip would read "DailyMed" — which blurs "we link OUT to DailyMed" vs "our data comes FROM DailyMed". Consider relabeling to **"FDA drug label"**.
+  - **(ii) BUG — host→type mapping drift:** `utils/sourceLabels.ts:79` maps host `dailymed.nlm.nih.gov` → `'dailymed'`, while `api/services/share_renderer.py:233` maps the SAME host → `'rxnorm'`. So a DailyMed-linked citation would label **differently in the share OG render vs the live panel**. Reconcile to ONE mapping, aligned with the (i) chip-label decision.
+  - **Why deferred:** the 2026-06-25 DailyMed over-claim sweep (PART I) was kept FRONTEND-only + zero-backend, so this (touches `sourceLabels.ts` + `share_renderer.py`) was deferred. Low priority — the chip is dormant today.
+  - **Discovered:** 2026-06-25 during the DailyMed reference inventory.
+
+- **[P2 · honesty — PROMPT-GATED, out of frontend-sweep scope] `explain_system.md` lists "FDA DailyMed" as a source category to the LLM (deferred 2026-06-25)**
+  - `api/prompts/explain_system.md` (~L120 "**D. FDA DailyMed** — for prescription drug labels (when available)"; ~L228 example `"url": "https://dailymed.nlm.nih.gov/..."`) tells the **LLM** that "FDA DailyMed" is a source category, which can cause the model to NAME DailyMed in Explain output — the same over-claim family as the frontend copy, but at the prompt layer.
+  - **Why deferred:** editing this edits a **system prompt** → requires a **§2.7 ExplainJudge re-baseline** (CLAUDE.md Rule 17), so it was OUT of scope for the frontend copy sweep (PART I). **Batch with the next Explain prompt edit / re-baseline.**
+  - **Discovered:** 2026-06-25 during the DailyMed reference inventory.
+
 - **[P2 · tooling / lint] ESLint flat-config breakage — `npm run lint` failed repo-wide — ✅ RESOLVED 2026-06-25 (`eslint.config.mjs` added)**
   - **Correct cause (the earlier 2026-06-24 note MISDIAGNOSED this as "repo still carries the old `.eslintrc`" — verified WRONG: there was NO `.eslintrc*` AND NO `eslint.config.*` of any kind):** ESLint 9 + a bare `"lint": "eslint"` script + **no config file at all** → ESLint 9 errors before linting, so `npm run lint` exited non-zero repo-wide (NOT a code lint error — identical on a clean checkout). The repo already shipped the flat-config deps (`@eslint/eslintrc` FlatCompat shim + `eslint-config-next` 15.5.5); only the config file was missing.
   - **Fix (this commit):** added the standard Next.js 15 flat config `eslint.config.mjs` (FlatCompat → `next/core-web-vitals` + `next/typescript`, plus a build-artifact `ignores` block) + set `eslint.ignoreDuringBuilds: true` in `next.config.ts` so `next build` keeps its pre-existing behavior (it did NOT run ESLint while the config was missing → build stays the deploy gate, lint is a standalone net). `npm run lint` now RUNS.

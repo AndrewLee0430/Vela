@@ -28,7 +28,7 @@ Three core features:
 
 - **PubMed 36M+ articles + FDA official drug labels** as retrieval sources (not just LLM knowledge)
 - **16 language support** — English, Traditional Chinese, Simplified Chinese, Japanese, Korean, Spanish, French, German, Italian, Portuguese, Thai, Arabic, Hindi, Bengali, Hebrew, Vietnamese
-- **Every answer includes citations** with clickable source links (PubMed PMID, FDA DailyMed)
+- **Every answer includes citations** with clickable source links (PubMed PMID, FDA DailyMed) <!-- ⚠️ 2026-06-25: if reused as external marketing copy, change "FDA DailyMed" → "FDA drug labels (OpenFDA)" — internal doc only, not a live over-claim today (see TECH_DEBT DailyMed sweep). -->
 - **Evidence strength assessment** per section, judged by the LLM against retrieval quality
 - **5-layer safety guard chain** — input validation, injection detection, medical intent classification, PHI detection
 

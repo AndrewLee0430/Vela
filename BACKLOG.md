@@ -785,6 +785,13 @@ Phase 1B work items per advisor discussion 2026-05-04 (preserved in git commit 3
 - **⚠️ DO NOT implement now** — recorded as the **Q2-a next-task candidate**. Distinct from the 在地差異 Tier 1 item below (that's the frontend pointer panel; THIS is the backend fabrication). Cross-ref the DailyMed over-claim sweep above (same honesty principle) + the reversal-defense retrieval-miss family (no-retrieval answers are the fragile path).
 - **Slot**: Q2 (next-task candidate); NOT Phase 1B Week-scheduled.
 
+### [P1] Verify presents LLM-generated interaction analysis as "FDA Label Analysis" (honesty / medical-safety) — DO NOT implement yet
+- **Source**: surfaced during the DailyMed reference inventory (2026-06-25). The Verify drug-interaction analysis is produced by the **LLM** (`api/server.py` builds each `DrugInteraction` with `source="FDA Label Analysis"` from a `verify_binding.provider.complete()` call), yet is presented to the user as if it were **official FDA-sourced** analysis. The accompanying `source_url` is a real DailyMed lookup link (Bucket B — kept in the 2026-06-25 sweep), but the **"FDA Label Analysis" label implies an authority the content doesn't have** — the analysis is model-generated, not extracted from an FDA label.
+- **Why it matters (same family as the two items it sits with)**: this is the SAME "presenting model-generated medical content with authority it doesn't have" pattern as **(i)** the Q2-a no-retrieval fabrication (above) and **(ii)** the DailyMed over-claim sweep (TECH_DEBT + BACKLOG). Honesty + medical-safety.
+- **⚠️ DO NOT implement now** — needs its own probe: how the "FDA Label Analysis" label actually renders to the user, and whether fixing it touches Verify's result presentation or the verify prompt (→ possible §2.7 re-baseline). Cross-ref the Q2-a item above + the DailyMed over-claim sweep.
+- **Slot**: Q2 honesty/safety candidate; NOT Phase 1B Week-scheduled.
+- **Discovered**: 2026-06-25 during the DailyMed reference inventory.
+
 ### [P0] 在地差異提示 Tier 1 (TW/JP/KR/SG/MY/TH)
 - **Source**: ADR 004 (advisor discussion in git commit 394545e § 5.3 — advanced from Phase 1C to 1B per 護城河 rebalance)
 - **Why advanced**: Removing prescription parser frees 5-7 days; 在地差異 is core 護城河 (per ADR 004 wedge 2)
