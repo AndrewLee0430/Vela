@@ -696,8 +696,20 @@ function ResearchForm() {
 
                 {/* Right: citations */}
                 <div className="w-full lg:w-96 flex flex-col">
-                    <div className="rounded-xl p-6 flex-1 overflow-hidden" style={{ background: "rgb(var(--color-text) / 0.06)", border: "1px solid rgb(var(--color-text) / 0.1)" }}>
-                        <CitationPanel citations={citations} isLoading={loading && citations.length === 0} />
+                    <div className="rounded-xl p-6 flex-1 overflow-hidden flex flex-col" style={{ background: "rgb(var(--color-text) / 0.06)", border: "1px solid rgb(var(--color-text) / 0.1)" }}>
+                        {/* References always render in their source language (English) by design — Vela does
+                            NOT translate medical literature (translation could distort clinical accuracy). This
+                            small caption reassures non-English users it's intentional, not missing i18n. Shown
+                            ONLY when the UI language is not English AND there is ≥1 citation → English users +
+                            empty/loading panels render nothing (no layout shift). i18n-keyed, never LLM-generated. */}
+                        {lang !== 'en' && citations.length > 0 && (
+                            <p className="text-xs mb-3 text-text/40">
+                                {ui.citationLanguageNote}
+                            </p>
+                        )}
+                        <div className="flex-1 min-h-0">
+                            <CitationPanel citations={citations} isLoading={loading && citations.length === 0} />
+                        </div>
                     </div>
                 </div>
             </div>

@@ -204,6 +204,7 @@ export interface UITranslations {
   referencesEmpty: string;
   referencesTitle: string;
   verifyReference: string;
+  citationLanguageNote: string;
 
   // ── Phase 2: Navbar ──
   signIn: string;
@@ -469,6 +470,7 @@ const en: UITranslations = {
   referencesEmpty: 'References will appear here after your search.',
   referencesTitle: 'References',
   verifyReference: 'Click \u201CView source\u201D to verify each reference.',
+  citationLanguageNote: 'References are shown in their original language to avoid translation errors.',
   signIn: 'Sign In',
   cancelledMsg: 'Subscription cancelled. Your Pro access has ended.',
   cancelError: 'Unable to cancel. Please contact',
@@ -713,6 +715,7 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     referencesEmpty: '搜尋後參考文獻將顯示於此。',
     referencesTitle: '參考文獻',
     verifyReference: '點擊「查看來源」以驗證每篇參考文獻。',
+    citationLanguageNote: '文獻保留原文，避免翻譯造成失真。',
     signIn: '登入',
     cancelledMsg: '訂閱已取消。您的 Pro 存取權限已結束。',
     cancelError: '無法取消，請聯繫',
@@ -954,6 +957,7 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     referencesEmpty: '搜索后参考文献将显示于此。',
     referencesTitle: '参考文献',
     verifyReference: '点击"查看来源"以验证每篇参考文献。',
+    citationLanguageNote: '文献保留原文，避免翻译造成失真。',
     signIn: '登录',
     cancelledMsg: '订阅已取消。您的 Pro 访问权限已结束。',
     cancelError: '无法取消，请联系',
@@ -1194,6 +1198,7 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     referencesEmpty: '検索後に参考文献がここに表示されます。',
     referencesTitle: '参考文献',
     verifyReference: '「ソースを表示」をクリックして各参考文献を確認してください。',
+    citationLanguageNote: '文献は翻訳による誤りを避けるため原文のまま表示しています。',
     signIn: 'サインイン',
     cancelledMsg: 'サブスクリプションが解約されました。Pro アクセスは終了しました。',
     cancelError: '解約できませんでした。お問い合わせください：',
@@ -1434,6 +1439,7 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     referencesEmpty: '검색 후 참고문헌이 여기에 표시됩니다.',
     referencesTitle: '참고문헌',
     verifyReference: '"출처 보기"를 클릭하여 각 참고문헌을 확인하세요.',
+    citationLanguageNote: '문헌은 번역 오류를 방지하기 위해 원문 그대로 표시됩니다.',
     signIn: '로그인',
     cancelledMsg: '구독이 취소되었습니다. Pro 접근 권한이 종료되었습니다.',
     cancelError: '취소할 수 없습니다. 다음으로 문의해 주세요:',
@@ -1676,6 +1682,7 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     referencesEmpty: 'Las referencias aparecerán aquí después de su búsqueda.',
     referencesTitle: 'Referencias',
     verifyReference: 'Haga clic en "Ver fuente" para verificar cada referencia.',
+    citationLanguageNote: 'Las referencias se muestran en su idioma original para evitar errores de traducción.',
     signIn: 'Iniciar sesión',
     cancelledMsg: 'Suscripción cancelada. Su acceso Pro ha terminado.',
     cancelError: 'No se pudo cancelar. Contacte a',
@@ -1918,6 +1925,7 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     referencesEmpty: 'Les références apparaîtront ici après votre recherche.',
     referencesTitle: 'Références',
     verifyReference: 'Cliquez sur « Voir la source » pour vérifier chaque référence.',
+    citationLanguageNote: 'Les références sont affichées dans leur langue d\'origine pour éviter les erreurs de traduction.',
     signIn: 'Se connecter',
     cancelledMsg: 'Abonnement annulé. Votre accès Pro est terminé.',
     cancelError: 'Impossible d\'annuler. Veuillez contacter',
@@ -2160,6 +2168,7 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     referencesEmpty: 'Referenzen erscheinen hier nach Ihrer Suche.',
     referencesTitle: 'Referenzen',
     verifyReference: 'Klicken Sie auf „Quelle anzeigen", um jede Referenz zu überprüfen.',
+    citationLanguageNote: 'Quellen werden in ihrer Originalsprache angezeigt, um Übersetzungsfehler zu vermeiden.',
     signIn: 'Anmelden',
     cancelledMsg: 'Abonnement gekündigt. Ihr Pro-Zugang ist beendet.',
     cancelError: 'Kündigung nicht möglich. Bitte kontaktieren Sie',
@@ -2402,6 +2411,7 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     referencesEmpty: 'I riferimenti appariranno qui dopo la ricerca.',
     referencesTitle: 'Riferimenti',
     verifyReference: 'Clicca "Vedi fonte" per verificare ogni riferimento.',
+    citationLanguageNote: 'I riferimenti sono mostrati nella lingua originale per evitare errori di traduzione.',
     signIn: 'Accedi',
     cancelledMsg: 'Abbonamento annullato. Il tuo accesso Pro è terminato.',
     cancelError: 'Impossibile annullare. Contatta',
@@ -2644,6 +2654,7 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     referencesEmpty: 'As referências aparecerão aqui após sua pesquisa.',
     referencesTitle: 'Referências',
     verifyReference: 'Clique em "Ver fonte" para verificar cada referência.',
+    citationLanguageNote: 'As referências são exibidas no idioma original para evitar erros de tradução.',
     signIn: 'Entrar',
     cancelledMsg: 'Assinatura cancelada. Seu acesso Pro foi encerrado.',
     cancelError: 'Não foi possível cancelar. Entre em contato com',
@@ -2886,6 +2897,7 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     referencesEmpty: 'เอกสารอ้างอิงจะปรากฏที่นี่หลังการค้นหา',
     referencesTitle: 'เอกสารอ้างอิง',
     verifyReference: 'คลิก "ดูแหล่งที่มา" เพื่อยืนยันเอกสารอ้างอิงแต่ละรายการ',
+    citationLanguageNote: 'เอกสารอ้างอิงแสดงในภาษาต้นฉบับเพื่อหลีกเลี่ยงข้อผิดพลาดจากการแปล',  // review: th
     signIn: 'เข้าสู่ระบบ',
     cancelledMsg: 'ยกเลิกสมาชิกแล้ว สิทธิ์ Pro ของคุณสิ้นสุดแล้ว',
     cancelError: 'ไม่สามารถยกเลิกได้ กรุณาติดต่อ',
@@ -3128,6 +3140,7 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     referencesEmpty: 'ستظهر المراجع هنا بعد البحث.',
     referencesTitle: 'المراجع',
     verifyReference: 'انقر "عرض المصدر" للتحقق من كل مرجع.',
+    citationLanguageNote: 'تُعرض المراجع بلغتها الأصلية لتجنب أخطاء الترجمة.',  // review: ar
     signIn: 'تسجيل الدخول',
     cancelledMsg: 'تم إلغاء الاشتراك. انتهى وصولك إلى Pro.',
     cancelError: 'تعذر الإلغاء. يرجى التواصل مع',
@@ -3370,6 +3383,7 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     referencesEmpty: 'खोज के बाद संदर्भ यहां दिखाई देंगे।',
     referencesTitle: 'संदर्भ',
     verifyReference: 'प्रत्येक संदर्भ सत्यापित करने के लिए "स्रोत देखें" पर क्लिक करें।',
+    citationLanguageNote: 'संदर्भ अनुवाद त्रुटियों से बचने के लिए उनकी मूल भाषा में दिखाए जाते हैं।',  // review: hi
     signIn: 'साइन इन',
     cancelledMsg: 'सदस्यता रद्द कर दी गई। आपका Pro एक्सेस समाप्त हो गया है।',
     cancelError: 'रद्द नहीं हो सका। कृपया संपर्क करें',
@@ -3612,6 +3626,7 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     referencesEmpty: 'অনুসন্ধানের পর রেফারেন্স এখানে দেখা যাবে।',
     referencesTitle: 'রেফারেন্স',
     verifyReference: 'প্রতিটি রেফারেন্স যাচাই করতে "উৎস দেখুন" ক্লিক করুন।',
+    citationLanguageNote: 'অনুবাদজনিত ত্রুটি এড়াতে রেফারেন্সগুলি তাদের মূল ভাষায় দেখানো হয়।',  // review: bn
     signIn: 'সাইন ইন',
     cancelledMsg: 'সাবস্ক্রিপশন বাতিল হয়েছে। আপনার Pro অ্যাক্সেস শেষ হয়েছে।',
     cancelError: 'বাতিল করা যায়নি। অনুগ্রহ করে যোগাযোগ করুন',
@@ -3854,6 +3869,7 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     referencesEmpty: 'הפניות יופיעו כאן לאחר החיפוש.',
     referencesTitle: 'הפניות',
     verifyReference: 'לחצו "הצג מקור" כדי לאמת כל הפניה.',
+    citationLanguageNote: 'המקורות מוצגים בשפת המקור כדי למנוע שגיאות תרגום.',  // review: he
     signIn: 'התחברות',
     cancelledMsg: 'המנוי בוטל. הגישה ל-Pro שלכם הסתיימה.',
     cancelError: 'לא ניתן לבטל. אנא צרו קשר עם',
@@ -4096,6 +4112,7 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     referencesEmpty: 'Tài liệu tham khảo sẽ xuất hiện ở đây sau khi tìm kiếm.',
     referencesTitle: 'Tài liệu tham khảo',
     verifyReference: 'Nhấp "Xem nguồn" để xác minh từng tài liệu tham khảo.',
+    citationLanguageNote: 'Tài liệu tham khảo được hiển thị bằng ngôn ngữ gốc để tránh lỗi dịch thuật.',  // review: vi
     signIn: 'Đăng nhập',
     cancelledMsg: 'Đăng ký đã hủy. Quyền truy cập Pro của bạn đã kết thúc.',
     cancelError: 'Không thể hủy. Vui lòng liên hệ',
