@@ -26,7 +26,7 @@ Examples from 2026-04-19 to 2026-04-20 sessions:
 | Completed/shipped work log (chronological) | `git log` (recent window in STATE "Recently Shipped") |
 | Tech debt entries (active gaps) | TECH_DEBT.md |
 | System architecture (request flow / pipelines / payments / DB / env / frontend / deploy) | docs/architecture.md |
-| Master spec | docs/PRD.md (v1.3) |
+| Master spec | docs/PRD.md (v1.5) |
 | Decision records (ADRs) | docs/decisions/ |
 
 ### Workflow for a new task

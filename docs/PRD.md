@@ -1,4 +1,4 @@
-**Vela Master PRD v1.4**
+**Vela Master PRD v1.5**
 
 *Ask in your language. Verified by official sources. Answered in yours. · Updated 2026-04-28*
 
@@ -2345,7 +2345,7 @@ pharmacist Free → Pro 轉換率 ≥ 其他角色 2 倍是 PMF 達成的主要�
 **A.3 文件間關係**
 
 - GTM v7.1:市場定位、渠道、融資、風險。對應「為何要做這些功能」
-- Master PRD v1.3(本文件):產品功能規格。對應「要做什麼」
+- Master PRD v1.5(本文件):產品功能規格。對應「要做什麼」
 - 維運計畫 v3:上線後監控與運維。對應「如何維護」
 - STATE.md:當前焦點 + Next Up 隊列。對應「現在做哪個」
 - `git log`:已 ship 的工作紀錄(chronological)。對應「做過哪些」
@@ -2355,7 +2355,17 @@ pharmacist Free → Pro 轉換率 ≥ 其他角色 2 倍是 PMF 達成的主要�
 
 **十、更新記錄**
 
-**10.1 v1.3 → v1.4 變更(2026-05-13)**
+**10.1 v1.4 → v1.5 變更(2026-06-25)**
+
+| **變更類型** | **內容** |
+| --- | --- |
+| §5.1 修訂 | 在地差異提示**觸發機制**:原 LLM-in-generator-prompt 設計改為**前端 deterministic keyword matching + 前端 render**(Probe 1 v186→v188 驗證,flag-OFF、invisible to real users)。理由:對齊 §9.2 disclaimer 前端渲染哲學(不由 LLM 生成 boilerplate,避免不準確/不一致)。原 LLM-trigger 文字保留於 §5.1 供歷史(標記 SUPERSEDED)。 |
+| §5.1 修訂 | 「零人工標註」原則由「全靠 **LLM 判斷**」修正為「**deterministic keyword rules**」(NOT LLM judgment);「零人工標註」意圖不變,僅修正觸發機制。 |
+| §5.1.1 標註 | Probe-1 僅覆蓋 **Tier-1-TW**;`config/locale_authorities/` YAML、`global_fallback.yaml`、`get_authorities(locale)`、locale-detection waterfall 均未建;`locale=US → Tier 2 fallback` 驗收 case 未達成。 |
+
+**v1.5 決策依據:** 本 bump 為 §5.1 的 inline 🔄 修訂註記(2026-06-25,commit `aecd66f`)提供正式版號錨點 —— 該批註記為實作後對齊:Probe 1 dogfood 驗證 deterministic keywords 已足夠,不需 LLM classifier。架構層級的 spec 變更應有版號可追溯。
+
+**10.2 v1.3 → v1.4 變更(2026-05-13)**
 
 | **變更類型** | **內容** |
 | --- | --- |
@@ -2384,7 +2394,7 @@ Groq 在輕量任務有明確省錢路徑:Llama 3.1 8B at $0.05/$0.08 vs gpt-4.1
 - **OpenRouter**(gateway / router 層):5.5% credit fee,Phase 0 預設不需 routing fallback,Phase 1B 撥開關時邊際工程量 < 30 min,延後加
 - **Phase 0 三 provider(OpenAI + Anthropic + Groq)**:blast radius 大,工程量 +1d,Anthropic 仍然死碼,得不償失
 
-**10.2 v1.2 → v1.3 變更(2026-04-28)**
+**10.3 v1.2 → v1.3 變更(2026-04-28)**
 
 | **變更類型** | **內容** |
 | --- | --- |
@@ -2410,7 +2420,7 @@ soft launch(= Phase 0 ship gate)需要 word-of-mouth 工具(§ 4.5)與 SEO 內�
 - Phase 1A 末段(post soft launch)— 否決,理由同上
 - 只做 4.5 延後 4.6 — 否決,理由:4.6 重用 4.5 共用基礎設施,邊際工程成本低;延後 4.6 等於放棄內容團隊 6-12 個月累積期的起跑點
 
-**10.3 v1.1 → v1.2 變更(2026-04-17)**
+**10.4 v1.1 → v1.2 變更(2026-04-17)**
 
 | **變更類型** | **內容** |
 | --- | --- |
@@ -2425,12 +2435,12 @@ soft launch(= Phase 0 ship gate)需要 word-of-mouth 工具(§ 4.5)與 SEO 內�
 | 調整:附錄 A.2 章節對照 | 新增 2.7 與 5.1.1 的 FEATURE_AUDIT 對照行。 |
 | 調整:附錄 A.1 範例 prompt | 改以 2.7 為範例任務。 |
 
-**10.3.1 v1.2 post-release 變更記錄(非正式 bump 版號)**
+**10.4.1 v1.2 post-release 變更記錄(非正式 bump 版號)**
 
 - 2026-04-18:新增 § 2.8 Anonymous Trial Flow(discovered gap,見 ADR 001)
 - 2026-04-20:新增 § 2.9 Verify 輸出語言對齊 user locale(discovered gap,solo review Accepted,post-2.4 smoke test)
 
-**10.4 v1.0 → v1.1 變更(2026-04-17)**
+**10.5 v1.0 → v1.1 變更(2026-04-17)**
 
 | **變更類型** | **內容** |
 | --- | --- |
@@ -2447,8 +2457,8 @@ soft launch(= Phase 0 ship gate)需要 word-of-mouth 工具(§ 4.5)與 SEO 內�
 | 校準:Phase 0 時程 | 從 2 週延長為 2-2.5 週(10-13 工作天)。九章時程總覽對應調整。 |
 | 新增:附錄 A PRD 使用說明 | 提供 Claude Code 工作流程範例 + PRD vs FEATURE_AUDIT vs GTM vs 維運計畫的文件關係說明。 |
 
-**10.5 v1.0 版本(保留)**
+**10.6 v1.0 版本(保留)**
 
 v1.0 涵蓋 Phase 0 / 1A / 1B / 1C 初版規格,包括:Model Provider 抽象(初版 2 檔案)、query_id 關聯、Citation 追蹤、Onboarding 三問、首頁動態範例、Privacy 四接觸點、FeedbackBar 原因 chip、Citation ⓘ、Settings user_context、處方解析 MVP、在地差異提示分層、跨語言橋接面板。
 
-*Vela · vela.an-tho.com · Master PRD v1.4 · Updated 2026-05-13*
+*Vela · vela.an-tho.com · Master PRD v1.5 · Updated 2026-06-25*
