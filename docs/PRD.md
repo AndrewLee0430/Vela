@@ -1759,7 +1759,7 @@ Phase 1C 把「別人複製不了」的東西埋進產品。兩個核心功能�
 **關鍵設計原則**
 
 - 不承諾在地答案,只提示去核對:Vela 永遠不給具體在地答案,只提供官方連結
-- 零人工標註:全部靠 LLM 判斷 + hardcoded 連結 map
+- 零人工標註(目標不變:無 per-answer 人工標記)+ hardcoded 連結 map。**🔄 修訂 (2026-06-25, Probe 1):** 觸發機制原為「全部靠 **LLM 判斷**」,Probe 1 改為 **deterministic keyword rules(NOT LLM judgment)** —— dogfood 驗證確定性關鍵字已足夠;「零人工標註」意圖保留,僅修正 how-it's-triggered(LLM 判斷 → 確定性關鍵字規則)。
 - 從第一天就是全球產品:Tier 1 + Tier 2 確保每個國家使用者都有意義的提示
 **Tier 1 初版 6 國(Phase 1B 預告)**
 
@@ -1806,7 +1806,9 @@ Phase 1C 把「別人複製不了」的東西埋進產品。兩個核心功能�
 - IP 地理位置(粗略,僅輔助)
 **系統 Prompt 設計**
 
-在 Generator 的 system prompt 加入指令(語意摘要):生成主回答後,評估是否涉及藥物劑量、給付條件、ICD 編碼、國家監管、prescribing rules。若 YES:附加「⚠️ 地區差異提示 / Regional Differences Notice」段落。不提供具體在地答案,只指向官方來源。使用者 detected locale 和 authorities 從 config 注入。
+> **🔄 修訂 (2026-06-25, Probe 1 SHIPPED v186→v188):** 下方「在 Generator system prompt 加入指令」的 **LLM-in-generator-prompt 觸發設計已被 Probe 1 取代,不採用**。實際 shipped 架構 = **前端 deterministic keyword matching** 偵測在地敏感類別(dosing / reimbursement / indication / contraindication)+ **前端 render** 面板(資料驅動,讀 `utils/localeHint.ts` 常數),**生成 prompt 內零 LLM 介入、零 backend/SSE**。理由:遵循與 **§9.2 disclaimer 相同的哲學** —— disclaimer 由前端依偵測語言 render、**不由 LLM 生成**(LLM 生成的 boilerplate 不準確/不一致);在地提示同理。Probe 1 dogfood 驗證 deterministic keywords 已足夠(**不需要 LLM classifier**)。下方原 LLM-trigger 文字保留供歷史參考。
+
+**(SUPERSEDED 原設計,保留供歷史 — 見上方修訂):** 在 Generator 的 system prompt 加入指令(語意摘要):生成主回答後,評估是否涉及藥物劑量、給付條件、ICD 編碼、國家監管、prescribing rules。若 YES:附加「⚠️ 地區差異提示 / Regional Differences Notice」段落。不提供具體在地答案,只指向官方來源。使用者 detected locale 和 authorities 從 config 注入。
 
 **資料層:Authorities Database**
 
@@ -1964,6 +1966,9 @@ Phase 1C 本版不做 Tier 3 使用者貢獻功能,但保留擴充點:
 - Tier 2 fallback(WHO/NICE/EMA/Cochrane)獨立 YAML(global_fallback.yaml)存在
 - LLM 可透過 get_authorities(locale) 函式取得對應資料注入 prompt
 - 一個測試 case:使用者 locale=US(非 Tier 1),回傳 Tier 2 fallback 且 locale_hint 顯示正確
+
+> **🔄 Probe-1 status (2026-06-25):** Probe 1(shipped v186→v188)只覆蓋 **Tier-1 TW ONLY**,以上驗收標準 **均未達成**:無 `config/locale_authorities/` YAML(資料是前端 TS 常數 `utils/localeHint.ts`)、無 `global_fallback.yaml`、無 `get_authorities(locale)` 後端函式,且 **無 locale 偵測** —— 用 response-language `lang==='zh-TW'` 當 TW proxy(NOT a real locale)。**`locale=US → Tier 2 fallback` 這條驗收 case 尚未達成 —— Tier 2 fallback 與 locale-detection waterfall 兩者都仍未建。** 見 BACKLOG 在地差異 Tier 1 sub-items (b)/(e)。
+
 **不做什麼(對齊 5.1)**
 
 - 不做使用者投稿 Tier 3(Phase 2 後評估)
