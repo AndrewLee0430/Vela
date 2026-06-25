@@ -1183,13 +1183,9 @@ Two i18n content drifts surfaced during Stage 2 landing redesign (Steps 2 / 4a /
       flat-config breakage"), which also logs the 7 errors + 14 warnings of pre-existing lint
       debt now surfaced (separate cleanup task). (Was duplicated across both docs.)
 
-- [ ] **Decide fate of `docs/Blog_Implementation_Spec.md`**
-      Untracked since the 2026-05-25 blog feature ship; persisted as
-      untracked across every Stage 2 / Stage 4 commit. Needs a decision:
-      (a) `git add` + commit if intended as repo doc; (b) add to
-      `.gitignore` if intentionally local; (c) delete if obsolete. Currently
-      shows up as `??` in every `git status` and clutters the working-tree
-      check.
+- [x] **Decide fate of `docs/Blog_Implementation_Spec.md` — ✅ RESOLVED 2026-06-25 (option a: committed as repo doc).**
+      Untracked since the 2026-05-25 blog feature ship; brought under version control as-is
+      ahead of resuming blog engineering. No longer shows as `??` in `git status`.
 
 ## §4.3 deferred sub-needs (from §3.1 PHASE E, 2026-06-08)
 
