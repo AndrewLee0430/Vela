@@ -5,7 +5,7 @@
 **Vela is a multilingual clinical AI research tool for healthcare professionals**, delivering evidence-based answers grounded in PubMed 36M+ articles and official FDA drug data.
 
 Three core features:
-- **Research** — Ask clinical questions in any language, get cited answers with evidence strength ratings (🟢 Strong / 🟡 Moderate / 🔴 Limited)
+- **Research** — Ask clinical questions in any language, get cited answers; each section header carries an LLM-emitted 🟢/🟡/🔴 evidence-strength marker (self-label), shown with a source-provenance line (the standalone evidence-legend UI was retired in v176)
 - **Verify** — Check drug interactions against official FDA label data with severity badges (Critical / Major / Moderate / Minor)
 - **Explain** — Upload medical reports (PDF/image) or paste text, get plain-language summaries backed by LOINC (tooltip popover on hover), RxNorm (clickable links to DailyMed), and MedlinePlus
 - **FAQ** — Public FAQ page (`/faq`) with 15 Q&A items in accordion format
@@ -29,7 +29,7 @@ Three core features:
 - **PubMed 36M+ articles + FDA official drug labels** as retrieval sources (not just LLM knowledge)
 - **16 language support** — English, Traditional Chinese, Simplified Chinese, Japanese, Korean, Spanish, French, German, Italian, Portuguese, Thai, Arabic, Hindi, Bengali, Hebrew, Vietnamese
 - **Every answer includes citations** with clickable source links (PubMed PMID, FDA DailyMed) <!-- ⚠️ 2026-06-25: if reused as external marketing copy, change "FDA DailyMed" → "FDA drug labels (OpenFDA)" — internal doc only, not a live over-claim today (see TECH_DEBT DailyMed sweep). -->
-- **Evidence strength assessment** per section, judged by the LLM against retrieval quality
+- **Evidence strength** — a per-section 🟢🟡🔴 marker the LLM self-assigns (parsed into a colored section header), shown alongside a real source-provenance line. (The earlier standalone evidence-legend / credibility-badge UI was replaced by the provenance line in v176; the `evidenceStrong/Moderate/Limited` i18n keys were removed 2026-06-25.)
 - **5-layer safety guard chain** — input validation, injection detection, medical intent classification, PHI detection
 
 ---
@@ -86,20 +86,21 @@ Three core features:
 
 **Landing page**: Three product mockup cards (Research/Verify/Explain) with unified structure — query + badge + source label + CTA. "Every answer cited" social proof tagline. Footer: "© 2026 Vela. All rights reserved. · an-tho.com" (an-tho.com is the parent brand page, now live).
 
-| Dimension | Vela | UpToDate | ChatGPT/Perplexity | Google Scholar |
-|---|---|---|---|---|
-| Multilingual | 16 languages | English only | Any (no medical focus) | English-centric |
-| Sources | PubMed + FDA (cited) | Curated editorial | No citations / hallucination risk | Raw papers |
-| Evidence grading | 🟢🟡🔴 per section | Editorial assessment | None | None |
-| Drug interactions | FDA-backed severity | Included | Unreliable | Not available |
-| Price | $9.99/mo | ~$60/mo | $20/mo | Free (no answers) |
-| Clinical focus | Medical-only (guard chain) | Medical-only | General-purpose | General-purpose |
+| Dimension | Vela | OpenEvidence | UpToDate | ChatGPT/Perplexity | Google Scholar |
+|---|---|---|---|---|---|
+| Multilingual | 16 languages | EN + Japanese (added 2026); withdrew EU/UK | English only | Any (no medical focus) | English-centric |
+| Sources | PubMed + FDA, cited; **TFDA 仿單 local grounding planned (ADR 007)** | US-centric guideline + literature | Curated editorial | No citations / hallucination risk | Raw papers |
+| Evidence grading | per-section 🟢🟡🔴 self-label (LLM-emitted, in the section header) + source-provenance line | Literature-based | Editorial assessment | None | None |
+| Drug interactions | FDA-label severity (cited) | US-centric | Included | Unreliable | Not available |
+| Access / Price | $9.99/mo · no credential gate · anonymous-friendly | **Free but NPI-gated — verified US physicians ONLY (blocks non-US incl. Taiwan); ad-monetized** | ~$60/mo | $20/mo | Free (no answers) |
+| Clinical focus | Medical-only (guard chain); non-English + Allied-Health TA | Medical (US physicians) | Medical-only | General-purpose | General-purpose |
 
-**Key moats:**
-1. **Language + medical specialization** — hard to replicate without dedicated language detection + medical prompt engineering
-2. **Official source attribution** — PubMed + FDA retrieval pipeline, not just LLM generation
-3. **Safety by design** — 5-layer guard chain, PHI detection, fail-close architecture
-4. **Price/value** — 6x cheaper than UpToDate with comparable clinical utility for common queries
+**Key moats (headline = deep local grounding, NOT price):**
+1. **Deep local grounding — the headline differentiator** — answer with Taiwan standards + citations (TFDA 仿單 ingested as a citable RAG source; planned per ADR 007), serving the non-physician **Allied-Health TA** (pharmacists, nurses, students) that OpenEvidence does not prioritize. This is the moat OpenEvidence's **NPI-gated, US-centric** model structurally cannot replicate (it blocks non-US users, incl. Taiwan).
+2. **Language + medical specialization** — 16-language medical search; dedicated language detection + medical prompt engineering.
+3. **Official source attribution** — PubMed + FDA retrieval pipeline (cited), not just LLM generation.
+4. **Safety by design** — 5-layer guard chain, PHI detection, fail-close, no-credential-gate / anonymous-friendly access.
+5. **Price (secondary value point, NOT the moat)** — $9.99/mo vs UpToDate ~$60/mo; a value point, demoted below the local-grounding moat.
 
 ---
 

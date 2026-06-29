@@ -396,6 +396,7 @@ source_type 必須是以下 enum 之一:
 - 'WHO' | 'NICE' | 'EMA' | 'Cochrane'
 - 'LocalAuthority'(Phase 1C 加)| 'Other'
 - **(2026-05-06 新增)** 'DailyMed' enum value 預定 Phase 1B Week 4-5 ship 時啟用 (per BACKLOG [P0] DailyMed API integration)。詳見新增 §2.10 資料來源策略。
+- **(2026-06-26 新增 — [ADR 007](decisions/007-tfda-open-data-grounding.md))** 'TFDA' 加入 SourceType **策略**(deep local grounding;TFDA 仿單 ingest-and-cite)。**這是 spec / 設計註記;enum 的 CODE 變更屬後續 dev 階段** —— 目前 backend `SourceType` = {pubmed, fda, local}(`api/models/schemas.py`),'TFDA' 尚未進 code。'TFDA' 屬「官方法規」authority class(見下方 §2.10 source-authority label)。
 
 判定邏輯:
 
@@ -875,6 +876,18 @@ Vela 核心承諾 "Ask in any language, answered in yours"(§ 0.2)對 Verify 服
 | LOINC / RxNorm / MedlinePlus (現有) | ❌ | ❌ | ✅ Explain 主力 |
 
 ✅ 主力使用 / ⚠️ 輔助或可選 / 🔧 內部機制 / ❌ 不使用
+
+**🔄 來源權威性標籤 (source-authority / officialness;2026-06-26 新增 — [ADR 007](decisions/007-tfda-open-data-grounding.md) + 報告 Rec 4)**
+
+法規 / 官方來源(TFDA 仿單、openFDA、DailyMed、學會指引)需要一個與 🟢🟡🔴 **證據強度自評脫鉤** 的「權威性 / officialness」標籤 —— 法規文本沒有「證據等級」,它權威是因為它**就是**法規機關的文本。兩條不同的軸,**共用同一個 citation chip 設計**:
+
+- **官方法規軸**(regulator text:TFDA / FDA / DailyMed)+ **last-reviewed / last-sync 日期**;**學會指引**(licensed guideline,若取得授權)+ last-reviewed 日期。
+- **文獻軸**才用 🟢🟡🔴 證據強度(PubMed / DailyMed 文獻 tier;§2.10.6)。
+- 與 BACKLOG [P0] DailyMed item 上的 **label-system convergence note 一致**(同一處設計,勿各自設計);infra 可延伸 `utils/sourceLabels.ts` `tooltipKey` + `CredibilityLevel`(`api/models/schemas.py`)。
+
+**🔄 Source-weighting §2.10.3 仍 UNBUILT — context-tiering 的前置 (2026-06-26)**
+
+目前 `api/rag/retriever.py` 只有 `YEAR_BOOST`(recency);`source_weight` + `tier_weight` 仍為 spec-only。三個 label 來源(openFDA + DailyMed + TFDA)+ PubMed 並存後,需要一致的加權/分層(`semantic × source_weight × tier_weight × recency`,§2.10.6)才能做 context-tiering(TW context → TFDA primary、FDA/DailyMed 為 comparison)。與 BACKLOG [P0] DailyMed item 上的 **source-weighting note 一致**(勿重複設計)。
 
 **2.10.3 設計原則**
 
@@ -1744,6 +1757,19 @@ Phase 1C 把「別人複製不了」的東西埋進產品。兩個核心功能�
 **5.1 在地差異提示 — 分層式全球化** ❌ PENDING (Phase 1B advanced per ADR 004 + advisor discussion 護城河 rebalance — Tier 1 6國 originally Phase 1C, now Phase 1B; see BACKLOG.md)
 
 **戰略定位:**Vela 對抗 OpenEvidence 全球擴張最重要的結構性護城河。OE 因為 NPI 驗證綁定美國,無法做真正的全球在地化。Vela 的「無身份驗證」架構讓我們可以自然服務全球,透過分層式在地提示實現低成本在地化。
+
+**🔄 深度模型分層 (2026-06-26 修訂 — grounding 凌駕 pointer;見 [ADR 007](decisions/007-tfda-open-data-grounding.md))**
+
+原 §5.1 設計只有「pointer(指向官方來源、使用者自行核對)」一種深度。2026-06-26 在 pointer 之上新增 **深 Grounding** 層,並把原單一「pointer」拆為兩級。完整四級(由深到淺):
+
+1. **深 Grounding(RAG-ingest-and-cite)— 僅限 open-commercial-downloadable 資料(目前 = TW TFDA 仿單)。** 把官方 label 文本 ingest 進 Vela 自有 vector store,retrieve + cite(同 PubMed 模式),用 Taiwan 標準 + citation 回答。受 **ingest-and-cite constitution** 約束(ADR 004 2026-06-26 addendum / ADR 007):只呈現+引用 label 說了什麼,**不**由 LLM 生成在地規則、**不**給個人化建議、**不**建 DDI「不可併用」判定引擎。
+2. **Pointer + Active-Licensing(TW 醫學會指引:高血壓 / 糖尿病 / 感染症)— #2 TA-need**(臨床決策核心;護理師 + 醫學生也用)。今日 **copyright-blocked → 不可 ingest**,故 **pointer NOW**,但 **主動爭取 per-society 授權**。這是指引從 pointer **畢業**到 grounding 的路徑 —— IF 取得授權則 graduate。**未取得授權前不得 RAG-ingest**(糖尿病學會明文禁止重製)。
+3. **Pointer-Passive(JP/KR/SG/MY/TH)** — 無 open data、無 licensing track,近期無 grounding 路徑,維持被動 pointer。
+4. **國際 fallback(WHO / NICE / EMA)** — 最底層,非 Tier-1 地區的通用權威(沿用下方原 Tier 2 設計)。
+
+**UPGRADE 準則(修訂):** 一個 topic graduate 到深 Grounding 的條件 = 其資料 **EITHER open-and-downloadable(TFDA)OR licensed(指引,若談成授權)** —— 「資料開放 OR 取得授權」→ grounding。**原 pointer spec 內容(下方 機制層 / 資料層 / Tier 1-3 / 系統 Prompt 設計 等)全部保留**;grounding 是 per-topic 的「畢業」目標(topic 一旦 ingested-or-licensed 即 graduate;未畢業的 topic 仍以 pointer 為 fallback)。
+
+**US-comparison + 邊界:** FDA / DailyMed 作為 **US-comparison arm**(非 US-market feature);所有層級不跨越 no-individualized-advice 邊界。詳見 [ADR 007](decisions/007-tfda-open-data-grounding.md)。
 
 **核心概念:機制 vs 資料**
 

@@ -20,6 +20,8 @@ Full test report + UI spec + i18n keys + engineering breakdown documented in adv
 
 Option B (LLM resolution) and Option C (TFDA API) both rejected — see ADR 004 for prescription parser deferral context (sister decision).
 
+> **Scoped by [ADR 007](007-tfda-open-data-grounding.md) (2026-06-26):** this rejection targets a LIVE-runtime TFDA-API drug-name-resolution dependency; periodic BATCH ingestion of TFDA open-data into Vela's own corpus is out of this rejection's scope and is adopted in ADR 007.
+
 ## Consequences
 
 **Positive**: Zero confident-hallucinate risk. No LLM dependency / model lifecycle exposure. Strengthens "safety-first" positioning. 1.5-day implementation enables Phase 1B on schedule.

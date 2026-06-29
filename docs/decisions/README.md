@@ -28,6 +28,9 @@
 | 002 | Documentation Reorganization | Accepted (2026-04-30) | 2026-04-30 | 拆 CLAUDE.md (574→111),新增 STATE/BACKLOG/ARCHIVE/TECH_DEBT,docs/architecture.md;PRD 加 status markers |
 | 003 | Drug Name Resolution Strategy | Accepted (2026-05-04) | 2026-05-04 | Verify 採 Option A:強制英文 INN 輸入 + 非英文 inline warning + 外部查詢連結;基於 40-題×3 模型實測拒絕 LLM resolution / TFDA dict |
 | 004 | Prescription Parser Deferral | Accepted (2026-05-04) | 2026-05-04 | 處方解析 MVP 永久移除(Phase 1B + 任何未來階段);TFDA API 不整合;護城河重新定位:5-wedge→4-wedge(multilingual + 在地差異 + 跨語言橋接 + privacy) |
+| 007 | TFDA Open-Data Grounding | Accepted (2026-06-26) | 2026-06-26 | TFDA 仿單 open data 採為可引用 RAG grounding 來源(deep local grounding);scope ADR 003/004「No TFDA API」拒絕為「live-runtime 藥名解析依賴」,periodic BATCH ingestion 開放;ingest-and-cite constitution(無 LLM 生成在地規則 / 無 DDI verdict);醫學會指引 copyright-blocked → pointer + 主動爭取授權。 |
+
+> 註:ADR 005/006 尚未補入本索引表,待回填(兩個 ADR 本身已存在於 `docs/decisions/`)。
 
 ## 如何加新決策
 
