@@ -187,7 +187,7 @@ async def _cleanup_old_records():
             cutoff = datetime.utcnow() - timedelta(days=180)
             db = SessionLocal()
             try:
-                deleted_audit = db.query(AuditLog).filter(AuditLog.created_at < cutoff).delete()
+                deleted_audit = db.query(AuditLog).filter(AuditLog.timestamp < cutoff).delete()
                 deleted_chat = db.query(ChatHistory).filter(ChatHistory.created_at < cutoff).delete()
                 db.commit()
                 if deleted_audit or deleted_chat:
