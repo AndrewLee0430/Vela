@@ -23,6 +23,8 @@ The strategy thesis (from the localization-grounding report): Vela's only defens
    (a2) 藥品電子結構化仿單資料庫 (full structured label text, mcp.fda.gov.tw) — deep
         grounding content; bulk full-text access path is a build-time confirmation.
 
+   **📌 2026-06-29 data-probe correction (the real dataset was pulled + characterized):** two factual errors in the a1 description above — (1) **name↔id mapping:** in the current TFDA OpenAPI, **id=37 = 「未註銷藥品許可證資料集」 (active-only — the correct set to use)**; the name **「全部藥品許可證資料集」 is actually id=36** (includes cancelled). Keep using **id=37**, but its correct name is *未註銷藥品許可證資料集*. (2) **access:** it is **bulk-ZIP-only** — `GET /data/opendata/export/37/json` returns `application/zip` (inner `37_5.json`, **26,020 records**, 29.5 MB); the per-dataset query API `/dataset/openapi/{id}` returns **404** → there is **NO queryable/paged API**, so the design is **pin-a-dated-snapshot + periodic (monthly) re-pull**, not live query (the CSV/XML export variants are the same bulk ZIP). For later: **id=39 = 藥品仿單或外盒資料集 is the a2 full-仿單 source.** The Decision is otherwise unchanged.
+
 2. SCOPING of ADR 003/004 "No TFDA API (any phase, any future spec)": that rejection
    targeted a LIVE-RUNTIME TFDA-API dependency for drug-name RESOLUTION (ADR 003
    Option C). It is NOT reversed for that use — Vela still does NOT resolve drug names
