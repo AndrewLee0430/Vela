@@ -925,6 +925,70 @@ async def verify_drug_interaction(
     lang = detect_language(verify_query)
     lang_instruction = get_language_instruction(lang)
 
+    # ── ADR 007 (T2a): deterministic TFDA brand→ingredient grounding ────────────────
+    # The ADR-003 non-Latin guard is FRONTEND; a user who clicks 「仍要送出（不建議）」
+    # arrives here with a raw Chinese brand. openFDA can't match it → today it falls to
+    # the LLM, which guessed wrong (冠脂妥 → simvastatin). Resolve the brand to its TFDA
+    # active ingredient HERE so the downstream FDA lookup + LLM analysis run on the INN
+    # (冠脂妥 → ROSUVASTATIN CALCIUM). ADDITIVE by contract: a MISS leaves the token
+    # untouched → EXACTLY today's behavior; an AMBIGUOUS name DEFERS (never guesses).
+    analysis_drugs = list(body.drugs)
+    tfda_notes: list[str] = []
+    tfda_resolutions = []
+    try:
+        from api.services.tfda_lookup import resolve_brand
+        tfda_resolutions = [resolve_brand(d) for d in body.drugs]
+    except Exception as e:  # fail-soft: grounding is additive, not a guard → today's behavior
+        logger.warning("[Verify] TFDA brand resolution unavailable: %s", e)
+        tfda_resolutions = []
+
+    # (c) AMBIGUOUS — defer the whole request (a DDI check needs every drug resolved).
+    #     Do NOT run analysis on a guessed active (no-fabrication principle).
+    ambiguous = [(i, r) for i, r in enumerate(tfda_resolutions) if r.status == "ambiguous"]
+    if ambiguous:
+        resolved_so_far = "; ".join(
+            f"'{body.drugs[i]}' = {' + '.join(r.ingredients)}"
+            for i, r in enumerate(tfda_resolutions) if r.status == "resolved"
+        )
+        amb_lines = [
+            f"'{body.drugs[i]}' matches multiple distinct TFDA products"
+            + (f" (e.g. {', '.join(r.candidate_products[:4])})" if r.candidate_products else "")
+            for i, r in ambiguous
+        ]
+        defer_summary = (
+            "⚠️ Could not verify — ambiguous brand name. "
+            + "; ".join(amb_lines)
+            + ". Please enter a more specific product name or the active-ingredient (INN) name."
+            + (f" (Resolved so far: {resolved_so_far}.)" if resolved_so_far else "")
+        )
+        if not is_anonymous:
+            _safe_db_write(db, AuditLog(id=audit_id, user_id=user_id,
+                    action="verify_defer_ambiguous",
+                    query_content=f"Ambiguous TFDA brand(s): {[body.drugs[i] for i, _ in ambiguous]}",
+                    ip_address="0.0.0.0"),
+                    label="Verify Audit")
+        return VerifyResponse(
+            drugs_analyzed=body.drugs, interactions=[],
+            summary=defer_summary, risk_level="Unknown",
+            response_language=response_language,
+            disclaimer=get_verify_disclaimer(response_language),
+            query_time_ms=int((time.time() - start_time) * 1000),
+            query_id=audit_id,
+        )
+
+    # (a) single-ingredient / (b) combo — substitute the resolved INN(s) into the ANALYSIS
+    #     input (body.drugs is kept verbatim for display/audit). Comma-joining a combo's
+    #     actives makes the LLM prompt list them as separate drugs (correct for DDI).
+    for i, r in enumerate(tfda_resolutions):
+        if r.status == "resolved":
+            analysis_drugs[i] = ", ".join(r.ingredients)
+            if r.is_combo:
+                tfda_notes.append(
+                    f"'{body.drugs[i]}' is a TFDA combination product: {' + '.join(r.ingredients)}")
+            else:
+                tfda_notes.append(f"'{body.drugs[i]}' → {r.ingredients[0]} (per TFDA 藥品許可證)")
+    # (d) MISS — analysis_drugs[i] stays == body.drugs[i] (today's behavior, unchanged).
+
     drug_labels = []
     spelling_corrections: list[str] = []
 
@@ -947,15 +1011,16 @@ async def verify_drug_interaction(
         "sertraline","losartan",
     ]
 
-    # Parallel FDA lookups for all drugs
+    # Parallel FDA lookups for all drugs (analysis_drugs = body.drugs with any Chinese
+    # brand replaced by its TFDA INN, so openFDA matches the ingredient not the brand).
     fda_results = await asyncio.gather(
-        *[fda_client.search_drug_labels(drug, limit=1) for drug in body.drugs],
+        *[fda_client.search_drug_labels(drug, limit=1) for drug in analysis_drugs],
         return_exceptions=True
     )
 
     # Process results and apply spell correction for misses
     correction_tasks = []  # (index, drug_name, best_match)
-    for i, (drug, result) in enumerate(zip(body.drugs, fda_results)):
+    for i, (drug, result) in enumerate(zip(analysis_drugs, fda_results)):
         if isinstance(result, Exception):
             result = []
         if result:
@@ -1000,7 +1065,7 @@ async def verify_drug_interaction(
 
         try:
             fb_user_content = (
-                f"Analyze interaction between: {', '.join(body.drugs)}\n"
+                f"Analyze interaction between: {', '.join(analysis_drugs)}\n"
                 f"Context: {body.patient_context or 'None'}\n"
                 "(No FDA label data available — rely on general clinical pharmacology knowledge.)"
             )
@@ -1023,11 +1088,13 @@ async def verify_drug_interaction(
                     description=item.get("description",""),
                     clinical_recommendation=item.get("recommendation",""),
                     source="Clinical Knowledge (No FDA label available)",
-                    source_url=f"https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=BasicSearch.process&query={body.drugs[0].replace(' ', '+')}"
+                    source_url=f"https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=BasicSearch.process&query={analysis_drugs[0].replace(' ', '+')}"
                 )
                 for item in fb_data.get("interactions",[]) if len(item.get("drugs",[])) >= 2
             ]
             fb_summary = "⚠️ No FDA label data found. " + fb_data.get("summary","")
+            if tfda_notes:
+                fb_summary = "TFDA grounding — " + "; ".join(tfda_notes) + ". " + fb_summary
             if not is_anonymous:
                 _safe_db_write(db, ChatHistory(user_id=user_id, session_type="verify",
                         question=f"Drugs: {', '.join(body.drugs)}", answer=fb_summary), label="Verify History")
@@ -1094,7 +1161,7 @@ async def verify_drug_interaction(
 
     main_user_content = (
         f"Patient Context: {body.patient_context or 'None'}\n"
-        f"Drugs: {', '.join(body.drugs)}\n\n"
+        f"Drugs: {', '.join(analysis_drugs)}\n\n"
         f"FDA Data:\n{fda_context}"
     )
 
@@ -1161,6 +1228,8 @@ async def verify_drug_interaction(
 
     if spelling_corrections:
         summary = "Note: " + "; ".join(spelling_corrections) + ". Please verify. " + summary
+    if tfda_notes:
+        summary = "TFDA grounding — " + "; ".join(tfda_notes) + ". " + summary
 
     # 成功後扣減 credits + log cost
     if is_anonymous:

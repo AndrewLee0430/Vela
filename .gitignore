@@ -132,9 +132,9 @@ data/drug_database/
 *.json.gz
 
 # ??鞈?摨?& ?亦?亥?摨?(??scripts ?遣)
-data/
+data/*
 
-# ?冽銝??隞?
+#?冽銝??隞?
 uploads/
 media/
 
@@ -155,3 +155,13 @@ artifacts/
 # Local OG image cache from dev runs of api/services/og_image.py
 # (production OG images go to R2/CDN, not local filesystem)
 static/og/
+
+# ==========================================
+# TFDA brand→ingredient grounding (ADR 007 T2a) — COMMITTED data subtree
+# ==========================================
+# Override the blanket `data/` ignore (line ~135) for THIS subtree ONLY:
+# the pinned TFDA id=37 snapshot + the generated deterministic lookup table are
+# source-controlled for reproducibility (rebuild via scripts/build_tfda_brand_ingredient.py).
+# Negation must come AFTER `data/` and re-include the directory before its contents.
+!data/tfda/
+!data/tfda/**

@@ -1,0 +1,14 @@
+{
+  "dataset_id": 37,
+  "dataset_name": "未註銷藥品許可證資料集 (active-only drug licenses)",
+  "source_url": "https://data.fda.gov.tw/data/opendata/export/37/json",
+  "access": "bulk-ZIP-only (application/zip); no queryable/paged API",
+  "license": "政府資料開放授權條款 (OGDL) v1.0 — commercial use OK",
+  "pulled_at": "2026-06-30",
+  "inner_file": "37_5.json",
+  "zip_sha256": "685954d5984b18cf66750a8001f66a1a8fe4dd0a52040e2cc69f5d844f76f52d",
+  "record_count": 26020,
+  "cancelled_rows_in_set": 0,
+  "active_set_confirmed": true,
+  "note": "id=37 is the 未註銷 (active) set; 註銷狀態 empty for all. id=36=全部(incl cancelled), id=39=仿單(a2 full label). Pin + monthly re-pull."
+}
