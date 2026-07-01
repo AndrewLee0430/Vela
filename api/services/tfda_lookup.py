@@ -16,9 +16,11 @@ The NORMALIZATION below is the SINGLE SOURCE OF TRUTH shared with the build scri
 (scripts/build_tfda_brand_ingredient.py imports it) so the on-disk table keys and the
 runtime query keys can never drift.
 """
+import datetime
 import json
 import logging
 import re
+import zipfile
 from dataclasses import dataclass, field
 from pathlib import Path
 from threading import Lock
@@ -91,6 +93,57 @@ def parse_ingredients(field_val: str):
         if c and c not in clean_list:
             clean_list.append(c)
     return raw_list, clean_list
+
+
+def norm_indication(text: str) -> str:
+    """Normalize 適應症 text for display + keying. Collapse whitespace ONLY — this is
+    CITED label text (ingest-and-cite), never a rewrite; the Chinese content is preserved
+    verbatim so what we cite is exactly what the TFDA label says."""
+    return norm_ws(text)
+
+
+# ── Shared snapshot read + filter (ONE read, ONE filter set for BOTH TFDA consumers:
+#    T2a brand→ingredient lookup AND grounding-lite indication corpus — no drift) ────────
+
+def load_snapshot_records(zip_path) -> list:
+    """Read the pinned id=37 snapshot ZIP → list of raw record dicts."""
+    z = zipfile.ZipFile(str(zip_path))
+    return json.loads(z.read(z.namelist()[0]).decode("utf-8"))
+
+
+def snapshot_ref_date(zip_path) -> str:
+    """Derive the reference date (YYYY/MM/DD) from the pinned snapshot dir name
+    (…/snapshot_YYYYMMDD/…), so 有效日期 expiry is evaluated AS-OF the pinned snapshot —
+    reproducible (not `today()`, which drifts and would make rebuilds non-deterministic)."""
+    m = re.search(r"snapshot_(\d{4})(\d{2})(\d{2})", str(zip_path))
+    if m:
+        return f"{m.group(1)}/{m.group(2)}/{m.group(3)}"
+    return datetime.date.today().strftime("%Y/%m/%d")   # fallback only
+
+
+def _license_kind(r: dict) -> str:
+    return (r.get("許可證種類") or "").replace("　", "").strip()
+
+
+def filter_active_preparations(records: list, ref_date: str):
+    """Shared filter for BOTH TFDA consumers: keep 製劑 + 未註銷(註銷狀態 empty) +
+    有效日期 >= ref_date; drop 原料藥/菌疫/硬空膠囊 + cancelled + expired.
+    Returns (kept_records, stats)."""
+    kept = []
+    drop_kind = drop_cancelled = drop_expired = 0
+    for r in records:
+        if _license_kind(r) != "製劑":
+            drop_kind += 1; continue
+        if str(r.get("註銷狀態", "")).strip():
+            drop_cancelled += 1; continue
+        eff = str(r.get("有效日期", "")).strip()
+        if not re.match(r"\d{4}/\d{2}/\d{2}", eff) or eff < ref_date:
+            drop_expired += 1; continue
+        kept.append(r)
+    stats = {"input_rows": len(records), "dropped_non_製劑": drop_kind,
+             "dropped_cancelled": drop_cancelled, "dropped_expired_or_no_date": drop_expired,
+             "rows_after_filter": len(kept), "ref_date": ref_date}
+    return kept, stats
 
 
 # British/American orthography of the SAME word: "SULPH" (UK) vs "SULF" (US). The ONLY

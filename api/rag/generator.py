@@ -20,7 +20,8 @@ from api.models.schemas import (
     RetrievedDocument,
     Citation,
     StreamEvent,
-    StreamEventType
+    StreamEventType,
+    SourceType,
 )
 from api.utils.language_detector import detect_language, get_language_instruction
 from api.providers import get_generator_provider
@@ -173,7 +174,8 @@ class AnswerGenerator:
         effective_model = model_override or self.model
         context       = self._build_context(documents)
         system_prompt = self._get_system_prompt(query_type)
-        user_prompt   = self._build_user_prompt(question, context, query_type, resolved_lang)
+        has_tfda      = any(getattr(d, "source_type", None) == SourceType.TFDA for d in documents)
+        user_prompt   = self._build_user_prompt(question, context, query_type, resolved_lang, has_tfda)
         citations     = [doc.to_citation(citation_id=i + 1) for i, doc in enumerate(documents)]
 
         try:
@@ -249,7 +251,8 @@ class AnswerGenerator:
         effective_model = model_override or self.model
         context       = self._build_context(documents)
         system_prompt = self._get_system_prompt(query_type)
-        user_prompt   = self._build_user_prompt(question, context, query_type, resolved_lang)
+        has_tfda      = any(getattr(d, "source_type", None) == SourceType.TFDA for d in documents)
+        user_prompt   = self._build_user_prompt(question, context, query_type, resolved_lang, has_tfda)
         citations     = [doc.to_citation(citation_id=i + 1) for i, doc in enumerate(documents)]
 
         try:
@@ -397,7 +400,8 @@ For questions spanning a broad geography (e.g. "Asia", "globally", "East Asia"),
         question: str,
         context: str,
         query_type: str,
-        lang: str = "en"
+        lang: str = "en",
+        has_tfda: bool = False
     ) -> str:
         extra_instruction = ""
         if query_type == "verify":
@@ -411,6 +415,22 @@ For questions spanning a broad geography (e.g. "Asia", "globally", "East Asia"),
                 "Summary → Clinical Notes. "
                 "Do NOT include a separate Evidence section."
             )
+            if has_tfda:
+                # ADR 007 grounding-lite safety scope: the TFDA indication corpus has NO
+                # safety content — it must never read as safety clearance (Q2-a-style defer
+                # for the missing half; still cite it for the indication it DOES cover).
+                extra_instruction += (
+                    "\n\nTFDA INDICATION SOURCE — SCOPE LIMIT: a source marked "
+                    "\"[TFDA 核准適應症 — Taiwan-approved indication]\" contains ONLY the Taiwan-"
+                    "approved INDICATION — it has NO contraindications, warnings, drug "
+                    "interactions, adverse reactions, or dosing. You MAY cite it for what a drug "
+                    "is approved to treat in Taiwan. You MUST NOT treat it as safety clearance: "
+                    "if the question concerns contraindications / interactions / pregnancy / "
+                    "safety / dosing, state explicitly that the TFDA indication source does NOT "
+                    "cover those, direct the user to the full TFDA 仿單 or a pharmacist, and "
+                    "answer the safety part ONLY from the other cited sources (FDA / PubMed) — "
+                    "never from the TFDA indication source."
+                )
 
         lang_instruction = _research_language_instruction(lang)
         lang_line        = f"\n\n{lang_instruction}" if lang_instruction else ""

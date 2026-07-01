@@ -16,6 +16,7 @@ class SourceType(str, Enum):
     PUBMED = "pubmed"
     FDA = "fda"
     LOCAL = "local"
+    TFDA = "tfda"   # ADR 007 grounding-lite: TFDA 官方核准適應症 (indication-only) citable corpus
 
 
 class CredibilityLevel(str, Enum):

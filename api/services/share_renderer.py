@@ -183,6 +183,7 @@ def _markdown_to_html(text: str) -> str:
 _SOURCE_TYPE_CONFIG: dict[str, dict[str, str]] = {
     "pubmed":         {"label": "PubMed",      "color": "#68d391"},
     "fda":            {"label": "FDA",         "color": "#63b3ed"},
+    "tfda":           {"label": "TFDA 核准適應症", "color": "#38b2ac"},  # ADR 007 — scope-accurate (indication-only), own bucket
     "loinc":          {"label": "LOINC",       "color": "#f6ad55"},
     "medlineplus":    {"label": "MedlinePlus", "color": "#9f7aea"},
     "rxnorm":         {"label": "RxNorm",      "color": "#ed64a6"},
@@ -226,6 +227,7 @@ def _detect_source_type(citation: dict[str, Any]) -> str:
     hostmap = (
         ("pubmed.ncbi.nlm.nih.gov", "pubmed"),
         ("ncbi.nlm.nih.gov/pubmed", "pubmed"),
+        ("fda.gov.tw", "tfda"),   # TW TFDA — BEFORE the US fda.gov entry
         ("fda.gov", "fda"),
         ("accessdata.fda.gov", "fda"),
         ("loinc.org", "loinc"),

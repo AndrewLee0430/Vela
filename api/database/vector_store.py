@@ -142,3 +142,53 @@ def get_vector_store() -> VectorStore:
     if _vector_store is None:
         _vector_store = VectorStore()
     return _vector_store
+
+
+class TFDACorpusStore(VectorStore):
+    """ADR 007 grounding-lite: a SEPARATE, bounded TFDA 官方核准適應症 corpus (NOT mixed into
+    the 690-doc local drug store, so it can't swamp it). Reuses VectorStore's query-embed +
+    cosine + RetrievedDocument logic; only the load differs — compact float16 .npy + docs JSON
+    (a JSON-float index would exceed GitHub's 100MB limit). Fail-soft: a missing/broken index
+    → empty store → search() returns [] → Research falls through to today's behavior."""
+
+    def __init__(
+        self,
+        corpus_path: str = "data/tfda/indication_corpus.json",
+        emb_path: str = "data/tfda/indication_emb.npy",
+    ):
+        self.index_path = corpus_path
+        binding = get_embedder_provider()
+        self._embedder = binding.provider
+        self._embedder_model = binding.model
+        self.documents = []
+        self.embeddings = None
+        self._load_compact(corpus_path, emb_path)
+
+    def _load_compact(self, corpus_path: str, emb_path: str):
+        cp, ep = Path(corpus_path), Path(emb_path)
+        if not cp.exists() or not ep.exists():
+            print(f"⚠️ TFDA indication index not found ({corpus_path} / {emb_path}) — TFDA source disabled")
+            return
+        try:
+            with open(cp, "r", encoding="utf-8") as f:
+                self.documents = json.load(f)["documents"]
+            self.embeddings = np.load(ep).astype(np.float32)  # float16 on disk → float32 for cosine
+            if len(self.documents) != self.embeddings.shape[0]:
+                print(f"⚠️ TFDA index row mismatch (docs={len(self.documents)} emb={self.embeddings.shape[0]}) — TFDA source disabled")
+                self.documents, self.embeddings = [], None
+                return
+            print(f"✅ TFDA indication corpus loaded: {len(self.documents)} docs, dim={self.embeddings.shape[1]}")
+        except Exception as e:
+            print(f"⚠️ TFDA indication corpus load failed ({e}) — TFDA source disabled")
+            self.documents, self.embeddings = [], None
+
+
+_tfda_store: Optional[TFDACorpusStore] = None
+
+
+def get_tfda_store() -> TFDACorpusStore:
+    """取得 TFDACorpusStore 單例"""
+    global _tfda_store
+    if _tfda_store is None:
+        _tfda_store = TFDACorpusStore()
+    return _tfda_store

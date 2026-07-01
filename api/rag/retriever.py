@@ -19,7 +19,7 @@ import logging
 from typing import Optional, Callable, Awaitable
 
 from api.models.schemas import RetrievedDocument, SourceType, CredibilityLevel
-from api.database.vector_store import get_vector_store
+from api.database.vector_store import get_vector_store, get_tfda_store
 from api.data_sources.pubmed import PubMedClient
 from api.data_sources.fda import FDAClient
 from api.rag.reranker import Reranker
@@ -53,16 +53,22 @@ class HybridRetriever:
         local_threshold: float = 0.6,
         enable_local: bool = True,
         enable_pubmed: bool = True,
-        enable_fda: bool = True
+        enable_fda: bool = True,
+        enable_tfda: bool = True
     ):
         self.local_threshold = local_threshold
         self.enable_local = enable_local
         self.enable_pubmed = enable_pubmed
         self.enable_fda = enable_fda
+        self.enable_tfda = enable_tfda
 
         self.vector_store = get_vector_store() if enable_local else None
         self.pubmed = PubMedClient() if enable_pubmed else None
         self.fda = FDAClient() if enable_fda else None
+        # ADR 007 grounding-lite: separate bounded TFDA 核准適應症 corpus (its own store, its
+        # own retrieval budget — competes in the SAME relevance-filter + LLM reranker, no
+        # source-weighting). Fail-soft: missing index → empty store → contributes nothing.
+        self.tfda_store = get_tfda_store() if enable_tfda else None
         binding = get_lightweight_provider()
         self._provider = binding.provider
         self._model = binding.model
@@ -108,6 +114,8 @@ class HybridRetriever:
                 all_tasks.append(self._search_pubmed(rq, max_results))
             if self.enable_fda and (not source_filter or SourceType.FDA in source_filter):
                 all_tasks.append(self._search_fda(rq, max_results))
+            if self.enable_tfda and self.tfda_store and (not source_filter or SourceType.TFDA in source_filter):
+                all_tasks.append(self._search_tfda(rq, max_results))
 
         results = await asyncio.gather(*all_tasks, return_exceptions=True)
 
@@ -412,6 +420,22 @@ class HybridRetriever:
             return documents
         except Exception as e:
             logger.warning("Local search error: %s", e)
+            return []
+
+    async def _search_tfda(self, query: str, max_results: int) -> list[RetrievedDocument]:
+        # ADR 007 grounding-lite: search ONLY the TFDA 核准適應症 corpus, with the SAME cosine
+        # threshold as the local store (so a weakly-similar indication doc on an off-topic —
+        # e.g. safety — query is filtered out before it can reach the reranker). Bounded to
+        # max_results; the docs carry source_type="tfda" → become numbered citations via the
+        # existing to_citation() path when they survive rerank.
+        try:
+            return await self.tfda_store.search(
+                query=query,
+                n_results=max_results,
+                min_score=self.local_threshold,
+            )
+        except Exception as e:
+            logger.warning("TFDA search error: %s", e)
             return []
 
     async def _search_pubmed(self, query: str, max_results: int) -> list[RetrievedDocument]:

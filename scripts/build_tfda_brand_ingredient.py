@@ -38,37 +38,27 @@ from pathlib import Path
 # Repo root on sys.path so `from api.services...` imports when run as scripts/<file>.py
 # (no PYTHONPATH needed — same pattern as scripts/deletion_dryrun.py).
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from api.services.tfda_lookup import (  # noqa: E402  (shared normalization — single source of truth)
+from api.services.tfda_lookup import (  # noqa: E402  (shared normalization + read/filter — single source of truth)
     norm_ws, canonical, brand_stem, parse_ingredients, ambiguity_key,
+    load_snapshot_records, snapshot_ref_date, filter_active_preparations,
 )
 
 SNAPSHOT_ZIP = Path("data/tfda/snapshot_20260630/drug_license_id37.zip")
 OUT_PATH = Path("data/tfda/brand_ingredient.json")
-TODAY = datetime.date.today().strftime("%Y/%m/%d")  # 有效日期 format is YYYY/MM/DD (lexicographic == chronological)
 
 
 def main():
-    z = zipfile.ZipFile(SNAPSHOT_ZIP)
-    recs = json.loads(z.read(z.namelist()[0]).decode("utf-8"))
-    stats = {"input_rows": len(recs)}
-
-    # ---- STEP 1: filter ----
-    def license_kind(r):
-        return (r.get("許可證種類") or "").replace("　", "").strip()
-
-    kept = []
-    drop_kind = drop_cancelled = drop_expired = 0
-    for r in recs:
-        if license_kind(r) != "製劑":
-            drop_kind += 1; continue
-        if str(r.get("註銷狀態", "")).strip():
-            drop_cancelled += 1; continue
-        eff = str(r.get("有效日期", "")).strip()
-        if not re.match(r"\d{4}/\d{2}/\d{2}", eff) or eff < TODAY:
-            drop_expired += 1; continue
-        kept.append(r)
-    stats.update(dropped_non_製劑=drop_kind, dropped_cancelled=drop_cancelled,
-                 dropped_expired_or_no_date=drop_expired, rows_after_filter=len(kept), today=TODAY)
+    # SHARED read + filter (ONE snapshot read, ONE filter set with grounding-lite → no drift).
+    # ref_date is derived from the pinned snapshot (not today()) → reproducible rebuilds.
+    recs = load_snapshot_records(SNAPSHOT_ZIP)
+    ref_date = snapshot_ref_date(SNAPSHOT_ZIP)
+    kept, fstats = filter_active_preparations(recs, ref_date)
+    stats = {"input_rows": fstats["input_rows"],
+             "dropped_non_製劑": fstats["dropped_non_製劑"],
+             "dropped_cancelled": fstats["dropped_cancelled"],
+             "dropped_expired_or_no_date": fstats["dropped_expired_or_no_date"],
+             "rows_after_filter": fstats["rows_after_filter"],
+             "today": ref_date}
 
     # ---- STEP 2-4: build maps ----
     # by_name is keyed on canonical(中文品名) — quote-insensitive (decision ②) so the runtime
@@ -144,7 +134,7 @@ def main():
     out = {
         "_meta": {
             "source": "TFDA id=37 未註銷藥品許可證資料集",
-            "snapshot": str(SNAPSHOT_ZIP), "built_at": TODAY,
+            "snapshot": str(SNAPSHOT_ZIP), "built_at": ref_date,
             "filters": "製劑 + 未註銷(註銷狀態 empty) + 有效日期>=today; dropped 原料藥/菌疫/硬空膠囊 + expired",
             "normalization": "by_name keyed on canonical(中文品名) (quote-insensitive); stem = strip quoted 廠商 prefix + trailing 劑量 + trailing 劑型, then canonical()",
             "ambiguity_rule": "stem or full-name → >1 distinct ingredient-set ⇒ ambiguous=true (lookup must defer, not guess). Comparison key collapses ONLY SULPH↔SULF spelling (US/UK); display keeps original.",

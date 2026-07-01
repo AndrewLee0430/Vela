@@ -19,6 +19,7 @@
 export type CitationSourceType =
     | 'pubmed'
     | 'fda'
+    | 'tfda'
     | 'dailymed'
     | 'loinc'
     | 'medlineplus'
@@ -49,6 +50,10 @@ export const SOURCE_LABELS: Record<string, SourceLabel> = {
     pubmed:         { label: 'PubMed',     tooltipKey: 'peerReviewedTip' },
     fda:            { label: 'FDA',        tooltipKey: 'officialTip' },
     local:          { label: 'FDA',        tooltipKey: 'officialTip' },   // cached FDA labeling → MERGES into FDA
+    // ADR 007 grounding-lite: SCOPE-ACCURATE label (approved indication ONLY) — deliberately
+    // NOT a bare "TFDA" that would imply full-label/safety authority (cf. the "FDA Label
+    // Analysis" mislabel lesson). Kept as its OWN bucket — must NOT merge with FDA.
+    tfda:           { label: 'TFDA 核准適應症', tooltipKey: 'officialTip' },
     dailymed:       { label: 'DailyMed',   tooltipKey: 'officialTip' },   // reserved (Phase 1B)
     loinc:          { label: 'LOINC' },
     medlineplus:    { label: 'MedlinePlus' },
@@ -64,7 +69,7 @@ export const SOURCE_LABELS: Record<string, SourceLabel> = {
 export function detectSourceType(citation: SourceLike): CitationSourceType {
     const raw = (citation.source_type || '').toString().trim().toLowerCase();
     const known: CitationSourceType[] = [
-        'pubmed', 'fda', 'dailymed', 'loinc', 'medlineplus', 'rxnorm',
+        'pubmed', 'fda', 'tfda', 'dailymed', 'loinc', 'medlineplus', 'rxnorm',
         'who', 'nice', 'ema', 'cochrane', 'local', 'localauthority', 'other',
     ];
     if ((known as string[]).includes(raw)) return raw as CitationSourceType;
@@ -73,6 +78,7 @@ export function detectSourceType(citation: SourceLike): CitationSourceType {
     try {
         const host = new URL(citation.url || '').hostname.toLowerCase();
         if (host.includes('pubmed.ncbi.nlm.nih.gov') || host.includes('ncbi.nlm.nih.gov/pubmed')) return 'pubmed';
+        if (host.includes('fda.gov.tw')) return 'tfda';   // TW TFDA (mcp.fda.gov.tw) — BEFORE the US fda.gov check
         if (host.includes('fda.gov') || host.includes('accessdata.fda.gov')) return 'fda';
         if (host.includes('loinc.org')) return 'loinc';
         if (host.includes('medlineplus.gov')) return 'medlineplus';

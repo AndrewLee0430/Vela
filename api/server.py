@@ -448,7 +448,8 @@ retriever = HybridRetriever(
     local_threshold=0.6,
     enable_local=True,
     enable_pubmed=True,
-    enable_fda=True
+    enable_fda=True,
+    enable_tfda=True,   # ADR 007 grounding-lite: TFDA 核准適應症 as a separate bounded source
 )
 generator = AnswerGenerator()
 fda_client = FDAClient()
