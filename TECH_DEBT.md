@@ -39,6 +39,11 @@ When entries are resolved, mark with the resolving commit SHA (git log is the re
   - **Cross-ref:** STATE v191 (T2a `7c50fd6`). The grounding-lite follow-ups (a1-i..a1-iv, BACKLOG) are the **v193 Research** family — this is the DISTINCT **v191 Verify** family, tracked separately here. Same citation/chip display layer as the DailyMed chip-label [P2] below.
   - **Discovered:** 2026-07-01 (founder prod manual test; CC API probes can't see UI render → human-eye only).
 
+- **[P2 · honesty / display — introduced with the v194 `verification_status` field] Verify fallback-fail path returns `verification_status="ok"` — a total failure reads as ok**
+  - **What:** the Verify LLM-fallback-fail path (`api/server.py:1142` region — no FDA labels found AND the fallback LLM call throws) returns `interactions=[]` + a generic prose summary, and (since v194) `verification_status="ok"` → the UI renders the same clean "no interactions" presentation as before, and "ok" understates a total failure. Pre-existing display behavior; the v194 enum just makes it visible/nameable.
+  - **Fix:** a `"failed_no_data"` enum value + a distinct frontend state; small, same seam as GAP B (the v194 deferred presentation).
+  - **Discovered:** flagged during the v194 ship (2026-07-03), deliberately out of scope.
+
 - **[P2 · honesty / consistency] DailyMed outbound-link chip label + host-mapping inconsistency (deferred from the 2026-06-25 DailyMed sweep)**
   - **(i) chip label reads like an integrated source:** `utils/sourceLabels.ts:52` maps source_type `dailymed` → chip label **'DailyMed'** (with `officialTip`). It's "reserved (Phase 1B)" and effectively **dormant today** (Explain's RxNorm badge keeps `source_type:'rxnorm'`, so the host-detection branch rarely/never fires), BUT if any citation is ever tagged `dailymed` the chip would read "DailyMed" — which blurs "we link OUT to DailyMed" vs "our data comes FROM DailyMed". Consider relabeling to **"FDA drug label"**.
   - **(ii) BUG — host→type mapping drift:** `utils/sourceLabels.ts:79` maps host `dailymed.nlm.nih.gov` → `'dailymed'`, while `api/services/share_renderer.py:233` maps the SAME host → `'rxnorm'`. So a DailyMed-linked citation would label **differently in the share OG render vs the live panel**. Reconcile to ONE mapping, aligned with the (i) chip-label decision.
