@@ -23,12 +23,12 @@ normal-confidence and are **out of scope** for this gate.
 4. RTL (ar, he): keep strings in logical order; proper nouns (Metformin, NOAC, ARDS,
    FDA, eGFR) stay in Latin script.
 
-> **Format note:** the current per-locale strings are NOT transcribed into this doc (264
+> **Format note:** the current per-locale strings are NOT transcribed into this doc (282
 > non-Latin cells) — that would risk corrupting the source of truth via copy errors.
 > Review + edit happen **in the `.ts` files**; this doc tracks the English reference,
 > risk level, file location, and per-cell status.
 
-**Inventory: 44 keys × 6 locales = 264 cells.** *(2026-07-03: +5 Verify transparency keys #40–44, shipped best-effort in fly v194 — deferred-verification + TFDA grounding-note strings, `utils/i18n-ui.ts`.)*
+**Inventory: 47 keys × 6 locales = 282 cells.** *(2026-07-03: +5 Verify transparency keys #40–44, shipped best-effort in fly v194 — deferred-verification + TFDA grounding-note strings; +3 keys #45–47, shipped v196 — failed_no_data messages + TFDA chip label. All in `utils/i18n-ui.ts`.)*
 
 ---
 
@@ -82,9 +82,12 @@ Risk: 🔴 = specialised clinical/medical terminology (highest review priority) 
 | 42 | `verifyDeferredAdvice` | i18n-ui.ts | Please confirm the exact product with your pharmacist, or enter the active-ingredient (INN) name. | 🔴 |
 | 43 | `verifyTfdaGroundingNote` | i18n-ui.ts | '{query}' = {ingredients} (per TFDA drug license) | 🟡 |
 | 44 | `verifyTfdaGroundingComboNote` | i18n-ui.ts | '{query}' is a TFDA-registered combination product: {ingredients} | 🟡 |
+| 45 | `verifyFailedMsg` | i18n-ui.ts | The check could not be completed — no drug label data was available for this request. | 🟡 |
+| 46 | `verifyFailedAdvice` | i18n-ui.ts | Please try again later, or consult a pharmacist or physician. | 🟡 |
+| 47 | `tfdaSourceLabel` | i18n-ui.ts | TFDA Approved Indication | 🔴 |
 
 ⚪ generic (lowest priority): #1, 4–7, 9–11*, 15, 16, 22–25, 38, 39 (\*9–11 are 🟡 — common clinical role nouns; verify but not specialised).
-🔴 specialised (review first): #8, 12–14, 17–21, 26–37, 41–42 (41–42 are safety-relevant — a softened translation would make a REFUSED verification read as reassurance).
+🔴 specialised (review first): #8, 12–14, 17–21, 26–37, 41–42 (41–42 are safety-relevant — a softened translation would make a REFUSED verification read as reassurance), 47 (scope-accurate chip: must read as "approved INDICATION", never as bare TFDA approval/full-label authority — the FDA-Label-Analysis mislabel lesson).
 
 ---
 
@@ -138,12 +141,15 @@ Mark each cell: `☐` not reviewed · `✓` reviewed, OK as-is · `✏️` corre
 | 42 | verifyDeferredAdvice | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | |
 | 43 | verifyTfdaGroundingNote | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | |
 | 44 | verifyTfdaGroundingComboNote | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | |
+| 45 | verifyFailedMsg | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | |
+| 46 | verifyFailedAdvice | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | |
+| 47 | tfdaSourceLabel | ☐ | ☐ | ☐ | ☐ | ☐ | ☐ | |
 
 ---
 
 ## After review
 
 Corrections are edited directly in `utils/i18n.ts` / `utils/i18n-ui.ts`, then shipped as
-an i18n-only redeploy (no logic/backend change). When all 264 cells are `✓`/`✏️`, this
+an i18n-only redeploy (no logic/backend change). When all 282 cells are `✓`/`✏️`, this
 checklist is done — remove the three superseded BACKLOG flags (hero-chip review,
 PHASE-D onboarding, §3.3) and close this gate.
