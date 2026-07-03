@@ -35,6 +35,13 @@ interface DrugInteraction {
     source_url?: string;
 }
 
+interface TfdaGrounding {
+    query: string;          // user-entered token, verbatim
+    ingredients: string[];  // resolved TFDA 主成分 (INN); >1 for combos
+    is_combo: boolean;
+    licenses: string[];     // TFDA 許可證字號
+}
+
 interface VerifyResponse {
     drugs_analyzed: string[];
     interactions: DrugInteraction[];
@@ -45,6 +52,10 @@ interface VerifyResponse {
     query_time_ms: number;
     disclaimer?: string;
     query_id?: string | null;
+    // ADR 007 T2a structured transparency (additive — absent on old/cached responses)
+    tfda_groundings?: TfdaGrounding[] | null;
+    verification_status?: string | null;   // "ok" | "deferred_ambiguous_brand"
+    deferred_brands?: string[] | null;
 }
 
 // Split a free-text prefill (e.g. cross-page ?prefill= carry-over) into the
@@ -512,22 +523,51 @@ function VerifyForm() {
                         <div className="space-y-6">
                             {/* Summary */}
                             <div>
-                                <div className="flex justify-between items-start mb-3">
-                                    <h2 className="text-base font-semibold" style={{ color: "rgb(var(--color-text))" }}>
-                                        {ui.analysisSummary}
-                                    </h2>
-                                    <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium border ${getRiskBadge(result.risk_level)}`}>
-                                        {getRiskLevelLabel(lang, result.risk_level)}
-                                    </span>
-                                </div>
+                                {/* ADR 007 T2a: an ambiguous-brand DEFER is a REFUSED verification —
+                                    it must never present as a clean "no interactions found" result. */}
                                 {(() => {
-                                    const summary = getInteractionSummary(result.interactions);
+                                    const isDeferred = result.verification_status === 'deferred_ambiguous_brand';
                                     return (
-                                        <p className="text-sm font-medium mb-3" style={{ color: summary.color }}>
-                                            {summary.text}
-                                        </p>
+                                        <>
+                                            <div className="flex justify-between items-start mb-3">
+                                                <h2 className="text-base font-semibold" style={{ color: "rgb(var(--color-text))" }}>
+                                                    {ui.analysisSummary}
+                                                </h2>
+                                                <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium border ${isDeferred ? 'bg-warning/10 text-warning border-warning/30' : getRiskBadge(result.risk_level)}`}>
+                                                    {isDeferred ? ui.verifyDeferredBadge : getRiskLevelLabel(lang, result.risk_level)}
+                                                </span>
+                                            </div>
+                                            {isDeferred ? (
+                                                <div className="rounded-lg border border-warning/30 bg-warning/10 p-3 mb-3 text-sm">
+                                                    <p className="font-medium text-warning mb-1">
+                                                        ⚠️ {ui.verifyDeferredMsg.replace('{brands}', (result.deferred_brands ?? []).join(', '))}
+                                                    </p>
+                                                    <p className="text-text/70">{ui.verifyDeferredAdvice}</p>
+                                                </div>
+                                            ) : (() => {
+                                                const summary = getInteractionSummary(result.interactions);
+                                                return (
+                                                    <p className="text-sm font-medium mb-3" style={{ color: summary.color }}>
+                                                        {summary.text}
+                                                    </p>
+                                                );
+                                            })()}
+                                        </>
                                     );
                                 })()}
+                                {/* ADR 007 T2a grounding-transparency note — a provenance line
+                                    (deterministic TFDA brand→INN mapping), subordinate to the verdict. */}
+                                {(result.tfda_groundings?.length ?? 0) > 0 && (
+                                    <div className="space-y-0.5 mb-3">
+                                        {result.tfda_groundings!.map((g, i) => (
+                                            <p key={i} className="text-xs text-text/50">
+                                                {(g.is_combo ? ui.verifyTfdaGroundingComboNote : ui.verifyTfdaGroundingNote)
+                                                    .replace('{query}', g.query)
+                                                    .replace('{ingredients}', g.ingredients.join(' + '))}
+                                            </p>
+                                        ))}
+                                    </div>
+                                )}
                                 <FeedbackBar
                                     query={`Drugs: ${result.drugs_analyzed.join(', ')}`}
                                     response={result.summary}

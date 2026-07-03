@@ -56,7 +56,8 @@ from api.models.schemas import (
     StreamEventType,
     VerifyRequest,
     VerifyResponse,
-    DrugInteraction
+    DrugInteraction,
+    TfdaGrounding
 )
 from api.rag.retriever import HybridRetriever
 from api.rag.generator import AnswerGenerator
@@ -868,6 +869,17 @@ async def get_suggestions(creds: Optional[HTTPAuthorizationCredentials] = Depend
 # ============================================================
 # 功能 3：Verify
 # ============================================================
+def _build_tfda_groundings(drugs: list, resolutions: list) -> Optional[list]:
+    """Structured pass-through of the deterministic T2a resolutions (ADDITIVE payload
+    fields — the frontend renders these localized; the `summary` prose stays unchanged)."""
+    groundings = [
+        TfdaGrounding(query=drugs[i], ingredients=list(r.ingredients),
+                      is_combo=r.is_combo, licenses=list(r.licenses))
+        for i, r in enumerate(resolutions) if r.status == "resolved"
+    ]
+    return groundings or None
+
+
 @app.post("/api/verify")
 async def verify_drug_interaction(
     body: VerifyRequest,
@@ -943,6 +955,8 @@ async def verify_drug_interaction(
         logger.warning("[Verify] TFDA brand resolution unavailable: %s", e)
         tfda_resolutions = []
 
+    tfda_groundings = _build_tfda_groundings(body.drugs, tfda_resolutions)
+
     # (c) AMBIGUOUS — defer the whole request (a DDI check needs every drug resolved).
     #     Do NOT run analysis on a guessed active (no-fabrication principle).
     ambiguous = [(i, r) for i, r in enumerate(tfda_resolutions) if r.status == "ambiguous"]
@@ -975,6 +989,9 @@ async def verify_drug_interaction(
             disclaimer=get_verify_disclaimer(response_language),
             query_time_ms=int((time.time() - start_time) * 1000),
             query_id=audit_id,
+            tfda_groundings=tfda_groundings,
+            verification_status="deferred_ambiguous_brand",
+            deferred_brands=[body.drugs[i] for i, _ in ambiguous],
         )
 
     # (a) single-ingredient / (b) combo — substitute the resolved INN(s) into the ANALYSIS
@@ -1132,6 +1149,8 @@ async def verify_drug_interaction(
                 disclaimer=get_verify_disclaimer(response_language),
                 query_time_ms=int((time.time()-start_time)*1000),
                 query_id=audit_id,
+                tfda_groundings=tfda_groundings,
+                verification_status="ok",
             )
         except Exception as e:
             logger.error("Verify fallback failed: %s", e)
@@ -1147,6 +1166,8 @@ async def verify_drug_interaction(
                 disclaimer=get_verify_disclaimer(response_language),
                 query_time_ms=int((time.time()-start_time)*1000),
                 query_id=audit_id,
+                tfda_groundings=tfda_groundings,
+                verification_status="ok",
             )
 
     fda_context = "\n".join([label.to_text() for label in drug_labels])
@@ -1261,6 +1282,8 @@ async def verify_drug_interaction(
         disclaimer=get_verify_disclaimer(response_language),
         query_time_ms=elapsed_ms,
         query_id=audit_id,
+        tfda_groundings=tfda_groundings,
+        verification_status="ok",
     )
 
 

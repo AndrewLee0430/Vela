@@ -217,6 +217,16 @@ class DrugInteraction(BaseModel):
     source_url: Optional[str] = None  # ✅ 新增：FDA 原文链接
 
 
+class TfdaGrounding(BaseModel):
+    """ADR 007 T2a: one deterministic TFDA brand→ingredient resolution, passed through
+    as structured data so the frontend can render a localized transparency note
+    (enum-authority pattern — backend emits data, frontend localizes strings)."""
+    query: str                                            # user-entered token, verbatim
+    ingredients: list[str]                                # resolved 主成分 (INN); >1 for combos
+    is_combo: bool = False
+    licenses: list[str] = Field(default_factory=list)     # TFDA 許可證字號 (citation anchors)
+
+
 class VerifyResponse(BaseModel):
     """驗證結果回應"""
     drugs_analyzed: list[str]
@@ -228,3 +238,9 @@ class VerifyResponse(BaseModel):
     disclaimer: str = "For reference only. Does not constitute medical advice. Please consult a qualified healthcare professional."
     query_time_ms: int
     query_id: Optional[str] = None
+    # ── ADR 007 T2a structured transparency (ADDITIVE — old clients unaffected).
+    #    The same facts stay in `summary` prose (Share answerText / FeedbackBar depend on it);
+    #    these fields exist so the UI renders them localized instead of parsing prose.
+    tfda_groundings: Optional[list[TfdaGrounding]] = None  # deterministic brand→INN resolutions applied
+    verification_status: Optional[str] = None              # "ok" | "deferred_ambiguous_brand"
+    deferred_brands: Optional[list[str]] = None            # inputs that caused an ambiguous-brand defer
