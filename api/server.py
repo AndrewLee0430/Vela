@@ -650,6 +650,41 @@ async def audit_middleware(request: Request, call_next):
 # ============================================================
 # 功能 2：Research / RAG
 # ============================================================
+def _annotate_research_question(question: str) -> str:
+    """ADR 007 a1-i (2a QUERY-AUGMENT): append deterministic TFDA brand→ingredient
+    identity annotations to a Research question. APPEND-ONLY input data — no prompt
+    template is touched. The annotated string feeds BOTH retrieval and the generator
+    (including its no-retrieval fallback), so the English-only rewriter and the
+    fallback LLM stop guessing CJK brand identities (mis-ID points #1 + #2).
+    ADDITIVE: no CJK / no detection / any failure → returned byte-identical
+    (English path untouched, v191 contract). Ambiguous brands get an ambiguity
+    flag ONLY — never an identity (no-fabrication principle)."""
+    try:
+        from api.services.tfda_lookup import detect_brands_in_text, has_cjk
+        if not has_cjk(question):
+            return question
+        notes = []
+        for m in detect_brands_in_text(question):
+            r = m["resolution"]
+            if r.status == "resolved":
+                lic = f" {r.licenses[0]}" if r.licenses else ""
+                notes.append(
+                    f"〔{m['token']} = {' + '.join(r.ingredients)}，per TFDA (Taiwan) "
+                    f"藥品許可證{lic} — identity mapping only, not a safety or approval statement〕"
+                )
+            elif r.status == "ambiguous":
+                notes.append(
+                    f"〔{m['token']} matches multiple distinct TFDA (Taiwan) products with "
+                    f"different active ingredients — do NOT assume its identity; treat it as unverified〕"
+                )
+        if not notes:
+            return question
+        return question + "\n" + " ".join(notes)
+    except Exception as e:  # fail-soft: annotation is additive, never blocks Research
+        logger.warning("[Research] TFDA brand annotation unavailable: %s", e)
+        return question
+
+
 @app.post("/api/research")
 async def research_query(
     body: ResearchRequest,
@@ -707,6 +742,14 @@ async def research_query(
                 yield f"data: {json.dumps({'type': 'done'})}\n\n"
                 return
 
+            # ── ADR 007 a1-i (2a QUERY-AUGMENT): deterministic TFDA brand→ingredient
+            # identity annotation, applied ONCE so the rewriter, all 4 retrieval sources,
+            # the generator AND its no-retrieval fallback see the same deterministic fact.
+            # AuditLog/PHI keep body.question (original, verbatim).
+            research_question = _annotate_research_question(body.question)
+            if research_question is not body.question:
+                logger.info("[Research] TFDA identity annotation applied")
+
             # ── Multi-step status (honest, emit-on-real-start) ──
             # Step 1 (server-direct): retrieval is starting.
             yield f"data: {json.dumps({'type': 'status', 'content': 'Searching the literature'}, ensure_ascii=False)}\n\n"
@@ -718,7 +761,7 @@ async def research_query(
             async def on_stage(label: str) -> None:
                 await stage_q.put(label)
             retrieve_task = asyncio.create_task(retriever.retrieve(
-                query=body.question,
+                query=research_question,
                 max_results=body.max_results or 5,
                 source_filter=body.sources,
                 on_stage=on_stage,
@@ -763,7 +806,7 @@ async def research_query(
             # default OFF → generator question UNCHANGED). When ON: detect-then-neutralize the INTERNAL
             # generator question only (retrieval + the user-facing question are untouched; both would
             # share the already-frozen `documents`). Fail-open to the original question — never block.
-            gen_question = body.question
+            gen_question = research_question
             if os.getenv("QUESTION_NEUTRALIZATION_SHADOW", "").lower() == "true":
                 try:
                     from api.services import question_neutralization as qn

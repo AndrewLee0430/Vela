@@ -200,6 +200,100 @@ _TABLE = None
 _LOAD_FAILED = False
 _LOCK = Lock()
 
+# ── Free-text brand detection (ADR 007 a1-i — Research QUERY-AUGMENT) ────────────────
+#
+# Research receives FREE TEXT (no structured drug list), so brand resolution there
+# needs a detector over the query string. Design constraints (2026-07-03 probe):
+#   - LONGEST-MATCH-FIRST per position; a consumed span never re-matches.
+#   - Minimum key length 3 (1,218 stems are ≤2 chars — 胃/心律/美好-class common words).
+#   - Curated GENERIC_CLASS_TERMS blocklist: commodity/class terms that ARE table keys
+#     (感冒藥, 葡萄糖, 生理食鹽水, 雙氧水…) must never annotate — a license-count cap was
+#     measured and rejected (resolved-stem max = 19 安比西林, real brands reach 8 → no
+#     usable threshold). Transliterated GENERICS (紅黴素→ERYTHROMYCIN) stay matchable
+#     on purpose — resolving them is correct, not a false positive.
+#   - Ambiguous keys are DETECTED but carry status="ambiguous" — callers must use them
+#     as an ambiguity flag ONLY, never for identity (no-fabrication principle).
+
+MIN_DETECT_KEY_LEN = 3
+MAX_TEXT_MATCHES = 3
+
+GENERIC_CLASS_TERMS = frozenset({
+    # symptom-class product terms
+    "感冒藥", "感冒液", "感冒錠", "感冒膠囊", "感冒糖漿", "止咳糖漿", "咳嗽糖漿",
+    "止痛藥", "退燒藥", "安眠藥", "眼藥水", "皮膚藥膏",
+    # commodity / chemical / household terms that are also product names
+    "葡萄糖", "生理食鹽水", "沖洗用食鹽水", "食鹽水", "氯化鈉", "氯化鉀", "氯化鈣",
+    "氧化鎂", "氧化鋅", "碳酸鈣", "硫酸鎂", "雙氧水", "黃藥水", "紫藥水", "碘藥水",
+    "維他命", "維生素", "綜合維他命", "胰島素", "黃體素", "甘油", "酒精", "凡士林",
+})
+
+_SCAN_INDEX = None  # first CJK char -> [candidate keys, longest first]
+
+
+def _scan_index():
+    """Lazy, thread-safe index over by_name + by_stem keys eligible for free-text
+    detection (len ≥ MIN_DETECT_KEY_LEN, CJK, not a generic class term)."""
+    global _SCAN_INDEX
+    if _SCAN_INDEX is not None:
+        return _SCAN_INDEX
+    table = _load()
+    if not table:
+        return None
+    with _LOCK:
+        if _SCAN_INDEX is not None:
+            return _SCAN_INDEX
+        idx: dict = {}
+        for source in ("by_name", "by_stem"):
+            for k in table.get(source, {}):
+                if len(k) < MIN_DETECT_KEY_LEN or not has_cjk(k) or k in GENERIC_CLASS_TERMS:
+                    continue
+                idx.setdefault(k[0], []).append(k)
+        for lst in idx.values():
+            lst.sort(key=len, reverse=True)
+        _SCAN_INDEX = idx
+    return _SCAN_INDEX
+
+
+def detect_brands_in_text(text: str, max_matches: int = MAX_TEXT_MATCHES) -> list:
+    """
+    Deterministic free-text CJK brand detection for Research (a1-i QUERY-AUGMENT).
+
+    TOTAL: never raises; non-CJK text, table-load failure, or no match all return [].
+    Left-to-right scan; at each position the LONGEST eligible key wins and its span is
+    consumed (never re-matched). Repeated brands dedupe to one entry. Returns at most
+    `max_matches` entries of {start, end, token, resolution: Resolution} — callers use
+    resolution.status: "resolved" → identity fact; "ambiguous" → ambiguity flag ONLY.
+    """
+    try:
+        if not text or not has_cjk(text):
+            return []
+        idx = _scan_index()
+        if not idx:
+            return []
+        results: list = []
+        seen: set = set()
+        i, n = 0, len(text)
+        while i < n and len(results) < max_matches:
+            matched = None
+            for k in idx.get(text[i], ()):  # longest-first within this start char
+                if text.startswith(k, i):
+                    matched = k
+                    break
+            if matched is None:
+                i += 1
+                continue
+            end = i + len(matched)
+            if matched not in seen:
+                seen.add(matched)
+                r = resolve_brand(matched)
+                if r.status in ("resolved", "ambiguous"):
+                    results.append({"start": i, "end": end, "token": matched, "resolution": r})
+            i = end  # consumed span never re-matches
+        return results
+    except Exception as e:  # defense in depth — detection must never break Research
+        logger.warning("[TFDA] detect_brands_in_text failed: %s", e)
+        return []
+
 
 def _load():
     """Lazy, thread-safe, fail-soft load of the lookup table. Returns dict or None."""
@@ -225,10 +319,11 @@ def _load():
 
 def reset_cache():
     """Test helper — force a reload on the next resolve_brand() call."""
-    global _TABLE, _LOAD_FAILED
+    global _TABLE, _LOAD_FAILED, _SCAN_INDEX
     with _LOCK:
         _TABLE = None
         _LOAD_FAILED = False
+        _SCAN_INDEX = None
 
 
 def _resolved_from_sets(sets, *, query, matched, match_type, licenses):
