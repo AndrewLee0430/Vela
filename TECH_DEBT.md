@@ -39,6 +39,11 @@ When entries are resolved, mark with the resolving commit SHA (git log is the re
   - **Cross-ref:** STATE v191 (T2a `7c50fd6`). The grounding-lite follow-ups (a1-i..a1-iv, BACKLOG) are the **v193 Research** family — this is the DISTINCT **v191 Verify** family, tracked separately here. Same citation/chip display layer as the DailyMed chip-label [P2] below.
   - **Discovered:** 2026-07-01 (founder prod manual test; CC API probes can't see UI render → human-eye only).
 
+- **[P2 · latent seam — flagged during the v195 ship] Lever-2 shadow override would strip the v195 TFDA identity annotation if ever enabled**
+  - **What:** the Lever-2 question-neutralization shadow override (`api/server.py:815`, flag `QUESTION_NEUTRALIZATION_SHADOW` — OFF in prod) neutralizes from `body.question`, not from the v195-annotated `research_question` — if that flag is ever enabled, the TFDA identity annotation is stripped from the GENERATION path (retrieval keeps it; the fallback would lose it → the a1-i mis-ID could reappear on neutralized loaded queries).
+  - **Action required:** any future Lever-2 activation must re-verify annotation survival — add it to that flag's activation checklist (cross-ref the Lever-2/A2 enforce items in BACKLOG §706a).
+  - **Flagged:** 2026-07-03 (v195 ship), deliberately not changed — the flag is OFF and changing shadow-path code was out of a1-i scope.
+
 - **[P2 · honesty / display — introduced with the v194 `verification_status` field] Verify fallback-fail path returns `verification_status="ok"` — a total failure reads as ok**
   - **What:** the Verify LLM-fallback-fail path (`api/server.py:1142` region — no FDA labels found AND the fallback LLM call throws) returns `interactions=[]` + a generic prose summary, and (since v194) `verification_status="ok"` → the UI renders the same clean "no interactions" presentation as before, and "ok" understates a total failure. Pre-existing display behavior; the v194 enum just makes it visible/nameable.
   - **Fix:** a `"failed_no_data"` enum value + a distinct frontend state; small, same seam as GAP B (the v194 deferred presentation).
