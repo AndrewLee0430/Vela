@@ -41,9 +41,18 @@ export interface SourceLike {
 
 // tooltipKey references a UITranslations key, resolved per-language by the component
 // via getUI(lang)[tooltipKey]. The trust copy is reused from the old credibility tips.
+// labelKey (a1-ii) mirrors that pattern for the ONE non-proper-noun label (the TFDA
+// scope descriptor); proper-noun labels (PubMed, FDA, …) stay static per Rule 16.
 export interface SourceLabel {
-    label: string;
+    label: string;                    // static fallback (proper nouns; also the safety net)
+    labelKey?: 'tfdaSourceLabel';     // optional i18n indirection, resolved via getUI
     tooltipKey?: 'peerReviewedTip' | 'officialTip';
+}
+
+// Resolve the user-language display label. Callers pass getUI(lang); the structural
+// param type keeps this module free of an i18n-ui import (mirrors tooltipKey usage).
+export function resolvedSourceLabel(source: SourceLabel, ui: { tfdaSourceLabel: string }): string {
+    return source.labelKey ? (ui[source.labelKey] || source.label) : source.label;
 }
 
 export const SOURCE_LABELS: Record<string, SourceLabel> = {
@@ -53,7 +62,7 @@ export const SOURCE_LABELS: Record<string, SourceLabel> = {
     // ADR 007 grounding-lite: SCOPE-ACCURATE label (approved indication ONLY) — deliberately
     // NOT a bare "TFDA" that would imply full-label/safety authority (cf. the "FDA Label
     // Analysis" mislabel lesson). Kept as its OWN bucket — must NOT merge with FDA.
-    tfda:           { label: 'TFDA 核准適應症', tooltipKey: 'officialTip' },
+    tfda:           { label: 'TFDA 核准適應症', labelKey: 'tfdaSourceLabel', tooltipKey: 'officialTip' },
     dailymed:       { label: 'DailyMed',   tooltipKey: 'officialTip' },   // reserved (Phase 1B)
     loinc:          { label: 'LOINC' },
     medlineplus:    { label: 'MedlinePlus' },

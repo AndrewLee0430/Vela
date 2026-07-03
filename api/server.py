@@ -1210,7 +1210,9 @@ async def verify_drug_interaction(
                 query_time_ms=int((time.time()-start_time)*1000),
                 query_id=audit_id,
                 tfda_groundings=tfda_groundings,
-                verification_status="ok",
+                # No FDA labels AND the fallback LLM failed → a TOTAL failure must never
+                # read as a clean result (TECH_DEBT [P2 honesty/display], same seam as GAP B).
+                verification_status="failed_no_data",
             )
 
     fda_context = "\n".join([label.to_text() for label in drug_labels])

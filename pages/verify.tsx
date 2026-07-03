@@ -523,26 +523,31 @@ function VerifyForm() {
                         <div className="space-y-6">
                             {/* Summary */}
                             <div>
-                                {/* ADR 007 T2a: an ambiguous-brand DEFER is a REFUSED verification —
-                                    it must never present as a clean "no interactions found" result. */}
+                                {/* ADR 007 T2a: an ambiguous-brand DEFER is a REFUSED verification, and a
+                                    failed_no_data run is an INCOMPLETE one — neither may present as a clean
+                                    "no interactions found" result. */}
                                 {(() => {
                                     const isDeferred = result.verification_status === 'deferred_ambiguous_brand';
+                                    const isFailed = result.verification_status === 'failed_no_data';
+                                    const notClean = isDeferred || isFailed;
                                     return (
                                         <>
                                             <div className="flex justify-between items-start mb-3">
                                                 <h2 className="text-base font-semibold" style={{ color: "rgb(var(--color-text))" }}>
                                                     {ui.analysisSummary}
                                                 </h2>
-                                                <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium border ${isDeferred ? 'bg-warning/10 text-warning border-warning/30' : getRiskBadge(result.risk_level)}`}>
-                                                    {isDeferred ? ui.verifyDeferredBadge : getRiskLevelLabel(lang, result.risk_level)}
+                                                <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium border ${notClean ? 'bg-warning/10 text-warning border-warning/30' : getRiskBadge(result.risk_level)}`}>
+                                                    {notClean ? ui.verifyDeferredBadge : getRiskLevelLabel(lang, result.risk_level)}
                                                 </span>
                                             </div>
-                                            {isDeferred ? (
+                                            {notClean ? (
                                                 <div className="rounded-lg border border-warning/30 bg-warning/10 p-3 mb-3 text-sm">
                                                     <p className="font-medium text-warning mb-1">
-                                                        ⚠️ {ui.verifyDeferredMsg.replace('{brands}', (result.deferred_brands ?? []).join(', '))}
+                                                        ⚠️ {isDeferred
+                                                            ? ui.verifyDeferredMsg.replace('{brands}', (result.deferred_brands ?? []).join(', '))
+                                                            : ui.verifyFailedMsg}
                                                     </p>
-                                                    <p className="text-text/70">{ui.verifyDeferredAdvice}</p>
+                                                    <p className="text-text/70">{isDeferred ? ui.verifyDeferredAdvice : ui.verifyFailedAdvice}</p>
                                                 </div>
                                             ) : (() => {
                                                 const summary = getInteractionSummary(result.interactions);

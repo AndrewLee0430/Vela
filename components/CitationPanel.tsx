@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useLang } from '../utils/LangContext';
 import { getUI } from '../utils/i18n-ui';
 import { track } from '../utils/analytics';
-import { detectSourceType, sourceLabelFor, sourceCountTooltip, referencesCountTooltip } from '../utils/sourceLabels';
+import { detectSourceType, sourceLabelFor, resolvedSourceLabel, sourceCountTooltip, referencesCountTooltip } from '../utils/sourceLabels';
 
 export interface Citation {
     id: number;
@@ -58,6 +58,7 @@ function CitationCard({ citation, position }: { citation: Citation; position: nu
 
     const normalizedSourceType = detectSourceType(citation);
     const source = sourceLabelFor(citation);                 // one user-language source name (A1)
+    const sourceName = resolvedSourceLabel(source, ui);      // a1-ii: labelKey → localized (TFDA chip)
     const sourceTooltip = source.tooltipKey ? ui[source.tooltipKey] : undefined;
     const abstract     = extractAbstract(citation.snippet);
     const isLong       = abstract.length > 200;
@@ -84,7 +85,7 @@ function CitationCard({ citation, position }: { citation: Citation; position: nu
             <div className="flex items-start mb-2">
                 <span className="relative group">
                     <span className={`font-semibold inline-flex items-center gap-1 ${sourceTooltip ? 'cursor-help' : ''}`} style={{ color: 'rgb(var(--color-text))' }}>
-                        [{citation.id}] {source.label}
+                        [{citation.id}] {sourceName}
                         {sourceTooltip && (
                             // Discoverability affordance: a subtle ⓘ telling users the
                             // source name is hoverable. Neutral color (no semantic color),
@@ -98,7 +99,7 @@ function CitationCard({ citation, position }: { citation: Citation; position: nu
                         <span className="absolute left-0 top-full mt-2 w-64 bg-white rounded-lg shadow-lg px-4 py-3 z-50 hidden group-hover:block">
                             <span className="flex items-center gap-2 mb-1">
                                 <svg className="w-4 h-4 text-green-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
-                                <span className="text-sm font-semibold text-gray-800">{source.label}</span>
+                                <span className="text-sm font-semibold text-gray-800">{sourceName}</span>
                             </span>
                             <span className="text-xs text-gray-500 leading-relaxed block">{sourceTooltip}</span>
                         </span>
@@ -198,7 +199,7 @@ export default function CitationPanel({ citations, isLoading }: CitationPanelPro
     // Group by the user-facing label (shared map) so local + fda MERGE into one
     // "FDA" bucket — matching the cards + the answer provenance line.
     const sourceStats = citations.reduce((acc, c) => {
-        const label = sourceLabelFor(c).label;
+        const label = resolvedSourceLabel(sourceLabelFor(c), ui);
         acc[label] = (acc[label] || 0) + 1;
         return acc;
     }, {} as Record<string, number>);

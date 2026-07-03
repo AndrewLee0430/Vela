@@ -27,6 +27,7 @@ import argparse
 import json
 import sys
 from pathlib import Path
+from urllib.parse import quote
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from api.services.tfda_lookup import (  # noqa: E402  (shared read/filter/normalization — single source of truth)
@@ -37,7 +38,19 @@ from api.services.tfda_lookup import (  # noqa: E402  (shared read/filter/normal
 SNAPSHOT_ZIP = Path("data/tfda/snapshot_20260630/drug_license_id37.zip")
 CORPUS_PATH = Path("data/tfda/indication_corpus.json")   # docs (content + metadata), row-aligned with the .npy
 EMB_PATH = Path("data/tfda/indication_emb.npy")          # float16 embeddings — compact (a JSON-float index would exceed GitHub's 100MB limit)
-TFDA_PORTAL_URL = "https://mcp.fda.gov.tw/"   # verified-live TFDA portal (per ADR-003; deep-link per 字號 is a follow-up)
+TFDA_PORTAL_URL = "https://mcp.fda.gov.tw/"   # portal base — fallback when a doc has no 許可證字號
+# a1-iii (2026-07-01 recon, scheme live-verified): per-字號 deep-link to that drug's 仿單資料
+# page. Some licenses have no structured label yet → the page may 404; the user clicking a
+# citation link in-browser is a normal outbound link (same risk class as the portal base).
+TFDA_DETAIL_URL = "https://mcp.fda.gov.tw/im_detail_pdf/{lic}"
+
+
+def _citation_url(rep_lic: str) -> str:
+    """Deep-link per 許可證字號 (URL-encoded); portal base when the 字號 is missing —
+    never emit a broken path."""
+    if rep_lic:
+        return TFDA_DETAIL_URL.format(lic=quote(rep_lic, safe=""))
+    return TFDA_PORTAL_URL
 EMBEDDING_MODEL = "text-embedding-3-small"    # same model as the local drug vector store
 
 
@@ -97,7 +110,7 @@ def build_docs():
             "source_type": "tfda",
             "source_id": rep_lic,
             "title": rep_zh,
-            "url": TFDA_PORTAL_URL,
+            "url": _citation_url(rep_lic),   # a1-iii deep-link (portal base if no 字號)
             "credibility": "official",
             "doc_type": "tfda_indication",
             "drug_name": ingr,

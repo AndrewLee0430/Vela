@@ -242,5 +242,5 @@ class VerifyResponse(BaseModel):
     #    The same facts stay in `summary` prose (Share answerText / FeedbackBar depend on it);
     #    these fields exist so the UI renders them localized instead of parsing prose.
     tfda_groundings: Optional[list[TfdaGrounding]] = None  # deterministic brand→INN resolutions applied
-    verification_status: Optional[str] = None              # "ok" | "deferred_ambiguous_brand"
+    verification_status: Optional[str] = None              # "ok" | "deferred_ambiguous_brand" | "failed_no_data"
     deferred_brands: Optional[list[str]] = None            # inputs that caused an ambiguous-brand defer

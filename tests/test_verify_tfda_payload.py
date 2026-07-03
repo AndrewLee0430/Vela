@@ -107,6 +107,85 @@ def test_ambiguous_brand_defers_with_structured_status_via_endpoint():
         guards.check_medical_intent = orig
 
 
+# ── v196: failed_no_data enum (TECH_DEBT honesty/display — total failure ≠ ok) ──
+# Pins the third verification_status value. Path: no FDA labels found AND the
+# fallback LLM call fails. The LLM is stubbed to RAISE (never produces medical
+# output); fda_client is stubbed to return no labels; deduct_credits is stubbed
+# no-op only because the test DB has no tables (the fail path never deducts,
+# the ok path does).
+
+
+class _StubProvider:
+    def __init__(self, behavior):
+        self._behavior = behavior
+
+    async def complete(self, req):
+        return self._behavior()
+
+
+class _StubBinding:
+    def __init__(self, behavior):
+        self.model = "stub-model"
+        self.provider = _StubProvider(behavior)
+
+
+class _StubFDA:
+    async def search_drug_labels(self, drug, limit=1):
+        return []
+
+
+def _run_verify_with_stubs(behavior):
+    import api.middleware.guards as guards
+    import api.server as server
+    from fastapi.testclient import TestClient
+
+    async def _always_medical(text):
+        return True, ""
+
+    async def _no_deduct(db, user_id, feature):
+        return None
+
+    orig = (guards.check_medical_intent, server._verify_binding,
+            server.fda_client, server.deduct_credits)
+    guards.check_medical_intent = _always_medical
+    server._verify_binding = _StubBinding(behavior)
+    server.fda_client = _StubFDA()
+    server.deduct_credits = _no_deduct
+    try:
+        client = TestClient(server.app)
+        resp = client.post("/api/verify", json={
+            "drugs": ["zzdrugalpha", "zzdrugbeta"],   # no FDA label, no spell-correct match
+            "patient_context": None,
+            "response_language": "en",
+        })
+        assert resp.status_code == 200, resp.text
+        return resp.json()
+    finally:
+        (guards.check_medical_intent, server._verify_binding,
+         server.fda_client, server.deduct_credits) = orig
+
+
+def test_fallback_fail_yields_failed_no_data():
+    def _raise():
+        raise RuntimeError("stub LLM failure")
+    data = _run_verify_with_stubs(_raise)
+    assert data["verification_status"] == "failed_no_data"
+    assert data["interactions"] == [], "a failed run must never carry interactions"
+    assert data["risk_level"] == "Unknown"
+
+
+def test_fallback_success_yields_ok():
+    class _Fake:
+        content = '{"interactions": [], "summary": "No interaction data.", "risk_level": "Unknown"}'
+        input_tokens = 1
+        output_tokens = 1
+    data = _run_verify_with_stubs(lambda: _Fake())
+    assert data["verification_status"] == "ok"
+    assert data["interactions"] == []
+    # (deferred_ambiguous_brand is pinned by the endpoint test above — all 3 enum
+    # values are now covered: ok / deferred_ambiguous_brand / failed_no_data.)
+
+
 if __name__ == "__main__":
     failures = 0
     for name, fn in sorted(globals().items()):
