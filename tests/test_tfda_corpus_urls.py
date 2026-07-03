@@ -61,6 +61,28 @@ def test_content_untouched_by_url_change():
         assert d["source_id"] in d["content"] or not d["source_id"]
 
 
+# ── v197: representative-row self-consistency (P1 citation-integrity guard) ─────
+# The v193 build selected rep name and rep 字號 INDEPENDENTLY per group, so 12.1%
+# of docs showed drug A's name with drug B's 字號 (冠脂妥 ↔ 諾脂替 057803). Fixed
+# v197: both must come from ONE row. This pins the mismatch count at 0 — if it
+# ever rises, the citation card lies about which product the deep-link opens.
+
+def test_representative_name_and_license_are_one_row():
+    from api.services.tfda_lookup import load_snapshot_records, norm_ws
+    snapshot = os.path.join(os.path.dirname(CORPUS), "snapshot_20260630", "drug_license_id37.zip")
+    lic_to_names = {}
+    for r in load_snapshot_records(snapshot):
+        lic_to_names.setdefault(norm_ws(r.get("許可證字號", "")), set()).add(
+            norm_ws(r.get("中文品名", "")))
+    mismatches = []
+    for d in _docs():
+        if d["source_id"] and d["title"] not in lic_to_names.get(d["source_id"], set()):
+            mismatches.append((d["title"], d["source_id"]))
+    assert not mismatches, (
+        f"{len(mismatches)} docs show a name with another product's 字號 "
+        f"(first: {mismatches[:3]}) — the v193 independent-selection defect is back")
+
+
 if __name__ == "__main__":
     failures = 0
     for name, fn in sorted(globals().items()):

@@ -82,12 +82,17 @@ def build_docs():
             groups[key] = g
         en = norm_ws(r.get("英文品名", ""))
         form = norm_ws(r.get("劑型", ""))
-        g["products"].setdefault(zh, {"en": en, "form": form})
+        # per-NAME license set: keeps the row-level name↔字號 binding so the
+        # representative 字號 can be drawn from the representative NAME's own rows
+        # (P1 citation-integrity fix — rep_zh/rep_lic must be ONE coherent row).
+        p = g["products"].setdefault(zh, {"en": en, "form": form, "licenses": set()})
         lic = norm_ws(r.get("許可證字號", ""))
         if lic:
             g["licenses"].add(lic)
+            p["licenses"].add(lic)
 
     docs = []
+    rep_lic_group_fallbacks = 0
     for g in groups.values():
         # representative product = shortest 中文品名 then alphabetical (the base brand, deterministic)
         rep_zh = min(g["products"], key=lambda z: (len(z), z))
@@ -95,7 +100,15 @@ def build_docs():
         ingr = " + ".join(g["ingr_repr"])
         n = len(g["licenses"])
         extra = f"（+ {n - 1} 項同成分同適應症許可證）" if n > 1 else ""
-        rep_lic = sorted(g["licenses"])[0] if g["licenses"] else ""
+        # P1 citation-integrity fix (2026-07-03): the representative 字號 comes from the
+        # representative NAME's OWN rows — name/字號/deep-link are one coherent row, never
+        # a cross-row pairing (the 冠脂妥↔諾脂替 057803 defect). Group-level fallback only
+        # if the rep name somehow has no 字號 (counted; expected 0 in id=37).
+        if rep["licenses"]:
+            rep_lic = sorted(rep["licenses"])[0]
+        else:
+            rep_lic = sorted(g["licenses"])[0] if g["licenses"] else ""
+            rep_lic_group_fallbacks += 1
         en_disp = f" ({rep['en']})" if rep["en"] else ""
         content = (
             "[TFDA 核准適應症 — Taiwan-approved indication]\n"
@@ -124,6 +137,7 @@ def build_docs():
         "dropped_no_ingredient": dropped_no_ingredient,
         "dropped_no_indication": dropped_no_indication,
         "distinct_indication_docs": len(docs),
+        "rep_lic_group_fallbacks": rep_lic_group_fallbacks,   # expected 0 (P1 fix guard)
     }
     return docs, stats, ref_date
 
