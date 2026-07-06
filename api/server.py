@@ -1307,7 +1307,11 @@ async def verify_drug_interaction(
                     severity_label=item.get("severity_label") or None,
                     description=item.get("description","No description provided"),
                     clinical_recommendation=item.get("recommendation",""),
-                    source="FDA Label Analysis",
+                    # HONEST attribution (P1 fix): the FDA label WAS consulted (fda_context
+                    # is real openFDA label text), but THIS interaction statement is the
+                    # model's inference over it — NOT an FDA-stated interaction. The old
+                    # wording read as FDA authority; keep this attributing the analysis to AI.
+                    source="AI analysis of FDA label",
                     source_url=f"https://dailymed.nlm.nih.gov/dailymed/search.cfm?labeltype=all&query={drugs[0].replace(' ','+')}"
                 ))
             interactions = temp

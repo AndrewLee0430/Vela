@@ -186,6 +186,109 @@ def test_fallback_success_yields_ok():
     # values are now covered: ok / deferred_ambiguous_brand / failed_no_data.)
 
 
+# ── v199: honest source relabel (P1 "FDA Label Analysis" fake-authority) ──────────
+# The FDA label WAS consulted (main path retrieves real openFDA labels), but the
+# interaction statement is the model's inference — it must NOT be labeled as if FDA
+# stated it. These pin the honest wording at the schema default AND the real main-path
+# emission, and prove the fallback path's already-honest label is untouched.
+
+HONEST_MAIN_SOURCE = "AI analysis of FDA label"
+BANNED_SOURCE_STRINGS = ("FDA Label Analysis", "FDA Label / AI Analysis")
+
+
+class _FakeLabel:
+    generic_name = "warfarin"
+    brand_name = "Coumadin"
+    source_id = "FDA:stub"
+    url = "https://example/label"
+    manufacturer = "StubCo"
+
+    def to_text(self):
+        return "WARFARIN label. Interactions: aspirin increases bleeding risk."
+
+
+class _StubFDAWithLabel:
+    async def search_drug_labels(self, drug, limit=1):
+        return [_FakeLabel()]
+
+
+def _run_verify_main_path(interactions_json):
+    """Drive the MAIN Verify path (FDA labels present → LLM analysis over real label
+    text). fda_client returns a stub label so drug_labels is non-empty; the LLM is
+    stubbed to return a fixed interactions JSON so the DrugInteraction.source our code
+    assigns is what we assert."""
+    import api.middleware.guards as guards
+    import api.server as server
+    from fastapi.testclient import TestClient
+
+    async def _always_medical(text):
+        return True, ""
+
+    async def _no_deduct(db, user_id, feature):
+        return None
+
+    class _Resp:
+        def __init__(self, content):
+            self.content = content
+            self.input_tokens = 1
+            self.output_tokens = 1
+
+    orig = (guards.check_medical_intent, server._verify_binding,
+            server.fda_client, server.deduct_credits)
+    guards.check_medical_intent = _always_medical
+    server._verify_binding = _StubBinding(lambda: _Resp(interactions_json))
+    server.fda_client = _StubFDAWithLabel()
+    server.deduct_credits = _no_deduct
+    try:
+        client = TestClient(server.app)
+        resp = client.post("/api/verify", json={
+            "drugs": ["warfarin", "aspirin"], "patient_context": None, "response_language": "en",
+        })
+        assert resp.status_code == 200, resp.text
+        return resp.json()
+    finally:
+        (guards.check_medical_intent, server._verify_binding,
+         server.fda_client, server.deduct_credits) = orig
+
+
+def test_schema_default_source_is_honest():
+    from api.models.schemas import DrugInteraction
+    di = DrugInteraction(drug_pair=("a", "b"), severity="Minor",
+                         description="d", clinical_recommendation="r")
+    assert di.source == HONEST_MAIN_SOURCE
+    assert di.source not in BANNED_SOURCE_STRINGS
+
+
+def test_main_path_interaction_carries_honest_source():
+    payload = ('{"interactions": [{"drugs": ["warfarin", "aspirin"], "severity": "Major", '
+               '"description": "Increased bleeding risk.", "recommendation": "Monitor INR."}], '
+               '"summary": "1 interaction", "risk_level": "Major"}')
+    data = _run_verify_main_path(payload)
+    assert data["interactions"], "main path should return the stubbed interaction"
+    src = data["interactions"][0]["source"]
+    assert src == HONEST_MAIN_SOURCE, f"expected honest source, got {src!r}"
+    assert src not in BANNED_SOURCE_STRINGS, "the fake-authority wording must not return"
+
+
+def test_old_fake_authority_strings_absent_from_source():
+    """Anti-regression: the banned strings must not be emitted anywhere in the Verify
+    source-label code path (both are inline literals — pin them by source inspection)."""
+    import os
+    root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    for rel in ("api/server.py", "api/models/schemas.py"):
+        text = open(os.path.join(root, rel), encoding="utf-8").read()
+        for banned in BANNED_SOURCE_STRINGS:
+            assert banned not in text, f"{banned!r} still present in {rel}"
+
+
+def test_fallback_no_label_source_still_honest():
+    """The no-FDA-label path already labeled honestly — must stay unchanged."""
+    import os
+    root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    text = open(os.path.join(root, "api/server.py"), encoding="utf-8").read()
+    assert "Clinical Knowledge (No FDA label available)" in text
+
+
 if __name__ == "__main__":
     failures = 0
     for name, fn in sorted(globals().items()):

@@ -218,7 +218,11 @@ class DrugInteraction(BaseModel):
     description: str
     mechanism: Optional[str] = None
     clinical_recommendation: str
-    source: str = "FDA Label / AI Analysis"
+    # HONEST attribution default (P1). The interaction is the model's inference; when an
+    # FDA label was consulted the main path sets "AI analysis of FDA label", the no-label
+    # path sets "Clinical Knowledge (No FDA label available)". This default must never
+    # read as an FDA-stated interaction.
+    source: str = "AI analysis of FDA label"
     source_url: Optional[str] = None  # ✅ 新增：FDA 原文链接
 
 
