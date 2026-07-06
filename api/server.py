@@ -584,6 +584,44 @@ async def _run_retrieval_refusal_background(audit_id: str, query: str, documents
         logger.error("[RetrievalRefusal] background task failed: %s", e)
 
 
+def _run_source_weight_shadow(audit_id: str, shadow_pool: list, top_k: int):
+    """SHADOW source-weighting observer. Behind SOURCE_WEIGHT_SHADOW (default OFF).
+
+    MEASUREMENT-ONLY: computes 5-tier classification + composite would-be rankings
+    (PRD §2.10.3/§2.10.6) over the FULL reranked candidate pool and logs a structured
+    record to a sink (logger + AuditLog.extra_data['source_weight_shadow']). NEVER
+    mutates a doc or the answer — pure local math, NO LLM, NO network. Mirrors
+    _run_retrieval_refusal_background's sink/retention pattern. Synchronous (cheap
+    arithmetic) so it needs no task; still fully exception-wrapped so it can never
+    affect the retrieval result or latency budget.
+    """
+    try:
+        from api.services import source_weight_shadow as sws
+        if not shadow_pool:
+            return
+        record = sws.build_shadow_record(shadow_pool, top_k=top_k)
+        s = record["summary"]
+        logger.info(
+            "[SourceWeightShadow] audit_id=%s pool=%s v1_changed=%s inversions=%d "
+            "label_promoted=%d tfda_promoted=%d tiers=%s",
+            audit_id, s.get("pool_size"), s.get("top_k_changed_under_V1"),
+            len(record["inversion_flags"]), len(record["label_promoted_into_topk"]),
+            len(record["tfda_promoted_into_topk"]), record["tier_distribution"],
+        )
+        db = SessionLocal()
+        try:
+            log = db.query(AuditLog).filter(AuditLog.id == audit_id).first()
+            if log:
+                extra = dict(log.extra_data or {})
+                extra["source_weight_shadow"] = sws.to_sink_dict(record)
+                log.extra_data = extra
+                db.commit()
+        finally:
+            db.close()
+    except Exception as e:
+        logger.error("[SourceWeightShadow] shadow failed: %s", e)
+
+
 # ============================================================
 # Middleware: PHI 防護 (feedback only — SSE endpoints use inline checks)
 # ============================================================
@@ -760,11 +798,17 @@ async def research_query(
             stage_q: asyncio.Queue[str] = asyncio.Queue()
             async def on_stage(label: str) -> None:
                 await stage_q.put(label)
+            # SHADOW source-weighting (measurement-only): when the flag is ON, pass a sink
+            # to capture the full reranked pool. When OFF, sink is None → retrieve() behaves
+            # BYTE-IDENTICALLY (identity-gated by tests/test_source_weight_identity.py).
+            _sw_shadow_on = os.getenv("SOURCE_WEIGHT_SHADOW", "").lower() == "true"
+            _sw_shadow_sink: list = [] if _sw_shadow_on else None
             retrieve_task = asyncio.create_task(retriever.retrieve(
                 query=research_question,
                 max_results=body.max_results or 5,
                 source_filter=body.sources,
                 on_stage=on_stage,
+                shadow_sink=_sw_shadow_sink,
             ))
 
             def _status_for(label: str) -> Optional[str]:
@@ -891,6 +935,13 @@ async def research_query(
                             asyncio.create_task(
                                 _run_retrieval_refusal_background(audit_id, body.question, documents)
                             )
+                        # SHADOW source-weighting observer — measurement-only, behind
+                        # SOURCE_WEIGHT_SHADOW (default OFF). Computes §2.10.3/§2.10.6
+                        # would-be rankings over the captured pool. Pure local math (no
+                        # LLM, no network); fully exception-wrapped inside. Output already
+                        # streamed → cannot affect the answer.
+                        if audit_id and _sw_shadow_sink:
+                            _run_source_weight_shadow(audit_id, _sw_shadow_sink, body.max_results or 5)
                     yield f"data: {json.dumps({'type': 'done', 'query_time_ms': elapsed_ms}, ensure_ascii=False)}\n\n"
 
         except Exception as e:

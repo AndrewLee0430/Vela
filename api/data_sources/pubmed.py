@@ -26,7 +26,8 @@ class PubMedArticle:
     journal: str
     pub_date: str
     doi: Optional[str] = None
-    
+    publication_types: List[str] = None  # PubMed PublicationType list (evidence-tier signal)
+
     @property
     def url(self) -> str:
         return f"https://pubmed.ncbi.nlm.nih.gov/{self.pmid}/"
@@ -293,7 +294,17 @@ class PubMedClient:
                             break
                 except Exception:
                     pass
-                
+
+                # PublicationType list (evidence-tier signal, §2.10.6) — additive metadata;
+                # never affects retrieval order/scores. Best-effort: any parse issue → [].
+                publication_types = []
+                try:
+                    for pt in article_elem.findall(".//PublicationTypeList/PublicationType"):
+                        if pt.text and pt.text.strip():
+                            publication_types.append(pt.text.strip())
+                except Exception:
+                    publication_types = []
+
                 articles.append(PubMedArticle(
                     pmid=pmid,
                     title=title,
@@ -301,7 +312,8 @@ class PubMedClient:
                     authors=authors or ["Unknown"],
                     journal=journal,
                     pub_date=pub_date,
-                    doi=doi
+                    doi=doi,
+                    publication_types=publication_types,
                 ))
                 
             except KeyError as e:

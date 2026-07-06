@@ -84,9 +84,17 @@ class HybridRetriever:
         max_results: int = 5,
         source_filter: Optional[list[SourceType]] = None,
         on_stage: Optional[Callable[[str], Awaitable[None]]] = None,
+        shadow_sink: Optional[list] = None,
     ) -> tuple[list[RetrievedDocument], str]:
         """
         混合檢索（回傳文件列表 + 狀態碼）
+
+        Args:
+            shadow_sink: OPTIONAL measurement-only out-param for the source-weighting
+                SHADOW. When a list is passed, it is populated with the FULL reranked
+                candidate pool as [(doc, rerank_score_0_1)]. Purely additive — the
+                returned (documents, status) is byte-identical whether or not it is
+                provided (the reranker already scores the full pool; we only capture it).
 
         Returns:
             (documents, status)
@@ -161,11 +169,17 @@ class HybridRetriever:
             return [], "irrelevant"
 
         # Step 7：Rerank
+        # shadow_sink (measurement-only): capture the full scored pool without changing
+        # what we return. Passed to the reranker as score_sink; if rerank throws we leave
+        # the sink empty (the shadow degrades gracefully).
+        _score_sink = [] if shadow_sink is not None else None
         try:
-            documents = await self.reranker.rerank(query, relevant_docs)
+            documents = await self.reranker.rerank(query, relevant_docs, score_sink=_score_sink)
         except Exception as e:
             logger.warning("Rerank failed: %s, using relevance order", e)
             documents = relevant_docs
+        if shadow_sink is not None and _score_sink:
+            shadow_sink.extend(_score_sink)
 
         logger.info("Final: %d documents returned", len(documents))
         return documents[:max_results], "ok"
@@ -457,7 +471,8 @@ class HybridRetriever:
                     year=article.pub_date,
                     authors=", ".join(article.authors[:3]),
                     journal=article.journal,
-                    relevance_score=rank_score
+                    relevance_score=rank_score,
+                    publication_types=article.publication_types or [],
                 )
                 documents.append(doc)
 

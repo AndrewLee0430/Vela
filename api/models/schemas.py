@@ -121,7 +121,12 @@ class RetrievedDocument(BaseModel):
     authors: Optional[str] = None
     journal: Optional[str] = None
     relevance_score: float = 0.0
-    
+    # PRD §2.10.6 evidence-tier signal (additive metadata; NOT surfaced in Citation —
+    # to_citation() below omits it, so user-visible citations are unchanged). Populated
+    # for PubMed docs from efetch PublicationType; used only by the source-weighting
+    # SHADOW classifier. Empty/None for non-PubMed sources (they get source-default tiers).
+    publication_types: Optional[list[str]] = None
+
     def to_citation(self, citation_id: int) -> Citation:
         """轉換為 Citation"""
         # 截斷 snippet

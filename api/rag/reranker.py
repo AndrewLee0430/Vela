@@ -44,6 +44,7 @@ class Reranker:
         self,
         query: str,
         documents: list[RetrievedDocument],
+        score_sink: list | None = None,
     ) -> list[RetrievedDocument]:
         """
         對文件重新評分並排序
@@ -51,6 +52,11 @@ class Reranker:
         Args:
             query: 原始使用者問題
             documents: 已經過相關性過濾的候選文件
+            score_sink: OPTIONAL measurement-only out-param. When a list is passed, it
+                is populated with the FULL scored candidate pool as [(doc, score_0_1)]
+                in reranked order — for the source-weighting SHADOW. Purely additive:
+                the returned top_k and every doc.relevance_score are byte-identical
+                whether or not a sink is provided.
 
         Returns:
             重新排序後的 top_k 份文件
@@ -60,6 +66,8 @@ class Reranker:
 
         # 文件太少不需要 rerank
         if len(documents) <= 2:
+            if score_sink is not None:
+                score_sink.extend((d, d.relevance_score) for d in documents)
             return documents
 
         # 建立送給 GPT 的文件摘要
@@ -130,6 +138,11 @@ One score per document, same order as input."""
             reranked = sorted(documents, key=lambda d: d.relevance_score, reverse=True)
             result = reranked[:self.top_k]
 
+            # SHADOW capture (measurement-only): full scored pool in reranked order.
+            # doc.relevance_score already holds the reranker score/100 at this point.
+            if score_sink is not None:
+                score_sink.extend((d, d.relevance_score) for d in reranked)
+
             logger.info("Reranker: %d -> top %d docs (scores: %s)",
                         len(documents), len(result), [round(s) for s in scores])
 
@@ -137,4 +150,6 @@ One score per document, same order as input."""
 
         except Exception as e:
             logger.warning("Reranker failed: %s, returning original order", e)
+            if score_sink is not None:
+                score_sink.extend((d, d.relevance_score) for d in documents[:self.top_k])
             return documents[:self.top_k]
