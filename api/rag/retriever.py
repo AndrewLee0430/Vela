@@ -85,6 +85,7 @@ class HybridRetriever:
         source_filter: Optional[list[SourceType]] = None,
         on_stage: Optional[Callable[[str], Awaitable[None]]] = None,
         shadow_sink: Optional[list] = None,
+        source_weight_active: bool = False,
     ) -> tuple[list[RetrievedDocument], str]:
         """
         混合檢索（回傳文件列表 + 狀態碼）
@@ -95,6 +96,12 @@ class HybridRetriever:
                 candidate pool as [(doc, rerank_score_0_1)]. Purely additive — the
                 returned (documents, status) is byte-identical whether or not it is
                 provided (the reranker already scores the full pool; we only capture it).
+            source_weight_active: PRD §2.10.3 ACTIVATION. When True, the final top_k is
+                REORDERED by composite V1 (rerank × source_weight × tier_weight) over the
+                full reranked pool, using the SAME shadow-validated tier/composite code
+                (source_weight_shadow.rank_by_composite_v1 — no fork). When False, the
+                returned order is today's rerank order (byte-identical). This ONLY reorders
+                the already-retrieved+reranked set — no source is dropped or added.
 
         Returns:
             (documents, status)
@@ -169,10 +176,12 @@ class HybridRetriever:
             return [], "irrelevant"
 
         # Step 7：Rerank
-        # shadow_sink (measurement-only): capture the full scored pool without changing
-        # what we return. Passed to the reranker as score_sink; if rerank throws we leave
-        # the sink empty (the shadow degrades gracefully).
-        _score_sink = [] if shadow_sink is not None else None
+        # Capture the full reranked pool when EITHER the shadow (measurement) or the
+        # activation (reordering) needs it — the SAME capture object, so activation
+        # reorders exactly what the shadow measured (parity). Passed to the reranker as
+        # score_sink; if rerank throws we leave the sink empty (both degrade gracefully).
+        _need_pool = shadow_sink is not None or source_weight_active
+        _score_sink = [] if _need_pool else None
         try:
             documents = await self.reranker.rerank(query, relevant_docs, score_sink=_score_sink)
         except Exception as e:
@@ -180,6 +189,16 @@ class HybridRetriever:
             documents = relevant_docs
         if shadow_sink is not None and _score_sink:
             shadow_sink.extend(_score_sink)
+
+        # PRD §2.10.3 ACTIVATION (SOURCE_WEIGHT_ACTIVE, decided by the caller): reorder the
+        # final top_k by composite V1 over the FULL reranked pool, reusing the shadow's
+        # validated tier/composite code (no fork). POST-rerank (pre-rerank is erased). Only
+        # reorders the retrieved+reranked set — never drops/adds a source; the top_k SET
+        # changes only when a reorder crosses the max_results cutoff (rare, per the sweep).
+        # When _score_sink is empty (rerank degenerate/failed) → falls through to rerank order.
+        if source_weight_active and _score_sink:
+            from api.services.source_weight_shadow import rank_by_composite_v1
+            documents = rank_by_composite_v1(_score_sink)
 
         logger.info("Final: %d documents returned", len(documents))
         return documents[:max_results], "ok"

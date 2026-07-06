@@ -151,6 +151,38 @@ def _variant_scores(rerank_score: float, sw: float, tw: float) -> dict[str, floa
     }
 
 
+def rank_by_composite_v1(pool, *, source_weights=None, tier_weights=None) -> list:
+    """LIVE ACTIVATION of composite V1 (PRD §2.10.3): reorder the reranked pool by
+    ``rerank_score × source_weight × tier_weight``, highest first.
+
+    ``pool`` = list of ``(doc, rerank_score_0_1)`` in the reranker's returned order
+    (the SAME structure ``build_shadow_record`` consumes). Returns the docs (not the
+    tuples) reordered by V1 desc. Applied POST-rerank — the reranker overwrites
+    relevance_score, so a composite computed pre-rerank would be erased.
+
+    PARITY BY CONSTRUCTION: this uses the identical ``classify_tier`` / ``source_weight``
+    / ``tier_weight`` functions and the identical V1 formula (``_variant_scores``'s "V1")
+    and the identical stable sort (``reverse=True`` keeps the input/reranked order for
+    ties) as ``build_shadow_record``'s ``V1_rank``. So the top_k slice of this list ==
+    the shadow's ``{doc : V1_rank < top_k}`` set, in the same order. Proven empirically
+    in tests/test_source_weight_parity.py.
+
+    Pure math — reads the docs, never mutates them (no relevance_score write), so a
+    concurrently-captured shadow_sink still sees the raw rerank scores.
+    """
+    scored = []
+    for idx, (doc, rr) in enumerate(pool):
+        tier, _ = classify_tier(doc)
+        sw = source_weight(doc, source_weights)
+        tw = tier_weight(tier, tier_weights)
+        v1 = _variant_scores(rr, sw, tw)["V1"]
+        scored.append((idx, doc, v1))
+    # Stable sort desc by V1; ties keep ascending idx = the reranked order (matches the
+    # shadow's sorted(range(n), key=..., reverse=True)).
+    scored.sort(key=lambda t: t[2], reverse=True)
+    return [doc for _idx, doc, _v1 in scored]
+
+
 def build_shadow_record(pool, *, top_k: int, source_weights=None, tier_weights=None,
                         query_label: str | None = None) -> dict:
     """Build ONE structured shadow record from the full reranked candidate pool.

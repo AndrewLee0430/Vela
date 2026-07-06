@@ -803,12 +803,19 @@ async def research_query(
             # BYTE-IDENTICALLY (identity-gated by tests/test_source_weight_identity.py).
             _sw_shadow_on = os.getenv("SOURCE_WEIGHT_SHADOW", "").lower() == "true"
             _sw_shadow_sink: list = [] if _sw_shadow_on else None
+            # ACTIVATION (PRD §2.10.3, SOURCE_WEIGHT_ACTIVE default OFF): when ON, retrieve()
+            # REORDERS the final top_k by composite V1 (rerank × source_weight × tier_weight)
+            # over the same pool the shadow measures — ranking-only (no prompt/generator edit).
+            # When OFF → today's rerank order (byte-identical). Shadow logging (above) stays
+            # intact so shadow-vs-live stays comparable after activation.
+            _sw_active = os.getenv("SOURCE_WEIGHT_ACTIVE", "").lower() == "true"
             retrieve_task = asyncio.create_task(retriever.retrieve(
                 query=research_question,
                 max_results=body.max_results or 5,
                 source_filter=body.sources,
                 on_stage=on_stage,
                 shadow_sink=_sw_shadow_sink,
+                source_weight_active=_sw_active,
             ))
 
             def _status_for(label: str) -> Optional[str]:
