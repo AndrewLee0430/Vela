@@ -17,6 +17,13 @@ When entries are resolved, mark with the resolving commit SHA (git log is the re
 
 ---
 
+- **[P2 · lever-verification method — surfaced v198, 2026-07-06] The lever-digest fingerprint is no longer unique across shadow flags**
+  - **What:** `SOURCE_WEIGHT_SHADOW` (added v198) and `RETRIEVAL_REFUSAL_SHADOW` both resolve to Fly digest **`d8c5ac2e11c8e492` (= `d8c5ac2e`)** because Fly hashes the secret **VALUE** (`'true'`), NOT the flag name — identical values → identical digest.
+  - **Consequence:** the long-standing "`RETRIEVAL_REFUSAL_SHADOW` digest = `d8c5ac2e`" check can no longer be read as proof that RETRIEVAL_REFUSAL **alone** is unchanged — the same digest now covers two flags (and any future flag also set to `'true'` will collide too).
+  - **FIX (method, not code):** every future lever-state verification must enumerate **EACH flag's state by name** (`RETRIEVAL_REFUSAL_SHADOW`, `SOURCE_WEIGHT_SHADOW`, C1 / `DIRECTION_CHECK_SHADOW`, Lever 2 / `QUESTION_NEUTRALIZATION_SHADOW`, locale-hint), not compare a single shared digest. Update the deploy / post-deploy checklist wording accordingly.
+  - **Not a bug in v198** — a verification-method blind spot introduced by a second shadow flag sharing a value.
+  - **Surfaced:** 2026-07-06 (v198 review).
+
 - **[P1 · citation-integrity — v193-origin, surfaced by the v196 deep-link — ✅ FIXED v197 (2026-07-03, `dd63bf2` script+test + `07dddd8` corpus/embedding regen)] grounding-lite corpus representative NAME and 許可證字號 were selected INDEPENDENTLY — citation card could show drug A's name with drug B's 字號**
   - **What:** the grounding-lite corpus build (v193) selected the representative NAME and the representative 許可證字號 **independently** per ingredient×indication group (`scripts/build_tfda_indication_corpus.py` — `rep_zh` = shortest product name, `rep_lic` = alphabetically-first license in the group), so within multi-license groups the citation's 代表品名 and 字號 could come from **different rows**. Example: **冠脂妥膜衣錠5毫克 shown with 衛署藥製字第057803號 — which is 諾脂替膜衣錠20毫克's (Roty, 中國化學製藥) license**. The mismatch was in the displayed content since v193; **v196's deep-link made it clickable → visible** (card says 冠脂妥, link opened 諾脂替's 仿單資料 page).
   - **Blast radius (quantified 2026-07-03, read-only diagnostic):** **1,327 / 10,941 docs (12.1%)**, all inside the 2,193 multi-license groups; the 8,748 single-license docs were structurally immune.
