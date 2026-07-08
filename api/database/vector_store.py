@@ -192,3 +192,58 @@ def get_tfda_store() -> TFDACorpusStore:
     if _tfda_store is None:
         _tfda_store = TFDACorpusStore()
     return _tfda_store
+
+
+class DailyMedCorpusStore(VectorStore):
+    """DailyMed US-label corpus (Research 5th-source, Stage A). A SEPARATE, bounded
+    market-overlap corpus (US reference labels for the moieties Vela grounds in TW via
+    TFDA), built by scripts/build_dailymed_label_corpus.py. Mirrors TFDACorpusStore:
+    compact float16 .npy + docs JSON, identical embedder (text-embedding-3-small),
+    fail-soft (missing/broken index → empty store → search() returns []).
+
+    ⚠️ STAGE-A DORMANT: this class is imported NOWHERE in the live retrieval path yet.
+    It LOADS in Stage A (validation), but search() converts source_type via
+    SourceType("dailymed"), which requires the Stage-B SourceType.DAILYMED enum member —
+    do NOT call search() until Stage B wires it (SourceType + _search_dailymed)."""
+
+    def __init__(
+        self,
+        corpus_path: str = "data/dailymed/label_docs.json",
+        emb_path: str = "data/dailymed/label_emb.npy",
+    ):
+        self.index_path = corpus_path
+        binding = get_embedder_provider()
+        self._embedder = binding.provider
+        self._embedder_model = binding.model
+        self.documents = []
+        self.embeddings = None
+        self._load_compact(corpus_path, emb_path)
+
+    def _load_compact(self, corpus_path: str, emb_path: str):
+        cp, ep = Path(corpus_path), Path(emb_path)
+        if not cp.exists() or not ep.exists():
+            print(f"⚠️ DailyMed label index not found ({corpus_path} / {emb_path}) — DailyMed source disabled")
+            return
+        try:
+            with open(cp, "r", encoding="utf-8") as f:
+                self.documents = json.load(f)["documents"]
+            self.embeddings = np.load(ep).astype(np.float32)  # float16 on disk → float32 for cosine
+            if len(self.documents) != self.embeddings.shape[0]:
+                print(f"⚠️ DailyMed index row mismatch (docs={len(self.documents)} emb={self.embeddings.shape[0]}) — DailyMed source disabled")
+                self.documents, self.embeddings = [], None
+                return
+            print(f"✅ DailyMed label corpus loaded: {len(self.documents)} docs, dim={self.embeddings.shape[1]}")
+        except Exception as e:
+            print(f"⚠️ DailyMed label corpus load failed ({e}) — DailyMed source disabled")
+            self.documents, self.embeddings = [], None
+
+
+_dailymed_store: Optional[DailyMedCorpusStore] = None
+
+
+def get_dailymed_store() -> DailyMedCorpusStore:
+    """取得 DailyMedCorpusStore 單例 (Stage-A: not yet wired into retrieval)."""
+    global _dailymed_store
+    if _dailymed_store is None:
+        _dailymed_store = DailyMedCorpusStore()
+    return _dailymed_store

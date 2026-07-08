@@ -165,3 +165,7 @@ static/og/
 # Negation must come AFTER `data/` and re-include the directory before its contents.
 !data/tfda/
 !data/tfda/**
+# DailyMed US-label corpus (Research 5th-source, Stage A) — pinned snapshot,
+# rebuild via scripts/build_dailymed_label_corpus.py (float16 .npy keeps it ~3MB).
+!data/dailymed/
+!data/dailymed/**
