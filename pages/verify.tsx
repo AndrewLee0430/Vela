@@ -15,7 +15,8 @@ import AnonymousUpgradeCTA from '../components/AnonymousUpgradeCTA';
 import { setQueryId, getAnonFingerprint, track } from '../utils/analytics';
 import { useLang } from '../utils/LangContext';
 import { getUI } from '../utils/i18n-ui';
-import { formatInteractionSummary, getSeverityLabel, getRiskLevelLabel } from '../utils/i18n-verify';
+import { formatInteractionSummary, getSeverityLabel, getRiskLevelLabel,
+         getAiSeverityNote, getSourceCaptionByKind, getSourcePrefix } from '../utils/i18n-verify';
 
 // ADR 003 — flag a drug line as non-English ONLY if it contains a non-Latin SCRIPT
 // (CJK / kana / Hangul / Cyrillic / Hebrew / Arabic / Thai / Devanagari / Bengali).
@@ -33,6 +34,7 @@ interface DrugInteraction {
     clinical_recommendation: string;
     source: string;
     source_url?: string;
+    attribution_kind?: string;        // stable Option-C key: dailymed_grounded | openfda_analysis | no_label
 }
 
 interface TfdaGrounding {
@@ -593,23 +595,33 @@ function VerifyForm() {
                                                     <p className="font-semibold text-base text-text">
                                                         {interaction.drug_pair[0]} ↔ {interaction.drug_pair[1]}
                                                     </p>
-                                                    <span className={`px-2 py-0.5 rounded text-xs font-medium ml-2 flex-shrink-0 ${getSeverityBadge(interaction.severity)}`}>
-                                                        {getSeverityLabel(lang, interaction.severity)}
-                                                    </span>
+                                                    {/* Severity badge + Option-C AI-severity marker in the SAME eyeline:
+                                                        the severity is Vela's AI judgment, NOT the label's grading. */}
+                                                    <div className="flex flex-col items-end ml-2 flex-shrink-0">
+                                                        <span className={`px-2 py-0.5 rounded text-xs font-medium ${getSeverityBadge(interaction.severity)}`}>
+                                                            {getSeverityLabel(lang, interaction.severity)}
+                                                        </span>
+                                                        <span className="text-[10px] leading-tight text-text/50 mt-0.5 text-right max-w-[9rem]"
+                                                              title={getAiSeverityNote(lang)}>
+                                                            ⓘ {getAiSeverityNote(lang)}
+                                                        </span>
+                                                    </div>
                                                 </div>
                                                 <div className="space-y-2 text-sm leading-relaxed text-text/85">
                                                     <p>{interaction.description}</p>
                                                     {interaction.clinical_recommendation && (
                                                         <p className="opacity-90">{interaction.clinical_recommendation}</p>
                                                     )}
+                                                    {/* Attribution: localized caption keyed off the STABLE
+                                                        attribution_kind enum (NOT the raw English source string). */}
                                                     <p className="text-xs text-text/55 italic">
-                                                        Source:{' '}
+                                                        {getSourcePrefix(lang)}{' '}
                                                         {interaction.source_url ? (
                                                             <a href={interaction.source_url} target="_blank" rel="noopener noreferrer"
                                                                className="underline hover:opacity-80">
-                                                                {interaction.source}
+                                                                {getSourceCaptionByKind(lang, interaction.attribution_kind)}
                                                             </a>
-                                                        ) : interaction.source}
+                                                        ) : getSourceCaptionByKind(lang, interaction.attribution_kind)}
                                                     </p>
                                                 </div>
                                             </div>

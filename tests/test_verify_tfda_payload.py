@@ -134,6 +134,14 @@ class _StubFDA:
         return []
 
 
+class _StubDailyMedEmpty:
+    """DailyMed (now the PRIMARY tier) returns nothing → forces the openFDA fallback
+    tier (or, if that also misses, the no-label path). Keeps these tests network-free
+    and deterministic now that Verify tries DailyMed first."""
+    async def search_drug_labels(self, drug, limit=1):
+        return []
+
+
 def _run_verify_with_stubs(behavior):
     import api.middleware.guards as guards
     import api.server as server
@@ -146,10 +154,11 @@ def _run_verify_with_stubs(behavior):
         return None
 
     orig = (guards.check_medical_intent, server._verify_binding,
-            server.fda_client, server.deduct_credits)
+            server.fda_client, server.dailymed_client, server.deduct_credits)
     guards.check_medical_intent = _always_medical
     server._verify_binding = _StubBinding(behavior)
     server.fda_client = _StubFDA()
+    server.dailymed_client = _StubDailyMedEmpty()
     server.deduct_credits = _no_deduct
     try:
         client = TestClient(server.app)
@@ -162,7 +171,7 @@ def _run_verify_with_stubs(behavior):
         return resp.json()
     finally:
         (guards.check_medical_intent, server._verify_binding,
-         server.fda_client, server.deduct_credits) = orig
+         server.fda_client, server.dailymed_client, server.deduct_credits) = orig
 
 
 def test_fallback_fail_yields_failed_no_data():
@@ -192,6 +201,10 @@ def test_fallback_success_yields_ok():
 # stated it. These pin the honest wording at the schema default AND the real main-path
 # emission, and prove the fallback path's already-honest label is untouched.
 
+# Post-DailyMed (v2.4): the schema DEFAULT is source-agnostic; the openFDA-FALLBACK
+# tier keeps the v199 "AI analysis of FDA label" emission (the main-path tests below
+# stub DailyMed empty → they exercise the openFDA fallback).
+HONEST_SCHEMA_DEFAULT = "AI analysis of drug label"
 HONEST_MAIN_SOURCE = "AI analysis of FDA label"
 BANNED_SOURCE_STRINGS = ("FDA Label Analysis", "FDA Label / AI Analysis")
 
@@ -234,10 +247,11 @@ def _run_verify_main_path(interactions_json):
             self.output_tokens = 1
 
     orig = (guards.check_medical_intent, server._verify_binding,
-            server.fda_client, server.deduct_credits)
+            server.fda_client, server.dailymed_client, server.deduct_credits)
     guards.check_medical_intent = _always_medical
     server._verify_binding = _StubBinding(lambda: _Resp(interactions_json))
     server.fda_client = _StubFDAWithLabel()
+    server.dailymed_client = _StubDailyMedEmpty()  # DailyMed miss → openFDA fallback tier
     server.deduct_credits = _no_deduct
     try:
         client = TestClient(server.app)
@@ -248,14 +262,14 @@ def _run_verify_main_path(interactions_json):
         return resp.json()
     finally:
         (guards.check_medical_intent, server._verify_binding,
-         server.fda_client, server.deduct_credits) = orig
+         server.fda_client, server.dailymed_client, server.deduct_credits) = orig
 
 
 def test_schema_default_source_is_honest():
     from api.models.schemas import DrugInteraction
     di = DrugInteraction(drug_pair=("a", "b"), severity="Minor",
                          description="d", clinical_recommendation="r")
-    assert di.source == HONEST_MAIN_SOURCE
+    assert di.source == HONEST_SCHEMA_DEFAULT
     assert di.source not in BANNED_SOURCE_STRINGS
 
 

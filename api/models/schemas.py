@@ -218,12 +218,20 @@ class DrugInteraction(BaseModel):
     description: str
     mechanism: Optional[str] = None
     clinical_recommendation: str
-    # HONEST attribution default (P1). The interaction is the model's inference; when an
-    # FDA label was consulted the main path sets "AI analysis of FDA label", the no-label
-    # path sets "Clinical Knowledge (No FDA label available)". This default must never
-    # read as an FDA-stated interaction.
-    source: str = "AI analysis of FDA label"
-    source_url: Optional[str] = None  # ✅ 新增：FDA 原文链接
+    # HONEST attribution default (P1). Source-agnostic wording: the interaction is the
+    # model's inference over whatever label was consulted. The Verify path overrides this
+    # per-interaction — DailyMed-grounded → "Interaction text cited from DailyMed label;
+    # severity is Vela's AI interpretation"; openFDA-fallback → "AI analysis of FDA label";
+    # no-label → "Clinical Knowledge (No FDA label available)". This default must never
+    # read as a label-STATED interaction.
+    source: str = "AI analysis of drug label"
+    source_url: Optional[str] = None  # deep-links the consulted label (DailyMed setid / lookup)
+    # STABLE attribution KIND — the durable key the frontend renders the Option-C honesty
+    # markers from (NOT the free-text `source` above, which is display copy and may be
+    # tuned; substring-matching it silently breaks the honesty marker). Exactly three
+    # values: "dailymed_grounded" | "openfda_analysis" | "no_label". Default matches the
+    # source-default lineage; additive/backward-compatible (`source`/`source_url` unchanged).
+    attribution_kind: str = "openfda_analysis"
 
 
 class TfdaGrounding(BaseModel):

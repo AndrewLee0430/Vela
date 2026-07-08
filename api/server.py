@@ -62,6 +62,7 @@ from api.models.schemas import (
 from api.rag.retriever import HybridRetriever
 from api.rag.generator import AnswerGenerator
 from api.data_sources.fda import FDAClient
+from api.data_sources.dailymed import DailyMedClient
 from api.middleware.phi_handler import PHIDetector
 from api.middleware.guards import run_guards
 from api.database.sql_db import get_db, engine, Base, SessionLocal
@@ -454,6 +455,9 @@ retriever = HybridRetriever(
 )
 generator = AnswerGenerator()
 fda_client = FDAClient()
+# Verify DailyMed-primary (ADR 004/007 ingest-and-cite). Module-global so tests can
+# stub it exactly like fda_client. Reused by the later Research 5th-source increment.
+dailymed_client = DailyMedClient()
 _judge = LLMJudge()
 
 # §2.1 PHASE D (PRD v1.4 + ADR 005): module-level lazy bindings for the
@@ -981,6 +985,57 @@ def _build_tfda_groundings(drugs: list, resolutions: list) -> Optional[list]:
     return groundings or None
 
 
+# HONEST source strings for Verify interactions (Option C / ADR 004-007). The DailyMed
+# string makes the SPLIT explicit — the interaction TEXT is the label's own words, the
+# severity is Vela's AI interpretation (NOT label-stated). The openFDA-fallback string
+# is the v199 wording. Neither asserts a "cannot combine" verdict.
+DAILYMED_GROUNDED_SOURCE = "Interaction text cited from DailyMed label; severity is Vela's AI interpretation"
+OPENFDA_ANALYSIS_SOURCE = "AI analysis of FDA label"
+
+# STABLE attribution kinds — the durable keys the frontend renders honesty markers from
+# (NOT the display `source` strings above). Keep in sync with DrugInteraction.attribution_kind.
+ATTR_DAILYMED_GROUNDED = "dailymed_grounded"
+ATTR_OPENFDA_ANALYSIS = "openfda_analysis"
+ATTR_NO_LABEL = "no_label"
+
+
+def _resolve_interaction_source(interaction_drugs: list, provenance: list) -> tuple:
+    """Return (source_str, source_url, attribution_kind) for ONE interaction, chosen by
+    matching its drugs to the retrieved-label provenance. DailyMed-grounded → cite the
+    exact SPL (drugInfo.cfm?setid=) + flag severity as Vela-AI + kind
+    ATTR_DAILYMED_GROUNDED; otherwise → the v199 AI-analysis wording + a generic lookup
+    link + kind ATTR_OPENFDA_ANALYSIS. Deterministic; no network.
+
+    CITATION INTEGRITY (v197/v199 class): we attach a specific DailyMed setid ONLY when
+    THIS interaction CONFIDENTLY matches a dailymed-tier entry (a drug of the pair
+    substring-matches that entry's drug). On no confident match — CJK→INN substitution,
+    LLM rename, multi-word names — we FAIL HONEST: openFDA/AI-analysis wording + the
+    generic search link, and NEVER invent a setid for a label that may not state this
+    interaction. If the pair spans both tiers, the DailyMed match still wins (real cite)."""
+    def norm(s):
+        return (s or "").lower().strip()
+    idrugs = [norm(d) for d in interaction_drugs]
+
+    dailymed_match = None
+    for p in provenance:
+        pd = norm(p.get("drug"))
+        if (pd and p.get("tier") == "dailymed" and p.get("setid")
+                and any(pd in idr or idr in pd for idr in idrugs)):
+            dailymed_match = p
+            break
+
+    if dailymed_match is not None:
+        return (DAILYMED_GROUNDED_SOURCE,
+                f"https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid={dailymed_match['setid']}",
+                ATTR_DAILYMED_GROUNDED)
+
+    # No confident DailyMed citation → honest fallback (never a specific setid).
+    first = interaction_drugs[0] if interaction_drugs else ""
+    return (OPENFDA_ANALYSIS_SOURCE,
+            f"https://dailymed.nlm.nih.gov/dailymed/search.cfm?labeltype=all&query={first.replace(' ', '+')}",
+            ATTR_OPENFDA_ANALYSIS)
+
+
 @app.post("/api/verify")
 async def verify_drug_interaction(
     body: VerifyRequest,
@@ -1109,6 +1164,10 @@ async def verify_drug_interaction(
     # (d) MISS — analysis_drugs[i] stays == body.drugs[i] (today's behavior, unchanged).
 
     drug_labels = []
+    # Provenance per retrieved label — drives HONEST per-interaction source attribution
+    # (a DailyMed-grounded interaction cites its exact SPL; an openFDA-fallback one keeps
+    # the v199 AI-analysis wording). {"drug","label","setid"(str|None),"tier"("dailymed"|"openfda")}.
+    label_provenance: list[dict] = []
     spelling_corrections: list[str] = []
 
     def levenshtein(a, b):
@@ -1130,27 +1189,59 @@ async def verify_drug_interaction(
         "sertraline","losartan",
     ]
 
-    # Parallel FDA lookups for all drugs (analysis_drugs = body.drugs with any Chinese
-    # brand replaced by its TFDA INN, so openFDA matches the ingredient not the brand).
-    fda_results = await asyncio.gather(
-        *[fda_client.search_drug_labels(drug, limit=1) for drug in analysis_drugs],
+    def _note_spelling(drug: str, label) -> None:
+        official_name = (getattr(label, "generic_name", "") or getattr(label, "brand_name", "") or "").strip()
+        if not official_name:
+            return
+        drug_lower, official_lower = drug.lower().strip(), official_name.lower().strip()
+        if drug_lower not in official_lower and official_lower not in drug_lower:
+            dist = levenshtein(drug_lower, official_lower)
+            if 1 <= dist <= 3 and abs(len(drug_lower) - len(official_lower)) <= 2:
+                spelling_corrections.append(f"'{drug}' was interpreted as '{official_name.title()}'")
+
+    # ── Tier 1 (PRIMARY): DailyMed. A label counts here ONLY if its LOINC 34073-7
+    # Drug Interactions section is present (OTC Drug-Facts labels — e.g. aspirin —
+    # lack it → treated as a miss so we fall through to openFDA). PRD §2.10.2. ──
+    dm_results = await asyncio.gather(
+        *[dailymed_client.search_drug_labels(drug, limit=1) for drug in analysis_drugs],
         return_exceptions=True
     )
+    dm_hit: dict[int, object] = {}       # index -> DailyMedLabel (with 34073-7)
+    openfda_indices: list[int] = []      # DailyMed misses → openFDA fallback
+    for i, res in enumerate(dm_results):
+        if isinstance(res, Exception):
+            res = []
+        if res and getattr(res[0], "drug_interactions", None):
+            dm_hit[i] = res[0]
+        else:
+            openfda_indices.append(i)
 
-    # Process results and apply spell correction for misses
-    correction_tasks = []  # (index, drug_name, best_match)
-    for i, (drug, result) in enumerate(zip(analysis_drugs, fda_results)):
+    # ── Tier 2 (FALLBACK): openFDA for the DailyMed misses only. ──
+    fda_by_index: dict[int, object] = {}
+    if openfda_indices:
+        _fda = await asyncio.gather(
+            *[fda_client.search_drug_labels(analysis_drugs[i], limit=1) for i in openfda_indices],
+            return_exceptions=True
+        )
+        fda_by_index = dict(zip(openfda_indices, _fda))
+
+    # Assemble labels in drug order; collect spell-correction retries for total misses.
+    correction_tasks = []  # (index, orig_drug, best_match)
+    for i, drug in enumerate(analysis_drugs):
+        if i in dm_hit:
+            lbl = dm_hit[i]
+            drug_labels.append(lbl)
+            label_provenance.append({"drug": drug, "label": lbl, "setid": lbl.setid, "tier": "dailymed"})
+            _note_spelling(drug, lbl)
+            continue
+        result = fda_by_index.get(i)
         if isinstance(result, Exception):
             result = []
         if result:
-            drug_labels.append(result[0])
-            official_name = (result[0].generic_name or result[0].brand_name or '').strip()
-            if official_name:
-                drug_lower, official_lower = drug.lower().strip(), official_name.lower().strip()
-                if drug_lower not in official_lower and official_lower not in drug_lower:
-                    dist = levenshtein(drug_lower, official_lower)
-                    if 1 <= dist <= 3 and abs(len(drug_lower) - len(official_lower)) <= 2:
-                        spelling_corrections.append(f"'{drug}' was interpreted as '{official_name.title()}'")
+            lbl = result[0]
+            drug_labels.append(lbl)
+            label_provenance.append({"drug": drug, "label": lbl, "setid": None, "tier": "openfda"})
+            _note_spelling(drug, lbl)
         else:
             drug_lower = drug.lower().strip()
             best_match, best_dist = None, 999
@@ -1162,15 +1253,17 @@ async def verify_drug_interaction(
                 spelling_corrections.append(f"'{drug}' was interpreted as '{best_match.title()}'")
                 correction_tasks.append((i, drug, best_match))
 
-    # Parallel FDA lookups for spell-corrected drugs
+    # ── Tier 3: openFDA lookups for spell-corrected drugs (unchanged behavior). ──
     if correction_tasks:
         corrected_results = await asyncio.gather(
             *[fda_client.search_drug_labels(match, limit=1) for _, _, match in correction_tasks],
             return_exceptions=True
         )
-        for (_, _, _), corrected in zip(correction_tasks, corrected_results):
+        for (_, orig_drug, _match), corrected in zip(correction_tasks, corrected_results):
             if not isinstance(corrected, Exception) and corrected:
-                drug_labels.append(corrected[0])
+                lbl = corrected[0]
+                drug_labels.append(lbl)
+                label_provenance.append({"drug": orig_drug, "label": lbl, "setid": None, "tier": "openfda"})
 
     if not drug_labels:
         logger.warning("No FDA labels found for %s, falling back to LLM", body.drugs)
@@ -1207,7 +1300,8 @@ async def verify_drug_interaction(
                     description=item.get("description",""),
                     clinical_recommendation=item.get("recommendation",""),
                     source="Clinical Knowledge (No FDA label available)",
-                    source_url=f"https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=BasicSearch.process&query={analysis_drugs[0].replace(' ', '+')}"
+                    source_url=f"https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=BasicSearch.process&query={analysis_drugs[0].replace(' ', '+')}",
+                    attribution_kind=ATTR_NO_LABEL,
                 )
                 for item in fb_data.get("interactions",[]) if len(item.get("drugs",[])) >= 2
             ]
@@ -1287,7 +1381,7 @@ async def verify_drug_interaction(
     main_user_content = (
         f"Patient Context: {body.patient_context or 'None'}\n"
         f"Drugs: {', '.join(analysis_drugs)}\n\n"
-        f"FDA Data:\n{fda_context}"
+        f"Drug label data (DailyMed primary / openFDA fallback):\n{fda_context}"
     )
 
     verify_binding = _get_verify()
@@ -1308,18 +1402,20 @@ async def verify_drug_interaction(
                 drugs = item.get("drugs", [])
                 if len(drugs) < 2 or not all(isinstance(d, str) and d.strip() for d in drugs):
                     continue
+                # Option C honest attribution: match this interaction to the label that
+                # grounded it. DailyMed-grounded → the description is the label's own
+                # interaction-section words + the source deep-links that SPL, with severity
+                # flagged as Vela-AI; openFDA-fallback → the v199 AI-analysis wording.
+                src, src_url, src_kind = _resolve_interaction_source(drugs, label_provenance)
                 temp.append(DrugInteraction(
                     drug_pair=tuple(drugs[:2]),
                     severity=item.get("severity","Unknown"),
                     severity_label=item.get("severity_label") or None,
                     description=item.get("description","No description provided"),
                     clinical_recommendation=item.get("recommendation",""),
-                    # HONEST attribution (P1 fix): the FDA label WAS consulted (fda_context
-                    # is real openFDA label text), but THIS interaction statement is the
-                    # model's inference over it — NOT an FDA-stated interaction. The old
-                    # wording read as FDA authority; keep this attributing the analysis to AI.
-                    source="AI analysis of FDA label",
-                    source_url=f"https://dailymed.nlm.nih.gov/dailymed/search.cfm?labeltype=all&query={drugs[0].replace(' ','+')}"
+                    source=src,
+                    source_url=src_url,
+                    attribution_kind=src_kind,
                 ))
             interactions = temp
             risk_level_label = analysis.get("risk_level_label") or None
