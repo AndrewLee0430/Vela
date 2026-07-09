@@ -271,6 +271,77 @@ def test_absent_section_returns_none():
     assert DailyMedClient()._section_text(ET.fromstring(otc), "34073-7") is None
 
 
+# ── Baton A: option (b) — bound prose, ALWAYS keep the full interaction TABLE ──────────
+def _spl_34073(prose: str = "", rows: list | None = None) -> str:
+    """Minimal SPL with a 34073-7 section: a <paragraph> of `prose` + a <table> of `rows`."""
+    para = f"<paragraph>{prose}</paragraph>" if prose else ""
+    tbody = "".join("<tr>" + "".join(f"<td>{c}</td>" for c in r) + "</tr>" for r in (rows or []))
+    table = f"<table><tbody>{tbody}</tbody></table>" if tbody else ""
+    return ('<document xmlns="urn:hl7-org:v3"><component><structuredBody><component>'
+            '<section>'
+            '<code code="34073-7" codeSystem="2.16.840.1.113883.6.1" displayName="DRUG INTERACTIONS SECTION"/>'
+            f'<text>{para}{table}</text>'
+            '</section></component></structuredBody></component></document>')
+
+
+def test_long_section_keeps_full_table_past_2000():
+    """REGRESSION PIN (Baton A). What breaks if this fails: a drug-interaction table that
+    sits past char 2000 (the label's per-drug CYP450 enumeration) is dropped → Verify
+    grounds on text where major interactions (warfarin+fluconazole) are ABSENT → under-warn
+    while attribution claims 'grounded'. This FAILS on v201 (blob hard-cut at 2000 drops the
+    trailing table) and PASSES after option (b) (prose bounded, full table always appended)."""
+    long_prose = "CYP450 interaction narrative sentence. " * 80   # ~3120 chars > 2000
+    spl = _spl_34073(long_prose, rows=[
+        ["CYP2C9 Inhibitors", "amiodarone, fluconazole, fluvoxamine, metronidazole"],
+        ["CYP Inducers", "rifampin, carbamazepine, phenytoin"],
+    ])
+    text = DailyMedClient()._section_text(ET.fromstring(spl), "34073-7")
+    assert text, "section must be extracted"
+    # The table (and its drug enumeration) sits past char 2000 — it MUST survive.
+    for drug in ("fluconazole", "rifampin", "carbamazepine"):
+        assert drug in text, f"dropped table drug {drug!r} — the v201 under-grounding bug: {len(text)=}"
+    assert "..." in text[:2100], "prose portion should be bounded (~2000 + ellipsis)"
+    assert " — " in text, "flattened table rows retained"
+
+
+def test_section_with_content_never_renders_empty_but_empty_stays_none():
+    """INVARIANT GUARD (protects server.py:1214 truthiness → tier=dailymed + setid). A
+    section with ANY content (prose OR table) must return non-empty; only a genuinely
+    empty section returns None (so a real label never false-flips to the openFDA tier)."""
+    c = DailyMedClient()
+    prose_only = c._section_text(ET.fromstring(_spl_34073("Concomitant use increases bleeding risk.")), "34073-7")
+    assert prose_only and "bleeding risk" in prose_only, "prose-only section must be non-empty"
+    table_only = c._section_text(ET.fromstring(_spl_34073(rows=[["Warfarin", "monitor INR"]])), "34073-7")
+    assert table_only and "Warfarin" in table_only, "table-only section must be non-empty"
+    empty = c._section_text(ET.fromstring(_spl_34073()), "34073-7")   # no prose, no table
+    assert empty is None, "a genuinely empty section must return None (no false tier flip)"
+
+
+def test_dailymed_to_text_carries_full_table_past_cut():
+    """to_text() (what Verify feeds the LLM at server.py:1370) must carry the full table."""
+    long_prose = "Interaction narrative. " * 120   # >2000
+    spl = _spl_34073(long_prose, rows=[["CYP2C9 Inhibitors", "fluconazole, amiodarone"]])
+    lbl = DailyMedClient()._parse_spl(spl.encode("utf-8"), "SETID-X", "warfarin")
+    assert lbl is not None and lbl.drug_interactions   # invariant: truthy
+    assert "fluconazole" in lbl.to_text(), "to_text must carry the full interaction table"
+
+
+def test_openfda_to_text_keeps_full_interaction_section():
+    """openFDA parity (Baton A, fda.py). openFDA sections are single prose blobs; the
+    interaction/contraindication drug enumerations live INLINE. The safety sections must
+    NOT be truncated, so a drug named past char 2000 still reaches the Verify LLM."""
+    from api.data_sources.fda import FDADrugLabel
+    late_interaction = ("Interaction narrative. " * 120) + " Coadministration with FLUCONAZOLE raises INR."
+    lbl = FDADrugLabel(brand_name="Coumadin", generic_name="warfarin", manufacturer="X",
+                       drug_interactions=late_interaction)
+    txt = lbl.to_text()
+    assert "FLUCONAZOLE" in txt, "openFDA interaction section must not truncate the late drug enumeration"
+    # non-grounding narrative stays bounded (parity rationale): a long indications field is capped.
+    lbl2 = FDADrugLabel(brand_name="X", generic_name="x", manufacturer="X",
+                        indications="Indicated for. " * 200)
+    assert "..." in lbl2.to_text(), "narrative (indications) stays bounded via _truncate"
+
+
 # ── unit: source resolver ────────────────────────────────────────────────────────────
 def test_resolve_source_prefers_dailymed_and_deeplinks_setid():
     prov = [{"drug": "warfarin", "label": None, "setid": "S1", "tier": "dailymed"},

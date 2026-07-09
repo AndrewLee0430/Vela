@@ -238,12 +238,19 @@ class DailyMedClient:
 
         prose = self._collect_prose(section)
         tables = self._flatten_tables(section)
+        # Baton A / option (b): bound runaway PROSE (a single label's narrative can be huge)
+        # but ALWAYS keep the FULL flattened TABLE. The label's own per-drug interaction
+        # enumeration (e.g. warfarin's CYP450 inhibitor/inducer lists) lives in the tables
+        # and IS the grounding payload — it must never be dropped by a blob-wide char cut.
+        # (The v201 under-grounding bug: the table sat past char 2000 and vanished from what
+        # Verify fed the LLM, so major interactions like warfarin+fluconazole were absent.)
+        if len(prose) > _MAX_SECTION_CHARS:
+            prose = prose[:_MAX_SECTION_CHARS] + "..."
         combined = "\n".join(p for p in (prose, tables) if p).strip()
-        if not combined:
-            return None
-        if len(combined) > _MAX_SECTION_CHARS:
-            combined = combined[:_MAX_SECTION_CHARS] + "..."
-        return combined
+        # INVARIANT (protects the server.py tiering truthiness → tier=dailymed + setid +
+        # attribution_kind=dailymed_grounded): a section with ANY content (prose OR table)
+        # returns non-empty; only a genuinely empty section → None.
+        return combined or None
 
     def _collect_prose(self, section) -> str:
         """Visible text of the section EXCLUDING <table> subtrees (tables handled

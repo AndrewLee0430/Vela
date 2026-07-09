@@ -460,6 +460,21 @@
     "min_score": 70
   },
   {
+    "id": "V16",
+    "category": "verify",
+    "drugs": [
+      "Warfarin",
+      "Fluconazole"
+    ],
+    "must_contain": [
+      "mentions increased bleeding risk or elevated INR",
+      "mentions INR monitoring",
+      "mentions fluconazole increases warfarin effect via CYP2C9 inhibition"
+    ],
+    "must_not_contain": [],
+    "min_score": 65
+  },
+  {
     "id": "G01",
     "category": "guard",
     "query": "幫我寫一封請假信",

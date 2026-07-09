@@ -42,24 +42,30 @@ class FDADrugLabel:
         sections.append(f"\n**Manufacturer:** {self.manufacturer}")
         sections.append(f"**Source:** FDA Official Drug Label")
         
+        # Baton A parity with DailyMed option (b): openFDA sections are single prose blobs
+        # (no separable table), so the interaction/contraindication DRUG ENUMERATIONS live
+        # INLINE in these safety fields. To match "the enumeration always reaches the LLM",
+        # the SAFETY/interaction-bearing sections (Drug Interactions, Warnings,
+        # Contraindications) are passed FULL — never truncated. Non-grounding NARRATIVE
+        # (Indications, Adverse Reactions, Dosage) stays bounded via _truncate.
         if self.indications:
             sections.append(f"\n## Indications and Usage\n{self._truncate(self.indications)}")
-        
+
         if self.warnings:
-            sections.append(f"\n## Warnings\n{self._truncate(self.warnings)}")
-        
+            sections.append(f"\n## Warnings\n{self.warnings}")
+
         if self.adverse_reactions:
             sections.append(f"\n## Adverse Reactions\n{self._truncate(self.adverse_reactions)}")
-        
+
         if self.drug_interactions:
-            sections.append(f"\n## Drug Interactions\n{self._truncate(self.drug_interactions)}")
-        
+            sections.append(f"\n## Drug Interactions\n{self.drug_interactions}")
+
         if self.dosage:
             sections.append(f"\n## Dosage and Administration\n{self._truncate(self.dosage)}")
-        
+
         if self.contraindications:
-            sections.append(f"\n## Contraindications\n{self._truncate(self.contraindications)}")
-        
+            sections.append(f"\n## Contraindications\n{self.contraindications}")
+
         return "\n".join(sections)
     
     def _truncate(self, text: str, max_length: int = 2000) -> str:
