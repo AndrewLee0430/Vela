@@ -74,6 +74,23 @@ When entries are resolved, mark with the resolving commit SHA (git log is the re
   - **Not a bug (recall/relevance tradeoff), a candidate future improvement:** e.g. brand-name → TFDA-corpus routing (deterministic: a detected TFDA brand in the query forces a TFDA-corpus search), or a lower similarity threshold for TFDA-tagged/brand queries. Cross-ref the v195 `detect_brands_in_text` path (already deterministic brand detection at the endpoint) as a possible hook.
   - **Discovered:** 2026-07-06 (v200 activation human-eye gate).
 
+- **[P3 · verify grounding coverage — flagged at the Baton A prod gate 2026-07-09] openFDA-fallback interaction-truncation fix is unit-test-covered, NOT live-eyeballed**
+  - **What:** Baton A (fly 204, `8a4db6f`) un-truncated the interaction/safety sections on BOTH sources (DailyMed `dailymed.py::_section_text` option-b + openFDA `fda.py::to_text` safety-sections-full). The **DailyMed half was live-verified** at the prod human-eye gate; the **openFDA-fallback half was NOT** — the fallback rarely triggers, and every common drug tried during the gate (incl. OTC aspirin / acetaminophen / ibuprofen) resolved via the DailyMed PRIMARY path, so a "goes-openFDA AND has a long interaction section" case couldn't be reproduced live.
+  - **Coverage today:** `fda.py` safety-sections-full is client-level unit-tested (`tests/test_verify_dailymed.py::test_openfda_to_text_keeps_full_interaction_section`; warfarin's 6477-char openFDA interaction section confirmed fully retained). No live UI eyeball.
+  - **Action:** re-verify live if a fallback long-section case appears in prod (a drug that misses DailyMed 34073-7 yet has a >2000-char openFDA interaction section). **Priority [P3]** — the unit coverage bounds the risk; the residual is only the missing live eyeball on a rare path.
+
+- **[P3 · verify honesty/consistency — surfaced at the Baton A prod gate 2026-07-09] Verify UI mixes 實證 / 循證 (both "evidence-based")**
+  - **What:** the Verify title reads 「FDA 官方·實證醫學」 while the input label reads 「英文藥名查詢·循證」 — same meaning, but 循證 reads Mainland-style to zh-TW users; 實證 is the Taiwan-standard term.
+  - **Fix-direction:** standardize to **實證** across the Verify UI copy. Frontend copy only (`utils/i18n-ui.ts` / verify labels), no logic. Batch with the next i18n copy pass.
+
+- **[P3 · verify generation glitch — 1/5 Baton A prod-gate runs 2026-07-09] Occasional species hallucination in the interaction description**
+  - **What:** on ONE warfarin+aspirin prod run, the description said 「獸醫師應評估…」 (veterinarian) for a human-drug query — a stray LLM generation artifact.
+  - **NOT Baton-A-caused** (un-truncation adds label text; it cannot inject a "veterinarian" word) and **NOT reproduced** on the other 4 gate cases. Monitor frequency; revisit only if it recurs (it's an LLM-output artifact, not a code path). **1/5 gate runs.**
+
+- **[P3 · deploy hygiene, informational — recorded 2026-07-09] deploy.ps1 "stopped machine" box-char false-negative**
+  - **What:** post-deploy, one Fly machine (e.g. `2879720c66d478` on fly 204) shows `stopped` in the deploy.ps1 status while it prints "All machines running" — a box-drawing-char parsing false-negative in deploy.ps1's stopped-detection. **Benign:** same image/version is served; Fly `auto_start` wakes the machine on traffic.
+  - **Recorded so it's NOT re-diagnosed each deploy** (seen on v200 fly 201, v201 fly 203, Baton A fly 204). Cosmetic script parsing only — not a deploy failure.
+
 - **[P2 · latent seam — flagged during the v195 ship] Lever-2 shadow override would strip the v195 TFDA identity annotation if ever enabled**
   - **What:** the Lever-2 question-neutralization shadow override (`api/server.py:815`, flag `QUESTION_NEUTRALIZATION_SHADOW` — OFF in prod) neutralizes from `body.question`, not from the v195-annotated `research_question` — if that flag is ever enabled, the TFDA identity annotation is stripped from the GENERATION path (retrieval keeps it; the fallback would lose it → the a1-i mis-ID could reappear on neutralized loaded queries).
   - **Action required:** any future Lever-2 activation must re-verify annotation survival — add it to that flag's activation checklist (cross-ref the Lever-2/A2 enforce items in BACKLOG §706a).
