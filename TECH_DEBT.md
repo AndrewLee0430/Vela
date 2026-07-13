@@ -87,6 +87,12 @@ When entries are resolved, mark with the resolving commit SHA (git log is the re
   - **What:** on ONE warfarin+aspirin prod run, the description said 「獸醫師應評估…」 (veterinarian) for a human-drug query — a stray LLM generation artifact.
   - **NOT Baton-A-caused** (un-truncation adds label text; it cannot inject a "veterinarian" word) and **NOT reproduced** on the other 4 gate cases. Monitor frequency; revisit only if it recurs (it's an LLM-output artifact, not a code path). **1/5 gate runs.**
 
+- **[P3 · verify SaMD verdict-phrasing — flagged at the Baton A2-typo prod gate 2026-07-13] Danger-path occasional SaMD verdict-phrasing (「不得併用」-class)**
+  - **What:** the no-verdict constraint (`verify_system.md` — never assert "must not combine") is not 100%-stable on the strictest contraindicated pairs. During the A2-typo prod gate, tranylcypromine+fluoxetine (MAOI × SSRI, serotonin-syndrome danger-path) run ×4 produced **1/4** with a 「不得併用」-class verdict phrase; the other 3/4 held the present-and-cite / no-verdict line.
+  - **NOT A2-typo-caused (pre-existing):** the indications un-truncation only ADDS descriptive label text; it cannot produce a "must not combine" verdict, and the 3/4-clean re-test rules it out. This is the same family as the Baton-A species-hallucination glitch above — a rare LLM-generation artifact on the no-verdict constraint, not a code path.
+  - **Action:** monitor frequency; if it recurs, consider hardening `verify_system.md`'s no-verdict wording (would need a §2.7 ExplainJudge/VerifyJudge re-baseline per Rule 17) or adding a danger-path verdict-phrasing check to §2.7. **1/4 gate runs.**
+  - **Discovered:** 2026-07-13 (Baton A2-typo prod human-eye gate).
+
 - **[P3 · deploy hygiene, informational — recorded 2026-07-09] deploy.ps1 "stopped machine" box-char false-negative**
   - **What:** post-deploy, one Fly machine (e.g. `2879720c66d478` on fly 204) shows `stopped` in the deploy.ps1 status while it prints "All machines running" — a box-drawing-char parsing false-negative in deploy.ps1's stopped-detection. **Benign:** same image/version is served; Fly `auto_start` wakes the machine on traffic.
   - **Recorded so it's NOT re-diagnosed each deploy** (seen on v200 fly 201, v201 fly 203, Baton A fly 204). Cosmetic script parsing only — not a deploy failure.
