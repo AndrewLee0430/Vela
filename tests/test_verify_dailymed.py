@@ -342,6 +342,32 @@ def test_openfda_to_text_keeps_full_interaction_section():
     assert "..." in lbl2.to_text(), "narrative (indications) stays bounded via _truncate"
 
 
+# ── Baton A2-typo: the INDICATIONS LOINC must be 34067-9 (was a "34067-0" typo) ───────
+def _spl_indications(text: str) -> str:
+    """Minimal SPL with a 34067-9 INDICATIONS & USAGE section (the real SPL code)."""
+    return ('<document xmlns="urn:hl7-org:v3"><component><structuredBody><component>'
+            '<section>'
+            '<code code="34067-9" codeSystem="2.16.840.1.113883.6.1" displayName="INDICATIONS &amp; USAGE SECTION"/>'
+            f'<text><paragraph>{text}</paragraph></text>'
+            '</section></component></structuredBody></component></document>')
+
+
+def test_indications_loinc_is_34067_9_and_populates():
+    """REGRESSION PIN (Baton A2-typo). `_LOINC_INDICATIONS` was "34067-0" — a typo for the
+    real SPL "INDICATIONS & USAGE SECTION" code 34067-9 — so .indications NEVER populated
+    (0/1040 in the Stage-A corpus). This FAILS pre-fix (the 34067-0 code matches no section
+    → .indications is None) and PASSES after. What breaks if it fails: Verify's to_text()
+    silently omits the entire indications section from the LLM context."""
+    from api.data_sources.dailymed import _LOINC_INDICATIONS
+    assert _LOINC_INDICATIONS == "34067-9", f"indications LOINC regressed to {_LOINC_INDICATIONS!r}"
+    spl = _spl_indications("Warfarin is indicated for prophylaxis and treatment of venous thrombosis.")
+    lbl = DailyMedClient()._parse_spl(spl.encode("utf-8"), "SETID-IND", "warfarin")
+    assert lbl is not None
+    assert lbl.indications and "prophylaxis and treatment" in lbl.indications, \
+        f"indications must now populate: {lbl.indications!r}"
+    assert "## Indications and Usage" in lbl.to_text(), "to_text must render the indications section"
+
+
 # ── unit: source resolver ────────────────────────────────────────────────────────────
 def test_resolve_source_prefers_dailymed_and_deeplinks_setid():
     prov = [{"drug": "warfarin", "label": None, "setid": "S1", "tier": "dailymed"},
