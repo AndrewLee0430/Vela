@@ -1,10 +1,21 @@
 # DailyMed US-label corpus — PER-SECTION, fresh-snapshot (offline artifact)
 
-**Status: BUILT + VALIDATED, NOT WIRED.** This corpus is imported nowhere in the live
-retrieval path. It becomes a Research 5th source only in **B-2 Phase 2** (adds
-`SourceType.DAILYMED`, `retriever._search_dailymed`, the §2.7 Research re-baseline +
-danger-path + human-eye gate, and the `share_renderer.py` debt-(2) reconcile). Do not
-treat this as shipped — the founder owns the Phase-2 baton + the STATE bump.
+**Status: LIVE-WIRED as the Research 5th source (B-2 Phase 2, 2026-07-14) — committed, NOT
+yet deployed; PROD human-eye gate FOUNDER-PENDING (🔴).** The corpus now feeds live Research
+retrieval: `SourceType.DAILYMED` (`schemas.py:20`), `retriever._search_dailymed` +
+`enable_dailymed=True` (mirrors TFDA), a retrieval-time sub-chunk collapse
+(`_collapse_subchunks`), the `share_renderer.py` debt-(2) host-map reconcile
+(`dailymed`→"DailyMed", no longer "RxNorm"), and a section-aware danger-path harness.
+Gates (local, fresh code): **§2.7 Research 20/20 PASS** (≥ 18/2/0 baseline, no regression);
+**danger-path 0 violations / 0 mandatory-rechecks** (founder-signed-off section-aware
+criterion); dogfooding shows DailyMed safety sections surface + get cited but do NOT robustly
+out-rank strong PubMed (×1.5 weight = partial lift — a prominence/tuning flag, not a safety
+issue). The founder owns the deploy + the prod human-eye gate + the STATE bump.
+
+Founder decisions baked in: citation granularity = **SECTION-LEVEL** (distinct sections of a
+drug cite separately; only `~i` sub-chunks of one section collapse). Elevated per founder:
+a danger query citing a DailyMed DESCRIPTIVE section with ZERO safety section → MANDATORY
+human-eye recheck regardless of the LLM-judge verdict.
 
 **Supersedes the B-1 per-section artifact (`6c2c3a9`).** B-2 Phase 1 = a single FRESH
 `--resolve` on one coherent snapshot + two resolve-quality fixes surfaced by the B-1 eyeball
