@@ -35,6 +35,13 @@ on messy backbone moiety STRINGS. Both are fixed here; selection is otherwise B-
    recall, never changes a currently-resolved reference. Guards against over-stripping:
    - **element-cation guard** — never reduce a mineral salt to its bare cation
      (`CALCIUM GLUCONATE`↛`CALCIUM`, `SODIUM CITRATE`↛`SODIUM`); the anion is the drug identity.
+   - **name-part guard** (`_NAME_PART_STEMS`, added 2026-07-14) — never reduce a moiety to a
+     generic chemical-group prefix that is not a standalone INN. `BENZYL BENZOATE` (a scabicide
+     whose name legitimately ends in "benzoate") was stripping to `BENZYL`, which then
+     mis-matched **PRE-PEN (benzylpenicilloyl polylysine)** — an unrelated drug. The guard keeps
+     `BENZYL BENZOATE` intact; it then misses (no US mono Rx label → absent/safe, NOT PRE-PEN).
+     Same shape as the element guard; only `BENZYL BENZOATE` triggers it on the backbone (the
+     rest of the set — METHYL/ETHYL/PHENYL/… — is defensive, changes nothing today).
    - excludes ambiguous salt words that are themselves base drugs (e.g. FUMARATE — dimethyl fumarate).
 2. **Mono-preferred selection + combo drop** (`_find_mono_reference`, `_active_moieties`) — a
    mono backbone moiety must never ground on a COMBINATION label. If the pick's SPL has >1
@@ -49,11 +56,14 @@ on messy backbone moiety STRINGS. Both are fixed here; selection is otherwise B-
 - Snapshot: **Jul 13, 2026** for selection + content + deep-link (single coherent snapshot;
   `prior_stage_a_snapshot=None`). ⚠️ DailyMed published a new monthly release mid-work, so
   setids differ from B-1's Jul-10 pinning — that is the intended fresh-snapshot refresh.
-- Corpus: **1,908 backbone → 1,204 labels-with-sections → 4,611 section-docs** (avg 3.83/label).
-- Per-section-type: dosage 1037 · **indications 1029** · contraindications 907 · interactions
+- Corpus: **1,908 backbone → 1,203 labels-with-sections → 4,608 section-docs** (avg 3.83/label).
+- Per-section-type: dosage 1036 · **indications 1028** · contraindications 906 · interactions
   722 · warnings 632 · boxed 284 (indications > 0 confirms the A2-typo fix).
-- Resolve provenance: original 952 · normalized_recall 135 · **mono_rescue 117** · dropped_combo
-  78 · miss 626. (alogliptin → **Nesina** mono with real DPP-4 interactions + T2DM indications.)
+- Resolve provenance (after the name-part guard): original 952 · normalized_recall 135 ·
+  **mono_rescue 116** · dropped_combo 78 · miss 627. (alogliptin → **Nesina** mono with real DPP-4
+  interactions + T2DM indications.) The name-part guard's ONLY effect vs the prior corpus:
+  `BENZYL BENZOATE` moved mono_rescue(→PRE-PEN, wrong) → miss (absent/safe); mono_rescue 117→116,
+  miss 626→627; every other moiety unchanged.
 - **Combo-label survivors: 110 (pre-fix) → 8** (title proxy). Of the 8: 3 are proxy
   false-positives that are actually MONO by base-moiety (`Celestone Soluspan` = two betamethasone
   forms; `Premarin` = conjugated estrogens; caffeine-sodium-benzoate); 2 are drug-in-diluent
@@ -64,7 +74,7 @@ on messy backbone moiety STRINGS. Both are fixed here; selection is otherwise B-
   PIPERACILLIN, SULFAMETHOXAZOLE, COLISTIN, DIENOGEST — and multi-mineral antacid salts).
 - Regression vs B-1: 923 common moieties; 79 setid changes = 76 mono_rescue + 3 fresh-snapshot
   churn; 65 "absent" = deduped same-drug variants or dropped combos (none lost to normalization).
-- Index: **dim 1536** (HARD parity), emb float16 (4611, 1536); row-match docs==emb.
+- Index: **dim 1536** (HARD parity), emb float16 (4608, 1536), 14.2 MB; row-match docs==emb.
 - Content: warfarin interactions full table intact (6,529 chars incl. fluconazole/rifampin/CYP2C9).
 - 0 duplicate `source_id` in the final corpus; 0 setids with >1 moiety post-dedup; 0 bare-element
   normalizations; chunk seams lossless (2400-char overlap byte-identical).

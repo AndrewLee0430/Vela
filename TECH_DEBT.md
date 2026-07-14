@@ -93,6 +93,17 @@ When entries are resolved, mark with the resolving commit SHA (git log is the re
   - **Action:** monitor frequency; if it recurs, consider hardening `verify_system.md`'s no-verdict wording (would need a §2.7 ExplainJudge/VerifyJudge re-baseline per Rule 17) or adding a danger-path verdict-phrasing check to §2.7. **1/4 gate runs.**
   - **Discovered:** 2026-07-13 (Baton A2-typo prod human-eye gate).
 
+- **[P3 · DailyMed corpus (dormant, B-2 Phase 1) — cross-market salt-choice coverage gap, accepted-as-is 2026-07-14]**
+  - **What:** the DailyMed corpus backbone is the TFDA mono moieties, whose SALT choice can differ from the US mono label's salt. When TW uses one salt and the US mono label is filed under a DIFFERENT salt, the drug has NO DailyMed mono in this corpus. Concrete: **`PERINDOPRIL ARGININE`** (TW) drops as US-combo-only (Prestalia = perindopril arginine + amlodipine); the US mono is **perindopril *erbumine*** (Aceon), a different salt not in the backbone → perindopril has no DailyMed mono doc here. Same class as the head-word rescue misses (`EPINEPHRINE HCL`→lidocaine+epi combo where `EPINEPHRINE`→EpiPen is a separate string; `COLISTIN`→colistimethate under a different name).
+  - **NOT a bug (safe failure):** the drug is **absent** (dropped/missed), NOT mis-grounded — the mono-preference drop rule guarantees a mono moiety never grounds on a combo. Absence is safe; TFDA still covers the drug for TW.
+  - **Fix-direction (deferred):** a base-INN / salt-synonym map (moiety → base INN → all US salt forms) would close both this and the head-word rescue misses in one pass. Defer to a future synonym-map pass; not worth a rebuild now.
+  - **Discovered:** 2026-07-14 (B-2 Phase 1 corpus eyeball).
+
+- **[P3 · DailyMed corpus (dormant, B-2 Phase 1) — a few low-value homeopathic mono docs, accepted-as-is 2026-07-14]**
+  - **What:** a handful of mono-rescues land on single-ingredient **homeopathic** labels for moieties with no real US Rx mono: **`ALUMINUM OXIDE`→Alumina, `AMMONIUM CHLORIDE`→Ammonium muriaticum, `CENTELLA ASIATICA`→Hydrocotyle**. Technically mono (1 active moiety) so kept, but clinically low-value.
+  - **Harmless / accepted:** these drugs are rarely queried; the Phase-2 danger-path gate covers any safety-misread risk at wiring time; dropping them is not worth a rebuild. Recorded for awareness only.
+  - **Discovered:** 2026-07-14 (B-2 Phase 1 corpus eyeball).
+
 - **[P3 · deploy hygiene, informational — recorded 2026-07-09] deploy.ps1 "stopped machine" box-char false-negative**
   - **What:** post-deploy, one Fly machine (e.g. `2879720c66d478` on fly 204) shows `stopped` in the deploy.ps1 status while it prints "All machines running" — a box-drawing-char parsing false-negative in deploy.ps1's stopped-detection. **Benign:** same image/version is served; Fly `auto_start` wakes the machine on traffic.
   - **Recorded so it's NOT re-diagnosed each deploy** (seen on v200 fly 201, v201 fly 203, Baton A fly 204). Cosmetic script parsing only — not a deploy failure.
