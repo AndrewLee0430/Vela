@@ -19,7 +19,7 @@ import logging
 from typing import Optional, Callable, Awaitable
 
 from api.models.schemas import RetrievedDocument, SourceType, CredibilityLevel
-from api.database.vector_store import get_vector_store, get_tfda_store
+from api.database.vector_store import get_vector_store, get_tfda_store, get_dailymed_store
 from api.data_sources.pubmed import PubMedClient
 from api.data_sources.fda import FDAClient
 from api.rag.reranker import Reranker
@@ -54,13 +54,15 @@ class HybridRetriever:
         enable_local: bool = True,
         enable_pubmed: bool = True,
         enable_fda: bool = True,
-        enable_tfda: bool = True
+        enable_tfda: bool = True,
+        enable_dailymed: bool = True
     ):
         self.local_threshold = local_threshold
         self.enable_local = enable_local
         self.enable_pubmed = enable_pubmed
         self.enable_fda = enable_fda
         self.enable_tfda = enable_tfda
+        self.enable_dailymed = enable_dailymed
 
         self.vector_store = get_vector_store() if enable_local else None
         self.pubmed = PubMedClient() if enable_pubmed else None
@@ -69,6 +71,11 @@ class HybridRetriever:
         # own retrieval budget — competes in the SAME relevance-filter + LLM reranker, no
         # source-weighting). Fail-soft: missing index → empty store → contributes nothing.
         self.tfda_store = get_tfda_store() if enable_tfda else None
+        # B-2: DailyMed US-label PER-SECTION corpus (Research 5th source, ADR 004/007
+        # ingest-and-cite). Same pattern as tfda_store — its own bounded vector store,
+        # competes in the SAME relevance-filter + reranker; source-weighting gives label
+        # sources Tier-2 ×1.5. Fail-soft: missing index → empty store → contributes nothing.
+        self.dailymed_store = get_dailymed_store() if enable_dailymed else None
         binding = get_lightweight_provider()
         self._provider = binding.provider
         self._model = binding.model
@@ -131,6 +138,8 @@ class HybridRetriever:
                 all_tasks.append(self._search_fda(rq, max_results))
             if self.enable_tfda and self.tfda_store and (not source_filter or SourceType.TFDA in source_filter):
                 all_tasks.append(self._search_tfda(rq, max_results))
+            if self.enable_dailymed and self.dailymed_store and (not source_filter or SourceType.DAILYMED in source_filter):
+                all_tasks.append(self._search_dailymed(rq, max_results))
 
         results = await asyncio.gather(*all_tasks, return_exceptions=True)
 
@@ -199,6 +208,14 @@ class HybridRetriever:
         if source_weight_active and _score_sink:
             from api.services.source_weight_shadow import rank_by_composite_v1
             documents = rank_by_composite_v1(_score_sink)
+
+        # B-2: collapse DailyMed sub-chunks of the SAME section BEFORE the top_k cut, so a
+        # section counts as ONE citation slot (a >24k-char section is stored as
+        # …#{loinc}~0/~1; both can rank in). Keeps the highest-ranked chunk (documents are
+        # already in final order). DISTINCT sections of a drug (…#{loinc_a} vs …#{loinc_b})
+        # stay SEPARATE — section-level citation granularity (founder decision). No-op for any
+        # source_id without a '~{i}' suffix (all non-DailyMed docs, + un-chunked sections).
+        documents = self._collapse_subchunks(documents)
 
         logger.info("Final: %d documents returned", len(documents))
         return documents[:max_results], "ok"
@@ -435,6 +452,30 @@ class HybridRetriever:
 
         return documents
 
+    def _collapse_subchunks(self, documents: list[RetrievedDocument]) -> list[RetrievedDocument]:
+        """Collapse sub-chunk docs of ONE section into a single citation.
+
+        A DailyMed section longer than the embed cap is stored as multiple docs sharing the
+        section key but suffixed `~0/~1/…` (source_id `DailyMed:{setid}#{loinc}~{i}`). When
+        two chunks of the SAME section both survive rerank, they would render as duplicate
+        citations (identical setid deep-link, identical section). We keep the FIRST occurrence
+        (highest-ranked, since `documents` is already in final order).
+
+        The collapse key strips ONLY a trailing `~{i}` — so DISTINCT sections of the same drug
+        (`…#{loinc_a}` vs `…#{loinc_b}`) have DIFFERENT keys and stay SEPARATE citations
+        (founder decision: section-level granularity). Any source_id without a `~` (all
+        non-DailyMed sources, and un-chunked DailyMed sections) passes through unchanged.
+        """
+        seen: set[str] = set()
+        out: list[RetrievedDocument] = []
+        for doc in documents:
+            key = doc.source_id.split("~", 1)[0]   # strip the sub-chunk suffix only
+            if key in seen:
+                continue
+            seen.add(key)
+            out.append(doc)
+        return out
+
     # ─────────────────────────────────────────────
     # 各來源檢索
     # ─────────────────────────────────────────────
@@ -469,6 +510,23 @@ class HybridRetriever:
             )
         except Exception as e:
             logger.warning("TFDA search error: %s", e)
+            return []
+
+    async def _search_dailymed(self, query: str, max_results: int) -> list[RetrievedDocument]:
+        # B-2: search ONLY the DailyMed US-label PER-SECTION corpus, SAME cosine threshold as
+        # the local/TFDA stores (a weakly-similar section on an off-topic query is filtered out
+        # before the reranker). Bounded to max_results; docs carry source_type="dailymed" and a
+        # per-section title "{brand} ({generic}) — {section}" → become numbered citations via the
+        # existing to_citation() path when they survive rerank. Ingest-and-cite: present the
+        # label's own section text; NO DDI verdict (ADR 004/007).
+        try:
+            return await self.dailymed_store.search(
+                query=query,
+                n_results=max_results,
+                min_score=self.local_threshold,
+            )
+        except Exception as e:
+            logger.warning("DailyMed search error: %s", e)
             return []
 
     async def _search_pubmed(self, query: str, max_results: int) -> list[RetrievedDocument]:

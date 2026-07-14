@@ -17,6 +17,7 @@ class SourceType(str, Enum):
     FDA = "fda"
     LOCAL = "local"
     TFDA = "tfda"   # ADR 007 grounding-lite: TFDA 官方核准適應症 (indication-only) citable corpus
+    DAILYMED = "dailymed"   # B-2: DailyMed US-label per-section corpus (Research 5th source, ingest-and-cite)
 
 
 class CredibilityLevel(str, Enum):

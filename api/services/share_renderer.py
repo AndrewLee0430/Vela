@@ -184,6 +184,7 @@ _SOURCE_TYPE_CONFIG: dict[str, dict[str, str]] = {
     "pubmed":         {"label": "PubMed",      "color": "#68d391"},
     "fda":            {"label": "FDA",         "color": "#63b3ed"},
     "tfda":           {"label": "TFDA 核准適應症", "color": "#38b2ac"},  # ADR 007 — scope-accurate (indication-only), own bucket
+    "dailymed":       {"label": "DailyMed",    "color": "#4299e1"},  # B-2 — US drug label (official-label family, own bucket; NOT RxNorm)
     "loinc":          {"label": "LOINC",       "color": "#f6ad55"},
     "medlineplus":    {"label": "MedlinePlus", "color": "#9f7aea"},
     "rxnorm":         {"label": "RxNorm",      "color": "#ed64a6"},
@@ -232,7 +233,7 @@ def _detect_source_type(citation: dict[str, Any]) -> str:
         ("accessdata.fda.gov", "fda"),
         ("loinc.org", "loinc"),
         ("medlineplus.gov", "medlineplus"),
-        ("dailymed.nlm.nih.gov", "rxnorm"),
+        ("dailymed.nlm.nih.gov", "dailymed"),   # B-2 — DailyMed is its own official-label source (was 'rxnorm', debt-(2) drift)
         ("rxnav.nlm.nih.gov", "rxnorm"),
         ("who.int", "who"),
         ("nice.org.uk", "nice"),
