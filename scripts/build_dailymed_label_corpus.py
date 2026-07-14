@@ -150,6 +150,16 @@ _ELEMENT_CATIONS = {
     "COPPER", "CUPRIC", "AMMONIUM", "BISMUTH", "SILVER", "STRONTIUM", "BARIUM",
     "GOLD", "STANNOUS", "COBALT", "NICKEL", "MOLYBDENUM", "VANADIUM", "TITANIUM",
 }
+# Generic chemical-group PREFIXES that are never a standalone INN — when the "salt" token is
+# actually part of the drug's own NAME, stripping it leaves a bare non-drug stem that
+# mis-matches an unrelated drug. Same guard shape as _ELEMENT_CATIONS: NEVER reduce a moiety
+# to one of these. Currently only BENZYL BENZOATE (scabicide) triggers this on the backbone —
+# stripping BENZOATE gave "BENZYL", which wrongly matched PRE-PEN (benzylpenicilloyl). The
+# rest are defensive (they never trigger on the current backbone; they guard future re-pulls).
+_NAME_PART_STEMS = {
+    "BENZYL", "METHYL", "ETHYL", "PHENYL", "VINYL", "ALLYL", "ACETYL", "GLYCERYL",
+    "DIMETHYL", "DIETHYL", "BUTYL", "PROPYL", "ISOPROPYL", "AMYL", "CETYL",
+}
 
 
 def _normalize_moiety(m: str) -> str:
@@ -171,8 +181,9 @@ def _normalize_moiety(m: str) -> str:
     s = re.sub(r'\([^()]*\)', '', s).strip()   # drop any remaining parenthetical
     tokens = s.split()
     while len(tokens) > 1 and tokens[-1].upper().strip(',') in _SALT_TOKENS:
-        if len(tokens) == 2 and tokens[0].upper() in _ELEMENT_CATIONS:
-            break                              # don't reduce a mineral salt to a bare element
+        if len(tokens) == 2 and tokens[0].upper() in (_ELEMENT_CATIONS | _NAME_PART_STEMS):
+            break                              # don't reduce a mineral salt to a bare element,
+                                               # nor a name-part (BENZYL BENZOATE) to a bare stem
         tokens.pop()                           # strip trailing salt/hydrate tokens
     s = " ".join(tokens).strip()
     return s or m.strip()
