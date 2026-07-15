@@ -17,6 +17,12 @@ When entries are resolved, mark with the resolving commit SHA (git log is the re
 
 ---
 
+- **[P1 · retrieval-ranking / silent-inert — surfaced by the B-2 Phase 2b prominence measurement 2026-07-14] Reranker instability silently BYPASSES the v200 source-weighting composite on ~27% of Research queries**
+  - **What:** ~3/11 measured Research queries hit the reranker's **"unexpected scores format" → skipping rerank** path (`api/rag/reranker.py`), which degrades so `retriever.retrieve()` falls back to relevance order with an EMPTY `_score_sink`. The v200 activation only reorders when `source_weight_active and _score_sink` (`api/rag/retriever.py:199`) — so on a rerank-failed query the **composite (rerank × source_weight × tier_weight) is BYPASSED ENTIRELY** and source-weighting does not apply.
+  - **Impact:** the v200 `SOURCE_WEIGHT_ACTIVE=ON` activation is **silently inert on ~27% of queries** (the measured failure rate). Pre-existing; affects **ALL** Research ranking — NOT DailyMed-specific. It also **manufactured the false "#5 prominence" signal** that triggered B-2 Phase 2b: the one-off methotrexate "#5" was a rerank-failed run mis-read as composite order (clean runs = **#0, 5/5**).
+  - **Fix-direction:** reproduce the scores-format failure (what does the reranker LLM return that the parser rejects?), then either fix the parser/prompt OR **fail loud** per CLAUDE.md Rule 18 — a silent rerank-skip that inertizes a *shipped lever* is exactly the "reported completed while a sub-step was silently swallowed" anti-pattern. At minimum: log the rerank-skip at WARNING with the raw payload + count it so the inert-rate is observable.
+  - **Discovered:** 2026-07-14 (B-2 Phase 2b prominence measurement — 3/11 queries).
+
 - **[P2 · lever-verification method — surfaced v198, 2026-07-06] The lever-digest fingerprint is no longer unique across shadow flags**
   - **What:** `SOURCE_WEIGHT_SHADOW` (added v198) and `RETRIEVAL_REFUSAL_SHADOW` both resolve to Fly digest **`d8c5ac2e11c8e492` (= `d8c5ac2e`)** because Fly hashes the secret **VALUE** (`'true'`), NOT the flag name — identical values → identical digest.
   - **Consequence:** the long-standing "`RETRIEVAL_REFUSAL_SHADOW` digest = `d8c5ac2e`" check can no longer be read as proof that RETRIEVAL_REFUSAL **alone** is unchanged — the same digest now covers two flags (and any future flag also set to `'true'` will collide too).
