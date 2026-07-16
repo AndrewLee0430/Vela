@@ -205,6 +205,14 @@ class HybridRetriever:
         # reorders the retrieved+reranked set — never drops/adds a source; the top_k SET
         # changes only when a reorder crosses the max_results cutoff (rare, per the sweep).
         # When _score_sink is empty (rerank degenerate/failed) → falls through to rerank order.
+        if source_weight_active and not _score_sink:
+            # FAIL LOUD (CLAUDE.md Rule 18): activation is ON but the rerank produced no
+            # score pool (skip path leaves the sink empty), so the composite is silently
+            # inert for this query. ONE WARNING per retrieve() call (no loop → no double-log)
+            # makes the bypass directly observable instead of inferred. Behavior-neutral —
+            # the reorder below is already skipped by the same empty-sink condition.
+            logger.warning("[SOURCE_WEIGHT_INERT] source_weight_active but rerank produced no "
+                           "score pool (rerank skipped) — composite bypassed, relevance order used")
         if source_weight_active and _score_sink:
             from api.services.source_weight_shadow import rank_by_composite_v1
             documents = rank_by_composite_v1(_score_sink)

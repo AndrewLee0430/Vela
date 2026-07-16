@@ -23,6 +23,38 @@ from api.providers.base import CompletionRequest
 
 logger = logging.getLogger(__name__)
 
+# ── Observability counters (TECH_DEBT [P1] slice 1 — MEASUREMENT ONLY) ──────────────
+# Process-cumulative rerank outcome tallies. Surfaced in logs so the rerank-skip
+# inert-rate (the v200 source-weighting composite is silently bypassed on a skip) is
+# greppable from Fly logs alone — no DB, no metrics backend, no PostHog. These counters
+# NEVER affect which docs are returned or their order; they are read-only observability.
+#   attempts           = rerank() calls that actually issued the LLM scoring request
+#                        (<=2-doc pools skip the LLM by design and are NOT counted, so
+#                        the denominator matches the probe's 31.9% = skips/attempts).
+#   success            = parsed a valid same-length score array and reranked.
+#   skip_format_reject = LLM returned a non-list or a wrong-length array (the deterministic
+#                        off-by-one at pool >=6) → rerank skipped, composite bypassed.
+#   skip_exception     = the LLM call / JSON parse raised → rerank skipped.
+_RERANK_STATS = {
+    "attempts": 0,
+    "success": 0,
+    "skip_format_reject": 0,
+    "skip_exception": 0,
+}
+
+
+def _rerank_summary() -> str:
+    """One-line cumulative summary of rerank observability counters (inert-rate =
+    skips / attempts). Read-only — computes a string, mutates nothing."""
+    a = _RERANK_STATS["attempts"]
+    skips = _RERANK_STATS["skip_format_reject"] + _RERANK_STATS["skip_exception"]
+    rate = (skips / a * 100.0) if a else 0.0
+    return ("[RERANK_STATS] attempts=%d success=%d skip_format_reject=%d "
+            "skip_exception=%d inert_rate=%.1f%%") % (
+        a, _RERANK_STATS["success"], _RERANK_STATS["skip_format_reject"],
+        _RERANK_STATS["skip_exception"], rate,
+    )
+
 
 class Reranker:
     """
@@ -69,6 +101,10 @@ class Reranker:
             if score_sink is not None:
                 score_sink.extend((d, d.relevance_score) for d in documents)
             return documents
+
+        # Observability: this call will issue the LLM scoring request (past the small-pool
+        # guard). Count it as an attempt — the denominator of the inert-rate.
+        _RERANK_STATS["attempts"] += 1
 
         # 建立送給 GPT 的文件摘要
         doc_summaries = []
@@ -128,7 +164,16 @@ One score per document, same order as input."""
             scores = json.loads(raw)
 
             if not isinstance(scores, list) or len(scores) != len(documents):
-                logger.warning("Reranker: unexpected scores format, skipping rerank")
+                _RERANK_STATS["skip_format_reject"] += 1
+                received = len(scores) if isinstance(scores, list) else f"non-list({type(scores).__name__})"
+                # FAIL LOUD (CLAUDE.md Rule 18): the composite is now silently bypassed for
+                # this query. Marker RERANK_SKIP + reason so Fly log search / future alerting
+                # can grep it; raw payload truncated to 500 chars to keep logs sane.
+                logger.warning(
+                    "[RERANK_SKIP reason=format_reject] expected=%d received=%s model=%s raw=%.500s",
+                    len(documents), received, self.model, response.content,
+                )
+                logger.info(_rerank_summary())
                 return documents[:self.top_k]
 
             # 把分數寫回文件的 relevance_score，然後排序
@@ -143,13 +188,22 @@ One score per document, same order as input."""
             if score_sink is not None:
                 score_sink.extend((d, d.relevance_score) for d in reranked)
 
+            _RERANK_STATS["success"] += 1
             logger.info("Reranker: %d -> top %d docs (scores: %s)",
                         len(documents), len(result), [round(s) for s in scores])
+            logger.info(_rerank_summary())
 
             return result
 
         except Exception as e:
-            logger.warning("Reranker failed: %s, returning original order", e)
+            _RERANK_STATS["skip_exception"] += 1
+            # FAIL LOUD: labeled RERANK_SKIP marker (distinct reason from format_reject —
+            # do not merge distinct causes). Note the composite is NOT bypassed here: the
+            # sink is populated below with the pre-rerank score, so activation still runs
+            # (on stale scores — a slice-2 concern, not this observability slice).
+            logger.warning("[RERANK_SKIP reason=exception] %s: %s model=%s",
+                           type(e).__name__, e, self.model)
+            logger.info(_rerank_summary())
             if score_sink is not None:
                 score_sink.extend((d, d.relevance_score) for d in documents[:self.top_k])
             return documents[:self.top_k]
