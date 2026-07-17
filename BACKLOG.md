@@ -1295,3 +1295,31 @@ PHASE E built §4.3 需求1+2 (My-Context editor + save) + 需求5 Trigger A (si
   - **(i) i18n-refactor:** `pages/privacy.tsx` is hardcoded English JSX → refactor to an i18n-driven page (extract the ~10 sections into the i18n bundle + `useLang`) before any translation. This is **more than pure i18n** (a page restructure).
   - **(ii) translation-confidence decision:** the 15 non-English versions are **LEGAL + medical** text — decide machine-translated vs human-reviewed (do NOT auto-trust). Ship with the lawyer's **"English version shall prevail"** disclaimer (already in the English page header).
   - Note: keep the "24h backup / 6h PITR" wording in sync with TECH_DEBT (d) — revise on a Neon paid-plan upgrade.
+
+## GTM observation hooks (captured 2026-07-16)
+
+Cheap watch-points from the TA re-examination conversation. No build work
+unless a trigger fires. Context anchor: Market Analysis §4.2 R2 追記 +
+Product Overview §1.5 (consumer decision upheld).
+
+- [ ] **Onboarding role coverage: 營養師(dietitian) trackable?**
+      **Priority:** Low — verify-only, no schema change unless gap found.
+      Check whether onboarding 三問 role options include 營養師, or whether
+      「其他」free-text lands in PostHog in queryable form. Rationale:
+      dietitian mirrors pharmacist structurally (drug-supplement
+      interaction queries daily, no institutional subscription, often
+      co-located in community pharmacies). Adjacent segment — worth
+      counting before deciding anything.
+
+- [ ] **R11 early signal: nurse registration share in PostHog**
+      **Priority:** Low — recurring glance during existing data review
+      (2h/week slot), not a new task. If 護理師 role share or query
+      frequency grows faster than pharmacist organically, that is the
+      R11 pre-signal (GTM: nurse = first TA re-evaluation candidate if
+      CP2 pharmacist conversion misses). No action before CP2.
+
+- [ ] **Seed interview list: reserve 2-3 slots for educator nodes**
+      **Priority:** Medium — affects interview recruiting now.
+      藥師講師 / 繼續教育課程提供者 / 藥學系臨床課教師. One educator
+      recommending the tool in a course = 50+ warm impressions per
+      session. Also validates Share Answer as teaching-material surface.
