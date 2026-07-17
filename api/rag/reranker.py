@@ -23,23 +23,26 @@ from api.providers.base import CompletionRequest
 
 logger = logging.getLogger(__name__)
 
-# ── Observability counters (TECH_DEBT [P1] slice 1 — MEASUREMENT ONLY) ──────────────
-# Process-cumulative rerank outcome tallies. Surfaced in logs so the rerank-skip
-# inert-rate (the v200 source-weighting composite is silently bypassed on a skip) is
-# greppable from Fly logs alone — no DB, no metrics backend, no PostHog. These counters
-# NEVER affect which docs are returned or their order; they are read-only observability.
-#   attempts           = rerank() calls that actually issued the LLM scoring request
-#                        (<=2-doc pools skip the LLM by design and are NOT counted, so
-#                        the denominator matches the probe's 31.9% = skips/attempts).
-#   success            = parsed a valid same-length score array and reranked.
-#   skip_format_reject = LLM returned a non-list or a wrong-length array (the deterministic
-#                        off-by-one at pool >=6) → rerank skipped, composite bypassed.
-#   skip_exception     = the LLM call / JSON parse raised → rerank skipped.
+# ── Observability counters (TECH_DEBT [P1] slice 1/2 — MEASUREMENT ONLY) ────────────
+# Process-cumulative rerank outcome tallies. Surfaced in logs (WARNING, slice-2: ships
+# reliably through Fly log-shipping loss) so the rerank-skip inert-rate (the v200
+# source-weighting composite is silently bypassed on a skip) is greppable from Fly logs
+# alone — no DB, no metrics backend, no PostHog. These counters NEVER affect which docs
+# are returned or their order; they are read-only observability.
+#   attempts           = rerank() calls that issued the LLM scoring request (<=2-doc pools
+#                        skip the LLM by design and are NOT counted).
+#   success            = parsed a valid keyed score set (all n indices present) and reranked.
+#   skip_keyed_missing = keyed object valid but NOT every index 0..n-1 present (the slice-1
+#                        off-by-one, now STRUCTURALLY detected instead of a length check).
+#   skip_keyed_invalid = wrong root / non-array / positional array / duplicate index /
+#                        out-of-range index / non-numeric score.
+#   skip_json_parse    = model output was not parseable JSON.
+#   skip_exception     = the LLM call raised (network/provider) → rerank skipped.
+_SKIP_REASONS = ("keyed_missing", "keyed_invalid", "json_parse", "exception")
 _RERANK_STATS = {
     "attempts": 0,
     "success": 0,
-    "skip_format_reject": 0,
-    "skip_exception": 0,
+    **{f"skip_{r}": 0 for r in _SKIP_REASONS},
 }
 
 
@@ -47,13 +50,68 @@ def _rerank_summary() -> str:
     """One-line cumulative summary of rerank observability counters (inert-rate =
     skips / attempts). Read-only — computes a string, mutates nothing."""
     a = _RERANK_STATS["attempts"]
-    skips = _RERANK_STATS["skip_format_reject"] + _RERANK_STATS["skip_exception"]
+    skips = sum(_RERANK_STATS[f"skip_{r}"] for r in _SKIP_REASONS)
     rate = (skips / a * 100.0) if a else 0.0
-    return ("[RERANK_STATS] attempts=%d success=%d skip_format_reject=%d "
-            "skip_exception=%d inert_rate=%.1f%%") % (
-        a, _RERANK_STATS["success"], _RERANK_STATS["skip_format_reject"],
+    return ("[RERANK_STATS] attempts=%d success=%d skip_keyed_missing=%d skip_keyed_invalid=%d "
+            "skip_json_parse=%d skip_exception=%d inert_rate=%.1f%%") % (
+        a, _RERANK_STATS["success"], _RERANK_STATS["skip_keyed_missing"],
+        _RERANK_STATS["skip_keyed_invalid"], _RERANK_STATS["skip_json_parse"],
         _RERANK_STATS["skip_exception"], rate,
     )
+
+
+def _rerank_max_tokens(n: int) -> int:
+    """Output-token ceiling for the keyed schema, sized to the pool.
+
+    Each entry `{"index": 12, "score": 85}` is ~14 tokens; the `{"scores":[...]}` wrapper is
+    ~4. We budget 40 tokens/doc + 200 fixed (≈3x the real cost) so a full pool never truncates
+    — the pool is bounded by retriever candidates[:max_results*4] (<=40) and in practice <=~20
+    (the probe saw expected=13). Capped at 4096 for safety."""
+    return min(4096, 40 * n + 200)
+
+
+def _parse_keyed_scores(raw: str, n: int):
+    """Parse the keyed reranker response into scores aligned BY INDEX.
+
+    Returns (aligned, reason) where:
+      - aligned = list[float] of length n (position i = doc i's score, normalized to 0-1) and
+        reason == "ok" when EVERY index 0..n-1 is present exactly once with a numeric score;
+      - (None, "keyed_missing")  — valid entries but some index absent (the slice-1 off-by-one);
+      - (None, "keyed_invalid")  — wrong root / non-array `scores` / non-dict entry / duplicate
+                                   index / out-of-range index / bool or non-int index /
+                                   non-numeric score (incl. a bare positional array);
+      - (None, "json_parse")     — not parseable JSON.
+
+    Pure — no I/O, never raises. NO fabrication/interpolation of a missing score (a partial
+    accept would change scoring semantics — a founder-level decision, out of scope for slice 2).
+    """
+    text = raw.strip().replace("```json", "").replace("```", "").strip()
+    try:
+        obj = json.loads(text)
+    except (ValueError, TypeError):
+        return None, "json_parse"
+    if not isinstance(obj, dict):
+        return None, "keyed_invalid"
+    entries = obj.get("scores")
+    if not isinstance(entries, list):
+        return None, "keyed_invalid"
+    by_index: dict[int, float] = {}
+    for e in entries:
+        if not isinstance(e, dict):
+            return None, "keyed_invalid"
+        idx = e.get("index")
+        sc = e.get("score")
+        # bool is an int subclass in Python — reject it explicitly for both fields.
+        if isinstance(idx, bool) or not isinstance(idx, int) or not (0 <= idx < n):
+            return None, "keyed_invalid"
+        if idx in by_index:
+            return None, "keyed_invalid"          # duplicate index
+        if isinstance(sc, bool) or not isinstance(sc, (int, float)):
+            return None, "keyed_invalid"
+        by_index[idx] = float(sc)
+    if len(by_index) != n:
+        return None, "keyed_missing"              # some index 0..n-1 absent
+    return [by_index[i] / 100.0 for i in range(n)], "ok"
 
 
 class Reranker:
@@ -114,14 +172,15 @@ class Reranker:
 
         docs_text = "\n\n".join(doc_summaries)
 
+        n = len(documents)
         prompt = f"""You are a medical evidence evaluator.
 
-Given a clinical question and a list of retrieved documents, score each document's relevance 
+Given a clinical question and a list of retrieved documents, score each document's relevance
 to answering the question on a scale of 0-100.
 
 Scoring criteria:
 - 90-100: Directly answers the question with specific clinical data
-- 70-89:  Highly relevant, contains useful related information  
+- 70-89:  Highly relevant, contains useful related information
 - 50-69:  Partially relevant, tangentially related
 - 0-49:   Not useful for answering this question
 
@@ -130,8 +189,10 @@ Clinical question: {query}
 Retrieved documents:
 {docs_text}
 
-Output ONLY a JSON array with scores in order, e.g.: [85, 40, 92, 60, 75]
-One score per document, same order as input."""
+Output ONLY a JSON object of exactly this shape:
+{{"scores": [{{"index": 0, "score": 85}}, {{"index": 1, "score": 40}}, ...]}}
+Include EXACTLY one entry for EVERY document index from 0 to {n - 1} (there are {n} documents),
+each with its 0-100 score. Do not omit, duplicate, or invent an index."""
 
         try:
             req = CompletionRequest(
@@ -139,12 +200,13 @@ One score per document, same order as input."""
                 messages=[
                     {
                         "role": "system",
-                        "content": "You are a medical evidence evaluator. Output ONLY valid JSON arrays."
+                        "content": "You are a medical evidence evaluator. Output ONLY a valid JSON object."
                     },
                     {"role": "user", "content": prompt}
                 ],
                 temperature=0,
-                max_tokens=200,
+                max_tokens=_rerank_max_tokens(n),
+                response_format={"type": "json_object"},
             )
             response = await self._provider.complete(req)
 
@@ -159,51 +221,43 @@ One score per document, same order as input."""
             except Exception:
                 pass
 
-            raw = response.content.strip()
-            raw = raw.replace("```json", "").replace("```", "").strip()
-            scores = json.loads(raw)
-
-            if not isinstance(scores, list) or len(scores) != len(documents):
-                _RERANK_STATS["skip_format_reject"] += 1
-                received = len(scores) if isinstance(scores, list) else f"non-list({type(scores).__name__})"
-                # FAIL LOUD (CLAUDE.md Rule 18): the composite is now silently bypassed for
-                # this query. Marker RERANK_SKIP + reason so Fly log search / future alerting
-                # can grep it; raw payload truncated to 500 chars to keep logs sane.
-                logger.warning(
-                    "[RERANK_SKIP reason=format_reject] expected=%d received=%s model=%s raw=%.500s",
-                    len(documents), received, self.model, response.content,
-                )
-                logger.info(_rerank_summary())
-                return documents[:self.top_k]
-
-            # 把分數寫回文件的 relevance_score，然後排序
-            for doc, score in zip(documents, scores):
-                doc.relevance_score = score / 100.0  # 統一到 0-1
-
-            reranked = sorted(documents, key=lambda d: d.relevance_score, reverse=True)
-            result = reranked[:self.top_k]
-
-            # SHADOW capture (measurement-only): full scored pool in reranked order.
-            # doc.relevance_score already holds the reranker score/100 at this point.
-            if score_sink is not None:
-                score_sink.extend((d, d.relevance_score) for d in reranked)
-
-            _RERANK_STATS["success"] += 1
-            logger.info("Reranker: %d -> top %d docs (scores: %s)",
-                        len(documents), len(result), [round(s) for s in scores])
-            logger.info(_rerank_summary())
-
-            return result
-
         except Exception as e:
+            # LLM call raised (network/provider). FAIL LOUD + BYPASS: leave score_sink empty
+            # so the v200 composite is bypassed (relevance order), NOT run on stale pre-rerank
+            # scores (slice-2 fix — consistent with the parse-skip path below).
             _RERANK_STATS["skip_exception"] += 1
-            # FAIL LOUD: labeled RERANK_SKIP marker (distinct reason from format_reject —
-            # do not merge distinct causes). Note the composite is NOT bypassed here: the
-            # sink is populated below with the pre-rerank score, so activation still runs
-            # (on stale scores — a slice-2 concern, not this observability slice).
             logger.warning("[RERANK_SKIP reason=exception] %s: %s model=%s",
                            type(e).__name__, e, self.model)
-            logger.info(_rerank_summary())
-            if score_sink is not None:
-                score_sink.extend((d, d.relevance_score) for d in documents[:self.top_k])
+            logger.warning(_rerank_summary())
             return documents[:self.top_k]
+
+        # Parse the keyed schema — score attaches to its INDEX (structural alignment). A
+        # dropped element is now a detectable missing index, not a silent off-by-one.
+        aligned, reason = _parse_keyed_scores(response.content, n)
+        if aligned is None:
+            _RERANK_STATS[f"skip_{reason}"] += 1
+            # FAIL LOUD (CLAUDE.md Rule 18): composite silently bypassed for this query.
+            # Marker RERANK_SKIP + reason; raw payload truncated to 500 chars to keep logs sane.
+            logger.warning("[RERANK_SKIP reason=%s] expected=%d model=%s raw=%.500s",
+                           reason, n, self.model, response.content)
+            logger.warning(_rerank_summary())
+            return documents[:self.top_k]
+
+        # 把分數寫回文件的 relevance_score（by index），然後排序
+        for i, doc in enumerate(documents):
+            doc.relevance_score = aligned[i]  # already normalized to 0-1
+
+        reranked = sorted(documents, key=lambda d: d.relevance_score, reverse=True)
+        result = reranked[:self.top_k]
+
+        # SHADOW capture (measurement-only): full scored pool in reranked order.
+        # doc.relevance_score already holds the reranker score/100 at this point.
+        if score_sink is not None:
+            score_sink.extend((d, d.relevance_score) for d in reranked)
+
+        _RERANK_STATS["success"] += 1
+        logger.info("Reranker: %d -> top %d docs (scores: %s)",
+                    n, len(result), [round(s * 100) for s in aligned])
+        logger.warning(_rerank_summary())
+
+        return result

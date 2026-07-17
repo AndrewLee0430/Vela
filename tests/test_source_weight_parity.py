@@ -19,6 +19,7 @@ Two levels of proof:
 Run: python tests/test_source_weight_parity.py   (or via pytest)
 """
 import asyncio
+import json
 import os
 import sys
 
@@ -140,8 +141,9 @@ def _build_stub_retriever():
             self.output_tokens = 0
 
     async def _fake_complete(req):
-        # scores in INPUT order → doc i gets score below; rerank sorts desc.
-        return _StubResp("[30, 40, 50, 60, 70, 80, 90, 95]")
+        # scores in INPUT order → doc i gets score below (keyed by index); rerank sorts desc.
+        scores = [30, 40, 50, 60, 70, 80, 90, 95]
+        return _StubResp(json.dumps({"scores": [{"index": i, "score": s} for i, s in enumerate(scores)]}))
     r.reranker._provider.complete = _fake_complete
     return r
 

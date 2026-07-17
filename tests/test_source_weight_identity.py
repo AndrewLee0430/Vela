@@ -12,6 +12,7 @@ If this fails, the shadow can perturb a user-visible result and must NOT ship en
 Run: python tests/test_source_weight_identity.py   (or via pytest)
 """
 import asyncio
+import json
 import os
 import sys
 
@@ -61,8 +62,9 @@ def _build_stub_retriever():
             self.output_tokens = 0
 
     async def _fake_complete(req):
-        # 8 docs → fixed scores (reverse of input so rerank actually reorders)
-        return _StubResp("[30, 40, 50, 60, 70, 80, 90, 95]")
+        # 8 docs → keyed-by-index scores (reverse of input so rerank actually reorders)
+        scores = [30, 40, 50, 60, 70, 80, 90, 95]
+        return _StubResp(json.dumps({"scores": [{"index": i, "score": s} for i, s in enumerate(scores)]}))
     r.reranker._provider.complete = _fake_complete
     return r
 
