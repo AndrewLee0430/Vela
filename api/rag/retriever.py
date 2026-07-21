@@ -34,6 +34,33 @@ RELEVANCE_THRESHOLD = 0.45
 # 年份加權
 YEAR_BOOST = {0: 0.10, 1: 0.08, 2: 0.06, 3: 0.04, 4: 0.02}
 
+# ── Official-label SAFETY-section exemption (TECH_DEBT [P1] recall-miss surface iii) ──
+# LOINC codes for the 4 official-label (DailyMed) SAFETY sections that are EXEMPT from the
+# LLM relevance filter's drop: a section that WAS retrieved (cosine ≥ the store threshold)
+# but the filter would drop is RE-ADDED. ADDITIVE ONLY — never drops a kept doc, never
+# reorders/rescoves. Descriptive sections (34067-9 indications / 34068-7 dosage) are NOT
+# exempt. Founder-locked whitelist (2026-07-20); matches the fly-206 danger-path SAFETY set.
+_SAFETY_SECTION_WHITELIST = {
+    "34073-7": "Drug Interactions",
+    "34070-3": "Contraindications",
+    "43685-7": "Warnings",
+    "34066-1": "Boxed Warning",
+}
+
+
+def _is_whitelisted_safety_section(doc) -> bool:
+    """True iff `doc` is an official-label per-section SAFETY doc whose LOINC is whitelisted.
+    Requires an official source_type AND a `…#{loinc}` source_id — FDA whole-labels (no
+    LOINC) and non-official sources return False."""
+    st = str(getattr(doc.source_type, "value", doc.source_type) or "").lower()
+    if st not in ("dailymed", "fda"):
+        return False
+    sid = doc.source_id or ""
+    if "#" not in sid:
+        return False
+    loinc = sid.split("#", 1)[1].split("~", 1)[0]
+    return loinc in _SAFETY_SECTION_WHITELIST
+
 
 class HybridRetriever:
     """
@@ -431,6 +458,20 @@ class HybridRetriever:
                 documents[i] for i in relevant_indices
                 if isinstance(i, int) and 0 <= i < len(documents)
             ]
+
+            # Surface-(iii) exemption: re-add any RETRIEVED whitelisted official-label SAFETY
+            # section the filter dropped (the gpt-4.1-mini filter is input-brittle and drops
+            # e.g. #34073-7 on some pools — probe filterexempt_probe_REPORT.md 2026-07-20).
+            # ADDITIVE: operates ONLY on the drop-set, APPENDS — never removes/reorders a kept
+            # doc, never rescoves. Rerank re-sorts afterward, so append order is immaterial.
+            kept_ids = {d.source_id for d in filtered}
+            exempted = [d for d in documents
+                        if d.source_id not in kept_ids and _is_whitelisted_safety_section(d)]
+            if exempted:
+                logger.info("[FilterExempt] re-added %d whitelisted safety section(s) dropped by "
+                            "the filter: %s", len(exempted), [d.source_id for d in exempted])
+                filtered = filtered + exempted
+
             logger.info("Relevance filter: %d -> %d documents kept", len(documents), len(filtered))
             return filtered
 
