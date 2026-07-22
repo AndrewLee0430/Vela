@@ -9,6 +9,7 @@ primary_region = "nrt"   # 東京，離台灣最近
   NEXT_PUBLIC_POSTHOG_KEY = "phc_b9toDT6nkPhQxRpabYsT6vSUEAWGha8HQbVxkaaNthW"
   NEXT_PUBLIC_POSTHOG_HOST = "https://app.posthog.com"
   NEXT_PUBLIC_API_URL = "https://vela.an-tho.com"
+  NEXT_PUBLIC_LOCALE_HINT_ENABLED = "true"
   NEXT_PUBLIC_SENTRY_DSN = ""  # Fill in your Sentry DSN
 
 [env]
