@@ -43,3 +43,13 @@ to an LLM classifier.
 | 「warfarin 和 aspirin 的交互作用」 | interaction — should it count as a local-diff? `交互作用` is **intentionally excluded** in v0; expect NO fire unless dosing/etc. keywords appear in the answer |
 | 「metformin 的副作用有哪些」 | general side-effects — potential over-fire if we ever add `副作用`; v0 excludes it, but the answer may contain `劑量`/`mg` and fire on dosing — eyeball whether that's correct |
 | 「糖尿病患者的飲食建議」 | lifestyle — should NOT fire (no category keyword); watch for false positives from the answer text |
+
+## BEHAVIORAL CHECKS (gate logic, not keyword-fire)
+
+These verify the two gate mechanisms that keyword-fire rows don't exercise. Run with the preview
+hatch on (`localStorage vela_locale_hint_preview = '1'`), UI language = 繁體中文.
+
+| Check | How to run | Expected (gate PASS) |
+|---|---|---|
+| **isFallback suppression** | Ask a zh-TW query that returns the **no-literature fallback** banner (「未找到相關文獻」/「基於一般醫學知識」) *and* would otherwise fire a category — e.g. a reimbursement/dosing question about an obscure or hypothetical drug so no literature is retrieved. Confirm you see the fallback banner. | Panel is **SUPPRESSED** even though a category keyword (e.g. `給付`/`劑量`) is present — an ungrounded answer must not get false local-authority credibility (`!isFallback` gate, `research.tsx`). |
+| **Dismiss-then-new-query re-show** | On any SHOULD-FIRE query, dismiss the panel (×). Then submit a **different** SHOULD-FIRE query. | Panel **RE-SHOWS** on the new query — dismissal is per-query via `resetKey`, NOT cross-session. Regression guard for the v187「fires once then never again」bug. |
