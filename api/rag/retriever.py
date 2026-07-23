@@ -62,6 +62,21 @@ def _is_whitelisted_safety_section(doc) -> bool:
     return loinc in _SAFETY_SECTION_WHITELIST
 
 
+def _cut_exemption(candidates, unique_docs):
+    """Lever-2 (recall-miss [P1]): re-add any RETRIEVED whitelisted official-label SAFETY
+    section that the candidates[:max_results*4] cut dropped. ADDITIVE — appends only sections
+    BELOW the cut (`not in cut_ids`); never drops, reorders, or displaces a survived candidate.
+    Mirrors the surface-(iii) filter-exemption one stage earlier (the candidate cut)."""
+    cut_ids = {d.source_id for d in candidates}
+    exempted = [d for d in unique_docs
+                if d.source_id not in cut_ids and _is_whitelisted_safety_section(d)]
+    if not exempted:
+        return candidates
+    logger.info("[CutExempt] re-added %d whitelisted safety section(s) dropped by the "
+                "candidate cut: %s", len(exempted), [d.source_id for d in exempted])
+    return candidates + exempted
+
+
 class HybridRetriever:
     """
     混合檢索器 v2.2
