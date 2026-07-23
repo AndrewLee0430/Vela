@@ -163,13 +163,17 @@ class HybridRetriever:
             if on_stage:
                 await on_stage(label)
 
-        # Step 1：Query Rewriting（生成 3 個標準化查詢）
+        # Step 1：Query Rewriting（生成 3 個標準化查詢；non-DailyMed 用這 3 個）
         rewritten_queries = await self._rewrite_query(query)
         logger.info("Query rewritten: '%s'", query)
         for i, q in enumerate(rewritten_queries, 1):
             logger.debug("  [%d] %s", i, q)
 
-        # Step 2：對每個 rewritten query 並行檢索所有來源
+        # Step 1b: DailyMed-ONLY K-union rewrite set (lever 1) — recovers the straddling safety
+        # section; isolated to DailyMed so PubMed/FDA/local/TFDA pools are NOT inflated.
+        dailymed_queries = await self._dailymed_union_queries(query, k=3)
+
+        # Step 2：對每個 rewritten query 並行檢索所有來源（DailyMed 用 union set）
         all_tasks = []
         for rq in rewritten_queries:
             if self.enable_local and (not source_filter or SourceType.LOCAL in source_filter):
@@ -180,8 +184,9 @@ class HybridRetriever:
                 all_tasks.append(self._search_fda(rq, max_results))
             if self.enable_tfda and self.tfda_store and (not source_filter or SourceType.TFDA in source_filter):
                 all_tasks.append(self._search_tfda(rq, max_results))
+        for dq in dailymed_queries:
             if self.enable_dailymed and self.dailymed_store and (not source_filter or SourceType.DAILYMED in source_filter):
-                all_tasks.append(self._search_dailymed(rq, max_results))
+                all_tasks.append(self._search_dailymed(dq, max_results))
 
         results = await asyncio.gather(*all_tasks, return_exceptions=True)
 

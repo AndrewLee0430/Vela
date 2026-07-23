@@ -4,6 +4,7 @@ import asyncio, os, sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 os.environ.setdefault("TEST_MODE", "true")
 from api.rag import retriever as rmod  # noqa: E402
+from api.models.schemas import RetrievedDocument, SourceType, CredibilityLevel
 
 
 def _stub_retriever(rewrite_batches):
@@ -61,6 +62,49 @@ def test_returns_empty_when_dailymed_disabled():
     r._rewrite_query = _fake
     out = asyncio.run(r._dailymed_union_queries("RAWQ", k=3))
     assert out == [] and called["n"] == 0                 # no wasted rewrite calls when DM off
+
+
+def test_dailymed_searched_with_union_set_not_the_3():
+    """retrieve() must call _search_dailymed once per UNION query, and non-DailyMed sources
+    once per the 3 rewrites — proving the split fan-out (DailyMed-only K-union)."""
+    import json
+    r = rmod.HybridRetriever(enable_local=True, enable_pubmed=False, enable_fda=False,
+                             enable_tfda=False, enable_dailymed=True)
+
+    async def _rewrite(q):
+        return ["r1", "r2", "r3"]
+    r._rewrite_query = _rewrite
+
+    seen_local, seen_dm = [], []
+
+    async def _local(q, n):
+        seen_local.append(q)
+        return [RetrievedDocument(content="x " * 3, source_type=SourceType.LOCAL,
+                source_id=f"L:{q}", title="L", url="u", credibility=CredibilityLevel.OFFICIAL,
+                year="2023", relevance_score=0.7)]
+    r._search_local = _local
+
+    async def _dm(q, n):
+        seen_dm.append(q)
+        return []
+    r._search_dailymed = _dm
+
+    async def _filt(oq, docs):
+        return list(docs)
+    r._filter_by_relevance = _filt
+
+    class _R:
+        def __init__(s, c):
+            s.content, s.input_tokens, s.output_tokens = c, 0, 0
+
+    async def _cmp(req):
+        n = req.messages[-1]["content"].count("] Title:")
+        return _R(json.dumps({"scores": [{"index": i, "score": 50} for i in range(n)]}))
+    r.reranker._provider.complete = _cmp
+
+    asyncio.run(r.retrieve("RAWQ", max_results=5, source_weight_active=True))
+    assert sorted(set(seen_local)) == ["r1", "r2", "r3"]              # non-DM: the 3 rewrites
+    assert "RAWQ" in seen_dm and len(set(seen_dm)) >= 4               # DM: union incl. raw augment
 
 
 if __name__ == "__main__":
