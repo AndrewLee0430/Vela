@@ -38,6 +38,19 @@ def test_additive_survivors_unchanged_and_not_reordered():
     assert len(out) == 3
 
 
+def test_exempted_appended_after_survivor_even_when_higher_score():
+    # The exempted below-cut section is given a HIGHER relevance_score than the survivor.
+    # A pure-append helper keeps the survivor FIRST; a mutant that sorts by score would put
+    # the section first. This proves order-independence (the additive contract), not just "append".
+    survivor = _pub(1, score=0.5)
+    section = _dm("34073-7", 9, score=0.9)      # higher score, but was below the cut
+    candidates = [survivor]
+    unique = [survivor, section]
+    out = rmod._cut_exemption(candidates, unique)
+    assert [d.source_id for d in out] == ["PMID:1", "DailyMed:setid-9#34073-7"], \
+        f"survivor must stay first (pure append, not score-sort): {[d.source_id for d in out]}"
+
+
 def test_all_four_whitelisted_loincs_readded():
     for loinc in ("34073-7", "34070-3", "43685-7", "34066-1"):
         candidates = [_pub(1)]
