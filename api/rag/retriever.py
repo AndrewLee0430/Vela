@@ -215,6 +215,11 @@ class HybridRetriever:
         unique_docs.sort(key=lambda x: x.relevance_score, reverse=True)
         candidates = unique_docs[:max_results * 4]  # 多取供相關性驗證
 
+        # Lever-2 (recall-miss [P1]): re-add any whitelisted safety section the [:N] cut dropped,
+        # so a retrieved-but-cut label section reaches the filter (+surface-(iii)) + composite.
+        # ADDITIVE — never drops/reorders a survived candidate.
+        candidates = _cut_exemption(candidates, unique_docs)
+
         # Step 6：相關性驗證
         # Real stage boundary: fetch produced documents (we're past the
         # no_results short-circuit above) → the relevance-filter + rerank stages

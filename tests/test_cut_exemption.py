@@ -4,6 +4,7 @@ section the candidates[:20] cut would drop. ADDITIVE — never drops/reorders a 
 import os, sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 os.environ.setdefault("TEST_MODE", "true")
+import asyncio, json
 from api.models.schemas import RetrievedDocument, SourceType, CredibilityLevel  # noqa: E402
 from api.rag import retriever as rmod  # noqa: E402
 
@@ -79,6 +80,54 @@ def test_canary_no_op_when_no_whitelisted_below_cut():
     unique = candidates + [_pub(3)]
     out = rmod._cut_exemption(candidates, unique)
     assert [d.source_id for d in out] == ["PMID:1", "PMID:2"]
+
+
+def _build_stub_retriever_below_cut():
+    """Local search returns 20 high-score PubMed-like docs + 1 below-cut DailyMed #34073-7
+    safety section (0.61); rewrite/filter/rerank stubbed deterministic. The section reaches the
+    FINAL returned docs ONLY because lever-2 rescued it from the [:20] cut."""
+    r = rmod.HybridRetriever(enable_local=True, enable_pubmed=False, enable_fda=False,
+                             enable_tfda=False, enable_dailymed=False)
+
+    async def _fake_rewrite(q):
+        return ["x"]
+    r._rewrite_query = _fake_rewrite
+
+    def _docs():
+        highs = [RetrievedDocument(content="s " * 3, source_type=SourceType.PUBMED,
+                                   source_id=f"PMID:{i}", title=f"S{i}", url="u",
+                                   credibility=CredibilityLevel.PEER_REVIEWED, year="2023",
+                                   relevance_score=0.80 + i * 0.01) for i in range(20)]
+        sec = _dm("34073-7", 99, score=0.61)
+        return highs + [sec]
+
+    async def _fake_local(q, n):
+        return _docs()
+    r._search_local = _fake_local
+
+    async def _fake_filter(oq, docs):
+        return list(docs)      # keep all — isolate the cut, not the filter
+    r._filter_by_relevance = _fake_filter
+
+    class _Resp:
+        def __init__(self, c):
+            self.content, self.input_tokens, self.output_tokens = c, 0, 0
+
+    async def _fake_complete(req):
+        n = req.messages[-1]["content"].count("] Title:")   # #docs the reranker sees
+        return _Resp(json.dumps({"scores": [{"index": i, "score": 50} for i in range(n)]}))
+    r.reranker._provider.complete = _fake_complete
+    return r
+
+
+def test_below_cut_section_is_CITED_via_lever2():
+    async def run():
+        r = _build_stub_retriever_below_cut()
+        docs, status = await r.retrieve("q", max_results=5, source_weight_active=True)
+        return [d.source_id for d in docs], status
+    ids, status = asyncio.run(run())
+    assert status == "ok"
+    assert any("34073-7" in s for s in ids), f"section must be cited via lever-2: {ids}"
 
 
 if __name__ == "__main__":
