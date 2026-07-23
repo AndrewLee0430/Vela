@@ -171,7 +171,8 @@ class HybridRetriever:
 
         # Step 1b: DailyMed-ONLY K-union rewrite set (lever 1) — recovers the straddling safety
         # section; isolated to DailyMed so PubMed/FDA/local/TFDA pools are NOT inflated.
-        dailymed_queries = await self._dailymed_union_queries(query, k=3)
+        dailymed_queries = (await self._dailymed_union_queries(query, k=3)
+                            if (not source_filter or SourceType.DAILYMED in source_filter) else [])
 
         # Step 2：對每個 rewritten query 並行檢索所有來源（DailyMed 用 union set）
         all_tasks = []

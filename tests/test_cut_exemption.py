@@ -130,6 +130,62 @@ def test_below_cut_section_is_CITED_via_lever2():
     assert any("34073-7" in s for s in ids), f"section must be cited via lever-2: {ids}"
 
 
+def test_combined_cut_and_filter_exemption_cited_exactly_once():
+    """A whitelisted safety section BOTH below the [:20] cut (lever-2 rescues into candidates)
+    AND dropped by the relevance filter (surface-(iii) re-adds) must be cited EXACTLY ONCE —
+    proving the two exemptions compose without double-count. Uses the REAL _filter_by_relevance
+    (so surface-(iii) actually runs); only its LLM provider is stubbed to drop the section."""
+    r = rmod.HybridRetriever(enable_local=True, enable_pubmed=False, enable_fda=False,
+                             enable_tfda=False, enable_dailymed=False)
+
+    async def _fake_rewrite(q):
+        return ["x"]
+    r._rewrite_query = _fake_rewrite
+
+    def _docs():
+        highs = [RetrievedDocument(content="s " * 3, source_type=SourceType.PUBMED,
+                                   source_id=f"PMID:{i}", title=f"S{i}", url="u",
+                                   credibility=CredibilityLevel.PEER_REVIEWED, year="2023",
+                                   relevance_score=0.80 + i * 0.01) for i in range(20)]
+        return highs + [_dm("34073-7", 99, score=0.61)]   # below the [:20] cut
+
+    async def _fake_local(q, n):
+        return _docs()
+    r._search_local = _fake_local
+
+    class _Resp:
+        def __init__(self, c):
+            self.content, self.input_tokens, self.output_tokens = c, 0, 0
+
+    # The retriever's lightweight provider is used ONLY by _filter_by_relevance here (rewrite is
+    # stubbed above). Return kept indices = every doc whose summary line does NOT mention the
+    # DailyMed LOINC → the filter "drops" the section → surface-(iii) must re-add it.
+    async def _fake_lightweight(req):
+        content = req.messages[-1]["content"]
+        keep = []
+        for line in content.splitlines():
+            line = line.strip()
+            if line.startswith("[") and "]" in line:
+                try:
+                    idx = int(line[1:line.index("]")])
+                except ValueError:
+                    continue
+                if "34073-7" not in line:
+                    keep.append(idx)
+        return _Resp(json.dumps(keep))
+    r._provider.complete = _fake_lightweight
+
+    async def _fake_rerank_complete(req):
+        n = req.messages[-1]["content"].count("] Title:")
+        return _Resp(json.dumps({"scores": [{"index": i, "score": 50} for i in range(n)]}))
+    r.reranker._provider.complete = _fake_rerank_complete
+
+    docs, status = asyncio.run(r.retrieve("q", max_results=5, source_weight_active=True))
+    ids = [d.source_id for d in docs]
+    n_section = sum(1 for s in ids if "34073-7" in s)
+    assert n_section == 1, f"section must be cited EXACTLY once (no double-count): {ids}"
+
+
 if __name__ == "__main__":
     failures = 0
     for name, fn in sorted(globals().items()):
