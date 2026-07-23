@@ -377,6 +377,26 @@ class HybridRetriever:
         fallback = await self._translate_to_medical_english(query)
         return [fallback]
 
+    async def _dailymed_union_queries(self, query: str, k: int = 3) -> list[str]:
+        """Lever-1 (recall-miss [P1]): DailyMed-ONLY K-union rewrite set. Runs `_rewrite_query`
+        k times IN PARALLEL (asyncio.gather — serial would add ~2-4s), unions the emitted
+        rewrites (first-seen, deduped), and appends the raw `query` as a deterministic augment.
+        Used ONLY for _search_dailymed — the other sources keep the single K=1 rewrite set (no
+        PubMed/FDA pool inflation). Returns [] when DailyMed is disabled (no wasted LLM calls)."""
+        if not (self.enable_dailymed and self.dailymed_store):
+            return []
+        batches = await asyncio.gather(*[self._rewrite_query(query) for _ in range(k)])
+        seen: set[str] = set()
+        out: list[str] = []
+        for rws in batches:
+            for w in rws:
+                if isinstance(w, str) and w.strip() and w not in seen:
+                    seen.add(w)
+                    out.append(w)
+        if query not in seen:
+            out.append(query)
+        return out
+
     async def _translate_to_medical_english(self, query: str) -> str:
         """Fallback：單純翻譯為英文醫學術語"""
         has_chinese = any('\u4e00' <= ch <= '\u9fff' for ch in query)
