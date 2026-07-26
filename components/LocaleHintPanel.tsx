@@ -115,7 +115,7 @@ export default function LocaleHintPanel({ matchedCategories, lang, resolvedCount
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => track('locale_hint_clicked', { resolved_country: resolvedCountry, tier, authority_short_name: a.short_name })}
-            className="flex items-center gap-2 text-sm transition-opacity hover:opacity-80"
+            className="flex items-center flex-wrap gap-x-2 gap-y-0.5 text-sm transition-opacity hover:opacity-80"
             style={{ color: 'rgb(var(--color-text) / 0.85)' }}
           >
             <span
@@ -124,7 +124,17 @@ export default function LocaleHintPanel({ matchedCategories, lang, resolvedCount
             >
               {a.short_name}
             </span>
+            {/* PRD §5.1.1 — BOTH names must be visible. Official local name is primary (it is what
+                the linked site itself uses); the English name follows, muted, and is omitted only
+                when it is identical (SG + all Tier-2) so it never renders as a duplicate. Without
+                this, an EN panel pointing at NPRA showed only "Bahagian Regulatori Farmasi Negara" —
+                worst for exactly b1's new audience, since SG/MY users read English. */}
             <span className="underline">{a.name_native}</span>
+            {a.name_en !== a.name_native && (
+              <span className="text-xs" style={{ color: 'rgb(var(--color-text) / 0.55)' }}>
+                {a.name_en}
+              </span>
+            )}
             <span aria-hidden>&#x2197;</span>
           </a>
         ))}

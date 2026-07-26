@@ -65,8 +65,7 @@ const SG_MOH: Authority = {
 };
 
 // ── Malaysia (Tier-1) — NPRA + MOH. name_native is the confirmed official Malay name.
-//    npra.gov.my HTTP-200 verified; moh.gov.my returned 403 to automated tools (bot-block) —
-//    flagged for founder browser-confirm (STEP-0 report). ──
+//    npra.gov.my HTTP-200 verified 2026-07-24. ──
 const MY_NPRA: Authority = {
   short_name: 'NPRA',
   name_native: 'Bahagian Regulatori Farmasi Negara',
@@ -74,6 +73,12 @@ const MY_NPRA: Authority = {
   url_native: 'https://www.npra.gov.my/',
   covers: ['dosing', 'indication', 'contraindication'],
 };
+// moh.gov.my — TOOL-UNCONFIRMED (403 to automated checks: both curl w/ browser UA and WebFetch)
+// / BROWSER-CONFIRMED at the b1 prod gate (row 2), 2026-07-26. The 403 is a WAF bot-block, not a
+// dead site: this is the official Malaysia MOH domain and the structural sibling of the
+// HTTP-200-confirmed moh.gov.sg. ⚠️ The PRD §5.1.1 monthly url_native HEAD-check cron will 403 on
+// this entry FOREVER — it needs an allowlist exception when that cron is built, or this one
+// permanently-crying URL erodes the whole link-health layer. See TECH_DEBT [P2 · link-health cron].
 const MY_MOH: Authority = {
   short_name: 'MOH',
   name_native: 'Kementerian Kesihatan Malaysia',
@@ -119,11 +124,34 @@ const KEYWORDS_ZH_TW: Record<LocaleCategory, string[]> = {
 // EN list (b1, NEW): mirrors the zh-TW list at the SAME v188 precision bar — DECISION / STRONG-signal
 // terms only, never generic boilerplate. Deliberately NOT included (would over-fire on ordinary
 // English answers): bare 'dose'/'dosage'/'mg', bare 'coverage'/'label'/'indication', generic
-// 'contraindicated'/'warning'/'interaction'/'side effect'. FLAGGED for founder review (STEP-0 report).
+// 'contraindicated'/'warning'/'interaction'/'side effect'.
+//
+// CALIBRATED TIGHTER THAN zh-TW BY DESIGN (29 EN vs 34 zh-TW). zh-TW fires only on zh-TW answers,
+// validated in one country; EN fires on English answers GLOBALLY and English is many users' default
+// UI language — the same false-positive RATE is a far larger absolute volume, and a panel that
+// becomes wallpaper cannot be un-rung. Widen later from PostHog data if it under-fires.
+//
+// 2026-07-26 pre-ship narrowing (founder review of the STEP-0 proposal):
+//   - indication: DROPPED 'prescribing information' / 'package insert' — DailyMed has been the 5th
+//     Research retrieval source since fly 206 and fly 209/211 both raised the rate at which official
+//     label safety sections reach the cited pool; these two terms are those label documents' OWN
+//     NAMES, so they would fire on a large share of drug answers with no local-difference angle.
+//   - dosing: DROPPED bare 'titrate' / 'titration' — generic clinical prose verbs, the English
+//     equivalent of the bare dosage terms v188 stripped from zh-TW. 'dose titration' KEPT.
+//   - SUBSTRING de-dup (matching is `lower.includes(kw)`, NOT word-boundary): dropped
+//     'renal dose adjustment' + 'hepatic dose adjustment' (covered by 'dose adjustment'),
+//     'reimbursement' (covered by 'reimburse'), 'co-payment' (covered by 'co-pay'). Zero
+//     behavior change — each dropped term's matches are a subset of a retained term's.
+// Counts: dosing 6 · reimbursement 12 · indication 8 · contraindication 3 = 29.
+//
+// KNOWN b1 LIMITATION (documented, deliberately NOT fixed): `contraindication` contains only
+// boxed-warning phrasings — one concept, and a US-FDA-specific construct. In b1 it effectively
+// detects "the answer mentions a US boxed warning", not contraindications generally. Revisit once
+// PostHog shows the real category distribution; adding terms now would be guessing without data.
 const KEYWORDS_EN: Record<LocaleCategory, string[]> = {
-  dosing: ['starting dose', 'initial dose', 'maximum dose', 'dose adjustment', 'dose titration', 'titrate', 'titration', 'dosing regimen', 'renal dose adjustment', 'hepatic dose adjustment'],
-  reimbursement: ['reimbursement', 'reimburse', 'formulary', 'insurance coverage', 'out-of-pocket', 'out of pocket', 'copay', 'co-pay', 'co-payment', 'prior authorization', 'prior authorisation', 'subsidy', 'subsidized', 'subsidised'],
-  indication: ['approved indication', 'licensed indication', 'off-label', 'off label', 'approved use', 'prescribing information', 'package insert', 'marketing authorization', 'marketing authorisation', 'label indication'],
+  dosing: ['starting dose', 'initial dose', 'maximum dose', 'dose adjustment', 'dose titration', 'dosing regimen'],
+  reimbursement: ['reimburse', 'formulary', 'insurance coverage', 'out-of-pocket', 'out of pocket', 'copay', 'co-pay', 'prior authorization', 'prior authorisation', 'subsidy', 'subsidized', 'subsidised'],
+  indication: ['approved indication', 'licensed indication', 'off-label', 'off label', 'approved use', 'marketing authorization', 'marketing authorisation', 'label indication'],
   contraindication: ['black box warning', 'black-box warning', 'boxed warning'],
 };
 

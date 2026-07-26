@@ -60,6 +60,15 @@ eq(detectLocaleCategories('plain english answer, no trigger', 'en'), [], 'en no-
 eq(detectLocaleCategories('起始劑量', 'ja'), [], 'unsupported answer language → [] (panel does not fire)');
 // precision: a bare generic word must NOT trigger (v188 bar) — "dose" alone is not a decision term.
 eq(detectLocaleCategories('the usual dose is 5 mg', 'en'), [], 'en bare "dose"/"mg" must NOT over-fire');
+// 2026-07-26 EN calibration lock (founder pre-ship narrowing). WHAT BREAKS IF THIS FAILS: the EN list
+// re-widens and the panel becomes wallpaper on ordinary drug answers — unrecoverable trust cost.
+// (a) DailyMed label documents' own names must NOT fire — DailyMed is the 5th Research source and
+//     fly 209/211 raised how often label sections reach the cited pool.
+eq(detectLocaleCategories('see the prescribing information and package insert', 'en'), [], 'en label-document names must NOT fire');
+// (b) bare titrate/titration are generic clinical prose verbs, not local-difference decision terms...
+eq(detectLocaleCategories('titrate slowly; titration is guided by response', 'en'), [], 'en bare "titrate"/"titration" must NOT fire');
+// (c) ...but the compound decision term is retained.
+eq(detectLocaleCategories('dose titration is required in renal impairment', 'en'), ['dosing'], 'en "dose titration" still fires');
 
 // 6. getAuthoritiesForCategories filters by covers∩cats (order preserved).
 const dosingOnly = getAuthoritiesForCategories(sg.authorities, ['dosing']);

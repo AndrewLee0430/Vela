@@ -8,12 +8,15 @@ import { COUNTRY_CODES, type LocaleSetting } from '../utils/country';
 import { WORKPLACES, ROLES_BY_WORKPLACE, FALLBACK_ROLES } from '../utils/contextOptions';
 import { postContextHash } from '../utils/contextSync';
 
-// 在地差異 b1 country selector — native endonyms (language-neutral, mirrors the language
-// selector's native labels), so the 6 options need no per-locale i18n keys.
+// 在地差異 b1 country selector — native endonym + Latin name in parentheses, so the 6 options
+// need no per-locale i18n keys (zero i18n cost) yet stay readable to a user who cannot read the
+// endonym's script. DELIBERATELY differs from the sibling answer-language selector's pure-endonym
+// style: that list is chosen BY someone who reads the target language; this one is not.
+// SG/MY carry no parenthetical — their endonyms are already the Latin names.
 const NATIVE_COUNTRY_NAMES: Record<(typeof COUNTRY_CODES)[number], string> = {
   TW: '台灣 (Taiwan)',
   JP: '日本 (Japan)',
-  KR: '대한민국 (Korea)',
+  KR: '대한민국 (South Korea)',
   SG: 'Singapore',
   MY: 'Malaysia',
   TH: 'ประเทศไทย (Thailand)',
