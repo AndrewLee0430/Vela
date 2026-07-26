@@ -144,6 +144,11 @@ const KEYWORDS_ZH_TW: Record<LocaleCategory, string[]> = {
 //     behavior change — each dropped term's matches are a subset of a retained term's.
 // Counts: dosing 6 · reimbursement 12 · indication 8 · contraindication 3 = 29.
 //
+// KNOWN MINOR RECALL GAP (parked for the PostHog tuning round, deliberately NOT fixed): substring
+// matching means 'subsidy' does NOT cover 'subsidies' (different stem). The obvious stem 'subsidi'
+// would false-match 'subsidiary', and adding bare 'subsidies' alone is over-fitting to one plural.
+// Resolve it with data, not a guess.
+//
 // KNOWN b1 LIMITATION (documented, deliberately NOT fixed): `contraindication` contains only
 // boxed-warning phrasings — one concept, and a US-FDA-specific construct. In b1 it effectively
 // detects "the answer mentions a US boxed warning", not contraindications generally. Revisit once

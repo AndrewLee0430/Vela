@@ -79,6 +79,17 @@ through **Settings → My Context → Country / region** (no timezone trick need
 | 12 | BEHAVIORAL | PostHog `locale_hint_displayed` on rows 1 / 3 / 7 | correct `resolution_level` (timezone / settings / timezone) + `resolved_country` + `tier` |
 | 13 | REGRESSION | ALL 21 rows of the fly-210 checklist above | still pass — a TW regression fails this gate outright |
 
+**HOW TO READ ROW 13 — behavior, not pixels.** A TW row **PASSES** if it fires when it should, names the
+correct authorities, dismisses correctly, and the links resolve. b1 adds a **muted English name** beside each
+authority's native name (TFDA → "Taiwan Food and Drug Administration", NHI → "National Health Insurance
+Administration") to satisfy PRD §5.1.1's both-names requirement. That is an **intended b1 change and MUST NOT
+be read as a TW regression.**
+
+**Design observation, NOT a gate row (record, don't fail):** if the English subtitle reads as redundant on a
+zh-TW UI showing TW authorities, note it as a design observation. Possible later refinement — omit `name_en`
+when the UI language and the authority's native language coincide. The case where `name_en` genuinely earns
+its place is the **travel case**: a zh-TW UI resolving to JP (or SG/MY) authorities.
+
 **Waterfall (frontend-only, no IP):** L1 Settings locale > L2 work_language (zh-TW→TW · ja→JP · ko→KR · th→TH)
 > L3 timezone (Asia/Taipei→TW · Tokyo→JP · Seoul→KR · Singapore→SG · Kuala_Lumpur→MY · Bangkok→TH) > L4 UI-lang
 (same 4 as L2). L3 must stay above L4 — SG/MY are English-speaking, so timezone is their ONLY implicit path.
