@@ -12,6 +12,8 @@
 // §2.9 canonical-first read order. NO backend POST, NO fetch, NO token, NO
 // locale write, NO identify() change, NO onboarding fields — those are PHASE D/E.
 
+import type { LocaleSetting } from "./country";
+
 const USER_CONTEXT_KEY = "vela_user_context";
 const LEGACY_LANG_KEY = "vela_lang";
 
@@ -19,17 +21,16 @@ const LEGACY_LANG_KEY = "vela_lang";
 const EMPTY_CONTEXT_HASH = "e3b0c44298fc1c14";
 
 /**
- * Canonical user-context shape (PRD §3.1). PHASE C only owns `work_language`,
- * `user_context_hash`, and `version`. The other fields are written by later
- * phases (workplace/role/onboarding* by PHASE D; locale by Phase 1C) — they are
- * declared here for the contract but PHASE C never writes them, and writeMerge
- * preserves any that already exist.
+ * Canonical user-context shape (PRD §3.1). `work_language`, `user_context_hash`,
+ * and `version` were PHASE C; `locale` (the COUNTRY field, Phase 1B 在地差異 b1) is
+ * written by `setLocale`. `locale` is NOT a `user_context_hash` input — it is posted
+ * as a separate field by contextSync — so setLocale does not recompute the hash.
  */
 export interface UserContextData {
   workplace: string | null;
   role: string | null;
   work_language: string | null;
-  locale: string | null;
+  locale: LocaleSetting | null;   // COUNTRY (or 'OTHER'). NOT a language — see utils/country.ts.
   onboarding_completed: boolean;
   onboarding_completed_at: string | null;
   version: number;
@@ -129,6 +130,17 @@ export async function setWorkLanguage(lang: string): Promise<void> {
   const cur = readRaw();
   const hash = await computeHash(cur.workplace ?? null, cur.role ?? null, lang);
   writeMerge({ work_language: lang, user_context_hash: hash });
+}
+
+/**
+ * Settings My Context — persist the COUNTRY field (在地差異 b1). `null` clears it
+ * (fall through to the waterfall); 'OTHER' = the user's explicit "international" choice.
+ * NOT a `user_context_hash` input (locale is posted separately by contextSync), so the
+ * hash is NOT recomputed here.
+ */
+export function setLocale(locale: LocaleSetting | null): void {
+  if (!isBrowser()) return;
+  writeMerge({ locale });
 }
 
 /**

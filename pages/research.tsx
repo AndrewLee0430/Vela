@@ -22,6 +22,8 @@ import ProFeatureOverlay from '../components/ProFeatureOverlay';
 import ResearchSection from '../components/ResearchSection';
 import LocaleHintPanel from '../components/LocaleHintPanel';
 import { detectLocaleCategories } from '../utils/localeHint';
+import { resolveCountry, type CountryCode, type LocaleSetting, type ResolutionLevel } from '../utils/country';
+import { readRaw } from '../utils/userContext';
 import AnonymousUpgradeCTA from '../components/AnonymousUpgradeCTA';
 import { exportResearchPdf } from '../utils/exportPdf';
 import { setQueryId, getAnonFingerprint, track } from '../utils/analytics';
@@ -197,9 +199,23 @@ function ResearchForm() {
     // Suppressed on no-retrieval/fallback answers (isFallback) — on those the answer is ungrounded
     // ("基於一般醫學知識"), and the panel would lend it false local-authority credibility (stopgap;
     // the deeper generator fix is a separate task).
-    const localeHintCategories = useMemo(() => {
-        if (!(localeHintEnabled && lang === 'zh-TW' && !loading && !isFallback && answer)) return [];
-        return detectLocaleCategories(question + '\n' + answer);
+    // RULE 1 — two independent axes: the ANSWER LANGUAGE (en / zh-TW in b1) picks the keyword list
+    // (does the panel fire?), the resolved COUNTRY picks the authorities (Tier-1 or Tier-2 fallback).
+    const localeHint = useMemo(() => {
+        const none = { categories: [] as ReturnType<typeof detectLocaleCategories>, country: null as CountryCode | null, level: 'none' as ResolutionLevel };
+        if (!(localeHintEnabled && (lang === 'zh-TW' || lang === 'en') && !loading && !isFallback && answer)) return none;
+        const categories = detectLocaleCategories(question + '\n' + answer, lang);
+        if (!categories.length) return none;
+        // COUNTRY is resolved only when a keyword actually matched. Timezone (L3) is browser-only.
+        const raw = readRaw();
+        const timeZone = typeof window !== 'undefined' ? Intl.DateTimeFormat().resolvedOptions().timeZone : null;
+        const { country, level } = resolveCountry({
+            settingsLocale: (raw.locale as LocaleSetting | undefined) ?? null,
+            workLanguage: raw.work_language ?? null,
+            timeZone,
+            uiLang: lang,
+        });
+        return { categories, country, level };
     }, [localeHintEnabled, lang, loading, isFallback, question, answer]);
 
     const [plan, setPlan] = useState<'free' | 'pro'>(() => {
@@ -716,7 +732,7 @@ function ResearchForm() {
 
             {/* 在地差異提示 (Probe 1) — renders only when enabled + zh-TW + ≥1 category matched;
                 otherwise renders nothing (no layout shift). Does not alter answer/citations/disclaimer. */}
-            <LocaleHintPanel matchedCategories={localeHintCategories} lang={lang} resetKey={localQueryId} />
+            <LocaleHintPanel matchedCategories={localeHint.categories} lang={lang} resolvedCountry={localeHint.country} resolutionLevel={localeHint.level} resetKey={localQueryId} />
 
             {answer && (
             <p className="text-xs mt-4 text-center" style={{ color: "rgb(var(--color-text) / 0.35)" }}>
