@@ -249,10 +249,14 @@ same selector code path as row 10, which passed).
 
 ---
 
-## 8. PRD reconcile — canonical A–G drift table
+## 8. PRD reconcile — canonical A–H drift table
 
 This is **the canonical numbering**. Earlier STATE wording referred to "drifts 1/3/4", a numbering that existed nowhere in
 the repo; STATE now points here.
+
+**A–G and H are different kinds of drift.** A–G are **stale or wrong spec lines** — following them wastes effort.
+**H is a spec line describing a design that actually caused a shipped bug** — following it *reintroduces* that bug.
+Read H before touching §5.1.
 
 | # | Drift | Resolution (applied in the same commit as this file) |
 |---|---|---|
@@ -263,8 +267,35 @@ the repo; STATE now points here.
 | **E** | §4.3 said **"Locale(Phase 1C 啟用 UI)"** | → **Phase 1B**; the selector **shipped and was gate-verified** in b1 (Settings → My Context → Country/region writes `locale`, and L1 > L3 was proven on prod). |
 | **F** | §5.1 / §5.1.1 headers carried inconsistent Phase markers | → normalized to **Phase 1B**. |
 | **G** | PRD PostHog payload spec listed `{ query_id, locale, tier, authorities_count }` | → reconciled with the **actual** fields, which now include **`resolved_country`**, **`resolution_level`**, and **`tier`**. The misleading hardcoded `locale:'TW'` was removed from all three events in b1. |
+| **H** | §5.1 acceptance line **「可收起,記住偏好」** (dismissible, remembers the preference) | → **⛔ DO NOT REVERT TO SPEC.** This design **caused the v187 defect**. Shipped behavior is **per-query `resetKey` dismissal**, and it is a **pinned gate row**. See the box below. |
 
-### 8.1 `url_search_pattern` — DELIBERATE DEVIATION (PRD amended to match code)
+### 8.1 ⛔ DRIFT H — DO NOT "FIX THE CODE TO MATCH THE SPEC"
+
+> **The PRD line 「可收起,記住偏好」 is not an unfinished feature. It is the origin of a shipped bug.**
+>
+> **What the spec says:** dismissing the panel remembers the preference (cross-session, via localStorage).
+>
+> **What that caused — the v187 defect:** the panel fired once, the user dismissed it, and it **never appeared again** —
+> not for the next query, not for a different drug, not in a later session. A user who dismissed one panel silently lost
+> the entire feature forever. The 在地差異 panel's whole value is being there **on the queries where local rules differ**;
+> a one-time dismissal that kills it permanently is indistinguishable from the feature being broken.
+>
+> **What actually ships:** dismissal is **per-query**. Dismissing hides the CURRENT panel; a new query changes `resetKey`
+> and the panel **re-shows**. There is no cross-session persistence, deliberately.
+>
+> **Why this is dangerous to leave recorded only in §5.1:** the spec line reads like a to-do. A future session comparing
+> code against the PRD would see "spec says remember the preference, code doesn't" and **implement it in good faith**,
+> reintroducing v187 — with no signal that it was ever tried and reverted.
+>
+> **Guards already in place:** per-query re-show is a **pinned human-eye gate row** in
+> `docs/locale_hint_dogfood_queries.md` — fly-210 checklist row ("Dismiss-then-new-query re-show", explicitly labelled a
+> regression guard for the v187 bug) and b1 gate **row 11**. It is verified on prod every gate.
+>
+> **If cross-session dismissal is ever genuinely wanted**, it needs a design that does not silently kill the feature —
+> e.g. per-country or per-category suppression, a time-boxed snooze, or an undo affordance — plus its own gate.
+> **It is not a one-line localStorage write, and the PRD's phrasing implies it is.**
+
+### 8.2 `url_search_pattern` — DELIBERATE DEVIATION (PRD amended to match code)
 
 PRD §5.1.1 specifies a `url_search_pattern` field per authority (e.g.
 `https://www.fda.gov.tw/TC/siteListContent.aspx?sid=1619&q={query}`). **b1 omits it, and that stays.**

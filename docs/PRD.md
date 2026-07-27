@@ -1897,7 +1897,13 @@ Phase 1C 把「別人複製不了」的東西埋進產品。兩個核心功能�
 - ~~LLM 正確識別「涉及在地議題」並加上提示~~ → **改為 deterministic-keyword 判準(drift B,對齊 2026-06-25 修訂)**。2026-06-25 已將 LLM-in-generator-prompt 觸發設計標記 SUPERSEDED(見上方「系統 Prompt 設計」修訂),但**這條驗收標準當時漏改**。實際判準:前端確定性關鍵字比對(zh-TW 34 詞 / en 29 詞,substring、case-insensitive),**零 LLM 介入**;精準度以 dogfood + prod human-eye gate 驗收,不以 LLM 判斷力驗收。
 - 不涉及在地議題的回答不會無謂加上 — ✅ **b1 達成**(prod gate:mechanism-of-action 查詢不觸發)
 - 連結點擊新分頁、PostHog 事件正確 — ✅ **b1 達成**
-- 可收起,記住偏好 — ⚠️ **刻意偏離**:收起是 **per-query**(新查詢會重新顯示),**不是**跨 session 記住。原設計造成 v187「觸發一次後就再也不出現」的 bug;per-query `resetKey` 是修正後的行為,已列為 gate 回歸項。
+- ~~可收起,記住偏好~~ — ⛔ **DO NOT REVERT TO SPEC(drift H,2026-07-27)。這一行不是未完成的功能,而是一個已造成 bug 的設計。**
+  - **原設計造成 v187 defect:**面板觸發一次、使用者關閉後,**就再也不會出現** —— 下一個查詢不會、換一個藥不會、之後的 session 也不會。使用者關掉一次就等於永久失去整個功能。
+  - **實際 shipped 行為:收起是 per-query** —— 關閉只隱藏「當前」面板,新查詢改變 `resetKey` 後面板**會重新顯示**。**刻意沒有**跨 session 記憶。
+  - **⚠️ 危險點:**這條 spec 讀起來像 to-do。未來若有人拿 code 對 PRD,會看到「spec 說要記住偏好、code 沒做」而**善意地把它實作出來**,直接重現 v187 —— 且不會有任何訊號告訴他這件事試過、而且被推翻過。
+  - **既有防線:**per-query re-show 已是**釘選的 human-eye gate 回歸項**(`docs/locale_hint_dogfood_queries.md`:fly-210 checklist 的「Dismiss-then-new-query re-show」列明是 v187 回歸守衛 + b1 gate **row 11**),每次 gate 都在 prod 驗證。
+  - **若真的要做跨 session 收起**,必須是一個「不會靜默殺掉整個功能」的設計(例:per-country / per-category 抑制、有時效的 snooze、可復原的 undo),並且要有自己的 gate。**它不是一行 localStorage 寫入,而這條 spec 的措辭暗示它是。**
+  - 完整脈絡見 [`docs/locale_waterfall_b1_build.md` §8.1](locale_waterfall_b1_build.md)。
 **維護成本**
 
 - 初版建 12 國 authorities:1 個週末
