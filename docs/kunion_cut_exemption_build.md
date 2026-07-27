@@ -24,7 +24,7 @@ Immediately after `candidates = unique_docs[:max_results*4]`, re-adds any RETRIE
 
 | Gate | Bar | Result |
 |---|---|---|
-| CITED recovery (straddles, retrieval top_k, N=8) | materially > K=1 | **0.625 → 0.90 mean** (+44% rel; 4/5 up, 1 flat, 0 down); spironolactone 0.125→0.875 |
+| CITED recovery (straddles, retrieval top_k, N=8) | materially > K=1 | **0.625 → 0.90 mean** (+44% rel; 4/5 up, 1 flat, 0 down); spironolactone 0.125→0.875 — **⚠️ see the METRIC QUALIFICATION below** |
 | Canary (0 safety-cited, N=8) | 0/8 each | metformin-MoA 0/8 · statin-MoA 0/8 · GLP-1 0/8 |
 | Latency (K=3 parallel) | ≪ ~2–4 s serial | +0.9 s (12.4 → 13.3 s) |
 | Displacement | 0 danger-relevant displacement (by section nature / whitelisted LOINC) | **0 danger-LOINC displaced**; 2 descriptive accepted (below) |
@@ -70,6 +70,38 @@ The gate's CITED-recovery metric measures **retrieval top_k** (does the DailyMed
 ## Lever state (BY NAME, UNCHANGED this ship — code-only, no fly.toml/secrets change)
 
 `RETRIEVAL_REFUSAL_SHADOW`=ON · `SOURCE_WEIGHT_SHADOW`=ON · `SOURCE_WEIGHT_ACTIVE`=ON (3 secrets share digest `d8c5ac2e11c8e492`) · `DIRECTION_CHECK_SHADOW`=OFF · `QUESTION_NEUTRALIZATION_SHADOW`=OFF (unset) · `locale-hint`=ON (`fly.toml [build.args] NEXT_PUBLIC_LOCALE_HINT_ENABLED="true"`, build-arg — verify in fly.toml, NOT `fly secrets list`). The `0b05de5..2b56941` diff touched only `api/rag/retriever.py` + 2 test files; a code-only image deploy cannot alter secrets.
+
+## ⚠️ METRIC QUALIFICATION (added 2026-07-27, pair-aware probe)
+
+**The ship decision STANDS. The recorded recovery FIGURE needs qualifying.**
+
+The CITED-recovery numbers above (**0.625 → 0.90 mean**; **spironolactone 0.125 → 0.875**) were computed
+with an **any-DailyMed-whitelisted-safety-section** metric — `tests/results/_kunion_gate.py:49-50`
+(`_dm_safety`) tests **LOINC membership only** and does **not attribute the cited section to the drug
+the query asked about**.
+
+Re-measured on HEAD (2026-07-27, N=8, `docs/pair_aware_retrieval_probe.md` §8) with per-drug
+attribution **plus inspection of the actual section text**, `spironolactone potassium hyperkalemia
+contraindication` splits as:
+
+| Metric | Result |
+|---|---|
+| ANY-drug (this gate's metric) | **5/8** |
+| …section actually **answers** the question (`POTASSIUM CHLORIDE #34073-7`, names spironolactone) | **1/8** |
+| …**wrong-object intrusion** (`POTASSIUM ACETATE #34070-3`, 194 chars, never mentions spironolactone) | **4/8** |
+| SPIRONOLACTONE's **own** safety section | **0/8** — never entered the pool at any rank |
+
+**K-union is additive and fly 211 remains correctly shipped** — it demonstrably increased
+safety-section reach, canaries stayed 0/8, danger-path was 0/0, and none of that is affected. **What
+is overstated is the recovery number, for at least this query**, because a semantically-adjacent
+*wrong-drug* section counts as recovery.
+
+**CLAUDE.md Rule 17 — tests must verify intent, not just behavior.** "A whitelisted LOINC was cited"
+is behaviour; "the query's interaction was documented by the cited section" is the business rule.
+**Future recall gates must assert the latter.** A ready audit method exists:
+`tests/results/_pairaware_m1_content_audit.py`.
+
+*(Tracked as its own re-scoped surface: BACKLOG "[P2] Danger-path WRONG-OBJECT citation intrusion".)*
 
 ## Residuals (measure-only; composite/top_k/flags deliberately untouched)
 
