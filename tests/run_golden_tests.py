@@ -9,6 +9,24 @@ v3.0：加入 Explain 類別、HTML Report 輸出、Regression 比較
 import sys
 from pathlib import Path
 
+# ── Windows cp950 fix (TECH_DEBT [P2] cp950 console-encoding defect, site 2 of 2) ──
+# This module prints emoji (✅ / ⚠️ / 🟢 …). On a default Windows console `sys.stdout`
+# is cp950, so the first such print raised
+#     UnicodeEncodeError: 'cp950' codec can't encode character '✅'
+# and the runner died BEFORE executing a single case — `--filter R15` was unusable
+# without an external `PYTHONIOENCODING=utf-8` prefix.
+#
+# `reconfigure()` mutates the EXISTING stream in place (Python 3.7+); it does NOT create
+# a second TextIOWrapper over the same buffer, which is what causes the
+# "ValueError: I/O operation on closed file" failure mode when the first wrapper is GC'd.
+# Guarded + best-effort: a stream that cannot be reconfigured (redirected, replaced, or a
+# non-Windows tty already on UTF-8) is left exactly as-is.
+for _stream in (sys.stdout, sys.stderr):
+    try:
+        _stream.reconfigure(encoding="utf-8", errors="replace")  # type: ignore[attr-defined]
+    except Exception:
+        pass
+
 # Make `api` package importable when running from repo root or anywhere else.
 # Required since B2 (§ 2.7 Step 8) added `from api.utils.llm_judge import
 # ExplainJudge` as a lazy import inside the main loop. Without this shim the
@@ -20,6 +38,7 @@ if str(_REPO_ROOT) not in sys.path:
 import asyncio
 import json
 import os
+import re
 import time
 from datetime import datetime
 
@@ -83,8 +102,63 @@ openai_client = OpenAI()
 # API 呼叫函式
 # ─────────────────────────────────────────────
 
+# ─────────────────────────────────────────────
+# RETRIEVED-POOL IDENTITY CAPTURE (measurement-only, additive — TECH_DEBT R15)
+#
+# WHY: the R15 escalation condition (TECH_DEBT, rewritten 2026-07-27) discriminates
+# `live-index drift` from a code-caused regression by asking whether the RETRIEVED POOL
+# CHANGED IDENTITY between runs:
+#     verdict moved + pool identity changed  -> live PubMed drift, do NOT escalate
+#     verdict moved + pool IDENTICAL         -> code-caused, ESCALATE
+# Without this artifact the rule cannot be executed, and an executor who hits it will
+# default to assuming drift — silently restoring the lenient hole the rule closed.
+#
+# WHAT IS CAPTURED: the `citations` SSE event (api/server.py:903), which is built as
+# `[doc.to_citation(i+1) for i, doc in enumerate(documents)]` (api/rag/generator.py:179)
+# — i.e. EVERY document handed to the generator, in retrieval order. It is therefore the
+# final top_k pool identity, not an LLM-selected subset.
+#
+# ⚠️ SCOPE LIMIT (do not overclaim): this is the FINAL top_k pool that fed the generator.
+# The pre-top_k candidate pool (the ~20 candidates, the full reranked pool) is NOT exposed
+# over SSE and capturing it would require changing api/ — out of scope for a tests-only
+# baton. For the R15 discriminator the top_k set is the right artifact: it is what the
+# generator actually answered from.
+#
+# `cited_in_answer` additionally records which citation ids the ANSWER TEXT references
+# via [N] markers — the subset the answer actually leaned on.
+#
+# Single module-level slot is safe: run_tests() iterates cases strictly sequentially
+# (one `await` per case, no gather), so there is never more than one call in flight.
+_LAST_POOL: dict = {}
+_CITE_MARKER_RE = re.compile(r"\[(\d{1,2})\]")
+
+
+def _reset_pool_capture() -> None:
+    _LAST_POOL.clear()
+
+
+def _pool_snapshot(answer: str) -> dict:
+    """Build the persisted pool-identity record. Returns {} when nothing was captured
+    (non-research categories, guard/PHI blocks, errors) so the JSON field stays absent
+    rather than misleadingly empty-but-present."""
+    docs = _LAST_POOL.get("docs")
+    if not docs:
+        return {}
+    referenced = sorted({int(m) for m in _CITE_MARKER_RE.findall(answer or "")
+                         if 1 <= int(m) <= len(docs)})
+    return {
+        "retrieved_pool": docs,                    # ordered: index 0 = retrieval rank 0
+        "pool_size": len(docs),
+        "pool_ids": [d["source_id"] for d in docs],  # the drift discriminator, compact
+        "cited_in_answer": referenced,             # citation ids referenced by [N] markers
+        "capture_scope": "final top_k pool handed to the generator (SSE citations event); "
+                         "pre-top_k candidate pool NOT captured (would require api/ change)",
+    }
+
+
 async def call_research(client: httpx.AsyncClient, query: str) -> str:
     full_answer = ""
+    _reset_pool_capture()
     try:
         response = await client.post(
             f"{BASE_URL}/api/research",
@@ -114,6 +188,19 @@ async def call_research(client: httpx.AsyncClient, query: str) -> str:
                     chunk = event.get("content", "")
                     if chunk:
                         full_answer += chunk
+                elif event.get("type") == "citations":
+                    # MEASUREMENT-ONLY (R15 pool identity). Read-only on the event;
+                    # does not touch full_answer, so the verdict path is untouched.
+                    try:
+                        _LAST_POOL["docs"] = [
+                            {"id": c.get("id"),
+                             "source_id": c.get("source_id"),
+                             "source_type": c.get("source_type"),
+                             "title": (c.get("title") or "")[:120]}
+                            for c in (event.get("content") or [])
+                        ]
+                    except Exception:
+                        pass  # capture must never affect the run
                 elif event.get("type") == "error":
                     full_answer = f"[GUARD_BLOCKED] {event.get('content', '')}"
             except json.JSONDecodeError:
@@ -1002,7 +1089,10 @@ async def run_tests(smoke_only: bool = False, filter_prefix: str | None = None):
                 "api_elapsed_s":  api_elapsed,
                 "total_elapsed_s": total_elapsed,
                 "eval":           eval_result,
-                "answer_preview": answer[:400] + "..." if len(answer) > 400 else answer
+                "answer_preview": answer[:400] + "..." if len(answer) > 400 else answer,
+                # ADDITIVE (R15 drift discriminator) — omitted entirely when nothing was
+                # captured, so existing consumers see no new key on non-research cases.
+                **({"pool_identity": _pool_snapshot(answer)} if _pool_snapshot(answer) else {})
             })
 
             await asyncio.sleep(1.0)
