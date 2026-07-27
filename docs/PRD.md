@@ -1312,7 +1312,11 @@ Phase 1A 讓使用者感覺「這個產品為我設計」,Phase 1B 真正做出�
 - Workplace 可重選
 - Role 根據 Workplace 動態顯示
 - Work Language 可重選(16 語言)
-- Locale(Phase 1C 啟用 UI)
+- Locale / Country-region — ✅ **SHIPPED (Phase 1B, b1 fly 212)** *(drift E, 2026-07-27:原文寫「Phase 1C 啟用 UI」)*
+  - Settings → My Context → **Country / region** 選單已上線,寫入 `vela_user_context.locale`(值為 `TW|JP|KR|SG|MY|TH|OTHER`)
+  - 選項用 native endonym + 括號拉丁名(台灣 (Taiwan)、日本 (Japan)、대한민국 (South Korea)、Singapore、Malaysia、ประเทศไทย (Thailand))+ `Other`,**零 i18n 成本**
+  - 這是在地差異 waterfall 的 **L1(最高優先)**,prod gate 已驗證它能覆蓋真實的 timezone(Settings=SG + 實際 `Asia/Taipei` → 顯示 Singapore 面板)
+  - ⚠️ **已知落差(BACKLOG sub-item (f)):** 此設定「可達但難以發現」—— onboarding 可跳過,且藏在 Settings 兩層深。L1 是 L3 timezone 誤判(出差/VPN)的**唯一**修正途徑
 **需求 2:儲存行為**
 
 - 修改後立即寫 localStorage
@@ -1754,7 +1758,12 @@ table: ExplorePage
 
 Phase 1C 把「別人複製不了」的東西埋進產品。兩個核心功能——在地差異提示和跨語言橋接——都是 OpenEvidence 和 UpToDate 結構上做不到的差異化。
 
-**5.1 在地差異提示 — 分層式全球化** ❌ PENDING (Phase 1B advanced per ADR 004 + advisor discussion 護城河 rebalance — Tier 1 6國 originally Phase 1C, now Phase 1B; see BACKLOG.md)
+**5.1 在地差異提示 — 分層式全球化** 🟡 **PARTIALLY SHIPPED (Phase 1B)** — 行為層 ✅ / 結構層 ❌,見下方 b1 狀態註記 (drift F: Phase marker normalized 1C → **1B**)
+
+> **🔄 b1 / b1-fix SHIPPED (fly 212 / fly 213, 2026-07-26–27) — 完整 build record 見 [`docs/locale_waterfall_b1_build.md`](locale_waterfall_b1_build.md)。**
+> **已達成(行為層):** locale-detection waterfall(L1 Settings > L2 work_language > L3 timezone > L4 ui_lang)· Tier-2 fallback(WHO/NICE/EMA/Cochrane)· Tier-1 資料 TW + **SG + MY** · `locale=US → Tier 2` 驗收 case **已達成** · Settings Country/region 選單 shipped 並經 prod gate 驗證 · 四層 waterfall 每一層都在 prod 用真實 session 驗過。
+> **未達成(結構層):** 資料仍是前端 TS 常數 `utils/localeHint.ts`,**不是** backend YAML — 見 §5.1.1 的 (e)-SCOPED 註記。**b1 shipped 不等於 §5.1.1 驗收通過。**
+> **仍缺 Tier-1 資料:** JP / KR / TH(已能被 waterfall 解析,但無 Tier-1 資料 → 依 RULE 2 落到 Tier-2,不是空面板)。
 
 **戰略定位:**Vela 對抗 OpenEvidence 全球擴張最重要的結構性護城河。OE 因為 NPI 驗證綁定美國,無法做真正的全球在地化。Vela 的「無身份驗證」架構讓我們可以自然服務全球,透過分層式在地提示實現低成本在地化。
 
@@ -1829,7 +1838,16 @@ Phase 1C 把「別人複製不了」的東西埋進產品。兩個核心功能�
 - user_context.locale(Settings 明確選)
 - onboarding work_language 推論(zh-TW → TW、ja → JP 等)
 - 瀏覽器 timezone
-- IP 地理位置(粗略,僅輔助)
+- ~~IP 地理位置(粗略,僅輔助)~~ **← 刪除(drift D,2026-07-27)**
+
+> **🔄 修訂 (drift D, 2026-07-27, b1 SHIPPED):** **IP 地理位置不採用,已從 signals 移除。** b1 的 locale detection 是
+> **frontend-only、零 IP、零後端 round-trip**:面板必須在沒有 backend call 的情況下運作,且 IP 查詢會新增一個沒有必要的 PII 面。
+> **實際 shipped 的 waterfall(`utils/country.ts` `resolveCountry()`,純函式):**
+> **L1** Settings locale(`OTHER` 為 **terminal**,不 fall through)> **L2** work_language(zh-TW→TW · ja→JP · ko→KR · th→TH)
+> > **L3** 瀏覽器 timezone(Asia/Taipei→TW · Tokyo→JP · Seoul→KR · Singapore→SG · Kuala_Lumpur→MY · Bangkok→TH)
+> > **L4** UI 語言(同 L2 的 4 個)。
+> **L3 必須高於 L4** —— SG/MY 是英語系,timezone 是它們唯一的隱含路徑;若 L4 在上,SG/MY 永遠無法被解析到。
+> 只有這 4 個語言是 1:1 無歧義的;en/ms/pt/es/ar 是多國語言、zh-CN 不在 Tier 1,故**刻意不映射**(絕不猜測)。
 **系統 Prompt 設計**
 
 > **🔄 修訂 (2026-06-25, Probe 1 SHIPPED v186→v188):** 下方「在 Generator system prompt 加入指令」的 **LLM-in-generator-prompt 觸發設計已被 Probe 1 取代,不採用**。實際 shipped 架構 = **前端 deterministic keyword matching** 偵測在地敏感類別(dosing / reimbursement / indication / contraindication)+ **前端 render** 面板(資料驅動,讀 `utils/localeHint.ts` 常數),**生成 prompt 內零 LLM 介入、零 backend/SSE**。理由:遵循與 **§9.2 disclaimer 相同的哲學** —— disclaimer 由前端依偵測語言 render、**不由 LLM 生成**(LLM 生成的 boilerplate 不準確/不一致);在地提示同理。Probe 1 dogfood 驗證 deterministic keywords 已足夠(**不需要 LLM classifier**)。下方原 LLM-trigger 文字保留供歷史參考。
@@ -1838,7 +1856,15 @@ Phase 1C 把「別人複製不了」的東西埋進產品。兩個核心功能�
 
 **資料層:Authorities Database**
 
-後端儲存 YAML config(v1.2:從 JSON 改為 YAML,詳見 5.1.1 節):每國包含 drug_regulator、insurance、medical_society 等類型,各有 name_native、name_en、url_native、url_search_pattern。DEFAULT_TIER2 用於非 Tier 1 國家的 fallback。
+後端儲存 YAML config(v1.2:從 JSON 改為 YAML,詳見 5.1.1 節):每國包含 drug_regulator、insurance、medical_society 等類型,各有 name_native、name_en、url_native、~~url_search_pattern~~。DEFAULT_TIER2 用於非 Tier 1 國家的 fallback。
+
+> **🔄 `url_search_pattern` — 刻意偏離,PRD 對齊 code(2026-07-27):** b1 **不實作** `url_search_pattern`,且**維持不做**。
+> 理由:(1) **pointer panel 不需要 query-injection URL** —— 面板的職責是「指出哪些面向可能有在地差異」並連到權威機關的
+> **首頁**供使用者自行查證,不代替使用者搜尋;(2) 每一條 search-pattern URL 都是對方網站的**私有契約**,對方改版時會**無聲失效**,
+> 而我們不會知道;(3) **沒人讀的欄位會腐爛** —— 一個過期的 search pattern 比沒有這個欄位更糟(它會把使用者帶到錯誤或空白的頁面,
+> 而面板的全部信用就建立在「這是官方來源」)。**此處是 PRD 對齊 code,不是 code 欠 PRD 一筆債。**
+> b1 實際 shipped 的 authority 欄位:`short_name` · `name_native` · `name_en` · `url_native` · `covers[]`
+> (+ b1-fix 新增的 optional per-country `cat_labels` 覆寫)。
 
 **UI 呈現**
 
@@ -1852,20 +1878,44 @@ Phase 1C 把「別人複製不了」的東西埋進產品。兩個核心功能�
 - locale_hint_displayed: { query_id, locale, tier, authorities_count }
 - locale_hint_clicked: { query_id, locale, tier, authority_type, authority_name }
 - locale_hint_dismissed: { query_id, locale }
+
+> **🔄 修訂 (drift G, 2026-07-27, b1 SHIPPED) — 上方為原始 spec,以下為 ACTUAL shipped payload:**
+> - `locale_hint_displayed`: `{ resolved_country, resolution_level, tier, matched_categories, authorities_shown }`
+> - `locale_hint_clicked`: `{ resolved_country, tier, authority_short_name }`
+> - `locale_hint_dismissed`: `{ resolved_country, tier }`
+>
+> **關鍵差異:** 新增 **`resolved_country`**(waterfall 解析出的國家)+ **`resolution_level`**(`settings` / `work_language` /
+> `timezone` / `ui_lang` / `none` —— 哪一層命中,可測量)。原 spec 的 `locale` 欄位在 b1 **移除**:它先前是**寫死的
+> `locale:'TW'`**,在多國情境下會直接誤導分析(每筆事件都宣稱是台灣)。`query_id` / `work_language` / `locale` 等仍由
+> `utils/analytics.ts` `track()` 自動注入為 super properties,不需事件端重複帶。
+
 **驗收標準**
 
-- Tier 1 的 12 國都有完整 authorities 資料
-- Tier 2 fallback 對其他地區正常顯示
-- LLM 正確識別「涉及在地議題」並加上提示
-- 不涉及在地議題的回答不會無謂加上
-- 連結點擊新分頁、PostHog 事件正確
-- 可收起,記住偏好
+- ~~Tier 1 的 12 國都有完整 authorities 資料~~ → **Tier 1 = 6 國**(TW/JP/KR/SG/MY/TH)**(drift A,2026-07-27)**。原文的「12 國」把 Tier-1 六國與 §5.1 的「Tier 1 擴展 6 國(VN/PH/ID/HK/SA/AE)」加總誤寫成單一交付範圍;**擴展 6 國是獨立 BACKLOG 項目**,不在此驗收標準內。
+  - b1 現況:**3 / 6 有 Tier-1 資料**(TW ✅ · SG ✅ · MY ✅);JP / KR / TH 可被 waterfall 解析但無資料 → 依 RULE 2 落到 Tier-2(不是空面板)。b2 補齊。
+- Tier 2 fallback 對其他地區正常顯示 — ✅ **b1 達成**(WHO/NICE/EMA/Cochrane;prod gate 驗過 US → Tier 2、JP → Tier 2)
+- ~~LLM 正確識別「涉及在地議題」並加上提示~~ → **改為 deterministic-keyword 判準(drift B,對齊 2026-06-25 修訂)**。2026-06-25 已將 LLM-in-generator-prompt 觸發設計標記 SUPERSEDED(見上方「系統 Prompt 設計」修訂),但**這條驗收標準當時漏改**。實際判準:前端確定性關鍵字比對(zh-TW 34 詞 / en 29 詞,substring、case-insensitive),**零 LLM 介入**;精準度以 dogfood + prod human-eye gate 驗收,不以 LLM 判斷力驗收。
+- 不涉及在地議題的回答不會無謂加上 — ✅ **b1 達成**(prod gate:mechanism-of-action 查詢不觸發)
+- 連結點擊新分頁、PostHog 事件正確 — ✅ **b1 達成**
+- 可收起,記住偏好 — ⚠️ **刻意偏離**:收起是 **per-query**(新查詢會重新顯示),**不是**跨 session 記住。原設計造成 v187「觸發一次後就再也不出現」的 bug;per-query `resetKey` 是修正後的行為,已列為 gate 回歸項。
 **維護成本**
 
 - 初版建 12 國 authorities:1 個週末
 - 每季檢查連結失效:30 分鐘
 - 新國家加入:30 分鐘-1 小時
-**5.1.1 在地知識 YAML 實作規範(v1.2 新增)** ❌ PENDING (Phase 1B advanced per ADR 004 + advisor discussion — Tier 1 schema + 6國 data go to Phase 1B; expansion 6國 stays Phase 1C)
+**5.1.1 在地知識 YAML 實作規範(v1.2 新增)** ❌ **PENDING — (e)-SCOPED (Phase 1B)** (drift F: Phase marker normalized → **1B**;expansion 6國 stays Phase 1C)
+
+> **⚠️ (e)-SCOPED (drift C, 2026-07-27) — b1 shipped 不代表本節驗收通過。**
+> b1 / b1-fix(fly 212 / 213)完成的是 §5.1 的**行為層**:locale-detection waterfall、Tier-2 fallback、SG/MY 資料、
+> `locale=US → Tier 2` 驗收 case。**本節(§5.1.1)的結構層完全未動:**
+> - ❌ 無 `config/locale_authorities/*.yaml`(資料仍是前端 TS 常數 `utils/localeHint.ts`)
+> - ❌ 無 `global_fallback.yaml`(Tier-2 是同一個 TS 常數裡的 `TIER2_AUTHORITIES`)
+> - ❌ 無 `get_authorities(locale)` 後端函式(**且 b1 架構下不需要** —— 面板是純前端 render,零 backend/SSE)
+> - ❌ 無 Pydantic schema、無 loader、無 monthly link-health cron
+>
+> 這對應 BACKLOG 在地差異 Tier 1 的 **sub-item (e)「TS 常數 → YAML 後端資料層」**,是一個**獨立、尚未排程**的工作項。
+> **任何人讀到「b1 shipped」時,不得推論 §5.1.1 已驗收。** 完整 build record 見
+> [`docs/locale_waterfall_b1_build.md`](locale_waterfall_b1_build.md)。
 
 **目標**
 
@@ -1994,6 +2044,17 @@ Phase 1C 本版不做 Tier 3 使用者貢獻功能,但保留擴充點:
 - 一個測試 case:使用者 locale=US(非 Tier 1),回傳 Tier 2 fallback 且 locale_hint 顯示正確
 
 > **🔄 Probe-1 status (2026-06-25):** Probe 1(shipped v186→v188)只覆蓋 **Tier-1 TW ONLY**,以上驗收標準 **均未達成**:無 `config/locale_authorities/` YAML(資料是前端 TS 常數 `utils/localeHint.ts`)、無 `global_fallback.yaml`、無 `get_authorities(locale)` 後端函式,且 **無 locale 偵測** —— 用 response-language `lang==='zh-TW'` 當 TW proxy(NOT a real locale)。**`locale=US → Tier 2 fallback` 這條驗收 case 尚未達成 —— Tier 2 fallback 與 locale-detection waterfall 兩者都仍未建。** 見 BACKLOG 在地差異 Tier 1 sub-items (b)/(e)。
+>
+> **🔄 UPDATE — b1 / b1-fix (fly 212 / 213, 2026-07-26–27):上列驗收標準逐條現況。** 行為層已補齊,結構層仍空(drift C, (e)-SCOPED):
+> | §5.1.1 驗收條目 | b1 後現況 |
+> |---|---|
+> | `config/locale_authorities/` 下 6 個 YAML | ❌ 仍無 —— 資料是前端 TS 常數 `utils/localeHint.ts`(TW/SG/MY 三國有資料,JP/KR/TH 待 b2) |
+> | Pydantic schema 驗證 | ❌ 仍無(無後端資料層) |
+> | 每個 `url_native` HTTP 200 | 🟡 9/10 工具驗過 200;`moh.gov.my` **403 to bots(WAF)/ 人工瀏覽器確認存活** —— 未來的 monthly HEAD-check cron **必須**帶 allowlist 例外,否則這條會永遠假性告警(見 TECH_DEBT [P2 · link-health cron]) |
+> | 每個 YAML 有 `last_reviewed` | ✅ 等價達成 —— TS 常數上有 `last_reviewed` 欄位(TW `2026-06-23`、SG/MY `2026-07-24`) |
+> | `global_fallback.yaml` 獨立存在 | ❌ 仍無 —— Tier-2 是同檔案內的 `TIER2_AUTHORITIES`(WHO/NICE/EMA/Cochrane,**功能上已達成**) |
+> | LLM 可透過 `get_authorities(locale)` 注入 prompt | ❌ 且 **b1 架構下不需要** —— 面板是純前端 render,零 LLM、零 backend/SSE(對齊 2026-06-25 的 SUPERSEDED 修訂) |
+> | 測試 case:`locale=US` → Tier 2 | ✅ **已達成** —— prod human-eye gate 驗證 `America/New_York` → Tier-2 面板(無國名標題);JP → Tier-2 亦驗過(RULE 2:有解析出國家但無 Tier-1 資料時落 Tier-2,不出空面板) |
 
 **不做什麼(對齊 5.1)**
 
