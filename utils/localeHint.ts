@@ -29,6 +29,12 @@ export interface LocaleAuthorities {
   panel_name: { en: string; 'zh-TW': string };
   last_reviewed: string;
   authorities: Authority[];
+  // OPTIONAL per-country category-label override (b1-fix). The i18n `localeHintCat*` keys are the
+  // COUNTRY-NEUTRAL default used by every country and by Tier-2; a country sets an entry here ONLY
+  // when its own domestic term is genuinely better for its users. Absent → neutral default, so a
+  // new country needs ZERO extra data. This is a generic data-driven lookup, NOT render-logic
+  // special-casing — see getCategoryLabelOverride + LocaleHintPanel.
+  cat_labels?: Partial<Record<LocaleCategory, { en: string; 'zh-TW': string }>>;
 }
 
 // ── Taiwan (Tier-1) — authorities BYTE-IDENTICAL to fly-210 (restructure, not re-authoring). ──
@@ -89,8 +95,18 @@ const MY_MOH: Authority = {
 
 // Tier-1 country → authorities. ONLY TW/SG/MY have data in b1; JP/KR/TH resolve (via the waterfall)
 // but have no entry here → getTier1Authorities returns null → the panel renders Tier-2 (Rule 2).
+// TW-only category-label override (b1-fix). Taiwan's single-payer scheme IS "健保 / NHI", so the
+// domestic term is more precise than the neutral default FOR TAIWANESE USERS. It was previously
+// hardcoded into the i18n `localeHintCatReimbursement` string itself, which meant a Malaysian user
+// on an MY panel saw the chip "NHI reimbursement" — Taiwan's insurer, named to a Malaysian
+// pharmacist (found at the b1 prod gate). The neutral default now lives in i18n; TW opts back in
+// here. Any country may add its own override; none is required.
+const TW_CAT_LABELS: LocaleAuthorities['cat_labels'] = {
+  reimbursement: { en: 'NHI reimbursement', 'zh-TW': '健保給付' },
+};
+
 const LOCALE_DATA: Partial<Record<CountryCode, LocaleAuthorities>> = {
-  TW: { country: 'TW', panel_name: { en: 'Taiwan', 'zh-TW': '台灣' }, last_reviewed: '2026-06-23', authorities: [TW_TFDA, TW_NHI] },
+  TW: { country: 'TW', panel_name: { en: 'Taiwan', 'zh-TW': '台灣' }, last_reviewed: '2026-06-23', authorities: [TW_TFDA, TW_NHI], cat_labels: TW_CAT_LABELS },
   SG: { country: 'SG', panel_name: { en: 'Singapore', 'zh-TW': '新加坡' }, last_reviewed: '2026-07-24', authorities: [SG_HSA, SG_MOH] },
   MY: { country: 'MY', panel_name: { en: 'Malaysia', 'zh-TW': '馬來西亞' }, last_reviewed: '2026-07-24', authorities: [MY_NPRA, MY_MOH] },
 };
@@ -98,6 +114,19 @@ const LOCALE_DATA: Partial<Record<CountryCode, LocaleAuthorities>> = {
 /** Tier-1 authorities for a resolved country, or null when the country has no data yet (→ Tier-2). */
 export function getTier1Authorities(country: CountryCode | null): LocaleAuthorities | null {
   return (country && LOCALE_DATA[country]) || null;
+}
+
+/**
+ * The country's own label for a category, or null when it has none (→ caller uses the neutral i18n
+ * default). Tier-2 passes null and therefore ALWAYS gets the neutral default. Pure + exported so
+ * the data guard can assert no non-TW entry ever carries a TW-specific term.
+ */
+export function getCategoryLabelOverride(
+  data: LocaleAuthorities | null,
+  cat: LocaleCategory,
+  lang: 'en' | 'zh-TW',
+): string | null {
+  return data?.cat_labels?.[cat]?.[lang] ?? null;
 }
 
 // ── Tier-2 international fallback — shown when no Tier-1 country resolves, or a resolved country has

@@ -14,7 +14,12 @@ import ts from 'typescript';
 const src = readFileSync(new URL('../utils/localeHint.ts', import.meta.url), 'utf8');
 const js = ts.transpileModule(src, { compilerOptions: { module: 'ESNext', target: 'ES2020' } }).outputText;
 const mod = await import('data:text/javascript,' + encodeURIComponent(js));
-const { getTier1Authorities, TIER2_AUTHORITIES, detectLocaleCategories, getAuthoritiesForCategories } = mod;
+const { getTier1Authorities, TIER2_AUTHORITIES, detectLocaleCategories, getAuthoritiesForCategories, getCategoryLabelOverride } = mod;
+
+const CATS = ['dosing', 'reimbursement', 'indication', 'contraindication'];
+const COUNTRIES = ['TW', 'SG', 'MY', 'JP', 'KR', 'TH'];
+// TW-specific terms that must never reach a non-TW user. 'NHI' = Taiwan's single-payer insurer.
+const TW_TERMS = ['NHI', '健保'];
 
 const failures = [];
 function check(cond, msg) { if (!cond) failures.push(msg); }
@@ -75,6 +80,48 @@ const dosingOnly = getAuthoritiesForCategories(sg.authorities, ['dosing']);
 eq(dosingOnly.map(a => a.short_name), ['HSA'], 'SG dosing → HSA only (not MOH)');
 const reimb = getAuthoritiesForCategories(sg.authorities, ['reimbursement']);
 eq(reimb.map(a => a.short_name), ['MOH'], 'SG reimbursement → MOH only');
+
+// 7. ANTI-LEAK (b1-fix): no TW-specific category label may reach a non-TW country or Tier-2.
+//    WHAT BREAKS IF THIS FAILS: a Malaysian pharmacist sees the chip "NHI reimbursement" — Taiwan's
+//    national insurer — on a Malaysia panel. Found at the b1 prod gate; the TW term was baked into
+//    the shared i18n string. This assertion is what stops the same class of leak when b2 adds
+//    JP/KR/TH, since those countries get their labels purely by NOT having an override.
+for (const c of COUNTRIES.filter(c => c !== 'TW')) {
+  const data = getTier1Authorities(c);
+  if (!data) continue;                       // no Tier-1 data yet (JP/KR/TH) → Tier-2 path, checked below
+  for (const cat of CATS) {
+    for (const lang of ['en', 'zh-TW']) {
+      const label = getCategoryLabelOverride(data, cat, lang);
+      check(label === null || !TW_TERMS.some(t => label.includes(t)),
+        `${c}.${cat}[${lang}] must not carry a TW-specific label (got ${JSON.stringify(label)})`);
+    }
+  }
+}
+// Tier-2 has no country data at all → getCategoryLabelOverride(null,…) must ALWAYS be null, so
+// Tier-2 can only ever render the country-neutral i18n default.
+for (const cat of CATS) {
+  for (const lang of ['en', 'zh-TW']) {
+    eq(getCategoryLabelOverride(null, cat, lang), null, `TIER2 ${cat}[${lang}] must have no override`);
+  }
+}
+// TW itself KEEPS its domestic term — the override must survive, not be flattened away.
+eq(getCategoryLabelOverride(getTier1Authorities('TW'), 'reimbursement', 'en'), 'NHI reimbursement', 'TW keeps NHI label (en)');
+eq(getCategoryLabelOverride(getTier1Authorities('TW'), 'reimbursement', 'zh-TW'), '健保給付', 'TW keeps 健保給付 label (zh-TW)');
+// TW must NOT override the other three — they are already country-neutral and correct everywhere.
+for (const cat of ['dosing', 'indication', 'contraindication']) {
+  eq(getCategoryLabelOverride(getTier1Authorities('TW'), cat, 'en'), null, `TW ${cat} needs no override`);
+}
+
+// 8. The i18n DEFAULTS themselves must be country-neutral — this is where the leak actually lived
+//    (the shared `localeHintCatReimbursement` string read "NHI reimbursement" for every country).
+//    Source-scan utils/i18n-ui.ts across ALL 16 locales, not just the two the panel renders.
+const uiSrc = readFileSync(new URL('../utils/i18n-ui.ts', import.meta.url), 'utf8');
+const catLines = uiSrc.split('\n').filter(l => /localeHintCat\w+\s*:/.test(l));
+check(catLines.length >= 64, `expected >=64 localeHintCat* lines (16 locales x 4), got ${catLines.length}`);
+for (const line of catLines) {
+  const bad = TW_TERMS.find(t => line.includes(t));
+  check(!bad, `i18n localeHintCat* default must be country-neutral, found "${bad}" in: ${line.trim()}`);
+}
 
 if (failures.length) {
   console.error(`localeHint data GUARD FAILED (${failures.length}):\n - ` + failures.join('\n - '));

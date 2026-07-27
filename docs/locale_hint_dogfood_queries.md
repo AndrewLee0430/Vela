@@ -90,6 +90,26 @@ zh-TW UI showing TW authorities, note it as a design observation. Possible later
 when the UI language and the authority's native language coincide. The case where `name_en` genuinely earns
 its place is the **travel case**: a zh-TW UI resolving to JP (or SG/MY) authorities.
 
+---
+
+## b1-fix — MINI-GATE (2 queries, pinned 2026-07-27)
+
+Run **both with `?localeDebug=1`** appended to the Research URL — the debug line reports the resolved
+country / resolution level / tier, so a timezone override that silently reset is visible instead of being
+misread as a code failure. (The debug line renders ONLY with that param, and only when the panel itself
+renders.)
+
+| # | Setup | Expected (mini-gate PASS) |
+|---|---|---|
+| **F1** | TZ `Asia/Kuala_Lumpur` + **English** reimbursement query | **Malaysia** panel; category chip is the **NEUTRAL** label ("Reimbursement") — **no "NHI" anywhere on the panel**. Debug line: `country=MY · level=timezone · tier=1` |
+| **F2** | Answer language **zh-TW**, NO timezone override, reimbursement query | **Taiwan** panel; chip still reads the TW-specific **健保給付** (the override must SURVIVE the neutralization). Debug line: `country=TW · level=…` (ui_lang or work_language, per your account) |
+
+**What F1/F2 jointly prove:** the TW-specific reimbursement label moved from the shared i18n string
+(where it leaked to every country) to an **optional per-country override** on the TW entry only.
+F1 proves the leak is gone for non-TW; F2 proves TW did not lose its better domestic term.
+
+---
+
 **Waterfall (frontend-only, no IP):** L1 Settings locale > L2 work_language (zh-TW→TW · ja→JP · ko→KR · th→TH)
 > L3 timezone (Asia/Taipei→TW · Tokyo→JP · Seoul→KR · Singapore→SG · Kuala_Lumpur→MY · Bangkok→TH) > L4 UI-lang
 (same 4 as L2). L3 must stay above L4 — SG/MY are English-speaking, so timezone is their ONLY implicit path.

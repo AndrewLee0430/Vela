@@ -5,6 +5,7 @@ import { track } from '../utils/analytics';
 import {
   LocaleCategory,
   getAuthoritiesForCategories,
+  getCategoryLabelOverride,
   getTier1Authorities,
   TIER2_AUTHORITIES,
 } from '../utils/localeHint';
@@ -49,6 +50,24 @@ export default function LocaleHintPanel({ matchedCategories, lang, resolvedCount
   // re-shows it (NOT the PRD §5.1 cross-session persistence that caused "fires once then never again").
   const [dismissed, setDismissed] = useState(false);
   useEffect(() => { setDismissed(false); }, [resetKey]);
+
+  // OPT-IN resolution debug (?localeDebug=1). Surfaces the waterfall state that is ALREADY computed
+  // for the PostHog payload — no new logic, no new state. Exists because verifying the country
+  // waterfall on PROD otherwise costs paid queries: DevTools timezone overrides reset silently
+  // between queries and DevTools' own "Locale" field only overrides navigator.language, so there
+  // was no way to see which level actually fired short of reading localStorage in the console
+  // before every query. b2 adds five more countries, which makes that worse.
+  // Read in an effect, not during render: the app is a STATIC EXPORT, so touching window during
+  // render would desync hydration. Without the param this renders NOTHING — no element, no layout
+  // shift, no console output. Works in prod because it is a runtime URL read, not a build flag.
+  const [showDebug, setShowDebug] = useState(false);
+  useEffect(() => {
+    try {
+      setShowDebug(new URLSearchParams(window.location.search).get('localeDebug') === '1');
+    } catch {
+      // non-browser / malformed URL — stay off
+    }
+  }, []);
 
   // Fire the display event once per query the panel is shown for.
   useEffect(() => {
@@ -101,7 +120,9 @@ export default function LocaleHintPanel({ matchedCategories, lang, resolvedCount
             className="px-2.5 py-0.5 text-xs rounded-full"
             style={{ background: 'rgb(var(--color-text) / 0.08)', border: '1px solid rgb(var(--color-text) / 0.18)', color: 'rgb(var(--color-text) / 0.8)' }}
           >
-            {ui[CAT_LABEL_KEY[cat]]}
+            {/* Country's own term if it has one (TW: 健保給付 / NHI reimbursement), else the
+                COUNTRY-NEUTRAL i18n default. Tier-2 passes null → always neutral. */}
+            {getCategoryLabelOverride(tier1, cat, panelLang) ?? ui[CAT_LABEL_KEY[cat]]}
           </span>
         ))}
       </div>
@@ -143,6 +164,12 @@ export default function LocaleHintPanel({ matchedCategories, lang, resolvedCount
       <p className="text-xs" style={{ color: 'rgb(var(--color-text) / 0.5)' }}>
         {ui.localeHintNote}
       </p>
+
+      {showDebug && (
+        <p className="text-[11px] mt-2 font-mono break-all" style={{ color: 'rgb(var(--color-text) / 0.45)' }}>
+          localeDebug · country={resolvedCountry ?? 'none'} · level={resolutionLevel} · tier={tier}
+        </p>
+      )}
     </div>
   );
 }
