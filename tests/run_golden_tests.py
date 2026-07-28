@@ -1101,10 +1101,31 @@ async def run_tests(smoke_only: bool = False, filter_prefix: str | None = None):
     total         = len(cases)
     pass_rate     = round(stats["PASS"] / total * 100, 1)
 
+    # ── COMPLETENESS GUARD (CLAUDE.md Rule 18 — fail loud) ────────────────────────
+    # WHY: §2.7 is the mechanism that authorizes 🔴 ships. An interrupted run must never
+    # be readable as a completed gate. A case that ERRORed is a RESULT; a case that never
+    # ran is an ABSENCE — and absence is the dangerous one, because a truncated run shows
+    # fewer rows and an unwary reader sees "no failures". These are now distinguished
+    # explicitly in the console, in the JSON, and in the exit code.
+    ran_ids     = {r["id"] for r in results}
+    never_ran   = [c["id"] for c in cases if c["id"] not in ran_ids]
+    run_complete = not never_ran
+    if not run_complete:
+        print(f"\n{RED}{BOLD}{'!'*60}{RESET}")
+        print(f"{RED}{BOLD}  ⛔ INCOMPLETE RUN — THIS IS NOT A VALID GATE RESULT{RESET}")
+        print(f"{RED}  expected {len(cases)} cases · attempted {len(results)} · "
+              f"NEVER RAN {len(never_ran)}{RESET}")
+        print(f"{RED}  never ran: {', '.join(never_ran)}{RESET}")
+        print(f"{RED}  A case that NEVER RAN is not a pass and not a failure — it is an")
+        print(f"{RED}  absence. Do NOT read the summary below as a gate outcome; re-run.{RESET}")
+        print(f"{RED}{BOLD}{'!'*60}{RESET}")
+
     print(f"\n{BOLD}{'='*60}{RESET}")
-    print(f"{BOLD}  Test Summary{RESET}")
+    print(f"{BOLD}  Test Summary{RESET}" +
+          ("" if run_complete else f"  {RED}[INCOMPLETE — NOT A GATE RESULT]{RESET}"))
     print(f"{'='*60}{RESET}")
-    print(f"  Total:  {total}")
+    print(f"  Total:  {total}" +
+          ("" if run_complete else f"   {RED}(only {len(results)} ran; {len(never_ran)} NEVER RAN){RESET}"))
     print(f"  {GREEN}PASS{RESET}:   {stats['PASS']} ({pass_rate}%)")
     print(f"  {YELLOW}WARN{RESET}:   {stats['WARN']}")
     print(f"  {RED}FAIL{RESET}:    {stats['FAIL']}")
@@ -1187,12 +1208,23 @@ async def run_tests(smoke_only: bool = False, filter_prefix: str | None = None):
         json.dump({
             "timestamp": timestamp,
             "base_url":  BASE_URL,
+            # ── completeness guard (Rule 18): a consumer must be able to tell an
+            # interrupted run from a finished one WITHOUT counting rows by hand.
+            "run_complete":    run_complete,
+            "cases_expected":  len(cases),
+            "cases_attempted": len(results),
+            "never_ran":       never_ran,
+            "gate_valid":      run_complete,
+            "gate_invalid_reason": (None if run_complete else
+                                    f"{len(never_ran)} case(s) never ran: {never_ran}"),
             "summary":   stats,
             "pass_rate": pass_rate,
             "evaluator": "LLM Judge (gpt-4.1-mini)",
             "results":   results
         }, f, ensure_ascii=False, indent=2)
     print(f"\n  JSON saved → {json_path}")
+    if not run_complete:
+        print(f"  {RED}⛔ JSON marked run_complete=false / gate_valid=false{RESET}")
 
     # Compute regression
     previous_data = load_previous_results()
@@ -1228,6 +1260,15 @@ async def run_tests(smoke_only: bool = False, filter_prefix: str | None = None):
     print(f"  HTML report → {html_path}")
     print(f"  Open in browser: file:///{html_path.resolve()}")
     print(f"{'='*60}{RESET}\n")
+
+    # Rule 18: an incomplete run must exit NON-ZERO so a caller (or a human skimming a
+    # terminal) cannot mistake it for a clean gate. Checked BEFORE the pass-rate gate,
+    # because on a truncated run the pass rate is computed over cases that never ran and
+    # is therefore meaningless in either direction.
+    if not run_complete:
+        print(f"{RED}{BOLD}⛔ INCOMPLETE RUN — exiting non-zero. "
+              f"{len(never_ran)} of {len(cases)} cases never ran; this is NOT a gate result.{RESET}\n")
+        sys.exit(2)
 
     if pass_rate < 70:
         print(f"{RED}⚠️  Pass rate below 70%.{RESET}\n")
