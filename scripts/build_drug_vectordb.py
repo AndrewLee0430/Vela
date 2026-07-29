@@ -1,4 +1,28 @@
 """
+⛔ DEPRECATED 2026-07-29 (c1) — DO NOT RUN. The corpus this builds is no longer retrieved.
+
+The 690 documents it produces are field-label scaffolding with NO values (payload <= 20
+chars, max 5, median 1). Root cause is UPSTREAM, in scripts/collect_drug_data.py: its
+`_extract_*` methods were written for the RAW openFDA JSON shape (sections as lists) but
+receive FDADrugLabel.to_dict() (a flat dict of STRINGS), so `[0]` returns the first
+CHARACTER, and the raw-only key names (indications_and_usage, dosage_and_administration,
+clinical_pharmacology, openfda) fall through to "". The real ~3.58M chars of label text
+sit unread in each record's `full_label`.
+
+⚠️ RE-RUNNING THIS SCRIPT WOULD REBUILD THE SAME EMPTY CORPUS — the defect is not here.
+⛔ AND DO NOT "FIX" IT BY POINTING create_documents() AT `full_label`: that repair was
+   evaluated and REJECTED — it would import 22/190 combination-product records
+   (Metformin's label is SITAGLIPTIN AND METFORMIN), repackager-first label selection
+   (`search_drug_labels_sync(drug, limit=1)`, no reference preference), and a still-
+   unusable URL (`full_label.url` = https://labels.fda.gov/ on 190/190). 81.6% of it is
+   already covered, better, by the per-section DailyMed corpus. The complementary
+   coverage is being obtained from the real SPL instead (c2).
+
+Retrieval is disabled at api/server.py (`enable_local=False`). The corpus file and this
+script are left in place pending founder sign-off on deletion.
+See docs/local_corpus_decision_20260729.md.
+
+--- original header ---
 Build Drug Vector Database (NumPy JSON index)
 將收集的藥物資料向量化並存為 JSON，供 VectorStore 載入
 

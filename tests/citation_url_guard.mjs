@@ -20,17 +20,22 @@
 //   openFDA   https://labels.fda.gov/                            HTTP 200  ⚠️ HOMEPAGE, NOT the
 //             cited document — hard-coded at api/data_sources/fda.py:31-33. Passes this guard
 //             by construction; recorded as a PROVENANCE finding, deliberately not "fixed" here.
-//   local     ""                                                 EXEMPT — see below.
+//   local     ""                                                 ⛔ DEPRECATED — see below.
 //
-// EXEMPTION — `local` (data/drug_vectordb/index.json), 690 docs, url:"" BY DESIGN:
-//   Its builder input (data/drug_database/*.json) carries NO stable per-document identifier —
-//   full_label.url is the shared host "https://labels.fda.gov/" on all 190 records and
-//   full_label.source_id is a brand-name string ("FDA:<brand>"); no spl_set_id / set_id /
-//   application_number exists anywhere in scripts/ or the FDA client. A URL synthesized from a
-//   drug name is a SEARCH, not the source document, and presenting it under "View source" would
-//   claim provenance the link does not have — the same defect family as the "FDA Label Analysis"
-//   honesty [P1]. So the corpus keeps empty URLs and the RENDER guard suppresses the anchor.
-//   ⛔ Do NOT "fix" this exemption by generating search URLs.
+// ⛔ `local` — the EXEMPTION IS RETIRED, REPLACED BY A STRONGER INVARIANT (2026-07-29, c1).
+//   The old exemption said: "690 docs ship url:'' by design; the RENDER guard suppresses the
+//   anchor." That exemption's SUBJECT is gone — the corpus is no longer retrieved at all
+//   (api/server.py `enable_local=False`), because every one of its documents is field-label
+//   scaffolding with no values (payload <= 20 chars, max 5, median 1).
+//   An exemption whose subject no longer exists is dead weight and would silently pass, so it
+//   is replaced by the invariant that actually matters now:
+//
+//       LOCAL MUST NOT BE RETRIEVED — and if it ever is again, its URLs must be usable.
+//
+//   That is enforced CONDITIONALLY below: flipping `enable_local` back to True re-arms the
+//   full URL check against the corpus, which still ships 690 empty URLs — so a silent
+//   re-enable FAILS this guard instead of quietly restoring the answer-destroying bug.
+//   ⛔ Do NOT "fix" a failure here by generating search URLs from drug names.
 //
 // Run: node tests/citation_url_guard.mjs
 import { readFileSync } from 'node:fs';
@@ -41,9 +46,8 @@ const check = (cond, msg) => { if (!cond) failures.push(msg); };
 
 // ── layer 1: DATA ────────────────────────────────────────────────────────────────
 const CORPORA = [
-  { name: 'DailyMed', path: 'data/dailymed/label_docs.json', key: 'documents', exempt: false },
-  { name: 'TFDA',     path: 'data/tfda/indication_corpus.json', key: 'documents', exempt: false },
-  { name: 'local',    path: 'data/drug_vectordb/index.json',  key: null,        exempt: true  },
+  { name: 'DailyMed', path: 'data/dailymed/label_docs.json', key: 'documents' },
+  { name: 'TFDA',     path: 'data/tfda/indication_corpus.json', key: 'documents' },
 ];
 
 const usable = (u) => /^https?:\/\/[^/\s]+/i.test((u ?? '').trim());
@@ -56,19 +60,35 @@ for (const c of CORPORA) {
     check(false, `${c.name}: corpus not readable at ${c.path} (build it before gating)`);
     continue;
   }
-  const docs = c.key ? raw[c.key] : (Array.isArray(raw) ? raw : raw.documents);
+  const docs = raw[c.key];
   const bad = docs.filter(d => !usable(d.url));
-  if (c.exempt) {
-    // Exempt source: assert the exemption still describes reality. If `local` ever GAINS real
-    // URLs the exemption is stale and this guard must be revisited — so we fail loudly on that
-    // too, rather than silently passing.
-    check(bad.length === docs.length,
-      `local: exemption says ALL ${docs.length} docs have no usable URL, but ${docs.length - bad.length} now do — ` +
-      `the exemption is STALE. Re-read the guard header and update it deliberately.`);
-  } else {
+  check(bad.length === 0,
+    `${c.name}: ${bad.length}/${docs.length} documents have no usable https URL ` +
+    `(e.g. ${bad.slice(0, 3).map(d => d.source_id).join(', ')})`);
+}
+
+// ── layer 1b: the LOCAL DEPRECATION invariant (replaces the retired exemption) ────
+// The local corpus ships 690 empty URLs. It is safe ONLY because it is not retrieved.
+// So assert the deprecation itself, and re-arm the URL check if it is ever undone.
+const server = readFileSync(new URL('api/server.py', ROOT), 'utf8');
+const localEnabled = /enable_local\s*=\s*True/.test(server);
+check(!localEnabled,
+  'api/server.py has enable_local=True — the local drug corpus is DEPRECATED (c1, 2026-07-29). ' +
+  'It ships 690 documents with url:"" and <=20 chars of content; re-enabling it restores ' +
+  'empty-href citations. If this is deliberate, the corpus must first gain usable per-document ' +
+  'URLs — and see docs/local_corpus_decision_20260729.md before doing that.');
+
+if (localEnabled) {
+  // Re-armed: if someone re-enables local, hold it to the SAME bar as every other source.
+  try {
+    const raw = JSON.parse(readFileSync(new URL('data/drug_vectordb/index.json', ROOT), 'utf8'));
+    const docs = raw.documents ?? [];
+    const bad = docs.filter(d => !usable(d.url));
     check(bad.length === 0,
-      `${c.name}: ${bad.length}/${docs.length} documents have no usable https URL ` +
+      `local: re-enabled, but ${bad.length}/${docs.length} documents still have no usable https URL ` +
       `(e.g. ${bad.slice(0, 3).map(d => d.source_id).join(', ')})`);
+  } catch {
+    check(false, 'local: re-enabled but data/drug_vectordb/index.json is not readable');
   }
 }
 
@@ -104,5 +124,5 @@ if (failures.length) {
   console.error(`citation-url GUARD FAILED (${failures.length}):\n - ` + failures.join('\n - '));
   process.exit(1);
 }
-console.log('PASS  citation URLs — DailyMed/TFDA usable, local exemption intact, ' +
+console.log('PASS  citation URLs — DailyMed/TFDA usable, local DEPRECATED (enable_local=False), ' +
             'isUsableSourceUrl rejects empty/relative/non-http, anchor is gated');

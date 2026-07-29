@@ -58,6 +58,13 @@ export function resolvedSourceLabel(source: SourceLabel, ui: { tfdaSourceLabel: 
 export const SOURCE_LABELS: Record<string, SourceLabel> = {
     pubmed:         { label: 'PubMed',     tooltipKey: 'peerReviewedTip' },
     fda:            { label: 'FDA',        tooltipKey: 'officialTip' },
+    // ⛔ LEGACY-ONLY as of 2026-07-29 (c1): the local drug corpus is DEPRECATED and no
+    // longer retrieved (`api/server.py` enable_local=False), so NEW answers can never
+    // carry source_type 'local'. This entry is KEPT ON PURPOSE as a fallback for
+    // PERSISTED citations — shared/explore public pages re-render on demand from stored
+    // citation JSON (share_renderer.render_public_page), so removing it would silently
+    // relabel already-published pages. Deleting it is NOT free: it is a user-visible
+    // string change on live URLs (Rule 16). Do not remove without founder sign-off.
     local:          { label: 'FDA',        tooltipKey: 'officialTip' },   // cached FDA labeling → MERGES into FDA
     // ADR 007 grounding-lite: SCOPE-ACCURATE label (approved indication ONLY) — deliberately
     // NOT a bare "TFDA" that would imply full-label/safety authority (cf. the "FDA Label

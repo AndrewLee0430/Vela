@@ -93,7 +93,17 @@ class HybridRetriever:
     def __init__(
         self,
         local_threshold: float = 0.6,
-        enable_local: bool = True,
+        # ⛔ DEFAULT FLIPPED TO False 2026-07-29 (c1) — the local drug corpus is deprecated.
+        # WHY THE DEFAULT AND NOT JUST THE SERVER: 9 measurement harnesses construct
+        # `HybridRetriever()` with no arguments (dailymed_danger_path_verify, the source-weight
+        # evals, the recall probes, …). While the server also passed True those harnesses
+        # matched production by accident; the moment production stopped using local they would
+        # have kept measuring a DEAD SOURCE and silently reported on a config that no longer
+        # ships. Caught exactly that way: the first danger-path re-gate for this ship logged
+        # "Vector store loaded: 690 documents" and was therefore invalid.
+        # Call sites that genuinely want the corpus (tests/test_cut_exemption.py,
+        # tests/test_source_weight_*.py) pass enable_local=True explicitly and are unaffected.
+        enable_local: bool = False,
         enable_pubmed: bool = True,
         enable_fda: bool = True,
         enable_tfda: bool = True,

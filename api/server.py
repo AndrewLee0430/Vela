@@ -448,7 +448,19 @@ def get_user_id(creds: Optional[HTTPAuthorizationCredentials]) -> str:
 # ============================================================
 retriever = HybridRetriever(
     local_threshold=0.6,
-    enable_local=True,
+    # ⛔ DEPRECATED 2026-07-29 (c1) — the 690-doc local drug corpus is OFF.
+    # WHY: every document is field-label scaffolding with NO values (payload <=20 chars,
+    # max 5, median 1) because scripts/collect_drug_data.py's _extract_* read a data shape
+    # that never existed — `[0]` on a STRING returns its first character. The real ~3.58M
+    # chars sit unread in `full_label`, which is NOT indexed, so the corpus delivers zero
+    # value AS SHIPPED regardless of repair. Repair was rejected: it would import 22/190
+    # combination-product records, repackager-first label selection, and a still-unusable
+    # URL; the same coverage is obtainable from the real SPL via the DailyMed build (c2).
+    # MEASURED: §2.7 with local excluded = 19/1/0 vs control 18/2/0 (0 FAIL both) — no cost.
+    # See docs/local_corpus_decision_20260729.md.
+    # This flag is the ONLY read path (retriever.py:109 + :180 both guard on it); the
+    # corpus file and builder are intentionally left in place pending founder sign-off.
+    enable_local=False,
     enable_pubmed=True,
     enable_fda=True,
     enable_tfda=True,   # ADR 007 grounding-lite: TFDA 核准適應症 as a separate bounded source
@@ -2414,11 +2426,16 @@ def health_check():
 
 @app.get("/api/status")
 async def api_status(creds: Optional[HTTPAuthorizationCredentials] = Depends(require_auth)):
-    try:
-        from api.database.vector_store import get_vector_store
-        vector_store_status = get_vector_store().get_stats()
-    except Exception as e:
-        vector_store_status = {"error": "unavailable"}
+    # ⛔ DEPRECATED 2026-07-29 (c1). This used to call get_vector_store().get_stats(),
+    # which loaded the 690-doc local drug corpus into memory DIRECTLY — bypassing the
+    # `enable_local` switch entirely, so disabling the source would not have stopped it.
+    # Reporting it as deprecated (rather than deleting the key) keeps the response shape
+    # for any ops consumer while telling the truth: the corpus is no longer retrieved.
+    # No endpoint in the frontend reads this field — /api/status is ops/debug only.
+    vector_store_status = {
+        "status": "deprecated",
+        "note": "local drug corpus removed from Research retrieval 2026-07-29 (c1)",
+    }
 
     return {
         "status": "healthy",

@@ -192,6 +192,14 @@ _SOURCE_TYPE_CONFIG: dict[str, dict[str, str]] = {
     "nice":           {"label": "NICE",        "color": "#90cdf4"},
     "ema":            {"label": "EMA",         "color": "#fbb6ce"},
     "cochrane":       {"label": "Cochrane",    "color": "#b794f4"},
+    # ⛔ LEGACY-ONLY as of 2026-07-29 (c1) — the local drug corpus is deprecated and no
+    # longer retrieved, so no NEW share can carry source_type 'local'. Kept because this
+    # renderer runs ON DEMAND over stored citation JSON, so already-published /q and
+    # /explore pages would otherwise silently relabel ("Local" → "Source"). Verified
+    # non-crashing either way (_detect_source_type falls through to "other" on an empty
+    # url), but the relabel is user-visible on live URLs. NOTE: this label DISAGREES with
+    # the frontend's "FDA" (utils/sourceLabels.ts) — the recorded [P2] sourceLabels ↔
+    # share_renderer drift. Deprecation removes one side of that drift going forward.
     "local":          {"label": "Local",       "color": "#a0aec0"},
     "localauthority": {"label": "Local",       "color": "#a0aec0"},
     "other":          {"label": "Source",      "color": "#a0aec0"},
