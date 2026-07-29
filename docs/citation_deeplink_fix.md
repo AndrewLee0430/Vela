@@ -1,7 +1,22 @@
 # Citation deep-link fix — BUILD record (2026-07-29)
 
 **Not a 🔴 baton** — no retrieval, generation, or citation-*selection* change. **§2.7 not required; a
-human-eye gate IS.** Not deployed. Diagnosis: `docs/citation_deeplink_diagnosis.md` (`1cfaa58`).
+human-eye gate IS.** Diagnosis: `docs/citation_deeplink_diagnosis.md` (`1cfaa58`).
+
+> ## ✅ SHIPPED fly 214 · PROD HUMAN-EYE GATE **PASS** (founder, 2026-07-29)
+>
+> Deployed 2026-07-29 (fly version **214**, image `deployment-01KYNRXCYAFP2VWMH14HCFJ731`; one file
+> changed since fly 213 — `components/CitationPanel.tsx`; zero `api/`, `fly.toml` untouched).
+> **Every source type verified.** Row 1 (the founder's original metformin report): the FDA(local) chip
+> renders **no** "View source" — the designed branch-(3) behaviour — while DailyMed and PubMed links open
+> in a new tab with the answer and references intact. Row 2 (warfarin+aspirin): both resolve. TFDA
+> resolved on retry (Finding 2). **No linked "FDA" chip appeared in any query**, giving the Task-1b
+> structural-inertness conclusion observational support on top of code inspection.
+>
+> **Gate result + six findings it surfaced:**
+> [`citation_gate_findings_20260729.md`](citation_gate_findings_20260729.md) — most importantly
+> **Finding 1: 690/690 local documents are empty field-label stubs (max payload 5 chars)**, which
+> reframes the Task-5 §2 deprecation question below from two-way to three-way.
 
 **Closed question applied:** the founder confirmed on prod that a DailyMed deep-link opens correctly
 (GLUMETZA, `setid=fb832474-…`). There is **no second prod-only defect**; the original "FDA and
@@ -73,12 +88,29 @@ though no rendered instance could be produced. **Recorded, not fixed — out of 
 |---|---|---|
 | pubmed `…/12667121/` | **200** | ✅ resolves to the document |
 | dailymed `drugInfo.cfm?setid=ca73b519-…` | **200** | ✅ resolves to the document |
-| tfda `mcp.fda.gov.tw/im_detail_pdf/%E8%A1%9B…` | **200** | ✅ the percent-encoded Chinese PDF path **does** resolve |
+| tfda `mcp.fda.gov.tw/im_detail_pdf/%E8%A1%9B…` | **200** | ✅ resolves to the **per-licence detail page** — see the correction below |
 | openFDA `https://labels.fda.gov/` | **200** | ⚠️ resolves, but to a **HOMEPAGE**, not the cited document |
 | local | — | **no URL** — nothing to resolve (branch 3) |
 
 No 404s, no redirects to search pages, **no bot-blocks** — so no browser-confirmation is needed here
 (the `moh.gov.my` precedent did not have to be invoked).
+
+> ### ⚠️ CORRECTION 2026-07-29 — the TFDA row was mis-characterized (HTTP 200 was right; the description was not)
+>
+> The row originally read *"the percent-encoded Chinese **PDF path** does resolve"*, i.e. it implied the
+> link opens a PDF. **It does not.** The founder browser-confirmed it at the fly-214 prod gate: clicking
+> 查看來源 on the 「TFDA 核准適應症 — 冠脂妥膜衣錠5毫克」 citation opened
+> `mcp.fda.gov.tw/im_detail_pdf/衛署藥輸字第024597號`, which is the **per-licence detail page** for
+> 冠脂妥膜衣錠5毫克 / Crestor 5mg Film-Coated Tablets — showing 許可證號, 申請商, 發證/有效日期, and a
+> **仿單清單 listing the label PDF one click further**.
+>
+> **The verdict is unchanged and if anything stronger**: this is precise per-document provenance, better
+> than a bare PDF because it shows the licence metadata around the document. Only the *characterization*
+> was wrong. **`im_detail_pdf` is a misleading path name; do not read it as "returns a PDF".**
+>
+> **This also closes the last Task-1c gap** — every source type that renders a link has now been clicked
+> in a real browser, not merely HTTP-probed. Details + the licence-expiry consequence:
+> [`citation_gate_findings_20260729.md`](citation_gate_findings_20260729.md) Finding 2 (iv) and Finding 6.
 
 ## Task 2 — render guard (shipped)
 
@@ -146,6 +178,19 @@ main distinguishing feature is now that it is the only source that cannot be cit
 Against: it may still contribute recall the section-level corpus misses, and Phase-1 measurement
 showed `local` docs *do* reach top_k regularly (unlike openFDA). **Deciding needs a recall
 measurement, not an opinion. Not scoped, not acted on.**
+
+> ### 🆕 2026-07-29 — this question is now THREE-way, not two-way, and one input to it was wrong
+>
+> The fly-214 gate produced the measurement this section asked for, and it changes the framing.
+> **All 690 documents carry ≤ 20 characters of real content (max 5, median 1); 190/190 are pure field
+> labels.** They are not "whole-drug blobs" — they are drug-name-plus-section-heading with nothing
+> behind them. But **the real FDA text (≈3.58 M chars) is present and unread in the builder's own input**
+> (`full_label`), so the third option — **REPAIR** — exists alongside KEEP and DEPRECATE, and repair is a
+> 🔴 retrieval-input change needing its own §2.7.
+> **Also: the ratified `local = Tier 2 ×1.5` decision rests on the premise "local IS cached FDA
+> labeling", which this measurement refutes.**
+> Full numbers, root cause, and the exact measurement that would decide it:
+> [`citation_gate_findings_20260729.md`](citation_gate_findings_20260729.md) Finding 1.
 
 ### 3. Gate checklist — added to the `[ops]` entry in BACKLOG (third SOP line).
 
