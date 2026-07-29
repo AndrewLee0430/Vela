@@ -1,8 +1,33 @@
 # c1 — local drug corpus DEPRECATION: build + gate record (2026-07-29)
 
 **🔴 This IS a retrieval change** (a source is removed) → section-aware danger-path re-gate + prod
-human-eye gate required. **NOT DEPLOYED.** No flags, no secrets, no thresholds, no composite weights,
-no `top_k` touched.
+human-eye gate required. No flags, no secrets, no thresholds, no composite weights, no `top_k` touched.
+
+> ## 🚀 DEPLOYED fly 215 — 2026-07-29 · founder human-eye gate **PENDING**
+>
+> Image `registry.fly.io/vela-ai-medical:deployment-01KYQ8N0FWA262D2C5DFTHDHGH` (333 MB), nrt.
+> Scope vs the fly-214 commit (`b19d3a8`): **6 files** — `api/rag/retriever.py`, `api/server.py`,
+> `api/services/share_renderer.py`, `scripts/build_drug_vectordb.py`, `tests/citation_url_guard.mjs`,
+> `utils/sourceLabels.ts`. **`fly.toml`, `Dockerfile`, `requirements.txt` untouched. No migration.**
+>
+> ### Post-deploy verification
+>
+> | # | check | result |
+> |---|---|---|
+> | 1 | `/health` | **PASS** — 200, `{"status":"healthy","version":"2.2.0"}` |
+> | 2 | both machines on the new version | **PASS** — `2879720c66d478` and `683d447c2e5428` both **215**, hand-parsed from the `│` rows (not `deploy.ps1`'s "All machines running", whose `^\S+` parser has a known [P3] defect). `2879720c66d478` `stopped` = the documented benign autostop |
+> | 3 | `/api/status` new shape | ⚠️ **NOT COMPLETED — see below** |
+> | 4 | levers unchanged by name | **PASS** — `RETRIEVAL_REFUSAL_SHADOW` · `SOURCE_WEIGHT_SHADOW` · `SOURCE_WEIGHT_ACTIVE` all **present, digest `d8c5ac2e11c8e492`, Deployed = ON**; `DIRECTION_CHECK_SHADOW` and `QUESTION_NEUTRALIZATION_SHADOW` **absent = unset = OFF**; **every secret reads `Deployed` — none staged** |
+> | 5 | b1 locale panel + `?localeDebug=1` | **PASS** — chunk `research-757f6f067e7cc77a.js` carries hsa.gov.sg · npra.gov.my · moh.gov.my · fda.gov.tw · nhi.gov.tw · who.int · `Asia/Kuala_Lumpur` · `localeDebug` ×2 · `cat_labels` ×2 · `健保給付` ×1, and **0** `NHI` in i18n keys. ⚠️ **The chunk hash is IDENTICAL to fly 214** — expected: the only frontend change was a *comment* in `sourceLabels.ts`, stripped at build. **The frontend is byte-identical; this deploy is a backend-behaviour change only.** |
+> | 6 | log-grep | **PASS** — and the decisive line: startup logs show **only** `TFDA indication corpus loaded: 10941` and `DailyMed label corpus loaded: 4608`, with **NO `Vector store loaded: 690 documents` line**. That is direct production confirmation the corpus is not loaded. No ERROR / CRITICAL / Traceback; the only non-2xx is my own probe's 403 |
+> | 7 | a published share/explore page still renders | **PASS — and it exercised the exact legacy path.** `/explore/metformin-contraindications-renal?locale=en` → **HTTP 200**, 5 citation cards, **0** tracebacks, and it renders **`[2] Local`** — a pre-ship `local` citation still labelled correctly through the retained fallback. **Had the mapping been removed, this live SEO-indexed URL would have silently relabelled to "Source".** *(It also makes the recorded [P2] `sourceLabels`↔`share_renderer` drift visible: this page says "Local" where the app says "FDA". Pre-existing, unchanged by this ship.)* |
+>
+> **⚠️ 3.3 could NOT be completed and is not claimed.** `/api/status` is `Depends(require_auth)` and prod
+> runs real Clerk auth, so an unauthenticated request returns **403 `{"detail":"Missing token"}`** — I have
+> no prod session. What that *does* prove: the route exists and the handler is reachable (a clean 403, not
+> a 500). What it does **not** prove: that the payload is the new `{"status":"deprecated", …}` shape on
+> prod. The shape is verified in code and on the local gate server only. **A signed-in check would close
+> it; it is listed here as open rather than assumed.**
 
 Basis: [`citation_gate_findings_20260729.md`](citation_gate_findings_20260729.md) Finding 1 ·
 [`local_corpus_decision_20260729.md`](local_corpus_decision_20260729.md) (`3e32c03`).
