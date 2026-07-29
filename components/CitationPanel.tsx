@@ -6,6 +6,26 @@ import { getUI } from '../utils/i18n-ui';
 import { track } from '../utils/analytics';
 import { detectSourceType, sourceLabelFor, resolvedSourceLabel, sourceCountTooltip, referencesCountTooltip } from '../utils/sourceLabels';
 
+/**
+ * Is this citation URL safe to render as a "View source" anchor?
+ *
+ * Requires an ABSOLUTE http(s) URL. Rejects:
+ *   - "" / null / undefined  → an <a href=""> navigates to the CURRENT page, remounting this
+ *     static-export SPA at its empty state and destroying the user's answer (the 2026-07-29 bug;
+ *     the local drug corpus ships url:"" on all 690 docs);
+ *   - relative or scheme-less values → same-origin navigation, same failure mode;
+ *   - anything not http/https (javascript:, data:, …) → never render as a source link.
+ *
+ * Deliberately NOT a provenance check: `https://labels.fda.gov/` (the hard-coded openFDA value at
+ * api/data_sources/fda.py:31-33) passes this and IS a homepage rather than the cited document.
+ * That is a separate, recorded provenance finding — not silently changed here.
+ */
+export function isUsableSourceUrl(url?: string | null): boolean {
+    const u = (url ?? '').trim();
+    if (!u) return false;
+    return /^https?:\/\/[^/\s]+/i.test(u);
+}
+
 export interface Citation {
     id: number;
     source_type: string; // Widened — normalized via detectSourceType() before use
@@ -137,22 +157,34 @@ function CitationCard({ citation, position }: { citation: Citation; position: nu
                 </div>
             )}
 
-            {/* Source link */}
-            <a
-                href={citation.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={handleSourceClick}
-                onAuxClick={handleSourceClick}
-                className="inline-flex items-center gap-1 text-sm hover:underline mt-3"
-                style={{ color: "rgb(var(--color-brand))" }}
-            >
-                {ui.viewSource}
-                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                </svg>
-            </a>
+            {/* Source link — rendered ONLY when the citation carries a usable absolute URL.
+                WHY (2026-07-29): the local drug corpus ships `url: ""` on all 690 documents
+                (`scripts/build_drug_vectordb.py` hard-codes it, and its openFDA input has no
+                stable per-document id — see docs/citation_deeplink_diagnosis.md). An
+                `<a href="">` navigates to the CURRENT page, so this static-export SPA remounted
+                /research empty and the user lost their answer and references.
+                A missing link is honest; a link that destroys the user's answer is not; a
+                fabricated link would be worse than both — which is why the corpus keeps empty
+                URLs rather than getting a synthesized search URL under "View source".
+                No new user-visible string: when there is no URL we render nothing (Rule 16 —
+                a new string would need all 16 languages). */}
+            {isUsableSourceUrl(citation.url) && (
+                <a
+                    href={citation.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={handleSourceClick}
+                    onAuxClick={handleSourceClick}
+                    className="inline-flex items-center gap-1 text-sm hover:underline mt-3"
+                    style={{ color: "rgb(var(--color-brand))" }}
+                >
+                    {ui.viewSource}
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                </a>
+            )}
         </div>
     );
 }
