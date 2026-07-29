@@ -6,11 +6,34 @@
 
 Two independent, each-sufficient reasons:
 
-1. **The fallback would not fire where it is needed.** Research already queries openFDA on **every**
+1. ~~**The fallback would not fire where it is needed.** Research already queries openFDA on **every**
    query as a parallel retrieval source — and **openFDA documents were cited 0 / 18 runs** across six
    single-drug OTC safety queries. openFDA content is retrieved and then loses the ranking
    competition. Adding a *fallback* to a source that is already retrieved and already discarded
-   changes nothing.
+   changes nothing.~~
+
+   > ### ⚠️ CORRECTION 2026-07-29 — this reasoning was WRONG. The conclusion stands; the reason does not.
+   >
+   > The claim *"openFDA content is retrieved and then loses the ranking competition"* is **false**.
+   > It was inferred from the 0/18 citation count without checking whether openFDA returned anything
+   > at all. The deep-link baton (`docs/citation_deeplink_fix.md`, Task 1b) measured it directly:
+   > two forced retrievals with `source_filter=[SourceType.FDA]` returned **`status=no_results`, 0
+   > documents**, and the cause is at **`api/data_sources/fda.py:127`**:
+   >
+   > ```python
+   > search_query = f'openfda.brand_name:"{query}" OR openfda.generic_name:"{query}"'
+   > ```
+   >
+   > In the Research path `query` is the **full rewritten multi-word string** (e.g.
+   > `"metformin pharmacokinetics renal impairment"`), which can never equal a brand or generic name
+   > → openFDA 404s. **openFDA is never retrieved in Research at all — it is not out-ranked, it is
+   > absent.** The 0/18 was the symptom of a broken query, not of a ranking loss.
+   >
+   > **CORRECTED REASON for keeping this entry CLOSED:** a *fallback* is still not the fix, but not
+   > because the source is already present and discarded — because **the parallel openFDA path is
+   > BROKEN**. Adding a second, conditional call to a client whose query construction cannot match
+   > would fail the same way. **The real candidate is repairing the query construction**, tracked as
+   > its own TECH_DEBT entry (`[P2] openFDA is structurally inert in Research`).
 2. **The real defect is different and worse: Research cites ANOTHER DRUG's safety section** on
    single-drug OTC safety queries — measured on 5 of 6 test queries.
 
