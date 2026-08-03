@@ -81,6 +81,29 @@ Last shipped (to prod): **v190 — 2026-06-29 (fly version 190, nrt, image `depl
 
 ## Next Up — Phase 1B (active); reversal-defense entries below are CONCLUDED/DEFERRED (history)
 
+### 📋 OPEN ITEMS — consolidated for founder sequencing (reconciled 2026-08-03, post-fly-215)
+
+**Proposed order. Not a decision — the founder sequences.** Rationale for the ordering: (1) c2 is the only item with *live prod evidence of user-visible harm*; (2) two items are **blocked-by** c2 and must not be built before it; (3) the cheap honesty/hygiene items are batched so the 16-language pass happens **once**.
+
+| # | item | pri | where | why here |
+|---|---|---|---|---|
+| **1** | **c2 — DailyMed reference-label selection** (c2-iii synonym alias · c2-i Rx tiebreak · c2-ii scope widening) | **[P1]** | BACKLOG ⭐ | **Only item with live prod harm**: 2 wrong-drug citations captured at the fly-215 gate, 6/6 coverage-caused. c2-iii is nearly free (a key alias; the data is already indexed). **Blocks #2.** |
+| **2** | **Wrong-drug filter build — RE-EVALUATE FOR NECESSITY, do not build yet** | [P2] | TECH_DEBT surface 3/3 + `docs/wrong_drug_citation_severity.md` §6 | **BLOCKED BY #1.** If c2 removes the cause in 6/6 cases, this may descope or close. Building a runtime guard first risks a permanent precision/recall tradeoff on the danger path against a defect a data fix removes. |
+| **3** | **openFDA query repair** (`fda.py:127`) | [P2] | TECH_DEBT | Restores a 4th working source. **⚠️ HARD ORDERING CONSTRAINT: fix the URL first or in the same change** — `labels.fda.gov/` passes `isUsableSourceUrl()`, so a query-only fix ships false-provenance links **and** re-opens the "FDA" chip that c1 just removed. |
+| **4** | **Pointer→grounding graduation** (在地差異 (d)) | [P2] | BACKLOG (d) + TECH_DEBT | **User-visible honesty defect today**: the panel says "Vela 未整合上述機關資料" on a screen whose only source *is* the integrated TFDA corpus. **Do this BEFORE any TFDA renaming** — graduation dissolves the "TFDA" chip-vs-pointer collision on the screens where it confuses. |
+| **5** | **Consolidated provenance-string sweep** (now 3 strings: TFDA chip's wrong-agency `officialTip` · locale-panel note · **DailyMed's FDA provenance**, BACKLOG (e)) | [P2] | TECH_DEBT + BACKLOG (e) | **ONE 16-language pass, not three.** Sequenced after #4 because graduation may resolve the panel string by suppression rather than rewording. c1 already closed the `local`-chip string by deprecation. |
+| **6** | **TFDA snapshot refresh + representative-licence sort key** | [P2] | TECH_DEBT | ⏰ **The monthly re-pull is OVERDUE** (manifest `pulled_at` 2026-06-30). 40 docs already deep-link to an **expired** licence; 1,223 (11.2%) chose a sooner-expiring representative. Sort key is one key change, bounded (80% of docs have a single licence). Fold in the Finding-C near-duplicate question. |
+| **7** | **Published pages serve pre-c1 empty stubs marked "Official"** | [P2] | TECH_DEBT | Live on an SEO-indexed URL now. **Bounded — only 1 `/explore` slug exists**; needs the `/q/` count before any option is chosen. **Gates #12.** |
+| **8** | **Nine-harness shared constructor** (`build_production_retriever()`) | [P2] | TECH_DEBT | No *known* wrong result today (checked: no gate invalidated), but the next config change silently re-opens it. Cheap insurance; touches nine scripts. |
+| **9** | **`vector_store.py:52` `print()` (Rule 4 violation in PRODUCT code)** | [P2] | TECH_DEBT | Site 1 of the cp950 pair, **still untouched**. A one-line `logger` swap; it is a standing CLAUDE.md Rule 4 breach sitting in `api/`. |
+| **10** | **cp950 console-encoding class** (site 2 fixed; class open) | [P3] | TECH_DEBT | Site 2 (`run_golden_tests.py`) is fixed. Remaining exposure is opportunistic. |
+| **11** | **`/explore` zh-TW raw JSON 404** | [P3] | TECH_DEBT | Public SEO surface, primary market locale. Fix-direction is a one-line fallback to the `en` row. |
+| **12** | **Citation verification exists on exactly one surface** (History/shared pages) | [P3] | BACKLOG | **BLOCKED BY #7** — adding source links to pages whose citations are empty stubs surfaces the stub rather than fixing it. |
+| **13** | **b2 — JP/KR/TH Tier-1 locale data** | [P2] | BACKLOG (b2) | 🚧 **Blocked on native linguistic review**, not on code — `ja`/`ko` have no review path at all yet. Not sequenceable until that exists. |
+| — | *hygiene, batch with any of the above* | [P3] | TECH_DEBT | `.dockerignore` the 22 MB dead corpus · delete/flag `build_drug_vectordb.py` · **delete `init_knowledge_base.py` (dead AND broken)** |
+
+**Two items need a founder decision rather than a build slot:** the **c2-ii scope call** (biologics/insulin/GLP-1 — widen the TFDA-mono backbone or accept the boundary), and the **`/api/status` verification gap** (CODE-VERIFIED ONLY; closable in 30 seconds by replaying a devtools JWT — no code change).
+
 > **✅ DONE (fly 208, 2026-07-17) — Reranker slice 2 (keyed-schema off-by-one fix):** shipped; see Recently Shipped + TECH_DEBT [P1] RESOLVED. The v200 composite now applies on the ~32% of Research queries it was silently inert on (prod `inert_rate` 0.0%, was ~32%).
 
 > **✅ DONE (2026-06-15) — direction-of-effect prompt-fix + re-measurement** (`96806b5`, holdout `fdd624c`; NOT pushed/deployed): PARTIAL mitigation — neutral-framed C01/C13 resolved, loaded-framing B01 still CONTRADICTS. Prompt-only proven insufficient for B2C.

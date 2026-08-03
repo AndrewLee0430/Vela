@@ -139,7 +139,7 @@ Two layers, both **negative-controlled**:
 
 | layer | assertion | negative control | result |
 |---|---|---|---|
-| DATA | every DailyMed + TFDA doc has a usable `https://` URL; `local` **exempt with documented reasoning** | injected an empty-url doc into the DailyMed corpus | **FAILED as required** (`1/4609 …`), then restored (4608, injection gone) |
+| DATA | *(⚠️ **the `local` exemption described here was RETIRED on 2026-07-29 by the c1 deprecation** — its subject no longer exists, and an exemption whose subject is gone passes silently. `tests/citation_url_guard.mjs` now asserts the **deprecation invariant** instead: `enable_local` must be `False`, and re-enabling it **re-arms** the full URL check. See `docs/local_corpus_deprecation_c1_build.md` §3.4. Row retained for audit.)* every DailyMed + TFDA doc has a usable `https://` URL; `local` **exempt with documented reasoning** | injected an empty-url doc into the DailyMed corpus | **FAILED as required** (`1/4609 …`), then restored (4608, injection gone) |
 | DATA | the `local` exemption must still describe reality — fails loudly if local ever *gains* URLs, so a stale exemption cannot pass silently | — | passes |
 | RENDER | `isUsableSourceUrl` rejects `''`, whitespace, `null`, `/research`, `#`, `javascript:`, `data:`, `labels.fda.gov`; accepts the four real citation URLs | — | passes |
 | RENDER | `CitationPanel.tsx` must actually **gate the anchor** on the helper, not merely export it | reverted the gate to `{true && (` | **FAILED as required**, then restored |

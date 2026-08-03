@@ -108,7 +108,17 @@ That result was discarded, not reported.
 matched production **by accident**; the moment production stopped using local, every one of them would
 have kept measuring a **dead source** and silently reporting on a config that no longer ships.
 
-**Fix applied at the default, not at the call site**, so the class is closed rather than one instance:
+> **⚠️ CORRECTION 2026-08-03 — "the class is closed" below is an OVER-CLAIM.** Flipping the default
+> closes **that parameter**, not the class. The class is that **nine harnesses each construct their own
+> retriever instead of sharing production's construction path**, so any future divergence re-opens
+> silently. A full sweep (all nine × every construction parameter **and** every `retrieve()` argument)
+> subsequently found **construction parity but a real `retrieve()` divergence** (`source_weight_active`
+> defaults `False`; production passes `True`) and **two harnesses that hand-mirror `retrieve()` entirely**.
+> The corrected account, and the proposed shared-constructor fix, are in
+> **TECH_DEBT [P2 · measurement-instrument drift]**. Text below retained for audit.
+
+**Fix applied at the default, not at the call site**, so ~~the class is closed rather than one instance~~
+**this instance is closed** (see the correction above):
 `enable_local: bool = False` in `HybridRetriever.__init__`. Call sites that genuinely want the corpus
 (`tests/test_cut_exemption.py`, `tests/test_source_weight_*.py`, `tests/test_reranker_observability.py`)
 pass `enable_local=True` explicitly and are unaffected — **124 tests pass**.
