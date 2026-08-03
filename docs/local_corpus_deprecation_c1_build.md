@@ -22,12 +22,39 @@ human-eye gate required. No flags, no secrets, no thresholds, no composite weigh
 > | 6 | log-grep | **PASS** — and the decisive line: startup logs show **only** `TFDA indication corpus loaded: 10941` and `DailyMed label corpus loaded: 4608`, with **NO `Vector store loaded: 690 documents` line**. That is direct production confirmation the corpus is not loaded. No ERROR / CRITICAL / Traceback; the only non-2xx is my own probe's 403 |
 > | 7 | a published share/explore page still renders | **PASS — and it exercised the exact legacy path.** `/explore/metformin-contraindications-renal?locale=en` → **HTTP 200**, 5 citation cards, **0** tracebacks, and it renders **`[2] Local`** — a pre-ship `local` citation still labelled correctly through the retained fallback. **Had the mapping been removed, this live SEO-indexed URL would have silently relabelled to "Source".** *(It also makes the recorded [P2] `sourceLabels`↔`share_renderer` drift visible: this page says "Local" where the app says "FDA". Pre-existing, unchanged by this ship.)* |
 >
-> **⚠️ 3.3 could NOT be completed and is not claimed.** `/api/status` is `Depends(require_auth)` and prod
+> ### ✅ FOUNDER PROD HUMAN-EYE GATE — **PASS, 8/8** (2026-08-03) → **SHIPPED**
+>
+> | row | query | result |
+> |---|---|---|
+> | 1 | metformin renal (EN) | DailyMed 2 + PubMed 2, **no FDA chip**, renal dosing + lactic acidosis covered — **PASS** |
+> | 2 | `warfarin 和 aspirin 一起用 safe 嗎` | PubMed 3, **no FDA chip**, bleeding risk warned — **PASS** |
+> | 3 | aspirin contraindications | 1 citation — **PASS on the written criterion**, ⚠️ **but the citation is the WRONG DRUG (Finding A)** |
+> | 4 | ibuprofen warnings | DailyMed 2 + PubMed 2, GI/CV warned — **PASS**, ⚠️ **`[1]` is the wrong drug (Finding A)** |
+> | 5 | **no "FDA" chip anywhere, all rows** | **PASS — the c1 objective, confirmed on prod** |
+> | 6 | `冠脂妥台灣核准的適應症是什麼` | TFDA 核准適應症 **×4** — **PASS** (see Finding C) |
+> | 7 | `metformin 腎臟不好的病人可以用嗎` | DailyMed 3 + PubMed 2 — **PASS** |
+> | 8 | statins canary | PubMed 4 only, no safety intrusion, no FDA chip — **PASS** |
+>
+> **Both halves of the c1 objective hold on prod: the empty-stub "FDA" chip is gone, and no answer lost
+> clinical content.**
+>
+> **⚠️ 3.3 REMAINS UNVERIFIED ON PROD — CODE-VERIFIED ONLY.** `/api/status` is `Depends(require_auth)` and prod
 > runs real Clerk auth, so an unauthenticated request returns **403 `{"detail":"Missing token"}`** — I have
 > no prod session. What that *does* prove: the route exists and the handler is reachable (a clean 403, not
 > a 500). What it does **not** prove: that the payload is the new `{"status":"deprecated", …}` shape on
-> prod. The shape is verified in code and on the local gate server only. **A signed-in check would close
-> it; it is listed here as open rather than assumed.**
+> prod.
+>
+> **⚠️ AND A BROWSER SESSION CANNOT CLOSE IT EITHER — confirmed by the founder.** `require_auth` reads a
+> **Bearer token**, not a cookie, so a signed-in browser hitting `/api/status` still returns
+> `{"detail":"Missing token"}`. **Status: CODE-VERIFIED ONLY, never prod-verified. Do not record it as
+> verified.**
+>
+> **Cheapest ways to close it (proposed, NOT built):** **(a)** copy a live Clerk JWT from the browser
+> devtools Network tab (any authenticated XHR carries `Authorization: Bearer …`) and replay it with one
+> `curl -H`; **(b)** add `/api/status` to the unauthenticated allowlist — ⚠️ **NOT recommended**, it
+> exposes corpus/feature internals publicly for a debug convenience; **(c)** fold the assertion into the
+> next authenticated smoke test rather than checking it standalone. **(a) is a 30-second manual step and
+> needs no code change** — that is the recommendation.
 
 Basis: [`citation_gate_findings_20260729.md`](citation_gate_findings_20260729.md) Finding 1 ·
 [`local_corpus_decision_20260729.md`](local_corpus_decision_20260729.md) (`3e32c03`).
@@ -298,6 +325,48 @@ it is a config key; otherwise it falls through to URL-host matching, and a local
 **➡️ DECISION: keep both mappings as a legacy fallback; annotate, change no string.** This is the
 cheaper option the baton anticipated, and it means **Rule 16 is not triggered** by this ship.
 
+### ⚠️ 3.7.2 FOLLOW-UP (2026-08-03) — the `/explore` 404 discrepancy, RESOLVED. **My evidence stands.**
+
+The founder's browser returned **`{"detail":"Not found."}`** for the URL I reported as 200. **Both
+observations are correct — the difference is the LOCALE**, and I reproduced both:
+
+| URL | result |
+|---|---|
+| `…/explore/metformin-contraindications-renal?locale=en` (fly.dev **and** vela.an-tho.com) | **200**, 23,326 bytes |
+| `…/explore/metformin-contraindications-renal` (no param) | **200**, 23,326 bytes |
+| `…/explore/metformin-contraindications-renal?locale=zh` | **200** (unknown locale → falls back to `en`) |
+| **`…/explore/metformin-contraindications-renal?locale=zh-TW`** | **404 `{"detail":"Not found."}`** ← the founder's result |
+
+**Exactly what I tested, for the record:** `curl` against
+`https://vela-ai-medical.fly.dev/explore/metformin-contraindications-renal?locale=en` — prod, not a local
+server, no trailing slash. **Cause:** `explore_renderer.render_explore_page` (`:147-163`) queries a row
+keyed by **(slug, locale)**; only an `en` row was authored for this slug, so a `zh-TW` request finds no
+row and the handler returns the JSON 404 (`server.py:2694-2696`).
+
+**➡️ Task 3.7.2 is VERIFIED, not unverified.** Re-confirmed live on the custom domain: 5 citation cards,
+0 tracebacks, and the legacy card renders intact —
+
+```
+[2] Local   ·  Official
+Metformin - Safety
+Drug: Metformin Contraindications: 4 Warnings and Precautions:
+```
+
+**Two NEW findings fell out of this, NEITHER caused by c1:**
+
+1. **A sitemap-listed public SEO page returns a raw FastAPI JSON 404 to a zh-TW visitor** — not a styled
+   page, not a fallback to English. And perversely, **`?locale=zh` works while `?locale=zh-TW` does
+   not**: `zh` is not a first-class locale so it degrades to `en`, whereas `zh-TW` *is* first-class and
+   is therefore honoured, then fails the row lookup. The sitemap advertises `?locale=en` only, but a
+   zh-TW user of the app who navigates there gets raw JSON. **Recorded in TECH_DEBT.**
+2. **Published `/explore` and `/q/` pages will serve pre-c1 empty local stubs indefinitely.** c1 stopped
+   *new* answers from carrying them; it cannot touch what is already stored. That live card shows a
+   **1-character payload under a credibility pill reading "Official"** — the same honesty defect c1 just
+   removed from the live path, frozen into an SEO-indexed URL. **The retained label mapping is what keeps
+   it rendering at all, so retaining it was right** — but "renders correctly" and "says something true"
+   are different bars, and only the first is met. **Recorded in TECH_DEBT; no data migration proposed
+   here.**
+
 ### 3.7.3 — can anything still emit `source_type: local`?
 
 No new emission is possible: the corpus is the only producer and it is no longer loaded
@@ -313,6 +382,104 @@ explicitly so it does not re-enter the queue.
 ⚠️ **Its sibling survives and is NOT closed:** the TFDA chip still uses `officialTip` = *"From official
 FDA drug labeling data"* for a Taiwanese licence. That stays in the consolidated provenance-string sweep,
 which now shrinks from three strings to two.
+
+---
+
+## Finding A — [HEADLINE] the gate captured TWO LIVE wrong-drug citations on PROD
+
+Not measurements. **User-visible production output**, in founder screenshots.
+
+### A1 🔴 `aspirin contraindications` → `Clanza (Aceclofenac) — Contraindications`, the **SOLE** citation
+
+The answer states aspirin is contraindicated in patients allergic to *"other NSAIDs, or related drugs
+such as **diclofenac**"* — the exact tell identified in Phase 1: **"diclofenac" appears only because the
+aceclofenac label reads "other analogues (diclofenac)".** The entire contraindication section is
+transposed from a different drug.
+
+**Reproduced locally on the shipped config** (same code, same corpora — a faithful reproduction, *not* the
+founder's captured answer): pool of **1**, the aceclofenac Contraindications section; every claim cited
+`[1]`; `diclofenac` **PRESENT**, `asthma` **PRESENT**, `peptic ulcer` **PRESENT** — matching the
+aceclofenac label verbatim.
+
+#### ⚠️ Reye's syndrome — CHECKED, and the answer is worse than "absent from the screenshot"
+
+| check | result |
+|---|---|
+| Reye's in the reproduced answer | **ABSENT** (also "chicken pox": absent) |
+| DailyMed documents mentioning Reye | **1 of 4,608** — and it is **LEVOCARNITINE's Indications** section |
+| DailyMed `ASPIRIN` moiety sections | **`34068-7` Dosage + `34067-9` Indications only — no safety section at all** |
+| aspirin's openFDA `full_label.warnings` | **2,292 chars, and it OPENS with** *"Warnings **Reye's syndrome**: Children and teenagers who have or are recovering from chicken pox or flu-like symptoms should not use this product."* |
+
+**So Reye's syndrome is not merely missing from the answer — it is STRUCTURALLY UNREACHABLE.** No
+document in the retrievable corpus contains it. The correct text exists, in the openFDA data, as the
+*first line* of aspirin's warnings — and is indexed nowhere.
+
+**This is the concrete clinical cost: wrong-drug citation does not only misattribute, it OMITS what the
+correct label would have supplied** — here, aspirin's single most distinctive contraindication, and a
+paediatric one.
+
+**⚖️ Stated fairly, not inflated:** the answer does **not** claim completeness. Its own *Missing
+Information* section reads *"the provided context does not address other common contraindications (e.g.
+bleeding disorders, severe hepatic or renal impairment, **children with viral infections**)"* — it names
+the Reye's population without naming Reye's. **The generator hedged honestly about the gap it could
+detect.** That is the difference between this and a silent omission, and it is why the Phase-1
+adjudication rated the *citation* 🔴 while the *answer* stops short of a false clinical claim.
+
+### A2 🟠 `ibuprofen warnings` → `[1] Piroxicam — Boxed Warning`
+
+Same shape, milder impact: the answer hedges to NSAID **class-level** language, consistent with the
+Phase-1 adjudication of ibuprofen as 🟠 rather than 🔴.
+
+### Attribution — recorded explicitly
+
+- **NEITHER is caused by c1.** Both were measured pre-c1 in the Phase-1 severity adjudication.
+- **c1 DID make A1 starker.** Aspirin's pool thinned **2.7 → 1.0 documents/run**, so the wrong-drug
+  citation went from *one of several* to **the only one**. **The defect did not grow — nothing is left
+  standing in front of it.** That is c1 working as designed (the removed documents were empty), and it is
+  exactly the "uncovers rather than creates" effect already recorded.
+- **This is the strongest evidence yet for prioritising c2**, and **both queries become named rows in
+  c2's own human-eye gate.**
+
+---
+
+## Finding B — the gate criterion I wrote checked COUNT, not IDENTITY (Rule 17, 6th instance)
+
+Gate row 3 read: *"a single DailyMed Contraindications citation is a PASS."* I wrote that to stop
+**thinness** being misread as failure — a real risk, since c1 legitimately thins OTC pools. **But it
+passed a wrong-drug citation, because it asserted how MANY citations appeared and never asserted WHOSE
+label they were.** A row that had said *"a DailyMed Contraindications section **for ASPIRIN**"* would
+have failed row 3 immediately.
+
+**Same shape as the five already recorded** — the fly-211 any-drug recovery metric · the §2.7 rubric's
+blindness to wrong-drug citation · `SOURCE_WEIGHT_SHADOW` censoring · Lever-1 censoring · the
+nine-harness divergence. **What is new: this instance is in a HUMAN-EYE checklist, not an automated
+one.** The failure mode is not specific to code — I wrote a prose criterion that measured the easy
+property instead of the meaningful one, and a human following it faithfully still passed a defect.
+
+**📋 PROPOSED STANDING RULE (founder approval requested — CLAUDE.md NOT edited):** *any human-eye gate
+row that checks citations must name the EXPECTED DRUG (or expected document), not merely an expected
+source type or count.* Cross-ref **Rule 17** — *"tests must verify intent, not just behavior"* — this
+extends it from automated tests to hand-written gate rows. **Ops checklist updated accordingly.**
+
+---
+
+## Finding C — TFDA returned 4 citations where it previously returned 1 (OBSERVATION)
+
+Same query `冠脂妥台灣核准的適應症是什麼`: **1** TFDA citation at the fly-214 gate, **4** at fly 215
+(冠脂妥膜衣錠5毫克 + 優脂定膜衣錠5毫克 + 2 more, **all ROSUVASTATIN CALCIUM**).
+
+**Recorded as an observation, not a causal claim.** n=1 per arm, on different days, with
+rewrite-nondeterminism churn known to move pools. The **freed-slot hypothesis is plausible and named** —
+c1 vacated `top_k` slots and TFDA documents are eligible to fill them — but **it is not demonstrated**,
+and the fly-214 run had `pool_size=1` overall, which is itself the thin-pool shape.
+
+**⚠️ The interesting question is whether this is desirable at all.** Four citations for four brand
+licences of **the same active ingredient** is arguably **near-duplicate crowding**: the user sees four
+reference cards that say the same thing about rosuvastatin, occupying slots a genuinely different source
+could hold. It is not wrong — each is a real, correctly-cited licence — but it is low information per
+slot. **This touches the already-scoped Finding-6 representative-licence sort key**: the same corpus
+design that picks one representative 許可證字號 per document could also collapse same-ingredient
+brand licences at retrieval time. **Recorded as a design question for that baton, not decided here.**
 
 ---
 
@@ -351,7 +518,40 @@ carry omeprazole safety sections, and **omeprazole→PANTOPRAZOLE is coverage-ca
 in fact it is the cleanest illustration of the mechanism, because the drug whose label got substituted
 is precisely a REDUNDANT sibling.
 
-**aspirin is the genuine exception, tentatively.** Mono-aspirin appears to be OTC-only in the US SPL
+> ### ⚠️ CORRECTED 2026-08-03 — **ASPIRIN IS c2-FIXABLE. 5-for-5 becomes 6-for-6** — but by a DIFFERENT sub-fix
+>
+> The paragraph below called aspirin "the likely exception" because its **local `full_label`** was an OTC
+> Drug-Facts label. **That was a statement about the LOCAL corpus, not about DailyMed** — the founder was
+> right to push on it. Checking DailyMed directly:
+>
+> | moiety key | docs | safety sections | reference label |
+> |---|---|---|---|
+> | `ASPIRIN` | 2 | **NONE** | VAZALORE (OTC) |
+> | **`ACETYLSALICYLIC ACID`** | **5** | **`34070-3` Contraindications · `34073-7` Drug Interactions · `43685-7` Warnings** | **DURLAZA — Rx extended-release aspirin** |
+>
+> **The Rx aspirin label the founder hypothesised EXISTS and is ALREADY IN THE CORPUS** (Contraindications
+> 375 · Drug Interactions 2,198 · Warnings 1,111 chars). It is simply **under a different moiety key**, so
+> an "aspirin" query never reaches it.
+>
+> **➡️ Aspirin's fix is NOT the Rx-preference tiebreak (c2-i) — it is MOIETY-SYNONYM NORMALIZATION**,
+> already recorded as a sub-defect of the DailyMed coverage [P2] (*"ASPIRIN and ACETYLSALICYLIC ACID are
+> two moiety keys for the same drug"*). **Call it c2-iii. It needs NO new data at all — just a key alias —
+> making it the cheapest of the three sub-fixes.** So c2 is: **c2-i** Rx-preference tiebreak (naproxen,
+> omeprazole, ibuprofen, cimetidine) · **c2-ii** scope widening (biologics/insulin/GLP-1, founder call) ·
+> **c2-iii** moiety-synonym normalization (aspirin).
+>
+> **⚠️ KNOWN RESIDUAL — c2 fixes the CITATION but NOT the Reye's gap.** DURLAZA's safety sections
+> **do not mention Reye's syndrome** (verified: 0 hits). DURLAZA is Rx extended-release aspirin for adult
+> cardiovascular use; the Reye's warning is a **paediatric OTC Drug-Facts** item, and Drug-Facts labels
+> carry no LOINC safety sections at all. **So after c2, `aspirin contraindications` would correctly cite
+> aspirin's own label instead of aceclofenac's — and would still omit Reye's syndrome.**
+> **This exposes a genuine c2 DESIGN QUESTION: for drugs with dual OTC/Rx status, ONE reference label is
+> structurally insufficient** — the Rx label carries the structured safety sections, the OTC label carries
+> the population-specific warnings, and neither alone is the whole truth. **Flagged for the c2 baton to
+> decide; not decided here.**
+
+**~~aspirin is the genuine exception, tentatively.~~** *(Superseded by the correction above — retained for
+audit.)* Mono-aspirin appears to be OTC-only in the US SPL
 universe — the *independent* openFDA hit for aspirin is also an OTC label (Low Dose Aspirin, P&L
 Development, **0** interaction chars, Drug-Facts Warnings only), matching DailyMed's VAZALORE. If no Rx
 mono-aspirin SPL with a safety section exists, **c2 cannot fix aspirin** and it needs a different
