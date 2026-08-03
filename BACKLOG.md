@@ -1101,12 +1101,212 @@ Phase 1B work items per advisor discussion 2026-05-04 (preserved in git commit 3
 
 ## Phase 2 candidates (exploratory) — post Phase 1B / post Stage 3, not scheduled
 
-### [P2] Generative UI — structured/interactive answer rendering
+### ⛔ [NOT PURSUING — DECIDED 2026-08-03] LAYER 1: Generative UI (LLM selects components at runtime)
 
-> **Reworked 2026-06-08 into two tiers:** a near-term **Tier 1 Verify PoC** pulled
-> forward to the Phase 1B tail, feeding the go/no-go on the **Tier 2** full rollout
-> (unchanged — still Phase 2, gated on prod data). Every original rationale line +
-> design constraint below is PRESERVED and applies to BOTH tiers.
+> **RESTRUCTURED 2026-08-03 (founder + strategist, after fresh trend + evidence research).**
+> The former two-tier entry (written 2026-06-02, reworked 2026-06-08) **conflated three different
+> things**, and its evidence base has been **superseded by two randomized clinical trials**. It is now
+> **three separate entries**: **Layer 1** (this one) = the full generative-UI rollout, **now a decision,
+> not a deferral** · **Layer 2** = structured rendering of already-validated data, kept but gated and
+> demoted · **Layer 3** = **Calibration UI**, a NEW and differentiated direction. **Every original
+> rationale line and design constraint is PRESERVED below as retained history** (same treatment as the
+> STATE.md archived-header precedent) — they remain correct, and are now evidence-backed rather than
+> merely argued.
+
+**DECISION: NOT PURSUING.** Previously "Phase 2, gated on prod data"; that framing implied it was
+waiting for evidence. The evidence arrived and points the other way.
+
+- **The core conflict.** Generative UI means **an LLM decides AT RUNTIME which components to render**.
+  In a medical product that is **letting a model which can hallucinate decide what looks
+  authoritative** — a direct conflict with the citation-mandatory / anti-hallucination positioning, and
+  with **CLAUDE.md Rule 19**'s principle that a compensating behaviour must travel with the data it
+  protects. Here the compensating behaviour (provenance, hedging, honest gaps) would have to travel into
+  a component-selection layer that is itself model-generated.
+- **⚠️ Measured in Vela THIS MONTH — the risk is not hypothetical:** **three false provenance strings**
+  (TFDA chip claiming FDA labeling · the `local` chip · the locale panel's "not integrated" note), a
+  **6-for-6 coverage-caused wrong-drug citation defect** (`aspirin contraindications` answered entirely
+  from *Clanza (Aceclofenac)* on prod), and a **1-character stub labelled "Official"** still live on a
+  public indexed page. **Making provenance DISPLAY richer while provenance CORRECTNESS is still being
+  repaired amplifies exactly the risk this entry's own constraints warn about.**
+- **🔓 REOPEN CONDITION (so this is a decision, not a dead end):** revisit **only if** (a) provenance
+  correctness is closed — c2, openFDA query repair, and the provenance-string sweep all shipped and
+  verified — **AND** (b) real prod data shows users struggle with the current presentation. **Both, not
+  either.**
+
+#### 📎 RETAINED RATIONALE (original Tier-2 constraints — still correct, now evidence-backed)
+
+- **Source**: Andrew product exploration 2026-06-02 (generative UI trend research + medical over-trust risk analysis)
+- **Idea**: Render Vela answers as structured/interactive components (React/HTML) instead of plain text/markdown, for more intuitive comprehension. Trend is real (Gartner: ~30% of new apps to use AI-driven adaptive interfaces by 2026; Vercel AI SDK RSC / Google A2UI / CopilotKit AG-UI are mature patterns — LLM emits structured JSON selecting which component to render).
+- **CRITICAL design constraints (the reason this is recorded, not just "do generative UI")**: medical context inverts the usual "rich UI = better" conclusion because of the OVER-TRUST risk (Stanford-Harvard State of Clinical AI 2026 + ECRI 2026 top patient-safety concern: users over-trust confident-looking systems lacking clinical context). Rich/authoritative UI can make a possibly-hallucinated answer LOOK more authoritative, directly undermining Vela's citation-mandatory / anti-hallucination positioning. Therefore:
+  1. **Structured UI ONLY for: source/citation surfacing, numeric values vs ranges, verification paths.** NOT for wrapping prose clinical judgment to make it look more authoritative.
+  2. **Per-mode suitability differs by data shape:**
+     - **Verify (drug interactions)** — BEST fit, lowest over-trust risk. Data is already structured (drug pairs, severity, mechanism, source from FDA/DailyMed). Interaction matrix + severity badge visualizes already-validated structured data, not free-generated prose. The removed ProductShowcase Verify card ("⚠ Major Interaction" badge) was a proto-version.
+     - **Explain (lab results)** — GOOD fit, BUT numeric-mapping correctness is safety-critical: a value→status mapping error (e.g. TSH 12.5 shown as "normal/green") is MORE dangerous than a prose error because visualization makes it look precise. Requires strict correctness validation of the value→status mapping. The removed Explain card ("↑ Above normal range") was a proto-version.
+     - **Research (evidence Q&A)** — WORST fit for charts (prose reasoning forced into visuals = the over-trust trap). BUT citation can be structured (source cards, evidence-tier badges, PubMed links) — that part STRENGTHENS verification, so it's additive.
+  3. **Numeric/status mappings (Explain) need rigorous correctness validation** — wrong mapping in a visual is more dangerous than in prose.
+  4. **Gate on prod data, not trend** — only invest if PostHog shows users struggle with plain-text answers (e.g. high dwell/bounce on Explain lab interpretation). The problem (plain text is hard to comprehend) is unvalidated until there are real users.
+- **Solo-founder cost note**: large effort — component manifest, LLM structured-output prompt engineering + validation, streaming render, per-component 16-locale i18n, a11y, AND medical content correctness validation (heavier than general-purpose apps). Competes with Stage 3 + Phase 1B for resources.
+- **Suggested entry point IF pursued**: narrow PoC on Verify interaction matrix first (most structured data, lowest over-trust risk, existing ProductShowcase proto). NOT a full-app generative UI rewrite.
+
+> **⚠️ Reconciling constraint 2 with Layer 3 (read together, they are NOT in conflict):** the table above
+> calls Research the **WORST fit *for charts*** — forcing prose reasoning into visuals. **Layer 3 is not
+> charts.** It adds a *calibration cue* about evidence disagreement, which falls under the same
+> sentence's second half: *"citation can be structured … that part STRENGTHENS verification, so it's
+> additive."* Layer 3 is the additive half, not the charts half.
+
+---
+
+### [P3 — GATED, LOW priority] LAYER 2: Structured rendering of ALREADY-VALIDATED data (Verify)
+
+> **Formerly "TIER 1 Verify generative-UI PoC".** Survives the 2026-08-03 review, with corrections.
+
+**⚠️ CORRECTION — this is NOT the differentiated opportunity.** The 2026-06-08 rework treated it as the
+near-term win; the review found it had been **conflated with Layer 3**. Its value proposition is
+*"looks better"*, which **has no supporting evidence** and carries presentation risk in a medical
+context. **Layer 3 is the differentiated direction; this is a polish item.** Demoted [P2] → **[P3]**.
+
+- **Scope (unchanged)**: render Verify's EXISTING validated structured output (interaction matrix +
+  severity badge + per-drug info cards + source chips) as interactive components. **Verify remains the
+  safest mode** — the data is already structured and validated.
+- **Placement gates:** **(a) MET** — Verify force-English + drug-name resolution + DailyMed all shipped.
+  **(b) NOT MET** — the §5.1 在地差異 **6-country moat has only TW / SG / MY of 6**; JP/KR/TH are
+  blocked on native review (b2).
+- **🆕 (c) NEW SEQUENCING CONSTRAINT (added 2026-08-03) — must come AFTER the content-correctness work in
+  flight: c2 (DailyMed reference-label selection) · openFDA query repair · the consolidated
+  provenance-string sweep.** All three touch **the same chip / citation components** this layer would
+  restyle, so building first means building it twice. Cross-ref those entries.
+- **🆕 SHARPER SUITABILITY RULE (2026-08-03 — generalises the per-mode table above; that table is
+  retained, not replaced):**
+  > **The dividing line is NOT data shape — it is whether the content could be a hallucination.**
+  > **LLM-GENERATED content stays prose. RETRIEVED FACTS may be structured.**
+  > Verify's **severity verdict is LLM-judged** (hence the v199 honesty fix), so **it does not
+  > qualify**; a **DailyMed section's own label text does**.
+  >
+  > ⚠️ **This bites Layer 2's own headline feature.** The "severity badge" in the scope line above is
+  > exactly the LLM-judged verdict the rule excludes. **A Layer-2 build must re-scope around that** —
+  > render the retrieved label text and the source chips, not the generated severity grade.
+- **Over-trust guardrail (retained)**: render ONLY already-validated structured data; introduce NO new
+  medical inference; do NOT wrap prose clinical judgment to look more authoritative.
+- **Gate-override note (retained, but weakened):** the original entry let this PoC override its own
+  "gate on prod data, not trend" rule, on the reasoning that a small time-boxed bet is worth an
+  experiential signal. **That override is now much harder to justify** — the same review that produced
+  Layer 3 found the *"structured looks better"* premise unevidenced, while Layer 3's premise has RCT
+  effect sizes. **If there is one experiential bet to make, it is Layer 3, not this.**
+
+---
+
+### [P2 — NEW 2026-08-03, GATED] LAYER 3: **Calibration UI** — help users know which answers deserve a second look
+
+> **This is the differentiated direction.** Filed as its own entry, not a sub-tier, because **its goal is
+> different**: not *"easier to read"* but **"help the user know which answers deserve a second look."**
+
+**🎯 THE DESIGN PRINCIPLE (corrects the original framing of this whole entry):**
+> The goal is **NOT** "make everything easier to read." It is **"let the easy cases stay fast and make
+> the doubtful cases slow down."** In the nudge RCT, treated physicians spent **~52.5s LONGER per case**,
+> with a **larger increment on cases where the LLM was wrong** — **selective System 2 engagement, not
+> uniform slowing. Better outcomes came from selective friction, not from lower friction.**
+
+#### Evidence base (both trials POST-DATE this entry's original 2026-06-02 research)
+
+- **NEJM AI, April 2026 — Qazi et al., RCT, n=44 physicians, ALL with 20-hour AI-literacy training.**
+  Diagnostic reasoning fell from **84.9%** with error-free LLM suggestions to **73.3%** with flawed ones
+  — a **14.0-point adjusted drop**. **AI-literacy training alone was insufficient.**
+  `doi:10.1056/AIoa2501001`
+- **medRxiv, June 2026 — Qazi et al. follow-up RCT, n=72 physicians, 432 cases.** A lightweight
+  **dual-component behavioural nudge** improved diagnostic reasoning by **+7.6 pp** (95% CI 1.4–13.9,
+  P=0.016) and top-choice diagnosis accuracy by **+10.9 pp** (P=0.020). `doi:10.64898/2026.06.01.26354596`
+  The nudge = **(i) an ANCHORING CUE** showing the model's benchmark accuracy before each recommendation
+  **+ (ii) a SELECTIVE-ATTENTION CUE**: ensemble confidence from **three DIFFERENT-FAMILY models**, shown
+  as a red/orange/green traffic light.
+
+#### Four mechanism findings that CONSTRAIN the design
+
+1. **A model's own confidence score is unreliable** — documented overconfidence on incorrect output.
+   **Cross-model DISAGREEMENT is a model-agnostic signal needing no model internals.**
+   **➡️ Do NOT build self-reported confidence.** *(Audited: Vela surfaces none today — good.)*
+2. **Uniform friction fails.** Cognitive forcing functions (forced delays, commit-first) reduce
+   overreliance only at a friction cost users resist; self-explanations get processed heuristically
+   rather than substantively.
+3. **Selectivity is the point.** Uniform skepticism is cognitively costly and **erodes the genuine
+   accuracy gains** LLM consultation provides on routine cases.
+4. **Interface beats training.** In high-stakes domains, interface modifications consistently outperform
+   training-only interventions (human-factors parallel) — and finding 1's RCT shows training alone
+   failing directly.
+
+#### ⚠️ Primary mode is **RESEARCH**, not Verify
+
+Correcting any impression carried over from the old entry (which designated Verify the entry point for
+*rendering*). Research is where the **evidence-strength signal is meaningful**, where **Lever 1 already
+lives**, and where the **wrong-drug defect occurs**.
+
+#### What Vela ALREADY has (audited in code 2026-08-03 — read-only, nothing modified)
+
+| RCT component | Vela status | evidence |
+|---|---|---|
+| **Selective-attention cue** (disagreement) | ✅ **already exists as a detector** — `RETRIEVAL_REFUSAL_SHADOW` (Lever 1) detects one-sided pools and has logged **real prod traffic since fly 181 (2026-06-18)** | hook `api/server.py:957-959` (flag-gated `create_task`) → `_run_retrieval_refusal_background` `api/server.py:572` → `rr.assess()` `:585` |
+| **Honest gap flagging** | ✅ exists | the v190 no-retrieval honesty instruction `api/rag/generator.py:54-60`; and the aspirin gate answer's *Missing Information* section naming *"children with viral infections"* |
+| **Verifiable sources** | ✅ exists | citation deep-links, repaired fly 214/215 — `isUsableSourceUrl` gate in `components/CitationPanel.tsx` |
+| **ANCHORING CUE** (model benchmark accuracy shown before the recommendation) | ❌ **NOT PRESENT — the missing piece** | no equivalent anywhere in `components/` |
+| *self-reported confidence* | ✅ **correctly absent** | grep of `components/` + `utils/sourceLabels.ts` → no confidence surfaced to users, matching mechanism finding 1 |
+
+#### 💡 Cheaper mechanism candidate (RECORD ONLY — do NOT scope)
+
+The RCT used a **3-model ensemble**, and its authors note multiple queries carry operational cost.
+**Vela is a RAG product**, so **disagreement among RETRIEVED SOURCES** is a candidate substitute signal —
+cheaper than running three models and arguably **more meaningful for an evidence product**. **Lever 1
+already approximates this.**
+**❓ OPEN QUESTION, UNMEASURED: is source-level disagreement a valid proxy for the model-ensemble
+disagreement the RCT validated?** They are not obviously the same construct — one measures *evidence
+conflict in the literature*, the other *model unreliability*. **Do not assume equivalence.**
+
+#### 🔴 PREREQUISITE — Lever 1's dataset is CENSORED against exactly the shape it detects
+
+Any calibration-UI work **depends on that data being uncensored first**:
+- **`api/server.py:583`** — `if len(sources) < 2: return`, so the **most extreme one-sided pools never
+  reach `assess()` at all**. *(⚠️ The baton cited `server.py:571-572`; the early return is at **:583**,
+  inside `_run_retrieval_refusal_background` which begins at :572. Corrected here.)*
+- **`api/services/retrieval_refusal.py:69-79`** — `pool_sources_from_documents` counts **PubMed
+  documents only** (`if getattr(d, "source_type", None) != SourceType.PUBMED: continue`), so a pool that
+  is entirely DailyMed/TFDA/label-sourced registers as **zero sources** and is dropped by the same guard.
+- **Cross-ref the existing [P2] `RETRIEVAL_REFUSAL_SHADOW` is structurally blind entry** — same defect,
+  and it is the **2nd of the six recorded "instrument blind to its own target" instances.**
+
+#### 🆕 A THIRD option on the pending Lever-1 enforce decision
+
+The enforce decision has been framed as **enforce vs not** (refuse the answer). This review adds a third,
+**much lower-risk** option — and it is **what the RCT actually validates**:
+> **Surface the signal to the user as a CALIBRATION CUE rather than refusing.**
+
+Refusing withholds an answer on a shadow signal that has never been enforced; a cue **preserves the
+answer and lets the clinician allocate attention** — which is precisely the measured +7.6 pp / +10.9 pp
+mechanism. **Recorded as a new option on that decision. NOT decided here.**
+
+#### Competitive positioning (why this is the differentiated layer)
+
+- **Inline citations are NO LONGER differentiation.** OpenEvidence has content partnerships with **NEJM
+  Group** and the **JAMA Network**, **40%+ of US physicians** as daily users, and a reported **$12B**
+  valuation.
+- Its **most-cited weakness in 2026 clinician reviews** is being *"annoyingly confident when it's
+  wrong"*; one physician reported hallucinations across **1,220+ searches**, and **88%** of surveyed
+  physicians want more rigorous safety validation.
+- **So the open position is not "prettier" — it is HONEST EXPRESSION OF UNCERTAINTY**, now with
+  **RCT-measured effect sizes**, and **consistent with Vela's existing positioning** (citation-mandatory,
+  fail-loud, honest gaps) rather than a new direction requiring a pivot.
+
+#### Gating
+
+**GATED on (1) the Lever-1 censoring fix** (above) **and (2) the content-correctness work** — c2, openFDA
+query repair, provenance-string sweep. A calibration cue computed from a censored signal, or displayed
+alongside citations that name the wrong drug, would be **worse than none**: it would attach a
+trustworthiness signal to output whose provenance is still being repaired.
+
+---
+
+### 📎 SUPERSEDED (retained for audit): TIER 1 (2026-06-08 framing) — [P2] Verify generative-UI PoC
+
+> **Superseded 2026-08-03** by **Layer 2** above (kept, gated, demoted to [P3], re-scoped around the
+> hallucination-vs-retrieved rule) and **Layer 3** (the differentiated direction this tier was conflated
+> with). Original text retained below.
 
 #### TIER 1 (NEW — near-term): [P2] Verify generative-UI PoC (rich structured rendering)
 - **Scope**: render Verify's EXISTING validated structured output (interaction matrix
@@ -1133,8 +1333,12 @@ Phase 1B work items per advisor discussion 2026-05-04 (preserved in git commit 3
 - **Exit condition**: productionize the PoC AND consider Tier 2 (full generative UI)
   ONLY if the PoC result + prod data BOTH support it.
 
-#### TIER 2 (UNCHANGED — full generative-UI rollout, Phase 2, gated on prod data)
-> Cross-ref: Tier 1 above is the pulled-forward Verify PoC that feeds this decision.
+#### 📎 SUPERSEDED: TIER 2 (2026-06-08 framing — "full generative-UI rollout, Phase 2, gated on prod data")
+> **Superseded 2026-08-03 → LAYER 1 above, which converts this from a DEFERRAL into a DECISION
+> (NOT PURSUING, with a stated reopen condition).** The rationale and constraint lines below are
+> **reproduced verbatim in Layer 1's "RETAINED RATIONALE" block**, where they remain live and
+> evidence-backed; this copy is the original placement, kept for audit. **Do not treat the "gated on
+> prod data" status line as current — it is not.**
 - **Source**: Andrew product exploration 2026-06-02 (generative UI trend research + medical over-trust risk analysis)
 - **Idea**: Render Vela answers as structured/interactive components (React/HTML) instead of plain text/markdown, for more intuitive comprehension. Trend is real (Gartner: ~30% of new apps to use AI-driven adaptive interfaces by 2026; Vercel AI SDK RSC / Google A2UI / CopilotKit AG-UI are mature patterns — LLM emits structured JSON selecting which component to render).
 - **CRITICAL design constraints (the reason this is recorded, not just "do generative UI")**: medical context inverts the usual "rich UI = better" conclusion because of the OVER-TRUST risk (Stanford-Harvard State of Clinical AI 2026 + ECRI 2026 top patient-safety concern: users over-trust confident-looking systems lacking clinical context). Rich/authoritative UI can make a possibly-hallucinated answer LOOK more authoritative, directly undermining Vela's citation-mandatory / anti-hallucination positioning. Therefore:
