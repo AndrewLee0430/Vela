@@ -122,11 +122,24 @@ Re-parsing the **same pinned setids** and diffing against the shipped corpus:
 
 | | |
 |---|---|
-| shipped-only `source_id`s (section vanished upstream) | **11** |
+| ~~shipped-only `source_id`s (section vanished upstream)~~ | ~~**11**~~ **❌ REFUTED — see below** |
 | new-only `source_id`s | 0 |
-| same `source_id`, **content differs** | **30** |
+| same `source_id`, **content differs** | **30** ✅ stands |
 
-**DailyMed has changed ≥30 sections since the pinned snapshot.** Independent of c2; same family as the
+> ### ❌ REFUTED 2026-08-04 — the "11 vanished upstream" was MY OWN fetch failure, not upstream drift
+>
+> All **11** belong to exactly **2 setids** — `TOLTERODINE TARTRATE` (5 sections) and `ZOLPIDEM TARTRATE`
+> (6 sections) — **the two setids this probe failed to fetch**. They are missing from the re-parse
+> because they were never fetched. **Genuinely vanished upstream: 0.**
+>
+> And those labels are **not withdrawn**: `drugInfo.cfm` returns **HTTP 200** with the correct current
+> labels (**Detrol® LA**, **AMBIEN CR**); only the v2 API `spls/{setid}.xml` 404s. **A DailyMed API-vs-web
+> inconsistency that blocks REFRESH, not CITATION.** Full detail:
+> [`dailymed_stale_citations_20260804.md`](dailymed_stale_citations_20260804.md).
+
+**The 30 content-differs is real and stands** — **18 of them are SAFETY sections** (Warnings ×10,
+Interactions ×4, Contraindications ×2, Boxed ×2), with substantive deltas (RILUZOLE warnings +741,
+PROGESTERONE contraindications +305, BUPRENORPHINE warnings −661). Independent of c2; same family as the
 recorded TFDA snapshot-staleness item. **Deliberately EXCLUDED from the Part-3 arms** (see §3.0) so it
 cannot contaminate the comparison.
 

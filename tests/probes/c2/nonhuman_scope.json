@@ -1,0 +1,71 @@
+{
+ "pinned": 1036,
+ "doctype_set": 15,
+ "flagged": [
+  {
+   "moiety": "CHLORTETRACYCLINE HCL",
+   "setid": "f65a7756-a03e-481e-943b-fdc6c715a454",
+   "title": "CLTC 100 MR (chlortetracycline hydrochloride) — Warnings and Precautions",
+   "doctype_code": "50575-0",
+   "doctype": "50575-0",
+   "human_doctype": false,
+   "indexed_sections": [
+    "34067-9",
+    "34068-7",
+    "43685-7"
+   ],
+   "safety_sections": [
+    "43685-7"
+   ],
+   "citable_as_safety": true,
+   "vet_strong": [
+    "\\bin (cattle|swine|horses|dogs|cats|poultry|sheep|calves|broiler chickens)\\b",
+    "\\bnot for human use\\b",
+    "\\bwithdrawal period\\b"
+   ],
+   "vet_weak": [],
+   "supplement": []
+  },
+  {
+   "moiety": "LEVAMISOLE",
+   "setid": "a5cd77e0-af84-4ef6-b0bf-b3dc706352c3",
+   "title": "LevaMed Soluble Drench Powder (Levamisole Hydrochloride) — Indications and Usage",
+   "doctype_code": "50577-6",
+   "doctype": "50577-6",
+   "human_doctype": false,
+   "indexed_sections": [
+    "34067-9",
+    "34068-7"
+   ],
+   "safety_sections": [],
+   "citable_as_safety": false,
+   "vet_strong": [
+    "\\bdrench\\b",
+    "\\bin (cattle|swine|horses|dogs|cats|poultry|sheep|calves|broiler chickens)\\b"
+   ],
+   "vet_weak": [
+    "\\bcattle\\b"
+   ],
+   "supplement": []
+  },
+  {
+   "moiety": "POTASSIUM GLUCONATE",
+   "setid": "43642434-ed10-49da-954b-a6306cb939de",
+   "title": "RenaKare (Potassium Gluconate) — Indications and Usage",
+   "doctype_code": "50578-4",
+   "doctype": "50578-4",
+   "human_doctype": false,
+   "indexed_sections": [
+    "34067-9",
+    "34068-7"
+   ],
+   "safety_sections": [],
+   "citable_as_safety": false,
+   "vet_strong": [],
+   "vet_weak": [
+    "\\bveterinarian\\b"
+   ],
+   "supplement": []
+  }
+ ]
+}
