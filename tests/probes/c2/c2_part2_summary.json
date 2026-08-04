@@ -1,0 +1,46 @@
+{
+ "labels_total": 1036,
+ "labels_with_34071_1": 381,
+ "chars_total": 985163,
+ "by_doctype": {
+  "Rx": {
+   "n": 264,
+   "chars": 914222
+  },
+  "OTC": {
+   "n": 107,
+   "chars": 66480
+  },
+  "58476-3": {
+   "n": 4,
+   "chars": 1084
+  },
+  "50578-4": {
+   "n": 3,
+   "chars": 1487
+  },
+  "50577-6": {
+   "n": 3,
+   "chars": 1890
+  }
+ },
+ "doctype_totals": {
+  "Rx": 908,
+  "OTC": 113,
+  "50575-0": 1,
+  "58476-3": 5,
+  "50578-4": 4,
+  "60683-0": 1,
+  "50577-6": 4
+ },
+ "new_docs": 381,
+ "new_chars": 985163,
+ "shipped_docs": 4608,
+ "moieties_zero_safety": 128,
+ "moieties_gaining_first": 118,
+ "staleness": {
+  "shipped_only": 11,
+  "new_only": 0,
+  "content_differs": 30
+ }
+}

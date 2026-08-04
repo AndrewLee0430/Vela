@@ -90,11 +90,28 @@ counts are from the live SPL parse. `Rx/OTC` is the SPL document-type code (see 
 
 **➡️ The c2-i prerequisite is MET, 6/6, against live DailyMed — no longer an openFDA-mirror inference.**
 
-⚠️ **Two caveats that survive:** **(1) cimetidine's Rx label is genuinely thin** — c2-i would fix its
-*wrong-drug citation* (COBIMETINIB) but give it much less content than the others. **(2)** the top Rx
-famotidine hit is an **injection**, and the ANDA one a **powder for suspension** — for an oral-tablet
-question the route differs. **Route/form suitability is NOT addressed by an Rx preference and is not in
-this probe's scope.** Flagged, not solved.
+⚠️ **THREE caveats survive — kept deliberately separate, they are different defects:**
+
+**(1) cimetidine's Rx label is genuinely thin** — c2-i would fix its *wrong-drug citation* (COBIMETINIB)
+but give it much less content than the others (contra ~110 chars, no warnings section).
+
+**(2) ROUTE / FORM mismatch.** The top Rx famotidine hit is an **injection** and the ANDA one a **powder
+for suspension**; terbinafine's OTC reference is a **topical cream** while its Rx is an **oral tablet**.
+For an oral-tablet question the route differs. **An Rx preference does not reason about route.** Not in
+this probe's scope. Flagged, not solved.
+
+**(3) 🆕 COMBINATION-PRODUCT contamination on the DailyMed side (added 2026-08-04).** Famotidine's pinned
+NDA reference **`PEPCID COMPLETE` carries 3 active moieties** (famotidine + calcium carbonate + magnesium
+hydroxide); its ANDA siblings `4e8a936c` / `962ced24` carry **5**. Ibuprofen's `ADVIL PM` (2) and `ADVIL
+COLD AND SINUS` (2), and the Rx `4493d4cd` **IBUPROFEN AND FAMOTIDINE** (2), are the same shape.
+**This is a new instance of the recorded combination-product defect family** — previously measured at
+**22/190 (11.6%) on the LOCAL corpus** (`docs/local_corpus_decision_20260729.md`) — **now observed on the
+DailyMed corpus side as well.** A mono-ingredient backbone moiety grounding on a multi-ingredient label
+attributes the combination's safety profile to one drug.
+⚠️ **Keep this DISTINCT from caveat (2).** Route/form and combination-product are **two different
+defects** with different fixes: (2) is about dosage form, (3) is about how many drugs the label covers.
+The builder already has mono-preference machinery for the resolve path (`_find_mono_reference` `:326`,
+`dropped_combo`), so the question is why these survived — **unmeasured here, not investigated.**
 
 ---
 
@@ -126,7 +143,31 @@ The root `<code>` element of every SPL carries a LOINC document type:
 
 **48 / 48 labels resolved to exactly one of the two. Zero unknowns, zero missing.**
 
-**And it predicts safety-section presence perfectly on this sample:**
+> ### ⛔ RETRACTED 2026-08-04 — the claim below was CIRCULAR. Retained for audit.
+>
+> The table's own column header says *"with ≥1 **corpus-whitelisted** safety section"*, and
+> **`34071-1` is not in the whitelist**. So "OTC 0/34" does not measure the doctype — **it measures
+> the whitelist**, which excludes precisely the section OTC labels use. The finding was an artifact
+> of the metric.
+>
+> **What the same 48 labels show once `34071-1` IS counted:**
+>
+> | doctype | n | with ≥1 safety section (**whitelist + 34071-1**) |
+> |---|---|---|
+> | Rx `34391-3` | 14 | **14 (100 %)** |
+> | OTC `34390-5` | 34 | **34 (100 %)** |
+>
+> **The discrimination vanishes entirely. Doctype predicts NOTHING about whether a label has safety
+> content — only about which LOINC that content is filed under.** `CONFIRMED` from the same probe JSON
+> (34/48 labels carry `34071-1`, and all 34 are the OTC ones).
+>
+> **⚠️ What this does and does not cost.** It does **not** touch the Rx/OTC **discriminator** finding
+> above (48/48 resolving to `34391-3`/`34390-5`, zero unknowns) — that stands, does not depend on the
+> whitelist, and is Task C's real contribution. It **does** remove any claim that doctype is a proxy for
+> *content presence*, and it undercuts the implied argument that OTC labels are inherently safety-poor.
+> **They are not; they are differently-coded.**
+
+**~~And it predicts safety-section presence perfectly on this sample:~~** *(retracted — see above)*
 
 | doctype | n | with ≥1 **corpus-whitelisted** safety section |
 |---|---|---|
@@ -145,7 +186,18 @@ not license the general claim.
 ### 🔎 Task-C side finding — **LOINC `34071-1` is not in the corpus's section list at all**
 
 The builder's `SECTIONS` (`:77-84`) covers `34073-7 · 34066-1 · 34070-3 · 43685-7 · 34067-9 · 34068-7`.
-**`34071-1` ("WARNINGS", the Drug-Facts-style section) is absent.** `CONFIRMED` by file read.
+**`34071-1` is absent.** `CONFIRMED` by file read.
+
+> **⚠️ CHARACTERISATION CORRECTED 2026-08-04.** This section originally called `34071-1`
+> *"the Drug-Facts-style section"*. **That is imprecise and it understates E-A's blast radius.**
+> **`34071-1` is the PRE-PLR "WARNINGS" code.** It is used by OTC Drug Facts labels **AND by
+> legacy-format PRESCRIPTION labels that were never converted to the Physician Labeling Rule format**;
+> the whitelisted `43685-7` is the **PLR-era "WARNINGS AND PRECAUTIONS"**. The two are format-era
+> siblings, not consumer-vs-professional siblings.
+> **This probe's own data proves it:** `17577b3b` (IBUPROFEN, **Rx**) files **11 689 chars** of warnings
+> under `34071-1`. So the missing code costs us warnings text on **legacy-format prescription labels**
+> too, not only on OTC ones — a defect **independent of c2**. Quantified in
+> `docs/c2_phase1b_measurement_20260804.md` Part 2.
 
 - **35 / 48** probed labels carry a `34071-1` section.
 - **34 / 34 OTC labels contribute ZERO whitelisted safety sections** — because their only safety content
@@ -255,11 +307,26 @@ builder's `SECTIONS` list.** No selection change, no new label, no new query is 
 
 | # | option | what it fixes | cost | blast radius |
 |---|---|---|---|---|
-| **E-A** | **Add `34071-1` to `SECTIONS`** — index Drug-Facts warnings; change **nothing** about selection | Gives **all ~120 OTC-shaped moieties** their first safety section. **Closes the aspirin Reye's gap.** Recovers the 11 689-char warnings on the Rx ibuprofen label too | **Smallest**: one constant + re-parse of pinned setids (the non-`--resolve` path) + **re-embed of the new docs** | 🔴 **Changes what is retrieved on every Research query** — adds ~120+ new docs competing for a `top_k=5` budget already measured tight (11 safety sections parked at composite rank 5) |
+| **E-A** | **Add `34071-1` to `SECTIONS`** — index pre-PLR WARNINGS; change **nothing** about selection | Gives the OTC-shaped moieties their first safety section. **Closes the aspirin Reye's gap.** ⚠️ **CORRECTED 2026-08-04 — see below** | **Smallest**: one constant + re-parse of pinned setids (the non-`--resolve` path) + **re-embed of the new docs** | 🔴 **Changes what is retrieved on every Research query** — ⚠️ **the "~120 docs" figure was wrong; see below** |
 | **E-B** | **Rx-preference selection (c2-i as scoped)** | The **wrong-drug citation** for naproxen / omeprazole / ibuprofen / cimetidine / terbinafine | Build change + **full `--resolve` re-pull (~25 min network) + full re-embed** | 🔴 Changes the reference label for an unknown number of the 1038 moieties — **must be measured before it is chosen** |
 | **E-C** | **E-A + E-B together** | Both the citation and the OTC-only content | Highest single-shot cost; one re-resolve + one re-embed | 🔴 Largest, but **one** gate cycle instead of two. ⚠️ Two safety sections per dual-status moiety ⇒ more near-duplicate crowding (cross-ref the Finding-C 4×-TFDA observation) |
 | **E-D** | **Dual-label indexing for a bounded, curated list of dual-status moieties only** | Both, for the drugs that matter, without corpus-wide growth | Curation effort + selection change; needs a defensible "which drugs are dual-status" rule | 🔴 Smaller than E-C but introduces a **second reference label per moiety**, a shape the corpus has never had (D4: 0 shared setids today) |
 | **E-E** | **Do nothing; document the gap** | Nothing | Zero | Zero — but leaves a live wrong-drug citation on prod, which the fly-215 gate captured |
+
+> ### ⚠️ CORRECTIONS to the E table, 2026-08-04
+>
+> **(a) E-A CANNOT recover the 11 689-char Rx ibuprofen warnings. That claim is withdrawn.**
+> `17577b3b` is an **ANDA Rx** label; ibuprofen's **pinned reference is ADVIL** (`1f01c10a`, NDA, OTC).
+> **E-A only re-parses ALREADY-PINNED setids — it never selects a different label**, so `17577b3b` is
+> not in the corpus and cannot be reached by adding a LOINC. Recovering it requires **E-B to select the
+> Rx label first**, making it an **E-C benefit, not an E-A one**. *(Task C's side finding already said
+> this correctly — "even after an Rx-preference fix" — and the E table contradicted it. The side finding
+> was right.)*
+>
+> **(b) "~120 docs" understates E-A's blast radius, probably by several-fold.** It was derived from the
+> 120/128 OTC-shaped **moieties**, but `34071-1` is carried by **34 of 48 (71%)** labels in the Task-B
+> sample — **including one Rx label** — not only by the OTC-shaped ones. The true corpus-wide count is
+> measured in **`docs/c2_phase1b_measurement_20260804.md` Part 2**; use that number, not this one.
 
 **⚠️ Every option except E-E changes what is retrieved on every Research query ⇒ 🔴.** Flagged as
 instructed.

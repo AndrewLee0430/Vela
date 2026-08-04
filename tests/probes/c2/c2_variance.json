@@ -1,0 +1,692 @@
+{
+ "started": "2026-08-04 11:54:30",
+ "N": 6,
+ "arms": {
+  "control": {
+   "cimetidine": {
+    "query": "cimetidine drug interactions and safety",
+    "runs": [
+     {
+      "run": 0,
+      "status": "ok",
+      "n_docs": 5,
+      "cited": [
+       {
+        "source_id": "DailyMed:c387579e-cee0-4334-bd1e-73f93ac1bde6#34073-7",
+        "moiety": "COBIMETINIB HEMIFUMARATE",
+        "own": false,
+        "other_drug": true
+       },
+       {
+        "source_id": "DailyMed:ab73778b-6794-441c-b127-610a6d0733ea#34073-7",
+        "moiety": "MEXILETINE HCL",
+        "own": false,
+        "other_drug": true
+       },
+       {
+        "source_id": "DailyMed:1f8833f9-1232-4aa7-a0d4-04a9f87dc2f0#34073-7",
+        "moiety": "METFORMIN HCL",
+        "own": false,
+        "other_drug": true
+       },
+       {
+        "source_id": "PMID:6140847",
+        "moiety": null,
+        "own": false,
+        "other_drug": false
+       },
+       {
+        "source_id": "PMID:6344228",
+        "moiety": null,
+        "own": false,
+        "other_drug": false
+       }
+      ]
+     },
+     {
+      "run": 1,
+      "status": "ok",
+      "n_docs": 5,
+      "cited": [
+       {
+        "source_id": "PMID:6140847",
+        "moiety": null,
+        "own": false,
+        "other_drug": false
+       },
+       {
+        "source_id": "PMID:6344228",
+        "moiety": null,
+        "own": false,
+        "other_drug": false
+       },
+       {
+        "source_id": "PMID:6152350",
+        "moiety": null,
+        "own": false,
+        "other_drug": false
+       },
+       {
+        "source_id": "PMID:6116430",
+        "moiety": null,
+        "own": false,
+        "other_drug": false
+       },
+       {
+        "source_id": "PMID:37948503",
+        "moiety": null,
+        "own": false,
+        "other_drug": false
+       }
+      ]
+     },
+     {
+      "run": 2,
+      "status": "ok",
+      "n_docs": 5,
+      "cited": [
+       {
+        "source_id": "DailyMed:c387579e-cee0-4334-bd1e-73f93ac1bde6#34073-7",
+        "moiety": "COBIMETINIB HEMIFUMARATE",
+        "own": false,
+        "other_drug": true
+       },
+       {
+        "source_id": "PMID:2878729",
+        "moiety": null,
+        "own": false,
+        "other_drug": false
+       },
+       {
+        "source_id": "PMID:6152350",
+        "moiety": null,
+        "own": false,
+        "other_drug": false
+       },
+       {
+        "source_id": "PMID:6344228",
+        "moiety": null,
+        "own": false,
+        "other_drug": false
+       },
+       {
+        "source_id": "PMID:1524698",
+        "moiety": null,
+        "own": false,
+        "other_drug": false
+       }
+      ]
+     },
+     {
+      "run": 3,
+      "status": "ok",
+      "n_docs": 5,
+      "cited": [
+       {
+        "source_id": "PMID:6140847",
+        "moiety": null,
+        "own": false,
+        "other_drug": false
+       },
+       {
+        "source_id": "PMID:6344228",
+        "moiety": null,
+        "own": false,
+        "other_drug": false
+       },
+       {
+        "source_id": "PMID:6152350",
+        "moiety": null,
+        "own": false,
+        "other_drug": false
+       },
+       {
+        "source_id": "PMID:6116430",
+        "moiety": null,
+        "own": false,
+        "other_drug": false
+       },
+       {
+        "source_id": "PMID:37948503",
+        "moiety": null,
+        "own": false,
+        "other_drug": false
+       }
+      ]
+     },
+     {
+      "run": 4,
+      "status": "ok",
+      "n_docs": 5,
+      "cited": [
+       {
+        "source_id": "DailyMed:c387579e-cee0-4334-bd1e-73f93ac1bde6#34073-7",
+        "moiety": "COBIMETINIB HEMIFUMARATE",
+        "own": false,
+        "other_drug": true
+       },
+       {
+        "source_id": "DailyMed:ab73778b-6794-441c-b127-610a6d0733ea#34073-7",
+        "moiety": "MEXILETINE HCL",
+        "own": false,
+        "other_drug": true
+       },
+       {
+        "source_id": "DailyMed:1f8833f9-1232-4aa7-a0d4-04a9f87dc2f0#34073-7",
+        "moiety": "METFORMIN HCL",
+        "own": false,
+        "other_drug": true
+       },
+       {
+        "source_id": "PMID:6140847",
+        "moiety": null,
+        "own": false,
+        "other_drug": false
+       },
+       {
+        "source_id": "PMID:6344228",
+        "moiety": null,
+        "own": false,
+        "other_drug": false
+       }
+      ]
+     },
+     {
+      "run": 5,
+      "status": "ok",
+      "n_docs": 5,
+      "cited": [
+       {
+        "source_id": "PMID:6344228",
+        "moiety": null,
+        "own": false,
+        "other_drug": false
+       },
+       {
+        "source_id": "PMID:6152350",
+        "moiety": null,
+        "own": false,
+        "other_drug": false
+       },
+       {
+        "source_id": "PMID:30082658",
+        "moiety": null,
+        "own": false,
+        "other_drug": false
+       },
+       {
+        "source_id": "DailyMed:c387579e-cee0-4334-bd1e-73f93ac1bde6#34073-7",
+        "moiety": "COBIMETINIB HEMIFUMARATE",
+        "own": false,
+        "other_drug": true
+       },
+       {
+        "source_id": "PMID:2979263",
+        "moiety": null,
+        "own": false,
+        "other_drug": false
+       }
+      ]
+     }
+    ],
+    "n_ok": 6,
+    "wrong_drug_cited": 4,
+    "own_cited": 0,
+    "wrong_identities": {
+     "COBIMETINIB HEMIFUMARATE": 4,
+     "MEXILETINE HCL": 2,
+     "METFORMIN HCL": 2
+    }
+   },
+   "aspirin": {
+    "query": "aspirin contraindications and who should not take it",
+    "runs": [
+     {
+      "run": 0,
+      "status": "ok",
+      "n_docs": 1,
+      "cited": [
+       {
+        "source_id": "DailyMed:8a023942-01e8-4849-aa3c-1a640ffc7fd3#34070-3",
+        "moiety": "ACECLOFENAC",
+        "own": false,
+        "other_drug": true
+       }
+      ]
+     },
+     {
+      "run": 1,
+      "status": "ok",
+      "n_docs": 1,
+      "cited": [
+       {
+        "source_id": "DailyMed:8a023942-01e8-4849-aa3c-1a640ffc7fd3#34070-3",
+        "moiety": "ACECLOFENAC",
+        "own": false,
+        "other_drug": true
+       }
+      ]
+     },
+     {
+      "run": 2,
+      "status": "ok",
+      "n_docs": 1,
+      "cited": [
+       {
+        "source_id": "DailyMed:8a023942-01e8-4849-aa3c-1a640ffc7fd3#34070-3",
+        "moiety": "ACECLOFENAC",
+        "own": false,
+        "other_drug": true
+       }
+      ]
+     },
+     {
+      "run": 3,
+      "status": "ok",
+      "n_docs": 1,
+      "cited": [
+       {
+        "source_id": "DailyMed:8a023942-01e8-4849-aa3c-1a640ffc7fd3#34070-3",
+        "moiety": "ACECLOFENAC",
+        "own": false,
+        "other_drug": true
+       }
+      ]
+     },
+     {
+      "run": 4,
+      "status": "ok",
+      "n_docs": 1,
+      "cited": [
+       {
+        "source_id": "DailyMed:8a023942-01e8-4849-aa3c-1a640ffc7fd3#34070-3",
+        "moiety": "ACECLOFENAC",
+        "own": false,
+        "other_drug": true
+       }
+      ]
+     },
+     {
+      "run": 5,
+      "status": "ok",
+      "n_docs": 1,
+      "cited": [
+       {
+        "source_id": "DailyMed:8a023942-01e8-4849-aa3c-1a640ffc7fd3#34070-3",
+        "moiety": "ACECLOFENAC",
+        "own": false,
+        "other_drug": true
+       }
+      ]
+     }
+    ],
+    "n_ok": 6,
+    "wrong_drug_cited": 6,
+    "own_cited": 0,
+    "wrong_identities": {
+     "ACECLOFENAC": 6
+    }
+   }
+  },
+  "treatment": {
+   "cimetidine": {
+    "query": "cimetidine drug interactions and safety",
+    "runs": [
+     {
+      "run": 0,
+      "status": "ok",
+      "n_docs": 5,
+      "cited": [
+       {
+        "source_id": "DailyMed:c387579e-cee0-4334-bd1e-73f93ac1bde6#34073-7",
+        "moiety": "COBIMETINIB HEMIFUMARATE",
+        "own": false,
+        "other_drug": true
+       },
+       {
+        "source_id": "PMID:6140847",
+        "moiety": null,
+        "own": false,
+        "other_drug": false
+       },
+       {
+        "source_id": "PMID:6344228",
+        "moiety": null,
+        "own": false,
+        "other_drug": false
+       },
+       {
+        "source_id": "PMID:6152350",
+        "moiety": null,
+        "own": false,
+        "other_drug": false
+       },
+       {
+        "source_id": "PMID:7325185",
+        "moiety": null,
+        "own": false,
+        "other_drug": false
+       }
+      ]
+     },
+     {
+      "run": 1,
+      "status": "ok",
+      "n_docs": 5,
+      "cited": [
+       {
+        "source_id": "DailyMed:c387579e-cee0-4334-bd1e-73f93ac1bde6#34073-7",
+        "moiety": "COBIMETINIB HEMIFUMARATE",
+        "own": false,
+        "other_drug": true
+       },
+       {
+        "source_id": "PMID:6140847",
+        "moiety": null,
+        "own": false,
+        "other_drug": false
+       },
+       {
+        "source_id": "PMID:6344228",
+        "moiety": null,
+        "own": false,
+        "other_drug": false
+       },
+       {
+        "source_id": "PMID:6152350",
+        "moiety": null,
+        "own": false,
+        "other_drug": false
+       },
+       {
+        "source_id": "PMID:7325185",
+        "moiety": null,
+        "own": false,
+        "other_drug": false
+       }
+      ]
+     },
+     {
+      "run": 2,
+      "status": "ok",
+      "n_docs": 5,
+      "cited": [
+       {
+        "source_id": "PMID:6140847",
+        "moiety": null,
+        "own": false,
+        "other_drug": false
+       },
+       {
+        "source_id": "PMID:6344228",
+        "moiety": null,
+        "own": false,
+        "other_drug": false
+       },
+       {
+        "source_id": "PMID:6152350",
+        "moiety": null,
+        "own": false,
+        "other_drug": false
+       },
+       {
+        "source_id": "PMID:6116430",
+        "moiety": null,
+        "own": false,
+        "other_drug": false
+       },
+       {
+        "source_id": "PMID:37948503",
+        "moiety": null,
+        "own": false,
+        "other_drug": false
+       }
+      ]
+     },
+     {
+      "run": 3,
+      "status": "ok",
+      "n_docs": 5,
+      "cited": [
+       {
+        "source_id": "DailyMed:c387579e-cee0-4334-bd1e-73f93ac1bde6#34073-7",
+        "moiety": "COBIMETINIB HEMIFUMARATE",
+        "own": false,
+        "other_drug": true
+       },
+       {
+        "source_id": "PMID:6140847",
+        "moiety": null,
+        "own": false,
+        "other_drug": false
+       },
+       {
+        "source_id": "PMID:6344228",
+        "moiety": null,
+        "own": false,
+        "other_drug": false
+       },
+       {
+        "source_id": "PMID:6152350",
+        "moiety": null,
+        "own": false,
+        "other_drug": false
+       },
+       {
+        "source_id": "PMID:7325185",
+        "moiety": null,
+        "own": false,
+        "other_drug": false
+       }
+      ]
+     },
+     {
+      "run": 4,
+      "status": "ok",
+      "n_docs": 5,
+      "cited": [
+       {
+        "source_id": "PMID:6140847",
+        "moiety": null,
+        "own": false,
+        "other_drug": false
+       },
+       {
+        "source_id": "PMID:6344228",
+        "moiety": null,
+        "own": false,
+        "other_drug": false
+       },
+       {
+        "source_id": "PMID:6152350",
+        "moiety": null,
+        "own": false,
+        "other_drug": false
+       },
+       {
+        "source_id": "PMID:6116430",
+        "moiety": null,
+        "own": false,
+        "other_drug": false
+       },
+       {
+        "source_id": "PMID:37948503",
+        "moiety": null,
+        "own": false,
+        "other_drug": false
+       }
+      ]
+     },
+     {
+      "run": 5,
+      "status": "ok",
+      "n_docs": 5,
+      "cited": [
+       {
+        "source_id": "PMID:6140847",
+        "moiety": null,
+        "own": false,
+        "other_drug": false
+       },
+       {
+        "source_id": "PMID:6344228",
+        "moiety": null,
+        "own": false,
+        "other_drug": false
+       },
+       {
+        "source_id": "PMID:6152350",
+        "moiety": null,
+        "own": false,
+        "other_drug": false
+       },
+       {
+        "source_id": "PMID:6116430",
+        "moiety": null,
+        "own": false,
+        "other_drug": false
+       },
+       {
+        "source_id": "PMID:37948503",
+        "moiety": null,
+        "own": false,
+        "other_drug": false
+       }
+      ]
+     }
+    ],
+    "n_ok": 6,
+    "wrong_drug_cited": 3,
+    "own_cited": 0,
+    "wrong_identities": {
+     "COBIMETINIB HEMIFUMARATE": 3
+    }
+   },
+   "aspirin": {
+    "query": "aspirin contraindications and who should not take it",
+    "runs": [
+     {
+      "run": 0,
+      "status": "ok",
+      "n_docs": 1,
+      "cited": [
+       {
+        "source_id": "DailyMed:8a023942-01e8-4849-aa3c-1a640ffc7fd3#34070-3",
+        "moiety": "ACECLOFENAC",
+        "own": false,
+        "other_drug": true
+       }
+      ]
+     },
+     {
+      "run": 1,
+      "status": "ok",
+      "n_docs": 1,
+      "cited": [
+       {
+        "source_id": "DailyMed:8a023942-01e8-4849-aa3c-1a640ffc7fd3#34070-3",
+        "moiety": "ACECLOFENAC",
+        "own": false,
+        "other_drug": true
+       }
+      ]
+     },
+     {
+      "run": 2,
+      "status": "ok",
+      "n_docs": 2,
+      "cited": [
+       {
+        "source_id": "DailyMed:8a023942-01e8-4849-aa3c-1a640ffc7fd3#34070-3",
+        "moiety": "ACECLOFENAC",
+        "own": false,
+        "other_drug": true
+       },
+       {
+        "source_id": "PMID:23324504",
+        "moiety": null,
+        "own": false,
+        "other_drug": false
+       }
+      ]
+     },
+     {
+      "run": 3,
+      "status": "ok",
+      "n_docs": 2,
+      "cited": [
+       {
+        "source_id": "PMID:37705676",
+        "moiety": null,
+        "own": false,
+        "other_drug": false
+       },
+       {
+        "source_id": "DailyMed:8a023942-01e8-4849-aa3c-1a640ffc7fd3#34070-3",
+        "moiety": "ACECLOFENAC",
+        "own": false,
+        "other_drug": true
+       }
+      ]
+     },
+     {
+      "run": 4,
+      "status": "ok",
+      "n_docs": 1,
+      "cited": [
+       {
+        "source_id": "DailyMed:8a023942-01e8-4849-aa3c-1a640ffc7fd3#34070-3",
+        "moiety": "ACECLOFENAC",
+        "own": false,
+        "other_drug": true
+       }
+      ]
+     },
+     {
+      "run": 5,
+      "status": "ok",
+      "n_docs": 5,
+      "cited": [
+       {
+        "source_id": "DailyMed:8a023942-01e8-4849-aa3c-1a640ffc7fd3#34070-3",
+        "moiety": "ACECLOFENAC",
+        "own": false,
+        "other_drug": true
+       },
+       {
+        "source_id": "PMID:34581729",
+        "moiety": null,
+        "own": false,
+        "other_drug": false
+       },
+       {
+        "source_id": "PMID:364401",
+        "moiety": null,
+        "own": false,
+        "other_drug": false
+       },
+       {
+        "source_id": "PMID:37705676",
+        "moiety": null,
+        "own": false,
+        "other_drug": false
+       },
+       {
+        "source_id": "PMID:30575425",
+        "moiety": null,
+        "own": false,
+        "other_drug": false
+       }
+      ]
+     }
+    ],
+    "n_ok": 6,
+    "wrong_drug_cited": 6,
+    "own_cited": 0,
+    "wrong_identities": {
+     "ACECLOFENAC": 6
+    }
+   }
+  }
+ }
+}

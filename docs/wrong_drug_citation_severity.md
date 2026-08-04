@@ -186,6 +186,69 @@ slower data-quality track.
 
 ## 6. BUILD PLAN-BACK — port Verify's non-confident-match discipline to Research
 
+> ## 🔴 HARD DESIGN CONSTRAINT — added 2026-08-04 from the c2 Phase-1b/1c measurement. **Read before designing the filter.**
+>
+> ### A filter keyed on *"does this document MENTION the queried drug"* WILL PASS the worst real instance.
+>
+> The best-evidenced wrong-drug case in the repo is `aspirin contraindications` → **`Clanza
+> (Aceclofenac) — Contraindications`**, cited **12 / 12 runs across two index configurations, zero
+> variance** (c2 Phase-1c Part 1). Its text reads:
+>
+> > *"Patients with allergy to these drugs or other analogues (diclofenac). … Like NSAIDS,
+> > **acetylsalicylic acid** and other drugs which inhibit prostagladin-synthesis may precipitate attacks
+> > of asthma…"*
+>
+> **The aceclofenac label literally contains "acetylsalicylic acid" — and that is CORRECT drafting.**
+> NSAID cross-sensitivity genuinely belongs in an aceclofenac contraindications section. The document is
+> not defective; it is being *used* for the wrong purpose.
+>
+> **This was discovered the hard way: the c2 Phase-1b harness used a mention-based `own_drug` flag and
+> false-positived on exactly this document, reporting "own drug cited 3/3" for a pool that contained no
+> aspirin document at all.** A measurement instrument built on the mention heuristic failed on the first
+> real case it met. **A production filter built on it would fail the same way, silently.**
+>
+> ### ➡️ The filter must determine WHOSE LABEL the document is, not WHOM it mentions.
+>
+> **This is cheap — the corpus already carries it.** Every DailyMed doc has a **`moiety`** field and a
+> `setid` (`scripts/build_dailymed_label_corpus.py:297-299`); ownership is a **lookup, not an inference**.
+> The c2 probes re-classified entirely on `setid → moiety` and it was exact.
+>
+> ⚠️ **A mention-based filter is both easier to build and wrong — which is the combination that gets
+> built by default.** Recorded now because it is cheap now and expensive after such a filter exists.
+>
+> ### And one more constraint from the same measurement
+>
+> **Supplying the correct document does NOT displace the incorrect one.** On the only two c2 cases where
+> the drug's own safety document entered the pool *and was cited*, the wrong drug was **still cited 3/3**
+> (c2 Phase-1c §0). The pool holds ~5 slots and both fit. **So a coverage fix upstream will not remove
+> the need for this filter.**
+>
+> ### ✅ 2026-08-04 — THE "BLOCKED BY c2" DEPENDENCY IS REMOVED
+>
+> STATE open-item #2 carried the block *"if c2 removes the cause in 6/6 cases, this may descope or
+> close."* **That premise is REFUTED.** It was **untested when the block was written**, and the two cases
+> able to test it both answered **no**: **2 of 6 adjudicated, NOT fixed by added coverage.**
+>
+> **The mechanism split, corrected:** the defect has a **coverage half** — nothing on-target exists,
+> which is what c2 addresses — **and a ranking half** — a wrong document out-competes a right one when
+> both are present. **The ranking half is what actually produces the citation, and no c2 option touches
+> it.** That is this item's territory.
+>
+> ⚠️ **Unblocking is NOT a recommendation to build.** Priority and queue position are unchanged and
+> remain the founder's call. What changed is only that a **false dependency** has been removed.
+>
+> ### ⭐ The deterministic probe — smoke-test any candidate filter against this in ONE run
+>
+> **`aspirin contraindications and who should not take it` → `Clanza (Aceclofenac) — Contraindications`:
+> 12 / 12 across two index configurations, one identity, zero variance** (c2 Phase-1c Part 1).
+> In a repo where nondeterminism has three times forced N=6 to separate signal from noise, **this is the
+> only known wrong-drug case where N=1 is interpretable** — and it is **simultaneously the hardest case**,
+> because it is precisely the one a mention-based filter passes. **A filter that clears it in a single run
+> is worth measuring further; one that does not is finished.** Re-running it at N=6 is wasted effort
+> unless the retrieval configuration changes materially.
+>
+> Cross-ref TECH_DEBT surface 3/3 and STATE open-item #2.
+
 **One fix shape, and it is Rule 19's own finding** (Rule 19 row #5, `docs/research_openfda_fallback_phase1.md` §2):
 Verify **never attaches a specific setid on a low-confidence drug match** (`api/server.py:1013-1020`)
 and fails honest instead. **Research has no drug-identity check at all.** Port the *discipline*, not

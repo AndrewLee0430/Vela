@@ -1,0 +1,1518 @@
+{
+ "probed_at": "2026-08-04 09:46:34",
+ "api": "https://dailymed.nlm.nih.gov/dailymed/services/v2",
+ "moieties": {
+  "NAPROXEN": [
+   {
+    "tier": "NDA",
+    "setid": "3ca84972-f8c9-1881-e063-6294a90a9070",
+    "title": "ALEVE CAPLETS (NAPROXEN SODIUM) TABLET [SELECT CONSUMER GROUP]",
+    "spl_version": 4,
+    "doctype_code": "34390-5",
+    "doctype": "HUMAN OTC DRUG LABEL",
+    "mktg_in_spl": [
+     "NDA"
+    ],
+    "n_active_moieties": 1,
+    "sections": {
+     "34067-9": 181,
+     "34071-1": 2700,
+     "34068-7": 417
+    },
+    "safety_sections": {
+     "34071-1": 2700
+    }
+   },
+   {
+    "tier": "NDA",
+    "setid": "02941928-128a-2c88-e063-6294a90ac6ba",
+    "title": "ALEVE CAPLETS SOFT GRIP ARTHRITIS (NAPROXEN SODIUM) TABLET ALEVE CAPLETS EASY OPEN ARTHRITIS (NAPROXEN SODIUM) TABLET ALEVE CAPLETS (NAPROXEN SODIUM) TABLET [BAYER HEALTHCARE LLC.]",
+    "spl_version": 4,
+    "doctype_code": "34390-5",
+    "doctype": "HUMAN OTC DRUG LABEL",
+    "mktg_in_spl": [
+     "NDA"
+    ],
+    "n_active_moieties": 1,
+    "sections": {
+     "34067-9": 181,
+     "34071-1": 2701,
+     "34068-7": 417
+    },
+    "safety_sections": {
+     "34071-1": 2701
+    }
+   },
+   {
+    "tier": "NDA",
+    "setid": "49f1f415-8017-0974-e063-6294a90a8918",
+    "title": "MUCINEX 12HR COLD AND FEVER MULTI-SYMPTOM (NAPROXEN SODIUM, DEXTROMETHORPHAN HYDROBROMIDE, GUAIFENESIN) TABLET, EXTENDED RELEASE [RECKITT BENCKISER LLC]",
+    "spl_version": 2,
+    "doctype_code": "34390-5",
+    "doctype": "HUMAN OTC DRUG LABEL",
+    "mktg_in_spl": [
+     "NDA"
+    ],
+    "n_active_moieties": 3,
+    "sections": {
+     "34067-9": 445,
+     "34071-1": 3347,
+     "34068-7": 330
+    },
+    "safety_sections": {
+     "34071-1": 3347
+    }
+   },
+   {
+    "tier": "NDA",
+    "setid": "9343c79f-9994-4599-bcfe-0a93e49d726e",
+    "title": "NAPROXEN SODIUM CAPSULE, LIQUID FILLED [BIONPHARMA INC.]",
+    "spl_version": 5,
+    "doctype_code": "34390-5",
+    "doctype": "HUMAN OTC DRUG LABEL",
+    "mktg_in_spl": [
+     "NDA"
+    ],
+    "n_active_moieties": 1,
+    "sections": {
+     "34067-9": 181,
+     "34071-1": 2676,
+     "34068-7": 480
+    },
+    "safety_sections": {
+     "34071-1": 2676
+    }
+   },
+   {
+    "tier": "ANDA",
+    "setid": "20eb9d9f-11df-464f-a1b0-949f8fda4042",
+    "title": "NAPROXEN (NAPROXEN SODIUM) TABLET [PREFERRED PHARMACEUTICALS, INC.]",
+    "spl_version": 8,
+    "doctype_code": "34390-5",
+    "doctype": "HUMAN OTC DRUG LABEL",
+    "mktg_in_spl": [
+     "ANDA"
+    ],
+    "n_active_moieties": 1,
+    "sections": {
+     "34067-9": 187,
+     "34071-1": 991,
+     "34068-7": 428
+    },
+    "safety_sections": {
+     "34071-1": 991
+    }
+   },
+   {
+    "tier": "ANDA",
+    "setid": "2183df53-ac90-4d43-8a5d-8421036bc4cb",
+    "title": "GOOD SENSE NAPROXEN SODIUM (NAPROXEN SODIUM) TABLET, FILM COATED [PREFERRED PHARMACEUTICALS INC.]",
+    "spl_version": 3,
+    "doctype_code": "34390-5",
+    "doctype": "HUMAN OTC DRUG LABEL",
+    "mktg_in_spl": [
+     "ANDA"
+    ],
+    "n_active_moieties": 1,
+    "sections": {
+     "34067-9": 190,
+     "34071-1": 2770,
+     "34068-7": 427
+    },
+    "safety_sections": {
+     "34071-1": 2770
+    }
+   },
+   {
+    "tier": "ANDA",
+    "setid": "49a00870-f580-4eb9-a95d-48fa956f147f",
+    "title": "NAPROXEN TABLET [PREFERRED PHARMACEUTICALS INC.]",
+    "spl_version": 3,
+    "doctype_code": "34391-3",
+    "doctype": "HUMAN PRESCRIPTION DRUG LABEL",
+    "mktg_in_spl": [
+     "ANDA"
+    ],
+    "n_active_moieties": 1,
+    "sections": {
+     "34066-1": 1946,
+     "34067-9": 591,
+     "34068-7": 4057,
+     "34070-3": 820,
+     "43685-7": 17314,
+     "34073-7": 10268
+    },
+    "safety_sections": {
+     "34066-1": 1946,
+     "34070-3": 820,
+     "43685-7": 17314,
+     "34073-7": 10268
+    }
+   },
+   {
+    "tier": "ANDA",
+    "setid": "9f026fd5-f996-4383-b528-841d38d3dab5",
+    "title": "NAPROXEN TABLET [PREFERRED PHARMACEUTICALS, INC.]",
+    "spl_version": 7,
+    "doctype_code": "34391-3",
+    "doctype": "HUMAN PRESCRIPTION DRUG LABEL",
+    "mktg_in_spl": [
+     "ANDA"
+    ],
+    "n_active_moieties": 1,
+    "sections": {
+     "34066-1": 1873,
+     "34067-9": 591,
+     "34068-7": 3983,
+     "34070-3": 722,
+     "43685-7": 16754,
+     "34073-7": 10201
+    },
+    "safety_sections": {
+     "34066-1": 1873,
+     "34070-3": 722,
+     "43685-7": 16754,
+     "34073-7": 10201
+    }
+   },
+   {
+    "tier": "other",
+    "setid": "20eb9d9f-11df-464f-a1b0-949f8fda4042",
+    "title": "NAPROXEN (NAPROXEN SODIUM) TABLET [PREFERRED PHARMACEUTICALS, INC.]",
+    "spl_version": 8,
+    "doctype_code": "34390-5",
+    "doctype": "HUMAN OTC DRUG LABEL",
+    "mktg_in_spl": [
+     "ANDA"
+    ],
+    "n_active_moieties": 1,
+    "sections": {
+     "34067-9": 187,
+     "34071-1": 991,
+     "34068-7": 428
+    },
+    "safety_sections": {
+     "34071-1": 991
+    }
+   },
+   {
+    "tier": "other",
+    "setid": "2183df53-ac90-4d43-8a5d-8421036bc4cb",
+    "title": "GOOD SENSE NAPROXEN SODIUM (NAPROXEN SODIUM) TABLET, FILM COATED [PREFERRED PHARMACEUTICALS INC.]",
+    "spl_version": 3,
+    "doctype_code": "34390-5",
+    "doctype": "HUMAN OTC DRUG LABEL",
+    "mktg_in_spl": [
+     "ANDA"
+    ],
+    "n_active_moieties": 1,
+    "sections": {
+     "34067-9": 190,
+     "34071-1": 2770,
+     "34068-7": 427
+    },
+    "safety_sections": {
+     "34071-1": 2770
+    }
+   },
+   {
+    "tier": "other",
+    "setid": "49a00870-f580-4eb9-a95d-48fa956f147f",
+    "title": "NAPROXEN TABLET [PREFERRED PHARMACEUTICALS INC.]",
+    "spl_version": 3,
+    "doctype_code": "34391-3",
+    "doctype": "HUMAN PRESCRIPTION DRUG LABEL",
+    "mktg_in_spl": [
+     "ANDA"
+    ],
+    "n_active_moieties": 1,
+    "sections": {
+     "34066-1": 1946,
+     "34067-9": 591,
+     "34068-7": 4057,
+     "34070-3": 820,
+     "43685-7": 17314,
+     "34073-7": 10268
+    },
+    "safety_sections": {
+     "34066-1": 1946,
+     "34070-3": 820,
+     "43685-7": 17314,
+     "34073-7": 10268
+    }
+   },
+   {
+    "tier": "other",
+    "setid": "9f026fd5-f996-4383-b528-841d38d3dab5",
+    "title": "NAPROXEN TABLET [PREFERRED PHARMACEUTICALS, INC.]",
+    "spl_version": 7,
+    "doctype_code": "34391-3",
+    "doctype": "HUMAN PRESCRIPTION DRUG LABEL",
+    "mktg_in_spl": [
+     "ANDA"
+    ],
+    "n_active_moieties": 1,
+    "sections": {
+     "34066-1": 1873,
+     "34067-9": 591,
+     "34068-7": 3983,
+     "34070-3": 722,
+     "43685-7": 16754,
+     "34073-7": 10201
+    },
+    "safety_sections": {
+     "34066-1": 1873,
+     "34070-3": 722,
+     "43685-7": 16754,
+     "34073-7": 10201
+    }
+   }
+  ],
+  "OMEPRAZOLE": [
+   {
+    "tier": "NDA",
+    "setid": "5b88717a-e90c-4e74-ae2a-29270e14a3cc",
+    "title": "CAREONE OMEPRAZOLE (OMEPRAZOLE) TABLET, ORALLY DISINTEGRATING, DELAYED RELEASE [AMERICAN SALES COMPANY]",
+    "spl_version": 6,
+    "doctype_code": "34390-5",
+    "doctype": "HUMAN OTC DRUG LABEL",
+    "mktg_in_spl": [
+     "NDA"
+    ],
+    "n_active_moieties": 1,
+    "sections": {
+     "34067-9": 157,
+     "34071-1": 1303,
+     "34068-7": 936
+    },
+    "safety_sections": {
+     "34071-1": 1303
+    }
+   },
+   {
+    "tier": "NDA",
+    "setid": "6919399e-f112-4274-b4de-df0b4c391e63",
+    "title": "OMEPRAZOLE TABLET, ORALLY DISINTEGRATING, DELAYED RELEASE [RITE AID CORPORATION]",
+    "spl_version": 6,
+    "doctype_code": "34390-5",
+    "doctype": "HUMAN OTC DRUG LABEL",
+    "mktg_in_spl": [
+     "NDA"
+    ],
+    "n_active_moieties": 1,
+    "sections": {
+     "34067-9": 157,
+     "34071-1": 1405,
+     "34068-7": 936
+    },
+    "safety_sections": {
+     "34071-1": 1405
+    }
+   },
+   {
+    "tier": "NDA",
+    "setid": "f74752a8-a686-4c7d-91ad-8c87c4596a7a",
+    "title": "BERKLEY AND JENSEN OMEPRAZOLE (OMEPRAZOLE) TABLET, DELAYED RELEASE [BJWC]",
+    "spl_version": 10,
+    "doctype_code": "34390-5",
+    "doctype": "HUMAN OTC DRUG LABEL",
+    "mktg_in_spl": [
+     "NDA"
+    ],
+    "n_active_moieties": 1,
+    "sections": {
+     "34067-9": 157,
+     "34071-1": 1410,
+     "34068-7": 799
+    },
+    "safety_sections": {
+     "34071-1": 1410
+    }
+   },
+   {
+    "tier": "NDA",
+    "setid": "db2d75ea-5924-4b7f-a92d-d4847a010d52",
+    "title": "CARE ONE OMEPRAZOLE (OMEPRAZOLE) TABLET, DELAYED RELEASE [AMERICAN SALES COMPANY]",
+    "spl_version": 10,
+    "doctype_code": "34390-5",
+    "doctype": "HUMAN OTC DRUG LABEL",
+    "mktg_in_spl": [
+     "NDA"
+    ],
+    "n_active_moieties": 1,
+    "sections": {
+     "34067-9": 157,
+     "34071-1": 1410,
+     "34068-7": 799
+    },
+    "safety_sections": {
+     "34071-1": 1410
+    }
+   },
+   {
+    "tier": "ANDA",
+    "setid": "37291cab-e350-d8e3-e063-6294a90a9cb1",
+    "title": "PRILOSEC OTC (OMEPRAZOLE MAGNESIUM) TABLET, DELAYED RELEASE [THE PROCTER & GAMBLE MANUFACTURING COMPANY]",
+    "spl_version": 2,
+    "doctype_code": "34390-5",
+    "doctype": "HUMAN OTC DRUG LABEL",
+    "mktg_in_spl": [
+     "ANDA"
+    ],
+    "n_active_moieties": 1,
+    "sections": {
+     "34067-9": 155,
+     "34071-1": 249,
+     "34068-7": 795
+    },
+    "safety_sections": {
+     "34071-1": 249
+    }
+   },
+   {
+    "tier": "ANDA",
+    "setid": "77d4f6c7-87ca-78bb-3310-2304a68f9f9b",
+    "title": "OMEPRAZOLE TABLET, DELAYED RELEASE [CHAIN DRUG MARKETING ASSOCIATION INC]",
+    "spl_version": 2,
+    "doctype_code": "34390-5",
+    "doctype": "HUMAN OTC DRUG LABEL",
+    "mktg_in_spl": [
+     "ANDA"
+    ],
+    "n_active_moieties": 1,
+    "sections": {
+     "34067-9": 158,
+     "34071-1": 1386,
+     "34068-7": 787
+    },
+    "safety_sections": {
+     "34071-1": 1386
+    }
+   },
+   {
+    "tier": "ANDA",
+    "setid": "a19ce586-59b7-4c2e-9e8d-12e8f0f058e2",
+    "title": "OMEPRAZOLE CAPSULE, DELAYED RELEASE [REMEDYREPACK INC.]",
+    "spl_version": 17,
+    "doctype_code": "34391-3",
+    "doctype": "HUMAN PRESCRIPTION DRUG LABEL",
+    "mktg_in_spl": [
+     "ANDA"
+    ],
+    "n_active_moieties": 1,
+    "sections": {
+     "34067-9": 3639,
+     "34068-7": 6387,
+     "34070-3": 1100,
+     "43685-7": 10483,
+     "34073-7": 8600
+    },
+    "safety_sections": {
+     "34070-3": 1100,
+     "43685-7": 10483,
+     "34073-7": 8600
+    }
+   },
+   {
+    "tier": "ANDA",
+    "setid": "0344268f-d8e6-48d5-b1e1-f750ed1d8a52",
+    "title": "OMEPRAZOLE CAPSULE, DELAYED RELEASE [PD-RX PHARMACEUTICALS, INC.]",
+    "spl_version": 35,
+    "doctype_code": "34391-3",
+    "doctype": "HUMAN PRESCRIPTION DRUG LABEL",
+    "mktg_in_spl": [
+     "ANDA"
+    ],
+    "n_active_moieties": 1,
+    "sections": {
+     "34067-9": 3620,
+     "34068-7": 6761,
+     "34070-3": 1110,
+     "43685-7": 10517,
+     "34073-7": 8590
+    },
+    "safety_sections": {
+     "34070-3": 1110,
+     "43685-7": 10517,
+     "34073-7": 8590
+    }
+   },
+   {
+    "tier": "other",
+    "setid": "37291cab-e350-d8e3-e063-6294a90a9cb1",
+    "title": "PRILOSEC OTC (OMEPRAZOLE MAGNESIUM) TABLET, DELAYED RELEASE [THE PROCTER & GAMBLE MANUFACTURING COMPANY]",
+    "spl_version": 2,
+    "doctype_code": "34390-5",
+    "doctype": "HUMAN OTC DRUG LABEL",
+    "mktg_in_spl": [
+     "ANDA"
+    ],
+    "n_active_moieties": 1,
+    "sections": {
+     "34067-9": 155,
+     "34071-1": 249,
+     "34068-7": 795
+    },
+    "safety_sections": {
+     "34071-1": 249
+    }
+   },
+   {
+    "tier": "other",
+    "setid": "77d4f6c7-87ca-78bb-3310-2304a68f9f9b",
+    "title": "OMEPRAZOLE TABLET, DELAYED RELEASE [CHAIN DRUG MARKETING ASSOCIATION INC]",
+    "spl_version": 2,
+    "doctype_code": "34390-5",
+    "doctype": "HUMAN OTC DRUG LABEL",
+    "mktg_in_spl": [
+     "ANDA"
+    ],
+    "n_active_moieties": 1,
+    "sections": {
+     "34067-9": 158,
+     "34071-1": 1386,
+     "34068-7": 787
+    },
+    "safety_sections": {
+     "34071-1": 1386
+    }
+   },
+   {
+    "tier": "other",
+    "setid": "a19ce586-59b7-4c2e-9e8d-12e8f0f058e2",
+    "title": "OMEPRAZOLE CAPSULE, DELAYED RELEASE [REMEDYREPACK INC.]",
+    "spl_version": 17,
+    "doctype_code": "34391-3",
+    "doctype": "HUMAN PRESCRIPTION DRUG LABEL",
+    "mktg_in_spl": [
+     "ANDA"
+    ],
+    "n_active_moieties": 1,
+    "sections": {
+     "34067-9": 3639,
+     "34068-7": 6387,
+     "34070-3": 1100,
+     "43685-7": 10483,
+     "34073-7": 8600
+    },
+    "safety_sections": {
+     "34070-3": 1100,
+     "43685-7": 10483,
+     "34073-7": 8600
+    }
+   },
+   {
+    "tier": "other",
+    "setid": "0344268f-d8e6-48d5-b1e1-f750ed1d8a52",
+    "title": "OMEPRAZOLE CAPSULE, DELAYED RELEASE [PD-RX PHARMACEUTICALS, INC.]",
+    "spl_version": 35,
+    "doctype_code": "34391-3",
+    "doctype": "HUMAN PRESCRIPTION DRUG LABEL",
+    "mktg_in_spl": [
+     "ANDA"
+    ],
+    "n_active_moieties": 1,
+    "sections": {
+     "34067-9": 3620,
+     "34068-7": 6761,
+     "34070-3": 1110,
+     "43685-7": 10517,
+     "34073-7": 8590
+    },
+    "safety_sections": {
+     "34070-3": 1110,
+     "43685-7": 10517,
+     "34073-7": 8590
+    }
+   }
+  ],
+  "IBUPROFEN": [
+   {
+    "tier": "NDA",
+    "setid": "0da9ed22-bfb4-d61b-110b-0c7760332a98",
+    "title": "ADVIL COLD AND SINUS (IBUPROFEN, PSEUDOEPHEDRINE HYDROCHLORIDE) CAPSULE, LIQUID FILLED [HALEON US HOLDINGS LLC]",
+    "spl_version": 14,
+    "doctype_code": "34390-5",
+    "doctype": "HUMAN OTC DRUG LABEL",
+    "mktg_in_spl": [
+     "NDA"
+    ],
+    "n_active_moieties": 2,
+    "sections": {
+     "34067-9": 154,
+     "34071-1": 3219,
+     "34068-7": 378
+    },
+    "safety_sections": {
+     "34071-1": 3219
+    }
+   },
+   {
+    "tier": "NDA",
+    "setid": "1f01c10a-9434-91a4-2ee4-352315a6b610",
+    "title": "ADVIL (IBUPROFEN) CAPSULE, LIQUID FILLED [HALEON US HOLDINGS LLC]",
+    "spl_version": 37,
+    "doctype_code": "34390-5",
+    "doctype": "HUMAN OTC DRUG LABEL",
+    "mktg_in_spl": [
+     "NDA"
+    ],
+    "n_active_moieties": 1,
+    "sections": {
+     "34067-9": 181,
+     "34071-1": 2614,
+     "34068-7": 355
+    },
+    "safety_sections": {
+     "34071-1": 2614
+    }
+   },
+   {
+    "tier": "NDA",
+    "setid": "405afdb4-c157-1d88-f232-848063ba4714",
+    "title": "ADVIL PM (DIPHENHYDRAMINE HCL, IBUPROFEN) CAPSULE, LIQUID FILLED [HALEON US HOLDINGS LLC]",
+    "spl_version": 22,
+    "doctype_code": "34390-5",
+    "doctype": "HUMAN OTC DRUG LABEL",
+    "mktg_in_spl": [
+     "NDA"
+    ],
+    "n_active_moieties": 2,
+    "sections": {
+     "34067-9": 124,
+     "34071-1": 3232,
+     "34068-7": 152
+    },
+    "safety_sections": {
+     "34071-1": 3232
+    }
+   },
+   {
+    "tier": "NDA",
+    "setid": "e4a6219d-4ad4-0119-4cf8-7fc39b4b5979",
+    "title": "ADVIL MIGRAINE (IBUPROFEN) CAPSULE, LIQUID FILLED [HALEON US HOLDINGS LLC]",
+    "spl_version": 15,
+    "doctype_code": "34390-5",
+    "doctype": "HUMAN OTC DRUG LABEL",
+    "mktg_in_spl": [
+     "NDA"
+    ],
+    "n_active_moieties": 1,
+    "sections": {
+     "34067-9": 19,
+     "34071-1": 3093,
+     "34068-7": 289
+    },
+    "safety_sections": {
+     "34071-1": 3093
+    }
+   },
+   {
+    "tier": "ANDA",
+    "setid": "14515409-736f-4119-b6a0-cb19ee2e948e",
+    "title": "IBUPROFEN TABLET, COATED [HARRIS TEETER]",
+    "spl_version": 4,
+    "doctype_code": "34390-5",
+    "doctype": "HUMAN OTC DRUG LABEL",
+    "mktg_in_spl": [
+     "ANDA"
+    ],
+    "n_active_moieties": 1,
+    "sections": {
+     "34067-9": 181,
+     "34071-1": 2675,
+     "34068-7": 366
+    },
+    "safety_sections": {
+     "34071-1": 2675
+    }
+   },
+   {
+    "tier": "ANDA",
+    "setid": "17577b3b-e755-45d1-8b53-775d058578b2",
+    "title": "IBUPROFEN TABLET [AMNEAL PHARMACEUTICALS LLC]",
+    "spl_version": 11,
+    "doctype_code": "34391-3",
+    "doctype": "HUMAN PRESCRIPTION DRUG LABEL",
+    "mktg_in_spl": [
+     "ANDA"
+    ],
+    "n_active_moieties": 1,
+    "sections": {
+     "34066-1": 820,
+     "34067-9": 677,
+     "34070-3": 519,
+     "34071-1": 11689,
+     "34073-7": 3762,
+     "34068-7": 2455
+    },
+    "safety_sections": {
+     "34066-1": 820,
+     "34070-3": 519,
+     "34071-1": 11689,
+     "34073-7": 3762
+    }
+   },
+   {
+    "tier": "ANDA",
+    "setid": "1fa28cb4-ae7b-4fa9-ae64-9bd8ccfcc633",
+    "title": "IBUPROFEN TABLET, COATED [HARRIS TEETER]",
+    "spl_version": 6,
+    "doctype_code": "34390-5",
+    "doctype": "HUMAN OTC DRUG LABEL",
+    "mktg_in_spl": [
+     "ANDA"
+    ],
+    "n_active_moieties": 1,
+    "sections": {
+     "34067-9": 181,
+     "34071-1": 2671,
+     "34068-7": 366
+    },
+    "safety_sections": {
+     "34071-1": 2671
+    }
+   },
+   {
+    "tier": "ANDA",
+    "setid": "291602fa-8ebe-4200-bba7-9798c90f8a50",
+    "title": "IBUPROFEN TABLET [PIONEER LIFE SCIENCES, LLC]",
+    "spl_version": 1,
+    "doctype_code": "34390-5",
+    "doctype": "HUMAN OTC DRUG LABEL",
+    "mktg_in_spl": [
+     "ANDA"
+    ],
+    "n_active_moieties": 1,
+    "sections": {
+     "34067-9": 195,
+     "34071-1": 995,
+     "34068-7": 362
+    },
+    "safety_sections": {
+     "34071-1": 995
+    }
+   },
+   {
+    "tier": "other",
+    "setid": "0da9ed22-bfb4-d61b-110b-0c7760332a98",
+    "title": "ADVIL COLD AND SINUS (IBUPROFEN, PSEUDOEPHEDRINE HYDROCHLORIDE) CAPSULE, LIQUID FILLED [HALEON US HOLDINGS LLC]",
+    "spl_version": 14,
+    "doctype_code": "34390-5",
+    "doctype": "HUMAN OTC DRUG LABEL",
+    "mktg_in_spl": [
+     "NDA"
+    ],
+    "n_active_moieties": 2,
+    "sections": {
+     "34067-9": 154,
+     "34071-1": 3219,
+     "34068-7": 378
+    },
+    "safety_sections": {
+     "34071-1": 3219
+    }
+   },
+   {
+    "tier": "other",
+    "setid": "14515409-736f-4119-b6a0-cb19ee2e948e",
+    "title": "IBUPROFEN TABLET, COATED [HARRIS TEETER]",
+    "spl_version": 4,
+    "doctype_code": "34390-5",
+    "doctype": "HUMAN OTC DRUG LABEL",
+    "mktg_in_spl": [
+     "ANDA"
+    ],
+    "n_active_moieties": 1,
+    "sections": {
+     "34067-9": 181,
+     "34071-1": 2675,
+     "34068-7": 366
+    },
+    "safety_sections": {
+     "34071-1": 2675
+    }
+   },
+   {
+    "tier": "other",
+    "setid": "17577b3b-e755-45d1-8b53-775d058578b2",
+    "title": "IBUPROFEN TABLET [AMNEAL PHARMACEUTICALS LLC]",
+    "spl_version": 11,
+    "doctype_code": "34391-3",
+    "doctype": "HUMAN PRESCRIPTION DRUG LABEL",
+    "mktg_in_spl": [
+     "ANDA"
+    ],
+    "n_active_moieties": 1,
+    "sections": {
+     "34066-1": 820,
+     "34067-9": 677,
+     "34070-3": 519,
+     "34071-1": 11689,
+     "34073-7": 3762,
+     "34068-7": 2455
+    },
+    "safety_sections": {
+     "34066-1": 820,
+     "34070-3": 519,
+     "34071-1": 11689,
+     "34073-7": 3762
+    }
+   },
+   {
+    "tier": "other",
+    "setid": "1f01c10a-9434-91a4-2ee4-352315a6b610",
+    "title": "ADVIL (IBUPROFEN) CAPSULE, LIQUID FILLED [HALEON US HOLDINGS LLC]",
+    "spl_version": 37,
+    "doctype_code": "34390-5",
+    "doctype": "HUMAN OTC DRUG LABEL",
+    "mktg_in_spl": [
+     "NDA"
+    ],
+    "n_active_moieties": 1,
+    "sections": {
+     "34067-9": 181,
+     "34071-1": 2614,
+     "34068-7": 355
+    },
+    "safety_sections": {
+     "34071-1": 2614
+    }
+   }
+  ],
+  "CIMETIDINE": [
+   {
+    "tier": "NDA",
+    "setid": "e6401e0a-8612-42e8-bf89-2d67243f28dc",
+    "title": "TAGAMET (CIMETIDINE) TABLET [MEDTECH PRODUCTS INC.]",
+    "spl_version": 9,
+    "doctype_code": "34390-5",
+    "doctype": "HUMAN OTC DRUG LABEL",
+    "mktg_in_spl": [
+     "NDA"
+    ],
+    "n_active_moieties": 1,
+    "sections": {
+     "34067-9": 203,
+     "34071-1": 1206,
+     "34068-7": 358
+    },
+    "safety_sections": {
+     "34071-1": 1206
+    }
+   },
+   {
+    "tier": "NDA",
+    "setid": "c8ba8815-9d99-439f-b397-3869f729d9f4",
+    "title": "TAGAMET (CIMETIDINE) TABLET [PRESTIGE BRANDS HOLDINGS, INC.]",
+    "spl_version": 1,
+    "doctype_code": "34390-5",
+    "doctype": "HUMAN OTC DRUG LABEL",
+    "mktg_in_spl": [
+     "NDA"
+    ],
+    "n_active_moieties": 1,
+    "sections": {
+     "34067-9": 203,
+     "34071-1": 1205,
+     "34068-7": 359
+    },
+    "safety_sections": {
+     "34071-1": 1205
+    }
+   },
+   {
+    "tier": "ANDA",
+    "setid": "cf772ee0-680a-4e1c-8c5d-929756896b36",
+    "title": "ACID CONTROLLER (CIMETIDINE) TABLET, FILM COATED [CVS WOONSOCKET PRESCRIPTION CENTER, INCORPORATED]",
+    "spl_version": 2,
+    "doctype_code": "34390-5",
+    "doctype": "HUMAN OTC DRUG LABEL",
+    "mktg_in_spl": [
+     "ANDA"
+    ],
+    "n_active_moieties": 1,
+    "sections": {
+     "34067-9": 207,
+     "34071-1": 1220,
+     "34068-7": 360
+    },
+    "safety_sections": {
+     "34071-1": 1220
+    }
+   },
+   {
+    "tier": "ANDA",
+    "setid": "0ab5ea2b-bd2f-49ec-9e92-033bed998797",
+    "title": "CIMETIDINE TABLET, FILM COATED [BRYANT RANCH PREPACK]",
+    "spl_version": 1008,
+    "doctype_code": "34391-3",
+    "doctype": "HUMAN PRESCRIPTION DRUG LABEL",
+    "mktg_in_spl": [
+     "ANDA"
+    ],
+    "n_active_moieties": 1,
+    "sections": {
+     "34067-9": 1341,
+     "34070-3": 107,
+     "34073-7": 1902,
+     "34068-7": 4806
+    },
+    "safety_sections": {
+     "34070-3": 107,
+     "34073-7": 1902
+    }
+   },
+   {
+    "tier": "ANDA",
+    "setid": "d1d73350-4e7e-428a-90a5-6000fd373a4f",
+    "title": "CIMETIDINE HYDROCHLORIDE SOLUTION [CHARTWELL RX, LLC]",
+    "spl_version": 3,
+    "doctype_code": "34391-3",
+    "doctype": "HUMAN PRESCRIPTION DRUG LABEL",
+    "mktg_in_spl": [
+     "ANDA"
+    ],
+    "n_active_moieties": 1,
+    "sections": {
+     "34067-9": 1331,
+     "34070-3": 107,
+     "34068-7": 4858
+    },
+    "safety_sections": {
+     "34070-3": 107
+    }
+   },
+   {
+    "tier": "ANDA",
+    "setid": "db482bd8-e68d-3a38-e053-2995a90a38a5",
+    "title": "CIMETIDINE TABLET, FILM COATED [NORTHWIND HEALTH COMPANY, LLC]",
+    "spl_version": 4,
+    "doctype_code": "34391-3",
+    "doctype": "HUMAN PRESCRIPTION DRUG LABEL",
+    "mktg_in_spl": [
+     "ANDA"
+    ],
+    "n_active_moieties": 1,
+    "sections": {
+     "34067-9": 1324,
+     "34070-3": 116,
+     "34073-7": 1936,
+     "34068-7": 4925
+    },
+    "safety_sections": {
+     "34070-3": 116,
+     "34073-7": 1936
+    }
+   },
+   {
+    "tier": "other",
+    "setid": "cf772ee0-680a-4e1c-8c5d-929756896b36",
+    "title": "ACID CONTROLLER (CIMETIDINE) TABLET, FILM COATED [CVS WOONSOCKET PRESCRIPTION CENTER, INCORPORATED]",
+    "spl_version": 2,
+    "doctype_code": "34390-5",
+    "doctype": "HUMAN OTC DRUG LABEL",
+    "mktg_in_spl": [
+     "ANDA"
+    ],
+    "n_active_moieties": 1,
+    "sections": {
+     "34067-9": 207,
+     "34071-1": 1220,
+     "34068-7": 360
+    },
+    "safety_sections": {
+     "34071-1": 1220
+    }
+   },
+   {
+    "tier": "other",
+    "setid": "0ab5ea2b-bd2f-49ec-9e92-033bed998797",
+    "title": "CIMETIDINE TABLET, FILM COATED [BRYANT RANCH PREPACK]",
+    "spl_version": 1008,
+    "doctype_code": "34391-3",
+    "doctype": "HUMAN PRESCRIPTION DRUG LABEL",
+    "mktg_in_spl": [
+     "ANDA"
+    ],
+    "n_active_moieties": 1,
+    "sections": {
+     "34067-9": 1341,
+     "34070-3": 107,
+     "34073-7": 1902,
+     "34068-7": 4806
+    },
+    "safety_sections": {
+     "34070-3": 107,
+     "34073-7": 1902
+    }
+   },
+   {
+    "tier": "other",
+    "setid": "d1d73350-4e7e-428a-90a5-6000fd373a4f",
+    "title": "CIMETIDINE HYDROCHLORIDE SOLUTION [CHARTWELL RX, LLC]",
+    "spl_version": 3,
+    "doctype_code": "34391-3",
+    "doctype": "HUMAN PRESCRIPTION DRUG LABEL",
+    "mktg_in_spl": [
+     "ANDA"
+    ],
+    "n_active_moieties": 1,
+    "sections": {
+     "34067-9": 1331,
+     "34070-3": 107,
+     "34068-7": 4858
+    },
+    "safety_sections": {
+     "34070-3": 107
+    }
+   },
+   {
+    "tier": "other",
+    "setid": "db482bd8-e68d-3a38-e053-2995a90a38a5",
+    "title": "CIMETIDINE TABLET, FILM COATED [NORTHWIND HEALTH COMPANY, LLC]",
+    "spl_version": 4,
+    "doctype_code": "34391-3",
+    "doctype": "HUMAN PRESCRIPTION DRUG LABEL",
+    "mktg_in_spl": [
+     "ANDA"
+    ],
+    "n_active_moieties": 1,
+    "sections": {
+     "34067-9": 1324,
+     "34070-3": 116,
+     "34073-7": 1936,
+     "34068-7": 4925
+    },
+    "safety_sections": {
+     "34070-3": 116,
+     "34073-7": 1936
+    }
+   }
+  ],
+  "TERBINAFINE": [
+   {
+    "tier": "NDA",
+    "setid": "21f1bf77-4338-4b75-b513-80a0d98a722a",
+    "title": "LAMISIL AT (TERBINAFINE HYDROCHLORIDE) SPRAY [KARO HEALTHCARE INC.]",
+    "spl_version": 1,
+    "doctype_code": "34390-5",
+    "doctype": "HUMAN OTC DRUG LABEL",
+    "mktg_in_spl": [
+     "NDA"
+    ],
+    "n_active_moieties": 1,
+    "sections": {
+     "34067-9": 269,
+     "34071-1": 522,
+     "34068-7": 709
+    },
+    "safety_sections": {
+     "34071-1": 522
+    }
+   },
+   {
+    "tier": "NDA",
+    "setid": "d3e75665-e2d4-47d9-baaa-93817b5fbf00",
+    "title": "LAMISIL AT (TERBINAFINE HYDROCHLORIDE) SPRAY [KARO HEALTHCARE INC.]",
+    "spl_version": 1,
+    "doctype_code": "34390-5",
+    "doctype": "HUMAN OTC DRUG LABEL",
+    "mktg_in_spl": [
+     "NDA"
+    ],
+    "n_active_moieties": 1,
+    "sections": {
+     "34067-9": 121,
+     "34071-1": 522,
+     "34068-7": 486
+    },
+    "safety_sections": {
+     "34071-1": 522
+    }
+   },
+   {
+    "tier": "NDA",
+    "setid": "9dea4789-bf1c-1577-e053-2a95a90a5381",
+    "title": "LAMISIL AT CREAM (TERBINAFINE HYDROCHLORIDE) CREAM [VOYANT BEAUTY INC.]",
+    "spl_version": 6,
+    "doctype_code": "34390-5",
+    "doctype": "HUMAN OTC DRUG LABEL",
+    "mktg_in_spl": [
+     "NDA"
+    ],
+    "n_active_moieties": 1,
+    "sections": {
+     "34067-9": 153,
+     "34071-1": 399,
+     "34068-7": 668
+    },
+    "safety_sections": {
+     "34071-1": 399
+    }
+   },
+   {
+    "tier": "NDA",
+    "setid": "1aa5e03a-432b-4154-ab6e-6dbce7a67109",
+    "title": "LAMISIL AT CREAM (TERBINAFINE HYDROCHLORIDE) CREAM [KARO HEALTHCARE INC.]",
+    "spl_version": 1,
+    "doctype_code": "34390-5",
+    "doctype": "HUMAN OTC DRUG LABEL",
+    "mktg_in_spl": [
+     "NDA"
+    ],
+    "n_active_moieties": 1,
+    "sections": {
+     "34067-9": 194,
+     "34071-1": 397,
+     "34068-7": 677
+    },
+    "safety_sections": {
+     "34071-1": 397
+    }
+   },
+   {
+    "tier": "ANDA",
+    "setid": "2886b2ff-815f-4621-bc28-1fea082c1920",
+    "title": "TERBINAFINE HYDROCHLORIDE TABLET [REMEDYREPACK INC.]",
+    "spl_version": 7,
+    "doctype_code": "34391-3",
+    "doctype": "HUMAN PRESCRIPTION DRUG LABEL",
+    "mktg_in_spl": [
+     "ANDA"
+    ],
+    "n_active_moieties": 1,
+    "sections": {
+     "34067-9": 535,
+     "34068-7": 779,
+     "34070-3": 386,
+     "43685-7": 6118,
+     "34073-7": 3571
+    },
+    "safety_sections": {
+     "34070-3": 386,
+     "43685-7": 6118,
+     "34073-7": 3571
+    }
+   },
+   {
+    "tier": "ANDA",
+    "setid": "50750500-6cb0-62dc-e063-6294a90a15bc",
+    "title": "TERBINAFINE HYDROCHLORIDE (TERBINAFINE TABLETS 250 MG) TABLET [GOLDEN STATE MEDICAL SUPPLY, INC.]",
+    "spl_version": 1,
+    "doctype_code": "34391-3",
+    "doctype": "HUMAN PRESCRIPTION DRUG LABEL",
+    "mktg_in_spl": [
+     "ANDA"
+    ],
+    "n_active_moieties": 1,
+    "sections": {
+     "34067-9": 538,
+     "34068-7": 782,
+     "34070-3": 388,
+     "43685-7": 6126,
+     "34073-7": 3572
+    },
+    "safety_sections": {
+     "34070-3": 388,
+     "43685-7": 6126,
+     "34073-7": 3572
+    }
+   },
+   {
+    "tier": "ANDA",
+    "setid": "31f59302-eaee-211b-e063-6294a90a08b0",
+    "title": "TERBINAFINE HYDROCHLORIDE CREAM [SCHOLL'S WELLNESS COMPANY LLC]",
+    "spl_version": 4,
+    "doctype_code": "34390-5",
+    "doctype": "HUMAN OTC DRUG LABEL",
+    "mktg_in_spl": [
+     "ANDA"
+    ],
+    "n_active_moieties": 1,
+    "sections": {
+     "34067-9": 191,
+     "34071-1": 391,
+     "34068-7": 735
+    },
+    "safety_sections": {
+     "34071-1": 391
+    }
+   },
+   {
+    "tier": "ANDA",
+    "setid": "4ee1b667-0cf6-46e4-a740-4fc27904d577",
+    "title": "TERBINAFINE (TERBINAFINE HYDROCHLORIDE) TABLET [AMERICAN HEALTH PACKAGING]",
+    "spl_version": 1,
+    "doctype_code": "34391-3",
+    "doctype": "HUMAN PRESCRIPTION DRUG LABEL",
+    "mktg_in_spl": [
+     "ANDA"
+    ],
+    "n_active_moieties": 1,
+    "sections": {
+     "34067-9": 539,
+     "34068-7": 780,
+     "34070-3": 388,
+     "43685-7": 6120,
+     "34073-7": 3576
+    },
+    "safety_sections": {
+     "34070-3": 388,
+     "43685-7": 6120,
+     "34073-7": 3576
+    }
+   },
+   {
+    "tier": "other",
+    "setid": "2886b2ff-815f-4621-bc28-1fea082c1920",
+    "title": "TERBINAFINE HYDROCHLORIDE TABLET [REMEDYREPACK INC.]",
+    "spl_version": 7,
+    "doctype_code": "34391-3",
+    "doctype": "HUMAN PRESCRIPTION DRUG LABEL",
+    "mktg_in_spl": [
+     "ANDA"
+    ],
+    "n_active_moieties": 1,
+    "sections": {
+     "34067-9": 535,
+     "34068-7": 779,
+     "34070-3": 386,
+     "43685-7": 6118,
+     "34073-7": 3571
+    },
+    "safety_sections": {
+     "34070-3": 386,
+     "43685-7": 6118,
+     "34073-7": 3571
+    }
+   },
+   {
+    "tier": "other",
+    "setid": "3b2c1d7f-32c3-aa3b-e063-6394a90a6267",
+    "title": "ATHLETE FOOT CREAM (TERBINAFINE HYDROCHLORIDE) CREAM [BEAUTIVITY LLC]",
+    "spl_version": 3,
+    "doctype_code": "34390-5",
+    "doctype": "HUMAN OTC DRUG LABEL",
+    "mktg_in_spl": [
+     "OTC Monograph Drug"
+    ],
+    "n_active_moieties": 1,
+    "sections": {
+     "34067-9": 185,
+     "34071-1": 317,
+     "34068-7": 670
+    },
+    "safety_sections": {
+     "34071-1": 317
+    }
+   },
+   {
+    "tier": "other",
+    "setid": "3b3aa69f-4e73-cabc-e063-6294a90ab65b",
+    "title": "ATHLETE FOOT TREATMENT KIT (TERBINAFINE HYDROCHLORIDE, TOLNAFTATE) KIT [BEAUTIVITY LLC]",
+    "spl_version": 3,
+    "doctype_code": "34390-5",
+    "doctype": "HUMAN OTC DRUG LABEL",
+    "mktg_in_spl": [
+     "OTC Monograph Drug"
+    ],
+    "n_active_moieties": 2,
+    "sections": {
+     "34067-9": 374,
+     "34071-1": 425,
+     "34068-7": 808
+    },
+    "safety_sections": {
+     "34071-1": 425
+    }
+   },
+   {
+    "tier": "other",
+    "setid": "50750500-6cb0-62dc-e063-6294a90a15bc",
+    "title": "TERBINAFINE HYDROCHLORIDE (TERBINAFINE TABLETS 250 MG) TABLET [GOLDEN STATE MEDICAL SUPPLY, INC.]",
+    "spl_version": 1,
+    "doctype_code": "34391-3",
+    "doctype": "HUMAN PRESCRIPTION DRUG LABEL",
+    "mktg_in_spl": [
+     "ANDA"
+    ],
+    "n_active_moieties": 1,
+    "sections": {
+     "34067-9": 538,
+     "34068-7": 782,
+     "34070-3": 388,
+     "43685-7": 6126,
+     "34073-7": 3572
+    },
+    "safety_sections": {
+     "34070-3": 388,
+     "43685-7": 6126,
+     "34073-7": 3572
+    }
+   }
+  ],
+  "FAMOTIDINE": [
+   {
+    "tier": "NDA",
+    "setid": "a2ef8424-7d80-42b0-a01e-f378f629b2b6",
+    "title": "PEPCID COMPLETE (FAMOTIDINE, CALCIUM CARBONATE, AND MAGNESIUM HYDROXIDE) TABLET, CHEWABLE [KENVUE BRANDS LLC]",
+    "spl_version": 20,
+    "doctype_code": "34390-5",
+    "doctype": "HUMAN OTC DRUG LABEL",
+    "mktg_in_spl": [
+     "NDA"
+    ],
+    "n_active_moieties": 3,
+    "sections": {
+     "34067-9": 72,
+     "34071-1": 1180,
+     "34068-7": 237
+    },
+    "safety_sections": {
+     "34071-1": 1180
+    }
+   },
+   {
+    "tier": "NDA",
+    "setid": "55cc3304-9094-3da8-e063-6394a90aa49b",
+    "title": "PEPCID COMPLETE (FAMOTIDINE, CALCIUM CARBONATE, AND MAGNESIUM HYDROXIDE) TABLET, CHEWABLE [SELECT CONSUMER GROUP]",
+    "spl_version": 1,
+    "doctype_code": "34390-5",
+    "doctype": "HUMAN OTC DRUG LABEL",
+    "mktg_in_spl": [
+     "NDA"
+    ],
+    "n_active_moieties": 3,
+    "sections": {
+     "34067-9": 72,
+     "34071-1": 1177,
+     "34068-7": 236
+    },
+    "safety_sections": {
+     "34071-1": 1177
+    }
+   },
+   {
+    "tier": "NDA",
+    "setid": "549136d5-8f2c-d417-e063-6394a90a23e4",
+    "title": "PEPCID COMPLETE (FAMOTIDINE, CALCIUM CARBONATE, AND MAGNESIUM HYDROXIDE) TABLET, CHEWABLE [SAVINGS DISTRIBUTORS LLC]",
+    "spl_version": 1,
+    "doctype_code": "34390-5",
+    "doctype": "HUMAN OTC DRUG LABEL",
+    "mktg_in_spl": [
+     "NDA"
+    ],
+    "n_active_moieties": 3,
+    "sections": {
+     "34067-9": 72,
+     "34071-1": 1179,
+     "34068-7": 236
+    },
+    "safety_sections": {
+     "34071-1": 1179
+    }
+   },
+   {
+    "tier": "NDA",
+    "setid": "9710995d-b518-40ce-bc2b-8b5dcf002c31",
+    "title": "FAMOTIDINE INJECTION, SOLUTION [SAGENT PHARMACEUTICALS]",
+    "spl_version": 6,
+    "doctype_code": "34391-3",
+    "doctype": "HUMAN PRESCRIPTION DRUG LABEL",
+    "mktg_in_spl": [
+     "NDA"
+    ],
+    "n_active_moieties": 1,
+    "sections": {
+     "34067-9": 1471,
+     "34068-7": 5177,
+     "34070-3": 310,
+     "43685-7": 2656,
+     "34073-7": 1178
+    },
+    "safety_sections": {
+     "34070-3": 310,
+     "43685-7": 2656,
+     "34073-7": 1178
+    }
+   },
+   {
+    "tier": "ANDA",
+    "setid": "4e8a936c-b876-4923-ad9e-d23537b5d7cf",
+    "title": "DUAL ACTION COMPLETE (FAMOTIDINE, CALCIUM CARBONATE AND MAGNESIUM HYDROXIDE) TABLET, CHEWABLE [AMAZON.COM SERVICES LLC]",
+    "spl_version": 2,
+    "doctype_code": "34390-5",
+    "doctype": "HUMAN OTC DRUG LABEL",
+    "mktg_in_spl": [
+     "ANDA"
+    ],
+    "n_active_moieties": 5,
+    "sections": {
+     "34067-9": 72,
+     "34071-1": 1194,
+     "34068-7": 243
+    },
+    "safety_sections": {
+     "34071-1": 1194
+    }
+   },
+   {
+    "tier": "ANDA",
+    "setid": "4493d4cd-ca8e-4b0a-9b65-b75e55bf8b9e",
+    "title": "IBUPROFEN AND FAMOTIDINE TABLET, FILM COATED [ASCEND LABORATORIES, LLC]",
+    "spl_version": 11,
+    "doctype_code": "34391-3",
+    "doctype": "HUMAN PRESCRIPTION DRUG LABEL",
+    "mktg_in_spl": [
+     "ANDA"
+    ],
+    "n_active_moieties": 2,
+    "sections": {
+     "34066-1": 1963,
+     "34067-9": 1320,
+     "34068-7": 1405,
+     "34070-3": 1127,
+     "43685-7": 19916,
+     "34073-7": 7979
+    },
+    "safety_sections": {
+     "34066-1": 1963,
+     "34070-3": 1127,
+     "43685-7": 19916,
+     "34073-7": 7979
+    }
+   },
+   {
+    "tier": "ANDA",
+    "setid": "962ced24-0fb3-4aba-b32e-2e6fa1c1c5d7",
+    "title": "COMPLETE ACID REDUCER (FAMOTIDINE, CALCIUM CARBONATE AND MAGNESIUM HYDROXIDE) TABLET, CHEWABLE [CVS WOONSOCKET PRESCRIPTION CENTER, INCORPORATED]",
+    "spl_version": 2,
+    "doctype_code": "34390-5",
+    "doctype": "HUMAN OTC DRUG LABEL",
+    "mktg_in_spl": [
+     "ANDA"
+    ],
+    "n_active_moieties": 5,
+    "sections": {
+     "34067-9": 72,
+     "34071-1": 1194,
+     "34068-7": 243
+    },
+    "safety_sections": {
+     "34071-1": 1194
+    }
+   },
+   {
+    "tier": "ANDA",
+    "setid": "b2228be0-472b-4e47-9910-af0bf12fde77",
+    "title": "FAMOTIDINE POWDER, FOR SUSPENSION [ASCEND LABORATORIES, LLC]",
+    "spl_version": 4,
+    "doctype_code": "34391-3",
+    "doctype": "HUMAN PRESCRIPTION DRUG LABEL",
+    "mktg_in_spl": [
+     "ANDA"
+    ],
+    "n_active_moieties": 1,
+    "sections": {
+     "34067-9": 1463,
+     "34068-7": 7205,
+     "34070-3": 334,
+     "43685-7": 1247,
+     "34073-7": 1464
+    },
+    "safety_sections": {
+     "34070-3": 334,
+     "43685-7": 1247,
+     "34073-7": 1464
+    }
+   },
+   {
+    "tier": "other",
+    "setid": "4e8a936c-b876-4923-ad9e-d23537b5d7cf",
+    "title": "DUAL ACTION COMPLETE (FAMOTIDINE, CALCIUM CARBONATE AND MAGNESIUM HYDROXIDE) TABLET, CHEWABLE [AMAZON.COM SERVICES LLC]",
+    "spl_version": 2,
+    "doctype_code": "34390-5",
+    "doctype": "HUMAN OTC DRUG LABEL",
+    "mktg_in_spl": [
+     "ANDA"
+    ],
+    "n_active_moieties": 5,
+    "sections": {
+     "34067-9": 72,
+     "34071-1": 1194,
+     "34068-7": 243
+    },
+    "safety_sections": {
+     "34071-1": 1194
+    }
+   },
+   {
+    "tier": "other",
+    "setid": "4493d4cd-ca8e-4b0a-9b65-b75e55bf8b9e",
+    "title": "IBUPROFEN AND FAMOTIDINE TABLET, FILM COATED [ASCEND LABORATORIES, LLC]",
+    "spl_version": 11,
+    "doctype_code": "34391-3",
+    "doctype": "HUMAN PRESCRIPTION DRUG LABEL",
+    "mktg_in_spl": [
+     "ANDA"
+    ],
+    "n_active_moieties": 2,
+    "sections": {
+     "34066-1": 1963,
+     "34067-9": 1320,
+     "34068-7": 1405,
+     "34070-3": 1127,
+     "43685-7": 19916,
+     "34073-7": 7979
+    },
+    "safety_sections": {
+     "34066-1": 1963,
+     "34070-3": 1127,
+     "43685-7": 19916,
+     "34073-7": 7979
+    }
+   },
+   {
+    "tier": "other",
+    "setid": "a2ef8424-7d80-42b0-a01e-f378f629b2b6",
+    "title": "PEPCID COMPLETE (FAMOTIDINE, CALCIUM CARBONATE, AND MAGNESIUM HYDROXIDE) TABLET, CHEWABLE [KENVUE BRANDS LLC]",
+    "spl_version": 20,
+    "doctype_code": "34390-5",
+    "doctype": "HUMAN OTC DRUG LABEL",
+    "mktg_in_spl": [
+     "NDA"
+    ],
+    "n_active_moieties": 3,
+    "sections": {
+     "34067-9": 72,
+     "34071-1": 1180,
+     "34068-7": 237
+    },
+    "safety_sections": {
+     "34071-1": 1180
+    }
+   },
+   {
+    "tier": "other",
+    "setid": "962ced24-0fb3-4aba-b32e-2e6fa1c1c5d7",
+    "title": "COMPLETE ACID REDUCER (FAMOTIDINE, CALCIUM CARBONATE AND MAGNESIUM HYDROXIDE) TABLET, CHEWABLE [CVS WOONSOCKET PRESCRIPTION CENTER, INCORPORATED]",
+    "spl_version": 2,
+    "doctype_code": "34390-5",
+    "doctype": "HUMAN OTC DRUG LABEL",
+    "mktg_in_spl": [
+     "ANDA"
+    ],
+    "n_active_moieties": 5,
+    "sections": {
+     "34067-9": 72,
+     "34071-1": 1194,
+     "34068-7": 243
+    },
+    "safety_sections": {
+     "34071-1": 1194
+    }
+   }
+  ]
+ }
+}
