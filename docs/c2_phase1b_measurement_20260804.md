@@ -13,13 +13,36 @@ marked in place and dated. Tagging discipline (`CONFIRMED` / `INFERRED`) carried
 
 > **Does E-A remove the wrong-drug citation? NO — on 5 of 5 queries. `CONFIRMED`, N=3 per arm.**
 >
-> The wrong-drug citation **persisted in every case**, and on one (`cimetidine`) E-A made it **worse**
-> (0/3 → 3/3). E-A **is not a substitute for E-B**, and the load-bearing claim in the Phase-1 E table —
-> *"neither is a superset of the other"* — survives, but for a **different and stronger reason than
-> stated**: it is not that they fix different halves. It is that **E-A does not reliably fix its own
-> half.**
+> The wrong-drug citation **persisted in every case**. E-A **is not a substitute for E-B**, and the
+> load-bearing claim in the Phase-1 E table — *"neither is a superset of the other"* — survives, but for a
+> **different and stronger reason than stated**: it is not that they fix different halves. It is that
+> **E-A does not reliably fix its own half.**
 >
 > **E-B's cost is therefore NOT avoidable by doing E-A instead.**
+>
+> ### 🔴 THE STRONGER CONCLUSION — added 2026-08-04 (Phase 1c). It was in the table below and was not written down.
+>
+> | case | own doc in pool | own doc **CITED** | wrong drug **still cited** |
+> |---|---|---|---|
+> | ibuprofen | 0/3 → **3/3** | 0/3 → **3/3** | 3/3 → **3/3** |
+> | omeprazole | 0/3 → **3/3** | 0/3 → **3/3** | 3/3 → **3/3** |
+>
+> **In the only two cases where the drug's own safety document entered the pool AND was cited, the wrong
+> drug was still cited every single time. Supplying the correct document did not DISPLACE the incorrect
+> one — the pool holds ~5 slots and both fit.**
+>
+> **➡️ This undercuts E-B's premise, not just E-A's.** E-B's rationale is *"give the drug its own safety
+> section and the retriever stops reaching for a sibling"* — **directly refuted in the only two cases able
+> to test it.** E-B supplies a *thicker* Rx document **by the same mechanism**: it adds a good document,
+> it does not remove a bad one. **Recorded, not acted on — the founder sequences.**
+>
+> ### ❌ AND ONE CLAIM BELOW IS REFUTED — the cimetidine "regression"
+>
+> The original text of this box read *"and on one (`cimetidine`) E-A made it **worse** (0/3 → 3/3)"*.
+> **That is withdrawn.** Phase 1c re-ran the **control arm alone at N=6**: it gives **4/6**, not 0/6.
+> At matched N the comparison is **control 4/6 vs treatment 3/6** — no difference. **The Phase-1b control
+> 0/3 was a lucky sample; COBIMETINIB is cited on cimetidine queries with or without E-A.**
+> Same trap as c1's `ibuprofen 9→4`. See [`c2_phase1c_20260804.md`](c2_phase1c_20260804.md) Part 1.
 
 The baton's predicted defeat mechanism is **exactly what happened**: *"E-A hands `aspirin` a WARNINGS
 document while the gate query is `aspirin contraindications`. Vocabulary may not match. Coverage ≠
@@ -149,8 +172,17 @@ on-drug is necessary, not sufficient — it caught my own instrument first.)*
 | | **E-A** | **0/3** | **0/3** | **3/3** | 0/3 |
 | **omeprazole** | control | 0/3 | 0/3 | **3/3** | 0/3 |
 | | **E-A** | **3/3** ✅ | **3/3** ✅ | **3/3** ❌ | **3/3** |
-| **cimetidine** | control | 0/3 | 0/3 | **0/3** | 0/3 |
-| | **E-A** | 0/3 | 0/3 | **3/3** 🔴 **WORSE** | 0/3 |
+| **cimetidine** | control | 0/3 | 0/3 | **0/3** ⚠️ *unlucky sample — see below* | 0/3 |
+| | **E-A** | 0/3 | 0/3 | **3/3** ~~🔴 WORSE~~ **NOT ATTRIBUTABLE** | 0/3 |
+
+> **❌ REFUTED 2026-08-04 (Phase 1c).** The 🔴 REGRESSION label on the cimetidine row is **withdrawn**.
+> Re-running the **CONTROL arm alone at N=6** gives **4/6** wrong-drug citations
+> (COBIMETINIB ×4, MEXILETINE ×2, METFORMIN ×2); the treatment arm at N=6 gives **3/6** (COBIMETINIB ×3).
+> **The control arm oscillates 0/3 → 4/6 by itself**, so within-arm spread covers the entire between-arm
+> difference — the same trap as c1's `ibuprofen_warn 9→4` (ON arm ranged 4/4/1).
+> **COBIMETINIB is cited on cimetidine queries with or without E-A.**
+> *Conversely, one finding got STRONGER: **aspirin → ACECLOFENAC is 6/6 in BOTH arms** — deterministic,
+> 12/12 runs across two index configurations, zero variance.*
 
 **Wrong-drug identities cited** (`CONFIRMED`, by moiety):
 
@@ -170,7 +202,7 @@ on-drug is necessary, not sufficient — it caught my own instrument first.)*
 | **ibuprofen** | **NO** (but real coverage gain) | Own doc retrieved and **cited at rank [1]** (*ADVIL — Warnings*). **Store probe: own `34071-1` at rank 0.** But it **took a slot rather than displacing** the wrong ones — Piroxicam, Ibuprofen lysine, Mefenamic acid **and a NEW intrusion, METHOXSALEN** (a psoralen, unrelated) all still cited. |
 | **naproxen** | **NO** | Own doc never enters. **Store probe: 0 hits.** Same vocabulary miss. |
 | **omeprazole** | **NO** (but real coverage gain) | Own doc retrieved and cited (**store probe: rank 0**), yet PANTOPRAZOLE + ESOMEPRAZOLE persist. |
-| **cimetidine** | **NO — REGRESSION** 🔴 | Control cited **no** wrong drug; E-A cites **three** (COBIMETINIB, MEXILETINE, METFORMIN). Own doc never enters (**store probe: 0 hits**). **Adding 381 documents perturbed the pool and pulled in wrong-drug documents on a query that was previously clean.** |
+| **cimetidine** | **NO** ~~— REGRESSION 🔴~~ **(regression REFUTED 2026-08-04)** | Own doc never enters (**store probe: 0 hits**). ~~Control cited no wrong drug; E-A cites three.~~ **At N=6 the control arm itself cites a wrong drug 4/6 vs treatment 3/6** — the apparent regression was sampling noise in a 0/3 control. The wrong-drug citation here is **pre-existing, not E-A-caused.** |
 
 **Does the retrieved `34071-1` document ANSWER the question asked?** On the 2 successes it is **on-drug
 but only partly on-question**: both queries asked about *warnings/contraindications* and received a
@@ -212,6 +244,24 @@ classified, n = 381 — not a sample.**
 
 **➡️ The lay-consumer-language concern applies almost entirely to the OTC 107, and essentially not at
 all to the Rx 264** — which are 93 % of the recovered text.
+
+> ### 🆕 2026-08-04 (Phase 1c) — this split means **E-A is two options, not one**
+>
+> | | labels | chars | share | content |
+> |---|---|---|---|---|
+> | **Rx legacy-format warnings** (`34391-3`) | **264** | **914 222** | **92.8 %** | 0 % lay · ≥23 % clinical |
+> | OTC Drug-Facts warnings (`34390-5`) | 107 | 66 480 | 6.7 % | 64 % lay · **0 % clinical** |
+> | other doctypes | 10 | ~4 461 | 0.5 % | — |
+>
+> **New option `E-A-Rx`: index `34071-1` only for doctype `34391-3`.** +264 docs instead of 381, **zero
+> lay-language exposure**, recovers 92.8 % of the text for 69 % of the documents, and **excludes aspirin's
+> VAZALORE doc — which was never retrieved anyway** (0/6 at N=6, Phase 1c Part 1).
+>
+> ⚠️ **E-A-Rx has NO measured benefit.** The five Phase-1b queries are all **OTC-class** drugs, so they
+> exercised E-A's **OTC half**. Whether any of the 264 Rx documents is *ever retrieved* is **entirely
+> unmeasured**, and the signal is discouraging: E-A added 381 documents and **only 2 of 5 entered the
+> pool** on the queries most likely to surface them. **"Coverage ≠ retrieval" applies to E-A's own Rx
+> half too, and has not been tested there.**
 
 ⚠️ **Method limit, stated:** the 65.6 % AMBIGUOUS bucket is **a property of my classifier, not of the
 text**. Sampling shows clearly-clinical prose landing there — e.g. *"WARNINGS Administration of folic

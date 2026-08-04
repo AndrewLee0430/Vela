@@ -186,6 +186,44 @@ slower data-quality track.
 
 ## 6. BUILD PLAN-BACK — port Verify's non-confident-match discipline to Research
 
+> ## 🔴 HARD DESIGN CONSTRAINT — added 2026-08-04 from the c2 Phase-1b/1c measurement. **Read before designing the filter.**
+>
+> ### A filter keyed on *"does this document MENTION the queried drug"* WILL PASS the worst real instance.
+>
+> The best-evidenced wrong-drug case in the repo is `aspirin contraindications` → **`Clanza
+> (Aceclofenac) — Contraindications`**, cited **12 / 12 runs across two index configurations, zero
+> variance** (c2 Phase-1c Part 1). Its text reads:
+>
+> > *"Patients with allergy to these drugs or other analogues (diclofenac). … Like NSAIDS,
+> > **acetylsalicylic acid** and other drugs which inhibit prostagladin-synthesis may precipitate attacks
+> > of asthma…"*
+>
+> **The aceclofenac label literally contains "acetylsalicylic acid" — and that is CORRECT drafting.**
+> NSAID cross-sensitivity genuinely belongs in an aceclofenac contraindications section. The document is
+> not defective; it is being *used* for the wrong purpose.
+>
+> **This was discovered the hard way: the c2 Phase-1b harness used a mention-based `own_drug` flag and
+> false-positived on exactly this document, reporting "own drug cited 3/3" for a pool that contained no
+> aspirin document at all.** A measurement instrument built on the mention heuristic failed on the first
+> real case it met. **A production filter built on it would fail the same way, silently.**
+>
+> ### ➡️ The filter must determine WHOSE LABEL the document is, not WHOM it mentions.
+>
+> **This is cheap — the corpus already carries it.** Every DailyMed doc has a **`moiety`** field and a
+> `setid` (`scripts/build_dailymed_label_corpus.py:297-299`); ownership is a **lookup, not an inference**.
+> The c2 probes re-classified entirely on `setid → moiety` and it was exact.
+>
+> ⚠️ **A mention-based filter is both easier to build and wrong — which is the combination that gets
+> built by default.** Recorded now because it is cheap now and expensive after such a filter exists.
+>
+> ### And one more constraint from the same measurement
+>
+> **Supplying the correct document does NOT displace the incorrect one.** On the only two c2 cases where
+> the drug's own safety document entered the pool *and was cited*, the wrong drug was **still cited 3/3**
+> (c2 Phase-1c §0). The pool holds ~5 slots and both fit. **So a coverage fix upstream will not remove
+> the need for this filter** — which also means this item's "blocked by c2" rationale is weaker than
+> recorded. Cross-ref TECH_DEBT surface 3/3 and STATE open-item #2.
+
 **One fix shape, and it is Rule 19's own finding** (Rule 19 row #5, `docs/research_openfda_fallback_phase1.md` §2):
 Verify **never attaches a specific setid on a low-confidence drug match** (`api/server.py:1013-1020`)
 and fails honest instead. **Research has no drug-identity check at all.** Port the *discipline*, not
