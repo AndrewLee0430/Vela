@@ -1,0 +1,2362 @@
+{
+ "started": "2026-08-04 10:29:08",
+ "N": 3,
+ "arms": {
+  "control": {
+   "aspirin": {
+    "query": "aspirin contraindications and who should not take it",
+    "runs": [
+     {
+      "run": 0,
+      "status": "ok",
+      "final": [
+       {
+        "rank": 0,
+        "source_id": "DailyMed:8a023942-01e8-4849-aa3c-1a640ffc7fd3#34070-3",
+        "title": "Clanza (Aceclofenac) — Contraindications",
+        "own_drug": true,
+        "wrong_drug": true,
+        "loinc": "34070-3"
+       }
+      ],
+      "precut_pool_size": 1,
+      "precut_pool": [
+       {
+        "rerank_rank": 0,
+        "rerank_score": 0.6667558550834656,
+        "source_id": "DailyMed:8a023942-01e8-4849-aa3c-1a640ffc7fd3#34070-3",
+        "title": "Clanza (Aceclofenac) — Contraindications",
+        "own_drug": true,
+        "wrong_drug": true,
+        "loinc": "34070-3"
+       }
+      ]
+     },
+     {
+      "run": 1,
+      "status": "ok",
+      "final": [
+       {
+        "rank": 0,
+        "source_id": "DailyMed:8a023942-01e8-4849-aa3c-1a640ffc7fd3#34070-3",
+        "title": "Clanza (Aceclofenac) — Contraindications",
+        "own_drug": true,
+        "wrong_drug": true,
+        "loinc": "34070-3"
+       }
+      ],
+      "precut_pool_size": 1,
+      "precut_pool": [
+       {
+        "rerank_rank": 0,
+        "rerank_score": 0.6495073437690735,
+        "source_id": "DailyMed:8a023942-01e8-4849-aa3c-1a640ffc7fd3#34070-3",
+        "title": "Clanza (Aceclofenac) — Contraindications",
+        "own_drug": true,
+        "wrong_drug": true,
+        "loinc": "34070-3"
+       }
+      ]
+     },
+     {
+      "run": 2,
+      "status": "ok",
+      "final": [
+       {
+        "rank": 0,
+        "source_id": "DailyMed:8a023942-01e8-4849-aa3c-1a640ffc7fd3#34070-3",
+        "title": "Clanza (Aceclofenac) — Contraindications",
+        "own_drug": true,
+        "wrong_drug": true,
+        "loinc": "34070-3"
+       }
+      ],
+      "precut_pool_size": 1,
+      "precut_pool": [
+       {
+        "rerank_rank": 0,
+        "rerank_score": 0.6590481400489807,
+        "source_id": "DailyMed:8a023942-01e8-4849-aa3c-1a640ffc7fd3#34070-3",
+        "title": "Clanza (Aceclofenac) — Contraindications",
+        "own_drug": true,
+        "wrong_drug": true,
+        "loinc": "34070-3"
+       }
+      ]
+     }
+    ]
+   },
+   "ibuprofen": {
+    "query": "ibuprofen warnings and precautions",
+    "runs": [
+     {
+      "run": 0,
+      "status": "ok",
+      "final": [
+       {
+        "rank": 0,
+        "source_id": "DailyMed:0373da3a-7779-4e26-87f1-cd346018282c#34066-1",
+        "title": "Piroxicam (piroxicam) — Boxed Warning",
+        "own_drug": false,
+        "wrong_drug": true,
+        "loinc": "34066-1"
+       },
+       {
+        "rank": 1,
+        "source_id": "PMID:40306178",
+        "title": "Pharmacological bases of combining nonsteroidal antiinflammatory drugs and parac",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rank": 2,
+        "source_id": "PMID:29421936",
+        "title": "Cardiorenal Safety of OTC Analgesics.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rank": 3,
+        "source_id": "PMID:30176739",
+        "title": "Benefits and Risks of Nonsteroidal Anti-inflammatory Drugs: Methodologic Limitat",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       }
+      ],
+      "precut_pool_size": 4,
+      "precut_pool": [
+       {
+        "rerank_rank": 0,
+        "rerank_score": 0.9,
+        "source_id": "DailyMed:0373da3a-7779-4e26-87f1-cd346018282c#34066-1",
+        "title": "Piroxicam (piroxicam) — Boxed Warning",
+        "own_drug": false,
+        "wrong_drug": true,
+        "loinc": "34066-1"
+       },
+       {
+        "rerank_rank": 1,
+        "rerank_score": 0.8,
+        "source_id": "PMID:29421936",
+        "title": "Cardiorenal Safety of OTC Analgesics.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 2,
+        "rerank_score": 0.7,
+        "source_id": "PMID:40306178",
+        "title": "Pharmacological bases of combining nonsteroidal antiinflammatory drugs and parac",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 3,
+        "rerank_score": 0.5,
+        "source_id": "PMID:30176739",
+        "title": "Benefits and Risks of Nonsteroidal Anti-inflammatory Drugs: Methodologic Limitat",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       }
+      ]
+     },
+     {
+      "run": 1,
+      "status": "ok",
+      "final": [
+       {
+        "rank": 0,
+        "source_id": "DailyMed:0373da3a-7779-4e26-87f1-cd346018282c#34066-1",
+        "title": "Piroxicam (piroxicam) — Boxed Warning",
+        "own_drug": false,
+        "wrong_drug": true,
+        "loinc": "34066-1"
+       },
+       {
+        "rank": 1,
+        "source_id": "PMID:40306178",
+        "title": "Pharmacological bases of combining nonsteroidal antiinflammatory drugs and parac",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rank": 2,
+        "source_id": "PMID:29421936",
+        "title": "Cardiorenal Safety of OTC Analgesics.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rank": 3,
+        "source_id": "PMID:30176739",
+        "title": "Benefits and Risks of Nonsteroidal Anti-inflammatory Drugs: Methodologic Limitat",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       }
+      ],
+      "precut_pool_size": 4,
+      "precut_pool": [
+       {
+        "rerank_rank": 0,
+        "rerank_score": 0.9,
+        "source_id": "DailyMed:0373da3a-7779-4e26-87f1-cd346018282c#34066-1",
+        "title": "Piroxicam (piroxicam) — Boxed Warning",
+        "own_drug": false,
+        "wrong_drug": true,
+        "loinc": "34066-1"
+       },
+       {
+        "rerank_rank": 1,
+        "rerank_score": 0.8,
+        "source_id": "PMID:29421936",
+        "title": "Cardiorenal Safety of OTC Analgesics.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 2,
+        "rerank_score": 0.7,
+        "source_id": "PMID:40306178",
+        "title": "Pharmacological bases of combining nonsteroidal antiinflammatory drugs and parac",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 3,
+        "rerank_score": 0.5,
+        "source_id": "PMID:30176739",
+        "title": "Benefits and Risks of Nonsteroidal Anti-inflammatory Drugs: Methodologic Limitat",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       }
+      ]
+     },
+     {
+      "run": 2,
+      "status": "ok",
+      "final": [
+       {
+        "rank": 0,
+        "source_id": "DailyMed:6f5ede6f-b0b7-4fc8-969e-652f60ead047#34073-7",
+        "title": "NEOPROFEN (ibuprofen lysine) — Drug Interactions",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": "34073-7"
+       },
+       {
+        "rank": 1,
+        "source_id": "PMID:40306178",
+        "title": "Pharmacological bases of combining nonsteroidal antiinflammatory drugs and parac",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rank": 2,
+        "source_id": "PMID:33234913",
+        "title": "Nonsteroidal Anti-Inflammatory Drugs: Updates on Dosage Formulations and Adverse",
+        "own_drug": false,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rank": 3,
+        "source_id": "DailyMed:9b8b3e03-4801-4ae8-b44e-e01d1ab1e34b#34070-3",
+        "title": "Mefenamic acid (Mefenamic acid) — Contraindications",
+        "own_drug": false,
+        "wrong_drug": true,
+        "loinc": "34070-3"
+       },
+       {
+        "rank": 4,
+        "source_id": "PMID:30176739",
+        "title": "Benefits and Risks of Nonsteroidal Anti-inflammatory Drugs: Methodologic Limitat",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       }
+      ],
+      "precut_pool_size": 7,
+      "precut_pool": [
+       {
+        "rerank_rank": 0,
+        "rerank_score": 0.9,
+        "source_id": "DailyMed:6f5ede6f-b0b7-4fc8-969e-652f60ead047#34073-7",
+        "title": "NEOPROFEN (ibuprofen lysine) — Drug Interactions",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": "34073-7"
+       },
+       {
+        "rerank_rank": 1,
+        "rerank_score": 0.8,
+        "source_id": "PMID:33234913",
+        "title": "Nonsteroidal Anti-Inflammatory Drugs: Updates on Dosage Formulations and Adverse",
+        "own_drug": false,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 2,
+        "rerank_score": 0.7,
+        "source_id": "PMID:40306178",
+        "title": "Pharmacological bases of combining nonsteroidal antiinflammatory drugs and parac",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 3,
+        "rerank_score": 0.6,
+        "source_id": "PMID:30176739",
+        "title": "Benefits and Risks of Nonsteroidal Anti-inflammatory Drugs: Methodologic Limitat",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 4,
+        "rerank_score": 0.5,
+        "source_id": "PMID:31439354",
+        "title": "Nonsteroidal anti-inflammatory drugs and cardiovascular risk - a matter of indic",
+        "own_drug": false,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 5,
+        "rerank_score": 0.3,
+        "source_id": "DailyMed:9b8b3e03-4801-4ae8-b44e-e01d1ab1e34b#34070-3",
+        "title": "Mefenamic acid (Mefenamic acid) — Contraindications",
+        "own_drug": false,
+        "wrong_drug": true,
+        "loinc": "34070-3"
+       },
+       {
+        "rerank_rank": 6,
+        "rerank_score": 0.2,
+        "source_id": "DailyMed:5ad333bd-845f-43f8-9ecf-43491f26c7c7#34073-7",
+        "title": "UVADEX (Methoxsalen) — Drug Interactions",
+        "own_drug": false,
+        "wrong_drug": false,
+        "loinc": "34073-7"
+       }
+      ]
+     }
+    ]
+   },
+   "naproxen": {
+    "query": "naproxen drug interactions and safety",
+    "runs": [
+     {
+      "run": 0,
+      "status": "ok",
+      "final": [
+       {
+        "rank": 0,
+        "source_id": "DailyMed:419c597f-6a6f-4420-b240-7dc4c223387e#34073-7",
+        "title": "Nabumetone (Nabumetone) — Drug Interactions",
+        "own_drug": false,
+        "wrong_drug": true,
+        "loinc": "34073-7"
+       },
+       {
+        "rank": 1,
+        "source_id": "PMID:7001021",
+        "title": "Naproxen sodium (Anaprox): pharmacology, pharmacokinetics and drug interactions.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rank": 2,
+        "source_id": "PMID:9113437",
+        "title": "Clinical pharmacokinetics of naproxen.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rank": 3,
+        "source_id": "PMID:1628263",
+        "title": "Naproxen: pharmacology and dental therapeutics.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       }
+      ],
+      "precut_pool_size": 4,
+      "precut_pool": [
+       {
+        "rerank_rank": 0,
+        "rerank_score": 0.9,
+        "source_id": "PMID:7001021",
+        "title": "Naproxen sodium (Anaprox): pharmacology, pharmacokinetics and drug interactions.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 1,
+        "rerank_score": 0.7,
+        "source_id": "PMID:9113437",
+        "title": "Clinical pharmacokinetics of naproxen.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 2,
+        "rerank_score": 0.5,
+        "source_id": "PMID:1628263",
+        "title": "Naproxen: pharmacology and dental therapeutics.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 3,
+        "rerank_score": 0.4,
+        "source_id": "DailyMed:419c597f-6a6f-4420-b240-7dc4c223387e#34073-7",
+        "title": "Nabumetone (Nabumetone) — Drug Interactions",
+        "own_drug": false,
+        "wrong_drug": true,
+        "loinc": "34073-7"
+       }
+      ]
+     },
+     {
+      "run": 1,
+      "status": "ok",
+      "final": [
+       {
+        "rank": 0,
+        "source_id": "DailyMed:419c597f-6a6f-4420-b240-7dc4c223387e#34073-7",
+        "title": "Nabumetone (Nabumetone) — Drug Interactions",
+        "own_drug": false,
+        "wrong_drug": true,
+        "loinc": "34073-7"
+       },
+       {
+        "rank": 1,
+        "source_id": "PMID:7001021",
+        "title": "Naproxen sodium (Anaprox): pharmacology, pharmacokinetics and drug interactions.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rank": 2,
+        "source_id": "PMID:9113437",
+        "title": "Clinical pharmacokinetics of naproxen.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rank": 3,
+        "source_id": "PMID:1628263",
+        "title": "Naproxen: pharmacology and dental therapeutics.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       }
+      ],
+      "precut_pool_size": 4,
+      "precut_pool": [
+       {
+        "rerank_rank": 0,
+        "rerank_score": 0.9,
+        "source_id": "PMID:7001021",
+        "title": "Naproxen sodium (Anaprox): pharmacology, pharmacokinetics and drug interactions.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 1,
+        "rerank_score": 0.7,
+        "source_id": "PMID:9113437",
+        "title": "Clinical pharmacokinetics of naproxen.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 2,
+        "rerank_score": 0.5,
+        "source_id": "PMID:1628263",
+        "title": "Naproxen: pharmacology and dental therapeutics.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 3,
+        "rerank_score": 0.4,
+        "source_id": "DailyMed:419c597f-6a6f-4420-b240-7dc4c223387e#34073-7",
+        "title": "Nabumetone (Nabumetone) — Drug Interactions",
+        "own_drug": false,
+        "wrong_drug": true,
+        "loinc": "34073-7"
+       }
+      ]
+     },
+     {
+      "run": 2,
+      "status": "ok",
+      "final": [
+       {
+        "rank": 0,
+        "source_id": "DailyMed:419c597f-6a6f-4420-b240-7dc4c223387e#34073-7",
+        "title": "Nabumetone (Nabumetone) — Drug Interactions",
+        "own_drug": false,
+        "wrong_drug": true,
+        "loinc": "34073-7"
+       },
+       {
+        "rank": 1,
+        "source_id": "PMID:7001021",
+        "title": "Naproxen sodium (Anaprox): pharmacology, pharmacokinetics and drug interactions.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rank": 2,
+        "source_id": "PMID:1628263",
+        "title": "Naproxen: pharmacology and dental therapeutics.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rank": 3,
+        "source_id": "PMID:9113437",
+        "title": "Clinical pharmacokinetics of naproxen.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       }
+      ],
+      "precut_pool_size": 4,
+      "precut_pool": [
+       {
+        "rerank_rank": 0,
+        "rerank_score": 0.9,
+        "source_id": "PMID:7001021",
+        "title": "Naproxen sodium (Anaprox): pharmacology, pharmacokinetics and drug interactions.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 1,
+        "rerank_score": 0.7,
+        "source_id": "PMID:1628263",
+        "title": "Naproxen: pharmacology and dental therapeutics.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 2,
+        "rerank_score": 0.6,
+        "source_id": "PMID:9113437",
+        "title": "Clinical pharmacokinetics of naproxen.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 3,
+        "rerank_score": 0.4,
+        "source_id": "DailyMed:419c597f-6a6f-4420-b240-7dc4c223387e#34073-7",
+        "title": "Nabumetone (Nabumetone) — Drug Interactions",
+        "own_drug": false,
+        "wrong_drug": true,
+        "loinc": "34073-7"
+       }
+      ]
+     }
+    ]
+   },
+   "omeprazole": {
+    "query": "omeprazole contraindications and warnings",
+    "runs": [
+     {
+      "run": 0,
+      "status": "ok",
+      "final": [
+       {
+        "rank": 0,
+        "source_id": "DailyMed:51e4144a-489e-436c-609a-39305f8f56ba#43685-7",
+        "title": "Protonix (PANTOPRAZOLE SODIUM) — Warnings and Precautions",
+        "own_drug": false,
+        "wrong_drug": true,
+        "loinc": "43685-7"
+       },
+       {
+        "rank": 1,
+        "source_id": "DailyMed:51e4144a-489e-436c-609a-39305f8f56ba#34070-3",
+        "title": "Protonix (PANTOPRAZOLE SODIUM) — Contraindications",
+        "own_drug": false,
+        "wrong_drug": true,
+        "loinc": "34070-3"
+       }
+      ],
+      "precut_pool_size": 2,
+      "precut_pool": [
+       {
+        "rerank_rank": 0,
+        "rerank_score": 0.6012715101242065,
+        "source_id": "DailyMed:51e4144a-489e-436c-609a-39305f8f56ba#34070-3",
+        "title": "Protonix (PANTOPRAZOLE SODIUM) — Contraindications",
+        "own_drug": false,
+        "wrong_drug": true,
+        "loinc": "34070-3"
+       },
+       {
+        "rerank_rank": 1,
+        "rerank_score": 0.6040075421333313,
+        "source_id": "DailyMed:51e4144a-489e-436c-609a-39305f8f56ba#43685-7",
+        "title": "Protonix (PANTOPRAZOLE SODIUM) — Warnings and Precautions",
+        "own_drug": false,
+        "wrong_drug": true,
+        "loinc": "43685-7"
+       }
+      ]
+     },
+     {
+      "run": 1,
+      "status": "ok",
+      "final": [
+       {
+        "rank": 0,
+        "source_id": "DailyMed:51e4144a-489e-436c-609a-39305f8f56ba#43685-7",
+        "title": "Protonix (PANTOPRAZOLE SODIUM) — Warnings and Precautions",
+        "own_drug": false,
+        "wrong_drug": true,
+        "loinc": "43685-7"
+       },
+       {
+        "rank": 1,
+        "source_id": "PMID:30485850",
+        "title": "Immediate-Type Hypersensitivity Cross-Reactions to Proton Pump Inhibitors: A Des",
+        "own_drug": true,
+        "wrong_drug": true,
+        "loinc": null
+       },
+       {
+        "rank": 2,
+        "source_id": "DailyMed:51e4144a-489e-436c-609a-39305f8f56ba#34070-3",
+        "title": "Protonix (PANTOPRAZOLE SODIUM) — Contraindications",
+        "own_drug": false,
+        "wrong_drug": true,
+        "loinc": "34070-3"
+       },
+       {
+        "rank": 3,
+        "source_id": "DailyMed:45a15ba2-2aae-4edc-beaa-4a2357d87f32#34073-7",
+        "title": "Esomeprazole Sodium (Esomeprazole Sodium) — Drug Interactions",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": "34073-7"
+       }
+      ],
+      "precut_pool_size": 4,
+      "precut_pool": [
+       {
+        "rerank_rank": 0,
+        "rerank_score": 0.7,
+        "source_id": "PMID:30485850",
+        "title": "Immediate-Type Hypersensitivity Cross-Reactions to Proton Pump Inhibitors: A Des",
+        "own_drug": true,
+        "wrong_drug": true,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 1,
+        "rerank_score": 0.6,
+        "source_id": "DailyMed:51e4144a-489e-436c-609a-39305f8f56ba#43685-7",
+        "title": "Protonix (PANTOPRAZOLE SODIUM) — Warnings and Precautions",
+        "own_drug": false,
+        "wrong_drug": true,
+        "loinc": "43685-7"
+       },
+       {
+        "rerank_rank": 2,
+        "rerank_score": 0.4,
+        "source_id": "DailyMed:51e4144a-489e-436c-609a-39305f8f56ba#34070-3",
+        "title": "Protonix (PANTOPRAZOLE SODIUM) — Contraindications",
+        "own_drug": false,
+        "wrong_drug": true,
+        "loinc": "34070-3"
+       },
+       {
+        "rerank_rank": 3,
+        "rerank_score": 0.3,
+        "source_id": "DailyMed:45a15ba2-2aae-4edc-beaa-4a2357d87f32#34073-7",
+        "title": "Esomeprazole Sodium (Esomeprazole Sodium) — Drug Interactions",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": "34073-7"
+       }
+      ]
+     },
+     {
+      "run": 2,
+      "status": "ok",
+      "final": [
+       {
+        "rank": 0,
+        "source_id": "DailyMed:51e4144a-489e-436c-609a-39305f8f56ba#43685-7",
+        "title": "Protonix (PANTOPRAZOLE SODIUM) — Warnings and Precautions",
+        "own_drug": false,
+        "wrong_drug": true,
+        "loinc": "43685-7"
+       },
+       {
+        "rank": 1,
+        "source_id": "DailyMed:45a15ba2-2aae-4edc-beaa-4a2357d87f32#34073-7",
+        "title": "Esomeprazole Sodium (Esomeprazole Sodium) — Drug Interactions",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": "34073-7"
+       },
+       {
+        "rank": 2,
+        "source_id": "PMID:23927671",
+        "title": "Perils and pitfalls of long-term effects of proton pump inhibitors.",
+        "own_drug": true,
+        "wrong_drug": true,
+        "loinc": null
+       },
+       {
+        "rank": 3,
+        "source_id": "PMID:29759903",
+        "title": "Potential Adverse Drug Events and Nephrotoxicity Related to Prophylaxis With Ome",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       }
+      ],
+      "precut_pool_size": 4,
+      "precut_pool": [
+       {
+        "rerank_rank": 0,
+        "rerank_score": 0.85,
+        "source_id": "PMID:23927671",
+        "title": "Perils and pitfalls of long-term effects of proton pump inhibitors.",
+        "own_drug": true,
+        "wrong_drug": true,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 1,
+        "rerank_score": 0.7,
+        "source_id": "PMID:29759903",
+        "title": "Potential Adverse Drug Events and Nephrotoxicity Related to Prophylaxis With Ome",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 2,
+        "rerank_score": 0.5,
+        "source_id": "DailyMed:51e4144a-489e-436c-609a-39305f8f56ba#43685-7",
+        "title": "Protonix (PANTOPRAZOLE SODIUM) — Warnings and Precautions",
+        "own_drug": false,
+        "wrong_drug": true,
+        "loinc": "43685-7"
+       },
+       {
+        "rerank_rank": 3,
+        "rerank_score": 0.4,
+        "source_id": "DailyMed:45a15ba2-2aae-4edc-beaa-4a2357d87f32#34073-7",
+        "title": "Esomeprazole Sodium (Esomeprazole Sodium) — Drug Interactions",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": "34073-7"
+       }
+      ]
+     }
+    ]
+   },
+   "cimetidine": {
+    "query": "cimetidine drug interactions and safety",
+    "runs": [
+     {
+      "run": 0,
+      "status": "ok",
+      "final": [
+       {
+        "rank": 0,
+        "source_id": "PMID:6140847",
+        "title": "Cimetidine-drug interactions.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rank": 1,
+        "source_id": "PMID:6152350",
+        "title": "Drug interactions involving cimetidine--mechanisms, documentation, implications.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rank": 2,
+        "source_id": "PMID:6344228",
+        "title": "Interaction of cimetidine with other drugs.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rank": 3,
+        "source_id": "PMID:6116430",
+        "title": "Cimetidine-benzodiazepine drug interaction.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rank": 4,
+        "source_id": "PMID:37948503",
+        "title": "Metformin-Cimetidine Drug Interaction and Risk of Lactic Acidosis in Renal Failu",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       }
+      ],
+      "precut_pool_size": 9,
+      "precut_pool": [
+       {
+        "rerank_rank": 0,
+        "rerank_score": 0.9,
+        "source_id": "PMID:6140847",
+        "title": "Cimetidine-drug interactions.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 1,
+        "rerank_score": 0.85,
+        "source_id": "PMID:6152350",
+        "title": "Drug interactions involving cimetidine--mechanisms, documentation, implications.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 2,
+        "rerank_score": 0.8,
+        "source_id": "PMID:6344228",
+        "title": "Interaction of cimetidine with other drugs.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 3,
+        "rerank_score": 0.7,
+        "source_id": "PMID:6116430",
+        "title": "Cimetidine-benzodiazepine drug interaction.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 4,
+        "rerank_score": 0.7,
+        "source_id": "PMID:37948503",
+        "title": "Metformin-Cimetidine Drug Interaction and Risk of Lactic Acidosis in Renal Failu",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 5,
+        "rerank_score": 0.7,
+        "source_id": "PMID:6547990",
+        "title": "Cimetidine-sucralfate drug interaction.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 6,
+        "rerank_score": 0.6,
+        "source_id": "PMID:2979263",
+        "title": "Six years of continuous cimetidine treatment in peptic ulcer disease: efficacy a",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 7,
+        "rerank_score": 0.5,
+        "source_id": "PMID:30082658",
+        "title": "Pharmacokinetic Drug-Drug Interaction and Responsible Mechanism between Memantin",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 8,
+        "rerank_score": 0.5,
+        "source_id": "PMID:39497599",
+        "title": "Effects of Cimetidine and Dolutegravir on the Endogenous Drug-Drug Interaction B",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       }
+      ]
+     },
+     {
+      "run": 1,
+      "status": "ok",
+      "final": [
+       {
+        "rank": 0,
+        "source_id": "PMID:6140847",
+        "title": "Cimetidine-drug interactions.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rank": 1,
+        "source_id": "PMID:6344228",
+        "title": "Interaction of cimetidine with other drugs.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rank": 2,
+        "source_id": "PMID:6152350",
+        "title": "Drug interactions involving cimetidine--mechanisms, documentation, implications.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rank": 3,
+        "source_id": "PMID:6116430",
+        "title": "Cimetidine-benzodiazepine drug interaction.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rank": 4,
+        "source_id": "PMID:6547990",
+        "title": "Cimetidine-sucralfate drug interaction.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       }
+      ],
+      "precut_pool_size": 10,
+      "precut_pool": [
+       {
+        "rerank_rank": 0,
+        "rerank_score": 0.9,
+        "source_id": "PMID:6140847",
+        "title": "Cimetidine-drug interactions.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 1,
+        "rerank_score": 0.85,
+        "source_id": "PMID:6344228",
+        "title": "Interaction of cimetidine with other drugs.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 2,
+        "rerank_score": 0.8,
+        "source_id": "PMID:6152350",
+        "title": "Drug interactions involving cimetidine--mechanisms, documentation, implications.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 3,
+        "rerank_score": 0.7,
+        "source_id": "PMID:6116430",
+        "title": "Cimetidine-benzodiazepine drug interaction.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 4,
+        "rerank_score": 0.7,
+        "source_id": "PMID:6547990",
+        "title": "Cimetidine-sucralfate drug interaction.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 5,
+        "rerank_score": 0.6,
+        "source_id": "PMID:37948503",
+        "title": "Metformin-Cimetidine Drug Interaction and Risk of Lactic Acidosis in Renal Failu",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 6,
+        "rerank_score": 0.5,
+        "source_id": "PMID:30082658",
+        "title": "Pharmacokinetic Drug-Drug Interaction and Responsible Mechanism between Memantin",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 7,
+        "rerank_score": 0.5,
+        "source_id": "PMID:2979263",
+        "title": "Six years of continuous cimetidine treatment in peptic ulcer disease: efficacy a",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 8,
+        "rerank_score": 0.5,
+        "source_id": "PMID:39497599",
+        "title": "Effects of Cimetidine and Dolutegravir on the Endogenous Drug-Drug Interaction B",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 9,
+        "rerank_score": 0.0,
+        "source_id": "DailyMed:c387579e-cee0-4334-bd1e-73f93ac1bde6#34073-7",
+        "title": "Cotellic (COBIMETINIB) — Drug Interactions",
+        "own_drug": false,
+        "wrong_drug": true,
+        "loinc": "34073-7"
+       }
+      ]
+     },
+     {
+      "run": 2,
+      "status": "ok",
+      "final": [
+       {
+        "rank": 0,
+        "source_id": "PMID:6140847",
+        "title": "Cimetidine-drug interactions.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rank": 1,
+        "source_id": "PMID:6344228",
+        "title": "Interaction of cimetidine with other drugs.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rank": 2,
+        "source_id": "PMID:6152350",
+        "title": "Drug interactions involving cimetidine--mechanisms, documentation, implications.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rank": 3,
+        "source_id": "PMID:6116430",
+        "title": "Cimetidine-benzodiazepine drug interaction.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rank": 4,
+        "source_id": "PMID:6547990",
+        "title": "Cimetidine-sucralfate drug interaction.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       }
+      ],
+      "precut_pool_size": 10,
+      "precut_pool": [
+       {
+        "rerank_rank": 0,
+        "rerank_score": 0.9,
+        "source_id": "PMID:6140847",
+        "title": "Cimetidine-drug interactions.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 1,
+        "rerank_score": 0.85,
+        "source_id": "PMID:6344228",
+        "title": "Interaction of cimetidine with other drugs.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 2,
+        "rerank_score": 0.8,
+        "source_id": "PMID:6152350",
+        "title": "Drug interactions involving cimetidine--mechanisms, documentation, implications.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 3,
+        "rerank_score": 0.7,
+        "source_id": "PMID:6116430",
+        "title": "Cimetidine-benzodiazepine drug interaction.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 4,
+        "rerank_score": 0.7,
+        "source_id": "PMID:6547990",
+        "title": "Cimetidine-sucralfate drug interaction.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 5,
+        "rerank_score": 0.6,
+        "source_id": "PMID:37948503",
+        "title": "Metformin-Cimetidine Drug Interaction and Risk of Lactic Acidosis in Renal Failu",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 6,
+        "rerank_score": 0.5,
+        "source_id": "PMID:30082658",
+        "title": "Pharmacokinetic Drug-Drug Interaction and Responsible Mechanism between Memantin",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 7,
+        "rerank_score": 0.5,
+        "source_id": "PMID:2979263",
+        "title": "Six years of continuous cimetidine treatment in peptic ulcer disease: efficacy a",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 8,
+        "rerank_score": 0.5,
+        "source_id": "PMID:39497599",
+        "title": "Effects of Cimetidine and Dolutegravir on the Endogenous Drug-Drug Interaction B",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 9,
+        "rerank_score": 0.0,
+        "source_id": "DailyMed:c387579e-cee0-4334-bd1e-73f93ac1bde6#34073-7",
+        "title": "Cotellic (COBIMETINIB) — Drug Interactions",
+        "own_drug": false,
+        "wrong_drug": true,
+        "loinc": "34073-7"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  "treatment": {
+   "aspirin": {
+    "query": "aspirin contraindications and who should not take it",
+    "runs": [
+     {
+      "run": 0,
+      "status": "ok",
+      "final": [
+       {
+        "rank": 0,
+        "source_id": "DailyMed:9b8b3e03-4801-4ae8-b44e-e01d1ab1e34b#34070-3",
+        "title": "Mefenamic acid (Mefenamic acid) — Contraindications",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": "34070-3"
+       },
+       {
+        "rank": 1,
+        "source_id": "DailyMed:8a023942-01e8-4849-aa3c-1a640ffc7fd3#34070-3",
+        "title": "Clanza (Aceclofenac) — Contraindications",
+        "own_drug": true,
+        "wrong_drug": true,
+        "loinc": "34070-3"
+       },
+       {
+        "rank": 2,
+        "source_id": "PMID:1576570",
+        "title": "Prophylactic aspirin and the elderly population.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       }
+      ],
+      "precut_pool_size": 3,
+      "precut_pool": [
+       {
+        "rerank_rank": 0,
+        "rerank_score": 0.8,
+        "source_id": "DailyMed:9b8b3e03-4801-4ae8-b44e-e01d1ab1e34b#34070-3",
+        "title": "Mefenamic acid (Mefenamic acid) — Contraindications",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": "34070-3"
+       },
+       {
+        "rerank_rank": 1,
+        "rerank_score": 0.7,
+        "source_id": "PMID:1576570",
+        "title": "Prophylactic aspirin and the elderly population.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 2,
+        "rerank_score": 0.6,
+        "source_id": "DailyMed:8a023942-01e8-4849-aa3c-1a640ffc7fd3#34070-3",
+        "title": "Clanza (Aceclofenac) — Contraindications",
+        "own_drug": true,
+        "wrong_drug": true,
+        "loinc": "34070-3"
+       }
+      ]
+     },
+     {
+      "run": 1,
+      "status": "ok",
+      "final": [
+       {
+        "rank": 0,
+        "source_id": "DailyMed:8a023942-01e8-4849-aa3c-1a640ffc7fd3#34070-3",
+        "title": "Clanza (Aceclofenac) — Contraindications",
+        "own_drug": true,
+        "wrong_drug": true,
+        "loinc": "34070-3"
+       }
+      ],
+      "precut_pool_size": 1,
+      "precut_pool": [
+       {
+        "rerank_rank": 0,
+        "rerank_score": 0.6495040655136108,
+        "source_id": "DailyMed:8a023942-01e8-4849-aa3c-1a640ffc7fd3#34070-3",
+        "title": "Clanza (Aceclofenac) — Contraindications",
+        "own_drug": true,
+        "wrong_drug": true,
+        "loinc": "34070-3"
+       }
+      ]
+     },
+     {
+      "run": 2,
+      "status": "ok",
+      "final": [
+       {
+        "rank": 0,
+        "source_id": "DailyMed:8a023942-01e8-4849-aa3c-1a640ffc7fd3#34070-3",
+        "title": "Clanza (Aceclofenac) — Contraindications",
+        "own_drug": true,
+        "wrong_drug": true,
+        "loinc": "34070-3"
+       }
+      ],
+      "precut_pool_size": 1,
+      "precut_pool": [
+       {
+        "rerank_rank": 0,
+        "rerank_score": 0.6755180954933167,
+        "source_id": "DailyMed:8a023942-01e8-4849-aa3c-1a640ffc7fd3#34070-3",
+        "title": "Clanza (Aceclofenac) — Contraindications",
+        "own_drug": true,
+        "wrong_drug": true,
+        "loinc": "34070-3"
+       }
+      ]
+     }
+    ]
+   },
+   "ibuprofen": {
+    "query": "ibuprofen warnings and precautions",
+    "runs": [
+     {
+      "run": 0,
+      "status": "ok",
+      "final": [
+       {
+        "rank": 0,
+        "source_id": "DailyMed:1a665e64-9f30-be37-4a83-38789f1f1e89#34071-1",
+        "title": "ADVIL (ibuprofen) — Warnings",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": "34071-1"
+       },
+       {
+        "rank": 1,
+        "source_id": "DailyMed:0373da3a-7779-4e26-87f1-cd346018282c#34066-1",
+        "title": "Piroxicam (piroxicam) — Boxed Warning",
+        "own_drug": false,
+        "wrong_drug": true,
+        "loinc": "34066-1"
+       },
+       {
+        "rank": 2,
+        "source_id": "DailyMed:6f5ede6f-b0b7-4fc8-969e-652f60ead047#34073-7",
+        "title": "NEOPROFEN (ibuprofen lysine) — Drug Interactions",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": "34073-7"
+       },
+       {
+        "rank": 3,
+        "source_id": "DailyMed:9b8b3e03-4801-4ae8-b44e-e01d1ab1e34b#34070-3",
+        "title": "Mefenamic acid (Mefenamic acid) — Contraindications",
+        "own_drug": false,
+        "wrong_drug": true,
+        "loinc": "34070-3"
+       },
+       {
+        "rank": 4,
+        "source_id": "DailyMed:5ad333bd-845f-43f8-9ecf-43491f26c7c7#34073-7",
+        "title": "UVADEX (Methoxsalen) — Drug Interactions",
+        "own_drug": false,
+        "wrong_drug": false,
+        "loinc": "34073-7"
+       }
+      ],
+      "precut_pool_size": 5,
+      "precut_pool": [
+       {
+        "rerank_rank": 0,
+        "rerank_score": 0.95,
+        "source_id": "DailyMed:1a665e64-9f30-be37-4a83-38789f1f1e89#34071-1",
+        "title": "ADVIL (ibuprofen) — Warnings",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": "34071-1"
+       },
+       {
+        "rerank_rank": 1,
+        "rerank_score": 0.5,
+        "source_id": "DailyMed:0373da3a-7779-4e26-87f1-cd346018282c#34066-1",
+        "title": "Piroxicam (piroxicam) — Boxed Warning",
+        "own_drug": false,
+        "wrong_drug": true,
+        "loinc": "34066-1"
+       },
+       {
+        "rerank_rank": 2,
+        "rerank_score": 0.4,
+        "source_id": "DailyMed:6f5ede6f-b0b7-4fc8-969e-652f60ead047#34073-7",
+        "title": "NEOPROFEN (ibuprofen lysine) — Drug Interactions",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": "34073-7"
+       },
+       {
+        "rerank_rank": 3,
+        "rerank_score": 0.3,
+        "source_id": "DailyMed:9b8b3e03-4801-4ae8-b44e-e01d1ab1e34b#34070-3",
+        "title": "Mefenamic acid (Mefenamic acid) — Contraindications",
+        "own_drug": false,
+        "wrong_drug": true,
+        "loinc": "34070-3"
+       },
+       {
+        "rerank_rank": 4,
+        "rerank_score": 0.2,
+        "source_id": "DailyMed:5ad333bd-845f-43f8-9ecf-43491f26c7c7#34073-7",
+        "title": "UVADEX (Methoxsalen) — Drug Interactions",
+        "own_drug": false,
+        "wrong_drug": false,
+        "loinc": "34073-7"
+       }
+      ]
+     },
+     {
+      "run": 1,
+      "status": "ok",
+      "final": [
+       {
+        "rank": 0,
+        "source_id": "DailyMed:1a665e64-9f30-be37-4a83-38789f1f1e89#34071-1",
+        "title": "ADVIL (ibuprofen) — Warnings",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": "34071-1"
+       },
+       {
+        "rank": 1,
+        "source_id": "DailyMed:6f5ede6f-b0b7-4fc8-969e-652f60ead047#34073-7",
+        "title": "NEOPROFEN (ibuprofen lysine) — Drug Interactions",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": "34073-7"
+       },
+       {
+        "rank": 2,
+        "source_id": "DailyMed:5ad333bd-845f-43f8-9ecf-43491f26c7c7#34073-7",
+        "title": "UVADEX (Methoxsalen) — Drug Interactions",
+        "own_drug": false,
+        "wrong_drug": false,
+        "loinc": "34073-7"
+       }
+      ],
+      "precut_pool_size": 3,
+      "precut_pool": [
+       {
+        "rerank_rank": 0,
+        "rerank_score": 0.9,
+        "source_id": "DailyMed:1a665e64-9f30-be37-4a83-38789f1f1e89#34071-1",
+        "title": "ADVIL (ibuprofen) — Warnings",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": "34071-1"
+       },
+       {
+        "rerank_rank": 1,
+        "rerank_score": 0.4,
+        "source_id": "DailyMed:6f5ede6f-b0b7-4fc8-969e-652f60ead047#34073-7",
+        "title": "NEOPROFEN (ibuprofen lysine) — Drug Interactions",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": "34073-7"
+       },
+       {
+        "rerank_rank": 2,
+        "rerank_score": 0.1,
+        "source_id": "DailyMed:5ad333bd-845f-43f8-9ecf-43491f26c7c7#34073-7",
+        "title": "UVADEX (Methoxsalen) — Drug Interactions",
+        "own_drug": false,
+        "wrong_drug": false,
+        "loinc": "34073-7"
+       }
+      ]
+     },
+     {
+      "run": 2,
+      "status": "ok",
+      "final": [
+       {
+        "rank": 0,
+        "source_id": "DailyMed:1a665e64-9f30-be37-4a83-38789f1f1e89#34071-1",
+        "title": "ADVIL (ibuprofen) — Warnings",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": "34071-1"
+       },
+       {
+        "rank": 1,
+        "source_id": "DailyMed:6f5ede6f-b0b7-4fc8-969e-652f60ead047#34073-7",
+        "title": "NEOPROFEN (ibuprofen lysine) — Drug Interactions",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": "34073-7"
+       },
+       {
+        "rank": 2,
+        "source_id": "DailyMed:5ad333bd-845f-43f8-9ecf-43491f26c7c7#34073-7",
+        "title": "UVADEX (Methoxsalen) — Drug Interactions",
+        "own_drug": false,
+        "wrong_drug": false,
+        "loinc": "34073-7"
+       }
+      ],
+      "precut_pool_size": 3,
+      "precut_pool": [
+       {
+        "rerank_rank": 0,
+        "rerank_score": 0.9,
+        "source_id": "DailyMed:1a665e64-9f30-be37-4a83-38789f1f1e89#34071-1",
+        "title": "ADVIL (ibuprofen) — Warnings",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": "34071-1"
+       },
+       {
+        "rerank_rank": 1,
+        "rerank_score": 0.4,
+        "source_id": "DailyMed:6f5ede6f-b0b7-4fc8-969e-652f60ead047#34073-7",
+        "title": "NEOPROFEN (ibuprofen lysine) — Drug Interactions",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": "34073-7"
+       },
+       {
+        "rerank_rank": 2,
+        "rerank_score": 0.1,
+        "source_id": "DailyMed:5ad333bd-845f-43f8-9ecf-43491f26c7c7#34073-7",
+        "title": "UVADEX (Methoxsalen) — Drug Interactions",
+        "own_drug": false,
+        "wrong_drug": false,
+        "loinc": "34073-7"
+       }
+      ]
+     }
+    ]
+   },
+   "naproxen": {
+    "query": "naproxen drug interactions and safety",
+    "runs": [
+     {
+      "run": 0,
+      "status": "ok",
+      "final": [
+       {
+        "rank": 0,
+        "source_id": "DailyMed:419c597f-6a6f-4420-b240-7dc4c223387e#34073-7",
+        "title": "Nabumetone (Nabumetone) — Drug Interactions",
+        "own_drug": false,
+        "wrong_drug": true,
+        "loinc": "34073-7"
+       },
+       {
+        "rank": 1,
+        "source_id": "PMID:7001021",
+        "title": "Naproxen sodium (Anaprox): pharmacology, pharmacokinetics and drug interactions.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rank": 2,
+        "source_id": "PMID:9113437",
+        "title": "Clinical pharmacokinetics of naproxen.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rank": 3,
+        "source_id": "PMID:1628263",
+        "title": "Naproxen: pharmacology and dental therapeutics.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       }
+      ],
+      "precut_pool_size": 4,
+      "precut_pool": [
+       {
+        "rerank_rank": 0,
+        "rerank_score": 0.9,
+        "source_id": "PMID:7001021",
+        "title": "Naproxen sodium (Anaprox): pharmacology, pharmacokinetics and drug interactions.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 1,
+        "rerank_score": 0.7,
+        "source_id": "PMID:9113437",
+        "title": "Clinical pharmacokinetics of naproxen.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 2,
+        "rerank_score": 0.5,
+        "source_id": "PMID:1628263",
+        "title": "Naproxen: pharmacology and dental therapeutics.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 3,
+        "rerank_score": 0.4,
+        "source_id": "DailyMed:419c597f-6a6f-4420-b240-7dc4c223387e#34073-7",
+        "title": "Nabumetone (Nabumetone) — Drug Interactions",
+        "own_drug": false,
+        "wrong_drug": true,
+        "loinc": "34073-7"
+       }
+      ]
+     },
+     {
+      "run": 1,
+      "status": "ok",
+      "final": [
+       {
+        "rank": 0,
+        "source_id": "DailyMed:419c597f-6a6f-4420-b240-7dc4c223387e#34073-7",
+        "title": "Nabumetone (Nabumetone) — Drug Interactions",
+        "own_drug": false,
+        "wrong_drug": true,
+        "loinc": "34073-7"
+       },
+       {
+        "rank": 1,
+        "source_id": "PMID:7001021",
+        "title": "Naproxen sodium (Anaprox): pharmacology, pharmacokinetics and drug interactions.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rank": 2,
+        "source_id": "PMID:9113437",
+        "title": "Clinical pharmacokinetics of naproxen.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rank": 3,
+        "source_id": "PMID:1628263",
+        "title": "Naproxen: pharmacology and dental therapeutics.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       }
+      ],
+      "precut_pool_size": 4,
+      "precut_pool": [
+       {
+        "rerank_rank": 0,
+        "rerank_score": 0.9,
+        "source_id": "PMID:7001021",
+        "title": "Naproxen sodium (Anaprox): pharmacology, pharmacokinetics and drug interactions.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 1,
+        "rerank_score": 0.7,
+        "source_id": "PMID:9113437",
+        "title": "Clinical pharmacokinetics of naproxen.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 2,
+        "rerank_score": 0.5,
+        "source_id": "PMID:1628263",
+        "title": "Naproxen: pharmacology and dental therapeutics.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 3,
+        "rerank_score": 0.4,
+        "source_id": "DailyMed:419c597f-6a6f-4420-b240-7dc4c223387e#34073-7",
+        "title": "Nabumetone (Nabumetone) — Drug Interactions",
+        "own_drug": false,
+        "wrong_drug": true,
+        "loinc": "34073-7"
+       }
+      ]
+     },
+     {
+      "run": 2,
+      "status": "ok",
+      "final": [
+       {
+        "rank": 0,
+        "source_id": "DailyMed:419c597f-6a6f-4420-b240-7dc4c223387e#34073-7",
+        "title": "Nabumetone (Nabumetone) — Drug Interactions",
+        "own_drug": false,
+        "wrong_drug": true,
+        "loinc": "34073-7"
+       },
+       {
+        "rank": 1,
+        "source_id": "PMID:9113437",
+        "title": "Clinical pharmacokinetics of naproxen.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rank": 2,
+        "source_id": "PMID:1628263",
+        "title": "Naproxen: pharmacology and dental therapeutics.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       }
+      ],
+      "precut_pool_size": 3,
+      "precut_pool": [
+       {
+        "rerank_rank": 0,
+        "rerank_score": 0.7,
+        "source_id": "PMID:9113437",
+        "title": "Clinical pharmacokinetics of naproxen.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 1,
+        "rerank_score": 0.5,
+        "source_id": "PMID:1628263",
+        "title": "Naproxen: pharmacology and dental therapeutics.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 2,
+        "rerank_score": 0.4,
+        "source_id": "DailyMed:419c597f-6a6f-4420-b240-7dc4c223387e#34073-7",
+        "title": "Nabumetone (Nabumetone) — Drug Interactions",
+        "own_drug": false,
+        "wrong_drug": true,
+        "loinc": "34073-7"
+       }
+      ]
+     }
+    ]
+   },
+   "omeprazole": {
+    "query": "omeprazole contraindications and warnings",
+    "runs": [
+     {
+      "run": 0,
+      "status": "ok",
+      "final": [
+       {
+        "rank": 0,
+        "source_id": "DailyMed:35a79458-79f6-44d6-b74c-b4f4aaf0dde0#34071-1",
+        "title": "Prilosec OTC (OMEPRAZOLE MAGNESIUM) — Warnings",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": "34071-1"
+       },
+       {
+        "rank": 1,
+        "source_id": "DailyMed:45a15ba2-2aae-4edc-beaa-4a2357d87f32#34073-7",
+        "title": "Esomeprazole Sodium (Esomeprazole Sodium) — Drug Interactions",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": "34073-7"
+       }
+      ],
+      "precut_pool_size": 2,
+      "precut_pool": [
+       {
+        "rerank_rank": 0,
+        "rerank_score": 0.6258381605148315,
+        "source_id": "DailyMed:35a79458-79f6-44d6-b74c-b4f4aaf0dde0#34071-1",
+        "title": "Prilosec OTC (OMEPRAZOLE MAGNESIUM) — Warnings",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": "34071-1"
+       },
+       {
+        "rerank_rank": 1,
+        "rerank_score": 0.6074966192245483,
+        "source_id": "DailyMed:45a15ba2-2aae-4edc-beaa-4a2357d87f32#34073-7",
+        "title": "Esomeprazole Sodium (Esomeprazole Sodium) — Drug Interactions",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": "34073-7"
+       }
+      ]
+     },
+     {
+      "run": 1,
+      "status": "ok",
+      "final": [
+       {
+        "rank": 0,
+        "source_id": "DailyMed:35a79458-79f6-44d6-b74c-b4f4aaf0dde0#34071-1",
+        "title": "Prilosec OTC (OMEPRAZOLE MAGNESIUM) — Warnings",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": "34071-1"
+       },
+       {
+        "rank": 1,
+        "source_id": "DailyMed:51e4144a-489e-436c-609a-39305f8f56ba#34070-3",
+        "title": "Protonix (PANTOPRAZOLE SODIUM) — Contraindications",
+        "own_drug": false,
+        "wrong_drug": true,
+        "loinc": "34070-3"
+       },
+       {
+        "rank": 2,
+        "source_id": "DailyMed:51e4144a-489e-436c-609a-39305f8f56ba#43685-7",
+        "title": "Protonix (PANTOPRAZOLE SODIUM) — Warnings and Precautions",
+        "own_drug": false,
+        "wrong_drug": true,
+        "loinc": "43685-7"
+       },
+       {
+        "rank": 3,
+        "source_id": "DailyMed:45a15ba2-2aae-4edc-beaa-4a2357d87f32#43685-7",
+        "title": "Esomeprazole Sodium (Esomeprazole Sodium) — Warnings and Precautions",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": "43685-7"
+       }
+      ],
+      "precut_pool_size": 4,
+      "precut_pool": [
+       {
+        "rerank_rank": 0,
+        "rerank_score": 0.9,
+        "source_id": "DailyMed:35a79458-79f6-44d6-b74c-b4f4aaf0dde0#34071-1",
+        "title": "Prilosec OTC (OMEPRAZOLE MAGNESIUM) — Warnings",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": "34071-1"
+       },
+       {
+        "rerank_rank": 1,
+        "rerank_score": 0.7,
+        "source_id": "DailyMed:51e4144a-489e-436c-609a-39305f8f56ba#34070-3",
+        "title": "Protonix (PANTOPRAZOLE SODIUM) — Contraindications",
+        "own_drug": false,
+        "wrong_drug": true,
+        "loinc": "34070-3"
+       },
+       {
+        "rerank_rank": 2,
+        "rerank_score": 0.4,
+        "source_id": "DailyMed:51e4144a-489e-436c-609a-39305f8f56ba#43685-7",
+        "title": "Protonix (PANTOPRAZOLE SODIUM) — Warnings and Precautions",
+        "own_drug": false,
+        "wrong_drug": true,
+        "loinc": "43685-7"
+       },
+       {
+        "rerank_rank": 3,
+        "rerank_score": 0.4,
+        "source_id": "DailyMed:45a15ba2-2aae-4edc-beaa-4a2357d87f32#43685-7",
+        "title": "Esomeprazole Sodium (Esomeprazole Sodium) — Warnings and Precautions",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": "43685-7"
+       }
+      ]
+     },
+     {
+      "run": 2,
+      "status": "ok",
+      "final": [
+       {
+        "rank": 0,
+        "source_id": "DailyMed:35a79458-79f6-44d6-b74c-b4f4aaf0dde0#34071-1",
+        "title": "Prilosec OTC (OMEPRAZOLE MAGNESIUM) — Warnings",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": "34071-1"
+       },
+       {
+        "rank": 1,
+        "source_id": "DailyMed:45a15ba2-2aae-4edc-beaa-4a2357d87f32#34073-7",
+        "title": "Esomeprazole Sodium (Esomeprazole Sodium) — Drug Interactions",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": "34073-7"
+       },
+       {
+        "rank": 2,
+        "source_id": "DailyMed:51e4144a-489e-436c-609a-39305f8f56ba#43685-7",
+        "title": "Protonix (PANTOPRAZOLE SODIUM) — Warnings and Precautions",
+        "own_drug": false,
+        "wrong_drug": true,
+        "loinc": "43685-7"
+       }
+      ],
+      "precut_pool_size": 3,
+      "precut_pool": [
+       {
+        "rerank_rank": 0,
+        "rerank_score": 0.9,
+        "source_id": "DailyMed:35a79458-79f6-44d6-b74c-b4f4aaf0dde0#34071-1",
+        "title": "Prilosec OTC (OMEPRAZOLE MAGNESIUM) — Warnings",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": "34071-1"
+       },
+       {
+        "rerank_rank": 1,
+        "rerank_score": 0.4,
+        "source_id": "DailyMed:45a15ba2-2aae-4edc-beaa-4a2357d87f32#34073-7",
+        "title": "Esomeprazole Sodium (Esomeprazole Sodium) — Drug Interactions",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": "34073-7"
+       },
+       {
+        "rerank_rank": 2,
+        "rerank_score": 0.3,
+        "source_id": "DailyMed:51e4144a-489e-436c-609a-39305f8f56ba#43685-7",
+        "title": "Protonix (PANTOPRAZOLE SODIUM) — Warnings and Precautions",
+        "own_drug": false,
+        "wrong_drug": true,
+        "loinc": "43685-7"
+       }
+      ]
+     }
+    ]
+   },
+   "cimetidine": {
+    "query": "cimetidine drug interactions and safety",
+    "runs": [
+     {
+      "run": 0,
+      "status": "ok",
+      "final": [
+       {
+        "rank": 0,
+        "source_id": "DailyMed:c387579e-cee0-4334-bd1e-73f93ac1bde6#34073-7",
+        "title": "Cotellic (COBIMETINIB) — Drug Interactions",
+        "own_drug": false,
+        "wrong_drug": true,
+        "loinc": "34073-7"
+       },
+       {
+        "rank": 1,
+        "source_id": "PMID:6140847",
+        "title": "Cimetidine-drug interactions.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rank": 2,
+        "source_id": "PMID:6344228",
+        "title": "Interaction of cimetidine with other drugs.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rank": 3,
+        "source_id": "PMID:6152350",
+        "title": "Drug interactions involving cimetidine--mechanisms, documentation, implications.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rank": 4,
+        "source_id": "PMID:7325185",
+        "title": "Drug interactions with cimetidine.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       }
+      ],
+      "precut_pool_size": 6,
+      "precut_pool": [
+       {
+        "rerank_rank": 0,
+        "rerank_score": 0.9,
+        "source_id": "PMID:6140847",
+        "title": "Cimetidine-drug interactions.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 1,
+        "rerank_score": 0.9,
+        "source_id": "PMID:6344228",
+        "title": "Interaction of cimetidine with other drugs.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 2,
+        "rerank_score": 0.85,
+        "source_id": "PMID:6152350",
+        "title": "Drug interactions involving cimetidine--mechanisms, documentation, implications.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 3,
+        "rerank_score": 0.8,
+        "source_id": "PMID:7325185",
+        "title": "Drug interactions with cimetidine.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 4,
+        "rerank_score": 0.7,
+        "source_id": "PMID:1524698",
+        "title": "Clinical relevance of cimetidine drug interactions.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 5,
+        "rerank_score": 0.4,
+        "source_id": "DailyMed:c387579e-cee0-4334-bd1e-73f93ac1bde6#34073-7",
+        "title": "Cotellic (COBIMETINIB) — Drug Interactions",
+        "own_drug": false,
+        "wrong_drug": true,
+        "loinc": "34073-7"
+       }
+      ]
+     },
+     {
+      "run": 1,
+      "status": "ok",
+      "final": [
+       {
+        "rank": 0,
+        "source_id": "DailyMed:c387579e-cee0-4334-bd1e-73f93ac1bde6#34073-7",
+        "title": "Cotellic (COBIMETINIB) — Drug Interactions",
+        "own_drug": false,
+        "wrong_drug": true,
+        "loinc": "34073-7"
+       },
+       {
+        "rank": 1,
+        "source_id": "PMID:6140847",
+        "title": "Cimetidine-drug interactions.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rank": 2,
+        "source_id": "PMID:6344228",
+        "title": "Interaction of cimetidine with other drugs.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rank": 3,
+        "source_id": "PMID:6152350",
+        "title": "Drug interactions involving cimetidine--mechanisms, documentation, implications.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rank": 4,
+        "source_id": "PMID:7325185",
+        "title": "Drug interactions with cimetidine.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       }
+      ],
+      "precut_pool_size": 6,
+      "precut_pool": [
+       {
+        "rerank_rank": 0,
+        "rerank_score": 0.9,
+        "source_id": "PMID:6140847",
+        "title": "Cimetidine-drug interactions.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 1,
+        "rerank_score": 0.9,
+        "source_id": "PMID:6344228",
+        "title": "Interaction of cimetidine with other drugs.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 2,
+        "rerank_score": 0.85,
+        "source_id": "PMID:6152350",
+        "title": "Drug interactions involving cimetidine--mechanisms, documentation, implications.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 3,
+        "rerank_score": 0.8,
+        "source_id": "PMID:7325185",
+        "title": "Drug interactions with cimetidine.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 4,
+        "rerank_score": 0.7,
+        "source_id": "PMID:1524698",
+        "title": "Clinical relevance of cimetidine drug interactions.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 5,
+        "rerank_score": 0.4,
+        "source_id": "DailyMed:c387579e-cee0-4334-bd1e-73f93ac1bde6#34073-7",
+        "title": "Cotellic (COBIMETINIB) — Drug Interactions",
+        "own_drug": false,
+        "wrong_drug": true,
+        "loinc": "34073-7"
+       }
+      ]
+     },
+     {
+      "run": 2,
+      "status": "ok",
+      "final": [
+       {
+        "rank": 0,
+        "source_id": "DailyMed:c387579e-cee0-4334-bd1e-73f93ac1bde6#34073-7",
+        "title": "Cotellic (COBIMETINIB) — Drug Interactions",
+        "own_drug": false,
+        "wrong_drug": true,
+        "loinc": "34073-7"
+       },
+       {
+        "rank": 1,
+        "source_id": "DailyMed:ab73778b-6794-441c-b127-610a6d0733ea#34073-7",
+        "title": "MEXILETINE HCL (Mexiletine hydrochloride) — Drug Interactions",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": "34073-7"
+       },
+       {
+        "rank": 2,
+        "source_id": "DailyMed:1f8833f9-1232-4aa7-a0d4-04a9f87dc2f0#34073-7",
+        "title": "Metformin HCl (Metformin HCl) — Drug Interactions",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": "34073-7"
+       },
+       {
+        "rank": 3,
+        "source_id": "PMID:6140847",
+        "title": "Cimetidine-drug interactions.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rank": 4,
+        "source_id": "PMID:6344228",
+        "title": "Interaction of cimetidine with other drugs.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       }
+      ],
+      "precut_pool_size": 8,
+      "precut_pool": [
+       {
+        "rerank_rank": 0,
+        "rerank_score": 0.9,
+        "source_id": "PMID:6140847",
+        "title": "Cimetidine-drug interactions.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 1,
+        "rerank_score": 0.9,
+        "source_id": "PMID:6344228",
+        "title": "Interaction of cimetidine with other drugs.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 2,
+        "rerank_score": 0.85,
+        "source_id": "PMID:6152350",
+        "title": "Drug interactions involving cimetidine--mechanisms, documentation, implications.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 3,
+        "rerank_score": 0.8,
+        "source_id": "PMID:7325185",
+        "title": "Drug interactions with cimetidine.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 4,
+        "rerank_score": 0.7,
+        "source_id": "PMID:1524698",
+        "title": "Clinical relevance of cimetidine drug interactions.",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": null
+       },
+       {
+        "rerank_rank": 5,
+        "rerank_score": 0.4,
+        "source_id": "DailyMed:c387579e-cee0-4334-bd1e-73f93ac1bde6#34073-7",
+        "title": "Cotellic (COBIMETINIB) — Drug Interactions",
+        "own_drug": false,
+        "wrong_drug": true,
+        "loinc": "34073-7"
+       },
+       {
+        "rerank_rank": 6,
+        "rerank_score": 0.4,
+        "source_id": "DailyMed:ab73778b-6794-441c-b127-610a6d0733ea#34073-7",
+        "title": "MEXILETINE HCL (Mexiletine hydrochloride) — Drug Interactions",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": "34073-7"
+       },
+       {
+        "rerank_rank": 7,
+        "rerank_score": 0.4,
+        "source_id": "DailyMed:1f8833f9-1232-4aa7-a0d4-04a9f87dc2f0#34073-7",
+        "title": "Metformin HCl (Metformin HCl) — Drug Interactions",
+        "own_drug": true,
+        "wrong_drug": false,
+        "loinc": "34073-7"
+       }
+      ]
+     }
+    ]
+   }
+  }
+ },
+ "store_probe": {
+  "treatment": {
+   "aspirin": {
+    "n": 0,
+    "own_34071_1_hits": [],
+    "hits": []
+   },
+   "ibuprofen": {
+    "n": 1,
+    "own_34071_1_hits": [
+     {
+      "rank": 0,
+      "source_id": "DailyMed:1a665e64-9f30-be37-4a83-38789f1f1e89#34071-1",
+      "loinc": "34071-1",
+      "own_drug": true,
+      "score": 0.6310076117515564
+     }
+    ],
+    "hits": [
+     {
+      "rank": 0,
+      "source_id": "DailyMed:1a665e64-9f30-be37-4a83-38789f1f1e89#34071-1",
+      "loinc": "34071-1",
+      "own_drug": true,
+      "score": 0.6310076117515564
+     }
+    ]
+   },
+   "naproxen": {
+    "n": 0,
+    "own_34071_1_hits": [],
+    "hits": []
+   },
+   "omeprazole": {
+    "n": 2,
+    "own_34071_1_hits": [
+     {
+      "rank": 0,
+      "source_id": "DailyMed:35a79458-79f6-44d6-b74c-b4f4aaf0dde0#34071-1",
+      "loinc": "34071-1",
+      "own_drug": true,
+      "score": 0.6258381605148315
+     },
+     {
+      "rank": 1,
+      "source_id": "DailyMed:61f67858-ba2f-449b-8b30-c15cdaf49222#34071-1",
+      "loinc": "34071-1",
+      "own_drug": true,
+      "score": 0.6003130078315735
+     }
+    ],
+    "hits": [
+     {
+      "rank": 0,
+      "source_id": "DailyMed:35a79458-79f6-44d6-b74c-b4f4aaf0dde0#34071-1",
+      "loinc": "34071-1",
+      "own_drug": true,
+      "score": 0.6258381605148315
+     },
+     {
+      "rank": 1,
+      "source_id": "DailyMed:61f67858-ba2f-449b-8b30-c15cdaf49222#34071-1",
+      "loinc": "34071-1",
+      "own_drug": true,
+      "score": 0.6003130078315735
+     }
+    ]
+   },
+   "cimetidine": {
+    "n": 0,
+    "own_34071_1_hits": [],
+    "hits": []
+   }
+  }
+ }
+}
