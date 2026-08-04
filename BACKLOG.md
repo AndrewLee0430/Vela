@@ -813,7 +813,44 @@ Phase 1B work items per advisor discussion 2026-05-04 (preserved in git commit 3
 - **🆕 2026-07-29 — a cheaper lever may exist upstream, and it should be measured in the SAME run.** The fly-214 gate measured that **all 690 documents in the `local` drug corpus are empty field-label stubs** (max 5 chars of real content) — and they are **Tier-2-boosted ×1.5 → composite ×2.25**, above Tier-4 PubMed studies, competing for exactly the slots this entry is about. **If those stubs are removed or repaired, the budget pressure changes without touching `top_k` at all.** So the sweep above should include a **`local`-excluded arm**: it costs one extra column, reuses the same pool-identity capture, and could answer this surface and the local-corpus deprecate/repair/keep question in one run. See TECH_DEBT **[P1 · retrieval-corpus integrity] local drug corpus** and [`docs/citation_gate_findings_20260729.md`](docs/citation_gate_findings_20260729.md) Finding 1.
 - **Priority reasoning — [P2]:** the cheapest lever found (config-level, not architecture) and the best-evidenced, **but** it is a genuine tradeoff with Research-wide blast radius, so it must not be treated as a quick win. Not [P1] because nothing is currently *wrong* — sections are being ranked correctly and the budget is simply tight.
 
-### [P1] c2 — DailyMed reference-label selection: recover the safety sections the corpus already has or can reach ⭐ **TOP BUILD CANDIDATE**
+### [P2 — NOT 🔴, NO GATE REQUIRED] M3 — DailyMed drift detection by `spl_version` comparison
+> **Promoted out from under c2 on 2026-08-04.** Independent of every c2 option and of the refresh
+> decision. **It changes nothing about retrieval, so it needs no gate.** Evidence:
+> [`dailymed_refresh_cost_20260804.md`](docs/dailymed_refresh_cost_20260804.md) Parts 2 + 4.
+- **Why it is feasible at near-zero cost — the measured finding:** **all 13 drifted labels bumped `spl_version`. Zero silent revisions.** So drift is detectable by **comparing the version number per setid** — **no SPL XML parse, no content diff, no embedding**. ~1038 cheap `spls.json` queries.
+- **Current drift census** (`CONFIRMED`, 4,597 comparable sections): **30 changed (0.65%), 18 of them SAFETY**, from 13 labels. Direction: **20** where we lack text upstream has · **9 where we SERVE text upstream REMOVED** (`BUPRENORPHINE warnings −661` is that shape).
+- **⚠️ `db_published_date` is `null` and must be populated as part of this.** Without it there is **no comparison baseline** — the corpus cannot state which day of DailyMed it corresponds to, and the existing `monthly_re_pull` note literally points at a null field. **The two go together.**
+- **🔴 WHY THIS COMES BEFORE THE REFRESH QUESTION:** R1–R4 all require the founder to choose a **cadence**, and **nothing today can say what cadence is right — no drift rate exists** (one snapshot, unknown interval). **M3 produces exactly that number for near-zero cost and no gate. It is a prerequisite for the refresh question being answerable at all, not a nice-to-have.**
+- **Rule 18 requirement, non-negotiable:** the mechanism **must FAIL LOUD on a 404**. Reading a fetch failure as an upstream deletion is precisely what produced the false *"11 vanished `source_id`s"* claim (since REFUTED — see TECH_DEBT).
+- **NOT BUILT. NO CADENCE CHOSEN.** Filed only.
+
+### [P1] c2 — DailyMed reference-label selection — ⏸️ **PARKED (measurement complete, founder-pending)** ⭐
+> **⏸️ PARKED 2026-08-04.** Four batons of measurement are complete; **every option is costed and none
+> has a measured upside on the defect c2 exists to fix.** Full parked state, unpark conditions and the
+> merge table: **[`c2_line_closeout_20260804.md`](docs/c2_line_closeout_20260804.md)** — one read is
+> enough to resume without re-reading five reports.
+>
+> **Option state:** **E-A** 0/5 on the citation (measured) · **E-A-Rx** untested (the 5 measured queries
+> were all OTC-class, so E-A's Rx half was never exercised) · **E-B** blast radius **45/1038 (4.3%)**,
+> **42 gain a first safety section / 0 lose one**, **but 21 of 45 (47%) newly ground on a COMBINATION
+> product** and **2–6 swap oral→parenteral** · **E-C/E-D** never measured · **E-E** leaves a
+> deterministic wrong-drug citation live.
+>
+> **💰 Embedding is NOT the constraint — a FULL re-embed of the entire corpus is $0.063.** Earlier
+> documents (including branch reports) treated it as the expensive part; **that framing is corrected.**
+> The real costs are **network time, 🔴 gate cycles, and blast radius.**
+>
+> **⚠️ The 47% is an UPPER BOUND, not an expectation** — the dry-run replicated `_pick_reference` only,
+> **not `_find_mono_reference` / `dropped_combo`**. **Whether the mono-preference machinery cuts most of
+> those 21 is the single question that decides whether E-B is dead or viable. It is purely OFFLINE and
+> UNMEASURED.**
+>
+> **🔓 UNPARK CONDITIONS (conditions, not a plan):** (i) **E-B** — the mono-preference question above is
+> answered; (ii) **E-A-Rx** — someone measures whether any of the 264 Rx `34071-1` documents is ever
+> retrieved; (iii) **any option** — a reason to pay a 🔴 gate cycle for a change with no measured upside.
+>
+> **⚠️ c2 no longer blocks the wrong-drug filter** (STATE open-item #2): that dependency was **REFUTED** —
+> supplying a correct document does not displace an incorrect one.
 > **Filed 2026-08-03.** Previously scoped only inside TECH_DEBT and session docs with **no BACKLOG task**, despite being the top build candidate — that gap is the reason for this entry. Full scope: [`docs/local_corpus_deprecation_c1_build.md`](docs/local_corpus_deprecation_c1_build.md) Task 4; mechanism + mapping: TECH_DEBT [P2 · DailyMed corpus coverage].
 - **Why now:** the fly-215 prod gate captured **two live wrong-drug citations** — `aspirin contraindications` answered **entirely from `Clanza (Aceclofenac)`**, its sole source; `ibuprofen warnings` citing **Piroxicam**. In **6 of 6** adjudicated cases the queried drug's own reference label has **no safety section** and the wrongly-cited sibling's does.
 - **❌ ~~This is a coverage defect, not a ranking defect.~~ REFUTED BY MEASUREMENT 2026-08-04 — it is BOTH, and fixing the coverage half leaves the ranking half untouched.** In the only two cases where the drug's own safety document **entered the pool and was cited** (`ibuprofen` 0/3→3/3, `omeprazole` 0/3→3/3), **the wrong drug was still cited 3/3**. Supplying the correct document did not displace the incorrect one — the pool holds ~5 slots and both fit. **Evidence:** [`docs/c2_phase1c_20260804.md`](docs/c2_phase1c_20260804.md) §0 · [`docs/c2_phase1b_measurement_20260804.md`](docs/c2_phase1b_measurement_20260804.md) Part 3.

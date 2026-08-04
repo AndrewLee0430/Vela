@@ -221,8 +221,33 @@ slower data-quality track.
 > **Supplying the correct document does NOT displace the incorrect one.** On the only two c2 cases where
 > the drug's own safety document entered the pool *and was cited*, the wrong drug was **still cited 3/3**
 > (c2 Phase-1c §0). The pool holds ~5 slots and both fit. **So a coverage fix upstream will not remove
-> the need for this filter** — which also means this item's "blocked by c2" rationale is weaker than
-> recorded. Cross-ref TECH_DEBT surface 3/3 and STATE open-item #2.
+> the need for this filter.**
+>
+> ### ✅ 2026-08-04 — THE "BLOCKED BY c2" DEPENDENCY IS REMOVED
+>
+> STATE open-item #2 carried the block *"if c2 removes the cause in 6/6 cases, this may descope or
+> close."* **That premise is REFUTED.** It was **untested when the block was written**, and the two cases
+> able to test it both answered **no**: **2 of 6 adjudicated, NOT fixed by added coverage.**
+>
+> **The mechanism split, corrected:** the defect has a **coverage half** — nothing on-target exists,
+> which is what c2 addresses — **and a ranking half** — a wrong document out-competes a right one when
+> both are present. **The ranking half is what actually produces the citation, and no c2 option touches
+> it.** That is this item's territory.
+>
+> ⚠️ **Unblocking is NOT a recommendation to build.** Priority and queue position are unchanged and
+> remain the founder's call. What changed is only that a **false dependency** has been removed.
+>
+> ### ⭐ The deterministic probe — smoke-test any candidate filter against this in ONE run
+>
+> **`aspirin contraindications and who should not take it` → `Clanza (Aceclofenac) — Contraindications`:
+> 12 / 12 across two index configurations, one identity, zero variance** (c2 Phase-1c Part 1).
+> In a repo where nondeterminism has three times forced N=6 to separate signal from noise, **this is the
+> only known wrong-drug case where N=1 is interpretable** — and it is **simultaneously the hardest case**,
+> because it is precisely the one a mention-based filter passes. **A filter that clears it in a single run
+> is worth measuring further; one that does not is finished.** Re-running it at N=6 is wasted effort
+> unless the retrieval configuration changes materially.
+>
+> Cross-ref TECH_DEBT surface 3/3 and STATE open-item #2.
 
 **One fix shape, and it is Rule 19's own finding** (Rule 19 row #5, `docs/research_openfda_fallback_phase1.md` §2):
 Verify **never attaches a specific setid on a low-confidence drug match** (`api/server.py:1013-1020`)
