@@ -20,21 +20,21 @@
     {
       "fixture": "WD02",
       "arm": "control",
-      "label": "salt-inclusive reading (adds IBUPROFEN LYSINE)",
-      "primary": "no_right_owner_in_corpus",
-      "alt": "wrong_owner_cited"
+      "label": "strict reading (IBUPROFEN key only) — SUPERSEDED, retained for comparison",
+      "primary": "wrong_owner_cited",
+      "alt": "no_right_owner_in_corpus"
     },
     {
       "fixture": "WD02",
       "arm": "treatment",
-      "label": "salt-inclusive reading (adds IBUPROFEN LYSINE)",
-      "primary": "no_right_owner_in_corpus",
-      "alt": "wrong_owner_cited"
+      "label": "strict reading (IBUPROFEN key only) — SUPERSEDED, retained for comparison",
+      "primary": "wrong_owner_cited",
+      "alt": "no_right_owner_in_corpus"
     }
   ],
   "self_test": {
-    "passed": 5,
-    "total": 5,
+    "passed": 6,
+    "total": 6,
     "all_passed": true,
     "checks": [
       {
@@ -54,6 +54,10 @@
         "ok": true
       },
       {
+        "name": "owner_route_form_divergent is a FLAG on correct_owner, not an outcome",
+        "ok": true
+      },
+      {
         "name": "no text-matching primitives in the module body",
         "ok": true
       }
@@ -62,25 +66,25 @@
   "part1": {
     "authoritative_scope": "control arm = shipped index; treatment arm excluded",
     "per_citation": {
-      "correct_owner": 0,
-      "wrong_owner_cited": 1,
-      "no_right_owner_in_corpus": 3,
+      "correct_owner": 1,
+      "wrong_owner_cited": 3,
+      "no_right_owner_in_corpus": 0,
       "out_of_scope_class_query": 0,
       "unclassified": 1,
       "unresolved_source_id": 0
     },
     "per_fixture": {
       "correct_owner": 0,
-      "wrong_owner_cited": 1,
-      "no_right_owner_in_corpus": 1,
+      "wrong_owner_cited": 2,
+      "no_right_owner_in_corpus": 0,
       "out_of_scope_class_query": 0,
       "unclassified": 1,
       "unresolved_source_id": 0
     },
     "per_citation_informational_EA_index": {
-      "correct_owner": 1,
-      "wrong_owner_cited": 2,
-      "no_right_owner_in_corpus": 4,
+      "correct_owner": 2,
+      "wrong_owner_cited": 5,
+      "no_right_owner_in_corpus": 0,
       "out_of_scope_class_query": 0,
       "unclassified": 0,
       "unresolved_source_id": 0
@@ -101,22 +105,22 @@
       {
         "fixture": "WD02",
         "shape": "single",
-        "outcome": "no_right_owner_in_corpus",
+        "outcome": "wrong_owner_cited",
         "citations": [
           {
             "source_id": "DailyMed:0373da3a-7779-4e26-87f1-cd346018282c#34066-1",
             "owner": "PIROXICAM",
-            "outcome": "no_right_owner_in_corpus"
+            "outcome": "wrong_owner_cited"
           },
           {
             "source_id": "DailyMed:6f5ede6f-b0b7-4fc8-969e-652f60ead047#34073-7",
             "owner": "IBUPROFEN LYSINE",
-            "outcome": "no_right_owner_in_corpus"
+            "outcome": "correct_owner"
           },
           {
             "source_id": "DailyMed:9b8b3e03-4801-4ae8-b44e-e01d1ab1e34b#34070-3",
             "owner": "MEFENAMIC ACID",
-            "outcome": "no_right_owner_in_corpus"
+            "outcome": "wrong_owner_cited"
           }
         ]
       },
@@ -146,12 +150,12 @@
       {
         "fixture": "WD02",
         "shape": "single",
-        "outcome": "no_right_owner_in_corpus",
+        "outcome": "wrong_owner_cited",
         "citations": [
           {
             "source_id": "DailyMed:0373da3a-7779-4e26-87f1-cd346018282c#34066-1",
             "owner": "PIROXICAM",
-            "outcome": "no_right_owner_in_corpus"
+            "outcome": "wrong_owner_cited"
           },
           {
             "source_id": "DailyMed:1a665e64-9f30-be37-4a83-38789f1f1e89#34071-1",
@@ -161,17 +165,17 @@
           {
             "source_id": "DailyMed:5ad333bd-845f-43f8-9ecf-43491f26c7c7#34073-7",
             "owner": "METHOXSALEN",
-            "outcome": "no_right_owner_in_corpus"
+            "outcome": "wrong_owner_cited"
           },
           {
             "source_id": "DailyMed:6f5ede6f-b0b7-4fc8-969e-652f60ead047#34073-7",
             "owner": "IBUPROFEN LYSINE",
-            "outcome": "no_right_owner_in_corpus"
+            "outcome": "correct_owner"
           },
           {
             "source_id": "DailyMed:9b8b3e03-4801-4ae8-b44e-e01d1ab1e34b#34070-3",
             "owner": "MEFENAMIC ACID",
-            "outcome": "no_right_owner_in_corpus"
+            "outcome": "wrong_owner_cited"
           }
         ]
       }

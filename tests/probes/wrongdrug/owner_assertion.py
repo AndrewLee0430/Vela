@@ -126,6 +126,22 @@ SAFETY_SECTIONS = {
 
 DEFAULT_CORPUS = Path("data/dailymed/label_docs.json")
 
+# ── NON-BLOCKING flags: {corpus moiety key: flag} ──
+# Emitted alongside `correct_owner`, NEVER as an outcome and NEVER folded into
+# `wrong_owner_cited`. Each entry records that a legitimate owner's reference label
+# differs from the queried context in route or dosage form — a real caveat a reviewer
+# should see, on a DIFFERENT axis from wrong-object citation.
+#
+# Adding an entry is a CLINICAL judgment and needs a founder ruling; do not extend by
+# pattern-matching salt names.
+_NONBLOCKING_OWNER_FLAGS = {
+    # Founder ruling 2026-08-05 (salt-inclusive): IBUPROFEN LYSINE is a legitimate owner
+    # for ibuprofen — same active moiety, and a salt is not a class sibling. But its
+    # reference label NEOPROFEN is an INTRAVENOUS NEONATAL product for patent ductus
+    # arteriosus closure, so citing it on an adult oral question is owned-but-divergent.
+    "IBUPROFEN LYSINE": "owner_route_form_divergent",
+}
+
 
 # ─────────────────────────── the ownership join ───────────────────────────
 
@@ -190,11 +206,13 @@ class CitationVerdict:
     owner_moiety: str | None     # resolved from the corpus, never from text
     loinc: str | None
     outcome: str
+    flags: list[str] = field(default_factory=list)   # NON-BLOCKING; never an outcome
 
     def row(self) -> str:
+        f = f"  [{' '.join(self.flags)}]" if self.flags else ""
         return (
             f"{self.outcome:<26} queried={self.queried_moiety:<22} "
-            f"owner={str(self.owner_moiety):<26} setid={self.setid} loinc={self.loinc}"
+            f"owner={str(self.owner_moiety):<26} setid={self.setid} loinc={self.loinc}{f}"
         )
 
 
@@ -244,7 +262,14 @@ def classify_citation(
         outcome = "correct_owner"
     else:
         outcome = "wrong_owner_cited" if owned_doc_exists else "no_right_owner_in_corpus"
-    return CitationVerdict(source_id, queried_moiety, setid, owner, loinc, outcome)
+
+    # NON-BLOCKING annotations. These are NEVER outcomes and are NEVER folded into
+    # wrong_owner_cited: "an owner exists" and "that owner is clinically applicable"
+    # are separate claims on separate axes. Merging them would do to route/form what
+    # the class-query exclusion refuses to do to answer-relevance.
+    flags = [f for m, f in _NONBLOCKING_OWNER_FLAGS.items()
+             if owner == m and outcome == "correct_owner"]
+    return CitationVerdict(source_id, queried_moiety, setid, owner, loinc, outcome, flags)
 
 
 def classify_fixture(fixture: dict, source_ids: list[str], corpus: CorpusIndex) -> FixtureVerdict:

@@ -18,7 +18,8 @@ cited from a branch report. Branch `c2-phase1b-EA-measurement`; **not pushed, no
 | 2 | `marketing_category_code` does **not** discriminate Rx/OTC; the SPL **doctype** does — **98.6%** corpus-wide | Phase 1 + 1b |
 | 3 | Selection **returns on the first tier with any candidate** — the ANDA tier is never queried once NDA answers | `_resolve_once:313-322` |
 | 4 | `34071-1` missing from `SECTIONS` costs **264 prescription labels 914,222 chars** of warnings — **93% an Rx problem, not OTC** | 1b Part 2 |
-| 5 | **E-A does not remove the wrong-drug citation — 0 of 5** | 1b Part 3 |
+| 5 | **E-A does not remove the wrong-drug citation — 0 of 5** — 🆕 **and it INTRODUCED one**, see 5b | 1b Part 3 |
+| 5b | 🆕 🔴 **E-A INTRODUCED a new wrong-object citation: `UVADEX (Methoxsalen) — Drug Interactions`, a psoralen unrelated to ibuprofen, cited in 3/3 TREATMENT runs and 0/27 control runs.** ⚠️ **E-A did not add that document** — UVADEX `#34073-7` is in the **shipped** corpus already and was never cited in any control run. E-A's +381 rows perturbed ranking enough to surface it. **So E-A is not merely ineffective (0/5); on this query it made the defect worse.** | `c2_ab_retrieval.json`, N=3/arm, 1 query — filed 2026-08-05 |
 | 6 | 🔴 **Supplying a correct document does not displace an incorrect one** — 2 cases, wrong drug still cited 3/3 | 1c §0 |
 | 7 | `aspirin → ACECLOFENAC` is **deterministic: 12/12, two index configs, zero variance** | 1c Part 1 |
 | 8 | The corpus has **no refresh mechanism** — `monthly_re_pull` is prose, `db_published_date` is **null**, no CI | 1c Part 5.3 |
@@ -67,7 +68,7 @@ cited from a branch report. Branch `c2-phase1b-EA-measurement`; **not pushed, no
 
 | option | measured effect | cost |
 |---|---|---|
-| **E-A** (all `34071-1`) | **0/5 on the citation.** 2/5 gained own-doc coverage | +381 docs (+8.3%), ~$0.005 |
+| **E-A** (all `34071-1`) | ❌ ~~**0/5 on the citation.** 2/5 gained own-doc coverage~~ → **0/5 AND it INTRODUCED a new wrong-object citation** (METHOXSALEN, 3/3 treatment vs **0/27** control) — 2/5 gained own-doc coverage. **Not neutral: net negative on the one query where it was observed.** See finding 5b | +381 docs (+8.3%), ~$0.005 |
 | **E-A-Rx** (`34071-1`, Rx doctype only) | **UNTESTED** — the 5 measured queries were all OTC-class, so E-A's **Rx half was never exercised** | +264 docs, 914,222 chars, **0% lay language** |
 | **E-B** (Rx-preference selection) | **45/1038 (4.3%)** change · **42 gain a first safety section, 0 lose one** · ⚠️ **21 of 45 (47%) newly ground on a COMBINATION product** · **2–6 oral→parenteral** · fixes only **4 of 15** non-human refs, all 4 with multi-ingredient labels, **both citable veterinary labels survive** | `--resolve` ~25 min + re-embed **$0.063** |
 | **E-C** (A+B) | never measured | highest, one gate cycle |

@@ -125,7 +125,20 @@ def self_test(corpus: CorpusIndex, report: dict) -> bool:
     checks.append(("unknown setid -> unresolved_source_id, never correct_owner", ok,
                    "a citation we cannot verify must not be reported as verified"))
 
-    # 5. No mention/text path exists in the module at all (Constraint 1, structural).
+    # 5. A non-blocking flag must NEVER become an outcome and never downgrade one.
+    #    NEOPROFEN is a legitimate owner (salt-inclusive ruling 2026-08-05) that is
+    #    clinically divergent (IV neonatal). Folding that into wrong_owner_cited would
+    #    merge two separate claims — the same error the class-query exclusion avoids.
+    lys = "DailyMed:6f5ede6f-b0b7-4fc8-969e-652f60ead047#34073-7"
+    v = classify_citation(lys, {"IBUPROFEN", "IBUPROFEN LYSINE"}, "IBUPROFEN", corpus, True)
+    ok = (v.outcome == "correct_owner"
+          and "owner_route_form_divergent" in v.flags
+          and v.outcome not in ("wrong_owner_cited",)
+          and not set(v.flags) & set(OUTCOMES))
+    checks.append(("owner_route_form_divergent is a FLAG on correct_owner, not an outcome", ok,
+                   "'an owner exists' and 'that owner is clinically applicable' are separate axes"))
+
+    # 6. No mention/text path exists in the module at all (Constraint 1, structural).
     src = (HERE / "owner_assertion.py").read_text(encoding="utf-8")
     body = src.split('"""', 2)[-1]  # exclude the module docstring, which discusses mention
     banned = [t for t in ("content", ".lower()", "in text", "TARGET_TERMS") if t in body]
@@ -217,8 +230,9 @@ def replay_fixtures(corpus: CorpusIndex, report: dict) -> None:
                 va = classify_fixture(g, uniq, corpus)
                 print(f"       ── ALT reading ({alt['label']}): {va.fixture_outcome}")
                 if va.fixture_outcome != v.fixture_outcome:
-                    print(f"          🔴 the two readings DISAGREE "
-                          f"({v.fixture_outcome} vs {va.fixture_outcome}) — founder decision")
+                    print(f"          ⚠️ the readings differ: adopted={v.fixture_outcome} "
+                          f"vs alt={va.fixture_outcome} — kept visible so the criterion "
+                          f"stays explicit, NOT an open question")
                 report["alt_readings"].append({
                     "fixture": f["id"], "arm": arm, "label": alt["label"],
                     "primary": v.fixture_outcome, "alt": va.fixture_outcome,

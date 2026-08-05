@@ -30,14 +30,14 @@
       "query": "ibuprofen warnings and precautions",
       "shape": "single",
       "queried_moiety": "IBUPROFEN",
-      "owner_moieties": ["IBUPROFEN"],
+      "owner_moieties": ["IBUPROFEN", "IBUPROFEN LYSINE"],
       "owner_moieties_alt": {
-        "label": "salt-inclusive reading (adds IBUPROFEN LYSINE)",
-        "moieties": ["IBUPROFEN", "IBUPROFEN LYSINE"],
-        "why_recorded": "IBUPROFEN resolves to ADVIL (OTC, zero whitelisted safety sections). IBUPROFEN LYSINE resolves to NEOPROFEN (34070-3/34073-7/43685-7) — the same active moiety as a lysine salt, but an INTRAVENOUS NEONATAL product for patent ductus arteriosus closure. Whether NEOPROFEN's warnings legitimately answer an adult oral ibuprofen question is a CLINICAL judgment, not a lexical one."
+        "label": "strict reading (IBUPROFEN key only) — SUPERSEDED, retained for comparison",
+        "moieties": ["IBUPROFEN"],
+        "why_recorded": "The criterion c2_phase1c §0 was measured under. Retained so the §0 numbers stay reproducible: under strict, §0's control 'own doc cited' reads 0/3; under the adopted salt-inclusive rule it reads 1/3."
       },
       "medically_unambiguous": false,
-      "founder_decision_pending": "🔴 FLAG (CLAUDE.md: flag medical ambiguity, do not best-guess). Under the strict reading this fixture is a COVERAGE gap; under the salt-inclusive reading it is a RANKING question. Both are reported. Not decided by this baton.",
+      "founder_ruling_2026_08_05": "SALT-INCLUSIVE, ADOPTED. IBUPROFEN LYSINE is a legitimate owner — same active moiety, and a salt is not a class sibling; consistent with the aspirin / acetylsalicylic acid treatment. Its reference label NEOPROFEN is an INTRAVENOUS NEONATAL product for patent ductus arteriosus closure, so a citation owned by it also carries the NON-BLOCKING flag `owner_route_form_divergent`. That flag is NEVER folded into `wrong_owner_cited`: 'an owner exists' and 'that owner is clinically applicable' are separate claims on separate axes.",
       "recorded_evidence": "ibuprofen warnings -> PIROXICAM, MEFENAMIC ACID, IBUPROFEN LYSINE and (on the E-A index) METHOXSALEN, a psoralen (docs/c2_phase1b_measurement_20260804.md:205, :215).",
       "expected_outcome_primary": "unset — reported, not asserted, pending the clinical decision above"
     },
