@@ -48,3 +48,28 @@ Reports: [`docs/c2_dailymed_probe_20260804.md`](../../docs/c2_dailymed_probe_202
 ⚠️ **`_c2_ab_retrieval.py`'s in-run `own_drug` flag is lexical and FALSE-POSITIVES** (the Aceclofenac
 label contains the words *"acetylsalicylic acid"*). The report's numbers are re-derived offline by
 `setid → moiety`. **Do not read the script's console output as the result** — see Part 3.1.
+
+---
+
+## `wrongdrug/` — the ownership assertion (T1, 2026-08-05)
+
+Report: [`docs/t1_ownership_assertion_20260805.md`](../../docs/t1_ownership_assertion_20260805.md)
+
+An **instrument**, not a fix. It answers "whose label is this citation?" — the predicate the
+fly-215 gate never asserted when it passed `aspirin contraindications` answered entirely from
+`Clanza (Aceclofenac)`.
+
+| file | what it is |
+|---|---|
+| `owner_assertion.py` | the pure module — `source_id → setid → moiety` join, six non-collapsing outcomes. No network, no `api/` import |
+| `fixtures.json` | 3 fixtures. `WD03` (spironolactone) is a **pair** query, retained but reported `unclassified` — never as passing |
+| `replay_probe.py` → `wrongdrug_replay.json` | self-test + replay over committed c2 evidence + the c1-ship §2.7 calibration |
+
+**No live retrieval.** Every input is a committed artifact, so unlike the `c2/` probes this one is
+fully reproducible: `python tests/probes/wrongdrug/replay_probe.py`.
+
+⚠️ It **supersedes** `_c2_ab_retrieval.py`'s lexical `own_drug` flag, and its self-test asserts the
+contradiction: on the ACECLOFENAC document the recorded flag says `own_drug: true` and the ownership
+join says `wrong_owner_cited`. If that check ever flips, the module has regressed to mention-based
+logic. It also deliberately does **not** reuse `tests/results/_pairaware_m1_content_audit.py`, whose
+`ON-TARGET-COUNTERPART` bucket is mention-based.

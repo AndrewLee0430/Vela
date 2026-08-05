@@ -1,0 +1,206 @@
+{
+  "generated": "2026-08-05",
+  "whitelist_check": "whitelist in sync with api/rag/retriever.py (4 LOINCs)",
+  "corpus_docs": 4608,
+  "alt_readings": [
+    {
+      "fixture": "WD01",
+      "arm": "control",
+      "label": "c1-adjudication reading (ASPIRIN key only)",
+      "primary": "wrong_owner_cited",
+      "alt": "no_right_owner_in_corpus"
+    },
+    {
+      "fixture": "WD01",
+      "arm": "treatment",
+      "label": "c1-adjudication reading (ASPIRIN key only)",
+      "primary": "wrong_owner_cited",
+      "alt": "no_right_owner_in_corpus"
+    },
+    {
+      "fixture": "WD02",
+      "arm": "control",
+      "label": "salt-inclusive reading (adds IBUPROFEN LYSINE)",
+      "primary": "no_right_owner_in_corpus",
+      "alt": "wrong_owner_cited"
+    },
+    {
+      "fixture": "WD02",
+      "arm": "treatment",
+      "label": "salt-inclusive reading (adds IBUPROFEN LYSINE)",
+      "primary": "no_right_owner_in_corpus",
+      "alt": "wrong_owner_cited"
+    }
+  ],
+  "self_test": {
+    "passed": 5,
+    "total": 5,
+    "all_passed": true,
+    "checks": [
+      {
+        "name": "source_id -> setid is exact for all 4608 docs",
+        "ok": true
+      },
+      {
+        "name": "ownership CONTRADICTS the recorded mention flag on ACECLOFENAC",
+        "ok": true
+      },
+      {
+        "name": "same citation splits ranking vs coverage on owned_doc_exists",
+        "ok": true
+      },
+      {
+        "name": "unknown setid -> unresolved_source_id, never correct_owner",
+        "ok": true
+      },
+      {
+        "name": "no text-matching primitives in the module body",
+        "ok": true
+      }
+    ]
+  },
+  "part1": {
+    "authoritative_scope": "control arm = shipped index; treatment arm excluded",
+    "per_citation": {
+      "correct_owner": 0,
+      "wrong_owner_cited": 1,
+      "no_right_owner_in_corpus": 3,
+      "out_of_scope_class_query": 0,
+      "unclassified": 1,
+      "unresolved_source_id": 0
+    },
+    "per_fixture": {
+      "correct_owner": 0,
+      "wrong_owner_cited": 1,
+      "no_right_owner_in_corpus": 1,
+      "out_of_scope_class_query": 0,
+      "unclassified": 1,
+      "unresolved_source_id": 0
+    },
+    "per_citation_informational_EA_index": {
+      "correct_owner": 1,
+      "wrong_owner_cited": 2,
+      "no_right_owner_in_corpus": 4,
+      "out_of_scope_class_query": 0,
+      "unclassified": 0,
+      "unresolved_source_id": 0
+    },
+    "detail": [
+      {
+        "fixture": "WD01",
+        "shape": "single",
+        "outcome": "wrong_owner_cited",
+        "citations": [
+          {
+            "source_id": "DailyMed:8a023942-01e8-4849-aa3c-1a640ffc7fd3#34070-3",
+            "owner": "ACECLOFENAC",
+            "outcome": "wrong_owner_cited"
+          }
+        ]
+      },
+      {
+        "fixture": "WD02",
+        "shape": "single",
+        "outcome": "no_right_owner_in_corpus",
+        "citations": [
+          {
+            "source_id": "DailyMed:0373da3a-7779-4e26-87f1-cd346018282c#34066-1",
+            "owner": "PIROXICAM",
+            "outcome": "no_right_owner_in_corpus"
+          },
+          {
+            "source_id": "DailyMed:6f5ede6f-b0b7-4fc8-969e-652f60ead047#34073-7",
+            "owner": "IBUPROFEN LYSINE",
+            "outcome": "no_right_owner_in_corpus"
+          },
+          {
+            "source_id": "DailyMed:9b8b3e03-4801-4ae8-b44e-e01d1ab1e34b#34070-3",
+            "owner": "MEFENAMIC ACID",
+            "outcome": "no_right_owner_in_corpus"
+          }
+        ]
+      },
+      {
+        "fixture": "WD03",
+        "shape": "pair",
+        "outcome": "unclassified",
+        "citations": []
+      },
+      {
+        "fixture": "WD01",
+        "shape": "single",
+        "outcome": "wrong_owner_cited",
+        "citations": [
+          {
+            "source_id": "DailyMed:8a023942-01e8-4849-aa3c-1a640ffc7fd3#34070-3",
+            "owner": "ACECLOFENAC",
+            "outcome": "wrong_owner_cited"
+          },
+          {
+            "source_id": "DailyMed:9b8b3e03-4801-4ae8-b44e-e01d1ab1e34b#34070-3",
+            "owner": "MEFENAMIC ACID",
+            "outcome": "wrong_owner_cited"
+          }
+        ]
+      },
+      {
+        "fixture": "WD02",
+        "shape": "single",
+        "outcome": "no_right_owner_in_corpus",
+        "citations": [
+          {
+            "source_id": "DailyMed:0373da3a-7779-4e26-87f1-cd346018282c#34066-1",
+            "owner": "PIROXICAM",
+            "outcome": "no_right_owner_in_corpus"
+          },
+          {
+            "source_id": "DailyMed:1a665e64-9f30-be37-4a83-38789f1f1e89#34071-1",
+            "owner": "IBUPROFEN",
+            "outcome": "correct_owner"
+          },
+          {
+            "source_id": "DailyMed:5ad333bd-845f-43f8-9ecf-43491f26c7c7#34073-7",
+            "owner": "METHOXSALEN",
+            "outcome": "no_right_owner_in_corpus"
+          },
+          {
+            "source_id": "DailyMed:6f5ede6f-b0b7-4fc8-969e-652f60ead047#34073-7",
+            "owner": "IBUPROFEN LYSINE",
+            "outcome": "no_right_owner_in_corpus"
+          },
+          {
+            "source_id": "DailyMed:9b8b3e03-4801-4ae8-b44e-e01d1ab1e34b#34070-3",
+            "owner": "MEFENAMIC ACID",
+            "outcome": "no_right_owner_in_corpus"
+          }
+        ]
+      }
+    ]
+  },
+  "part2": {
+    "artifact": "golden_results_20260729_230006.json",
+    "recorded_summary": {
+      "PASS": 20,
+      "WARN": 0,
+      "FAIL": 0,
+      "ERROR": 0
+    },
+    "per_case": {
+      "correct_owner": 3,
+      "wrong_owner_cited": 0,
+      "no_right_owner_in_corpus": 0,
+      "out_of_scope_class_query": 14,
+      "unclassified": 3,
+      "unresolved_source_id": 0
+    },
+    "per_citation": {
+      "correct_owner": 6,
+      "wrong_owner_cited": 0,
+      "no_right_owner_in_corpus": 0,
+      "out_of_scope_class_query": 14,
+      "unclassified": 3,
+      "unresolved_source_id": 0
+    },
+    "cases_that_would_flip": []
+  }
+}

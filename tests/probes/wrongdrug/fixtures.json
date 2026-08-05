@@ -1,0 +1,55 @@
+{
+  "_meta": {
+    "created": "2026-08-05",
+    "baton": "T1 — make wrong-drug citation visible to the gates (instrument work only)",
+    "constraint_1": "ownership only, never mention — see owner_assertion.py docstring",
+    "constraint_2": "wrong_owner_cited and no_right_owner_in_corpus never collapse",
+    "owner_moieties_note": "The corpus key is the TFDA backbone drug_name verbatim (scripts/build_dailymed_label_corpus.py:99-105), so ONE substance can occupy TWO moiety keys with different reference labels and different safety coverage. An owner set that omits a synonym silently flips a RANKING failure into a COVERAGE gap. That is not hypothetical — it is the recorded c1 error (BACKLOG.md:860). Hence owner_moieties is a set, and owner_moieties_alt records the competing reading so neither is chosen silently.",
+    "class_membership_note": "owner_moieties lists SYNONYMS OF ONE SUBSTANCE. It is NOT a class-membership list. Class queries are excluded entirely (decision (a)); no class roster appears anywhere in this fixture file."
+  },
+  "fixtures": [
+    {
+      "id": "WD01",
+      "query": "aspirin contraindications and who should not take it",
+      "shape": "single",
+      "queried_moiety": "ASPIRIN",
+      "owner_moieties": ["ASPIRIN", "ACETYLSALICYLIC ACID"],
+      "owner_moieties_alt": {
+        "label": "c1-adjudication reading (ASPIRIN key only)",
+        "moieties": ["ASPIRIN"],
+        "why_recorded": "The c1/c2 adjudication resolved aspirin to the ASPIRIN key alone (reference label VAZALORE, OTC, zero whitelisted safety sections) and concluded a COVERAGE gap. Including the synonym key ACETYLSALICYLIC ACID (reference label DURLAZA, Rx, sections 34070-3/34073-7/43685-7) reclassifies it as a RANKING failure. Both readings are reported; the founder decides which is authoritative."
+      },
+      "medically_unambiguous": true,
+      "synonym_justification": "Acetylsalicylic acid IS aspirin — same active substance, not a related drug and not a class sibling.",
+      "recorded_evidence": "aspirin -> ACECLOFENAC cited 12/12 across two index configs, zero variance (docs/c2_phase1c_20260804.md Part 1; BACKLOG.md:894). Treated as N=1 deterministic identity, not 12 independent samples.",
+      "expected_outcome_primary": "wrong_owner_cited",
+      "expected_outcome_alt": "no_right_owner_in_corpus"
+    },
+    {
+      "id": "WD02",
+      "query": "ibuprofen warnings and precautions",
+      "shape": "single",
+      "queried_moiety": "IBUPROFEN",
+      "owner_moieties": ["IBUPROFEN"],
+      "owner_moieties_alt": {
+        "label": "salt-inclusive reading (adds IBUPROFEN LYSINE)",
+        "moieties": ["IBUPROFEN", "IBUPROFEN LYSINE"],
+        "why_recorded": "IBUPROFEN resolves to ADVIL (OTC, zero whitelisted safety sections). IBUPROFEN LYSINE resolves to NEOPROFEN (34070-3/34073-7/43685-7) — the same active moiety as a lysine salt, but an INTRAVENOUS NEONATAL product for patent ductus arteriosus closure. Whether NEOPROFEN's warnings legitimately answer an adult oral ibuprofen question is a CLINICAL judgment, not a lexical one."
+      },
+      "medically_unambiguous": false,
+      "founder_decision_pending": "🔴 FLAG (CLAUDE.md: flag medical ambiguity, do not best-guess). Under the strict reading this fixture is a COVERAGE gap; under the salt-inclusive reading it is a RANKING question. Both are reported. Not decided by this baton.",
+      "recorded_evidence": "ibuprofen warnings -> PIROXICAM, MEFENAMIC ACID, IBUPROFEN LYSINE and (on the E-A index) METHOXSALEN, a psoralen (docs/c2_phase1b_measurement_20260804.md:205, :215).",
+      "expected_outcome_primary": "unset — reported, not asserted, pending the clinical decision above"
+    },
+    {
+      "id": "WD03",
+      "query": "spironolactone potassium hyperkalemia contraindication",
+      "shape": "pair",
+      "pair_query": "out_of_scope_v1",
+      "queried_moiety": "SPIRONOLACTONE",
+      "owner_moieties": ["SPIRONOLACTONE"],
+      "retained_why": "Kept in the fixture file deliberately. It is the recorded evidence for BACKLOG surface 3, and the POTASSIUM CHLORIDE #34073-7 label is a legitimate answer despite not being spironolactone-owned. v1 has no non-mention-based way to judge that, so it is reported `unclassified` and NEVER as passing — an instrument that scored a known defect as fine would be a fresh instance of the blindness class it exists to detect.",
+      "expected_outcome_primary": "unclassified"
+    }
+  ]
+}
