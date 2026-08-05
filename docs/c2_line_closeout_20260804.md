@@ -38,6 +38,14 @@ cited from a branch report. Branch `c2-phase1b-EA-measurement`; **not pushed, no
 | *"cimetidine 0/3 → 3/3 is a 🔴 REGRESSION"* | **Control alone oscillates 0/3 → 4/6.** Not attributable |
 | *"11 `source_id`s vanished upstream"* | **0 vanished.** All 11 were my own 2 failed fetches; both labels serve HTTP 200 |
 | *"doctype predicts safety-section presence perfectly"* | **Circular** — measured the whitelist. Once `34071-1` counts: Rx 14/14 **and** OTC 34/34 |
+| 🆕 *"in 6 of 6 adjudicated cases the queried drug's own reference label has no safety section"* (BACKLOG:860) | **REFUTED FOR ASPIRIN (2026-08-05, T1).** The corpus keys one substance under **two** moiety strings: `ASPIRIN` → VAZALORE (OTC, none) and **`ACETYLSALICYLIC ACID` → DURLAZA (Rx, 34070-3/34073-7/43685-7)**. *DURLAZA — Contraindications* is **row 57 of the shipped index, 375 chars, norm 0.9995, row-aligned** — an owned aspirin Contraindications doc **was in the index that cited Aceclofenac**. The adjudication checked one key, never the synonym. **Aspirin is a RANKING failure, not a coverage gap.** The other 5 are **not re-adjudicated** — UNMEASURED. [`t1_ownership_assertion_20260805.md`](t1_ownership_assertion_20260805.md) §2 |
+
+> **⚠️ ADDENDUM 2026-08-05 — this close-out is no longer complete on its own.** It remains the resume
+> point for the c2 *options*, but two things postdate it: the refutation above, and a **third defect
+> mechanism**. The record here says coverage **or** ranking; it is now coverage / **threshold** /
+> ranking, because whether DURLAZA's section ever clears the store `min_score` is **UNVERIFIED** and
+> decides which of the two non-coverage mechanisms is operating. See TECH_DEBT [P2 · corpus dual-key].
+> **c2 remains PARKED — nothing here reopens it.**
 | *"E-A recovers the 11,689-char Rx ibuprofen warnings"* | That label is not pinned — an **E-C** benefit |
 | *"c2-iii is cheapest, no new data, just a key alias"* | Data claim holds; **mechanism is a curated synonym map**, a new correctness dependency |
 | *"a full re-embed is the expensive part of a refresh"* | **$0.063.** Cost is gate cycles and blast radius |
