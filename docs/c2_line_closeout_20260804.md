@@ -4,7 +4,84 @@
 cited from a branch report. Branch `c2-phase1b-EA-measurement`; **not pushed, not merged, not deployed.**
 **No priority set, no option chosen, no queue reordered.** Every decision below is founder-pending.
 
-**Read this file alone to resume.** The five underlying reports are cited but should not be needed.
+❌ ~~**Read this file alone to resume.** The five underlying reports are cited but should not be needed.~~
+➡️ **Read § 0 FIRST — the line continued past 2026-08-04 and superseded several framings below.**
+
+---
+
+# § 0 — THE LINE CONTINUED. READ THIS BEFORE ANYTHING ELSE. (added 2026-08-06)
+
+**Everything below § 0 was written on 2026-08-04 and is retained as the record of that date.** Three
+further days of measurement (commits `e9778c8` · `5c5a158` · `526e87c` · `d1ec8e0` · `4c35654` ·
+`fcdaa0f`) **refuted several of its framings.** Nothing here is new measurement — every figure is
+cited from a committed report.
+
+## 🔴 The headline changed
+
+**2026-08-04 said:** the wrong-drug citation has a coverage half and a ranking half, and **the
+ranking half produces the citation**.
+
+**2026-08-06 says: on the flagship case it is NEITHER. It is a THRESHOLD defect.**
+`DURLAZA — Contraindications` (`ACETYLSALICYLIC ACID`, row 57, 375 chars, embedding norm 0.9995)
+clears `min_score=0.6` on **0 of 9** rewrite strings and **0** on the raw arm — best score **0.4051**,
+a **0.195** shortfall. On the raw query **0 of 4608** documents clear the floor at all. **The owned
+document never enters the pool, so there was never a ranking contest to lose.** It is therefore also
+beyond reach of the safety-section whitelist exemption (`retriever.py:38-48`), which only re-adds
+documents that were already retrieved. — [`rewrite_arm_mechanism_20260806.md`](rewrite_arm_mechanism_20260806.md) · [`durlaza_minscore_20260806.md`](durlaza_minscore_20260806.md)
+
+## 🛑 FOUR CANDIDATE DIRECTIONS ARE NOW MEASURED AND EXCLUDED
+
+**Do not reopen this line without new information of the kind named in the last column.**
+
+| # | direction | status | what would justify revisiting |
+|---|---|---|---|
+| 1 | **c2's six options** (E-A · E-A-Rx · E-B · E-C · E-D · E-E) | ⏸️ **PARKED — no option has a measured upside**, and E-A is **net negative** (introduced METHOXSALEN, 3/3 treatment vs 0/27 control). All are coverage/selection levers; **the flagship defect is threshold**, which none of them touch | The two unpark conditions in § 2 — both are **coverage** questions, and coverage is no longer the flagship mechanism |
+| 2 | **Wrong-drug filter** (STATE open-item #2) | 🔴 **PREMISE REFUTED BY MEASUREMENT.** Removing ACECLOFENAC yields a correct citation on **0/9** strings, and **zero DailyMed citations on 3/3** of the strings where the filter would fire at all | A case where the owned document **does** enter the pool and loses. None is currently evidenced |
+| 3 | **Title-prefix re-embed** (embed `title + content`, not `content` alone) | 🛑 **DEAD.** DURLAZA still **0/9** with the title; best **0.5614**, 0.039 short. And it **drops ACECLOFENAC below the floor on the only 3 strings where anything cleared** — a wrong citation becomes **zero** citations, the same failure mode as the filter, arriving via the corpus | A format or scope not tested here — **one** concatenation format on **11 documents / 2 drugs** was measured |
+| 4 | **Threshold change** (`min_score` 0.6) | ⚠️ **UNMEASURED and explicitly NOT RECOMMENDED.** Named only because the evidence points at it: everything sampled sits in **0.42–0.68**, so changing embedded text reorders the band without lifting anything through it. ⚠️ `local_threshold` is **shared across the local, TFDA and DailyMed stores** (`api/server.py:450`) — a change is **materially larger** than anything measured in this line | A scoped measurement of the shared-threshold blast radius, which does not exist |
+
+**Direction 3 is the informative failure.** Title-prefixing moves both documents the *right* way —
+DURLAZA **+0.111** mean, ACECLOFENAC **−0.103**, a **+0.215** differential that reverses the ordering
+on **5 of 9** strings, with its largest gains (**+0.18**) landing exactly on the strings that expose
+the synonym problem. **It has real discriminating power and still cannot cross the floor.** That is
+what makes the floor, not the embedded text, the binding constraint.
+
+## 🔬 Root cause, verified offline
+
+`scripts/build_dailymed_label_corpus.py:528` — **`texts = [d["content"] for d in docs]`.** Only
+section **content** is embedded; the **`title`, the sole place the `moiety` appears, is not.**
+DURLAZA's contraindications text names the **brand** and never `aspirin` or `acetylsalicylic acid`;
+the ACECLOFENAC text **does** contain *"acetylsalicylic acid"* as legitimate cross-sensitivity prose.
+**Aspirin's own safety document is semantically invisible to aspirin's own name.**
+
+🔴 **Sharpest detail — the correct synonym makes it worse.** The three rewrite strings containing
+*"acetylsalicylic acid"* — precisely what CLAUDE.md **Rule 23** exists to make us enumerate — are the
+**only three** that push anything over the floor, and what they push is **ACECLOFENAC** (0.586 →
+**0.679**), while **DURLAZA hits its lowest scores of the whole sample**.
+
+## ⚠️ Sampling boundaries — neither result is corpus-wide (Rule 21)
+
+- **Rewrite arm: ONE query**, 3 draws → 9 unique strings, 1 batched embedding. **Not** a claim about
+  other drugs, other query shapes, or the rewriter in general.
+- **Title-prefix: TWO drug cases, 11 documents, ONE concatenation format.** Evidence for a decision,
+  **not** a measurement of corpus-wide effect. A corpus-wide change remains **🔴** (own §2.7 +
+  section-aware danger-path re-gate + canary + prod human-eye gate), with a blast radius covering
+  **every Research query** rather than a countable row set. The **$0.063** re-embed is not the cost.
+- **The historical 12/12 rewrite strings are PERMANENTLY UNRECOVERABLE** — never persisted, and
+  `_dailymed_union_queries` logs nothing (TECH_DEBT `[P2 · observability / PRODUCT code]`). The
+  rewrite-arm numbers are a **fresh sample**, justified only because the outcome they explain
+  (ACECLOFENAC cited 12/12 across two index configurations) is itself stable.
+- **Ibuprofen was raw-arm only** — its rewrite strings were never captured either.
+
+## What else the continuation produced
+
+- **An ownership instrument** — `tests/probes/wrongdrug/owner_assertion.py`, ownership-only (never
+  mention-based), six non-collapsing outcomes, self-test 6/6.
+- **A pre-gate FORM** — `docs/human_eye_gate_checklist.md`, with a per-row **EXPECTED OWNER** field.
+  ⚠️ **NOT resolved:** it closes on a gate that *used* the form, not on the file existing.
+- **CLAUDE.md Rules 20–23**, and **instrument-blind instances #12, #13, #14**.
+- **A correction to `BACKLOG.md:860`** — the *"6 of 6, the drug's own label has no safety section"*
+  claim is **false for aspirin**; the corpus keys one substance under **two** moiety strings.
 
 ---
 
@@ -21,6 +98,7 @@ cited from a branch report. Branch `c2-phase1b-EA-measurement`; **not pushed, no
 | 5 | **E-A does not remove the wrong-drug citation — 0 of 5** — 🆕 **and it INTRODUCED one**, see 5b | 1b Part 3 |
 | 5b | 🆕 🔴 **E-A INTRODUCED a new wrong-object citation: `UVADEX (Methoxsalen) — Drug Interactions`, a psoralen unrelated to ibuprofen, cited in 3/3 TREATMENT runs and 0/27 control runs.** ⚠️ **E-A did not add that document** — UVADEX `#34073-7` is in the **shipped** corpus already and was never cited in any control run. E-A's +381 rows perturbed ranking enough to surface it. **So E-A is not merely ineffective (0/5); on this query it made the defect worse.** | `c2_ab_retrieval.json`, N=3/arm, 1 query — filed 2026-08-05 |
 | 6 | 🔴 **Supplying a correct document does not displace an incorrect one** — 2 cases, wrong drug still cited 3/3 | 1c §0 |
+| 6b | ⚠️ **§ 0 SUPERSEDES THE INFERENCE DRAWN FROM #6, NOT #6 ITSELF.** #6 remains true for `ibuprofen`/`omeprazole`, where the own doc *did* enter the pool. But it was generalised into *"the ranking half produces the citation"* — and **on the flagship `aspirin` case the owned document never enters the pool at all** (0/9 rewrite strings, 0/4608 on the raw query). **Threshold, not ranking.** | § 0 |
 | 7 | `aspirin → ACECLOFENAC` is **deterministic: 12/12, two index configs, zero variance** | 1c Part 1 |
 | 8 | The corpus has **no refresh mechanism** — `monthly_re_pull` is prose, `db_published_date` is **null**, no CI | 1c Part 5.3 |
 | 9 | **15 non-human references**, scope **bounded** (0 found outside); **2 citable as safety** | non-human scope |
@@ -34,8 +112,8 @@ cited from a branch report. Branch `c2-phase1b-EA-measurement`; **not pushed, no
 
 | claim | status |
 |---|---|
-| *"c2 is a coverage defect, not a ranking defect"* | **Both.** The ranking half produces the citation and c2 does not touch it |
-| *"the wrong-drug filter is blocked by c2 — c2 may descope or close it"* | **Premise refuted.** 2 of 6 adjudicated: **not fixed**. Dependency removed |
+| *"c2 is a coverage defect, not a ranking defect"* | ❌ ~~**Both.** The ranking half produces the citation~~ → **RE-POINTED 2026-08-06: on the flagship case it is NEITHER — it is a THRESHOLD defect.** The owned doc clears the 0.6 floor on **0/9** rewrite strings. c2 still does not touch it. See § 0 |
+| *"the wrong-drug filter is blocked by c2 — c2 may descope or close it"* | **Premise refuted.** 2 of 6 adjudicated: **not fixed**. Dependency removed. 🔴 **2026-08-06 — THE FILTER'S OWN premise is now refuted too:** removing ACECLOFENAC yields a correct citation on **0/9** strings and **zero** citations on **3/3** of the strings where it would fire. See § 0 |
 | *"cimetidine 0/3 → 3/3 is a 🔴 REGRESSION"* | **Control alone oscillates 0/3 → 4/6.** Not attributable |
 | *"11 `source_id`s vanished upstream"* | **0 vanished.** All 11 were my own 2 failed fetches; both labels serve HTTP 200 |
 | *"doctype predicts safety-section presence perfectly"* | **Circular** — measured the whitelist. Once `34071-1` counts: Rx 14/14 **and** OTC 34/34 |
@@ -101,7 +179,7 @@ blast radius.**
 
 ## What c2 no longer blocks
 
-**The wrong-drug filter (STATE #2).** Its c2 dependency is removed — see §3.
+**The wrong-drug filter (STATE #2).** Its c2 dependency is removed — see §3. ⚠️ **2026-08-06: removing the dependency did not leave a viable item** — the filter's own premise is refuted (§ 0, direction 2).
 
 ---
 
@@ -112,7 +190,7 @@ blast radius.**
 
 | item | before | now |
 |---|---|---|
-| **#2 wrong-drug filter** | BLOCKED BY c2 | ✅ **UNBLOCKED** — premise refuted; **2 of 6 adjudicated, not fixed**. Priority/position **unchanged** |
+| **#2 wrong-drug filter** | BLOCKED BY c2 | ❌ ~~✅ **UNBLOCKED** — premise refuted; **2 of 6 adjudicated, not fixed**. Priority/position **unchanged**~~ → 🔴 **RE-POINTED 2026-08-06: THE FILTER'S OWN PREMISE IS REFUTED BY MEASUREMENT** — same treatment c2's blocker received. Removing ACECLOFENAC gives a correct citation on **0/9** strings and **ZERO DailyMed citations on 3/3** of the strings where it would fire. It is unblocked *and* unevidenced. **Not a recommendation against it — a founder decision on new terms.** § 0 |
 | **#7 published stubs** | blocked on an unknown `/q/` count | ✅ **UNBLOCKED** — **4 of 18 rows**, all public, 2 with views |
 | **M3 drift detection** | implicit under the c2/refresh cluster | ✅ **PROMOTED to its own BACKLOG item** — **not 🔴, no gate** |
 | **c2** | top build candidate | ⏸️ **PARKED** with the three unpark conditions above |
