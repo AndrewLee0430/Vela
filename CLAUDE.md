@@ -53,7 +53,11 @@ Examples from 2026-04-19 to 2026-04-20 sessions:
    - `BACKLOG.md`: remove entry or mark done
    - `docs/PRD.md` status marker: update §X.Y if section-level change (❌ → ✅ SHIPPED `<date>`)
    - (the chronological shipped entry is auto-recorded by `git log` on commit — no manual append)
-10. Commit message format: `[PRD X.Y] brief description` (e.g. `[PRD 2.0] Remove temp window.__vela_analytics exposure`)
+10. **Commit message format — conventional commits by default; `[PRD X.Y]` only where it is true.**
+    - **Default:** `type(scope): brief description` — e.g. `docs(gate): …`, `test(wrongdrug): …`, `feat(verify): …`.
+    - **`[PRD X.Y]` is REQUIRED when, and only when, the commit changes product code implementing a PRD section.** The two combine: `feat(verify): [PRD 3.1] add DailyMed attribution enum`.
+    - **CHECK: does this commit change product code that implements a PRD section? If YES the PRD reference is mandatory; if NO it must not be invented.**
+    - *Basis (decided 2026-08-06):* `[PRD X.Y]` was used **30 times in 562 commits**, last on `8499495` (2026-07-22), and **28 of the last 30 commits touched no product code** — the format assumed feature work, and much of this line of work is not feature work.
 
 **Solo-founder STATE discipline**: At minimum, at the end of each task segment, update STATE.md (Next Up + Recently Shipped) even if other docs (PRD marker, BACKLOG removal) are intentionally skipped. STATE.md is the single entry point for "where am I next session"; a stale STATE is the highest-cost drift because it misleads the next work session about what's done vs pending. PRD-marker / BACKLOG updates may be batched or skipped at the founder's discretion, but STATE should never silently lag reality.
 
