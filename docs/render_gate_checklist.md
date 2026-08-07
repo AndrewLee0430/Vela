@@ -4,6 +4,11 @@
 > cells as you go**, and paste the completed copy into the STATE ship entry. The blank cells are the
 > point: an unfilled cell is visibly unfilled.
 
+> ## ✅ GATE 1 RUN AND PASSED — 4/4, founder-run, human-eye, against **fly 216** (2026-08-07)
+> **This is the first gate ever run with a form in this repo.** The completed rows are recorded
+> below. To run a NEW gate, copy the tables and blank the observation columns again — do not
+> overwrite this record.
+
 **Created 2026-08-07.** For gates that check **what a rendered public page CLAIMS** — as opposed to
 `docs/human_eye_gate_checklist.md`, which checks **whose label was cited on a Research query**.
 
@@ -47,16 +52,16 @@ NOTES; this is **not** a PASS).
 but renders with **no credibility pill** and **no source label**, reading *"Source withdrawn"* /
 *"來源已撤回"*, and is excluded from the source-chip summary.
 
-⚠️ **Requires a deployed build.** Nothing was deployed when this form was written.
+❌ ~~⚠️ **Requires a deployed build.** Nothing was deployed when this form was written.~~ → ✅ **RUN 2026-08-07 against fly 216** (deployed the same day, health 200). **Result: 4/4 PASS, plus both of the rows a unit test could never check.**
 
 ### Row expectations — derived read-only from prod on 2026-08-06, and from `_augment_citations` output, NOT from a rendered page
 
 | # | URL (copy-pasteable) | locale | expected slots | expected tombstones at `[N]` | observed slots | observed tombstones | credibility pill ABSENT on every tombstone? | every prose `[N]` resolves to a slot? | VERDICT | NOTES |
 |---|---|---|---|---|---|---|---|---|---|---|
-| 1 | `https://vela.an-tho.com/q/6-Si0boVrZo` | en | **2** | **[2]** | | | | | | |
-| 2 | `https://vela.an-tho.com/q/7xI-q0dxnVg` | **zh-TW** | **5** | **[1] [4] [5]** | | | | | | |
-| 3 | `https://vela.an-tho.com/q/Eclwok8n_Kw` | en | **5** | **[1] [4] [5]** | | | | | | |
-| 4 | `https://vela.an-tho.com/explore/metformin-contraindications-renal` | en | **3** | **[2]** | | | | | | |
+| 1 | `https://vela.an-tho.com/q/6-Si0boVrZo` | en | **2** | **[2]** | 2 ✅ | [2] ✅ | ✅ none | ✅ yes | **PASS** | chips `PubMed: 1`; "Source withdrawn" |
+| 2 | `https://vela.an-tho.com/q/7xI-q0dxnVg` | **zh-TW** | **5** | **[1] [4] [5]** | 5 ✅ | [1] [4] [5] ✅ | ✅ none | ✅ yes | **PASS** | chips `PubMed: 2`; **「來源已撤回」** |
+| 3 | `https://vela.an-tho.com/q/Eclwok8n_Kw` | en | **5** | **[1] [4] [5]** | 5 ✅ | [1] [4] [5] ✅ | ✅ none | ✅ yes | **PASS** | chips `PubMed: 2`; "Source withdrawn" |
+| 4 | `https://vela.an-tho.com/explore/metformin-contraindications-renal` | en | **3** | **[2]** | 3 ✅ | [2] ✅ | ✅ none | ✅ yes | **PASS** | `explore_page` path confirmed independently of rows 1–3 |
 
 **Per-row PASS criterion — identity of the claim, not a count:**
 ✅ every tombstoned slot shows **no credibility pill**, **no source name**, and **no "View source"
@@ -71,8 +76,8 @@ same renderer. It is in this gate deliberately — passing rows 1–3 does not e
 
 | # | check | what PASS looks like | observed | VERDICT | NOTES |
 |---|---|---|---|---|---|
-| 5 | **Legibility — does the tombstone read as withdrawn at a glance?** The source label renders in `#a0aec0` (grey), inherited from the pre-existing `local` config; no CSS was added for the tombstone | A reader scanning the references can tell the slot is withdrawn **without reading closely**. Contrast against the page background is sufficient | | | |
-| 6 | **Both locales render their own string, not a fallback** | Row 2 (zh-TW) shows **「來源已撤回」**; rows 1/3/4 (en) show **"Source withdrawn"**. Neither shows the other language, an empty label, or a raw key | | | |
+| 5 | **Legibility — does the tombstone read as withdrawn at a glance?** The source label renders in `#a0aec0` (grey), inherited from the pre-existing `local` config; no CSS was added for the tombstone | A reader scanning the references can tell the slot is withdrawn **without reading closely**. Contrast against the page background is sufficient | `#a0aec0` reads clearly against the page background. A tombstone card beside a PubMed card is **unmistakable at a glance** — no coloured source name, no pill, no "View source" link, visibly dimmer | **PASS** | 🔴 **The row that justified the whole form.** No unit test could have checked this — the correction is only worth shipping if it is *visible*, and grey-on-grey was the named risk |
+| 6 | **Both locales render their own string, not a fallback** | Row 2 (zh-TW) shows **「來源已撤回」**; rows 1/3/4 (en) show **"Source withdrawn"**. Neither shows the other language, an empty label, or a raw key | Row 2 correct. **And the locale resolves END TO END, not just the one string** — `參考來源`, `同儕審查`, `檢視來源 ↗` all render in zh-TW | **PASS** | Stronger than the criterion asked for: a single-string hit could have masked a broken locale path; the whole page is localised |
 
 **Why 5 is here:** the correction is only worth shipping if it is *visible*. A tombstone the eye
 slides past leaves the page reading as though the slot were an ordinary source — the defect would be
@@ -92,6 +97,10 @@ so it is the only row that can catch a locale-resolution fault.
 - **The scaffolding snippet is still visible** (e.g. `"Drug: Warfarin\n\nContraindications:\n4"`).
   **Intended** (founder decision 2026-08-07): it shows the reader *why* the slot was withdrawn.
   A withdrawn slot with no visible reason would be worse.
+  - ✅ **The gate VINDICATED this decision.** Row 3's `[5] Warfarin - Safety` rendered as
+    *"Drug: Warfarin Contraindications: 4 Warnings and Precautions:"* — **truncated mid-field, because
+    that field had no value at all.** The emptiness is visible to the reader directly, which is
+    precisely the argument for keeping it. Hidden, the slot would read as withdrawn for no evident reason.
 - **The 8 stub citations remain in the prod database.** Deliberate residue — deleting them hits the
   same renumbering hazard. See the `[P2 · honesty / persisted artifacts]` TECH_DEBT entry.
 
