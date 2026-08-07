@@ -23,6 +23,7 @@ Examples from 2026-04-19 to 2026-04-20 sessions:
 | Active rules + workflow (this file) | CLAUDE.md |
 | Current focus + next-up + active acceptance protocols | STATE.md |
 | Pre-gate human-eye checklist (blank FORM — fill per gate, incl. per-row EXPECTED OWNER) | docs/human_eye_gate_checklist.md |
+| Pre-gate RENDER checklist (blank FORM — what a rendered public page CLAIMS; sibling of the above) | docs/render_gate_checklist.md |
 | Open future tasks | BACKLOG.md |
 | Completed/shipped work log (chronological) | `git log` (recent window in STATE "Recently Shipped") |
 | Tech debt entries (active gaps) | TECH_DEBT.md |

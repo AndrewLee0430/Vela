@@ -1,0 +1,116 @@
+# Render gate checklist — PRE-GATE FORM
+
+> **This is a BLANK FORM, not a record.** Copy the row table into the gate session, **fill the empty
+> cells as you go**, and paste the completed copy into the STATE ship entry. The blank cells are the
+> point: an unfilled cell is visibly unfilled.
+
+**Created 2026-08-07.** For gates that check **what a rendered public page CLAIMS** — as opposed to
+`docs/human_eye_gate_checklist.md`, which checks **whose label was cited on a Research query**.
+
+---
+
+## Why this is a separate file and not extra columns on the ownership form
+
+The ownership form's per-row fields are `query · EXPECTED OWNER · observed owner(s) · verdict`. On a
+render gate there is **no query** (the input is a fixed URL), and **`EXPECTED OWNER` is `n/a` on every
+single row** — the entries under test have no owner at all. A column that is `n/a` on every row is the
+signal that the instrument does not match the measurement.
+
+Widening the ownership form was considered and **rejected** (founder decision 2026-08-07): a form's
+value is that opening it tells you what to fill in, and a form covering two unrelated question types
+degrades into a grab-bag. **Two narrow forms beat one wide one.**
+
+### 🔴 This form does NOT close `TECH_DEBT.md:110`
+
+That entry closes on a gate that **used the OWNERSHIP form on a Research gate**. Using a *different*
+form for a *different* kind of gate is not that, and must not be recorded as if it were. `:110`
+**stays open.** The ownership form still has never been used.
+
+---
+
+## What a render gate is for
+
+Unit tests assert on the **data** a renderer produces. They cannot see the **page**. Everything in the
+"cannot be unit-tested" rows below is there because it was explicitly flagged as unverified when the
+code shipped — legibility and locale fallback are properties of the rendered page, not of a dict.
+
+**Fill in every cell.** `—` means "checked, nothing to report"; an empty cell means **not checked**.
+
+**VERDICT vocabulary:** `PASS` · `FAIL` · `n/a` · `BLOCKED` (could not be evaluated — say why in
+NOTES; this is **not** a PASS).
+
+---
+
+## Gate 1 — open-item #7: pre-c1 empty `local` stubs are tombstoned
+
+**Change under test:** `a7e47c2` — a `source_type == 'local'` citation keeps its slot and its `[N]`
+but renders with **no credibility pill** and **no source label**, reading *"Source withdrawn"* /
+*"來源已撤回"*, and is excluded from the source-chip summary.
+
+⚠️ **Requires a deployed build.** Nothing was deployed when this form was written.
+
+### Row expectations — derived read-only from prod on 2026-08-06, and from `_augment_citations` output, NOT from a rendered page
+
+| # | URL (copy-pasteable) | locale | expected slots | expected tombstones at `[N]` | observed slots | observed tombstones | credibility pill ABSENT on every tombstone? | every prose `[N]` resolves to a slot? | VERDICT | NOTES |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | `https://vela.an-tho.com/q/6-Si0boVrZo` | en | **2** | **[2]** | | | | | | |
+| 2 | `https://vela.an-tho.com/q/7xI-q0dxnVg` | **zh-TW** | **5** | **[1] [4] [5]** | | | | | | |
+| 3 | `https://vela.an-tho.com/q/Eclwok8n_Kw` | en | **5** | **[1] [4] [5]** | | | | | | |
+| 4 | `https://vela.an-tho.com/explore/metformin-contraindications-renal` | en | **3** | **[2]** | | | | | | |
+
+**Per-row PASS criterion — identity of the claim, not a count:**
+✅ every tombstoned slot shows **no credibility pill**, **no source name**, and **no "View source"
+link**, while every non-tombstoned slot keeps its original number and its own source label and pill.
+❌ any tombstone showing **"Official"**, **"Local"**, or **"FDA"**; any non-local citation whose
+number changed; any prose `[N]` with no corresponding slot.
+
+⚠️ **Row 4 is `explore_page`, a different table and code path** (`server.py:2676`) that reuses the
+same renderer. It is in this gate deliberately — passing rows 1–3 does not establish row 4.
+
+### Rows that unit tests CANNOT check — the reason this gate exists
+
+| # | check | what PASS looks like | observed | VERDICT | NOTES |
+|---|---|---|---|---|---|
+| 5 | **Legibility — does the tombstone read as withdrawn at a glance?** The source label renders in `#a0aec0` (grey), inherited from the pre-existing `local` config; no CSS was added for the tombstone | A reader scanning the references can tell the slot is withdrawn **without reading closely**. Contrast against the page background is sufficient | | | |
+| 6 | **Both locales render their own string, not a fallback** | Row 2 (zh-TW) shows **「來源已撤回」**; rows 1/3/4 (en) show **"Source withdrawn"**. Neither shows the other language, an empty label, or a raw key | | | |
+
+**Why 5 is here:** the correction is only worth shipping if it is *visible*. A tombstone the eye
+slides past leaves the page reading as though the slot were an ordinary source — the defect would be
+fixed in the data and not in practice. **Grey-on-grey is the specific risk**, and it was never
+checked; `#a0aec0` was inherited, not chosen for this purpose.
+
+**Why 6 is here:** the code asserts `_STRINGS[locale]["sourceWithdrawn"]` resolves, but only a
+rendered page proves the right locale reached the template — row 2 is the only zh-TW row in the set,
+so it is the only row that can catch a locale-resolution fault.
+
+### Known and expected — do NOT record these as failures
+
+- **Prose markers point at tombstoned slots.** Rows 2 and 3 cite `[1]`, `[4]`, `[5]` in the answer
+  text, all tombstoned. This is **intended**: the alternative — deleting or hiding the entries —
+  renumbers the list and re-points the prose at the **wrong** source. The slot is kept precisely so
+  the reference still resolves.
+- **The scaffolding snippet is still visible** (e.g. `"Drug: Warfarin\n\nContraindications:\n4"`).
+  **Intended** (founder decision 2026-08-07): it shows the reader *why* the slot was withdrawn.
+  A withdrawn slot with no visible reason would be worse.
+- **The 8 stub citations remain in the prod database.** Deliberate residue — deleting them hits the
+  same renumbering hazard. See the `[P2 · honesty / persisted artifacts]` TECH_DEBT entry.
+
+---
+
+## Adding a gate to this file
+
+1. Name the **change under test** by commit SHA.
+2. Give each row a **copy-pasteable URL and its locale** — locale is a row property here, not a
+   global.
+3. State expectations as an **identity or a claim** (*"no credibility pill"*), never as a count
+   (*"3 citations"*). Counting is the failure mode that let the fly-215 gate pass a wrong-drug
+   citation.
+4. Add a row for **anything a unit test cannot see** — legibility, locale resolution, layout,
+   link behaviour. That is the whole reason a human is running this.
+
+## Related
+
+- **Ownership** gates (whose label was cited on a Research query):
+  [`docs/human_eye_gate_checklist.md`](human_eye_gate_checklist.md)
+- Process rules (stale server · deep-links · expected drug · same-day control · TFDA phrasing):
+  `BACKLOG.md` → `[ops] Pre-gate stale-server SOP`
