@@ -72,6 +72,7 @@ _STRINGS: dict[str, dict[str, str]] = {
         "peerReviewed": "Peer Reviewed",
         "official": "Official",
         "internal": "Internal",
+        "sourceWithdrawn": "Source withdrawn",
         "headerTagline": "Ask in your language. Verified by official sources.",
         "privacyLink": "Privacy",
         "termsLink": "Terms",
@@ -95,6 +96,7 @@ _STRINGS: dict[str, dict[str, str]] = {
         "peerReviewed": "同儕審查",
         "official": "官方來源",
         "internal": "內部資料",
+        "sourceWithdrawn": "來源已撤回",
         "headerTagline": "用你的語言提問,由官方來源驗證。",
         "privacyLink": "隱私政策",
         "termsLink": "使用條款",
@@ -325,8 +327,28 @@ def _augment_citations(
             continue
         slug = _detect_source_type(c)
         sconf = _SOURCE_TYPE_CONFIG[slug]
+
+        # ── TOMBSTONE (open-item #7, 2026-08-07) ────────────────────────────
+        # A pre-c1 `local` citation is an EMPTY STUB: every one of the 690
+        # documents in the deprecated local corpus is field-label scaffolding
+        # with no values (<=20 chars, max 5, median 1; the 8 rows still stored
+        # on prod hold 35-64 chars of "Drug: X\n\nContraindications:\n4"), and
+        # each carries `credibility: "official"` with an empty `url`.
+        #
+        # THE DEFECT IS THE CREDIBILITY CLAIM, NOT THE ROW'S EXISTENCE — a
+        # public page presenting an empty stub under an "Official" pill.
+        # So the entry is TOMBSTONED, not removed:
+        #   * it KEEPS ITS SLOT and therefore its [N]. `q_public.jinja2:51`
+        #     numbers by `loop.index`, so dropping the element would silently
+        #     RENUMBER and re-point the prose at the WRONG source. Measured on
+        #     the 4 affected prod rows: filtering mis-points all four.
+        #   * no credibility pill, and no source label claiming a source.
+        # Removing the rows from the DB instead would hit the same renumbering
+        # hazard, so they are deliberately retained as known residue.
+        is_tombstone = slug == "local"
+
         cred_raw = (c.get("credibility") or "").strip().lower()
-        cred = _CRED_CONFIG.get(cred_raw)
+        cred = None if is_tombstone else _CRED_CONFIG.get(cred_raw)
         cred_label = s.get(cred["label_key"], cred_raw) if cred else None
         cred_bg = cred["bg"] if cred else None
         cred_color = cred["color"] if cred else None
@@ -342,15 +364,21 @@ def _augment_citations(
         augmented.append({
             **c,
             "source_type": slug,
-            "source_label": sconf["label"],
+            "is_tombstone": is_tombstone,
+            # A tombstone names no source — it reads "Source withdrawn", never
+            # "Local" (share_renderer) and never "FDA" (sourceLabels.ts:68).
+            "source_label": s["sourceWithdrawn"] if is_tombstone else sconf["label"],
             "source_color": sconf["color"],
-            "credibility": cred_raw if cred else None,
+            "credibility": None if is_tombstone else (cred_raw if cred else None),
             "cred_label": cred_label,
             "cred_bg": cred_bg,
             "cred_color": cred_color,
             "abstract_truncated": _truncate_abstract(abstract),
         })
-        type_counter[sconf["label"]] += 1
+        # A tombstone is NOT counted in the source chips — those summarise which
+        # sources back the answer, and a withdrawn stub backs nothing.
+        if not is_tombstone:
+            type_counter[sconf["label"]] += 1
 
     chips = [
         {"label": label, "count": count}
