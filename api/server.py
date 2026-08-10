@@ -2832,11 +2832,55 @@ def _og_image_public_url(share_id: str) -> str:
     return f"{base}/static/og/{share_id}.png"
 
 
+class CitationIn(BaseModel):
+    """Typed, BOUNDED citation item for /api/share/create.
+
+    Closes TECH_DEBT [P2 · API contract]: `citations` was a bare `list` with no
+    item schema and no bounds, stored verbatim onto a PUBLIC, SEO-indexed page.
+
+    POSTURE: LENIENT — bound the payload, do NOT police the values.
+      * `source_type` is a bounded `str`, deliberately NOT the SourceType enum:
+        rejecting unknown values would break the open #7 population (stale
+        clients replaying pre-c1 answers, which legitimately carry `local`).
+      * `credibility` is likewise a free string — `clinical-trial` and `review`
+        are valid CredibilityLevel members (schemas.py:23-28) that the renderer
+        has no pill for; a strict model would 422 on perfectly valid data.
+      * The ONLY new rejection class is STRUCTURAL: a non-object item, an
+        over-bounds field, or more than 50 citations → FastAPI's normal 422.
+
+    Field set is the union of what the client can send and what the renderer
+    reads — derived, not invented:
+      * the 10 fields of `api/models/schemas.py:Citation`, which is what the SSE
+        emits and what `ShareModal.tsx` forwards back verbatim;
+      * plus `abstract` / `text`, which `share_renderer._augment_citations`
+        reads as snippet fallbacks.
+    `id` / `source_id` are Optional because stored `explore_page` rows are
+    observed without them.
+
+    ⚠️ Unknown extra fields are DROPPED (Pydantic default `extra='ignore'`),
+    not rejected. That is the cost of actually bounding the payload — `extra=
+    'allow'` would leave the unbounded hole open, which is the hole being closed.
+    """
+
+    id: Optional[int] = None
+    source_type: str = Field(default="", max_length=64)
+    source_id: Optional[str] = Field(default=None, max_length=512)
+    title: Optional[str] = Field(default=None, max_length=1000)
+    snippet: Optional[str] = Field(default=None, max_length=8000)
+    abstract: Optional[str] = Field(default=None, max_length=8000)
+    text: Optional[str] = Field(default=None, max_length=8000)
+    url: Optional[str] = Field(default=None, max_length=2048)
+    credibility: Optional[str] = Field(default=None, max_length=64)
+    year: Optional[str] = Field(default=None, max_length=32)
+    authors: Optional[str] = Field(default=None, max_length=2000)
+    journal: Optional[str] = Field(default=None, max_length=512)
+
+
 class ShareCreateRequest(BaseModel):
     query_id: str = Field(..., min_length=1, max_length=128)
     query_text: str = Field(..., min_length=1, max_length=8000)
     answer_text: str = Field(..., min_length=1, max_length=40000)
-    citations: list = Field(default_factory=list)
+    citations: list[CitationIn] = Field(default_factory=list, max_length=50)
     locale: Optional[str] = Field(default=None, max_length=16)
 
 
@@ -2951,12 +2995,32 @@ async def share_create(
         return JSONResponse(status_code=500, content={"type": "share_error", "message": "Service unavailable."})
 
     # ── 5. INSERT (use _safe_db_write per CLAUDE.md Rule 7) ──
+    #
+    # TOMBSTONE-AT-WRITE (TECH_DEBT [P2 · API contract], 2026-08-10). A `local`
+    # citation is persisted ALREADY TOMBSTONED — credibility claim and url
+    # stripped — using `share_renderer.tombstone_citation`, the SAME function the
+    # renderer calls (Rule 19: one implementation, two callers).
+    #
+    # WHY BOTH LAYERS, and why the render layer STAYS:
+    #   * WRITE side guarantees no NEW untombstoned `local` row can be created.
+    #     `enable_local=False` stopped retrieval PRODUCING one, but never stopped
+    #     a stale client REPLAYING a pre-c1 answer into a share.
+    #   * RENDER side still covers HISTORY — the 8 pre-c1 stubs already in the
+    #     prod DB are deliberately retained (deleting them renumbers the prose,
+    #     because q_public.jinja2 numbers by loop.index), so they must keep being
+    #     tombstoned at render time.
+    # Removing either layer reopens one of those two populations.
+    _cits = [c.model_dump() for c in (body.citations or [])]
+    _cits = [
+        _share_renderer.tombstone_citation(c) if _share_renderer.is_local_citation(c) else c
+        for c in _cits
+    ]
     record = _SharedQueryModel(
         share_id=share_id,
         query_id=body.query_id,
         query_text=body.query_text,
         answer_text=body.answer_text,
-        citations=body.citations or [],
+        citations=_cits,
         created_by=created_by,
         is_public=True,
         view_count=0,

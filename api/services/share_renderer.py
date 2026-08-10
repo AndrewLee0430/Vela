@@ -226,6 +226,43 @@ _CRED_CONFIG: dict[str, dict[str, str]] = {
 }
 
 
+def is_local_citation(citation: dict[str, Any]) -> bool:
+    """True when a stored citation is a pre-c1 `local` corpus stub.
+
+    Uses the same detection the renderer uses, so write-side and render-side
+    can never disagree about what counts as `local`.
+    """
+    if not isinstance(citation, dict):
+        return False
+    return _detect_source_type(citation) == "local"
+
+
+def tombstone_citation(citation: dict[str, Any]) -> dict[str, Any]:
+    """THE single definition of what tombstoning a `local` citation means.
+
+    Rule 19 — ONE implementation, two callers: `_augment_citations` (render, for
+    the 8 stubs already in prod) and `/api/share/create` (write, so no NEW
+    untombstoned `local` row can ever be persisted).
+
+    Data-level only. This deliberately does NOT bake in render chrome — no
+    `source_label`, no colours — because those are LOCALE-DEPENDENT and computed
+    per request ("Source withdrawn" / "來源已撤回"). Persisting a label would
+    freeze one locale into the row.
+
+    What it removes is the CLAIM, which is the actual defect:
+      * `credibility` → None: no "Official" pill for an empty document.
+      * `url` → "": no "View source" link offering provenance that does not exist.
+    What it KEEPS: the slot, `source_type` (so the renderer still recognises and
+    tombstones it), the title, and the snippet — the snippet stays visible on
+    purpose, because it shows the reader *why* the slot was withdrawn (founder
+    decision 2026-08-07, vindicated at the fly-216 render gate).
+    """
+    out = dict(citation)
+    out["credibility"] = None
+    out["url"] = ""
+    return out
+
+
 def _detect_source_type(citation: dict[str, Any]) -> str:
     """Mirror of detectSourceType() in CitationPanel.tsx 36-62.
     Falls back to URL hostname matching when source_type is missing."""
@@ -346,6 +383,14 @@ def _augment_citations(
         # Removing the rows from the DB instead would hit the same renumbering
         # hazard, so they are deliberately retained as known residue.
         is_tombstone = slug == "local"
+        # Rule 19 — apply THE shared transform, the same one the write path uses
+        # (`tombstone_citation` above), so a row tombstoned AT WRITE and a row
+        # tombstoned AT RENDER are byte-identical on the page. For the 8 stubs in
+        # prod this is a no-op (they already carry url='' and their pill is
+        # suppressed below), so render output is unchanged — pinned by
+        # tests/test_share_local_tombstone.py.
+        if is_tombstone:
+            c = tombstone_citation(c)
 
         cred_raw = (c.get("credibility") or "").strip().lower()
         cred = None if is_tombstone else _CRED_CONFIG.get(cred_raw)

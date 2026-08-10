@@ -127,3 +127,120 @@ def test_real_citations_are_untouched_by_the_tombstone_path():
     assert c["cred_label"] == "Peer Reviewed"
     assert c["credibility"] == "peer-reviewed"
     assert chips == [{"label": "PubMed", "count": 1}]
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# WRITE-PATH CASES — TECH_DEBT [P2 · API contract], tombstone-at-write (2026-08-10)
+#
+# THE BUSINESS RULE (Rule 17): /api/share/create must never PERSIST a `local`
+# citation still carrying a credibility claim, and must never accept an
+# unbounded payload onto a public page — while staying LENIENT about unknown
+# values, because rejecting them would break stale clients replaying pre-c1
+# answers (the open #7 population) and valid-but-unmapped CredibilityLevel
+# members like clinical-trial / review.
+#
+# These assert the STORED object, not the rendered page. Render coverage is
+# above; test_write_and_render_tombstones_are_identical pins the two together.
+# ═══════════════════════════════════════════════════════════════════════════
+import pytest  # noqa: E402
+from pydantic import ValidationError  # noqa: E402
+
+from api.server import CitationIn, ShareCreateRequest  # noqa: E402
+
+
+def _store(citations):
+    """Mirror the store site: validate, dump, tombstone `local`. Returns stored JSON."""
+    body = ShareCreateRequest(
+        query_id="q1", query_text="t", answer_text="a", citations=citations
+    )
+    cits = [c.model_dump() for c in (body.citations or [])]
+    return [
+        sr.tombstone_citation(c) if sr.is_local_citation(c) else c
+        for c in cits
+    ]
+
+
+def test_write_persists_local_citation_already_tombstoned():
+    """(a) A `local` citation is stored WITHOUT its credibility claim."""
+    stored = _store([_STUB])
+    assert len(stored) == 1, "the slot must be kept — dropping it renumbers the prose"
+    assert stored[0]["credibility"] is None, "an empty stub was persisted claiming 'official'"
+    assert stored[0]["url"] == ""
+    assert stored[0]["source_type"] == "local", "must stay recognisable to the renderer"
+    assert stored[0]["title"] == _STUB["title"]
+    assert stored[0]["snippet"] == _STUB["snippet"], "snippet stays — it shows WHY it was withdrawn"
+
+
+@pytest.mark.parametrize("stype", ["pubmed", "tfda", "dailymed"])
+def test_write_does_not_mutate_normal_citations(stype):
+    """(b) No collateral mutation: a real citation survives byte-identical."""
+    src = dict(_REAL, source_type=stype)
+    stored = _store([src])[0]
+    for k, v in src.items():
+        assert stored[k] == v, f"{stype}: field {k!r} was mutated on the write path"
+
+
+def test_write_accepts_unknown_source_type_and_leaves_it_alone():
+    """(c) LENIENT: an unknown source_type is accepted, stored, NOT tombstoned.
+
+    Rejecting here would break stale clients and unmapped-but-valid values.
+    """
+    src = dict(_REAL, source_type="some-future-source", credibility="clinical-trial")
+    stored = _store([src])[0]
+    assert stored["source_type"] == "some-future-source"
+    assert stored["credibility"] == "clinical-trial", "a valid enum member must not be stripped"
+
+
+@pytest.mark.parametrize("bad,why", [
+    (["not-an-object"], "a non-object citation item"),
+    ([{"source_type": "pubmed"}] * 51, "more than 50 citations"),
+    ([{"source_type": "x" * 65}], "an over-bounds source_type"),
+    ([{"url": "u" * 2049}], "an over-bounds url"),
+    ([{"snippet": "s" * 8001}], "an over-bounds snippet"),
+])
+def test_structurally_invalid_payloads_are_rejected(bad, why):
+    """(d) The ONLY new rejection class is structural — it becomes a 422."""
+    with pytest.raises(ValidationError):
+        ShareCreateRequest(query_id="q", query_text="t", answer_text="a", citations=bad)
+
+
+def test_write_and_render_tombstones_are_identical():
+    """(e) PARITY PIN — the single-transform guarantee (Rule 19).
+
+    A row tombstoned AT WRITE must render exactly as a row tombstoned AT RENDER.
+    If these ever diverge, two implementations have appeared and the 8 pre-c1
+    stubs in prod would render differently from anything created after fly 218.
+    """
+    # Compare what the TEMPLATE consumes, not the raw dicts. Raw equality is too
+    # strict and would fail for a reason invisible to the reader: the write path
+    # goes through `model_dump()`, which materialises undeclared optionals as
+    # explicit `None`, whereas the render path sees the original dict with those
+    # keys absent. Jinja treats missing and None identically (`{% if c.authors %}`
+    # is falsy for both), so the PAGE is the same — asserting dict equality would
+    # pin an implementation detail and fail on a non-difference.
+    consumed = ("is_tombstone", "source_label", "source_color", "cred_label",
+                "cred_bg", "cred_color", "abstract_truncated", "url", "title",
+                "authors", "journal", "year", "source_type")
+    for locale in ("en", "zh-TW"):
+        at_write, chips_w = _aug(_store([_STUB, _REAL]), locale)
+        at_render, chips_r = _aug([_STUB, _REAL], locale)
+        assert len(at_write) == len(at_render)
+        for i, (w, r) in enumerate(zip(at_write, at_render)):
+            for f in consumed:
+                assert w.get(f) == r.get(f), (
+                    f"{locale}: citation[{i}] field {f!r} differs between a row "
+                    f"tombstoned AT WRITE and one tombstoned AT RENDER — two "
+                    f"implementations have appeared (Rule 19)"
+                )
+        assert chips_w == chips_r, f"{locale}: source chips diverged"
+
+
+def test_citation_model_covers_every_field_the_renderer_reads():
+    """Guard: the typed model must not silently DROP a field the renderer needs.
+
+    Pydantic ignores undeclared extras, so a field the renderer reads but the
+    model omits would vanish at write and degrade the page.
+    """
+    for field in ("source_type", "url", "credibility", "snippet", "abstract", "text",
+                  "title", "authors", "journal", "year"):
+        assert field in CitationIn.model_fields, f"renderer reads {field!r}; model would drop it"

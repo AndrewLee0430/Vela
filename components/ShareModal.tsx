@@ -135,11 +135,21 @@ export default function ShareModal({
 
             if (res.status === 422) {
                 const data = await res.json().catch(() => ({}));
-                setState({
-                    kind: 'error_sensitive',
-                    reasons: Array.isArray(data.reasons) ? data.reasons : [],
-                    unknownLocaleFallback: Boolean(data.unknown_locale_fallback),
-                });
+                // 422 now has TWO senders. The PHI/sensitive-content block sends
+                // `type: 'share_sensitive_blocked'`; FastAPI's request-validation
+                // 422 (added 2026-08-10 when ShareCreateRequest.citations became a
+                // typed, bounded list) sends `detail` and no `type`. Without this
+                // discriminator a malformed payload would render the "sensitive
+                // content" copy, telling the user something false about their data.
+                if (data?.type === 'share_sensitive_blocked') {
+                    setState({
+                        kind: 'error_sensitive',
+                        reasons: Array.isArray(data.reasons) ? data.reasons : [],
+                        unknownLocaleFallback: Boolean(data.unknown_locale_fallback),
+                    });
+                } else {
+                    setState({ kind: 'error_other', message: t.modalGenericError });
+                }
                 return;
             }
             if (res.status === 429) {
