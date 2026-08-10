@@ -27,10 +27,15 @@
   --vela-coral-light: #ffb347;        /* DERIVED — no app counterpart (unused today) */
   --vela-verify: #2563eb;             /* app light --color-info (unused today) */
   --vela-explain: #16a34a;            /* app light --color-success (unused today) */
-  --vela-evidence-strong: #16a34a;    /* app light --color-success */
-  --vela-evidence-moderate: #ca8a04;  /* app light --color-warning */
-  --vela-evidence-limited: #dc2626;   /* app light --color-danger */
-  --vela-evidence-default: #94a3b8;   /* DERIVED — slate lightened for white ground */
+  /* fly 220 — DARKENED past the app's .light severity tokens. Those are tuned for
+     TEXT; here they paint a 3px left border on a near-white card, where WCAG 1.4.11
+     (non-text, 3:1) applied and they FAILED: success 2.97:1, warning 2.65:1, slate
+     2.31:1. These values clear it with margin. Deviation from the app tokens is
+     deliberate and is a contrast requirement, not a palette choice. */
+  --vela-evidence-strong: #15803d;    /* 4.52:1 — app --color-success darkened */
+  --vela-evidence-moderate: #a16207;  /* 4.44:1 — app --color-warning darkened */
+  --vela-evidence-limited: #dc2626;   /* 4.35:1 — app light --color-danger, already passes */
+  --vela-evidence-default: #64748b;   /* 4.29:1 — DERIVED slate */
   --vela-bg-1: #ffffff;               /* app light --color-bg-1 */
   --vela-bg-2: #f9fafb;               /* app light --color-bg-2 */
   --vela-bg-3: #f3f4f6;               /* app light --color-bg-3 */
@@ -43,13 +48,26 @@
   --vela-text-primary: #171717;       /* app light --color-text */
   --vela-text-body: rgba(23,23,23,0.85);
   --vela-text-muted: rgba(23,23,23,0.60);       /* DERIVED — lifted from 0.55 for AA on white */
-  --vela-text-subtle: rgba(23,23,23,0.45);      /* DERIVED — lifted from 0.35 for AA on white */
+  --vela-text-subtle: rgba(23,23,23,0.60);   /* fly 220: was 0.45 = 2.92:1, below AA; now 4.67:1 (carries the medical short-disclaimer) */      /* DERIVED — lifted from 0.35 for AA on white */
   --vela-prose-headings: #171717;
   --vela-prose-bold: #171717;
   --vela-prose-links: #c2410c;        /* DERIVED — coral darkened; #ff8e6e fails AA on white */
   --vela-prose-bullets: rgba(23,23,23,0.5);
   --vela-prose-code: #c2410c;         /* DERIVED — same reason as prose-links */
   --vela-prose-hr: rgba(23,23,23,0.15);
+  /* ── fly 220 — LIGHT-SCHEME LEGIBILITY FIX. These rules held HARDCODED white
+        (rgba(255,255,255,…)/#e2e8f0) outside the variable system, so fly 219's
+        theming never reached them: in light they rendered at 1.00–1.11:1 — white
+        on white, invisible. Light values are ink at an alpha computed to clear
+        WCAG AA 4.5:1 against each element's ACTUAL background, not eyeballed. ── */
+  --vela-citation-abstract-fg: rgba(23,23,23,0.75);  /* 7.35:1 on the card */
+  --vela-citation-meta-fg: rgba(23,23,23,0.70);      /* 6.19:1 on the card */
+  --vela-footer-copy-fg: rgba(23,23,23,0.60);        /* 4.67:1 on the page */
+  --vela-evidence-title-fg: #1f2937;                 /* 13.23:1 on the evidence card */
+  --vela-chip-bg: rgba(23,23,23,0.07);
+  --vela-header-border: rgba(23,23,23,0.10);
+  --vela-card-hover-bg: rgba(23,23,23,0.10);
+  --vela-prose-pre-bg: rgba(23,23,23,0.06);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -86,6 +104,16 @@
   --vela-prose-bullets: rgba(255,255,255,0.5);
   --vela-prose-code: #ff8e6e;
   --vela-prose-hr: rgba(255,255,255,0.15);
+  /* fly 220 — EXACTLY the values these rules carried when hardcoded. Dark is
+     unchanged by this fix; it was gate-passed at fly 216. */
+  --vela-citation-abstract-fg: rgba(255,255,255,0.7);
+  --vela-citation-meta-fg: rgba(255,255,255,0.5);
+  --vela-footer-copy-fg: rgba(255,255,255,0.25);
+  --vela-evidence-title-fg: #e2e8f0;
+  --vela-chip-bg: rgba(255,255,255,0.08);
+  --vela-header-border: rgba(255,255,255,0.07);
+  --vela-card-hover-bg: rgba(255,255,255,0.1);
+  --vela-prose-pre-bg: rgba(0,0,0,0.3);
 }
 }
 
@@ -104,7 +132,7 @@ body {
 /* ─── Header ──────────────────────────────────────────── */
 .vela-header {
   background: linear-gradient(135deg, var(--vela-bg-1) 0%, var(--vela-bg-2) 100%);
-  border-bottom: 1px solid rgba(255,255,255,0.07);
+  border-bottom: 1px solid var(--vela-header-border);
   padding: 12px 24px;
 }
 .vela-header-inner {
@@ -159,7 +187,7 @@ body {
 .vela-footer-links a:hover { color: var(--vela-text-primary); }
 .vela-footer-copy {
   font-size: 0.7rem;
-  color: rgba(255,255,255,0.25);
+  color: var(--vela-footer-copy-fg);
   margin: 0;
 }
 
@@ -184,7 +212,7 @@ body {
 .vela-evidence-title {
   font-size: 0.875rem;
   font-weight: 600;
-  color: #e2e8f0;
+  color: var(--vela-evidence-title-fg);
   margin: 0 0 8px;
 }
 
@@ -224,7 +252,7 @@ body {
   font-size: 0.85em;
 }
 .vela-prose pre {
-  background: rgba(0,0,0,0.3);
+  background: var(--vela-prose-pre-bg);
   border: 1px solid var(--vela-card-border);
   border-radius: 8px;
   padding: 12px;
@@ -274,7 +302,7 @@ body {
 .vela-source-chip {
   font-size: 0.7rem;
   padding: 2px 8px;
-  background: rgba(255,255,255,0.08);
+  background: var(--vela-chip-bg);
   color: var(--vela-text-muted);
   border-radius: 9999px;
 }
@@ -286,7 +314,7 @@ body {
   margin-bottom: 12px;
   transition: background 0.2s;
 }
-.vela-citation-card:hover { background: rgba(255,255,255,0.1); }
+.vela-citation-card:hover { background: var(--vela-card-hover-bg); }
 .vela-citation-header {
   display: flex;
   align-items: flex-start;
@@ -304,12 +332,12 @@ body {
 }
 .vela-citation-meta {
   font-size: 0.8rem;
-  color: rgba(255,255,255,0.5);
+  color: var(--vela-citation-meta-fg);
   margin-bottom: 8px;
 }
 .vela-citation-abstract {
   font-size: 0.825rem;
-  color: rgba(255,255,255,0.7);
+  color: var(--vela-citation-abstract-fg);
   line-height: 1.5;
   margin: 8px 0;
 }
