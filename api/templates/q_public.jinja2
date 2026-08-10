@@ -49,9 +49,6 @@
   <div class="vela-citation-card">
     <div class="vela-citation-header">
       <span class="vela-citation-source" style="color: {{ c.source_color }};">[{{ loop.index }}] {{ c.source_label }}</span>
-      {% if c.cred_label %}
-      <span class="vela-credibility-pill" style="background: {{ c.cred_bg }}; color: {{ c.cred_color }};">{{ c.cred_label }}</span>
-      {% endif %}
     </div>
     {% if c.title %}<h4 class="vela-citation-title">{{ c.title }}</h4>{% endif %}
     {% if c.authors or c.journal or c.year %}

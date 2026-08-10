@@ -125,11 +125,19 @@ _HEADER_RE = re.compile(
 
 # Color table for evidence-strength markers — matches
 # components/ResearchSection.tsx borderColors (lines 11-15).
+# 2026-08-10 (fly 219): values moved from literal hex to CSS VARIABLES so that
+# prefers-color-scheme can reach them. Dark keeps the exact shipped colours; light
+# uses the app's .light severity tokens (contrast-shifted for AA on white). This is
+# a THEMEABILITY change only — the colour language is unchanged in dark.
+# ⚠️ NOT neutralised: components/ResearchSection.tsx:18-19 shows the main app uses a
+# NEUTRAL accent (rgb(var(--color-text) / 0.15)) with no severity colour at all, so
+# full convergence would drop these too. That is a medical-communication decision
+# (🟢🟡🔴 conveys evidence strength) and is FLAGGED for the founder, not taken here.
 _MARKER_BORDER_COLORS: dict[str | None, str] = {
-    "\U0001F7E2": "#22c55e",  # 🟢 strong
-    "\U0001F7E1": "#eab308",  # 🟡 moderate
-    "\U0001F534": "#ef4444",  # 🔴 limited
-    None: "#475569",          # default slate
+    "\U0001F7E2": "var(--vela-evidence-strong)",    # 🟢 strong
+    "\U0001F7E1": "var(--vela-evidence-moderate)",  # 🟡 moderate
+    "\U0001F534": "var(--vela-evidence-limited)",   # 🔴 limited
+    None: "var(--vela-evidence-default)",           # default slate
 }
 
 
@@ -183,17 +191,17 @@ def _markdown_to_html(text: str) -> str:
 # refs back to here.
 # ============================================================
 _SOURCE_TYPE_CONFIG: dict[str, dict[str, str]] = {
-    "pubmed":         {"label": "PubMed",      "color": "#68d391"},
-    "fda":            {"label": "FDA",         "color": "#63b3ed"},
-    "tfda":           {"label": "TFDA 核准適應症", "color": "#38b2ac"},  # ADR 007 — scope-accurate (indication-only), own bucket
-    "dailymed":       {"label": "DailyMed",    "color": "#4299e1"},  # B-2 — US drug label (official-label family, own bucket; NOT RxNorm)
-    "loinc":          {"label": "LOINC",       "color": "#f6ad55"},
-    "medlineplus":    {"label": "MedlinePlus", "color": "#9f7aea"},
-    "rxnorm":         {"label": "RxNorm",      "color": "#ed64a6"},
-    "who":            {"label": "WHO",         "color": "#4fd1c5"},
-    "nice":           {"label": "NICE",        "color": "#90cdf4"},
-    "ema":            {"label": "EMA",         "color": "#fbb6ce"},
-    "cochrane":       {"label": "Cochrane",    "color": "#b794f4"},
+    "pubmed":         {"label": "PubMed"},
+    "fda":            {"label": "FDA"},
+    "tfda":           {"label": "TFDA 核准適應症"},  # ADR 007 — scope-accurate (indication-only), own bucket
+    "dailymed":       {"label": "DailyMed"},  # B-2 — US drug label (official-label family, own bucket; NOT RxNorm)
+    "loinc":          {"label": "LOINC"},
+    "medlineplus":    {"label": "MedlinePlus"},
+    "rxnorm":         {"label": "RxNorm"},
+    "who":            {"label": "WHO"},
+    "nice":           {"label": "NICE"},
+    "ema":            {"label": "EMA"},
+    "cochrane":       {"label": "Cochrane"},
     # ⛔ LEGACY-ONLY as of 2026-07-29 (c1) — the local drug corpus is deprecated and no
     # longer retrieved, so no NEW share can carry source_type 'local'. Kept because this
     # renderer runs ON DEMAND over stored citation JSON, so already-published /q and
@@ -202,28 +210,20 @@ _SOURCE_TYPE_CONFIG: dict[str, dict[str, str]] = {
     # url), but the relabel is user-visible on live URLs. NOTE: this label DISAGREES with
     # the frontend's "FDA" (utils/sourceLabels.ts) — the recorded [P2] sourceLabels ↔
     # share_renderer drift. Deprecation removes one side of that drift going forward.
-    "local":          {"label": "Local",       "color": "#a0aec0"},
-    "localauthority": {"label": "Local",       "color": "#a0aec0"},
-    "other":          {"label": "Source",      "color": "#a0aec0"},
+    "local":          {"label": "Local"},
+    "localauthority": {"label": "Local"},
+    "other":          {"label": "Source"},
 }
 
-_CRED_CONFIG: dict[str, dict[str, str]] = {
-    "peer-reviewed": {
-        "label_key": "peerReviewed",
-        "bg": "rgba(255,142,110,0.15)",
-        "color": "#ff8e6e",
-    },
-    "official": {
-        "label_key": "official",
-        "bg": "rgba(99,179,237,0.15)",
-        "color": "#63b3ed",
-    },
-    "internal": {
-        "label_key": "internal",
-        "bg": "rgba(160,174,192,0.15)",
-        "color": "#a0aec0",
-    },
-}
+# ⛔ _CRED_CONFIG REMOVED 2026-08-10 (fly 219) — the credibility PILL is gone from
+# both public surfaces, converging on the main app. `6066a92` (2026-06-10) removed it
+# from CitationPanel because source_type and credibility are REDUNDANT (PubMed→
+# peer-reviewed, FDA→official) and a pill reads as a QUALITY GRADE, which it is not.
+# The share page carried the pre-6066a92 design for three months.
+# ⚠️ The stored `credibility` FIELD is untouched — it still drives the TOMBSTONE
+# (see `tombstone_citation`) and is retained for Phase 1B evidence-tier work.
+# Only the visual pill is removed.
+
 
 
 def is_local_citation(citation: dict[str, Any]) -> bool:
@@ -351,7 +351,7 @@ def _augment_citations(
     Each augmented citation carries the precomputed display-only fields
     the template needs so the Jinja layer stays trivial: source_type
     (slug), source_label, source_color, credibility (raw key),
-    cred_label, cred_bg, cred_color, abstract_truncated.
+    abstract_truncated. No credibility pill since 2026-08-10.
     """
     if not citations:
         return [], []
@@ -392,11 +392,15 @@ def _augment_citations(
         if is_tombstone:
             c = tombstone_citation(c)
 
-        cred_raw = (c.get("credibility") or "").strip().lower()
-        cred = None if is_tombstone else _CRED_CONFIG.get(cred_raw)
-        cred_label = s.get(cred["label_key"], cred_raw) if cred else None
-        cred_bg = cred["bg"] if cred else None
-        cred_color = cred["color"] if cred else None
+        # No credibility pill (converged on the app, 2026-08-10) and NO per-source
+        # colour: `utils/sourceLabels.ts:15-16` — "no source wears a semantic/quality
+        # color (the old PubMed success-green was misleading)".
+        #
+        # The source name renders in a THEMEABLE token, not literal hex, so
+        # prefers-color-scheme can reach it. A tombstone is dimmed — that is a STATE
+        # distinction, not a source-identity one, and it is what keeps the withdrawn
+        # slot legible now that no source carries colour (fly-216 gate row 5).
+        source_color = "var(--vela-text-muted)" if is_tombstone else "var(--vela-text-primary)"
         # citations from ChatHistory may not include `snippet`;
         # ShareCreate's payload uses whatever the ChatHistory schema
         # carried. Try a few common keys.
@@ -413,11 +417,8 @@ def _augment_citations(
             # A tombstone names no source — it reads "Source withdrawn", never
             # "Local" (share_renderer) and never "FDA" (sourceLabels.ts:68).
             "source_label": s["sourceWithdrawn"] if is_tombstone else sconf["label"],
-            "source_color": sconf["color"],
-            "credibility": None if is_tombstone else (cred_raw if cred else None),
-            "cred_label": cred_label,
-            "cred_bg": cred_bg,
-            "cred_color": cred_color,
+            "source_color": source_color,
+            "credibility": None if is_tombstone else c.get("credibility"),
             "abstract_truncated": _truncate_abstract(abstract),
         })
         # A tombstone is NOT counted in the source chips — those summarise which

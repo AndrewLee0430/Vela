@@ -64,9 +64,11 @@ def test_local_citation_never_carries_a_credibility_claim():
         aug, _ = _aug([_STUB], locale)
         assert len(aug) == 1
         c = aug[0]
-        assert c["cred_label"] is None, f"{locale}: stub still renders a credibility pill"
+        # The pill was REMOVED from both surfaces 2026-08-10 (fly 219), converging on
+        # the app (6066a92). The rule is now stronger: no citation carries pill chrome
+        # at all, and a stub additionally carries no credibility VALUE.
+        assert "cred_label" not in c, f"{locale}: pill chrome came back"
         assert c["credibility"] is None, f"{locale}: stub still carries a credibility value"
-        assert c["cred_bg"] is None and c["cred_color"] is None
 
 
 def test_local_citation_claims_no_source_and_is_localised():
@@ -124,8 +126,8 @@ def test_real_citations_are_untouched_by_the_tombstone_path():
     c = aug[0]
     assert c["is_tombstone"] is False
     assert c["source_label"] == "PubMed"
-    assert c["cred_label"] == "Peer Reviewed"
-    assert c["credibility"] == "peer-reviewed"
+    assert "cred_label" not in c, "pill chrome came back for a real citation"
+    assert c["credibility"] == "peer-reviewed", "the stored VALUE must survive; only the pill went"
     assert chips == [{"label": "PubMed", "count": 1}]
 
 
@@ -244,3 +246,66 @@ def test_citation_model_covers_every_field_the_renderer_reads():
     for field in ("source_type", "url", "credibility", "snippet", "abstract", "text",
                   "title", "authors", "journal", "year"):
         assert field in CitationIn.model_fields, f"renderer reads {field!r}; model would drop it"
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# fly 219 — visual convergence + prefers-color-scheme
+# ═══════════════════════════════════════════════════════════════════════════
+
+def test_tombstone_survives_pill_removal_intact():
+    """(a) THE fly-216 GUARANTEE MUST NOT WEAKEN.
+
+    Removing the credibility pill removed one of the tombstone's visual signals.
+    What must still hold: a `local` citation claims NO source name, offers NO
+    link, and carries NO credibility value — and it must stay visually distinct
+    now that no source carries colour, via a dimmed (muted) token.
+    """
+    for locale, expected in (("en", "Source withdrawn"), ("zh-TW", "來源已撤回")):
+        c = _aug([_STUB], locale)[0][0]
+        assert c["is_tombstone"] is True
+        assert c["source_label"] == expected
+        assert c["source_label"] not in ("Local", "FDA")
+        assert c["credibility"] is None
+        assert not c.get("url"), "a withdrawn slot must not offer provenance"
+        assert c["source_color"] == "var(--vela-text-muted)", (
+            "the tombstone lost its only remaining visual distinction — with no "
+            "per-source colour and no pill, the dimmed token is what marks it"
+        )
+    real = _aug([_REAL], "en")[0][0]
+    assert real["source_color"] == "var(--vela-text-primary)"
+
+
+def test_source_type_membership_still_classifies_every_key():
+    """(b) GUARDS share_renderer.py's `if raw in _SOURCE_TYPE_CONFIG` membership test.
+
+    Colours were removed from that map; KEYS must not be. If a key is dropped,
+    its citations silently reclassify to "other" — changing the source name on a
+    published page with no error anywhere.
+    """
+    assert len(sr._SOURCE_TYPE_CONFIG) == 14, "a membership key was added or lost"
+    for key in sr._SOURCE_TYPE_CONFIG:
+        got = sr._detect_source_type({"source_type": key})
+        assert got == key, f"{key!r} no longer classifies as itself (got {got!r})"
+    assert not any("color" in v for v in sr._SOURCE_TYPE_CONFIG.values()), (
+        "a per-source colour came back — the app renders source names neutral "
+        "(utils/sourceLabels.ts:15-16)"
+    )
+
+
+def test_both_templates_ship_light_default_and_dark_media_block():
+    """(c) prefers-color-scheme is present on BOTH public surfaces.
+
+    Light is the default block (matching the app's defaultTheme="light"); dark is
+    behind the media query. Both bases must agree — they render the same content.
+    """
+    from pathlib import Path as _P
+    tdir = _P(__file__).resolve().parents[1] / "api" / "templates"
+    for name in ("q_base.jinja2", "explore_base.jinja2"):
+        css = (tdir / name).read_text(encoding="utf-8")
+        assert "@media (prefers-color-scheme: dark)" in css, f"{name}: no dark scheme"
+        assert "--vela-bg-1: #ffffff" in css, f"{name}: light default missing"
+        assert "--vela-bg-1: #0a1628" in css, f"{name}: dark values missing"
+        assert css.index("--vela-bg-1: #ffffff") < css.index("@media (prefers-color-scheme: dark)"), (
+            f"{name}: light must be the DEFAULT block, dark inside the media query"
+        )
+        assert "vela-credibility-pill" not in css, f"{name}: orphaned pill CSS remains"
