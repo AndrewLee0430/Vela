@@ -22,9 +22,52 @@
 {% block jsonld %}{% endblock %}
 <style>
 :root {
+  /* ── LIGHT is the DEFAULT, matching the main app (pages/_app.tsx:160-164,
+        defaultTheme="light"). Values sourced from the app's .light tokens at
+        styles/globals.css:101-112 — not invented. Public pages honour the
+        VIEWER's OS preference: no JS, no toggle, no server knowledge of theme
+        (the app persists theme in localStorage, which SSR cannot read). ── */
+  --vela-coral: #ff8e6e;              /* app --color-brand: identical in both schemes */
+  --vela-coral-dark: #ff6b6b;         /* DERIVED — no app counterpart (brand accent, unused today) */
+  --vela-coral-light: #ffb347;        /* DERIVED — no app counterpart (unused today) */
+  --vela-verify: #2563eb;             /* app light --color-info (unused today) */
+  --vela-explain: #16a34a;            /* app light --color-success (unused today) */
+  --vela-evidence-strong: #16a34a;    /* app light --color-success */
+  --vela-evidence-moderate: #ca8a04;  /* app light --color-warning */
+  --vela-evidence-limited: #dc2626;   /* app light --color-danger */
+  --vela-evidence-default: #94a3b8;   /* DERIVED — slate lightened for white ground */
+  --vela-bg-1: #ffffff;               /* app light --color-bg-1 */
+  --vela-bg-2: #f9fafb;               /* app light --color-bg-2 */
+  --vela-bg-3: #f3f4f6;               /* app light --color-bg-3 */
+  --vela-bg-4: #e5e7eb;               /* app light --color-bg-4 */
+  --vela-card-bg: rgba(23,23,23,0.04);          /* DERIVED — app uses bg-text/N opacity on --color-text (#171717 light) */
+  --vela-card-bg-hover: rgba(23,23,23,0.07);    /* DERIVED — mirrors the app's bg-text/7 */
+  --vela-card-border: rgba(23,23,23,0.10);      /* DERIVED */
+  --vela-card-border-strong: rgba(23,23,23,0.12); /* DERIVED — mirrors the app's border-text/12 */
+  --vela-section-bg: rgba(23,23,23,0.05);       /* DERIVED */
+  --vela-text-primary: #171717;       /* app light --color-text */
+  --vela-text-body: rgba(23,23,23,0.85);
+  --vela-text-muted: rgba(23,23,23,0.60);       /* DERIVED — lifted from 0.55 for AA on white */
+  --vela-text-subtle: rgba(23,23,23,0.45);      /* DERIVED — lifted from 0.35 for AA on white */
+  --vela-prose-headings: #171717;
+  --vela-prose-bold: #171717;
+  --vela-prose-links: #c2410c;        /* DERIVED — coral darkened; #ff8e6e fails AA on white */
+  --vela-prose-bullets: rgba(23,23,23,0.5);
+  --vela-prose-code: #c2410c;         /* DERIVED — same reason as prose-links */
+  --vela-prose-hr: rgba(23,23,23,0.15);
+}
+
+@media (prefers-color-scheme: dark) {
+:root {
+  /* ── DARK — the values this page shipped with since a5da1c5. Verified
+        2026-08-10 to be a hex mirror of the app's .dark tokens
+        (styles/globals.css:83-94): bg-1..4, brand, success, warning and danger
+        all match exactly. ── */
   --vela-coral: #ff8e6e;
   --vela-coral-dark: #ff6b6b;
   --vela-coral-light: #ffb347;
+  --vela-verify: #63b3ed;
+  --vela-explain: #68d391;
   --vela-evidence-strong: #22c55e;
   --vela-evidence-moderate: #eab308;
   --vela-evidence-limited: #ef4444;
@@ -48,6 +91,7 @@
   --vela-prose-bullets: rgba(255,255,255,0.5);
   --vela-prose-code: #ff8e6e;
   --vela-prose-hr: rgba(255,255,255,0.15);
+}
 }
 
 * { box-sizing: border-box; }
@@ -239,13 +283,6 @@ body {
   margin-bottom: 8px;
 }
 .vela-citation-source { font-weight: 600; font-size: 0.85rem; }
-.vela-credibility-pill {
-  font-size: 0.7rem;
-  padding: 2px 8px;
-  border-radius: 9999px;
-  font-weight: 500;
-  white-space: nowrap;
-}
 .vela-citation-title {
   color: var(--vela-text-primary);
   font-weight: 500;
