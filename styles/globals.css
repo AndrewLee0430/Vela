@@ -94,10 +94,17 @@ body {
   --color-danger-soft: 252 165 165;
 }
 
-/* Light-theme tokens — Stage 2 Step 1 (dormant). No element opts into .light
-   until Stage 2 Step 2 adds it on the landing root. Severity values are
-   contrast-shifted for AA legibility on white; revisit when a light-mode
-   surface first consumes them in Stage 2/3. */
+/* Light-theme tokens.
+   ⚠️ CORRECTED 2026-08-10 — this block was previously annotated "Stage 2 Step 1
+   (dormant). No element opts into .light until Stage 2 Step 2 adds it on the
+   landing root." That has been FALSE since `0d7df96` [stage3] 3.8 (2026-06-05),
+   which made light the DEFAULT theme. These tokens are LIVE and are what a
+   no-preference visitor sees:
+     * pages/_app.tsx:160-164 — ThemeProvider attribute="class" defaultTheme="light"
+     * pages/_document.tsx:17 — the FOUC-guard script does
+       `d.classList.add(e)` with `e = localStorage.getItem('theme') || 'light'`,
+       so <html class="light"> is present before first paint.
+   Severity values are contrast-shifted for AA legibility on white. */
 .light {
   --color-bg-1: 255 255 255;
   --color-bg-2: 249 250 251;
