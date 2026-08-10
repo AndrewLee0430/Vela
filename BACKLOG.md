@@ -1439,6 +1439,16 @@ trustworthiness signal to output whose provenance is still being repaired.
 - **🔴 DESIGN CONSTRAINT (C1 lesson, 2026-06-17):** a checker that passes micro-tests can fail real-data validation (C1: structural-ON **FP 75%**). This candidate is **UNMEASURED** — no FP/FN rate exists, and the **threshold finding** (owned docs may never enter the pool) means the flag could fire on a large fraction of queries. **Any build starts with an offline measurement pass against persisted answers, not a shadow hook.**
 - **Not scheduled. No option chosen. Founder sequences.**
 
+### [P3 · candidate / UNMEASURED — priority proposed, founder to ratify] Wrong-owner citation honest labeling (render / generation layer)
+- **What:** when the only DailyMed safety citation on a **single-drug** query is owned by a **DIFFERENT** moiety (ownership = `setid`→`moiety` lookup, **plural keys per Rule 23 — never mention-based**), **label the card honestly** — e.g. *"same-class drug label — not an `<drug>`-specific document"* — instead of presenting it as if on-target. **Fixes HONESTY, not retrieval — the tombstone's sibling: when the data can't be fixed, fix the claim.**
+- **Why filed:** founder decision **2026-08-10** after the first ownership-form gate (**2/4**) — the flagship defect is **measured unfixable by all four excluded directions** (c2 options · filter · title-prefix · threshold, `docs/c2_line_closeout_20260804.md` § 0), so the **honest-labeling axis is the remaining lever**. Filed the same day as the **NOHARM omission-detection** candidate above; **both consume the same ownership join** (`tests/probes/wrongdrug/owner_assertion.py`).
+- **🔴 DESIGN CONSTRAINTS (from the gate + the form's own rules):**
+  - **(a)** the detector must identify **WHICH drug the free-text query asks about** (zh / brand / spelling variants) **before any ownership check** — **this is the hard half**;
+  - **(b)** **pair and class queries legitimately cite other moieties** — the form's `UNSCORED` / `n/a` carve-outs must be replicated or the label misfires;
+  - **(c)** the gate's **row 4 shows ownership and content quality fail INDEPENDENTLY across runs** — labeling must **not imply the content is wrong** when it is class-correct.
+- **UNMEASURED:** no FP/FN rate exists. **Any build starts with an offline measurement pass against persisted answers** (C1 lesson: micro-test pass ≠ real-data pass, **FP 75%**).
+- **Not scheduled. No option chosen. Founder sequences.**
+
 ---
 
 ## ❌ Removed from roadmap (per ADR 004)
