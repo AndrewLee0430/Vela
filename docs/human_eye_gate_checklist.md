@@ -8,6 +8,13 @@
 **Created 2026-08-05.** Companion to the process rules in `BACKLOG.md` → `[ops] Pre-gate stale-server
 SOP` (SOP lines 1–5), which cover *how* to run a gate. This file covers *what each row asserts*.
 
+> **Where these gates run — PROD, and confirm the build first.** Gates using this form run against
+> **production**: the deterministic probe's 12/12 was measured on the **prod** index, and
+> harness-vs-production divergence is a recorded failure class in this repo (instrument-blind
+> **#5**, **#13**, **#14**). **Confirm which build you are gating before row 1** — `/health` returns a
+> `revision` field carrying the deployed git SHA, available since **fly 217**; match it against the
+> commit under test. A gate against an unconfirmed build is the stale-server hazard one level up.
+
 ---
 
 ## Why this file exists — read once

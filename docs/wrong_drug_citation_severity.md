@@ -301,3 +301,48 @@ broken, and the build does not ship.
 
 **Not scoped here (deliberately):** the class-term identification gap. Fail-open makes it harmless;
 closing it would need the drug-class asset M5 showed does not exist, and that is its own baton.
+
+---
+
+## Addendum — 2026-08-10: reproduced on prod fly 217 by the first ownership-form gate
+
+**Evidence points appended to the existing record. No new task, no recommendation, nothing deleted.**
+
+**Context:** founder-run human-eye gate, minimal Research set (rows 1/3/4/8) against **PROD fly 217**
+— the first gate in this repo whose build was confirmed by **readback** (`/health` `revision` =
+`088940c`, the capability shipped in fly 217). Result **2/4**; rows 3 and 4 FAIL. The completed form
+is recorded verbatim in the STATE.md Recently Shipped entry of the same date.
+
+### Row 3 — `aspirin contraindications and who should not take it` — the defect is unchanged
+
+`Clanza (ACECLOFENAC) — Contraindications` was **the only DailyMed safety citation**, alongside one
+PubMed allergology guideline. **The answer's entire contraindications content is supplied by that
+citation** — the "Absolute Contraindications" bullets cite `[2]` throughout.
+
+This matches §-for-§ what this document already records: the content is **class-correct** (NSAID
+cross-sensitivity is genuine), the **provenance is wrong-owner**, and **Reye's syndrome remains
+structurally unreachable**. What is new is only the confirmation surface: **it reproduces on a
+readback-confirmed prod build**, not merely in a harness.
+
+### Row 4 — `ibuprofen warnings and precautions` — two runs, two different failure clauses
+
+| run | DailyMed citations | content |
+|---|---|---|
+| **A** | `[1]` NEOPROFEN (`IBUPROFEN LYSINE`) — Drug Interactions · `[2]` Ketoprofen (`KETOPROFEN`) — Drug Interactions | interactions only — **no GI/CV warnings** |
+| **B** *(founder re-run, same query)* | **none — PubMed ×5, zero DailyMed** | GI/CV covered thoroughly (OR 2.28 GI bleed, CV, renal, pediatric) |
+
+Three observations, each an evidence point on the existing record:
+
+1. **The wrong sibling changed, the shape did not.** At fly-215 it was **Piroxicam**; here it is
+   **Ketoprofen**. Same wrong-object class, different member — consistent with a ranking/threshold
+   population rather than one sticky document.
+2. **Run A's owned citation is route/form divergent.** NEOPROFEN is the IV neonatal PDA product —
+   `owner_route_form_divergent`, a **non-blocking flag on `correct_owner`**, never folded into
+   `wrong_owner_cited`.
+3. **🔴 Ownership and content quality failed INDEPENDENTLY.** Run A had an owned citation and poor
+   content; Run B had good content and no owned citation. **Neither run had both.** They are not two
+   symptoms of one cause, and a fix or detector addressing one does not address the other.
+
+**Pool nondeterminism:** DailyMed-2 → PubMed-5-zero-DailyMed between two runs of the same query —
+the same oscillation shape as the recorded cimetidine `0/3 → 4/6`. **Single-run evidence on this
+query is not interpretable**; only `aspirin` has a recorded determinism result (12/12).
