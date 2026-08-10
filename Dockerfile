@@ -26,6 +26,16 @@ FROM python:3.12-slim
 
 WORKDIR /app
 
+# Build provenance — TECH_DEBT [P2 · build provenance], surfaced at the fly-216 deploy:
+# nothing tied a running fly version to a git commit (no SHA in `fly releases`, no image
+# LABEL, /health returned a hardcoded semver), so a deployed build could only be matched
+# to a commit by INFERENCE. Declared in stage 2 on purpose — stage-1 ARGs do not survive
+# the `COPY --from=frontend-builder` below. Defaults to "unknown" so a build without the
+# arg still succeeds and is self-describing rather than silently mislabelled.
+ARG GIT_SHA=unknown
+ENV GIT_SHA=$GIT_SHA
+LABEL org.opencontainers.image.revision=$GIT_SHA
+
 COPY requirements.txt .
 RUN apt-get update && apt-get install -y \
     build-essential \

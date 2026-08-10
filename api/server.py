@@ -2422,7 +2422,14 @@ async def admin_costs(
 # ============================================================
 @app.get("/health")
 def health_check():
-    return {"status": "healthy", "version": "2.2.0"}
+    # `revision` is the git SHA baked in at build time (Dockerfile stage 2 ARG/ENV,
+    # passed by deploy.ps1 as --build-arg GIT_SHA). "unknown" means the build arg did
+    # not reach the image — which is itself the honest answer, not a silent default.
+    return {
+        "status": "healthy",
+        "version": "2.2.0",
+        "revision": os.environ.get("GIT_SHA", "unknown"),
+    }
 
 @app.get("/api/status")
 async def api_status(creds: Optional[HTTPAuthorizationCredentials] = Depends(require_auth)):

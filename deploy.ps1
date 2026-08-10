@@ -4,7 +4,11 @@ $ErrorActionPreference = "Stop"
 $fly = "C:\Users\andre\.fly\bin\fly.exe"
 
 Write-Host "`n=== Step 1: fly deploy ===" -ForegroundColor Cyan
-& $fly deploy
+# Build provenance: stamp the deployed commit into the image so /health and the image
+# LABEL can be read back and matched to a commit. See TECH_DEBT [P2 · build provenance].
+$sha = (git rev-parse HEAD).Trim()
+Write-Host "  GIT_SHA = $sha" -ForegroundColor DarkGray
+& $fly deploy --build-arg GIT_SHA=$sha
 if ($LASTEXITCODE -ne 0) {
     Write-Host "Deploy failed (exit code $LASTEXITCODE)" -ForegroundColor Red
     exit 1
