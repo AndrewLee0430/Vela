@@ -1428,6 +1428,13 @@ trustworthiness signal to output whose provenance is still being repaired.
 - **Estimated**: full rollout TBD; much larger than Tier 1. (The narrow Verify PoC estimate moved to Tier 1 = 1-2d; the ~3-5d originally noted here referred to that now-Tier-1 PoC.) Re-scope when prod data justifies.
 - **Slot**: Phase 2 (post Phase 1B, post Stage 3). Not scheduled.
 
+### [P3 · candidate / UNMEASURED — priority proposed, founder to ratify] Ownership-based answer-completeness detection (omission flagging)
+- **What:** a post-answer check that flags when the queried drug's OWN reference label contains a whitelisted safety section (Boxed Warning / Contraindications / Warnings) that the answer's citations do not include. Ownership-keyed (`setid`/`moiety`, **plural keys per CLAUDE.md Rule 23**), never mention-based. **Detection-only; no answer modification.**
+- **Why filed:** external signal 2026-08-09 — the **NOHARM benchmark** (Stanford / Harvard / ARISE; 1,100 clinical cases, ~13k physician annotations) found **76.6% of harmful errors across all tested medical-AI systems are OMISSIONS, not misstatements** (Fortune 2026-07-29; TechNews zh summary 2026-08-09). Vela's own flagship defect (Reye's syndrome absent and structurally unreachable) is an omission produced at the **retrieval** layer. This candidate targets the **DETECTION** of that class at the **app** layer, which is possible because the corpus holds the label's section structure.
+- **Same family, distinct item:** `tests/probes/wrongdrug/owner_assertion.py` (ownership instrument, exists) and **STATE open-item #2** (wrong-drug filter, premise refuted 2026-08-06). This is **neither** — it detects **missing OWNED sections**, not wrong-owner citations.
+- **🔴 DESIGN CONSTRAINT (C1 lesson, 2026-06-17):** a checker that passes micro-tests can fail real-data validation (C1: structural-ON **FP 75%**). This candidate is **UNMEASURED** — no FP/FN rate exists, and the **threshold finding** (owned docs may never enter the pool) means the flag could fire on a large fraction of queries. **Any build starts with an offline measurement pass against persisted answers, not a shadow hook.**
+- **Not scheduled. No option chosen. Founder sequences.**
+
 ---
 
 ## ❌ Removed from roadmap (per ADR 004)
