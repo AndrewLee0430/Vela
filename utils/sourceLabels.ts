@@ -60,11 +60,25 @@ export const SOURCE_LABELS: Record<string, SourceLabel> = {
     fda:            { label: 'FDA',        tooltipKey: 'officialTip' },
     // ⛔ LEGACY-ONLY as of 2026-07-29 (c1): the local drug corpus is DEPRECATED and no
     // longer retrieved (`api/server.py` enable_local=False), so NEW answers can never
-    // carry source_type 'local'. This entry is KEPT ON PURPOSE as a fallback for
-    // PERSISTED citations — shared/explore public pages re-render on demand from stored
-    // citation JSON (share_renderer.render_public_page), so removing it would silently
-    // relabel already-published pages. Deleting it is NOT free: it is a user-visible
-    // string change on live URLs (Rule 16). Do not remove without founder sign-off.
+    // carry source_type 'local'.
+    //
+    // ⚠️ CORRECTED 2026-08-10 — the previous rationale here was FACTUALLY WRONG. It said
+    // this entry was kept "as a fallback for PERSISTED citations — shared/explore public
+    // pages re-render on demand from stored citation JSON (share_renderer.render_public_page)".
+    // Those pages have NEVER consumed this map: `share_renderer` carries its own table
+    // (`api/services/share_renderer.py:183-208` `_SOURCE_TYPE_CONFIG`), and since fly 216
+    // it renders a `local` citation as a TOMBSTONE — no source label, no credibility pill.
+    // So removing this entry could not "silently relabel already-published pages"; those
+    // pages are not rendered by this file.
+    //
+    // THE ACTUAL RESIDUAL this entry covers is narrow: a STALE CLIENT holding a pre-c1
+    // answer in a LIVE SESSION tab, rendered by `components/CitationPanel.tsx` — whose only
+    // consumer is `pages/research.tsx:727`. Never persisted, never public, one user, one
+    // tab. (`pages/history.tsx:337` passes `citations={[]}`, so history renders none.)
+    // Founder decision 2026-08-10: residual ACCEPTED, no frontend mirror — Rule 16 would
+    // cost 16 translations for an unreachable-in-practice path. See TECH_DEBT
+    // [P2 · label drift]. Still a user-visible string on that path: do not remove
+    // without founder sign-off.
     local:          { label: 'FDA',        tooltipKey: 'officialTip' },   // cached FDA labeling → MERGES into FDA
     // ADR 007 grounding-lite: SCOPE-ACCURATE label (approved indication ONLY) — deliberately
     // NOT a bare "TFDA" that would imply full-label/safety authority (cf. the "FDA Label
