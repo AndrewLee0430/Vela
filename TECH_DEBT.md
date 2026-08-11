@@ -12,10 +12,10 @@ Classes are **additive and orthogonal** to the existing `[P0]`–`[P3]` ratings 
 |---|---|---|
 | **[LAUNCH]** | blocks the B2B-interim route going live to a real customer | **0 — EMPTY** |
 | **[COMPLIANCE]** | legal / regulatory / data-protection obligation | **6** |
-| **[HONESTY]** | the product currently tells the user something untrue or misleading | **15** |
+| **[HONESTY]** | the product currently tells the user something untrue or misleading | **16** |
 | [DONE] | already fixed / resolved / accepted; retained for the record only | 33 |
-| [OTHER] | quality, hygiene, tooling, opportunistic | 63 |
-| | **total** | **117** |
+| [OTHER] | quality, hygiene, tooling, opportunistic | 65 |
+| | **total** | **120** |
 
 <!-- ⚠️ COUNT REPAIR 2026-08-11 (B0 commit): the table above had gone STALE by three entries —
      the fly-223 pytest-infra [OTHER] addition and the fly-224 duplicated-source [COMPLIANCE] +
@@ -55,6 +55,7 @@ Classes are **additive and orthogonal** to the existing `[P0]`–`[P3]` ratings 
 - `[P2 · honesty / consistency]` DailyMed outbound-link chip label + host-mapping inconsistency (deferred from the 2026-06-25 DailyMed sweep)
 - `[P2 · honesty — PROMPT-GATED, out of frontend-sweep scope]` `explain_system.md` lists "FDA DailyMed" as a source category to the LLM (deferred 2026-06-25)
 - `[P2 · landing tagline / fourth unguarded surface — discovered by the 2026-08-11 landing recon]` `landingContent.tagline` is a 16-locale MT provenance claim outside BOTH the parity guard and the sent reviewer CSV
+- `[P2 · explore stored metadata / legacy evidence marker — founder-ratified 2026-08-11]` The published explore page's stored meta_description leaks "Summary 🟢" into search/social snippets
 
 ⚠️ Listed by TITLE, not line number — line numbers rot the moment anything is inserted above them. Search the title.
 
@@ -88,6 +89,12 @@ When entries are resolved, mark with the resolving commit SHA (git log is the re
   - **Confirmed present in all 16 locales** (the earlier "≥8, pattern-limited" count was my pattern list's reach, not the defect's — every locale had the entry).
   - **Fix (this commit):** the evidence-strength Q&A **DELETED in all 16 locales** (ratified D1: deleted, not rewritten); the Research answer reworded without "evidence-graded"; the two source-enumeration answers reworded **claim-light and NON-COUNTING** (never "three databases" — the effective Research source count is recorded as THREE in the `[P2 · honesty / advertised capability]` entry below, so a count in either direction creates a false claim) and now name TFDA, closing the enumeration-omits-TFDA drift found in the same recon. Guard: `tests/test_faq_no_dead_features.py` — a regression guard for THIS feature (scope stated in its docstring), with a fires-proof.
   - **Class lesson, same family as the [DONE] OpenAI-auto-recharge retirement:** feature-removal batons check code paths, not marketing surfaces. `3ad3ddc` and fly 221 both did their jobs; nobody grepped the FAQ. The removal checklist should include: **grep FAQ + landing + pricing for the feature's name.**
+
+- [HONESTY] **[P2 · explore stored metadata / legacy evidence marker — founder-ratified 2026-08-11; discovered by the B1 P0.1 render-check]** The one published explore page's STORED metadata leaks the removed evidence-grading marker into Google/social snippets
+  - **What leaks:** `explore_page.meta_description` (and the og:description / twitter:description built from it) for `metformin-contraindications-renal` reads **`"Summary 🟢 Metformin is contraindicated…"`** — the 🟢 marker verbatim, in machine-visible copy that search engines and social cards republish.
+  - **How it got there:** the metadata was generated FROM THE STORED ANSWER at page creation (2026-05-13), when the generator still emitted markers. **`3ad3ddc` (2026-06-10) stopped emission and fly 221 removed the dead RENDER paths — but stored DATA was never swept.** The page body is clean; only the frozen metadata carries the residue.
+  - **Same class as the FAQ dead-feature entry above (`07c6ce7`, B0): public copy describing/carrying the removed evidence-grading.** Third member of the family: prompt (B0's entry), FAQ (B0), stored metadata (this). The removal checklist lesson extends again — **grep code paths, marketing surfaces, AND persisted artifacts.**
+  - **Fix: a one-time data correction** (strip the marker from `meta_description` for the affected page(s); regenerate og image caption if it embeds the text). **NOT this baton** (docs-only commit). One page today; the sweep should still query the whole table, not assume one.
 
 - [HONESTY] **[P1 · retrieval-corpus integrity / honesty — PROPOSED RATING, founder to ratify; surfaced by the fly-214 citation gate 2026-07-29] The 690-doc LOCAL drug corpus is 100% EMPTY STUBS — every document is field labels with no values (max 5 chars of content) — yet it is Tier-2-boosted (×1.5) into `top_k` and its cards claim "official FDA drug labeling data". The real text (≈3.58M chars) sits UNREAD in the builder's own input**
   - **Measured, corpus-wide (`data/drug_vectordb/index.json`, all 690 docs).** PAYLOAD = content minus the builder's literal template scaffolding (`scripts/build_drug_vectordb.py:63-157`):
@@ -1216,6 +1223,17 @@ When entries are resolved, mark with the resolving commit SHA (git log is the re
   - **影響**: the real command is `uv run python -m pytest tests/ -q --ignore=tests/test_webhook_cancel.py --ignore=tests/results`. **Nothing in the repo records that** — `CLAUDE.md` documents only the golden-test commands. Every baton that runs the suite rediscovers both flags by hitting both errors. It also means a **green run is easy to fake by accident**: an agent that stops at the first INTERNALERROR could reasonably report "tests could not run" and move on.
   - **Fix (≈5 lines, NOT done here — filed deliberately)**: a root `pytest.ini` with `testpaths = tests`, `norecursedirs = results`, and either renaming `test_webhook_cancel.py` → `manual_webhook_cancel.py` (it is a script, and the `test_` prefix is what makes pytest import it) or adding `collect_ignore` in a `tests/conftest.py`. Renaming is preferable: the file is documented as a `uv run python tests/…` invocation, so nothing depends on the `test_` prefix.
   - **Discovered**: 2026-08-11 during the fly-222 build baton, re-hit at fly 223.
+
+- [OTHER] **[P3 · explore CTA structural gap — founder-ratified 2026-08-11; merged entry from the B1 P0.1 verdict]** Bare `/explore` is a silent self-loop and the published corpus is ONE page — the landing's "See real answers" CTA was cut from B1 §how for this reason
+  - **The structural half:** `GET /explore` returns **200 serving the landing page itself** — the static export's fallback answers it because the rewrite map (`next.config.ts`) only proxies `/explore/:slug` and `/explore/category/…` to the backend; there is **no index route on either side**. A visitor (or crawler) landing on bare `/explore` gets `/` with the wrong URL in the bar.
+  - **The corpus half:** `sitemap-explore.xml` lists exactly **one** published page (`metformin-contraindications-renal`, 2026-05-13). GTM L3 context: explore is the long-horizon SEO engine — **corpus = 1 is the number to move**; the CTA is downstream of that.
+  - **The recorded scope reduction:** B1 (`9c8aed3`) shipped §how WITHOUT the explore CTA per the P0.1 verdict — no link, no analytics event.
+  - **REOPEN CONDITION (verbatim, founder-ratified): "corpus holds ≥3 medically diverse published pages AND an index route exists."** When both hold, re-add the CTA + the `track()` event and gate the target pages.
+
+- [OTHER] **[P3 · reviewer-CSV generator never committed — founder-ratified 2026-08-11; the fly-227 rescue proved the debt]** The 70-row reviewer CSV and its addendum were built by an UNCOMMITTED session scratchpad script, and the deliverables lived in a BUILD-WIPED directory
+  - **What happened (fly 227, STEP 1):** the B1 `npm run build` wiped `out/` — destroying **both** the sent 70-row CSV and the 14-row addendum. Both were regenerated from the session's scratchpad generators (byte-identical: sources unchanged), validated (round-trip PASS), and relocated to **`deliverables/`** (gitignored via the global `*.csv` rule, `.gitignore:131`; outside any build path). Had the session context been gone, the addendum would have been rebuilt by inspection — possible, but exactly the archaeology Rule 20 exists to prevent.
+  - **The debt:** no reusable generator exists in the repo. **Next time the CSV format is touched, commit a generator + round-trip validator** (a `tests/probes/`-convention home fits Rule 20: script = method, small output = evidence). Until then this entry is the pointer from the deliverable to its method.
+  - **Standing rule from the incident: deliverables never live in `out/`** — it is a build target. `deliverables/` is the durable home.
 
 - [OTHER] **[P3 → opportunistic] deploy.ps1 hardcoded 10-second settle insufficient for vector store cold start — discovered 2026-05-19**
   - **背景**: `deploy.ps1` Step 2 sleeps 10 seconds after `fly deploy` exit before running Step 3 machine status check. But vector store load (FAISS + 690 documents) takes 30-60 seconds on cold machine boot. Manual workaround during 2026-05-19 deploy: insert additional 60-second sleep before running PART B.3 smoke curls.

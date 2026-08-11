@@ -128,7 +128,7 @@ claim is row 1, and it is the row most worth failing honestly: the gradient elem
 | 6 | `https://vela.an-tho.com/` | en · either · **mobile width** (≤ 390px) | mobile | sections stack single-column, no horizontal scroll, footer wraps cleanly | | | |
 | 7 | `https://vela.an-tho.com/` | **ar** (RTL) · either | RTL | sections right-align correctly, step numbers/text order sane, chevron still centered | | | |
 | 8 | `https://vela.an-tho.com/` | **zh-TW** · either | locale strings | §who/§how/§privacy render zh-TW text (not en fallback); footer anchors labelled in zh-TW | | | |
-| 9 | *(no URL — content row)* | en | **founder copy approval** | the founderNote small-type line ("built and maintained by one independent developer…") — founder APPROVES the wording or names the edit | | | |
+| 9 | *(no URL — content row)* | en | **founder copy approval** | the founderNote small-type line ("built and maintained by one independent developer…") — founder APPROVES the wording or names the edit | wording as shipped in `9c8aed3` | **PASS — PRE-APPROVED** | ✅ founder approved the shipped wording 2026-08-11, PRE-DEPLOY (recorded at the fly-227 deploy baton); this row RECORDS the approval rather than asking for it |
 
 **Explore-CTA row deliberately ABSENT:** P0.1 verdict was NOT safe-to-link (one published explore
 page, no index route — bare `/explore` serves the landing itself). §how ships without the CTA;
