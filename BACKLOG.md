@@ -4,6 +4,35 @@ Open tasks not actively in progress. New items captured here, moved to STATE.md 
 
 For active focus see STATE.md. For tech debt see TECH_DEBT.md.
 
+<!-- NAVIGATION TABLE — added 2026-08-11. Navigation only; no entry text was changed. -->
+## Navigation — by class
+
+Same taxonomy as `TECH_DEBT.md`, **additive to** the existing `[P0]`–`[P3]` ratings. Entries are marked, never deleted.
+
+| class | meaning | count |
+|---|---|---|
+| **[LAUNCH]** | blocks the B2B-interim route going live to a real customer | **0** |
+| **[COMPLIANCE]** | legal / regulatory / data-protection obligation | **0** |
+| **[HONESTY]** | the product currently tells the user something untrue or misleading | **3** |
+| [DONE] | already shipped / closed / superseded; retained for the record only | 8 |
+| [OTHER] | features, quality, hygiene, opportunistic | 19 |
+| *(untagged)* | the 6 entries in **`## Product direction candidates`** — product bets, not defects; that section is self-describing | 6 |
+| | **total `###` entries** | **36** |
+
+**[LAUNCH]: none.** Applying the strict test (would it stop a first B2B customer — service down, a defect hit in normal use, or an expiring dependency), no BACKLOG entry qualifies; the three that do are all in `TECH_DEBT.md`.
+
+**[COMPLIANCE]: none** in this file — all five are in `TECH_DEBT.md`.
+
+#### [HONESTY]
+
+- `:878` — Citation source-verification exists on EXACTLY ONE surface — History and shared pages offer no source links
+- `:894` — Danger-path WRONG-OBJECT citation intrusion — a safety section about a different clinical object cited on a safety query (re-scope
+- `:956` — Verify DailyMed None-`attribution_kind` caption fast-follow (cosmetic, honesty-preserving)
+
+⚠️ Line numbers drift; the entry TITLE is the durable reference.
+
+---
+
 ## Categories below
 - Round 3 follow-ups (post §2.8 anon flow)
 - §2.7 Step 4 follow-ups (post Step 8 re-eval, 4 items remaining; 2 archived as resolved/evaluated)
@@ -616,7 +645,7 @@ Execution sequence:
 § 2.7 Step 7 (LLM judge) → § 2.7 Step 8 (20-case acceptance) →
 § 4.5 Share Answer → § 4.6 SEO Explore Pages → Phase 0 Retrospective
 
-### § 4.5 Share Answer 公開連結
+### [OTHER] § 4.5 Share Answer 公開連結
 
 - [~] Implement § 4.5 per PRD v1.3 spec — PHASE A-D shipped, E deferred to post-deploy
       **Reference:** PRD.md § 4.5 (full functional spec — 9 functional
@@ -656,7 +685,7 @@ Execution sequence:
               Checklist (PHASE E.2)". E.1 documentation closeout
               shipped 2026-05-08 (this commit).
 
-### § 4.6 SEO Explore Pages
+### [OTHER] § 4.6 SEO Explore Pages
 
 - [~] Implement § 4.6 per PRD v1.3 spec — PHASE A shipped, B-E pending
       **Reference:** PRD.md § 4.6 (full functional spec — 8 functional
@@ -745,14 +774,14 @@ Follow-ups to the **TECH_DEBT P0 "Direction-of-effect reversal on counterintuiti
 
 Phase 1B work items per advisor discussion 2026-05-04 (preserved in git commit 394545e) and ADR 003+004. Slot ranges from Week 4-8 of Phase 1B (5-week timeline).
 
-### [P1] Explain risk-tier over-escalation — magnitude-aware tiering — ✅ SHIPPED v184 (2026-06-23, `bf1c5ec`)
+### [DONE] [P1] Explain risk-tier over-escalation — magnitude-aware tiering — ✅ SHIPPED v184 (2026-06-23, `bf1c5ec`)
 - **DONE.** `explain_system.md` v6 §4 rule #3 made correlation tiering magnitude-aware (multi-item correlations tiered by SEVERITY not count; LFTs <3× ULN → yellow even when several abnormal; reserve red for critical-threshold/urgent values; yellow + symptom-conditional otherwise). The documented AST 68/ALT 92/Bili 2.1 panel that v5 over-escalated to RED now tiers the correlation YELLOW + symptom-conditional (live-confirmed). §2.7 Explain re-baseline 19/20 = 95.0% gate held; founder clinical eyeball accepted on prod. (STATE Recently-Shipped v184.)
 
-### [P0] Verify 強制英文 + 友善引導 + system prompt polish — ✅ SHIPPED (v183 + v184/v185)
+### [DONE] [P0] Verify 強制英文 + 友善引導 + system prompt polish — ✅ SHIPPED (v183 + v184/v185)
 - **DONE.** Force-English input guard + non-Latin detection + inline warning UI + 7 i18n keys × 16 + 4 PostHog events → **v183 (`cee0b9f`/`8509441`)**. System-prompt polish: **#1 citation-scope + #2 geographic-coverage → Research v185 (`20a84c9`)**; **#5 no-self-rating → Verify v184 (`bf1c5ec`)**; **#4 counterintuitive-mechanism → absorbed by the reversal-defense direction-of-effect chain** (BACKLOG §706a). (STATE Recently-Shipped v183/v184/v185.)
 - **Residual — STILL OPEN, tracked separately (do NOT close with this item):** the "仍要送出（不建議）" proceed-anyway path still lets the LLM confident-wrong map a Chinese brand→ingredient (e.g. 冠脂妥 → rosuvastatin, mis-identified as simvastatin). That's a deterministic-lookup grounding task → **Phase 1C "Taiwan brand-name → ingredient grounding"** + TECH_DEBT 2026-06-22.
 
-### [P0] DailyMed API integration — ✅ FULLY CLOSED (Verify half v201 2026-07-08 + Research 5th-source half fly 206 2026-07-15)
+### [DONE] [P0] DailyMed API integration — ✅ FULLY CLOSED (Verify half v201 2026-07-08 + Research 5th-source half fly 206 2026-07-15)
 - **✅ VERIFY HALF SHIPPED (v201, 2026-07-08):** Verify DailyMed ingest-and-cite (Option C) — DailyMed-primary/openFDA-fallback retrieval, `description` grounded in the cited **34073-7** interaction-section text (prose + flattened tables), severity honestly labeled Vela-AI, `attribution_kind` enum + setid deep-link + the v197/v199-class false-citation fix. NEW `api/data_sources/dailymed.py` (`DailyMedClient`). §2.7 Verify 14/15 (V10 oscillator, reverted on confirm) + human-eye gate PASSED on fresh code. **Closes the [P1] Verify fake-authority debt entirely** (v199 relabel half + this add-real-text half). See STATE v201.
 - **✅ SHIPPED (B-2 Phase 2 — DEPLOYED fly 206, 2026-07-15; prod human-eye gate PASSED, founder 8 queries):** DailyMed added as the parallel Research 5th retrieval source — **PER-SECTION** docs into the pool (NOT whole-label; the corpus is 4608 per-section docs, `source_id={setid}#{loinc}`, section-level citation granularity). `SourceType.DAILYMED` + `retriever._search_dailymed` (mirrors TFDA) + retrieval-time sub-chunk collapse + the debt-(2) host-map reconcile (`share_renderer.py` `dailymed`→"DailyMed"). Gates: §2.7 Research 20/20 (≥ 18/2/0 baseline); section-aware danger-path 0 violations (founder-signed-off criterion); dogfooding = DailyMed safety surfaces + cited but ×1.5 weight is only a partial lift over strong PubMed (prominence/tuning flag, not a safety issue). See `data/dailymed/BUILD_NOTES.md`.
 - **🟡 [P1] OPEN — DailyMed Research recall miss on safety queries (surfaced by the B-2 Phase 2b prominence measurement, 2026-07-14):** 3/11 measured safety queries retrieve **ZERO** DailyMed safety section — **warfarin+aspirin (3/3 runs)**, amiodarone+digoxin, spironolactone — because the section's cosine falls below the 0.6 retrieval threshold / the query phrasing mismatches, **NOT a ranking issue**. The Phase-2b measurement proved a weight boost cannot help: it can't promote a doc that was never retrieved, and when a DailyMed safety section IS in the pool the ×1.5 weight already ranks it **#0–#1** (5/5 in-pool cases in top-5). warfarin+aspirin is a **canonical interaction pair**, so this materially limits the 5th source's value on exactly the queries it exists for. **Fix direction:** section-targeted DailyMed retrieval (a detected drug-pair forces a DailyMed safety-section search) OR a DailyMed-specific/lower similarity threshold for safety-section docs. **🔴 changes WHAT is retrieved → needs its own §2.7 Research + section-aware danger-path re-gate.** Separate baton, NOT part of B-2 Phase 2 (which is ranking-correct as-is). Cross-ref the BACKLOG:886 dogfooding bar (「確認 DailyMed FDA label 沒被 PubMed studies 擠下去」 — the real risk is retrieval RECALL, not weighting). **Prod-gate data point (2026-07-15):** `lithium+ibuprofen` is an **INTERMITTENT** miss — CC's Phase-1 measurement retrieved its DailyMed safety section at #0, but the founder's prod-gate run retrieved none. So recall has **run-to-run VARIANCE**, not just the stable 3/3 `warfarin+aspirin` miss — the blind spot is NOT a fixed set of queries; the fix must improve recall robustly, not just for named pairs.
@@ -799,14 +828,14 @@ Phase 1B work items per advisor discussion 2026-05-04 (preserved in git commit 3
   **✅ Net [P1] state (2026-07-27, AUTHORITATIVE — this [P1] is now CLOSED):** surface (iii) SHIPPED (fly 209) · (i)/(ii) CLOSED-inadequate · rewrite-nondeterminism SHIPPED (K-union + cut-exemption, fly 211) · **pair-aware retrieval CLOSED-REFUTED (2026-07-27, above)**. That was the **last open surface**, so **the recall-miss [P1] is CLOSED**. The probe did, however, surface **three genuinely different residual surfaces**. They are **NOT** continuations of this [P1] — different mechanisms, different blast radii — and are opened as their own entries below. **Do not re-open this [P1] to hold them.**
   - **⚠️ The `composite-rank-6 > top_k-5` residual recorded "measure-only" above is now DIRECTLY MEASURED** (it was previously inferred from non-citing runs): across 80 safety-query runs on HEAD, **11 whitelisted safety sections landed at composite rank 5 — the 6th slot, one position outside `top_k=5`**. Full not-cited rank distribution `{5:11, 6:17, 7:10, 8:3, 10:1}`. Carried into surface (1) below. The **K2>K3 inversion remains UNMEASURED** (unchanged — no K=2 column was run).
 
-### ❓ OPEN FOUNDER QUESTION (NOT a defect, no fix proposed) — the DailyMed corpus backbone is Taiwan-scoped, but the product now addresses 6 countries
+### [OTHER] ❓ OPEN FOUNDER QUESTION (NOT a defect, no fix proposed) — the DailyMed corpus backbone is Taiwan-scoped, but the product now addresses 6 countries
 - **The fact:** the Research DailyMed corpus scope is **`mono-ingredient TFDA moieties → NDA-preferred US reference label`** (`data/dailymed/label_docs.json` `_meta.scope`) — i.e. **the Taiwan market overlap**. That was a coherent choice when DailyMed shipped as the 5th Research source at **fly 206 (Taiwan-first)**.
 - **What changed:** **b1 / b1-fix (fly 212 / 213) shipped 6-country locale support with SG and MY live.** A drug licensed in Singapore or Malaysia but **absent from Taiwan's mono set is structurally unreachable** in Research's DailyMed corpus. The 在地差異 panel will point an SG/MY user at HSA / NPRA while the underlying retrieval corpus is scoped to Taiwan's formulary.
 - **NOT quantified, and not cheaply quantifiable.** It would require SG (HSA) and MY (NPRA) product registries; neither is in the repo. The only in-repo anchor is the ratio itself: the corpus covers **1038 moieties** against a TFDA mono backbone of **1910**. Stating the limit rather than estimating past it.
 - **The question for sequencing:** should the corpus backbone stay Taiwan-scoped now that the product addresses six countries, or is Taiwan-overlap still the right bet? **No recommendation made** — this is a strategy call, not a defect, and it interacts with the b2 (JP/KR/TH) decision.
 - **Raised:** 2026-07-27 (`docs/pair_aware_retrieval_probe.md` §10).
 
-### [P2] Research pool budget — `top_k=5` cuts safety sections sitting at composite rank 6 (re-scoped surface 1 of 3 from the recall-miss [P1] probe)
+### [OTHER] [P2] Research pool budget — `top_k=5` cuts safety sections sitting at composite rank 6 (re-scoped surface 1 of 3 from the recall-miss [P1] probe)
 - **🆕 2026-08-06 — THERE ARE TWO `5`s IN THIS PIPELINE, AND THIS ENTRY ONLY COVERS ONE.** The DailyMed store applies its own in-store cutoff `n_results = max_results = 5` (`retriever.py:631` → `vector_store.py:120-121`, `if len(results) >= n_results: break`), which fires **per rewrite arm, BEFORE the fan-out is unioned** — whereas this entry's `top_k=5` is the **post-composite** budget. **They are NOT the same question filed twice** — one is pre-fan-out and per-arm, the other is post-rerank and global — **but they compound**, and the sweep as scoped measures only the latter. **Noted, NOT re-scoped** — whether to fold the in-store cutoff into the sweep is a founder sequencing call. ⚠️ On the one query measured to date the in-store cutoff was **never the binding gate** (the 0.6 floor bound first — [`docs/rewrite_arm_mechanism_20260806.md`](docs/rewrite_arm_mechanism_20260806.md)); that is one query and says nothing about queries where several docs clear the floor.
 - **Evidence (2026-07-27, N=8 × 10 queries on HEAD):** **11 whitelisted DailyMed safety sections landed at composite rank 5** (0-indexed) — exactly one slot outside `top_k=5` (`api/server.py:818` `max_results=5` → `api/rag/retriever.py:282`). Not-cited rank distribution: `{5:11, 6:17, 7:10, 8:3, 10:1}`.
 - **⚠️ NOT a tweak, and displacement is NOT free.** M3 measured what a safety section evicts from the composite top-5, and the displaced docs are **on-point studies, not filler**: `PMID:8247921` *"Possible interaction between warfarin and fluconazole"* (tier 5), `PMID:25451849` *"Comparison of the effects of azole antifungal agents on the anticoagulant activity of warfarin"* (tier 4), `PMID:37037980` (tier 4), `PMID:22867637` (tier 4). Raising `top_k` trades one relevant document for another and **changes generation input on EVERY Research query**.
@@ -818,7 +847,7 @@ Phase 1B work items per advisor discussion 2026-05-04 (preserved in git commit 3
   - **Still 🔴** (a `top_k` change alters generation input on every Research query) → own §2.7 + section-aware danger-path re-gate + canary + prod human-eye gate.
 - **Priority reasoning — [P2]:** the cheapest lever found (config-level, not architecture) and the best-evidenced, **but** it is a genuine tradeoff with Research-wide blast radius, so it must not be treated as a quick win. Not [P1] because nothing is currently *wrong* — sections are being ranked correctly and the budget is simply tight.
 
-### [P2 — NOT 🔴, NO GATE REQUIRED] M3 — DailyMed drift detection by `spl_version` comparison
+### [OTHER] [P2 — NOT 🔴, NO GATE REQUIRED] M3 — DailyMed drift detection by `spl_version` comparison
 > **Promoted out from under c2 on 2026-08-04.** Independent of every c2 option and of the refresh
 > decision. **It changes nothing about retrieval, so it needs no gate.** Evidence:
 > [`dailymed_refresh_cost_20260804.md`](docs/dailymed_refresh_cost_20260804.md) Parts 2 + 4.
@@ -830,7 +859,7 @@ Phase 1B work items per advisor discussion 2026-05-04 (preserved in git commit 3
 - **🔗 KEEP IN SYNC:** the refresh cost model is described **in two places** — this entry and **TECH_DEBT `[P2 · data staleness] The DailyMed corpus has NO refresh mechanism`**. They are consistent today (M3 feasibility, the `$0.063` full re-embed, fail-loud-on-404). **If you update one, update the other** — noted because a future reader could easily change one and miss the other.
 - **NOT BUILT. NO CADENCE CHOSEN.** Filed only.
 
-### [P1] c2 — DailyMed reference-label selection — ⏸️ **PARKED (measurement complete, founder-pending)** ⭐
+### [OTHER] [P1] c2 — DailyMed reference-label selection — ⏸️ **PARKED (measurement complete, founder-pending)** ⭐
 > **⏸️ PARKED 2026-08-04.** Four batons of measurement are complete; **every option is costed and none
 > has a measured upside on the defect c2 exists to fix.** Full parked state, unpark conditions and the
 > merge table: **[`c2_line_closeout_20260804.md`](docs/c2_line_closeout_20260804.md)** — one read is
@@ -875,7 +904,7 @@ Phase 1B work items per advisor discussion 2026-05-04 (preserved in git commit 3
 - **🔴 Sequencing consequence:** the pending **wrong-drug filter build must be RE-EVALUATED FOR NECESSITY after c2, not merely re-baselined** — if c2 removes the cause in 6/6 measured cases, the filter may descope substantially or close. **Do not build a runtime guard against a defect a data fix removes.**
 - **Gate:** 🔴 changes retrieval input → own §2.7 + section-aware danger-path re-gate + prod human-eye gate, with **`aspirin contraindications` and `ibuprofen warnings and precautions` as named rows naming the EXPECTED DRUG** (per the 4th ops SOP line).
 
-### [P3] Citation source-verification exists on EXACTLY ONE surface — History and shared pages offer no source links
+### [HONESTY] [P3] Citation source-verification exists on EXACTLY ONE surface — History and shared pages offer no source links
 > **Filed 2026-08-03.** Recorded since 2026-07-29 in [`docs/citation_deeplink_fix.md`](docs/citation_deeplink_fix.md) Task 5 §1 but **never surfaced in BACKLOG** — filed now so it is sequenceable.
 - **Measured:** `pages/history.tsx` renders `CitationPanel` **0 times** (it passes `citations={[]}` at `:337`); ❌ ~~the shared public page (`api/templates/q_base.jinja2`) styles `.vela-citation-card` but its only anchors are the logo and privacy/terms, and `share_renderer.py:225` reads `citation["url"]` **only** to classify host→source slug, never to emit a link.~~
   - **🔴 RE-POINTED 2026-08-10 — THE SHARED-PAGE HALF OF THIS ENTRY IS STALE. Public pages DO emit source links, and already did when this was filed.** `api/templates/q_public.jinja2:69-71` and `api/templates/q_explore.jinja2:81-83` both render `<a class="vela-citation-link" href="{{ c.url }}" …>{{ s.viewSource }} ↗</a>`, added in **`a5da1c5` `[PRD 4.5] UX polish 1/3 — public page visual alignment with main site`**. The cited `share_renderer.py:225` also no longer holds that code — it is inside `_CRED_CONFIG`; `_detect_source_type` now begins at **`:229`**.
@@ -886,12 +915,12 @@ Phase 1B work items per advisor discussion 2026-05-04 (preserved in git commit 3
   - **✅ BLOCKER DISCHARGED 2026-08-10 (post-`a7e47c2`, gate-passed on fly 216).** A `local` citation now renders as a **tombstone**: no source label, no credibility pill, and `url` is `''` — so `{% if c.url %}` (`q_public.jinja2:68`) **never emits its link in the first place**. **A stub cannot be surfaced by a link it never gets.** The #7 dependency is removed.
 - **🔴 WHAT #12 ACTUALLY IS NOW — a NEW FEATURE, not wiring (determined 2026-08-10 from the repo, no DB query needed).** **Research citations are NOT PERSISTED with history.** `ChatHistory` (`api/models/sql_models.py:17-25`) has exactly six columns — `id · user_id · session_type · question · answer · created_at` — and **no citations column**; none of the five write sites (`api/server.py:928, 1324, 1366, 1462, 1570`) passes one, and the schema could not accept it. So History has **nothing to link to**: #12 requires a **schema change + a write path + a render path**, not a link-plumbing change. **Re-scope not performed — reported only.**
 
-### [P2] Research recall — `SSRI + NSAID` total miss (re-scoped surface 2 of 3)
+### [OTHER] [P2] Research recall — `SSRI + NSAID` total miss (re-scoped surface 2 of 3)
 - **Evidence (2026-07-27):** `SSRI NSAID bleeding risk interaction` scored **0/8 on the ANY-drug metric** — the only canonical query where **no** whitelisted safety section was cited at all, and **none appeared in the pool at any composite rank**. Reproduces the 2026-07-22 threshold probe's single STABLE-MISS.
 - **Mechanism = relevance/embedding, NOT fan-out.** Nothing for either drug clears `min_score=0.6` (`api/rag/retriever.py:95`/`:102`), so there is nothing for a union or a wider `top_k` to promote. **Explicitly unreachable by pair-aware retrieval** (now closed) and unaffected by surface (1).
 - **Priority reasoning — [P2]:** a real, reproducible recall hole on a **danger-path (bleeding-risk) query class**, but a single measured query — the breadth is unknown. Warrants a scoped recall probe (how many safety queries sit below threshold?) before any threshold/embedding change, which would be 🔴 Research-wide.
 
-### [P2] Danger-path WRONG-OBJECT citation intrusion — a safety section about a different clinical object cited on a safety query (re-scoped surface 3 of 3)
+### [HONESTY] [P2] Danger-path WRONG-OBJECT citation intrusion — a safety section about a different clinical object cited on a safety query (re-scoped surface 3 of 3)
 - **Evidence (2026-07-27):** on `spironolactone potassium hyperkalemia contraindication`, **`POTASSIUM ACETATE #34070-3` was cited in 4/8 runs**. Its full text is 194 characters: *"CONTRAINDICATIONS Potassium administration is contraindicated in patients with severe renal insufficiency or adrenal insufficiency and in diseases where high potassium levels may be encountered."* — **it never mentions spironolactone, potassium-sparing diuretics, or the interaction.** It is about *administering potassium supplements*: a different clinical object. Same shape twice on `r07_betablocker` (`PINDOLOL` contraindications, naming no queried term).
 - **Contrast — the correct behaviour on the same query:** `POTASSIUM CHLORIDE #34073-7` (cited 1/8) **does** answer it, naming spironolactone and potassium-sparing diuretics. So the pool contains both a right and a wrong answer and picks the wrong one 4× more often.
 - **⚠️ Currently INVISIBLE to our gates:** the fly-211-style CITED-recovery metric counts this as a **success** (a whitelisted LOINC was cited). See the metric-qualification note on the fly-211 entry.
@@ -908,7 +937,7 @@ Phase 1B work items per advisor discussion 2026-05-04 (preserved in git commit 3
 - **🟡 Coupled OPEN items (NOT this ship):** [P2] setid-selection (repackager vs reference label, below); debt-(2) host-map drift + debt-(3) `explain_system.md` (TECH_DEBT — belong to the Research increment / a separate Explain slot).
 - **✅ PARTIALLY ANSWERED (T1, 2026-08-05):** the *instrument* now exists — `tests/probes/wrongdrug/owner_assertion.py`, ownership-based (never mention-based), six non-collapsing outcomes. It is **not wired to any gate**; see the entry immediately below. ⚠️ The "suggested first step" above (reuse `_pairaware_m1_content_audit.py`) was **deliberately NOT followed**: that file is mention-based in its `ON-TARGET-COUNTERPART` bucket, is **untracked in git** (`tests/results/` is gitignored at `.gitignore:113`, so it exists on one machine only), and hardcodes per-query owner lists covering 1 of the 3 fixtures. Left in place as recorded drift, not edited.
 
-### ✅ DONE 2026-08-05 — [HOST A of 2] EXPECTED OWNER field on the human-eye gate rows
+### [DONE] ✅ DONE 2026-08-05 — [HOST A of 2] EXPECTED OWNER field on the human-eye gate rows
 - **✅ SHIPPED as [`docs/human_eye_gate_checklist.md`](docs/human_eye_gate_checklist.md)** — a **blank PRE-GATE FORM**, not a record: per-row `query · EXPECTED OWNER · observed owner(s) [blank] · verdict [blank] · notes [blank]`, seeded with the 8 fly-215 queries with owners pre-filled and the observation columns **empty**. Row 3's withdrawn count-based criterion is replaced with an identity-based one. SOP line 4 now **points at the file** rather than restating it; **no sixth SOP line was added** — more prose is the intervention that already failed. **The fly-215 8/8 was NOT altered.** Founder decision A1, `docs/t1_followon_20260805.md` §1.
 - *(original entry retained below for context)*
 - **Split out of the single wiring entry 2026-08-05** — the two hosts differ by roughly an order of magnitude in cost and must be sequenced separately. Report: [`docs/t1_ownership_assertion_20260805.md`](docs/t1_ownership_assertion_20260805.md).
@@ -917,7 +946,7 @@ Phase 1B work items per advisor discussion 2026-05-04 (preserved in git commit 3
 - **🛑 BLOCKED ON A FOUNDER DECISION — there is NO standalone gate-checklist file to add a field to.** The checklist exists as **prose SOP lines inside the `[ops] Pre-gate stale-server SOP` entry above** (lines 1–5), and the gate *rows* exist only as **recorded results inline in a STATE.md "Recently Shipped" bullet** — a past-tense record, not a reusable pre-gate artifact. ⚠️ **The 4th SOP line already states the rule** (*"ANY GATE ROW THAT CHECKS CITATIONS MUST NAME THE EXPECTED DRUG"*) and even gives the aspirin/`ACETYLSALICYLIC ACID` example — **the rule was written on 2026-08-03 and still was not applied**, because there is no row-level artifact a reviewer fills in. Whether to create one, and where, is the founder's call.
 - **Not in scope:** the wrong-drug filter (open-item #2). Reviewer-facing measurement only.
 
-### [P2 — HOST B of 2, BLOCKED on a fixture gap] §2.7 post-pass over the `pool_identity` capture
+### [OTHER] [P2 — HOST B of 2, BLOCKED on a fixture gap] §2.7 post-pass over the `pool_identity` capture
 - **Split out of the single wiring entry 2026-08-05.** Do not build before the blocker below is closed.
 - **Concrete mechanism (named, not vague):** a **post-pass over the `pool_identity` `source_id` capture already present at `tests/run_golden_tests.py:195-201`**. **No new capture is required** — `pool_identity` already records `source_id` per pooled doc plus `cited_in_answer`; the c1-ship artifact was replayed through the assertion with **zero** additions to the harness. The post-pass joins `source_id → setid → data/dailymed/label_docs.json → moiety` and emits the six outcomes.
 - **🔴 BLOCKER — §2.7 HAS NO FIXTURE THAT CAN EXERCISE THE ASSERTION. Close this first or the wiring is a no-op.** Calibration against the c1-ship run (`golden_results_20260729_230006.json`, recorded 20/0/0) returns **`wrong_owner_cited` = 0** and **0 cases whose verdict would flip**. The assertion is **not** powerless — it flips the fly-215 human-eye gate **8/8 → 6/8** — but the golden set lacks the query shape that exhibits the defect: **14 of 20 are class-level** (excluded by design), **1 is a pair query**, **3 of the 5 single-drug cases are correctly owned**, and **2 retrieve no DailyMed document at all**. Sharpest evidence: **R08 asks aspirin *dosing* and pulls zero DailyMed docs, while the fly-215 gate asked aspirin *contraindications* and got Aceclofenac** — same drug, opposite outcome, because the corpus holds **only safety sections**. **What is needed: at least one single-drug, safety-shaped golden case.** ⚠️ Adding golden cases changes the §2.7 denominator and the **18/2/0** floor — **a founder decision, not a mechanical addition.**
@@ -946,20 +975,20 @@ Phase 1B work items per advisor discussion 2026-05-04 (preserved in git commit 3
 - **⚠️ Label-system convergence (founder decision 2026-06-26 — design coherently on the citation chip, do NOT design these in isolation):** TWO different label axes must share ONE citation-chip design — (a) the §2.10.6 5-tier **evidence** classifier (for literature: PubMed/DailyMed, tiered by study type) and (b) the report Rec-4 **source-authority / officialness** label (for regulatory: TFDA 仿單 / openFDA / DailyMed labels, which carry NO evidence tier — they're authoritative *because* they're the regulator's text). Evidence-tier for literature, officialness for regulatory. Infra to extend: `utils/sourceLabels.ts` `tooltipKey` (peerReviewedTip/officialTip) + the `CredibilityLevel` enum (`api/models/schemas.py`).
 - **⚠️ Source-weighting §2.10.3 — SHADOW front-half ✅ BUILT v198 (2026-07-06); RANKING ✅ ACTIVATED + LIVE ON PROD v200 (2026-07-06), `SOURCE_WEIGHT_ACTIVE`=ON, founder human-eye gate PASSED:** the 5-tier classifier + composite scorer (V1 rerank×source×tier) that ran shadow-only since v198 now reorders the real Research top_k on prod. **Activation seam:** `api/services/source_weight_shadow.py::rank_by_composite_v1` (a pure reuse of the shadow's `classify_tier`/`source_weight`/`tier_weight`/V1 formula/stable-sort — NO fork), called by `retriever.py` POST-rerank on the SAME full reranked pool the shadow captures; `server.py` reads `SOURCE_WEIGHT_ACTIVE` and passes it through. Ratified config: local = Tier 2 ×1.5, Review = Tier 4. **Gates all passed:** parity (`tests/test_source_weight_parity.py` 5/5 + LIVE 0-fail — activated top_k == shadow V1 top_k on real pools); danger-path LIVE (`scripts/source_weight_activation_verify.py`, TFDA-cited 0 on 冠脂妥+warfarin & 冠脂妥懷孕); §2.7 Research 18/2/0 (both WARNs = known oscillators R10[reverted PASS on confirm]/R20[documented safer-alt, founder-accepted 2026-07-03], zero reorder-caused regression). **OFF path is byte-identical** (retained as instant rollback: `fly secrets unset SOURCE_WEIGHT_ACTIVE` → `retriever.py` real path = `YEAR_BOOST` + rerank order; `test_source_weight_identity.py` still green). **✅ FLIPPED ON + human-eye gate PASSED 2026-07-06 (founder):** `fly secrets set SOURCE_WEIGHT_ACTIVE=true` (rolling update OK), prod human-eye verified — danger-path (TFDA 0, Verify analysis unchanged) + indication positive-control (TFDA correctly cited, v197 integrity intact) + English/general-zh (sane) + OFF-vs-ON citation-set consistency (no churn). One benign recall observation logged as TECH_DEBT [P3 · retrieval-recall] (weak-phrasing indication queries miss the TFDA corpus below the 0.6 threshold — identical OFF and ON, not weighting-caused). `SOURCE_WEIGHT_SHADOW` logging kept intact for ongoing shadow-vs-live comparison. **STILL OPEN (separate slots, NOT this activation):** (1) the §2.10.6:960 **cross-tier-divergence generator instruction** (a prompt change → its own §2.7 surface, explicitly OUT of scope here); (2) **DailyMed-as-5th-source** (the source list is still the existing 4; `dailymed`/`who` weights are reserved). Cross-ref the [P2] "Citation retrieval ranking evaluation" item.
 
-### [P2] DailyMed setid selection prefers repackager over reference label (citation-quality)
+### [OTHER] [P2] DailyMed setid selection prefers repackager over reference label (citation-quality)
 - **Source**: 2026-07-08 Verify DailyMed human-eye gate (Step 4 deep-link check). The Card-3 atorvastatin deep-link opened the CORRECT drug with a substantive 34073-7 section, BUT resolved to a **Bryant Ranch Prepack REPACKAGED label (ANDA/repackager)**, not the reference (NDA) label. Content matched this time (the repackaged DI section mirrored the originator), so NON-BLOCKING.
 - **Problem**: `DailyMedClient` picks the **max `spl_version`** setid. Repackager/generic labels often carry a higher spl_version → the heuristic systematically risks citing a thinner/lagging repackager DI section over the authoritative reference label. Same citation-integrity lineage as v197 (rep-name/rep-字號 mismatch).
 - **Fix-direction (backend-only, later slot)**: rank setids by **`marketing_category_code`** (prefer NDA > ANDA > repackager) using the field the `/spls.json` resolve already returns, then tie-break by `spl_version`. Do NOT change on this ship.
 - **Priority**: [P2], coupled to [P0] Verify DailyMed.
 - **Slot**: after Verify DailyMed ships; backend-only, independent of the Research 5th-source increment.
 
-### [P3] Verify DailyMed None-`attribution_kind` caption fast-follow (cosmetic, honesty-preserving)
+### [HONESTY] [P3] Verify DailyMed None-`attribution_kind` caption fast-follow (cosmetic, honesty-preserving)
 - **What**: a legacy/None `attribution_kind` payload (e.g. an old cached Verify response from before the v201 enum) renders the **openfda_analysis caption** alongside a **DailyMed setid deep-link** — cosmetically inconsistent (caption says AI-analysis, url says DailyMed). It is **honesty-preserving** (the safe-default caption is never "label-stated") and **cannot occur for anything the shipped v201 code serves** (new responses always carry `attribution_kind`). Non-blocking.
 - **Origin**: surfaced during the v201 human-eye-gate diagnosis — the observed mismatch was actually a **stale pre-enum server** emitting `attribution_kind=None` (see the [ops] entry below), NOT a live code bug.
 - **Optional hardening (frontend-only, later)**: suppress the setid deep-link (render the caption unlinked) when `attribution_kind !== 'dailymed_grounded'`, so a None/openfda payload never shows a DailyMed deep-link. Belt-and-suspenders only.
 - **Priority**: [P3], non-blocking.
 
-### [ops] Pre-gate stale-server SOP (add to deploy/human-eye-gate checklist)
+### [OTHER] [ops] Pre-gate stale-server SOP (add to deploy/human-eye-gate checklist)
 - **What**: before any human-eye gate or live verification, **kill any lingering `uvicorn` on :8000** (`netstat -ano | grep :8000` → `taskkill /PID <pid> /F`). A stale **pre-enum** dev server answered a verification TWICE this session (it held :8000; the fresh server failed to bind with `Errno 10048`), emitting `attribution_kind=None` and producing a **false caption/deep-link mismatch** that cost a full diagnosis round.
 - **Tell**: `attribution_kind: None` in a Verify response is diagnostic of stale code — the schema default is `"openfda_analysis"` (never None), so None ⟹ a build predating the enum field.
 - **Fix**: add "kill stale :8000 server, confirm fresh bind (no `Errno 10048` in the log)" as the first line of the deploy/gate SOP.
@@ -989,7 +1018,7 @@ Phase 1B work items per advisor discussion 2026-05-04 (preserved in git commit 3
   - **Why the weak evidence is still worth an SOP line:** the convention is **free** — it costs nothing to follow and, if the hypothesis is right, avoids a wasted gate cycle. It is a cheap precaution, not a diagnosis.
   - **Safety net now exists:** the **fail-loud completeness guard** (`61200cd`, `tests/run_golden_tests.py`) makes any recurrence **loud instead of silent** — an interrupted run prints an INCOMPLETE banner naming every case that never ran, writes `run_complete=false` / `gate_valid=false` / `never_ran[]` into the results JSON, and **exits 2**. So even if this SOP line is forgotten, a truncated gate can no longer be misread as a passing one. *(⚠️ The guard was negative-controlled by injection but has **not yet been exercised on a real interrupted gate** — see the Phase-2 note in the openFDA-fallback baton.)*
 
-### [P2] Full-site DailyMed over-claim sweep (honesty) — ✅ COPY portion SHIPPED v189 (2026-06-25); deferred pieces still OPEN
+### [DONE] [P2] Full-site DailyMed over-claim sweep (honesty) — ✅ COPY portion SHIPPED v189 (2026-06-25); deferred pieces still OPEN
 - **✅ DONE (copy half, `ead65fb`, human-verified on prod v189):** the 6 user-facing Bucket-A strings ×16 locales (Research/Explain/Verify attribution footers + 2 FAQ answers + the Verify composer chip) no longer claim data "via DailyMed" → "FDA drug labels (OpenFDA)"; `explainAttr3` drug-label clause removed entirely. Bucket-B functional DailyMed lookup links + FDA tooltip KEPT (verification tools, not source-claims).
 - **🟡 STILL OPEN (deferred — the sweep is NOT fully closed):** (1) Verify "FDA Label Analysis" P1 (above); (2) DailyMed chip-label + sourceLabels↔share_renderer host-mapping drift P2 (TECH_DEBT); (3) `explain_system.md` "FDA DailyMed" source category to the LLM — prompt-gated, needs §2.7 re-baseline, P2 (TECH_DEBT). Cross-ref TECH_DEBT "DailyMed over-claim" entry.
 - **Source**: v184 post-deploy (C) check (2026-06-23) — the founder saw a signed-in Explain result whose footer "Data Sources & Attribution" still claims **"Drug label data from DailyMed (FDA/NLM)."** But DailyMed is **NOT integrated** — the real source is OpenFDA / FDA drug labels. Same overclaim already fixed in `/llms.txt` earlier today (`6d4ff86`, "FDA DailyMed" → "FDA drug labels"); that fix was **incomplete** — the Explain page footer (likely a SHARED component) + probably other surfaces still claim DailyMed.
@@ -1000,7 +1029,7 @@ Phase 1B work items per advisor discussion 2026-05-04 (preserved in git commit 3
   - **LATER (when DailyMed is actually integrated — the [P0] DailyMed API integration item above):** the REVERSE — ADD/UPDATE real DailyMed attribution + `source_type` enum + frontend labels. This is **inherent to that integration task** (a feature launch updates its own public copy), so no separate task is recorded for it — but note this "removal" fix will be **SUPERSEDED** by a "correct attribution" step at integration time.
 - **Slot**: near-term (next docs/copy pass); cross-ref TECH_DEBT 2026-06-23 + `6d4ff86`.
 
-### [P1] Research fabricates Taiwan reimbursement/regulatory specifics on no-retrieval (isFallback) answers (honesty / medical-safety) — ✅ SHIPPED v190 (72ce664, 2026-06-29)
+### [DONE] [P1] Research fabricates Taiwan reimbursement/regulatory specifics on no-retrieval (isFallback) answers (honesty / medical-safety) — ✅ SHIPPED v190 (72ce664, 2026-06-29)
 - **✅ SHIPPED v190 (`72ce664`, 2026-06-29):** the fallback prompt (`FALLBACK_PROMPTS["research"]`) now **suppresses locale reimbursement/regulatory specifics on no-retrieval and defers to 健保署/TFDA inline** (name the topic, list nothing from memory). **Fallback-only** (the retrieved-documents path is byte-for-byte unchanged); §2.7 Research held **17/20 PASS, 0 FAIL**; generalizes cross-country (Japan→MHLW, Korea→HIRA); general medical knowledge preserved. Human-eye gate + wider cross-country sweep + tightening sweep all passed; prod-verified on v190 (warfarin 健保給付條件 → banner + redirect to 健保署 + no fabrication; warfarin 作用機轉 → fully answered, no over-refusal).
 - **Source**: 在地差異 Probe 1 dogfooding (2026-06-24). Query 「warfarin 健保給付」 returned a **no-retrieval (`isFallback`) answer** — the 「未找到相關文獻 / 基於一般醫學知識」 banner WAS shown — yet the answer body still enumerated specific Taiwan 健保 details (**適應症範圍 / 給付限制 / 申請程序**) generated from model memory. So Research asserts fabricated Taiwan reimbursement/regulatory rules as fact even when it retrieved NOTHING and has already told the user so.
 - **Why it matters (honesty + medical-safety — same family as the DailyMed over-claim above)**: reimbursement/regulatory specifics are exactly the locally-variable, high-confidence-wrong facts an LLM should NOT invent — a wrong 給付條件 or 申請程序 is directly actionable and harmful, and emitting it UNDER a 「未找到相關文獻」 banner is internally contradictory (the banner says "no evidence" while the body asserts specifics). This is the **backend/LLM counterpart** to the frontend 在地差異提示 panel: the panel correctly says "verify with NHI", but the answer body is the thing doing the fabricating.
@@ -1009,7 +1038,7 @@ Phase 1B work items per advisor discussion 2026-05-04 (preserved in git commit 3
 - **🔗 Relation to TFDA grounding (ADR 007 / candidate a1·a2):** TFDA grounding **fixes the TFDA-COVERED drug-fact fabrication** (those drugs gain real 仿單 label docs → grounded+cited path, no longer fallback). **THIS item REMAINS the fallback-suppression for NHI reimbursement / regulatory specifics that have NO open data source** (健保給付 is not in the TFDA-label corpus). Grounding NARROWS but does NOT eliminate this. **Shared seam: `generator.py:159`** (`if not documents → _generate_fallback_stream`, the no-retrieval path).
 - **Slot**: ✅ SHIPPED v190 (2026-06-29).
 
-### [P1] Verify presents LLM-generated interaction analysis as "FDA Label Analysis" (honesty / medical-safety) — ✅ FULLY CLOSED (relabel half v199 `a2f3c90` + add-real-DailyMed-text half v201 2026-07-08)
+### [DONE] [P1] Verify presents LLM-generated interaction analysis as "FDA Label Analysis" (honesty / medical-safety) — ✅ FULLY CLOSED (relabel half v199 `a2f3c90` + add-real-DailyMed-text half v201 2026-07-08)
 - **✅ FULLY CLOSED v201 (2026-07-08):** the add-real-DailyMed-label-text half shipped as the Verify half of DailyMed ingest-and-cite ([P0] above) — each interaction's `description` is now grounded in the cited DailyMed 34073-7 interaction text, severity honestly labeled Vela-AI, `attribution_kind` enum drives the honesty markers. Both halves (v199 relabel + v201 grounding) are done. History preserved below.
 - **✅ POST-SHIP FIX — Baton A (fly 204, 2026-07-09, `8a4db6f`):** the v201 grounding was UNDER-grounding — both `dailymed.py` (parse-time) and `fda.py` (render-time) capped the interaction section at char 2000, dropping the drug-interaction TABLE (per-drug CYP450 enumeration) past the cut, so major interactions living only in that table (warfarin+fluconazole) were absent from the grounding text. Fixed option-b (cap prose, always keep the full table on DailyMed; pass the 3 safety sections full on openFDA). §2.7 Verify 15/1/0 incl. new golden V16 warfarin+fluconazole (PASS); PROD human-eye gate PASSED (founder). See STATE Recently Shipped + `docs/baton_a_verify_undergrounding_fix.md`. (openFDA-fallback half unit-covered-not-live-eyeballed → TECH_DEBT [P3].)
 - **✅ FIXED (honest-relabel half, v199 `a2f3c90`, 2026-07-06) — the remove-false-claim-NOW half (v189 copy-sweep family):** the interaction source string is no longer mislabeled as FDA authority. `source="FDA Label Analysis"` (main path) + the `DrugInteraction.source` schema default `"FDA Label / AI Analysis"` → **`"AI analysis of FDA label"`** (honest: the FDA label WAS consulted — the main path retrieves real openFDA labels, `server.py:1218` — but the interaction is the model's inference over it, NOT an FDA-stated interaction). The no-label fallback path's already-honest `"Clinical Knowledge (No FDA label available)"` is untouched. **§2.7 verdict: NO re-baseline needed** — Stage-0 trace confirmed the source string is display-only: assigned by our code AFTER the LLM returns, never in `verify_system.md`, never fed to any LLM call, and NOT read by the golden judge (`call_verify` scores summary + description + clinical_recommendation only, `run_golden_tests.py:145-147`). Frontend `verify.tsx:610/612` renders it as a raw passthrough → the honest string flows through automatically, no frontend code change. Anti-regression + main-path-emission + fallback-honesty tests pin it (`tests/test_verify_tfda_payload.py`). **⚠️ i18n gap (pre-existing, NOT introduced here, deferred):** the source string + the "Source:" prefix are English-only across all 16 locales — a future i18n pass (same family as the DailyMed chip / sourceLabels i18n).
@@ -1020,7 +1049,7 @@ Phase 1B work items per advisor discussion 2026-05-04 (preserved in git commit 3
 - **Slot**: coupled with [P0] DailyMed integration (Phase 1B Week 4-5) — no longer a standalone Q2 item.
 - **Discovered**: 2026-06-25 during the DailyMed reference inventory.
 
-### [P0] 在地差異提示 Tier 1 (TW/JP/KR/SG/MY/TH)
+### [OTHER] [P0] 在地差異提示 Tier 1 (TW/JP/KR/SG/MY/TH)
 - **Source**: ADR 004 (advisor discussion in git commit 394545e § 5.3 — advanced from Phase 1C to 1B per 護城河 rebalance)
 - **Why advanced**: Removing prescription parser frees 5-7 days; 在地差異 is core 護城河 (per ADR 004 wedge 2)
 - **Status (2026-07-27, CURRENT) — behavioral layer SHIPPED, structural layer NOT.** Sub-items **(a) DONE** (fly 210) and **(b1) DONE** (fly 212 + 213): the panel is live for **zh-TW and English** answers, resolves **6 countries** via a real waterfall, has **Tier-2 fallback**, and carries Tier-1 data for **TW / SG / MY**. Still open: **(b2)** JP/KR/TH data (blocked on native review), **(c)** Verify + Explain, **(d)** 16-lang i18n, **(e)** TS→YAML backend layer, **(f)** L1 discoverability. ⚠️ **b1 shipping is NOT §5.1.1 acceptance** — that section's structural half (YAML, `global_fallback.yaml`, `get_authorities()`, Pydantic, link-health cron) is entirely unbuilt and is marked **(e)-SCOPED** in the PRD.
@@ -1043,7 +1072,7 @@ Phase 1B work items per advisor discussion 2026-05-04 (preserved in git commit 3
 - **Slot**: Phase 1B Week 5-6
 - **Integration scope**: Augments Research/Verify/Explain (not new tab) — show "在地差異提示" alongside results
 
-### TFDA Open-Data Grounding (ADR 007) — CANDIDATE tasks [pending founder sequencing]
+### [OTHER] TFDA Open-Data Grounding (ADR 007) — CANDIDATE tasks [pending founder sequencing]
 
 > Deep local grounding per [ADR 007](docs/decisions/007-tfda-open-data-grounding.md) + the ADR 004 2026-06-26 ingest-and-cite constitution. Every item is **[CANDIDATE — pending founder sequencing]** (NOT committed to a phase) — **except (a2), now ⛔ DEFERRED (founder decision 2026-07-06, NOT cancelled — see its reopen conditions)**. Medical-output (🔴) items require a **§2.7 re-baseline + human-eye gate** before ship.
 
@@ -1076,13 +1105,13 @@ Phase 1B work items per advisor discussion 2026-05-04 (preserved in git commit 3
 - **(f) Transparency coverage metrics [CANDIDATE — pending founder sequencing]** — public "N Taiwan data items covered + 仿單 last-sync timestamp." **Not medical-output.** Builds trust + matches the ingest-and-cite honesty stance.
 - **(g) TW medical-society guideline LICENSING pursuit [CANDIDATE — founder BUSINESS action, NOT a code task]** — 高血壓 / 糖尿病 / 感染症 societies. **#2 TA-priority** per the strategy report (clinical-decision core; nurses + med students also use them). High TA-value justifies the licensing effort; **success unblocks graduating these high-value clinical topics from pointer → grounding**. ⚠️ **Do NOT RAG-ingest guidelines without a license** (copyright; the diabetes society explicitly prohibits reproduction). Cross-ref ADR 007 scope-discipline (Decision point 4).
 
-### [P1] Anonymous Trial Flow polish
+### [OTHER] [P1] Anonymous Trial Flow polish
 - **Source**: advisor discussion notes (git commit 394545e § 5.4)
 - **Implementation**: L0→L1 upgrade prompt timing optimization (PostHog signal-driven) + Paywall UI polish + Onboarding 16-lang polish
 - **Estimated**: 2 days
 - **Slot**: Phase 1B Week 7
 
-### [P2] Citation retrieval ranking evaluation
+### [OTHER] [P2] Citation retrieval ranking evaluation
 - **Source**: dogfooding TECH_DEBT entry 2026-05-06 issue #3
 - **Why**: 對 query 最 match 的 citation 沒被推到 anchor 位置 (e.g. 「亞洲社區老年人 polypharmacy」最 match 的 PMID 37574369 排名在 PMID 38368398 之後)
 - **Implementation**: 評估 RAG retrieval ranking 是否需要加入 population × setting × geography match score，weight 高於單純 recency
@@ -1116,275 +1145,32 @@ Phase 1B work items per advisor discussion 2026-05-04 (preserved in git commit 3
 
 ## Phase 1C — per advisor discussion (護城河 deepening)
 
-### [P1] WHO ICD-11 API integration
-- **Source**: advisor discussion notes (git commit 394545e § 6.1)
-- **Why**: Cross-language bridging anchor — multilingual disease name alignment ("糖尿病" / "diabetes" / "당뇨병" → 5A11)
-- **Implementation**: OAuth 2.0 client_id (3-5 day approval, file early) + RESTful integration; 14 official languages
-- **Estimated**: 2-3 days
-- **Slot**: Phase 1C Week 9
-- **Pre-action**: Apply for OAuth client_id NOW (per advisor discussion git commit 394545e § 10.1)
-
-### [P2] Taiwan brand-name → ingredient grounding (deterministic lookup, NOT LLM memory) — NOT near-term
+### [OTHER] [P2] Taiwan brand-name → ingredient grounding (deterministic lookup, NOT LLM memory) — NOT near-term
 - **Source**: TECH_DEBT 2026-06-22 (post-deploy click-test of piece (A): 「冠脂妥」 confidently mis-identified as Simvastatin; it is rosuvastatin).
 - **Problem**: even with piece (A)'s force-English guard, the "仍要送出（不建議）" proceed-anyway path lets the LLM confident-wrong map a Chinese brand→ingredient and present the wrong-drug analysis as authoritative. Brand→ingredient is a **factual-lookup** problem, not a reasoning one — LLM memory on Taiwan long-tail brands is inherently unreliable.
 - **Fix-direction**: ground brand→ingredient in a REAL table — TFDA drug-license data (商品名↔成分) if a dataset/API exists (deterministic); else a hand-curated Taiwan-common brand→ingredient YAML (same pattern as 在地差異). **GUARDRAIL: do NOT model-swap or prompt-tune — it changes the error rate, not the reliability.** See TECH_DEBT 2026-06-22.
 - **✅ DATA-LAYER CONFIRMED (2026-06-26, [ADR 007](docs/decisions/007-tfda-open-data-grounding.md)):** the open dataset DOES exist — TFDA **全部藥品許可證資料集** (infoId=37, 中文品名↔主成分略述). This **removes this item's prior "if a dataset/API exists" uncertainty**. **MERGE this item's data layer with TFDA-grounding candidate (a1)** — one shared 商品名↔成分 layer serves BOTH brand→ingredient AND grounding-lite. See the "TFDA Open-Data Grounding" candidate (a1) above.
 - **Slot**: **Phase 1C (or whenever 在地差異 grows a drug-name component) — FOLD into the 在地差異 / local-augmentation effort; do NOT insert as a near-term Phase 1B task (breaks current 1B ordering).**
 
-### [P1] 在地差異提示 Tier 1 expansion (VN/PH/ID/HK/SA/AE)
+### [OTHER] [P1] 在地差異提示 Tier 1 expansion (VN/PH/ID/HK/SA/AE)
 - **Source**: advisor discussion notes (git commit 394545e § 6.2)
 - **Implementation**: Same YAML schema as Tier 1 initial 6; backend/frontend already built in Phase 1B
 - **Estimated**: 4-5 days
 - **Slot**: Phase 1C Week 9-10
 
-### [P1] 跨語言橋接面板 MVP
+### [OTHER] [P1] 跨語言橋接面板 MVP
 - **Source**: advisor discussion notes (git commit 394545e § 6.3 — Wedge 3 of 4-wedge 護城河)
 - **Implementation**: ICD-11 anchor data structure + cross-language query backend + bridging panel UI + 4-5 language alignment logic
 - **Estimated**: 3-4 days
 - **Slot**: Phase 1C Week 11
 
-### [P2] WHO API integration — RAG source for global treatment guidelines
-- **Background**: PRD §2.3 CitationPanel `source_type` enum already includes 'WHO', but no work item exists for actually ingesting WHO data as a retrievable RAG source. Currently 'WHO' is a valid display label only — no document ingest pipeline produces WHO-tagged citations.
-- **Scope**: integrate one or more WHO data endpoints (Essential Medicines List / treatment guidelines / global pharmaceutical reference) into the existing retriever pipeline (`api/rag/retriever.py` + `api/services/*`). Treat WHO as a baseline global reference that complements local-authority sources (§5.1 Tier 1 6國).
-- **Why Phase 1C, not Phase 1B**:
-  - Phase 1B Week 4-8 already loaded with DailyMed (Week 4-5) + §5.1 Tier 1 6國 (Week 5-6) + Anonymous Trial Flow polish (Week 7) + integration test (Week 7-8). No buffer.
-  - GTM priority: §5.1 in-locale differentiation is the moat (UpToDate / OpenEvidence don't have local data); WHO is a global baseline competitors can replicate.
-  - Sequencing: implementing §5.1 first surfaces whether WHO ingestion is needed standalone or can be folded into §5.1 local-vs-global comparison logic.
-- **Pre-implementation gates**:
-  - §5.1 Tier 1 6國 shipped (informs WHO data shape requirements)
-  - §2.1 Model Provider refactor shipped (clean retriever interface)
-- **Distinct from existing [P1] WHO ICD-11 API integration entry above**: that item is about ICD-11 anchor codes (cross-language disease term alignment, Wedge 1). This item is about WHO content ingestion as RAG documents.
-- **Estimated**: 2-3 days
-- **Discovered**: 2026-05-06 — user-flagged BACKLOG gap during §4.5 UX polish closing review
-
-### [P2] Guideline document ingestion pipeline (AAPD / NHS / SDCEP / EAPD / WHO 等)
-- **Background**: 2026-05-08 顧問 dogfooding 回饋 揭示 international clinical practice guideline (AAPD / NHS / SDCEP / EAPD / WHO 等) 不在 PubMed 主索引 — 很多是 PDF / website / 機構出版物。即使 PRD §2.10.6 證據分層把 Tier 1 weight × 2.0,如果 retrieval 根本撈不到 Tier 1 文件,classifier 也沒用。
-- **Scope**: Build ingestion pipeline for guideline documents from authoritative bodies:
-  - **Pediatric**: AAPD (American Academy of Pediatric Dentistry), EAPD (European Academy of Paediatric Dentistry)
-  - **Dental general**: ADA (American Dental Association)
-  - **Public health**: NHS (UK), SDCEP (Scottish), WHO global guidelines (already P2 in BACKLOG)
-  - 各 guideline document 拉進 RAG corpus,標 source_type='Guideline' + tier=1
-- **Why Phase 1C, not Phase 1B**:
-  - Each guideline source has different format (PDF / HTML / DOCX); 新 parsing pipeline
-  - 授權狀況 varies (AAPD 商業授權 / NHS 公開 / WHO 公開) — 須 case-by-case review
-  - Multi-week effort,Phase 1B 已滿載
-- **Pre-implementation gates**:
-  - PRD §2.10.6 evidence tier classification shipped (Phase 1B)
-  - Tier 1 weight × 2.0 validated against Phase 1B Week 7-8 dogfooding eval
-- **Distinct from existing [P2] WHO API integration entry**: that one ingests WHO global treatment guidelines + GHO statistics. This entry covers professional society guidelines (AAPD / ADA / EAPD / NHS / SDCEP) — different authorities, may share infrastructure but content scope distinct.
-- **Estimated**: 4-6 days (depends on # of guideline sources targeted in MVP — recommend MVP = AAPD + NHS + 1 more, expand later)
-- **Discovered**: 2026-05-08 — 顧問 dogfooding case revealed retrieval missing international guideline tier of evidence
-
----
-
 ## Phase 2 candidates (exploratory) — post Phase 1B / post Stage 3, not scheduled
 
-### ⛔ [NOT PURSUING — DECIDED 2026-08-03] LAYER 1: Generative UI (LLM selects components at runtime)
+### [DONE] 📎 SUPERSEDED (retained for audit): TIER 1 (2026-06-08 framing) — [P2] Verify generative-UI PoC
 
-> **RESTRUCTURED 2026-08-03 (founder + strategist, after fresh trend + evidence research).**
-> The former two-tier entry (written 2026-06-02, reworked 2026-06-08) **conflated three different
-> things**, and its evidence base has been **superseded by two randomized clinical trials**. It is now
-> **three separate entries**: **Layer 1** (this one) = the full generative-UI rollout, **now a decision,
-> not a deferral** · **Layer 2** = structured rendering of already-validated data, kept but gated and
-> demoted · **Layer 3** = **Calibration UI**, a NEW and differentiated direction. **Every original
-> rationale line and design constraint is PRESERVED below as retained history** (same treatment as the
-> STATE.md archived-header precedent) — they remain correct, and are now evidence-backed rather than
-> merely argued.
-
-**DECISION: NOT PURSUING.** Previously "Phase 2, gated on prod data"; that framing implied it was
-waiting for evidence. The evidence arrived and points the other way.
-
-- **The core conflict.** Generative UI means **an LLM decides AT RUNTIME which components to render**.
-  In a medical product that is **letting a model which can hallucinate decide what looks
-  authoritative** — a direct conflict with the citation-mandatory / anti-hallucination positioning, and
-  with **CLAUDE.md Rule 19**'s principle that a compensating behaviour must travel with the data it
-  protects. Here the compensating behaviour (provenance, hedging, honest gaps) would have to travel into
-  a component-selection layer that is itself model-generated.
-- **⚠️ Measured in Vela THIS MONTH — the risk is not hypothetical:** **three false provenance strings**
-  (TFDA chip claiming FDA labeling · the `local` chip · the locale panel's "not integrated" note), a
-  **6-for-6 coverage-caused wrong-drug citation defect** (`aspirin contraindications` answered entirely
-  from *Clanza (Aceclofenac)* on prod), and a **1-character stub labelled "Official"** still live on a
-  public indexed page. **Making provenance DISPLAY richer while provenance CORRECTNESS is still being
-  repaired amplifies exactly the risk this entry's own constraints warn about.**
-- **🔓 REOPEN CONDITION (so this is a decision, not a dead end):** revisit **only if** (a) provenance
-  correctness is closed — c2, openFDA query repair, and the provenance-string sweep all shipped and
-  verified — **AND** (b) real prod data shows users struggle with the current presentation. **Both, not
-  either.**
-
-#### 📎 RETAINED RATIONALE (original Tier-2 constraints — still correct, now evidence-backed)
-
-- **Source**: Andrew product exploration 2026-06-02 (generative UI trend research + medical over-trust risk analysis)
-- **Idea**: Render Vela answers as structured/interactive components (React/HTML) instead of plain text/markdown, for more intuitive comprehension. Trend is real (Gartner: ~30% of new apps to use AI-driven adaptive interfaces by 2026; Vercel AI SDK RSC / Google A2UI / CopilotKit AG-UI are mature patterns — LLM emits structured JSON selecting which component to render).
-- **CRITICAL design constraints (the reason this is recorded, not just "do generative UI")**: medical context inverts the usual "rich UI = better" conclusion because of the OVER-TRUST risk (Stanford-Harvard State of Clinical AI 2026 + ECRI 2026 top patient-safety concern: users over-trust confident-looking systems lacking clinical context). Rich/authoritative UI can make a possibly-hallucinated answer LOOK more authoritative, directly undermining Vela's citation-mandatory / anti-hallucination positioning. Therefore:
-  1. **Structured UI ONLY for: source/citation surfacing, numeric values vs ranges, verification paths.** NOT for wrapping prose clinical judgment to make it look more authoritative.
-  2. **Per-mode suitability differs by data shape:**
-     - **Verify (drug interactions)** — BEST fit, lowest over-trust risk. Data is already structured (drug pairs, severity, mechanism, source from FDA/DailyMed). Interaction matrix + severity badge visualizes already-validated structured data, not free-generated prose. The removed ProductShowcase Verify card ("⚠ Major Interaction" badge) was a proto-version.
-     - **Explain (lab results)** — GOOD fit, BUT numeric-mapping correctness is safety-critical: a value→status mapping error (e.g. TSH 12.5 shown as "normal/green") is MORE dangerous than a prose error because visualization makes it look precise. Requires strict correctness validation of the value→status mapping. The removed Explain card ("↑ Above normal range") was a proto-version.
-     - **Research (evidence Q&A)** — WORST fit for charts (prose reasoning forced into visuals = the over-trust trap). BUT citation can be structured (source cards, evidence-tier badges, PubMed links) — that part STRENGTHENS verification, so it's additive.
-  3. **Numeric/status mappings (Explain) need rigorous correctness validation** — wrong mapping in a visual is more dangerous than in prose.
-  4. **Gate on prod data, not trend** — only invest if PostHog shows users struggle with plain-text answers (e.g. high dwell/bounce on Explain lab interpretation). The problem (plain text is hard to comprehend) is unvalidated until there are real users.
-- **Solo-founder cost note**: large effort — component manifest, LLM structured-output prompt engineering + validation, streaming render, per-component 16-locale i18n, a11y, AND medical content correctness validation (heavier than general-purpose apps). Competes with Stage 3 + Phase 1B for resources.
-- **Suggested entry point IF pursued**: narrow PoC on Verify interaction matrix first (most structured data, lowest over-trust risk, existing ProductShowcase proto). NOT a full-app generative UI rewrite.
-
-> **⚠️ Reconciling constraint 2 with Layer 3 (read together, they are NOT in conflict):** the table above
-> calls Research the **WORST fit *for charts*** — forcing prose reasoning into visuals. **Layer 3 is not
-> charts.** It adds a *calibration cue* about evidence disagreement, which falls under the same
-> sentence's second half: *"citation can be structured … that part STRENGTHENS verification, so it's
-> additive."* Layer 3 is the additive half, not the charts half.
-
----
-
-### [P3 — GATED, LOW priority] LAYER 2: Structured rendering of ALREADY-VALIDATED data (Verify)
-
-> **Formerly "TIER 1 Verify generative-UI PoC".** Survives the 2026-08-03 review, with corrections.
-
-**⚠️ CORRECTION — this is NOT the differentiated opportunity.** The 2026-06-08 rework treated it as the
-near-term win; the review found it had been **conflated with Layer 3**. Its value proposition is
-*"looks better"*, which **has no supporting evidence** and carries presentation risk in a medical
-context. **Layer 3 is the differentiated direction; this is a polish item.** Demoted [P2] → **[P3]**.
-
-- **Scope (unchanged)**: render Verify's EXISTING validated structured output (interaction matrix +
-  severity badge + per-drug info cards + source chips) as interactive components. **Verify remains the
-  safest mode** — the data is already structured and validated.
-- **Placement gates:** **(a) MET** — Verify force-English + drug-name resolution + DailyMed all shipped.
-  **(b) NOT MET** — the §5.1 在地差異 **6-country moat has only TW / SG / MY of 6**; JP/KR/TH are
-  blocked on native review (b2).
-- **🆕 (c) NEW SEQUENCING CONSTRAINT (added 2026-08-03) — must come AFTER the content-correctness work in
-  flight: c2 (DailyMed reference-label selection) · openFDA query repair · the consolidated
-  provenance-string sweep.** All three touch **the same chip / citation components** this layer would
-  restyle, so building first means building it twice. Cross-ref those entries.
-- **🆕 SHARPER SUITABILITY RULE (2026-08-03 — generalises the per-mode table above; that table is
-  retained, not replaced):**
-  > **The dividing line is NOT data shape — it is whether the content could be a hallucination.**
-  > **LLM-GENERATED content stays prose. RETRIEVED FACTS may be structured.**
-  > Verify's **severity verdict is LLM-judged** (hence the v199 honesty fix), so **it does not
-  > qualify**; a **DailyMed section's own label text does**.
-  >
-  > ⚠️ **This bites Layer 2's own headline feature.** The "severity badge" in the scope line above is
-  > exactly the LLM-judged verdict the rule excludes. **A Layer-2 build must re-scope around that** —
-  > render the retrieved label text and the source chips, not the generated severity grade.
-- **Over-trust guardrail (retained)**: render ONLY already-validated structured data; introduce NO new
-  medical inference; do NOT wrap prose clinical judgment to look more authoritative.
-- **Gate-override note (retained, but weakened):** the original entry let this PoC override its own
-  "gate on prod data, not trend" rule, on the reasoning that a small time-boxed bet is worth an
-  experiential signal. **That override is now much harder to justify** — the same review that produced
-  Layer 3 found the *"structured looks better"* premise unevidenced, while Layer 3's premise has RCT
-  effect sizes. **If there is one experiential bet to make, it is Layer 3, not this.**
-
----
-
-### [P2 — NEW 2026-08-03, GATED] LAYER 3: **Calibration UI** — help users know which answers deserve a second look
-
-> **This is the differentiated direction.** Filed as its own entry, not a sub-tier, because **its goal is
-> different**: not *"easier to read"* but **"help the user know which answers deserve a second look."**
-
-**🎯 THE DESIGN PRINCIPLE (corrects the original framing of this whole entry):**
-> The goal is **NOT** "make everything easier to read." It is **"let the easy cases stay fast and make
-> the doubtful cases slow down."** In the nudge RCT, treated physicians spent **~52.5s LONGER per case**,
-> with a **larger increment on cases where the LLM was wrong** — **selective System 2 engagement, not
-> uniform slowing. Better outcomes came from selective friction, not from lower friction.**
-
-#### Evidence base (both trials POST-DATE this entry's original 2026-06-02 research)
-
-- **NEJM AI, April 2026 — Qazi et al., RCT, n=44 physicians, ALL with 20-hour AI-literacy training.**
-  Diagnostic reasoning fell from **84.9%** with error-free LLM suggestions to **73.3%** with flawed ones
-  — a **14.0-point adjusted drop**. **AI-literacy training alone was insufficient.**
-  `doi:10.1056/AIoa2501001`
-- **medRxiv, June 2026 — Qazi et al. follow-up RCT, n=72 physicians, 432 cases.** A lightweight
-  **dual-component behavioural nudge** improved diagnostic reasoning by **+7.6 pp** (95% CI 1.4–13.9,
-  P=0.016) and top-choice diagnosis accuracy by **+10.9 pp** (P=0.020). `doi:10.64898/2026.06.01.26354596`
-  The nudge = **(i) an ANCHORING CUE** showing the model's benchmark accuracy before each recommendation
-  **+ (ii) a SELECTIVE-ATTENTION CUE**: ensemble confidence from **three DIFFERENT-FAMILY models**, shown
-  as a red/orange/green traffic light.
-
-#### Four mechanism findings that CONSTRAIN the design
-
-1. **A model's own confidence score is unreliable** — documented overconfidence on incorrect output.
-   **Cross-model DISAGREEMENT is a model-agnostic signal needing no model internals.**
-   **➡️ Do NOT build self-reported confidence.** *(Audited: Vela surfaces none today — good.)*
-2. **Uniform friction fails.** Cognitive forcing functions (forced delays, commit-first) reduce
-   overreliance only at a friction cost users resist; self-explanations get processed heuristically
-   rather than substantively.
-3. **Selectivity is the point.** Uniform skepticism is cognitively costly and **erodes the genuine
-   accuracy gains** LLM consultation provides on routine cases.
-4. **Interface beats training.** In high-stakes domains, interface modifications consistently outperform
-   training-only interventions (human-factors parallel) — and finding 1's RCT shows training alone
-   failing directly.
-
-#### ⚠️ Primary mode is **RESEARCH**, not Verify
-
-Correcting any impression carried over from the old entry (which designated Verify the entry point for
-*rendering*). Research is where the **evidence-strength signal is meaningful**, where **Lever 1 already
-lives**, and where the **wrong-drug defect occurs**.
-
-#### What Vela ALREADY has (audited in code 2026-08-03 — read-only, nothing modified)
-
-| RCT component | Vela status | evidence |
-|---|---|---|
-| **Selective-attention cue** (disagreement) | ✅ **already exists as a detector** — `RETRIEVAL_REFUSAL_SHADOW` (Lever 1) detects one-sided pools and has logged **real prod traffic since fly 181 (2026-06-18)** | hook `api/server.py:957-959` (flag-gated `create_task`) → `_run_retrieval_refusal_background` `api/server.py:572` → `rr.assess()` `:585` |
-| **Honest gap flagging** | ✅ exists | the v190 no-retrieval honesty instruction `api/rag/generator.py:54-60`; and the aspirin gate answer's *Missing Information* section naming *"children with viral infections"* |
-| **Verifiable sources** | ✅ exists | citation deep-links, repaired fly 214/215 — `isUsableSourceUrl` gate in `components/CitationPanel.tsx` |
-| **ANCHORING CUE** (model benchmark accuracy shown before the recommendation) | ❌ **NOT PRESENT — the missing piece** | no equivalent anywhere in `components/` |
-| *self-reported confidence* | ✅ **correctly absent** | grep of `components/` + `utils/sourceLabels.ts` → no confidence surfaced to users, matching mechanism finding 1 |
-
-#### 💡 Cheaper mechanism candidate (RECORD ONLY — do NOT scope)
-
-The RCT used a **3-model ensemble**, and its authors note multiple queries carry operational cost.
-**Vela is a RAG product**, so **disagreement among RETRIEVED SOURCES** is a candidate substitute signal —
-cheaper than running three models and arguably **more meaningful for an evidence product**. **Lever 1
-already approximates this.**
-**❓ OPEN QUESTION, UNMEASURED: is source-level disagreement a valid proxy for the model-ensemble
-disagreement the RCT validated?** They are not obviously the same construct — one measures *evidence
-conflict in the literature*, the other *model unreliability*. **Do not assume equivalence.**
-
-#### 🔴 PREREQUISITE — Lever 1's dataset is CENSORED against exactly the shape it detects
-
-Any calibration-UI work **depends on that data being uncensored first**:
-- **`api/server.py:583`** — `if len(sources) < 2: return`, so the **most extreme one-sided pools never
-  reach `assess()` at all**. *(⚠️ The baton cited `server.py:571-572`; the early return is at **:583**,
-  inside `_run_retrieval_refusal_background` which begins at :572. Corrected here.)*
-- **`api/services/retrieval_refusal.py:69-79`** — `pool_sources_from_documents` counts **PubMed
-  documents only** (`if getattr(d, "source_type", None) != SourceType.PUBMED: continue`), so a pool that
-  is entirely DailyMed/TFDA/label-sourced registers as **zero sources** and is dropped by the same guard.
-- **Cross-ref the existing [P2] `RETRIEVAL_REFUSAL_SHADOW` is structurally blind entry** — same defect,
-  and it is the **2nd of the six recorded "instrument blind to its own target" instances.**
-
-#### 🆕 A THIRD option on the pending Lever-1 enforce decision
-
-The enforce decision has been framed as **enforce vs not** (refuse the answer). This review adds a third,
-**much lower-risk** option — and it is **what the RCT actually validates**:
-> **Surface the signal to the user as a CALIBRATION CUE rather than refusing.**
-
-Refusing withholds an answer on a shadow signal that has never been enforced; a cue **preserves the
-answer and lets the clinician allocate attention** — which is precisely the measured +7.6 pp / +10.9 pp
-mechanism. **Recorded as a new option on that decision. NOT decided here.**
-
-#### Competitive positioning (why this is the differentiated layer)
-
-- **Inline citations are NO LONGER differentiation.** OpenEvidence has content partnerships with **NEJM
-  Group** and the **JAMA Network**, **40%+ of US physicians** as daily users, and a reported **$12B**
-  valuation.
-- Its **most-cited weakness in 2026 clinician reviews** is being *"annoyingly confident when it's
-  wrong"*; one physician reported hallucinations across **1,220+ searches**, and **88%** of surveyed
-  physicians want more rigorous safety validation.
-- **So the open position is not "prettier" — it is HONEST EXPRESSION OF UNCERTAINTY**, now with
-  **RCT-measured effect sizes**, and **consistent with Vela's existing positioning** (citation-mandatory,
-  fail-loud, honest gaps) rather than a new direction requiring a pivot.
-
-#### Gating
-
-**GATED on (1) the Lever-1 censoring fix** (above) **and (2) the content-correctness work** — c2, openFDA
-query repair, provenance-string sweep. A calibration cue computed from a censored signal, or displayed
-alongside citations that name the wrong drug, would be **worse than none**: it would attach a
-trustworthiness signal to output whose provenance is still being repaired.
-
----
-
-### 📎 SUPERSEDED (retained for audit): TIER 1 (2026-06-08 framing) — [P2] Verify generative-UI PoC
-
-> **Superseded 2026-08-03** by **Layer 2** above (kept, gated, demoted to [P3], re-scoped around the
+> **Superseded 2026-08-03** by **Layer 2** (kept, gated, demoted to [P3], re-scoped around the
 > hallucination-vs-retrieved rule) and **Layer 3** (the differentiated direction this tier was conflated
-> with). Original text retained below.
+> with). Original text retained below. *(Both now live in `## Product direction candidates` — moved there 2026-08-11; this reference said "above" before the move.)*
 
 #### TIER 1 (NEW — near-term): [P2] Verify generative-UI PoC (rich structured rendering)
 - **Scope**: render Verify's EXISTING validated structured output (interaction matrix
@@ -1412,11 +1198,11 @@ trustworthiness signal to output whose provenance is still being repaired.
   ONLY if the PoC result + prod data BOTH support it.
 
 #### 📎 SUPERSEDED: TIER 2 (2026-06-08 framing — "full generative-UI rollout, Phase 2, gated on prod data")
-> **Superseded 2026-08-03 → LAYER 1 above, which converts this from a DEFERRAL into a DECISION
+> **Superseded 2026-08-03 → LAYER 1, which converts this from a DEFERRAL into a DECISION
 > (NOT PURSUING, with a stated reopen condition).** The rationale and constraint lines below are
 > **reproduced verbatim in Layer 1's "RETAINED RATIONALE" block**, where they remain live and
 > evidence-backed; this copy is the original placement, kept for audit. **Do not treat the "gated on
-> prod data" status line as current — it is not.**
+> prod data" status line as current — it is not.** *(LAYER 1 now lives in `## Product direction candidates` — moved there 2026-08-11; this reference said "above" before the move.)*
 - **Source**: Andrew product exploration 2026-06-02 (generative UI trend research + medical over-trust risk analysis)
 - **Idea**: Render Vela answers as structured/interactive components (React/HTML) instead of plain text/markdown, for more intuitive comprehension. Trend is real (Gartner: ~30% of new apps to use AI-driven adaptive interfaces by 2026; Vercel AI SDK RSC / Google A2UI / CopilotKit AG-UI are mature patterns — LLM emits structured JSON selecting which component to render).
 - **CRITICAL design constraints (the reason this is recorded, not just "do generative UI")**: medical context inverts the usual "rich UI = better" conclusion because of the OVER-TRUST risk (Stanford-Harvard State of Clinical AI 2026 + ECRI 2026 top patient-safety concern: users over-trust confident-looking systems lacking clinical context). Rich/authoritative UI can make a possibly-hallucinated answer LOOK more authoritative, directly undermining Vela's citation-mandatory / anti-hallucination positioning. Therefore:
@@ -1432,14 +1218,14 @@ trustworthiness signal to output whose provenance is still being repaired.
 - **Estimated**: full rollout TBD; much larger than Tier 1. (The narrow Verify PoC estimate moved to Tier 1 = 1-2d; the ~3-5d originally noted here referred to that now-Tier-1 PoC.) Re-scope when prod data justifies.
 - **Slot**: Phase 2 (post Phase 1B, post Stage 3). Not scheduled.
 
-### [P3 · candidate / UNMEASURED — priority proposed, founder to ratify] Ownership-based answer-completeness detection (omission flagging)
+### [OTHER] [P3 · candidate / UNMEASURED — priority proposed, founder to ratify] Ownership-based answer-completeness detection (omission flagging)
 - **What:** a post-answer check that flags when the queried drug's OWN reference label contains a whitelisted safety section (Boxed Warning / Contraindications / Warnings) that the answer's citations do not include. Ownership-keyed (`setid`/`moiety`, **plural keys per CLAUDE.md Rule 23**), never mention-based. **Detection-only; no answer modification.**
 - **Why filed:** external signal 2026-08-09 — the **NOHARM benchmark** (Stanford / Harvard / ARISE; 1,100 clinical cases, ~13k physician annotations) found **76.6% of harmful errors across all tested medical-AI systems are OMISSIONS, not misstatements** (Fortune 2026-07-29; TechNews zh summary 2026-08-09). Vela's own flagship defect (Reye's syndrome absent and structurally unreachable) is an omission produced at the **retrieval** layer. This candidate targets the **DETECTION** of that class at the **app** layer, which is possible because the corpus holds the label's section structure.
 - **Same family, distinct item:** `tests/probes/wrongdrug/owner_assertion.py` (ownership instrument, exists) and **STATE open-item #2** (wrong-drug filter, premise refuted 2026-08-06). This is **neither** — it detects **missing OWNED sections**, not wrong-owner citations.
 - **🔴 DESIGN CONSTRAINT (C1 lesson, 2026-06-17):** a checker that passes micro-tests can fail real-data validation (C1: structural-ON **FP 75%**). This candidate is **UNMEASURED** — no FP/FN rate exists, and the **threshold finding** (owned docs may never enter the pool) means the flag could fire on a large fraction of queries. **Any build starts with an offline measurement pass against persisted answers, not a shadow hook.**
 - **Not scheduled. No option chosen. Founder sequences.**
 
-### [P3 · candidate / UNMEASURED — priority proposed, founder to ratify] Wrong-owner citation honest labeling (render / generation layer)
+### [OTHER] [P3 · candidate / UNMEASURED — priority proposed, founder to ratify] Wrong-owner citation honest labeling (render / generation layer)
 - **What:** when the only DailyMed safety citation on a **single-drug** query is owned by a **DIFFERENT** moiety (ownership = `setid`→`moiety` lookup, **plural keys per Rule 23 — never mention-based**), **label the card honestly** — e.g. *"same-class drug label — not an `<drug>`-specific document"* — instead of presenting it as if on-target. **Fixes HONESTY, not retrieval — the tombstone's sibling: when the data can't be fixed, fix the claim.**
 - **Why filed:** founder decision **2026-08-10** after the first ownership-form gate (**2/4**) — the flagship defect is **measured unfixable by all four excluded directions** (c2 options · filter · title-prefix · threshold, `docs/c2_line_closeout_20260804.md` § 0), so the **honest-labeling axis is the remaining lever**. Filed the same day as the **NOHARM omission-detection** candidate above; **both consume the same ownership join** (`tests/probes/wrongdrug/owner_assertion.py`).
 - **🔴 DESIGN CONSTRAINTS (from the gate + the form's own rules):**
@@ -1754,3 +1540,264 @@ Product Overview §1.5 (consumer decision upheld).
       藥師講師 / 繼續教育課程提供者 / 藥學系臨床課教師. One educator
       recommending the tool in a course = 50+ warm impressions per
       session. Also validates Share Answer as teaching-material surface.
+
+## Product direction candidates (not scheduled — founder sequences)
+
+<!-- SECTION CREATED 2026-08-11 (docs reorganization). The six entries below were MOVED here
+     VERBATIM from `Phase 1C` and `Phase 2 candidates`; no entry text was changed. Only
+     positional wording ("above"/"below") was repaired where the move broke it — each such fix
+     is listed in the reorganization report. -->
+
+*Navigation text, new 2026-08-11 — not founder content.* **These are product-direction BETS, not
+defects.** Everything else in this file describes something that is wrong, missing, or owed; these
+describe something the product could BECOME. They are collected here so that reading the rest of
+BACKLOG as a work queue is not interrupted by strategy.
+
+**None is scheduled. Each carries its own gates, and those gates are part of the entry — read them
+before treating any of these as pickable.** Several also cross-reference each other (the three
+LAYER entries reconcile against one another; the two WHO entries are deliberately distinct items).
+
+---
+
+### [P1] WHO ICD-11 API integration
+- **Source**: advisor discussion notes (git commit 394545e § 6.1)
+- **Why**: Cross-language bridging anchor — multilingual disease name alignment ("糖尿病" / "diabetes" / "당뇨병" → 5A11)
+- **Implementation**: OAuth 2.0 client_id (3-5 day approval, file early) + RESTful integration; 14 official languages
+- **Estimated**: 2-3 days
+- **Slot**: Phase 1C Week 9
+- **Pre-action**: Apply for OAuth client_id NOW (per advisor discussion git commit 394545e § 10.1)
+
+### [P2] WHO API integration — RAG source for global treatment guidelines
+- **Background**: PRD §2.3 CitationPanel `source_type` enum already includes 'WHO', but no work item exists for actually ingesting WHO data as a retrievable RAG source. Currently 'WHO' is a valid display label only — no document ingest pipeline produces WHO-tagged citations.
+- **Scope**: integrate one or more WHO data endpoints (Essential Medicines List / treatment guidelines / global pharmaceutical reference) into the existing retriever pipeline (`api/rag/retriever.py` + `api/services/*`). Treat WHO as a baseline global reference that complements local-authority sources (§5.1 Tier 1 6國).
+- **Why Phase 1C, not Phase 1B**:
+  - Phase 1B Week 4-8 already loaded with DailyMed (Week 4-5) + §5.1 Tier 1 6國 (Week 5-6) + Anonymous Trial Flow polish (Week 7) + integration test (Week 7-8). No buffer.
+  - GTM priority: §5.1 in-locale differentiation is the moat (UpToDate / OpenEvidence don't have local data); WHO is a global baseline competitors can replicate.
+  - Sequencing: implementing §5.1 first surfaces whether WHO ingestion is needed standalone or can be folded into §5.1 local-vs-global comparison logic.
+- **Pre-implementation gates**:
+  - §5.1 Tier 1 6國 shipped (informs WHO data shape requirements)
+  - §2.1 Model Provider refactor shipped (clean retriever interface)
+- **Distinct from existing [P1] WHO ICD-11 API integration entry above**: that item is about ICD-11 anchor codes (cross-language disease term alignment, Wedge 1). This item is about WHO content ingestion as RAG documents.
+- **Estimated**: 2-3 days
+- **Discovered**: 2026-05-06 — user-flagged BACKLOG gap during §4.5 UX polish closing review
+
+### [P2] Guideline document ingestion pipeline (AAPD / NHS / SDCEP / EAPD / WHO 等)
+- **Background**: 2026-05-08 顧問 dogfooding 回饋 揭示 international clinical practice guideline (AAPD / NHS / SDCEP / EAPD / WHO 等) 不在 PubMed 主索引 — 很多是 PDF / website / 機構出版物。即使 PRD §2.10.6 證據分層把 Tier 1 weight × 2.0,如果 retrieval 根本撈不到 Tier 1 文件,classifier 也沒用。
+- **Scope**: Build ingestion pipeline for guideline documents from authoritative bodies:
+  - **Pediatric**: AAPD (American Academy of Pediatric Dentistry), EAPD (European Academy of Paediatric Dentistry)
+  - **Dental general**: ADA (American Dental Association)
+  - **Public health**: NHS (UK), SDCEP (Scottish), WHO global guidelines (already P2 in BACKLOG)
+  - 各 guideline document 拉進 RAG corpus,標 source_type='Guideline' + tier=1
+- **Why Phase 1C, not Phase 1B**:
+  - Each guideline source has different format (PDF / HTML / DOCX); 新 parsing pipeline
+  - 授權狀況 varies (AAPD 商業授權 / NHS 公開 / WHO 公開) — 須 case-by-case review
+  - Multi-week effort,Phase 1B 已滿載
+- **Pre-implementation gates**:
+  - PRD §2.10.6 evidence tier classification shipped (Phase 1B)
+  - Tier 1 weight × 2.0 validated against Phase 1B Week 7-8 dogfooding eval
+- **Distinct from existing [P2] WHO API integration entry**: that one ingests WHO global treatment guidelines + GHO statistics. This entry covers professional society guidelines (AAPD / ADA / EAPD / NHS / SDCEP) — different authorities, may share infrastructure but content scope distinct.
+- **Estimated**: 4-6 days (depends on # of guideline sources targeted in MVP — recommend MVP = AAPD + NHS + 1 more, expand later)
+- **Discovered**: 2026-05-08 — 顧問 dogfooding case revealed retrieval missing international guideline tier of evidence
+
+---
+
+### ⛔ [NOT PURSUING — DECIDED 2026-08-03] LAYER 1: Generative UI (LLM selects components at runtime)
+
+> **RESTRUCTURED 2026-08-03 (founder + strategist, after fresh trend + evidence research).**
+> The former two-tier entry (written 2026-06-02, reworked 2026-06-08) **conflated three different
+> things**, and its evidence base has been **superseded by two randomized clinical trials**. It is now
+> **three separate entries**: **Layer 1** (this one) = the full generative-UI rollout, **now a decision,
+> not a deferral** · **Layer 2** = structured rendering of already-validated data, kept but gated and
+> demoted · **Layer 3** = **Calibration UI**, a NEW and differentiated direction. **Every original
+> rationale line and design constraint is PRESERVED below as retained history** (same treatment as the
+> STATE.md archived-header precedent) — they remain correct, and are now evidence-backed rather than
+> merely argued.
+
+**DECISION: NOT PURSUING.** Previously "Phase 2, gated on prod data"; that framing implied it was
+waiting for evidence. The evidence arrived and points the other way.
+
+- **The core conflict.** Generative UI means **an LLM decides AT RUNTIME which components to render**.
+  In a medical product that is **letting a model which can hallucinate decide what looks
+  authoritative** — a direct conflict with the citation-mandatory / anti-hallucination positioning, and
+  with **CLAUDE.md Rule 19**'s principle that a compensating behaviour must travel with the data it
+  protects. Here the compensating behaviour (provenance, hedging, honest gaps) would have to travel into
+  a component-selection layer that is itself model-generated.
+- **⚠️ Measured in Vela THIS MONTH — the risk is not hypothetical:** **three false provenance strings**
+  (TFDA chip claiming FDA labeling · the `local` chip · the locale panel's "not integrated" note), a
+  **6-for-6 coverage-caused wrong-drug citation defect** (`aspirin contraindications` answered entirely
+  from *Clanza (Aceclofenac)* on prod), and a **1-character stub labelled "Official"** still live on a
+  public indexed page. **Making provenance DISPLAY richer while provenance CORRECTNESS is still being
+  repaired amplifies exactly the risk this entry's own constraints warn about.**
+- **🔓 REOPEN CONDITION (so this is a decision, not a dead end):** revisit **only if** (a) provenance
+  correctness is closed — c2, openFDA query repair, and the provenance-string sweep all shipped and
+  verified — **AND** (b) real prod data shows users struggle with the current presentation. **Both, not
+  either.**
+
+#### 📎 RETAINED RATIONALE (original Tier-2 constraints — still correct, now evidence-backed)
+
+- **Source**: Andrew product exploration 2026-06-02 (generative UI trend research + medical over-trust risk analysis)
+- **Idea**: Render Vela answers as structured/interactive components (React/HTML) instead of plain text/markdown, for more intuitive comprehension. Trend is real (Gartner: ~30% of new apps to use AI-driven adaptive interfaces by 2026; Vercel AI SDK RSC / Google A2UI / CopilotKit AG-UI are mature patterns — LLM emits structured JSON selecting which component to render).
+- **CRITICAL design constraints (the reason this is recorded, not just "do generative UI")**: medical context inverts the usual "rich UI = better" conclusion because of the OVER-TRUST risk (Stanford-Harvard State of Clinical AI 2026 + ECRI 2026 top patient-safety concern: users over-trust confident-looking systems lacking clinical context). Rich/authoritative UI can make a possibly-hallucinated answer LOOK more authoritative, directly undermining Vela's citation-mandatory / anti-hallucination positioning. Therefore:
+  1. **Structured UI ONLY for: source/citation surfacing, numeric values vs ranges, verification paths.** NOT for wrapping prose clinical judgment to make it look more authoritative.
+  2. **Per-mode suitability differs by data shape:**
+     - **Verify (drug interactions)** — BEST fit, lowest over-trust risk. Data is already structured (drug pairs, severity, mechanism, source from FDA/DailyMed). Interaction matrix + severity badge visualizes already-validated structured data, not free-generated prose. The removed ProductShowcase Verify card ("⚠ Major Interaction" badge) was a proto-version.
+     - **Explain (lab results)** — GOOD fit, BUT numeric-mapping correctness is safety-critical: a value→status mapping error (e.g. TSH 12.5 shown as "normal/green") is MORE dangerous than a prose error because visualization makes it look precise. Requires strict correctness validation of the value→status mapping. The removed Explain card ("↑ Above normal range") was a proto-version.
+     - **Research (evidence Q&A)** — WORST fit for charts (prose reasoning forced into visuals = the over-trust trap). BUT citation can be structured (source cards, evidence-tier badges, PubMed links) — that part STRENGTHENS verification, so it's additive.
+  3. **Numeric/status mappings (Explain) need rigorous correctness validation** — wrong mapping in a visual is more dangerous than in prose.
+  4. **Gate on prod data, not trend** — only invest if PostHog shows users struggle with plain-text answers (e.g. high dwell/bounce on Explain lab interpretation). The problem (plain text is hard to comprehend) is unvalidated until there are real users.
+- **Solo-founder cost note**: large effort — component manifest, LLM structured-output prompt engineering + validation, streaming render, per-component 16-locale i18n, a11y, AND medical content correctness validation (heavier than general-purpose apps). Competes with Stage 3 + Phase 1B for resources.
+- **Suggested entry point IF pursued**: narrow PoC on Verify interaction matrix first (most structured data, lowest over-trust risk, existing ProductShowcase proto). NOT a full-app generative UI rewrite.
+
+> **⚠️ Reconciling constraint 2 with Layer 3 (read together, they are NOT in conflict):** the table above
+> calls Research the **WORST fit *for charts*** — forcing prose reasoning into visuals. **Layer 3 is not
+> charts.** It adds a *calibration cue* about evidence disagreement, which falls under the same
+> sentence's second half: *"citation can be structured … that part STRENGTHENS verification, so it's
+> additive."* Layer 3 is the additive half, not the charts half.
+
+---
+
+### [P3 — GATED, LOW priority] LAYER 2: Structured rendering of ALREADY-VALIDATED data (Verify)
+
+> **Formerly "TIER 1 Verify generative-UI PoC".** Survives the 2026-08-03 review, with corrections.
+
+**⚠️ CORRECTION — this is NOT the differentiated opportunity.** The 2026-06-08 rework treated it as the
+near-term win; the review found it had been **conflated with Layer 3**. Its value proposition is
+*"looks better"*, which **has no supporting evidence** and carries presentation risk in a medical
+context. **Layer 3 is the differentiated direction; this is a polish item.** Demoted [P2] → **[P3]**.
+
+- **Scope (unchanged)**: render Verify's EXISTING validated structured output (interaction matrix +
+  severity badge + per-drug info cards + source chips) as interactive components. **Verify remains the
+  safest mode** — the data is already structured and validated.
+- **Placement gates:** **(a) MET** — Verify force-English + drug-name resolution + DailyMed all shipped.
+  **(b) NOT MET** — the §5.1 在地差異 **6-country moat has only TW / SG / MY of 6**; JP/KR/TH are
+  blocked on native review (b2).
+- **🆕 (c) NEW SEQUENCING CONSTRAINT (added 2026-08-03) — must come AFTER the content-correctness work in
+  flight: c2 (DailyMed reference-label selection) · openFDA query repair · the consolidated
+  provenance-string sweep.** All three touch **the same chip / citation components** this layer would
+  restyle, so building first means building it twice. Cross-ref those entries.
+- **🆕 SHARPER SUITABILITY RULE (2026-08-03 — generalises the per-mode table above; that table is
+  retained, not replaced):**
+  > **The dividing line is NOT data shape — it is whether the content could be a hallucination.**
+  > **LLM-GENERATED content stays prose. RETRIEVED FACTS may be structured.**
+  > Verify's **severity verdict is LLM-judged** (hence the v199 honesty fix), so **it does not
+  > qualify**; a **DailyMed section's own label text does**.
+  >
+  > ⚠️ **This bites Layer 2's own headline feature.** The "severity badge" in the scope line above is
+  > exactly the LLM-judged verdict the rule excludes. **A Layer-2 build must re-scope around that** —
+  > render the retrieved label text and the source chips, not the generated severity grade.
+- **Over-trust guardrail (retained)**: render ONLY already-validated structured data; introduce NO new
+  medical inference; do NOT wrap prose clinical judgment to look more authoritative.
+- **Gate-override note (retained, but weakened):** the original entry let this PoC override its own
+  "gate on prod data, not trend" rule, on the reasoning that a small time-boxed bet is worth an
+  experiential signal. **That override is now much harder to justify** — the same review that produced
+  Layer 3 found the *"structured looks better"* premise unevidenced, while Layer 3's premise has RCT
+  effect sizes. **If there is one experiential bet to make, it is Layer 3, not this.**
+
+---
+
+### [P2 — NEW 2026-08-03, GATED] LAYER 3: **Calibration UI** — help users know which answers deserve a second look
+
+> **This is the differentiated direction.** Filed as its own entry, not a sub-tier, because **its goal is
+> different**: not *"easier to read"* but **"help the user know which answers deserve a second look."**
+
+**🎯 THE DESIGN PRINCIPLE (corrects the original framing of this whole entry):**
+> The goal is **NOT** "make everything easier to read." It is **"let the easy cases stay fast and make
+> the doubtful cases slow down."** In the nudge RCT, treated physicians spent **~52.5s LONGER per case**,
+> with a **larger increment on cases where the LLM was wrong** — **selective System 2 engagement, not
+> uniform slowing. Better outcomes came from selective friction, not from lower friction.**
+
+#### Evidence base (both trials POST-DATE this entry's original 2026-06-02 research)
+
+- **NEJM AI, April 2026 — Qazi et al., RCT, n=44 physicians, ALL with 20-hour AI-literacy training.**
+  Diagnostic reasoning fell from **84.9%** with error-free LLM suggestions to **73.3%** with flawed ones
+  — a **14.0-point adjusted drop**. **AI-literacy training alone was insufficient.**
+  `doi:10.1056/AIoa2501001`
+- **medRxiv, June 2026 — Qazi et al. follow-up RCT, n=72 physicians, 432 cases.** A lightweight
+  **dual-component behavioural nudge** improved diagnostic reasoning by **+7.6 pp** (95% CI 1.4–13.9,
+  P=0.016) and top-choice diagnosis accuracy by **+10.9 pp** (P=0.020). `doi:10.64898/2026.06.01.26354596`
+  The nudge = **(i) an ANCHORING CUE** showing the model's benchmark accuracy before each recommendation
+  **+ (ii) a SELECTIVE-ATTENTION CUE**: ensemble confidence from **three DIFFERENT-FAMILY models**, shown
+  as a red/orange/green traffic light.
+
+#### Four mechanism findings that CONSTRAIN the design
+
+1. **A model's own confidence score is unreliable** — documented overconfidence on incorrect output.
+   **Cross-model DISAGREEMENT is a model-agnostic signal needing no model internals.**
+   **➡️ Do NOT build self-reported confidence.** *(Audited: Vela surfaces none today — good.)*
+2. **Uniform friction fails.** Cognitive forcing functions (forced delays, commit-first) reduce
+   overreliance only at a friction cost users resist; self-explanations get processed heuristically
+   rather than substantively.
+3. **Selectivity is the point.** Uniform skepticism is cognitively costly and **erodes the genuine
+   accuracy gains** LLM consultation provides on routine cases.
+4. **Interface beats training.** In high-stakes domains, interface modifications consistently outperform
+   training-only interventions (human-factors parallel) — and finding 1's RCT shows training alone
+   failing directly.
+
+#### ⚠️ Primary mode is **RESEARCH**, not Verify
+
+Correcting any impression carried over from the old entry (which designated Verify the entry point for
+*rendering*). Research is where the **evidence-strength signal is meaningful**, where **Lever 1 already
+lives**, and where the **wrong-drug defect occurs**.
+
+#### What Vela ALREADY has (audited in code 2026-08-03 — read-only, nothing modified)
+
+| RCT component | Vela status | evidence |
+|---|---|---|
+| **Selective-attention cue** (disagreement) | ✅ **already exists as a detector** — `RETRIEVAL_REFUSAL_SHADOW` (Lever 1) detects one-sided pools and has logged **real prod traffic since fly 181 (2026-06-18)** | hook `api/server.py:957-959` (flag-gated `create_task`) → `_run_retrieval_refusal_background` `api/server.py:572` → `rr.assess()` `:585` |
+| **Honest gap flagging** | ✅ exists | the v190 no-retrieval honesty instruction `api/rag/generator.py:54-60`; and the aspirin gate answer's *Missing Information* section naming *"children with viral infections"* |
+| **Verifiable sources** | ✅ exists | citation deep-links, repaired fly 214/215 — `isUsableSourceUrl` gate in `components/CitationPanel.tsx` |
+| **ANCHORING CUE** (model benchmark accuracy shown before the recommendation) | ❌ **NOT PRESENT — the missing piece** | no equivalent anywhere in `components/` |
+| *self-reported confidence* | ✅ **correctly absent** | grep of `components/` + `utils/sourceLabels.ts` → no confidence surfaced to users, matching mechanism finding 1 |
+
+#### 💡 Cheaper mechanism candidate (RECORD ONLY — do NOT scope)
+
+The RCT used a **3-model ensemble**, and its authors note multiple queries carry operational cost.
+**Vela is a RAG product**, so **disagreement among RETRIEVED SOURCES** is a candidate substitute signal —
+cheaper than running three models and arguably **more meaningful for an evidence product**. **Lever 1
+already approximates this.**
+**❓ OPEN QUESTION, UNMEASURED: is source-level disagreement a valid proxy for the model-ensemble
+disagreement the RCT validated?** They are not obviously the same construct — one measures *evidence
+conflict in the literature*, the other *model unreliability*. **Do not assume equivalence.**
+
+#### 🔴 PREREQUISITE — Lever 1's dataset is CENSORED against exactly the shape it detects
+
+Any calibration-UI work **depends on that data being uncensored first**:
+- **`api/server.py:583`** — `if len(sources) < 2: return`, so the **most extreme one-sided pools never
+  reach `assess()` at all**. *(⚠️ The baton cited `server.py:571-572`; the early return is at **:583**,
+  inside `_run_retrieval_refusal_background` which begins at :572. Corrected here.)*
+- **`api/services/retrieval_refusal.py:69-79`** — `pool_sources_from_documents` counts **PubMed
+  documents only** (`if getattr(d, "source_type", None) != SourceType.PUBMED: continue`), so a pool that
+  is entirely DailyMed/TFDA/label-sourced registers as **zero sources** and is dropped by the same guard.
+- **Cross-ref the existing [P2] `RETRIEVAL_REFUSAL_SHADOW` is structurally blind entry** — same defect,
+  and it is the **2nd of the six recorded "instrument blind to its own target" instances.**
+
+#### 🆕 A THIRD option on the pending Lever-1 enforce decision
+
+The enforce decision has been framed as **enforce vs not** (refuse the answer). This review adds a third,
+**much lower-risk** option — and it is **what the RCT actually validates**:
+> **Surface the signal to the user as a CALIBRATION CUE rather than refusing.**
+
+Refusing withholds an answer on a shadow signal that has never been enforced; a cue **preserves the
+answer and lets the clinician allocate attention** — which is precisely the measured +7.6 pp / +10.9 pp
+mechanism. **Recorded as a new option on that decision. NOT decided here.**
+
+#### Competitive positioning (why this is the differentiated layer)
+
+- **Inline citations are NO LONGER differentiation.** OpenEvidence has content partnerships with **NEJM
+  Group** and the **JAMA Network**, **40%+ of US physicians** as daily users, and a reported **$12B**
+  valuation.
+- Its **most-cited weakness in 2026 clinician reviews** is being *"annoyingly confident when it's
+  wrong"*; one physician reported hallucinations across **1,220+ searches**, and **88%** of surveyed
+  physicians want more rigorous safety validation.
+- **So the open position is not "prettier" — it is HONEST EXPRESSION OF UNCERTAINTY**, now with
+  **RCT-measured effect sizes**, and **consistent with Vela's existing positioning** (citation-mandatory,
+  fail-loud, honest gaps) rather than a new direction requiring a pivot.
+
+#### Gating
+
+**GATED on (1) the Lever-1 censoring fix** (above) **and (2) the content-correctness work** — c2, openFDA
+query repair, provenance-string sweep. A calibration cue computed from a censored signal, or displayed
+alongside citations that name the wrong drug, would be **worse than none**: it would attach a
+trustworthiness signal to output whose provenance is still being repaired.
+
+---
