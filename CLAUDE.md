@@ -133,7 +133,7 @@ docker run -p 8000:8000 vela
 9. **`/api/consultation` was removed** — do not reference it
 10. **Disclaimers are frontend-rendered** — never instruct LLM to generate disclaimers; `generator.py` says "Do NOT add any disclaimer"
 11. **ProFeatureOverlay is a popover** — not a full-area overlay; uses `w-full` wrapper for layout
-12. **Evidence section format** — LLM must output `## [SectionName 🟢 — Language]` for `parseResearchSections()` to work
+12. **Research answer section format** — the generator instructs **exactly two `## ` sections, no brackets, no emoji marker**: `## Summary — <section name in user's language>` then `## Clinical Notes — …`. **`api/rag/generator.py:358-375` is the source of truth**; parsers (`share_renderer.parse_research_sections`, `pages/research.tsx`) follow it, never the reverse. *Corrected 2026-08-10 — this rule previously read `## [SectionName 🟢 — Language]`, and **both halves had been false for two months**: `afe0bdf` (2026-06-05) added "do NOT output square brackets around the header", and `3ad3ddc` (2026-06-10) removed the 🟢🟡🔴 evidence markers as an unverified LLM self-label. The stale rule shipped a dead colour path on the public share pages until fly 221.*
 13. **Cost tracking must not block** — all `log_api_cost_standalone()` calls wrapped in `try/except pass`
 14. **All PostHog events go through `utils/analytics.ts` `track()`** — never call `posthog.capture()` directly. See PRD 2.0.
 15. **All LLM calls go through Provider interface** (`api/providers/`) after Phase 0 2.1 lands — no direct `OpenAI()` or `AsyncOpenAI()` instantiation outside `api/providers/`.
