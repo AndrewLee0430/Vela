@@ -45,16 +45,33 @@ _TS = _ROOT / "utils" / "i18n-share.ts"
 _EXPLORE = _ROOT / "api" / "i18n" / "explore_strings.py"
 _RENDERER = _ROOT / "api" / "services" / "share_renderer.py"
 
-# Keys carried by all three files. The other two legal-weighted share keys
+# Keys under parity. The other two legal-weighted share keys
 # (modalConsentCheckbox, settingsRevokeConfirm) live only in the .ts file and
 # so have no parity obligation.
-SHARED_KEYS = ("publicDisclaimer", "publicShortDisclaimer")
+#
+# Widened at fly 224 from the two disclaimers × en+zh-TW to every key below ×
+# every locale that carries it. Each key is compared across whichever sources
+# actually hold it — the .ts and explore files carry 16 locales, share_renderer
+# carries en + zh-TW, so the comparison set is computed, not assumed.
+SHARED_KEYS = ("publicDisclaimer", "publicShortDisclaimer",
+               "publicRevoked", "publicFlagged")
 
-# share_renderer.py ships en + zh-TW only, so those are the locales all three
-# files have in common — the full set over which parity is even defined.
-SHARED_LOCALES = ("en", "zh-TW")
+ALL_LOCALES = ("en", "zh-TW", "zh-CN", "ja", "ko", "es", "fr", "de",
+               "it", "pt", "th", "ar", "hi", "bn", "he", "vi")
 
-_TS_CONST_TO_LOCALE = {"en": "en", "zhTW": "zh-TW"}
+# 🔴 headerTagline is the ONE remaining key duplicated across the two 16-locale
+# files that is NOT under parity: at fly 224 it still diverges in 10 of 16
+# locales. It is not legal-weighted and converging it was not authorised, so it
+# is excluded deliberately rather than by oversight — and
+# test_the_only_unguarded_duplicate_is_known below fails if that set ever
+# changes, so a NEW duplicated key cannot be added silently.
+_KNOWN_UNGUARDED_DUPLICATES = {"headerTagline"}
+
+_TS_CONST_TO_LOCALE = {"en": "en", "zhTW": "zh-TW", "zhCN": "zh-CN",
+                       "ja": "ja", "ko": "ko", "es": "es", "fr": "fr",
+                       "de": "de", "it": "it", "pt": "pt", "th": "th",
+                       "ar": "ar", "hi": "hi", "bn": "bn", "he": "he",
+                       "vi": "vi"}
 
 
 def _read_js_string(src: str, i: int) -> str:
@@ -129,15 +146,21 @@ def sources():
     }
 
 
-@pytest.mark.parametrize("locale", SHARED_LOCALES)
+@pytest.mark.parametrize("locale", ALL_LOCALES)
 @pytest.mark.parametrize("key", SHARED_KEYS)
 def test_disclaimer_is_byte_identical_across_all_three_sources(sources, key, locale):
-    """One legal string, three files. Any drift between them fails here."""
-    texts = {}
-    for fname, store in sources.items():
-        assert locale in store, f"{fname} is missing locale {locale!r}"
-        assert key in store[locale], f"{fname} [{locale}] is missing key {key!r}"
-        texts[fname] = store[locale][key]
+    """One legal string, N files. Any drift between them fails here.
+
+    Compares across exactly those sources that carry this key in this locale.
+    A key present in only one source is skipped — parity is undefined for it —
+    but a key present in two or more must match exactly.
+    """
+    texts = {fname: store[locale][key]
+             for fname, store in sources.items()
+             if locale in store and key in store[locale]}
+
+    if len(texts) < 2:
+        pytest.skip(f"{key} [{locale}] exists in {len(texts)} source(s) — parity undefined")
 
     distinct = set(texts.values())
     if len(distinct) != 1:
@@ -244,12 +267,17 @@ def test_zh_tw_disclaimer_uses_fullwidth_punctuation(sources, key):
     hand-authored zh-TW disclaimer — the reference text every machine-translated
     locale was derived from. Pinned so it cannot regress in any of the three files.
     """
+    checked = 0
     for fname, store in sources.items():
+        if key not in store.get("zh-TW", {}):
+            continue          # not every source carries every key
         text = store["zh-TW"][key]
+        checked += 1
         assert "," not in text, (
             f"{fname} [{key}] zh-TW contains an ASCII comma (U+002C); "
             f"Traditional Chinese requires the fullwidth comma U+FF0C: {text!r}"
         )
+    assert checked, f"{key} was not found in any source's zh-TW — nothing was checked"
 
 
 def test_the_guard_actually_fires_on_divergence(sources):
@@ -276,11 +304,44 @@ def test_the_guard_actually_fires_on_divergence(sources):
     )
 
 
+def test_the_only_unguarded_duplicate_is_known(sources):
+    """No key may be duplicated across the two 16-locale files without a decision.
+
+    THE BUSINESS RULE: the fly-224 convergence fixed the two disclaimers, but the
+    underlying trap is structural — two files independently machine-translated the
+    same English source and nothing compared them. Converging today does not stop
+    a NEW shared key being added tomorrow and drifting the same way.
+
+    This computes the overlap set live. Add a key to both files and this fails
+    until you either put it under parity (add it to SHARED_KEYS) or record it as
+    a deliberate exclusion. headerTagline is the one current exclusion: it still
+    diverges in 10 of 16 locales and converging it was not authorised.
+    """
+    ts_keys = set(sources["utils/i18n-share.ts"]["en"])
+    ex_keys = set(sources["api/i18n/explore_strings.py"]["en"])
+    overlap = ts_keys & ex_keys
+
+    unguarded = overlap - set(SHARED_KEYS)
+    assert unguarded == _KNOWN_UNGUARDED_DUPLICATES, (
+        f"the set of duplicated-but-unguarded keys changed.\n"
+        f"  expected: {sorted(_KNOWN_UNGUARDED_DUPLICATES)}\n"
+        f"  actual:   {sorted(unguarded)}\n"
+        "A key duplicated across both 16-locale files will drift. Either add it to "
+        "SHARED_KEYS (after converging it) or add it to _KNOWN_UNGUARDED_DUPLICATES "
+        "with a reason."
+    )
+
+
 def test_all_three_sources_were_actually_parsed(sources):
     """Guard the guard: a parser that silently returns {} would pass everything above."""
+    expected_locales = {"utils/i18n-share.ts": 16,
+                        "api/i18n/explore_strings.py": 16,
+                        "api/services/share_renderer.py": 2}
     for fname, store in sources.items():
-        for locale in SHARED_LOCALES:
-            for key in SHARED_KEYS:
+        assert len(store) == expected_locales[fname], (
+            f"{fname} parsed {len(store)} locales, expected {expected_locales[fname]}")
+        for locale in ("en", "zh-TW"):
+            for key in ("publicDisclaimer", "publicShortDisclaimer"):
                 text = store.get(locale, {}).get(key)
                 assert text, f"{fname} [{locale}][{key}] parsed as empty — parser is broken"
                 assert len(text) > 20, f"{fname} [{locale}][{key}] suspiciously short: {text!r}"

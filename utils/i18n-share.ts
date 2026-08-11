@@ -126,8 +126,8 @@ const zhTW: ShareTranslations = {
   publicCtaButton: '在 Vela 試試',
   publicDisclaimer: '此內容由 AI 根據公開醫學文獻生成，僅供醫療專業人員參考討論，不構成醫療建議、診斷或處方。請勿用於自我診斷或自我用藥。如有健康問題請諮詢合格醫療人員。',
   publicShortDisclaimer: '⚠️ 本資訊僅供參考，請依據臨床指引並諮詢合格專業人員。',
-  publicRevoked: '此分享已被撤回',
-  publicFlagged: '此分享因違反使用條款已下架',
+  publicRevoked: '此分享已被撤回。',
+  publicFlagged: '此分享因違反使用條款已下架。',
   headerTagline: '用你的語言提問，由官方來源驗證。',
 
   settingsTabTitle: '我的分享',
