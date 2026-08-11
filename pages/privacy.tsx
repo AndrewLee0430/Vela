@@ -15,8 +15,7 @@ export default function Privacy() {
 
             <div className="container mx-auto px-4 py-12 max-w-3xl">
                 <h1 className="text-3xl font-bold text-white mb-2">Privacy Policy</h1>
-                <p className="text-sm mb-2 text-text/40">Last updated: 2026-06-12</p>
-                <p className="text-xs mb-8 text-text/40">This Privacy Policy is written in English. Any translation into another language is provided for convenience only. In the event of any inconsistency or conflict between the English version and any translated version, the English version shall prevail and control.</p>
+                <p className="text-sm mb-8 text-text/40">Last updated: 2026-06-12</p>
 
                 <div className="space-y-8 text-sm leading-relaxed text-text/75">
 
@@ -86,6 +85,11 @@ export default function Privacy() {
                     <section>
                         <h2 className="text-lg font-semibold text-white mb-3">9. Contact</h2>
                         <p>For privacy-related inquiries: <a href="mailto:support@an-tho.com" className="underline" style={{ color: "rgb(var(--color-brand))" }}>support@an-tho.com</a></p>
+                    </section>
+
+                    <section>
+                        <h2 className="text-lg font-semibold text-white mb-3">10. Language and Governing Translation</h2>
+                        <p>This Privacy Policy is written in English. Any translation into another language is provided for convenience only. In the event of any inconsistency or conflict between the English version and any translated version, the English version shall prevail and control.</p>
                     </section>
                 </div>
 
