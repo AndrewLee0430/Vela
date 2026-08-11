@@ -103,11 +103,9 @@ EXPLORE_STRINGS: Dict[str, Dict[str, str]] = {
         "category_listing_title": "{category} ページ",
         "category_listing_empty": "このカテゴリーにはまだページがありません。",
         "publicDisclaimer": (
-            "本コンテンツは AI が公開医学文献から生成しており、医療専門家の"
-            "参考としてのみ使用されることを意図しています。医療アドバイス、"
-            "診断、処方には該当しません。自己診断・自己投薬には使用しないで"
-            "ください。健康上の懸念がある場合は資格を持つ医療従事者にご相談"
-            "ください。"
+            "このコンテンツは公開されている医学文献から AI "
+            "によって生成され、医療専門家の参考用ディスカッション資料としてのみ提供されます。医療上の助言、診断、処方を構成するものではありません。"
+            "自己診断や自己投薬には使用しないでください。健康上の懸念がある場合は、有資格の医療提供者にご相談ください。"
         ),
         "publicShortDisclaimer": (
             "⚠️ 本情報は参考用です。臨床ガイドラインを確認し、資格のある医療専門家にご相談ください。"
@@ -128,10 +126,9 @@ EXPLORE_STRINGS: Dict[str, Dict[str, str]] = {
         "category_listing_title": "{category} 페이지",
         "category_listing_empty": "이 카테고리에는 아직 페이지가 없습니다.",
         "publicDisclaimer": (
-            "이 콘텐츠는 AI가 공개 의학 문헌에서 생성한 것이며, 의료 전문가의 "
-            "참고용으로만 사용됩니다. 의료 조언, 진단 또는 처방을 구성하지 "
-            "않습니다. 자가 진단 또는 자가 투약에 사용하지 마십시오. 건강 "
-            "문제는 자격을 갖춘 의료 제공자와 상의하십시오."
+            "이 콘텐츠는 공개된 의학 문헌에서 AI에 의해 생성되었으며, 의료 전문가의 참고용 토론 자료로만 제공됩니다. 의료 조언, "
+            "진단 또는 처방이 아닙니다. 자가 진단이나 자가 투약에 사용하지 마십시오. 건강 문제가 있는 경우 자격을 갖춘 의료 "
+            "제공자와 상담하십시오."
         ),
         "publicShortDisclaimer": (
             "⚠️ 본 정보는 참고용입니다. 임상 지침을 확인하고 자격을 갖춘 의료 전문가와 상담하십시오."
@@ -153,10 +150,11 @@ EXPLORE_STRINGS: Dict[str, Dict[str, str]] = {
         "category_listing_empty": "Aún no hay páginas en esta categoría.",
         "publicDisclaimer": (
             "Este contenido es generado por IA a partir de literatura médica "
-            "públicamente disponible, destinado a profesionales sanitarios "
-            "como referencia. No constituye consejo médico, diagnóstico ni "
-            "prescripción. No utilizar para autodiagnóstico ni automedicación. "
-            "Consulte a un profesional sanitario cualificado."
+            "disponible públicamente, destinado a profesionales sanitarios solo "
+            "como referencia de discusión. No constituye consejo médico, "
+            "diagnóstico ni prescripción. No lo use para autodiagnóstico ni "
+            "automedicación. Consulte a un proveedor de salud cualificado ante "
+            "cualquier problema de salud."
         ),
         "publicShortDisclaimer": (
             "⚠️ Solo con fines informativos. Verifique con las guías clínicas y consulte a un profesional cualificado."
@@ -177,11 +175,12 @@ EXPLORE_STRINGS: Dict[str, Dict[str, str]] = {
         "category_listing_title": "Pages {category}",
         "category_listing_empty": "Aucune page dans cette catégorie pour l'instant.",
         "publicDisclaimer": (
-            "Ce contenu est généré par l'IA à partir de la littérature médicale "
-            "publiquement disponible, destiné aux professionnels de santé comme "
-            "référence. Il ne constitue pas un avis médical, un diagnostic ou "
-            "une prescription. Ne pas utiliser pour l'auto-diagnostic ou "
-            "l'auto-médication. Consultez un professionnel de santé qualifié."
+            "Ce contenu est généré par IA à partir de la littérature médicale "
+            "publiquement disponible, destiné aux professionnels de santé "
+            "uniquement comme référence de discussion. Il ne constitue pas un "
+            "avis médical, un diagnostic ou une prescription. Ne l'utilisez pas "
+            "pour l'autodiagnostic ou l'automédication. Consultez un "
+            "professionnel de santé qualifié pour tout problème de santé."
         ),
         "publicShortDisclaimer": (
             "⚠️ À titre informatif uniquement. Vérifiez avec les directives cliniques et consultez un professionnel qualifié."
@@ -203,10 +202,12 @@ EXPLORE_STRINGS: Dict[str, Dict[str, str]] = {
         "category_listing_empty": "Noch keine Seiten in dieser Kategorie.",
         "publicDisclaimer": (
             "Dieser Inhalt wird von KI aus öffentlich verfügbarer medizinischer "
-            "Literatur generiert und richtet sich an medizinisches Fachpersonal "
-            "als Referenz. Er stellt keine medizinische Beratung, Diagnose oder "
-            "Verschreibung dar. Nicht zur Selbstdiagnose oder Selbstmedikation "
-            "verwenden. Konsultieren Sie einen qualifizierten Arzt."
+            "Literatur generiert und ist nur als Diskussionsreferenz für "
+            "medizinisches Fachpersonal gedacht. Er stellt keine medizinische "
+            "Beratung, Diagnose oder Verschreibung dar. Nicht zur Selbstdiagnose "
+            "oder Selbstmedikation verwenden. Konsultieren Sie bei "
+            "gesundheitlichen Bedenken einen qualifizierten "
+            "Gesundheitsdienstleister."
         ),
         "publicShortDisclaimer": (
             "⚠️ Nur zu Informationszwecken. Überprüfen Sie die klinischen Leitlinien und konsultieren Sie einen qualifizierten Fachmann."
@@ -227,11 +228,12 @@ EXPLORE_STRINGS: Dict[str, Dict[str, str]] = {
         "category_listing_title": "Pagine {category}",
         "category_listing_empty": "Ancora nessuna pagina in questa categoria.",
         "publicDisclaimer": (
-            "Questo contenuto è generato dall'IA da letteratura medica "
-            "pubblicamente disponibile, destinato ai professionisti sanitari "
-            "come riferimento. Non costituisce consulenza medica, diagnosi o "
-            "prescrizione. Non utilizzare per autodiagnosi o automedicazione. "
-            "Consultare un operatore sanitario qualificato."
+            "Questo contenuto è generato dall'IA a partire da letteratura medica "
+            "disponibile pubblicamente, destinato ai professionisti sanitari solo "
+            "come riferimento per la discussione. Non costituisce consiglio "
+            "medico, diagnosi o prescrizione. Non utilizzare per autodiagnosi o "
+            "automedicazione. Consulta un operatore sanitario qualificato per "
+            "qualsiasi preoccupazione sulla salute."
         ),
         "publicShortDisclaimer": (
             "⚠️ Solo a scopo informativo. Verificare con le linee guida cliniche e consultare un professionista qualificato."
@@ -253,10 +255,11 @@ EXPLORE_STRINGS: Dict[str, Dict[str, str]] = {
         "category_listing_empty": "Ainda não há páginas nesta categoria.",
         "publicDisclaimer": (
             "Este conteúdo é gerado por IA a partir de literatura médica "
-            "publicamente disponível, destinado a profissionais de saúde como "
-            "referência. Não constitui aconselhamento médico, diagnóstico ou "
-            "prescrição. Não usar para autodiagnóstico ou automedicação. "
-            "Consulte um profissional de saúde qualificado."
+            "disponível publicamente, destinado a profissionais de saúde apenas "
+            "como referência de discussão. Não constitui aconselhamento médico, "
+            "diagnóstico ou prescrição. Não use para autodiagnóstico ou "
+            "automedicação. Consulte um profissional de saúde qualificado para "
+            "qualquer preocupação de saúde."
         ),
         "publicShortDisclaimer": (
             "⚠️ Apenas para fins informativos. Verifique com as diretrizes clínicas e consulte um profissional qualificado."
@@ -277,11 +280,12 @@ EXPLORE_STRINGS: Dict[str, Dict[str, str]] = {
         "category_listing_title": "หน้า {category}",
         "category_listing_empty": "ยังไม่มีหน้าในหมวดหมู่นี้",
         "publicDisclaimer": (
-            "เนื้อหานี้สร้างโดย AI จากวรรณกรรมทางการแพทย์ที่เปิดเผยต่อสาธารณะ "
-            "มีวัตถุประสงค์เพื่อใช้เป็นข้อมูลอ้างอิงสำหรับบุคลากรทางการแพทย์เท่านั้น "
-            "ไม่ถือเป็นคำแนะนำทางการแพทย์ การวินิจฉัย หรือใบสั่งยา "
-            "ห้ามใช้สำหรับการวินิจฉัยตนเองหรือการใช้ยาด้วยตนเอง "
-            "โปรดปรึกษาผู้ให้บริการด้านสุขภาพที่มีคุณสมบัติ"
+            "เนื้อหานี้สร้างโดย AI จากเอกสารทางการแพทย์ที่เผยแพร่สาธารณะ "
+            "มีไว้สำหรับผู้เชี่ยวชาญด้านสุขภาพเป็นข้อมูลอ้างอิงสำหรับการอภิปรายเท"
+            "่านั้น ไม่ถือเป็นคำแนะนำทางการแพทย์ การวินิจฉัย หรือการสั่งยา "
+            "อย่าใช้เพื่อการวินิจฉัยตนเองหรือการรักษาตนเอง "
+            "หากมีข้อกังวลด้านสุขภาพ "
+            "ให้ปรึกษาผู้ให้บริการด้านสุขภาพที่มีคุณสมบัติ"
         ),
         "publicShortDisclaimer": (
             "⚠️ ข้อมูลนี้ใช้เพื่อการอ้างอิงเท่านั้น กรุณาตรวจสอบตามแนวทางปฏิบัติทางคลินิกและปรึกษาผู้เชี่ยวชาญที่มีคุณสมบัติ"
@@ -303,9 +307,9 @@ EXPLORE_STRINGS: Dict[str, Dict[str, str]] = {
         "category_listing_empty": "لا توجد صفحات في هذه الفئة بعد.",
         "publicDisclaimer": (
             "تم إنشاء هذا المحتوى بواسطة الذكاء الاصطناعي من الأدبيات الطبية "
-            "المتاحة للجمهور، وهو مخصص للمتخصصين في الرعاية الصحية كمرجع فقط. "
-            "لا يشكل نصيحة طبية أو تشخيصاً أو وصفة طبية. لا تستخدمه للتشخيص الذاتي "
-            "أو العلاج الذاتي. استشر مقدم رعاية صحية مؤهلاً."
+            "المتاحة للعموم، ومخصص للمتخصصين في الرعاية الصحية كمرجع للنقاش فقط. "
+            "لا يشكل نصيحة طبية أو تشخيصاً أو وصفة طبية. لا تستخدمه للتشخيص "
+            "الذاتي أو العلاج الذاتي. استشر مقدم رعاية صحية مؤهل لأي مخاوف صحية."
         ),
         "publicShortDisclaimer": (
             "⚠️ هذه المعلومات للأغراض المرجعية فقط. يرجى التحقق من الإرشادات السريرية واستشارة متخصص مؤهل."
@@ -326,10 +330,11 @@ EXPLORE_STRINGS: Dict[str, Dict[str, str]] = {
         "category_listing_title": "{category} पृष्ठ",
         "category_listing_empty": "इस श्रेणी में अभी तक कोई पृष्ठ नहीं है।",
         "publicDisclaimer": (
-            "यह सामग्री AI द्वारा सार्वजनिक रूप से उपलब्ध चिकित्सा साहित्य से उत्पन्न की गई है, "
-            "जो स्वास्थ्य पेशेवरों के लिए केवल चर्चा संदर्भ के रूप में है। यह चिकित्सा सलाह, "
-            "निदान या नुस्खे का गठन नहीं करता है। स्व-निदान या स्व-औषधि के लिए उपयोग न करें। "
-            "किसी भी स्वास्थ्य चिंता के लिए योग्य स्वास्थ्य प्रदाता से परामर्श करें।"
+            "यह सामग्री सार्वजनिक रूप से उपलब्ध चिकित्सा साहित्य से AI द्वारा "
+            "उत्पन्न की गई है, जो स्वास्थ्य देखभाल पेशेवरों के लिए केवल चर्चा के "
+            "संदर्भ के रूप में है। यह चिकित्सा सलाह, निदान या नुस्खा नहीं है। "
+            "स्व-निदान या स्व-उपचार के लिए उपयोग न करें। किसी भी स्वास्थ्य चिंता "
+            "के लिए योग्य स्वास्थ्य देखभाल प्रदाता से परामर्श करें।"
         ),
         "publicShortDisclaimer": (
             "⚠️ यह जानकारी केवल संदर्भ उद्देश्यों के लिए है। कृपया नैदानिक दिशानिर्देशों से सत्यापित करें और किसी योग्य पेशेवर से परामर्श करें।"
@@ -350,10 +355,12 @@ EXPLORE_STRINGS: Dict[str, Dict[str, str]] = {
         "category_listing_title": "{category} পৃষ্ঠা",
         "category_listing_empty": "এই বিভাগে এখনও কোনও পৃষ্ঠা নেই।",
         "publicDisclaimer": (
-            "এই বিষয়বস্তু সর্বজনীনভাবে উপলব্ধ চিকিৎসা সাহিত্য থেকে AI দ্বারা উৎপন্ন, "
-            "শুধুমাত্র চিকিৎসা পেশাদারদের জন্য আলোচনার রেফারেন্স হিসাবে। এটি চিকিৎসা পরামর্শ, "
-            "রোগ নির্ণয় বা প্রেসক্রিপশন গঠন করে না। স্ব-নির্ণয় বা স্ব-চিকিৎসার জন্য ব্যবহার করবেন না। "
-            "যেকোনো স্বাস্থ্য সমস্যার জন্য যোগ্য স্বাস্থ্যসেবা প্রদানকারীর সাথে পরামর্শ করুন।"
+            "এই সামগ্রীটি AI দ্বারা সর্বজনীনভাবে উপলব্ধ চিকিৎসা সাহিত্য থেকে "
+            "তৈরি, যা স্বাস্থ্যসেবা পেশাদারদের জন্য আলোচনার রেফারেন্স হিসাবে "
+            "শুধুমাত্র উদ্দিষ্ট। এটি চিকিৎসা পরামর্শ, রোগ নির্ণয় বা প্রেসক্রিপশন "
+            "গঠন করে না। স্ব-নির্ণয় বা স্ব-চিকিৎসার জন্য ব্যবহার করবেন না। কোনো "
+            "স্বাস্থ্য উদ্বেগের জন্য একজন যোগ্য স্বাস্থ্যসেবা প্রদানকারীর সাথে "
+            "পরামর্শ করুন।"
         ),
         "publicShortDisclaimer": (
             "⚠️ এই তথ্য শুধুমাত্র তথ্যসূত্র উদ্দেশ্যে। অনুগ্রহ করে ক্লিনিক্যাল নির্দেশিকা যাচাই করুন এবং একজন যোগ্য পেশাদারের সাথে পরামর্শ করুন।"
@@ -374,10 +381,10 @@ EXPLORE_STRINGS: Dict[str, Dict[str, str]] = {
         "category_listing_title": "דפי {category}",
         "category_listing_empty": "אין עדיין דפים בקטגוריה זו.",
         "publicDisclaimer": (
-            "תוכן זה נוצר על ידי AI מספרות רפואית הזמינה לציבור, מיועד לאנשי "
-            "מקצוע בתחום הבריאות כהפניה בלבד. אינו מהווה ייעוץ רפואי, אבחנה "
-            "או מרשם. אין להשתמש לאבחון עצמי או טיפול עצמי. התייעצו עם איש "
-            "מקצוע מוסמך לכל בעיה בריאותית."
+            "תוכן זה נוצר על ידי AI מתוך ספרות רפואית הזמינה לציבור, ומיועד "
+            "למקצועני בריאות כעזר לדיון בלבד. הוא אינו מהווה ייעוץ רפואי, אבחון "
+            "או מרשם. אין להשתמש בו לאבחון עצמי או טיפול עצמי. התייעץ עם נותן "
+            "שירותי בריאות מוסמך לכל חשש בריאותי."
         ),
         "publicShortDisclaimer": (
             "⚠️ מידע זה מיועד לצורכי עיון בלבד. אנא אמתו מול הנחיות קליניות והתייעצו עם איש מקצוע מוסמך."
@@ -398,10 +405,12 @@ EXPLORE_STRINGS: Dict[str, Dict[str, str]] = {
         "category_listing_title": "Trang {category}",
         "category_listing_empty": "Chưa có trang nào trong danh mục này.",
         "publicDisclaimer": (
-            "Nội dung này được tạo bởi AI từ tài liệu y khoa công khai, dành cho "
-            "các chuyên gia chăm sóc sức khỏe chỉ làm tài liệu tham khảo. Không "
-            "phải lời khuyên y tế, chẩn đoán hoặc đơn thuốc. Không tự chẩn đoán "
-            "hay tự dùng thuốc. Tham khảo ý kiến chuyên gia y tế có trình độ."
+            "Nội dung này được tạo bởi AI từ tài liệu y khoa có sẵn công khai, "
+            "dành cho các chuyên gia chăm sóc sức khỏe chỉ làm tài liệu tham khảo "
+            "thảo luận. Nó không cấu thành lời khuyên y tế, chẩn đoán hoặc kê "
+            "đơn. Không sử dụng để tự chẩn đoán hoặc tự dùng thuốc. Tham khảo ý "
+            "kiến nhà cung cấp dịch vụ y tế đủ điều kiện cho bất kỳ vấn đề sức "
+            "khỏe nào."
         ),
         "publicShortDisclaimer": (
             "⚠️ Thông tin này chỉ mang tính chất tham khảo. Vui lòng kiểm tra theo hướng dẫn lâm sàng và tham khảo ý kiến chuyên gia có trình độ."

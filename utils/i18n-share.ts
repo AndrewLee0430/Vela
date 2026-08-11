@@ -164,8 +164,8 @@ const zhCN: ShareTranslations = {
 
   publicCtaTitle: '想问你自己的版本?',
   publicCtaButton: '在 Vela 试试',
-  publicDisclaimer: '此内容由 AI 根据公开医学文献生成,仅供医疗专业人员参考讨论,不构成医疗建议、诊断或处方。请勿用于自我诊断或自我用药。如有健康问题请咨询合格医疗人员。',
-  publicShortDisclaimer: '⚠️ 本信息仅供参考,请依据临床指南并咨询合格专业人员。',
+  publicDisclaimer: '此内容由 AI 根据公开医学文献生成，仅供医疗专业人员参考讨论，不构成医疗建议、诊断或处方。请勿用于自我诊断或自我用药。如有健康问题请咨询合格医疗人员。',
+  publicShortDisclaimer: '⚠️ 本信息仅供参考，请依据临床指南并咨询合格专业人员。',
   publicRevoked: '此分享已被撤回',
   publicFlagged: '此分享因违反使用条款已下架',
   headerTagline: '用你的语言提问,由官方来源验证。',
