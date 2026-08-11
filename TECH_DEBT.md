@@ -13,8 +13,8 @@ Classes are **additive and orthogonal** to the existing `[P0]`–`[P3]` ratings 
 | **[LAUNCH]** | blocks the B2B-interim route going live to a real customer | **0 — EMPTY** |
 | **[COMPLIANCE]** | legal / regulatory / data-protection obligation | **6** |
 | **[HONESTY]** | the product currently tells the user something untrue or misleading | **16** |
-| [DONE] | already fixed / resolved / accepted; retained for the record only | 33 |
-| [OTHER] | quality, hygiene, tooling, opportunistic | 65 |
+| [DONE] | already fixed / resolved / accepted; retained for the record only | 34 |
+| [OTHER] | quality, hygiene, tooling, opportunistic | 64 |
 | | **total** | **120** |
 
 <!-- ⚠️ COUNT REPAIR 2026-08-11 (B0 commit): the table above had gone STALE by three entries —
@@ -1233,9 +1233,10 @@ When entries are resolved, mark with the resolving commit SHA (git log is the re
   - **The recorded scope reduction:** B1 (`9c8aed3`) shipped §how WITHOUT the explore CTA per the P0.1 verdict — no link, no analytics event.
   - **REOPEN CONDITION (verbatim, founder-ratified): "corpus holds ≥3 medically diverse published pages AND an index route exists."** When both hold, re-add the CTA + the `track()` event and gate the target pages.
 
-- [OTHER] **[P3 · reviewer-CSV generator never committed — founder-ratified 2026-08-11; the fly-227 rescue proved the debt]** The 70-row reviewer CSV and its addendum were built by an UNCOMMITTED session scratchpad script, and the deliverables lived in a BUILD-WIPED directory
+- [DONE] **[P3 · reviewer-CSV generator never committed — founder-ratified 2026-08-11; the fly-227 rescue proved the debt; ✅ RESOLVED 2026-08-11 by the B2.1 generator commit (`scripts/gen_review_csv.py` — SHA to be recorded in the fly-228 STATE entry at deploy)]** The 70-row reviewer CSV and its addendum were built by an UNCOMMITTED session scratchpad script, and the deliverables lived in a BUILD-WIPED directory
   - **What happened (fly 227, STEP 1):** the B1 `npm run build` wiped `out/` — destroying **both** the sent 70-row CSV and the 14-row addendum. Both were regenerated from the session's scratchpad generators (byte-identical: sources unchanged), validated (round-trip PASS), and relocated to **`deliverables/`** (gitignored via the global `*.csv` rule, `.gitignore:131`; outside any build path). Had the session context been gone, the addendum would have been rebuilt by inspection — possible, but exactly the archaeology Rule 20 exists to prevent.
-  - **The debt:** no reusable generator exists in the repo. **Next time the CSV format is touched, commit a generator + round-trip validator** (a `tests/probes/`-convention home fits Rule 20: script = method, small output = evidence). Until then this entry is the pointer from the deliverable to its method.
+  - **✅ CLOSED by `scripts/gen_review_csv.py`** — the committed generator + round-trip validator (`--validate` mode), producing the merged 84-row FINAL CSV. The trigger fired exactly as written: the coordinator's merged-file instruction WAS the format being touched. **The standing rule carries forward: deliverables never live in `out/`.**
+  - **The original debt text (for the record):** no reusable generator exists in the repo. **Next time the CSV format is touched, commit a generator + round-trip validator** (a `tests/probes/`-convention home fits Rule 20: script = method, small output = evidence). Until then this entry is the pointer from the deliverable to its method.
   - **Standing rule from the incident: deliverables never live in `out/`** — it is a build target. `deliverables/` is the durable home.
 
 - [OTHER] **[P3 → opportunistic] deploy.ps1 hardcoded 10-second settle insufficient for vector store cold start — discovered 2026-05-19**
