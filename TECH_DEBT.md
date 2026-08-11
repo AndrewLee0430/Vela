@@ -11,11 +11,20 @@ Classes are **additive and orthogonal** to the existing `[P0]`–`[P3]` ratings 
 | class | meaning | count |
 |---|---|---|
 | **[LAUNCH]** | blocks the B2B-interim route going live to a real customer | **0 — EMPTY** |
-| **[COMPLIANCE]** | legal / regulatory / data-protection obligation | **5** |
+| **[COMPLIANCE]** | legal / regulatory / data-protection obligation | **6** |
 | **[HONESTY]** | the product currently tells the user something untrue or misleading | **14** |
-| [DONE] | already fixed / resolved / accepted; retained for the record only | 32 |
-| [OTHER] | quality, hygiene, tooling, opportunistic | 61 |
-| | **total** | **112** |
+| [DONE] | already fixed / resolved / accepted; retained for the record only | 33 |
+| [OTHER] | quality, hygiene, tooling, opportunistic | 63 |
+| | **total** | **116** |
+
+<!-- ⚠️ COUNT REPAIR 2026-08-11 (B0 commit): the table above had gone STALE by three entries —
+     the fly-223 pytest-infra [OTHER] addition and the fly-224 duplicated-source [COMPLIANCE] +
+     legal-copy-metadata [OTHER] additions updated their COMMIT MESSAGES but not this table
+     (112 shown vs 115 actual). The drift the table exists to prevent, reproduced in the table
+     itself, three commits after it was built. Repaired here, plus this commit's FAQ
+     dead-feature entry (filed RESOLVED, counted under [DONE] per this file's convention). -->
+
+- `[COMPLIANCE]` 6th entry (fly 224, missing from the listing below until now): `[P2 · i18n / duplicated-source class]` — two files independently machine-translated the same source.
 
 #### ✅ [LAUNCH] — EMPTY as of 2026-08-11
 
@@ -64,6 +73,13 @@ Classes are **additive and orthogonal** to the existing `[P0]`–`[P3]` ratings 
 When entries are resolved, mark with the resolving commit SHA (git log is the record), then remove.
 
 ---
+
+- [DONE] **[P1 · HONESTY-class / FAQ dead-feature description — discovered by the 2026-08-11 landing recon; ✅ RESOLVED same day by this commit (B0)]** The public FAQ taught users, in ALL 16 locales, to rely on the 🟢🟡🔴 evidence-strength grading — a feature REMOVED as untrustworthy 62 days earlier
+  - **What the FAQ said** (`utils/i18n-faq.ts`, the "What does evidence strength mean?" Q&A + "evidence-graded answer" in the Research Q&A): *"Strong evidence (green) comes from systematic reviews… Moderate (yellow)… Limited (red)… This helps you quickly assess how reliable each part of the answer is."*
+  - **The feature it describes stopped existing at `3ad3ddc` (2026-06-10)** — the generator stopped emitting the markers because they were an **unverified LLM self-label**, unstable run-to-run; the last dead render path was deleted at fly 221 (2026-08-10). So for two months the FAQ instructed users to trust a signal that (a) never rendered and (b) was removed *because it was untrustworthy*. Worse than describing a missing feature: it described a **withdrawn trust signal as a reliability aid**.
+  - **Confirmed present in all 16 locales** (the earlier "≥8, pattern-limited" count was my pattern list's reach, not the defect's — every locale had the entry).
+  - **Fix (this commit):** the evidence-strength Q&A **DELETED in all 16 locales** (ratified D1: deleted, not rewritten); the Research answer reworded without "evidence-graded"; the two source-enumeration answers reworded **claim-light and NON-COUNTING** (never "three databases" — the effective Research source count is recorded as THREE in the `[P2 · honesty / advertised capability]` entry below, so a count in either direction creates a false claim) and now name TFDA, closing the enumeration-omits-TFDA drift found in the same recon. Guard: `tests/test_faq_no_dead_features.py` — a regression guard for THIS feature (scope stated in its docstring), with a fires-proof.
+  - **Class lesson, same family as the [DONE] OpenAI-auto-recharge retirement:** feature-removal batons check code paths, not marketing surfaces. `3ad3ddc` and fly 221 both did their jobs; nobody grepped the FAQ. The removal checklist should include: **grep FAQ + landing + pricing for the feature's name.**
 
 - [HONESTY] **[P1 · retrieval-corpus integrity / honesty — PROPOSED RATING, founder to ratify; surfaced by the fly-214 citation gate 2026-07-29] The 690-doc LOCAL drug corpus is 100% EMPTY STUBS — every document is field labels with no values (max 5 chars of content) — yet it is Tier-2-boosted (×1.5) into `top_k` and its cards claim "official FDA drug labeling data". The real text (≈3.58M chars) sits UNREAD in the builder's own input**
   - **Measured, corpus-wide (`data/drug_vectordb/index.json`, all 690 docs).** PAYLOAD = content minus the builder's literal template scaffolding (`scripts/build_drug_vectordb.py:63-157`):
