@@ -15,7 +15,7 @@ export default function Privacy() {
 
             <div className="container mx-auto px-4 py-12 max-w-3xl">
                 <h1 className="text-3xl font-bold text-white mb-2">Privacy Policy</h1>
-                <p className="text-sm mb-8 text-text/40">Last updated: 2026-06-12</p>
+                <p className="text-sm mb-8 text-text/40">Last updated: 2026-08-11</p>
 
                 <div className="space-y-8 text-sm leading-relaxed text-text/75">
 
@@ -92,6 +92,8 @@ export default function Privacy() {
                         <p>This Privacy Policy is written and executed in the English language. Any translation of this Privacy Policy into any other language is provided for convenience only and shall have no legal force or effect. In the event of any inconsistency, ambiguity, or conflict between the English language version and any translated version, the English language version shall prevail and control in all respects.</p>
                     </section>
                 </div>
+
+                <p className="mt-10 text-xs text-text/40">If you need to access previous versions of our Terms of Service or Privacy Policy, please contact us at <a href="mailto:support@an-tho.com" className="underline" style={{ color: "rgb(var(--color-brand))" }}>support@an-tho.com</a>.</p>
 
                 <div className="mt-12 pt-6 flex gap-6 text-xs border-t border-t-text/7 text-text/30">
                     <Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
