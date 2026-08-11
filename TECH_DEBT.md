@@ -14,8 +14,8 @@ Classes are **additive and orthogonal** to the existing `[P0]`–`[P3]` ratings 
 | **[COMPLIANCE]** | legal / regulatory / data-protection obligation | **6** |
 | **[HONESTY]** | the product currently tells the user something untrue or misleading | **16** |
 | [DONE] | already fixed / resolved / accepted; retained for the record only | 34 |
-| [OTHER] | quality, hygiene, tooling, opportunistic | 64 |
-| | **total** | **120** |
+| [OTHER] | quality, hygiene, tooling, opportunistic | 65 |
+| | **total** | **121** |
 
 <!-- ⚠️ COUNT REPAIR 2026-08-11 (B0 commit): the table above had gone STALE by three entries —
      the fly-223 pytest-infra [OTHER] addition and the fly-224 duplicated-source [COMPLIANCE] +
@@ -1227,13 +1227,19 @@ When entries are resolved, mark with the resolving commit SHA (git log is the re
   - **Fix (≈5 lines, NOT done here — filed deliberately)**: a root `pytest.ini` with `testpaths = tests`, `norecursedirs = results`, and either renaming `test_webhook_cancel.py` → `manual_webhook_cancel.py` (it is a script, and the `test_` prefix is what makes pytest import it) or adding `collect_ignore` in a `tests/conftest.py`. Renaming is preferable: the file is documented as a `uv run python tests/…` invocation, so nothing depends on the `test_` prefix.
   - **Discovered**: 2026-08-11 during the fly-222 build baton, re-hit at fly 223.
 
+- [OTHER] **[P3 · es register drift across surfaces — measured 2026-08-11 during the B2.1 CSV build]** The SAME provenance sentence ships as usted on the share surface and tú on the landing
+  - **The drift:** share `headerTagline` es = *“Pregunte en su idioma…”* (**usted**); landing `landingContent.tagline` es = *“Pregunta en tu idioma…”* (**tú**). One claim sentence, two registers, depending on which page a reader lands on.
+  - **Measured, not sampled:** across `utils/i18n*.ts` — **11 usted-form hits** (body copy incl. the B1/B2 landing sections and the share tagline) vs **8 tú-form hits** (the hero-tagline family: `tagline`, `heroSub`, two info boxes). de needs NO entry: **uniformly Sie, 95 formal hits / 0 genuine du-forms**.
+  - **Instrument lesson (one line, Rule 21):** the initial de count showed 12 “du” hits — **all twelve were French `du` partitives in adjacent locale blocks; self-refuted before reporting.**
+  - **Resolution path:** the 84-row review round adjudicates the tagline’s register (the es row's note asks for it, with the measured convention quoted). **When the es reviewer picks, sweep the MINORITY set to match.** The minority-set list rides this entry: if usted wins — `tagline`, `heroSub`, `researchInfoBox`, `explainInfoBox` (the tú cluster); if tú wins — the 11 usted-form strings (re-grep at sweep time; strings may have moved).
+
 - [OTHER] **[P3 · explore CTA structural gap — founder-ratified 2026-08-11; merged entry from the B1 P0.1 verdict]** Bare `/explore` is a silent self-loop and the published corpus is ONE page — the landing's "See real answers" CTA was cut from B1 §how for this reason
   - **The structural half:** `GET /explore` returns **200 serving the landing page itself** — the static export's fallback answers it because the rewrite map (`next.config.ts`) only proxies `/explore/:slug` and `/explore/category/…` to the backend; there is **no index route on either side**. A visitor (or crawler) landing on bare `/explore` gets `/` with the wrong URL in the bar.
   - **The corpus half:** `sitemap-explore.xml` lists exactly **one** published page (`metformin-contraindications-renal`, 2026-05-13). GTM L3 context: explore is the long-horizon SEO engine — **corpus = 1 is the number to move**; the CTA is downstream of that.
   - **The recorded scope reduction:** B1 (`9c8aed3`) shipped §how WITHOUT the explore CTA per the P0.1 verdict — no link, no analytics event.
   - **REOPEN CONDITION (verbatim, founder-ratified): "corpus holds ≥3 medically diverse published pages AND an index route exists."** When both hold, re-add the CTA + the `track()` event and gate the target pages.
 
-- [DONE] **[P3 · reviewer-CSV generator never committed — founder-ratified 2026-08-11; the fly-227 rescue proved the debt; ✅ RESOLVED 2026-08-11 by the B2.1 generator commit (`scripts/gen_review_csv.py` — SHA to be recorded in the fly-228 STATE entry at deploy)]** The 70-row reviewer CSV and its addendum were built by an UNCOMMITTED session scratchpad script, and the deliverables lived in a BUILD-WIPED directory
+- [DONE] **[P3 · reviewer-CSV generator never committed — founder-ratified 2026-08-11; the fly-227 rescue proved the debt; ✅ RESOLVED 2026-08-11 by the B2.1 generator commit `c9f91e4` (`scripts/gen_review_csv.py`; SHA deferred at commit time, recorded at the fly-228 deploy)]** The 70-row reviewer CSV and its addendum were built by an UNCOMMITTED session scratchpad script, and the deliverables lived in a BUILD-WIPED directory
   - **What happened (fly 227, STEP 1):** the B1 `npm run build` wiped `out/` — destroying **both** the sent 70-row CSV and the 14-row addendum. Both were regenerated from the session's scratchpad generators (byte-identical: sources unchanged), validated (round-trip PASS), and relocated to **`deliverables/`** (gitignored via the global `*.csv` rule, `.gitignore:131`; outside any build path). Had the session context been gone, the addendum would have been rebuilt by inspection — possible, but exactly the archaeology Rule 20 exists to prevent.
   - **✅ CLOSED by `scripts/gen_review_csv.py`** — the committed generator + round-trip validator (`--validate` mode), producing the merged 84-row FINAL CSV. The trigger fired exactly as written: the coordinator's merged-file instruction WAS the format being touched. **The standing rule carries forward: deliverables never live in `out/`.**
   - **The original debt text (for the record):** no reusable generator exists in the repo. **Next time the CSV format is touched, commit a generator + round-trip validator** (a `tests/probes/`-convention home fits Rule 20: script = method, small output = evidence). Until then this entry is the pointer from the deliverable to its method.
