@@ -38,7 +38,7 @@ wrong-drug citation.** If that check ever flips, the module has regressed to men
 
 ## 2. 🔴 CORRECTION TO THE RECORD — aspirin is a RANKING failure, not a coverage gap
 
-**`BACKLOG.md:860` records:** *"In 6 of 6 adjudicated cases the queried drug's own reference label
+**`BACKLOG.md` → the c2 entry's "Why now" bullet (was `BACKLOG.md:860`) records:** *"In 6 of 6 adjudicated cases the queried drug's own reference label
 has no safety section and the wrongly-cited sibling's does."*
 **`docs/local_corpus_deprecation_c1_build.md:512`** records aspirin's own safety sections as `NONE`.
 
@@ -155,7 +155,7 @@ The baton's stop condition was *"if the calibration shows the assertion changes 
 It does not. On the **fly-215 production human-eye gate** it flips **8/8 → 6/8**: rows 3
 (`aspirin contraindications` → sole citation Aceclofenac) and 4 (`ibuprofen warnings` →
 `[1] Piroxicam`), both recorded at `docs/local_corpus_deprecation_c1_build.md:402,438` and
-`BACKLOG.md:945`. So the instrument discriminates. **§2.7 is simply the wrong host for it.**
+`BACKLOG.md` → the `[ops] Pre-gate stale-server SOP` FOURTH SOP LINE (was `BACKLOG.md:945`). So the instrument discriminates. **§2.7 is simply the wrong host for it.**
 
 **Why §2.7 scores zero — the golden set does not contain the query shape that exhibits the defect:**
 
@@ -192,7 +192,7 @@ post-pass over the `pool_identity` `source_id` capture already present at
 | # | item |
 |---|---|
 | 1 | **`BACKLOG.md` cites an untracked, gitignored file as the reusable method** — `tests/results/_pairaware_m1_content_audit.py` exists only on this machine (`tests/results/` is gitignored at `.gitignore:113`). Doc drift, and evidence bearing on the still-open `tests/probes/` convention decision |
-| 2 | **`BACKLOG.md:860` / `local_corpus_deprecation_c1_build.md:512`** state aspirin has no owned safety section. False at the corpus level (§2). Not edited — the correction is recorded here for the founder to place |
+| 2 | **`BACKLOG.md` → the c2 entry's "Why now" bullet (was `BACKLOG.md:860`) / `local_corpus_deprecation_c1_build.md:512`** state aspirin has no owned safety section. False at the corpus level (§2). Not edited — the correction is recorded here for the founder to place |
 | 3 | **STATE open-item #9** — `vector_store.py:52` `print()`, Rule 4. Confirmed still present at the real path `api/database/vector_store.py`. Out of scope, untouched |
 | 4 | **`RetrievedDocument` drops `moiety` and `setid`** at `api/database/vector_store.py:99-119` although the corpus carries both on 4608/4608 docs. Ownership is recoverable only by re-joining the corpus offline. Carrying the fields through would make it available in-process — an `api/` change, out of scope |
 

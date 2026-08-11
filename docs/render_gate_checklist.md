@@ -25,7 +25,7 @@ Widening the ownership form was considered and **rejected** (founder decision 20
 value is that opening it tells you what to fill in, and a form covering two unrelated question types
 degrades into a grab-bag. **Two narrow forms beat one wide one.**
 
-### 🔴 This form does NOT close `TECH_DEBT.md:110`
+### 🔴 This form does NOT close `TECH_DEBT.md` → the `[P2 · gate-design / Rule 17 — 6th instance]` entry (was `TECH_DEBT.md:110`)
 
 That entry closes on a gate that **used the OWNERSHIP form on a Research gate**. Using a *different*
 form for a *different* kind of gate is not that, and must not be recorded as if it were. `:110`

@@ -80,7 +80,7 @@ the ACECLOFENAC text **does** contain *"acetylsalicylic acid"* as legitimate cro
 - **A pre-gate FORM** — `docs/human_eye_gate_checklist.md`, with a per-row **EXPECTED OWNER** field.
   ⚠️ **NOT resolved:** it closes on a gate that *used* the form, not on the file existing.
 - **CLAUDE.md Rules 20–23**, and **instrument-blind instances #12, #13, #14**.
-- **A correction to `BACKLOG.md:860`** — the *"6 of 6, the drug's own label has no safety section"*
+- **A correction to `BACKLOG.md` → the c2 entry's "Why now" bullet (was `BACKLOG.md:860`)** — the *"6 of 6, the drug's own label has no safety section"*
   claim is **false for aspirin**; the corpus keys one substance under **two** moiety strings.
 
 ---

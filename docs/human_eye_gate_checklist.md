@@ -28,7 +28,7 @@ EXPECTED DRUG, NOT JUST A SOURCE TYPE OR A COUNT"* — and it already gave the a
 Warning`. Under an ownership check that gate reads **6/8**.
 
 The rule was already written, already correct, already specific — **and it was not executed.** The
-same pattern holds for `TECH_DEBT.md:264`, which documented the dual-moiety-key defect on 2026-07-27
+same pattern holds for `TECH_DEBT.md` → the "Moiety-synonym fragmentation" sub-bullet (was `TECH_DEBT.md:264`), which documented the dual-moiety-key defect on 2026-07-27
 and went unapplied across five c2 batons.
 
 **➡️ Prose does not prevent recurrence. A form a reviewer fills in row by row might.** That is the
@@ -148,5 +148,5 @@ separate claims on separate axes and must not be merged. Same boundary as the cl
   [`docs/t1_ownership_assertion_20260805.md`](t1_ownership_assertion_20260805.md)
 - Why this file is a form and not more prose:
   [`docs/t1_followon_20260805.md`](t1_followon_20260805.md) §1
-- The dual-key defect: `TECH_DEBT.md:264` (data) and `[P2 · adjudication method / corpus dual-key]`
+- The dual-key defect: `TECH_DEBT.md` → the "Moiety-synonym fragmentation" sub-bullet (was `TECH_DEBT.md:264`) (data) and `[P2 · adjudication method / corpus dual-key]`
   (method — it recurred *after* being documented)
