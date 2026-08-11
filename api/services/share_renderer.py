@@ -79,7 +79,7 @@ _STRINGS: dict[str, dict[str, str]] = {
         "termsLink": "Terms",
     },
     "zh-TW": {
-        "publicCtaTitle": "想問你自己的版本?",
+        "publicCtaTitle": "想問你自己的版本？",
         "publicCtaButton": "在 Vela 試試",
         "publicDisclaimer": (
             "此內容由 AI 根據公開醫學文獻生成，僅供醫療專業人員參考討論，"
@@ -98,7 +98,7 @@ _STRINGS: dict[str, dict[str, str]] = {
         "official": "官方來源",
         "internal": "內部資料",
         "sourceWithdrawn": "來源已撤回",
-        "headerTagline": "用你的語言提問,由官方來源驗證。",
+        "headerTagline": "用你的語言提問，由官方來源驗證。",
         "privacyLink": "隱私政策",
         "termsLink": "使用條款",
     },

@@ -77,7 +77,11 @@ def _read_js_string(src: str, i: int) -> str:
 
 
 def _parse_ts() -> dict:
-    """{locale: {key: value}} from the `const <x>: ShareTranslations = {...}` blocks."""
+    """{locale: {key: value}} for EVERY key in each `const <x>: ShareTranslations` block.
+
+    Every key, not a named subset: the punctuation rule below has to see keys
+    nobody thought to list, which is the whole point of a rule over a list.
+    """
     src = _TS.read_text(encoding="utf-8")
     starts = [(m.group(1), m.start())
               for m in re.finditer(r"^const (\w+): ShareTranslations = \{", src, re.M)]
@@ -90,14 +94,12 @@ def _parse_ts() -> dict:
         end = starts[idx + 1][1] if idx + 1 < len(starts) else len(src)
         block = src[pos:end]
         vals = {}
-        for key in SHARED_KEYS:
-            m = re.search(r"(?<![\w])" + key + r"\s*:\s*", block)
-            if not m:
-                continue
+        for m in re.finditer(r"^\s{2}(\w+):\s*", block, re.M):
             j = m.end()
-            while block[j] in " \t\r\n":
+            while j < len(block) and block[j] in " \t\r\n":
                 j += 1
-            vals[key] = _read_js_string(block, j)
+            if j < len(block) and block[j] in "'\"`":
+                vals[m.group(1)] = _read_js_string(block, j)
         out[locale] = vals
     return out
 
@@ -146,6 +148,92 @@ def test_disclaimer_is_byte_identical_across_all_three_sources(sources, key, loc
             "A visitor-facing legal string must be identical everywhere it renders. "
             "Apply the correction to ALL THREE files."
         )
+
+
+# --------------------------------------------------------------------------
+# zh-TW fullwidth punctuation — a RULE over every string, not a list of known
+# strings. A list passes again the moment someone adds a key it does not name,
+# which is exactly how fly 222 shipped a partial fix.
+# --------------------------------------------------------------------------
+
+# Deliberately NOT included: ASCII "." and ":".
+#   "." is legitimate in URLs, decimals and version numbers ("fda.gov.tw", "2.0")
+#   ":" is legitimate in "Label: value" constructions and in times.
+# Both would produce false positives that train people to ignore this test.
+# "," "?" "!" ";" are sentence punctuation with no such legitimate use between
+# Chinese characters.
+_MUST_BE_FULLWIDTH = {",": "，", "?": "？", "!": "！", ";": "；"}
+
+
+def _is_cjk(ch: str) -> bool:
+    """CJK ideograph or CJK punctuation — the signal that we are inside Chinese text."""
+    if not ch:
+        return False
+    return ("一" <= ch <= "鿿"      # CJK Unified Ideographs
+            or "　" <= ch <= "〿"   # CJK symbols and punctuation (、。「」)
+            or "＀" <= ch <= "￯")  # Fullwidth forms (，？！；)
+
+
+def _punctuation_violations(text: str):
+    """ASCII sentence punctuation sitting next to a CJK character.
+
+    Adjacency is the test, not mere presence: ASCII punctuation is CORRECT
+    inside Latin fragments embedded in a Chinese string ("Vela, Inc.", a URL,
+    a numeric range). Only punctuation touching Chinese on either side is wrong.
+    """
+    out = []
+    for i, ch in enumerate(text):
+        if ch not in _MUST_BE_FULLWIDTH:
+            continue
+        prev = text[i - 1] if i else ""
+        nxt = text[i + 1] if i + 1 < len(text) else ""
+        if _is_cjk(prev) or _is_cjk(nxt):
+            out.append((i, ch, _MUST_BE_FULLWIDTH[ch], text[max(0, i - 12):i + 13]))
+    return out
+
+
+@pytest.mark.parametrize("fname", ["utils/i18n-share.ts",
+                                   "api/i18n/explore_strings.py",
+                                   "api/services/share_renderer.py"])
+def test_no_ascii_sentence_punctuation_in_any_zh_tw_string(sources, fname):
+    """EVERY zh-TW string in this file, including keys added after this was written.
+
+    fly 222 fixed 3 ASCII commas in the two disclaimer keys and left 14 more in
+    place across 11 other keys, because the count came from sampling one key.
+    A rule cannot sample.
+    """
+    store = sources[fname]["zh-TW"]
+    assert store, f"{fname} produced no zh-TW strings — parser is broken"
+
+    failures = []
+    for key in sorted(store):
+        for idx, ch, want, ctx in _punctuation_violations(store[key]):
+            failures.append(f"  {key} [idx {idx}]: {ch!r} should be {want!r} — …{ctx}…")
+
+    if failures:
+        pytest.fail(
+            f"{fname} has {len(failures)} ASCII sentence-punctuation character(s) "
+            f"adjacent to CJK in zh-TW:\n" + "\n".join(failures) +
+            "\nTraditional Chinese uses fullwidth punctuation. If a case is a Latin "
+            "fragment, a URL or a number, it will not be reported here — adjacency is "
+            "checked, not presence."
+        )
+
+
+def test_the_punctuation_rule_actually_fires(sources):
+    """A rule that cannot fail is dead weight. Inject a violation, prove it is caught."""
+    clean = sources["utils/i18n-share.ts"]["zh-TW"]["publicDisclaimer"]
+    assert _punctuation_violations(clean) == [], "real string should be clean"
+
+    # Same string with ONE fullwidth comma reverted to ASCII.
+    tampered = clean.replace("，", ",", 1)
+    found = _punctuation_violations(tampered)
+    assert len(found) == 1, f"injected violation not caught: {found}"
+    assert found[0][1] == "," and found[0][2] == "，"
+
+    # And the rule does NOT fire on ASCII punctuation inside a Latin fragment.
+    assert _punctuation_violations("請參考 Vela, Inc. 的說明") == []
+    assert _punctuation_violations("詳見 https://mcp.fda.gov.tw/a?b=1 的頁面") == []
 
 
 @pytest.mark.parametrize("key", SHARED_KEYS)

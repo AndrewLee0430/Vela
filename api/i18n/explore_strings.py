@@ -48,7 +48,7 @@ EXPLORE_STRINGS: Dict[str, Dict[str, str]] = {
         "termsLink": "Terms",
     },
     "zh-TW": {
-        "cta_banner_title": "想問你自己的版本?",
+        "cta_banner_title": "想問你自己的版本？",
         "cta_banner_button": "在 Vela 試試",
         "breadcrumb_home": "Vela",
         "breadcrumb_explore": "探索",
@@ -66,7 +66,7 @@ EXPLORE_STRINGS: Dict[str, Dict[str, str]] = {
         ),
         "citationsHeading": "參考來源",
         "viewSource": "檢視來源",
-        "headerTagline": "用你的語言提問,由官方來源驗證。",
+        "headerTagline": "用你的語言提問，由官方來源驗證。",
         "privacyLink": "隱私政策",
         "termsLink": "使用條款",
     },
