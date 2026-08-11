@@ -57,12 +57,12 @@ EXPLORE_STRINGS: Dict[str, Dict[str, str]] = {
         "category_listing_title": "{category} 頁面",
         "category_listing_empty": "此分類目前無頁面。",
         "publicDisclaimer": (
-            "此內容由 AI 根據公開醫學文獻生成,僅供醫療專業人員參考討論,"
+            "此內容由 AI 根據公開醫學文獻生成，僅供醫療專業人員參考討論，"
             "不構成醫療建議、診斷或處方。請勿用於自我診斷或自我用藥。"
             "如有健康問題請諮詢合格醫療人員。"
         ),
         "publicShortDisclaimer": (
-            "⚠️ 本資訊僅供參考,請依據臨床指引並諮詢合格專業人員。"
+            "⚠️ 本資訊僅供參考，請依據臨床指引並諮詢合格專業人員。"
         ),
         "citationsHeading": "參考來源",
         "viewSource": "檢視來源",
