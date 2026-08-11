@@ -1806,3 +1806,11 @@ alongside citations that name the wrong drug, would be **worse than none**: it w
 trustworthiness signal to output whose provenance is still being repaired.
 
 ---
+
+### [P2 · candidate — founder to sequence] PHASE E: single source of truth for shared i18n strings
+
+- **What:** three files hold hand-copied translations of the same strings — `utils/i18n-share.ts` (16 locales), `api/i18n/explore_strings.py` (16), `api/services/share_renderer.py` (2). `share_renderer.py`'s own header has said *"synced manually until PHASE E unifies the source-of-truth"* since **2026-05-07**. PHASE E means one authoritative store the other surfaces read from, rather than three copies kept equal by discipline.
+- **Why filed now:** three consecutive batons (fly 222 / 223 / 224) each fixed a divergence between these files — ASCII punctuation, duplicated disclaimer translations, revoked/flagged terminators. The parity guard added across those batons **CATCHES** drift; it does not **PREVENT** duplication. Every new key added to two files reopens the trap, and the guard's own "known duplicates" test exists precisely because that keeps happening.
+- **🔴 What the drift already cost:** the `/explore` and blog surfaces — the pages strangers reach from search — carried a **WEAKER medical disclaimer** than the share page for three months in at least five languages, dropping *"only"* and *"for any health concerns"* (measured fly 224). This was a content exposure, not an untidiness.
+- **Constraint:** the Python and TypeScript surfaces render at different times (server-side Jinja vs client-side React), so a shared store must be readable by both — this is the design question, and it is why the work is not a mechanical merge.
+- **Not scheduled. No option chosen. Founder sequences.**
