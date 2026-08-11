@@ -12,10 +12,10 @@ Classes are **additive and orthogonal** to the existing `[P0]`–`[P3]` ratings 
 |---|---|---|
 | **[LAUNCH]** | blocks the B2B-interim route going live to a real customer | **0 — EMPTY** |
 | **[COMPLIANCE]** | legal / regulatory / data-protection obligation | **6** |
-| **[HONESTY]** | the product currently tells the user something untrue or misleading | **14** |
+| **[HONESTY]** | the product currently tells the user something untrue or misleading | **15** |
 | [DONE] | already fixed / resolved / accepted; retained for the record only | 33 |
 | [OTHER] | quality, hygiene, tooling, opportunistic | 63 |
-| | **total** | **116** |
+| | **total** | **117** |
 
 <!-- ⚠️ COUNT REPAIR 2026-08-11 (B0 commit): the table above had gone STALE by three entries —
      the fly-223 pytest-infra [OTHER] addition and the fly-224 duplicated-source [COMPLIANCE] +
@@ -54,6 +54,7 @@ Classes are **additive and orthogonal** to the existing `[P0]`–`[P3]` ratings 
 - `[P3 · verify honesty/consistency — surfaced at the Baton A prod gate 2026-07-09]` Verify UI mixes 實證 / 循證 (both "evidence-based")
 - `[P2 · honesty / consistency]` DailyMed outbound-link chip label + host-mapping inconsistency (deferred from the 2026-06-25 DailyMed sweep)
 - `[P2 · honesty — PROMPT-GATED, out of frontend-sweep scope]` `explain_system.md` lists "FDA DailyMed" as a source category to the LLM (deferred 2026-06-25)
+- `[P2 · landing tagline / fourth unguarded surface — discovered by the 2026-08-11 landing recon]` `landingContent.tagline` is a 16-locale MT provenance claim outside BOTH the parity guard and the sent reviewer CSV
 
 ⚠️ Listed by TITLE, not line number — line numbers rot the moment anything is inserted above them. Search the title.
 
@@ -73,6 +74,13 @@ Classes are **additive and orthogonal** to the existing `[P0]`–`[P3]` ratings 
 When entries are resolved, mark with the resolving commit SHA (git log is the record), then remove.
 
 ---
+
+- [HONESTY] **[P2 · landing tagline / fourth unguarded surface — discovered by the 2026-08-11 landing recon; STAYS OPEN until the addendum review returns]** `landingContent.tagline` (`utils/i18n.ts`) carries the flagship provenance claim — *"Ask in your language. **Verified by official sources.** Answered in yours."* — in 16 machine-translated locales, on the landing hero, **outside every safeguard built for that claim family**
+  - **Outside the parity guard:** `tests/test_disclaimer_source_parity.py` covers only the three share/explore files (`utils/i18n-share.ts` · `api/i18n/explore_strings.py` · `api/services/share_renderer.py`). The landing tagline is a **fourth surface** with independent translations — the bn rendering (`আধিকারিক`) is already a **third distinct Bengali word for "official"** across surfaces. Parity is not the fix here (the tagline is a deliberately different, three-sentence sibling of `headerTagline`), but **claim-strength review is**: this is the exact class where MT escalated "official" to **government** (`সরকারি`) on the explore surface, caught at fly 225 only by per-locale review.
+  - **Outside the sent 70-row reviewer CSV** (fly 226): that file covers `modalConsentCheckbox` · `settingsRevokeConfirm` · `publicDisclaimer` · `publicShortDisclaimer` · `headerTagline` — not this key.
+  - **Spot-checked 2026-08-11, stated at its confidence:** bn does **not** use `সরকারি` (no escalation found); ar uses `متحقق` (a different passive form than the reviewed `تم التحقق`); naturalness and claim-strength in all 14 locales **UNDETERMINED** without native review.
+  - **Mitigation (this commit's baton, D3):** `out/vela_legal_i18n_review_addendum_20260811.csv` — 14 rows, 17 columns matching the sent CSV's format, the required name-the-word-for-"official" notes prompt on every row, round-trip PASS. **Generated and AWAITING FOUNDER SEND.** q-columns left empty (the main CSV already collects one answer per language).
+  - **Closes when:** the addendum review returns and any corrections are applied. If a correction lands, remember the tagline lives ONLY in `utils/i18n.ts` — one file, no cross-file propagation needed.
 
 - [DONE] **[P1 · HONESTY-class / FAQ dead-feature description — discovered by the 2026-08-11 landing recon; ✅ RESOLVED same day by this commit (B0)]** The public FAQ taught users, in ALL 16 locales, to rely on the 🟢🟡🔴 evidence-strength grading — a feature REMOVED as untrustworthy 62 days earlier
   - **What the FAQ said** (`utils/i18n-faq.ts`, the "What does evidence strength mean?" Q&A + "evidence-graded answer" in the Research Q&A): *"Strong evidence (green) comes from systematic reviews… Moderate (yellow)… Limited (red)… This helps you quickly assess how reliable each part of the answer is."*
