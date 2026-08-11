@@ -75,6 +75,11 @@ export default function Terms() {
                         <h2 className="text-lg font-semibold text-white mb-3">10. Contact</h2>
                         <p>For questions about these terms, contact us at <a href="mailto:support@an-tho.com" className="underline" style={{ color: "rgb(var(--color-brand))" }}>support@an-tho.com</a>.</p>
                     </section>
+
+                    <section>
+                        <h2 className="text-lg font-semibold text-white mb-3">11. Language and Governing Translation</h2>
+                        <p>This Agreement is written and executed in the English language. Any translation of this Agreement into any other language is provided for convenience only and shall have no legal force or effect. In the event of any inconsistency, ambiguity, or conflict between the English language version and any translated version, the English language version shall prevail and control in all respects.</p>
+                    </section>
                 </div>
 
                 <div className="mt-12 pt-6 flex gap-6 text-xs border-t border-t-text/7 text-text/30">
