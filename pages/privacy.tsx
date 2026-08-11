@@ -89,7 +89,7 @@ export default function Privacy() {
 
                     <section>
                         <h2 className="text-lg font-semibold text-white mb-3">10. Language and Governing Translation</h2>
-                        <p>This Privacy Policy is written in English. Any translation into another language is provided for convenience only. In the event of any inconsistency or conflict between the English version and any translated version, the English version shall prevail and control.</p>
+                        <p>This Privacy Policy is written and executed in the English language. Any translation of this Privacy Policy into any other language is provided for convenience only and shall have no legal force or effect. In the event of any inconsistency, ambiguity, or conflict between the English language version and any translated version, the English language version shall prevail and control in all respects.</p>
                     </section>
                 </div>
 
