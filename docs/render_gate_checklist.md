@@ -142,6 +142,41 @@ CLAIM the English does not (that IS a FAIL — the fly-225 class).
 
 ---
 
+## Gate 3 — B2: landing card-based visual upgrade (BLANK — founder runs post-deploy)
+
+**Change under test:** the B2 commit of 2026-08-11 (`feat(landing): [B2] …` — SHA in the baton
+report; fill in at gate time and **confirm `/health` `revision` contains it before row 1**).
+
+**What changed vs Gate 2:** how-steps section REPLACED by a three-card FEATURES section (reused
+mode-selector keys + the selector's Pro tag on Explain); privacy became FOUR cards (the three
+shipped promises + "No account required to try.") with an honest-limits sub-block under them; the
+WHO block gained a coral inline-start accent bar and a stepped-up final line; cards are bg-bg-1,
+rounded-2xl, no borders, shadow in light only; accent = coral icon chips (the B1 badge DNA).
+**Hero untouched — pixel-identical to fly 227 is the claim; row 1 exists to falsify it.**
+
+| # | URL | locale / scheme | check | what PASS looks like | observed | VERDICT | NOTES |
+|---|---|---|---|---|---|---|---|
+| 1 | `https://vela.an-tho.com/` | en · **light** | **hero pixel-unchanged vs fly 227** | headline, input, chips, gradient identical; the only new pixel in the first viewport is nothing — the chevron was already there | | | |
+| 2 | `https://vela.an-tho.com/` | en · **dark** | hero pixel-unchanged vs fly 227 | same | | | |
+| 3 | `https://vela.an-tho.com/` | en · light | **feature cards legibility** | three white cards read one step off the tinted band; coral icon chips visible; Explain's Pro tag matches the mode selector's; text ≥ comfortably readable | | | |
+| 4 | `https://vela.an-tho.com/` | en · **dark** | feature cards legibility | cards read as ELEVATED navy on the deep gradient — no muddy shadow (shadow is light-only), no washed-out text | | | |
+| 5 | `https://vela.an-tho.com/` | en · light | **privacy cards + limits block** | 2×2 cards, full sentences (no invented titles); the limits sub-block reads QUIETER than the cards but still legible — it must not disappear | | | |
+| 6 | `https://vela.an-tho.com/` | en · **dark** | privacy cards + limits block | same, dark | | | |
+| 7 | `https://vela.an-tho.com/` | en · either · **mobile ≤ 390px** | stacking | features 3→1 col, privacy 2×2→1 col, equal-height cards don't stretch oddly, no horizontal scroll | | | |
+| 8 | `https://vela.an-tho.com/` | **ar** (RTL) · either | RTL grid + accent bar | grids flip; the WHO coral bar sits on the RIGHT (inline-start); icon chips lead each card correctly | | | |
+| 9 | `https://vela.an-tho.com/` | en · either | **WHO accent treatment** | the manifesto block reads as deliberate (bar + coral final line), not like a styling accident; "This tool is for you." is the emphasis point of the section | | | |
+| 10 | `https://vela.an-tho.com/` | en · either | chevron still behaves | visible at hero bottom, fades on first scroll, click scrolls to §who | | | |
+
+**No explore row** — this baton touches no shared renderer.
+
+**Known and expected — do NOT record as failures:** privacy chips appear in the hero line AND as
+§privacy cards (deliberate verbatim reuse); the limits sub-block is INTENTIONALLY quiet (R5 —
+honest-limits register, not a fourth band); the 105 new MT cells are not native-reviewed (reviewer
+subset re-enumerated in STATE) — odd phrasing in a locale is reviewer-queue material unless it
+STRENGTHENS a claim (that is a FAIL — the fly-225 class).
+
+---
+
 ## Adding a gate to this file
 
 1. Name the **change under test** by commit SHA.

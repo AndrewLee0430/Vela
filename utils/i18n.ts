@@ -131,17 +131,17 @@ export interface LandingContent {
   whoP1: string;
   whoP2: string;
   whoP3: string;
-  howHeading: string;
-  how1Title: string;
-  how1Body: string;
-  how2Title: string;
-  how2Body: string;
-  how3Title: string;
-  how3Body: string;
   trustLine: string;
   founderNote: string;
   scrollHint: string;
   privacyHeading: string;
+  featuresHeading: string;
+  featuresIntro: string;
+  privacyPromise4: string;
+  privacyLimitsHeading: string;
+  privacyLimit1: string;
+  privacyLimit2: string;
+  privacyLimit3: string;
 }
 
 const landingEn: LandingContent = {
@@ -151,17 +151,17 @@ const landingEn: LandingContent = {
   whoP1: 'If you practice at a medical center with an institutional subscription, keep using the tools you have. Vela is not trying to replace them.',
   whoP2: 'Vela is for everyone else \u2014 the pharmacist at a community counter, the nurse on a home-care route, the clinician asked every day whether a drug should be stopped. No institutional subscription. No English-first environment. No time for a 30-page monograph. But decisions that reach real patients, every day.',
   whoP3: 'This tool is for you.',
-  howHeading: 'How it works',
-  how1Title: 'Ask in your language',
-  how1Body: 'Type your question the way you\u2019d say it \u2014 no rephrasing into English first.',
-  how2Title: 'Get an answer with citations',
-  how2Body: 'Answers draw on sources like PubMed and FDA drug labels, with citations you can open and check.',
-  how3Title: 'Check the sources yourself',
-  how3Body: 'Open the citation and read the original for yourself.',
   trustLine: 'Vela is built to show its gaps, not paper over them.',
   founderNote: 'Vela is built and maintained by one independent developer \u2014 no growth team, no ad model, just a tool that needed to exist.',
   scrollHint: 'Scroll to learn more',
   privacyHeading: 'Privacy',
+  featuresHeading: 'What Vela does',
+  featuresIntro: 'Works in 16 languages.',
+  privacyPromise4: 'No account required to try.',
+  privacyLimitsHeading: 'What privacy-first doesn\u2019t mean',
+  privacyLimit1: 'Vela is not end-to-end encrypted \u2014 queries pass through our servers to the AI provider.',
+  privacyLimit2: 'We collect anonymous usage analytics to improve the product.',
+  privacyLimit3: 'Payment requires an email for receipts, not linked to your queries.',
 };
 
 const landingZhTW: LandingContent = {
@@ -171,17 +171,17 @@ const landingZhTW: LandingContent = {
   whoP1: '如果您在有機構訂閱的醫學中心執業，請繼續使用您現有的工具，Vela 並不打算取代它們。',
   whoP2: 'Vela 是為其他所有人而做——社區藥局櫃檯的藥師、居家照護路線上的護理師、每天被問「這個藥要不要停」的臨床工作者。沒有機構訂閱，不在英語優先的環境，沒時間讀 30 頁的專論，但每天做著會影響真實病患的決定。',
   whoP3: '這個工具是為你而做的。',
-  howHeading: '運作方式',
-  how1Title: '用你的語言提問',
-  how1Body: '照你平常說話的方式輸入問題，不必先改寫成英文。',
-  how2Title: '取得附引用的回答',
-  how2Body: '回答取材自 PubMed 與 FDA 藥物標示等來源，附有可開啟查證的引用。',
-  how3Title: '親自查核來源',
-  how3Body: '開啟引用，自己閱讀原始文獻。',
   trustLine: 'Vela 的設計是把缺口顯示出來，而不是掩蓋它們。',
   founderNote: 'Vela 由一位獨立開發者建置與維護——沒有成長團隊、沒有廣告模式，只是一個需要存在的工具。',
   scrollHint: '向下捲動了解更多',
   privacyHeading: '隱私',
+  featuresHeading: 'Vela 能做什麼',
+  featuresIntro: '支援 16 種語言。',
+  privacyPromise4: '無需帳號即可試用。',
+  privacyLimitsHeading: '「隱私優先」不代表什麼',
+  privacyLimit1: 'Vela 並非端對端加密——查詢會經過我們的伺服器傳送至 AI 供應商。',
+  privacyLimit2: '我們收集匿名使用分析以改進產品。',
+  privacyLimit3: '付費需要電子郵件以寄送收據，但不會與您的查詢連結。',
 };
 
 const landingZhCN: LandingContent = {
@@ -191,17 +191,17 @@ const landingZhCN: LandingContent = {
   whoP1: '如果您在有机构订阅的医学中心执业，请继续使用您现有的工具，Vela 并不打算取代它们。',
   whoP2: 'Vela 是为其他所有人而做——社区药房柜台的药师、居家护理路线上的护士、每天被问「这个药要不要停」的临床工作者。没有机构订阅，不在英语优先的环境，没时间读 30 页的专论，但每天做着会影响真实患者的决定。',
   whoP3: '这个工具是为你而做的。',
-  howHeading: '运作方式',
-  how1Title: '用你的语言提问',
-  how1Body: '照你平常说话的方式输入问题，不必先改写成英文。',
-  how2Title: '获取附引用的回答',
-  how2Body: '回答取材自 PubMed 与 FDA 药物标签等来源，附有可打开查证的引用。',
-  how3Title: '亲自查核来源',
-  how3Body: '打开引用，自己阅读原始文献。',
   trustLine: 'Vela 的设计是把缺口显示出来，而不是掩盖它们。',
   founderNote: 'Vela 由一位独立开发者构建与维护——没有增长团队、没有广告模式，只是一个需要存在的工具。',
   scrollHint: '向下滚动了解更多',
   privacyHeading: '隐私',
+  featuresHeading: 'Vela 能做什么',
+  featuresIntro: '支持 16 种语言。',
+  privacyPromise4: '无需账号即可试用。',
+  privacyLimitsHeading: '「隐私优先」不代表什么',
+  privacyLimit1: 'Vela 并非端到端加密——查询会经过我们的服务器传送至 AI 供应商。',
+  privacyLimit2: '我们收集匿名使用分析以改进产品。',
+  privacyLimit3: '付费需要电子邮件以发送收据，但不会与您的查询关联。',
 };
 
 const landingJa: LandingContent = {
@@ -211,17 +211,17 @@ const landingJa: LandingContent = {
   whoP1: '機関契約のある医療センターにお勤めの方は、今お使いのツールをそのままご利用ください。Vela はそれらを置き換えようとはしていません。',
   whoP2: 'Vela はそれ以外のすべての人のためのものです——地域薬局のカウンターに立つ薬剤師、在宅ケアを回る看護師、「この薬は中止すべきか」と毎日尋ねられる臨床家。機関契約はなく、英語優先の環境でもなく、30 ページのモノグラフを読む時間もない。それでも毎日、実際の患者に届く判断をしている人たちです。',
   whoP3: 'このツールはあなたのためのものです。',
-  howHeading: '仕組み',
-  how1Title: 'あなたの言語で質問',
-  how1Body: '普段話すとおりに質問を入力してください。先に英語へ言い換える必要はありません。',
-  how2Title: '引用付きの回答を受け取る',
-  how2Body: '回答は PubMed や FDA 医薬品ラベルなどの情報源に基づき、開いて確認できる引用が付きます。',
-  how3Title: '出典を自分で確認',
-  how3Body: '引用を開いて、原文をご自身でお読みください。',
   trustLine: 'Vela は欠落を隠すのではなく、見えるように作られています。',
   founderNote: 'Vela は一人の独立開発者が構築・維持しています——グロースチームも広告モデルもなく、ただ必要とされるツールとして。',
   scrollHint: 'スクロールして詳細を見る',
   privacyHeading: 'プライバシー',
+  featuresHeading: 'Vela ができること',
+  featuresIntro: '16 言語で使えます。',
+  privacyPromise4: 'アカウント不要でお試しいただけます。',
+  privacyLimitsHeading: '「プライバシー第一」が意味しないこと',
+  privacyLimit1: 'Vela はエンドツーエンド暗号化ではありません——クエリは当社のサーバーを経由して AI プロバイダーに送られます。',
+  privacyLimit2: '製品改善のため匿名の利用分析を収集しています。',
+  privacyLimit3: 'お支払いには領収書送付用のメールアドレスが必要ですが、クエリとは紐付けられません。',
 };
 
 const landingKo: LandingContent = {
@@ -231,17 +231,17 @@ const landingKo: LandingContent = {
   whoP1: '기관 구독이 있는 대형 병원에서 일하신다면 지금 사용하는 도구를 계속 쓰세요. Vela는 그것을 대체하려는 것이 아닙니다.',
   whoP2: 'Vela는 그 외 모든 사람을 위한 것입니다 \u2014 동네 약국 카운터의 약사, 방문 간호 중인 간호사, \u201c이 약을 중단해야 하나요\u201d라는 질문을 매일 받는 임상가. 기관 구독도, 영어 우선 환경도, 30페이지 모노그래프를 읽을 시간도 없지만, 매일 실제 환자에게 닿는 결정을 내리는 사람들입니다.',
   whoP3: '이 도구는 당신을 위한 것입니다.',
-  howHeading: '작동 방식',
-  how1Title: '당신의 언어로 질문',
-  how1Body: '평소 말하듯 질문을 입력하세요. 먼저 영어로 바꿀 필요가 없습니다.',
-  how2Title: '인용이 포함된 답변 받기',
-  how2Body: '답변은 PubMed와 FDA 의약품 라벨 같은 출처를 바탕으로 하며, 열어서 확인할 수 있는 인용이 포함됩니다.',
-  how3Title: '출처를 직접 확인',
-  how3Body: '인용을 열어 원문을 직접 읽어보세요.',
   trustLine: 'Vela는 빈틈을 덮지 않고 보여주도록 만들어졌습니다.',
   founderNote: 'Vela는 한 명의 독립 개발자가 만들고 유지합니다 \u2014 성장 팀도, 광고 모델도 없이, 그저 존재해야 했던 도구입니다.',
   scrollHint: '스크롤하여 더 보기',
   privacyHeading: '개인정보 보호',
+  featuresHeading: 'Vela가 하는 일',
+  featuresIntro: '16개 언어로 작동합니다.',
+  privacyPromise4: '계정 없이 사용해 볼 수 있습니다.',
+  privacyLimitsHeading: '\u201c프라이버시 우선\u201d이 의미하지 않는 것',
+  privacyLimit1: 'Vela는 종단 간 암호화가 아닙니다 \u2014 쿼리는 당사 서버를 거쳐 AI 제공업체로 전달됩니다.',
+  privacyLimit2: '제품 개선을 위해 익명 사용 분석을 수집합니다.',
+  privacyLimit3: '결제에는 영수증용 이메일이 필요하지만 쿼리와 연결되지 않습니다.',
 };
 
 const landingEs: LandingContent = {
@@ -251,17 +251,17 @@ const landingEs: LandingContent = {
   whoP1: 'Si ejerce en un centro médico con suscripción institucional, siga usando las herramientas que ya tiene. Vela no intenta reemplazarlas.',
   whoP2: 'Vela es para todos los demás: el farmacéutico en el mostrador comunitario, la enfermera en su ruta de atención domiciliaria, el clínico al que cada día le preguntan si un fármaco debe suspenderse. Sin suscripción institucional. Sin un entorno donde el inglés sea lo primero. Sin tiempo para una monografía de 30 páginas. Pero con decisiones que llegan a pacientes reales, todos los días.',
   whoP3: 'Esta herramienta es para usted.',
-  howHeading: 'Cómo funciona',
-  how1Title: 'Pregunte en su idioma',
-  how1Body: 'Escriba su pregunta tal como la diría \u2014 sin reformularla antes al inglés.',
-  how2Title: 'Reciba una respuesta con citas',
-  how2Body: 'Las respuestas se basan en fuentes como PubMed y las etiquetas de medicamentos de la FDA, con citas que puede abrir y comprobar.',
-  how3Title: 'Compruebe las fuentes usted mismo',
-  how3Body: 'Abra la cita y lea el original por sí mismo.',
   trustLine: 'Vela está hecha para mostrar sus carencias, no para taparlas.',
   founderNote: 'Vela está construida y mantenida por un solo desarrollador independiente \u2014 sin equipo de crecimiento, sin modelo publicitario, solo una herramienta que necesitaba existir.',
   scrollHint: 'Desplácese para saber más',
   privacyHeading: 'Privacidad',
+  featuresHeading: 'Qué hace Vela',
+  featuresIntro: 'Funciona en 16 idiomas.',
+  privacyPromise4: 'No se requiere cuenta para probarlo.',
+  privacyLimitsHeading: 'Lo que \u201cprivacidad primero\u201d no significa',
+  privacyLimit1: 'Vela no tiene cifrado de extremo a extremo \u2014 las consultas pasan por nuestros servidores hacia el proveedor de IA.',
+  privacyLimit2: 'Recopilamos analíticas de uso anónimas para mejorar el producto.',
+  privacyLimit3: 'El pago requiere un correo electrónico para los recibos, no vinculado a sus consultas.',
 };
 
 const landingFr: LandingContent = {
@@ -271,17 +271,17 @@ const landingFr: LandingContent = {
   whoP1: 'Si vous exercez dans un centre hospitalier disposant d\u2019un abonnement institutionnel, continuez à utiliser vos outils. Vela ne cherche pas à les remplacer.',
   whoP2: 'Vela s\u2019adresse à tous les autres \u2014 le pharmacien au comptoir d\u2019officine, l\u2019infirmière en tournée de soins à domicile, le clinicien à qui l\u2019on demande chaque jour si un médicament doit être arrêté. Pas d\u2019abonnement institutionnel. Pas d\u2019environnement où l\u2019anglais prime. Pas le temps de lire une monographie de 30 pages. Mais des décisions qui touchent de vrais patients, chaque jour.',
   whoP3: 'Cet outil est pour vous.',
-  howHeading: 'Comment ça marche',
-  how1Title: 'Posez votre question dans votre langue',
-  how1Body: 'Écrivez votre question comme vous la diriez \u2014 sans la reformuler d\u2019abord en anglais.',
-  how2Title: 'Recevez une réponse avec citations',
-  how2Body: 'Les réponses s\u2019appuient sur des sources comme PubMed et les étiquettes de médicaments de la FDA, avec des citations que vous pouvez ouvrir et vérifier.',
-  how3Title: 'Vérifiez les sources vous-même',
-  how3Body: 'Ouvrez la citation et lisez l\u2019original par vous-même.',
   trustLine: 'Vela est conçu pour montrer ses lacunes, pas pour les masquer.',
   founderNote: 'Vela est développé et maintenu par un seul développeur indépendant \u2014 pas d\u2019équipe growth, pas de modèle publicitaire, juste un outil qui devait exister.',
   scrollHint: 'Faites défiler pour en savoir plus',
   privacyHeading: 'Confidentialité',
+  featuresHeading: 'Ce que fait Vela',
+  featuresIntro: 'Fonctionne en 16 langues.',
+  privacyPromise4: 'Aucun compte requis pour essayer.',
+  privacyLimitsHeading: 'Ce que « la confidentialité d\u2019abord » ne signifie pas',
+  privacyLimit1: 'Vela n\u2019est pas chiffré de bout en bout \u2014 les requêtes transitent par nos serveurs vers le fournisseur d\u2019IA.',
+  privacyLimit2: 'Nous collectons des analyses d\u2019usage anonymes pour améliorer le produit.',
+  privacyLimit3: 'Le paiement requiert un e-mail pour les reçus, non lié à vos requêtes.',
 };
 
 const landingDe: LandingContent = {
@@ -291,17 +291,17 @@ const landingDe: LandingContent = {
   whoP1: 'Wenn Sie an einem medizinischen Zentrum mit institutionellem Abonnement arbeiten, nutzen Sie weiter die Werkzeuge, die Sie haben. Vela will sie nicht ersetzen.',
   whoP2: 'Vela ist für alle anderen \u2014 die Apothekerin am Tresen der Stadtteilapotheke, den Pfleger auf der Hausbesuchsroute, die Klinikerin, die jeden Tag gefragt wird, ob ein Medikament abgesetzt werden soll. Kein institutionelles Abonnement. Kein Umfeld, in dem Englisch an erster Stelle steht. Keine Zeit für eine 30-seitige Monographie. Aber Entscheidungen, die jeden Tag echte Patienten erreichen.',
   whoP3: 'Dieses Werkzeug ist für Sie.',
-  howHeading: 'So funktioniert es',
-  how1Title: 'Fragen Sie in Ihrer Sprache',
-  how1Body: 'Schreiben Sie Ihre Frage so, wie Sie sie sagen würden \u2014 ohne sie zuerst ins Englische umzuformulieren.',
-  how2Title: 'Erhalten Sie eine Antwort mit Zitaten',
-  how2Body: 'Antworten stützen sich auf Quellen wie PubMed und FDA-Arzneimittelkennzeichnungen, mit Zitaten, die Sie öffnen und prüfen können.',
-  how3Title: 'Prüfen Sie die Quellen selbst',
-  how3Body: 'Öffnen Sie das Zitat und lesen Sie das Original selbst.',
   trustLine: 'Vela ist so gebaut, dass es seine Lücken zeigt, statt sie zu übertünchen.',
   founderNote: 'Vela wird von einem einzelnen unabhängigen Entwickler gebaut und gepflegt \u2014 kein Growth-Team, kein Werbemodell, nur ein Werkzeug, das es geben musste.',
   scrollHint: 'Scrollen Sie für mehr',
   privacyHeading: 'Datenschutz',
+  featuresHeading: 'Was Vela kann',
+  featuresIntro: 'Funktioniert in 16 Sprachen.',
+  privacyPromise4: 'Zum Ausprobieren ist kein Konto erforderlich.',
+  privacyLimitsHeading: 'Was \u201eDatenschutz zuerst\u201c nicht bedeutet',
+  privacyLimit1: 'Vela ist nicht Ende-zu-Ende-verschlüsselt \u2014 Anfragen laufen über unsere Server zum KI-Anbieter.',
+  privacyLimit2: 'Wir erfassen anonyme Nutzungsanalysen, um das Produkt zu verbessern.',
+  privacyLimit3: 'Die Zahlung erfordert eine E-Mail für Belege, die nicht mit Ihren Anfragen verknüpft ist.',
 };
 
 const landingIt: LandingContent = {
@@ -311,17 +311,17 @@ const landingIt: LandingContent = {
   whoP1: 'Se lavori in un centro medico con un abbonamento istituzionale, continua a usare gli strumenti che hai. Vela non vuole sostituirli.',
   whoP2: 'Vela è per tutti gli altri \u2014 il farmacista al banco della farmacia di quartiere, l\u2019infermiere nel giro di assistenza domiciliare, il clinico a cui ogni giorno chiedono se un farmaco vada sospeso. Nessun abbonamento istituzionale. Nessun ambiente dove l\u2019inglese viene prima. Niente tempo per una monografia di 30 pagine. Ma decisioni che raggiungono pazienti reali, ogni giorno.',
   whoP3: 'Questo strumento è per te.',
-  howHeading: 'Come funziona',
-  how1Title: 'Chiedi nella tua lingua',
-  how1Body: 'Scrivi la domanda come la diresti \u2014 senza riformularla prima in inglese.',
-  how2Title: 'Ricevi una risposta con citazioni',
-  how2Body: 'Le risposte si basano su fonti come PubMed e le etichette dei farmaci FDA, con citazioni che puoi aprire e verificare.',
-  how3Title: 'Controlla tu stesso le fonti',
-  how3Body: 'Apri la citazione e leggi l\u2019originale di persona.',
   trustLine: 'Vela è fatto per mostrare le proprie lacune, non per nasconderle.',
   founderNote: 'Vela è costruito e mantenuto da un solo sviluppatore indipendente \u2014 nessun team di crescita, nessun modello pubblicitario, solo uno strumento che doveva esistere.',
   scrollHint: 'Scorri per saperne di più',
   privacyHeading: 'Privacy',
+  featuresHeading: 'Cosa fa Vela',
+  featuresIntro: 'Funziona in 16 lingue.',
+  privacyPromise4: 'Nessun account richiesto per provarlo.',
+  privacyLimitsHeading: 'Cosa non significa \u201cprivacy prima di tutto\u201d',
+  privacyLimit1: 'Vela non è crittografato end-to-end \u2014 le query passano dai nostri server al fornitore di IA.',
+  privacyLimit2: 'Raccogliamo analisi d\u2019uso anonime per migliorare il prodotto.',
+  privacyLimit3: 'Il pagamento richiede un\u2019email per le ricevute, non collegata alle tue query.',
 };
 
 const landingPt: LandingContent = {
@@ -331,17 +331,17 @@ const landingPt: LandingContent = {
   whoP1: 'Se você atua em um centro médico com assinatura institucional, continue usando as ferramentas que já tem. O Vela não pretende substituí-las.',
   whoP2: 'O Vela é para todos os outros \u2014 o farmacêutico no balcão da farmácia comunitária, a enfermeira na rota de atendimento domiciliar, o clínico a quem perguntam todos os dias se um medicamento deve ser suspenso. Sem assinatura institucional. Sem um ambiente onde o inglês vem primeiro. Sem tempo para uma monografia de 30 páginas. Mas com decisões que chegam a pacientes reais, todos os dias.',
   whoP3: 'Esta ferramenta é para você.',
-  howHeading: 'Como funciona',
-  how1Title: 'Pergunte no seu idioma',
-  how1Body: 'Escreva a pergunta do jeito que você a diria \u2014 sem reformular antes para o inglês.',
-  how2Title: 'Receba uma resposta com citações',
-  how2Body: 'As respostas se baseiam em fontes como PubMed e rótulos de medicamentos da FDA, com citações que você pode abrir e conferir.',
-  how3Title: 'Confira as fontes você mesmo',
-  how3Body: 'Abra a citação e leia o original por conta própria.',
   trustLine: 'O Vela foi feito para mostrar suas lacunas, não para escondê-las.',
   founderNote: 'O Vela é construído e mantido por um único desenvolvedor independente \u2014 sem equipe de growth, sem modelo de anúncios, apenas uma ferramenta que precisava existir.',
   scrollHint: 'Role para saber mais',
   privacyHeading: 'Privacidade',
+  featuresHeading: 'O que o Vela faz',
+  featuresIntro: 'Funciona em 16 idiomas.',
+  privacyPromise4: 'Nenhuma conta é necessária para experimentar.',
+  privacyLimitsHeading: 'O que \u201cprivacidade em primeiro lugar\u201d não significa',
+  privacyLimit1: 'O Vela não tem criptografia de ponta a ponta \u2014 as consultas passam pelos nossos servidores até o provedor de IA.',
+  privacyLimit2: 'Coletamos análises de uso anônimas para melhorar o produto.',
+  privacyLimit3: 'O pagamento exige um e-mail para recibos, não vinculado às suas consultas.',
 };
 
 const landingTh: LandingContent = {
@@ -351,17 +351,17 @@ const landingTh: LandingContent = {
   whoP1: 'หากคุณทำงานในศูนย์การแพทย์ที่มีการสมัครสมาชิกระดับสถาบัน โปรดใช้เครื่องมือที่คุณมีต่อไป Vela ไม่ได้ตั้งใจจะมาแทนที่',
   whoP2: 'Vela มีไว้สำหรับทุกคนที่เหลือ \u2014 เภสัชกรหน้าเคาน์เตอร์ร้านยาชุมชน พยาบาลในเส้นทางเยี่ยมบ้าน แพทย์ที่ถูกถามทุกวันว่าควรหยุดยาหรือไม่ ไม่มีการสมัครสมาชิกระดับสถาบัน ไม่ได้อยู่ในสภาพแวดล้อมที่ใช้ภาษาอังกฤษเป็นหลัก ไม่มีเวลาอ่านเอกสาร 30 หน้า แต่ต้องตัดสินใจเรื่องที่ส่งผลถึงผู้ป่วยจริงทุกวัน',
   whoP3: 'เครื่องมือนี้มีไว้เพื่อคุณ',
-  howHeading: 'วิธีการทำงาน',
-  how1Title: 'ถามในภาษาของคุณ',
-  how1Body: 'พิมพ์คำถามแบบเดียวกับที่คุณพูด \u2014 ไม่ต้องเรียบเรียงเป็นภาษาอังกฤษก่อน',
-  how2Title: 'รับคำตอบพร้อมการอ้างอิง',
-  how2Body: 'คำตอบอ้างอิงจากแหล่งข้อมูลอย่าง PubMed และฉลากยา FDA พร้อมการอ้างอิงที่คุณเปิดตรวจสอบได้',
-  how3Title: 'ตรวจสอบแหล่งที่มาด้วยตนเอง',
-  how3Body: 'เปิดการอ้างอิงและอ่านต้นฉบับด้วยตัวคุณเอง',
   trustLine: 'Vela ถูกสร้างมาเพื่อแสดงช่องว่างของตัวเอง ไม่ใช่ปกปิด',
   founderNote: 'Vela สร้างและดูแลโดยนักพัฒนาอิสระคนเดียว \u2014 ไม่มีทีมการตลาด ไม่มีโมเดลโฆษณา มีแค่เครื่องมือที่จำเป็นต้องมี',
   scrollHint: 'เลื่อนลงเพื่อดูเพิ่มเติม',
   privacyHeading: 'ความเป็นส่วนตัว',
+  featuresHeading: 'Vela ทำอะไรได้บ้าง',
+  featuresIntro: 'ใช้งานได้ใน 16 ภาษา',
+  privacyPromise4: 'ทดลองใช้ได้โดยไม่ต้องมีบัญชี',
+  privacyLimitsHeading: '\u201cความเป็นส่วนตัวมาก่อน\u201d ไม่ได้หมายความว่าอะไร',
+  privacyLimit1: 'Vela ไม่ได้เข้ารหัสแบบ end-to-end \u2014 คำถามจะผ่านเซิร์ฟเวอร์ของเราไปยังผู้ให้บริการ AI',
+  privacyLimit2: 'เราเก็บข้อมูลวิเคราะห์การใช้งานแบบไม่ระบุตัวตนเพื่อปรับปรุงผลิตภัณฑ์',
+  privacyLimit3: 'การชำระเงินต้องใช้อีเมลสำหรับใบเสร็จ แต่ไม่เชื่อมโยงกับคำถามของคุณ',
 };
 
 const landingAr: LandingContent = {
@@ -371,17 +371,17 @@ const landingAr: LandingContent = {
   whoP1: 'إذا كنت تعمل في مركز طبي لديه اشتراك مؤسسي، فواصل استخدام الأدوات المتاحة لديك. لا يحاول Vela أن يحل محلها.',
   whoP2: 'Vela لكل الآخرين \u2014 الصيدلي خلف طاولة صيدلية الحي، والممرضة في جولة الرعاية المنزلية، والطبيب الذي يُسأل كل يوم عما إذا كان يجب إيقاف دواء. لا اشتراك مؤسسي، ولا بيئة تضع الإنجليزية أولاً، ولا وقت لقراءة دراسة من 30 صفحة. لكن قرارات تصل إلى مرضى حقيقيين، كل يوم.',
   whoP3: 'هذه الأداة لك.',
-  howHeading: 'كيف يعمل',
-  how1Title: 'اسأل بلغتك',
-  how1Body: 'اكتب سؤالك كما تقوله \u2014 دون إعادة صياغته بالإنجليزية أولاً.',
-  how2Title: 'احصل على إجابة مع اقتباسات',
-  how2Body: 'تعتمد الإجابات على مصادر مثل PubMed ووسم أدوية FDA، مع اقتباسات يمكنك فتحها والتحقق منها.',
-  how3Title: 'تحقق من المصادر بنفسك',
-  how3Body: 'افتح الاقتباس واقرأ النص الأصلي بنفسك.',
   trustLine: 'صُمم Vela ليُظهر ثغراته لا ليخفيها.',
   founderNote: 'يُبنى Vela ويُصان بواسطة مطور مستقل واحد \u2014 بلا فريق نمو، بلا نموذج إعلاني، مجرد أداة كان لا بد أن توجد.',
   scrollHint: 'مرر للأسفل لمعرفة المزيد',
   privacyHeading: 'الخصوصية',
+  featuresHeading: 'ماذا يفعل Vela',
+  featuresIntro: 'يعمل بـ 16 لغة.',
+  privacyPromise4: 'لا حاجة إلى حساب للتجربة.',
+  privacyLimitsHeading: 'ما الذي لا تعنيه «الخصوصية أولاً»',
+  privacyLimit1: 'Vela ليس مشفراً من طرف إلى طرف \u2014 تمر الاستعلامات عبر خوادمنا إلى مزود الذكاء الاصطناعي.',
+  privacyLimit2: 'نجمع تحليلات استخدام مجهولة لتحسين المنتج.',
+  privacyLimit3: 'يتطلب الدفع بريداً إلكترونياً للإيصالات، غير مرتبط باستعلاماتك.',
 };
 
 const landingHi: LandingContent = {
@@ -391,17 +391,17 @@ const landingHi: LandingContent = {
   whoP1: 'यदि आप संस्थागत सदस्यता वाले मेडिकल सेंटर में काम करते हैं, तो अपने मौजूदा टूल इस्तेमाल करते रहें। Vela उन्हें बदलने की कोशिश नहीं कर रहा।',
   whoP2: 'Vela बाकी सबके लिए है \u2014 सामुदायिक काउंटर पर खड़ा फार्मासिस्ट, होम-केयर रूट पर नर्स, वह चिकित्सक जिससे हर दिन पूछा जाता है कि कोई दवा बंद करनी चाहिए या नहीं। न संस्थागत सदस्यता, न अंग्रेज़ी-प्रथम माहौल, न 30 पन्नों का मोनोग्राफ पढ़ने का समय। लेकिन ऐसे निर्णय जो हर दिन असली मरीज़ों तक पहुँचते हैं।',
   whoP3: 'यह टूल आपके लिए है।',
-  howHeading: 'यह कैसे काम करता है',
-  how1Title: 'अपनी भाषा में पूछें',
-  how1Body: 'सवाल वैसे ही लिखें जैसे आप बोलते हैं \u2014 पहले अंग्रेज़ी में बदलने की ज़रूरत नहीं।',
-  how2Title: 'उद्धरणों के साथ उत्तर पाएँ',
-  how2Body: 'उत्तर PubMed और FDA दवा लेबल जैसे स्रोतों पर आधारित होते हैं, ऐसे उद्धरणों के साथ जिन्हें आप खोलकर जाँच सकते हैं।',
-  how3Title: 'स्रोत स्वयं जाँचें',
-  how3Body: 'उद्धरण खोलें और मूल पाठ स्वयं पढ़ें।',
   trustLine: 'Vela अपनी कमियाँ दिखाने के लिए बना है, छिपाने के लिए नहीं।',
   founderNote: 'Vela एक स्वतंत्र डेवलपर द्वारा बनाया और संभाला जाता है \u2014 न कोई ग्रोथ टीम, न विज्ञापन मॉडल, बस एक ऐसा टूल जिसका होना ज़रूरी था।',
   scrollHint: 'और जानने के लिए स्क्रॉल करें',
   privacyHeading: 'गोपनीयता',
+  featuresHeading: 'Vela क्या करता है',
+  featuresIntro: '16 भाषाओं में काम करता है।',
+  privacyPromise4: 'आज़माने के लिए खाते की ज़रूरत नहीं।',
+  privacyLimitsHeading: '\u201cप्राइवेसी-फ़र्स्ट\u201d का जो मतलब नहीं है',
+  privacyLimit1: 'Vela एंड-टू-एंड एन्क्रिप्टेड नहीं है \u2014 क्वेरी हमारे सर्वर से होकर AI प्रदाता तक जाती हैं।',
+  privacyLimit2: 'हम उत्पाद सुधारने के लिए अनाम उपयोग विश्लेषण एकत्र करते हैं।',
+  privacyLimit3: 'भुगतान के लिए रसीदों हेतु ईमेल चाहिए, जो आपकी क्वेरी से जुड़ा नहीं होता।',
 };
 
 const landingBn: LandingContent = {
@@ -411,17 +411,17 @@ const landingBn: LandingContent = {
   whoP1: 'আপনি যদি প্রাতিষ্ঠানিক সাবস্ক্রিপশনসহ কোনো মেডিকেল সেন্টারে কাজ করেন, তাহলে আপনার হাতে থাকা টুলগুলিই ব্যবহার করুন। Vela সেগুলি প্রতিস্থাপন করতে চায় না।',
   whoP2: 'Vela বাকি সবার জন্য \u2014 কমিউনিটি কাউন্টারের ফার্মাসিস্ট, হোম-কেয়ার রুটের নার্স, সেই চিকিৎসক যাঁকে প্রতিদিন জিজ্ঞাসা করা হয় কোনো ওষুধ বন্ধ করা উচিত কি না। প্রাতিষ্ঠানিক সাবস্ক্রিপশন নেই, ইংরেজি-প্রথম পরিবেশ নেই, ৩০ পৃষ্ঠার মনোগ্রাফ পড়ার সময় নেই। কিন্তু প্রতিদিন এমন সিদ্ধান্ত, যা সত্যিকারের রোগীদের কাছে পৌঁছায়।',
   whoP3: 'এই টুলটি আপনার জন্য।',
-  howHeading: 'কীভাবে কাজ করে',
-  how1Title: 'আপনার ভাষায় জিজ্ঞাসা করুন',
-  how1Body: 'যেভাবে বলেন সেভাবেই প্রশ্ন লিখুন \u2014 আগে ইংরেজিতে বদলানোর দরকার নেই।',
-  how2Title: 'উদ্ধৃতিসহ উত্তর পান',
-  how2Body: 'উত্তরগুলি PubMed ও FDA ওষুধের লেবেলের মতো উৎসের উপর ভিত্তি করে, এমন উদ্ধৃতিসহ যা আপনি খুলে যাচাই করতে পারেন।',
-  how3Title: 'নিজেই উৎস যাচাই করুন',
-  how3Body: 'উদ্ধৃতি খুলুন এবং মূল লেখাটি নিজে পড়ুন।',
   trustLine: 'Vela তার ফাঁকগুলি দেখানোর জন্য তৈরি, ঢেকে রাখার জন্য নয়।',
   founderNote: 'Vela একজন স্বাধীন ডেভেলপার তৈরি ও রক্ষণাবেক্ষণ করেন \u2014 কোনো গ্রোথ টিম নেই, বিজ্ঞাপনের মডেল নেই, শুধু এমন একটি টুল যার থাকা দরকার ছিল।',
   scrollHint: 'আরও জানতে স্ক্রল করুন',
   privacyHeading: 'গোপনীয়তা',
+  featuresHeading: 'Vela কী করে',
+  featuresIntro: '16টি ভাষায় কাজ করে।',
+  privacyPromise4: 'চেষ্টা করতে অ্যাকাউন্টের প্রয়োজন নেই।',
+  privacyLimitsHeading: '\u201cপ্রাইভেসি-ফার্স্ট\u201d যা বোঝায় না',
+  privacyLimit1: 'Vela এন্ড-টু-এন্ড এনক্রিপ্টেড নয় \u2014 কোয়েরি আমাদের সার্ভার হয়ে AI প্রদানকারীর কাছে যায়।',
+  privacyLimit2: 'পণ্য উন্নত করতে আমরা বেনামী ব্যবহার বিশ্লেষণ সংগ্রহ করি।',
+  privacyLimit3: 'পেমেন্টে রসিদের জন্য একটি ইমেল লাগে, যা আপনার কোয়েরির সঙ্গে যুক্ত নয়।',
 };
 
 const landingHe: LandingContent = {
@@ -431,17 +431,17 @@ const landingHe: LandingContent = {
   whoP1: 'אם אתם עובדים במרכז רפואי עם מנוי מוסדי, המשיכו להשתמש בכלים שיש לכם. Vela לא מנסה להחליף אותם.',
   whoP2: 'Vela מיועד לכל השאר \u2014 הרוקח בדלפק הקהילתי, האחות במסלול טיפול הבית, הקלינאי שנשאל מדי יום אם להפסיק תרופה. בלי מנוי מוסדי. בלי סביבה שבה אנגלית קודמת. בלי זמן למונוגרפיה של 30 עמודים. אבל עם החלטות שמגיעות לחולים אמיתיים, כל יום.',
   whoP3: 'הכלי הזה בשבילכם.',
-  howHeading: 'איך זה עובד',
-  how1Title: 'שאלו בשפה שלכם',
-  how1Body: 'כתבו את השאלה כפי שהייתם אומרים אותה \u2014 בלי לנסח קודם באנגלית.',
-  how2Title: 'קבלו תשובה עם ציטוטים',
-  how2Body: 'התשובות נשענות על מקורות כמו PubMed ותוויות תרופות של FDA, עם ציטוטים שאפשר לפתוח ולבדוק.',
-  how3Title: 'בדקו את המקורות בעצמכם',
-  how3Body: 'פתחו את הציטוט וקראו את המקור בעצמכם.',
   trustLine: 'Vela בנוי להראות את הפערים שלו, לא להסתיר אותם.',
   founderNote: 'Vela נבנה ומתוחזק על ידי מפתח עצמאי אחד \u2014 בלי צוות צמיחה, בלי מודל פרסום, רק כלי שהיה צריך להתקיים.',
   scrollHint: 'גללו למטה למידע נוסף',
   privacyHeading: 'פרטיות',
+  featuresHeading: 'מה Vela עושה',
+  featuresIntro: 'עובד ב-16 שפות.',
+  privacyPromise4: 'אין צורך בחשבון כדי לנסות.',
+  privacyLimitsHeading: 'מה \u201cפרטיות תחילה\u201d לא אומר',
+  privacyLimit1: 'Vela אינו מוצפן מקצה לקצה \u2014 שאילתות עוברות דרך השרתים שלנו לספק ה-AI.',
+  privacyLimit2: 'אנו אוספים ניתוחי שימוש אנונימיים לשיפור המוצר.',
+  privacyLimit3: 'תשלום דורש אימייל לקבלות, שאינו מקושר לשאילתות שלכם.',
 };
 
 const landingVi: LandingContent = {
@@ -451,17 +451,17 @@ const landingVi: LandingContent = {
   whoP1: 'Nếu bạn làm việc tại một trung tâm y tế có thuê bao tổ chức, hãy tiếp tục dùng những công cụ bạn đang có. Vela không định thay thế chúng.',
   whoP2: 'Vela dành cho tất cả những người còn lại \u2014 dược sĩ ở quầy thuốc cộng đồng, điều dưỡng trên tuyến chăm sóc tại nhà, bác sĩ lâm sàng mỗi ngày được hỏi liệu có nên ngừng một loại thuốc. Không thuê bao tổ chức. Không môi trường ưu tiên tiếng Anh. Không có thời gian cho một chuyên khảo 30 trang. Nhưng là những quyết định chạm đến bệnh nhân thật, mỗi ngày.',
   whoP3: 'Công cụ này dành cho bạn.',
-  howHeading: 'Cách hoạt động',
-  how1Title: 'Hỏi bằng ngôn ngữ của bạn',
-  how1Body: 'Gõ câu hỏi theo cách bạn vẫn nói \u2014 không cần diễn đạt lại bằng tiếng Anh trước.',
-  how2Title: 'Nhận câu trả lời có trích dẫn',
-  how2Body: 'Câu trả lời dựa trên các nguồn như PubMed và nhãn thuốc FDA, kèm trích dẫn bạn có thể mở ra kiểm chứng.',
-  how3Title: 'Tự kiểm tra nguồn',
-  how3Body: 'Mở trích dẫn và tự đọc bản gốc.',
   trustLine: 'Vela được tạo ra để cho thấy những khoảng trống của mình, không phải để che đậy.',
   founderNote: 'Vela do một lập trình viên độc lập xây dựng và duy trì \u2014 không đội tăng trưởng, không mô hình quảng cáo, chỉ là một công cụ cần phải tồn tại.',
   scrollHint: 'Cuộn xuống để tìm hiểu thêm',
   privacyHeading: 'Quyền riêng tư',
+  featuresHeading: 'Vela làm được gì',
+  featuresIntro: 'Hoạt động trong 16 ngôn ngữ.',
+  privacyPromise4: 'Không cần tài khoản để dùng thử.',
+  privacyLimitsHeading: '\u201cQuyền riêng tư trước tiên\u201d không có nghĩa là gì',
+  privacyLimit1: 'Vela không mã hóa đầu-cuối \u2014 truy vấn đi qua máy chủ của chúng tôi đến nhà cung cấp AI.',
+  privacyLimit2: 'Chúng tôi thu thập phân tích sử dụng ẩn danh để cải thiện sản phẩm.',
+  privacyLimit3: 'Thanh toán cần một email để nhận biên lai, không liên kết với truy vấn của bạn.',
 };
 
 export const landingContent: Record<LangCode, LandingContent> = {

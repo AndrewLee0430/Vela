@@ -393,7 +393,7 @@ function LandingPage() {
             {/* B1: section anchors + Pricing (ui.pricingTitle, reused verbatim) */}
             <div className="flex flex-wrap justify-center gap-4 text-xs">
               <a href="#who" className="hover:text-text transition-colors">{lc.whoHeading}</a>
-              <a href="#how" className="hover:text-text transition-colors">{lc.howHeading}</a>
+              <a href="#features" className="hover:text-text transition-colors">{lc.featuresHeading}</a>
               <a href="#privacy" className="hover:text-text transition-colors">{lc.privacyHeading}</a>
               <Link href="/pricing" className="hover:text-text transition-colors">{ui.pricingTitle}</Link>
               <Link href="/faq" className="hover:text-text transition-colors">FAQ</Link>
