@@ -223,22 +223,27 @@ None active. § 2.7 Step 8 acceptance protocol completed 2026-04-30 (commits c5b
   > **DARK UNCHANGED — asserted by diff, not claimed.** Parsing both schemes out of HEAD and the working tree: **zero dark tokens changed**; the 8 additions carry the previously-hardcoded values verbatim.
   > **REGRESSION GUARD — `tests/test_share_light_contrast.py` COMPUTES the ratio.** A hardcoded pass-list would have passed at fly 219 too — the values were fine, they just weren't reaching the elements. It parses the real template, composites each token over its true background, and fails below AA. A second test catches the **root cause**: any **achromatic** literal outside the variable system (greys must flip; brand coral legitimately does not). **Verified by re-injecting the exact fly-219 defect and watching it fail.** A third asserts both schemes define the same token set. **Suite 200 passed** (was 176); `tsc` **exit 0**.
   >
-  > ### 🔴 RENDER GATE — CARRIED FORWARD from fly 219, now against **fly 220**
-  > **Step 0:** `/health` `revision` must read `4b4f8aa08fce1efd6ef8d10f3d2bc0a9e6b72951`.
-  > **Row 5b is the one that already failed once — check it first.**
+  > ### ✅ RENDER GATE — RUN 2026-08-10 against **fly 220**, founder-run, human-eye, **BOTH schemes** (DevTools emulation) on `/q/80DFqlk4jGQ`
+  > **Step 0 build readback confirmed:** `/health` `revision` = `4b4f8aa`. **RESULT: 8 PASS / 1 FAIL.**
   >
-  > | # | URL | scheme | expected | observed | VERDICT | NOTES |
-  > |---|---|---|---|---|---|---|
-  > | 1 | `/q/80DFqlk4jGQ` | **dark** | unchanged from fly 218 except: source names neutral, **no credibility pills** | | | |
-  > | 2 | `/q/80DFqlk4jGQ` | **light** | page light; **snippet + author/journal text clearly readable** (the fly-219 defect) | | | |
-  > | 3 | `/explore/metformin-contraindications-renal` | **light** | identical treatment to `/q/` | | | |
-  > | 4 | `/q/7xI-q0dxnVg` (zh-TW, 3 tombstones) | **dark** | tombstones read 「來源已撤回」, dimmed, no link | | | |
-  > | 5 | LEGIBILITY — **DARK** | dark | tombstone distinguishable at a glance | | | |
-  > | **5b** | 🔴 **LEGIBILITY — LIGHT** — **FAILED at fly 219** | **light** | **all body text readable**; tombstone distinguishable; nothing washed out | | | |
-  > | 6 | CREDIBILITY PILL ABSENT | both | no "Official"/"Peer Reviewed" pill anywhere | | | |
-  > | 7 | TOMBSTONE READS AS WITHDRAWN | both | obviously not a normal source | | | |
-  > | 8 | evidence accents 🟢🟡🔴 | **light** | borders clearly visible on the light card (darkened in fly 220) | | | |
-  > | 9 | 🆕 footer + short-disclaimer | **light** | footer copy and the ⚠️ medical disclaimer readable (both were below AA) | | | |
+  > | check | light | dark | verdict |
+  > |---|---|---|---|
+  > | citation snippet legible | ✅ clear | ✅ clear | **PASS** |
+  > | author/journal line legible | ✅ clear | ✅ clear | **PASS** |
+  > | medical short-disclaimer legible | ✅ | ✅ | **PASS** |
+  > | footer disclaimer legible | ✅ | ✅ | **PASS** |
+  > | credibility pill ABSENT (intended change) | ✅ absent | ✅ absent | **PASS** |
+  > | source name neutral (no per-source colour) | ✅ | ✅ | **PASS** |
+  > | View source link present + coral | ✅ | ✅ | **PASS** |
+  > | overall parity with pre-219 dark | n/a | ✅ unchanged | **PASS** |
+  > | 🔴 evidence-strength accent bars (🟢🟡) | ❌ uniform slate | ❌ uniform slate | **FAIL** |
+  > | local tombstone still reads as withdrawn | — | — | n/a (no local stub on this share) |
+  >
+  > **✅ ROW 5b — THE fly-219 FAILURE IS FIXED.** Light legibility **FAILED at fly 219** and **PASSES at fly 220**. Recording the trajectory, not overwriting it: **the gate caught a real defect, and the deploy had shipped without running the prepared form.** That is the process finding filed in TECH_DEBT, and this run is its evidence.
+  > **🔴 THE ONE FAIL — evidence-strength accent bars, IDENTICAL IN BOTH SCHEMES.** Founder's reasoning, recorded: identical behaviour across schemes **rules out CSS variable resolution** (a variable failure would differ between schemes) and points at `section.border_color` taking the **None branch** — markers not reaching the renderer, regardless of theme.
+  > **⏳ OPEN pending diagnosis** → **DIAGNOSED the same day, see TECH_DEBT `[P2 · evidence-accent]`: the generator STOPPED EMITTING the markers on 2026-06-10 (`3ad3ddc`) and the share-page parser was never told.** Cause established; **no fix in this baton — founder decides.**
+  > **🔗 Cross-ref candidate A** (presentation drift, closed 2026-08-10 as investigated-not-a-defect): the founder's ORIGINAL observation was *"uniform accent bars"*. A closed on the **citation-card** source-colour explanation, which was **correct for citation cards** — but **the evidence-card accent uniformity was REAL** and is now reproduced under both schemes. **Q1 verified the markers EXIST in `answer_text`; nothing ever verified they reach a COLOUR.** ⚠️ **A is NOT reopened here** — recorded as a cross-ref; the input-verified/output-never shape is filed as instrument-blind **#16**.
+
 
 - **2026-08-10** [fly 219] **Share pages: visual convergence + `prefers-color-scheme` — ⏳ DEPLOYED, GATE PENDING** — code `bff6044` + `c6571bb` + `475911a`. **fly version 219, nrt, image `deployment-01KZN9WSJF41GFWK8ZSJYGRK9D`; `.\deploy.ps1` clean; machines both v219 (one stopped — known benign).** ✅ **Step 0 readback:** `/health` `revision` = **`475911ac9686…`** = pushed SHA.
   > **STEP 0 FINDING — the `.light` dormancy comment was STALE, light mode is FUNCTIONAL.** `styles/globals.css:96-100` claimed *"No element opts into `.light`"*; false since **`0d7df96` [stage3] 3.8 (2026-06-05)** made light the DEFAULT. `_app.tsx:160-164` + `_document.tsx:17` put `class="light"` on `<html>` before first paint; CitationPanel uses semantic tokens that flip with the theme. **Comment corrected (comment-only). Proceeded as authorised.**
