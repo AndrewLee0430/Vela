@@ -14,6 +14,8 @@ import UpgradeModal from '../components/UpgradeModal';
 import Navbar from '../components/Navbar';
 import LandingSettingsDropdown from '../components/LandingSettingsDropdown';
 import HeroComposerModeSelector, { type ComposerMode } from '../components/HeroComposerModeSelector';
+import LandingSections, { ScrollHint } from '../components/LandingSections';
+import { getUI } from '../utils/i18n-ui';
 import OnboardingOverlay from '../components/OnboardingOverlay';
 import OnboardingWizard from '../components/OnboardingWizard';
 import { readRaw } from '../utils/userContext';
@@ -100,6 +102,7 @@ function LandingPage() {
   const t = translations[lang];
   const lc = landingContent[lang];
   const extra = getExtra(lang);
+  const ui = getUI(lang); // footer Pricing link reuses ui.pricingTitle verbatim (D2)
   const isRtl = RTL_LANGS.includes(lang);
 
   // §3.3 — role-filtered example chips; null/unmapped role → heroChip1/2/3 default.
@@ -269,9 +272,18 @@ function LandingPage() {
             two landing dropdowns (mode selector + settings) were tokenized to flip.
             Dual-`/`: the signed-in Dashboard is a SEPARATE component (its own
             `bg-app-bg`) and likewise respects the theme. */}
-        <div className="landing-bg flex flex-col">
-          {/* First viewport: nav + hero */}
-          <div className="min-h-screen flex flex-col">
+        {/* B1 (2026-08-11): `.landing-bg` moved from this wrapper onto the
+            FIRST-VIEWPORT div below, scoping the warm radial gradient to the
+            hero. Reason: the gradient's ellipse center is a PERCENTAGE OF THE
+            ELEMENT — with the below-fold sections inside the old wrapper it
+            would migrate down the page. The wrapper gets `bg-app-bg` so the
+            sections + footer sit on the app's standard themed background.
+            Hero-visual delta: the gradient element is now exactly 100vh where
+            it was 100vh+footer (~4vh center shift) — imperceptible inside the
+            30%→70% falloff; render-gate row 1 verifies. */}
+        <div className="bg-app-bg flex flex-col">
+          {/* First viewport: nav + hero (relative: anchors the scroll hint) */}
+          <div className="landing-bg relative min-h-screen flex flex-col">
           {/* Top bar */}
           <nav className="flex-shrink-0 flex justify-between items-center gap-2 px-4 md:px-10 py-4">
             <Link href="/" className="flex items-center gap-2">
@@ -363,7 +375,11 @@ function LandingPage() {
               <span>· {t.privacyPromise3} ·</span>
             </p>
           </div>
+          <ScrollHint label={lc.scrollHint} />
           </div>
+
+          {/* B1 below-fold sections — §who / §how / §privacy */}
+          <LandingSections lc={lc} t={t} />
 
           {/* Footer — light zone */}
           <div
@@ -374,11 +390,18 @@ function LandingPage() {
               <span>© {new Date().getFullYear()} Vela. {t.footerCopy} · <a href="https://an-tho.com" target="_blank" rel="noopener noreferrer" className="hover:text-text transition-colors">an-tho.com</a></span>
             </div>
             <div>{t.footerDisclaimer}</div>
+            {/* B1: section anchors + Pricing (ui.pricingTitle, reused verbatim) */}
+            <div className="flex flex-wrap justify-center gap-4 text-xs">
+              <a href="#who" className="hover:text-text transition-colors">{lc.whoHeading}</a>
+              <a href="#how" className="hover:text-text transition-colors">{lc.howHeading}</a>
+              <a href="#privacy" className="hover:text-text transition-colors">{lc.privacyHeading}</a>
+              <Link href="/pricing" className="hover:text-text transition-colors">{ui.pricingTitle}</Link>
+              <Link href="/faq" className="hover:text-text transition-colors">FAQ</Link>
+            </div>
             <div className="flex flex-wrap justify-center gap-4 text-xs">
               <Link href="/terms" className="hover:text-text transition-colors">{extra.termsLabel}</Link>
               <Link href="/privacy" className="hover:text-text transition-colors">{extra.privacyLabel}</Link>
               <Link href="/refund" className="hover:text-text transition-colors">{extra.refundLabel}</Link>
-              <Link href="/faq" className="hover:text-text transition-colors">FAQ</Link>
               <a href="mailto:support@an-tho.com" className="hover:text-text transition-colors">support@an-tho.com</a>
             </div>
           </div>

@@ -106,6 +106,42 @@ so it is the only row that can catch a locale-resolution fault.
 
 ---
 
+## Gate 2 — B1: landing below-fold sections (BLANK — founder runs post-deploy)
+
+**Change under test:** the B1 landing-sections commit of 2026-08-11 (`fix(landing): [B1] …` —
+SHA recorded in the baton report and the STATE draft entry; fill in here at gate time, and
+**confirm `/health` `revision` matches it before row 1**).
+
+**What shipped:** three sections (`#who` / `#how` / `#privacy`) + expanded footer below the hero
+on `/`; the `.landing-bg` gradient re-scoped from the hero+footer wrapper to the first-viewport
+div; a scroll-hint chevron at the hero's bottom center. **The hero is claimed UNCHANGED** — that
+claim is row 1, and it is the row most worth failing honestly: the gradient element changed from
+~100vh+footer to exactly 100vh, a ~4vh center shift argued imperceptible. If it is visible, say so.
+
+| # | URL (copy-pasteable) | locale / scheme | check | what PASS looks like | observed | VERDICT | NOTES |
+|---|---|---|---|---|---|---|---|
+| 1 | `https://vela.an-tho.com/` | en · **light** | **hero unchanged vs fly 226** | headline, input, chips, privacy line, warm gradient all read as before; no layout shift, gradient center not visibly moved | | | |
+| 2 | `https://vela.an-tho.com/` | en · **dark** | hero unchanged vs fly 226 | same, on the dark gradient | | | |
+| 3 | `https://vela.an-tho.com/` | en · light | **section legibility** | scroll through §who/§how/§privacy: all text readable, step numbers visible, §how's tinted band distinct from the page | | | |
+| 4 | `https://vela.an-tho.com/` | en · **dark** | section legibility | same in dark — this is the fly-219 regression class; any washed-out text ⇒ FAIL | | | |
+| 5 | `https://vela.an-tho.com/` | en · either | **chevron subtlety** | visible-but-quiet at hero bottom; fades on first scroll; clicking it scrolls to §who; does NOT overlap the privacy line | | | |
+| 6 | `https://vela.an-tho.com/` | en · either · **mobile width** (≤ 390px) | mobile | sections stack single-column, no horizontal scroll, footer wraps cleanly | | | |
+| 7 | `https://vela.an-tho.com/` | **ar** (RTL) · either | RTL | sections right-align correctly, step numbers/text order sane, chevron still centered | | | |
+| 8 | `https://vela.an-tho.com/` | **zh-TW** · either | locale strings | §who/§how/§privacy render zh-TW text (not en fallback); footer anchors labelled in zh-TW | | | |
+| 9 | *(no URL — content row)* | en | **founder copy approval** | the founderNote small-type line ("built and maintained by one independent developer…") — founder APPROVES the wording or names the edit | | | |
+
+**Explore-CTA row deliberately ABSENT:** P0.1 verdict was NOT safe-to-link (one published explore
+page, no index route — bare `/explore` serves the landing itself). §how ships without the CTA;
+there is nothing to gate.
+
+**Known and expected — do NOT record as failures:** the three privacy chips and the research-tool
+disclaimer appear BOTH in the hero zone and in §privacy — deliberate verbatim reuse (D2), not a
+duplication bug. The new-key MT (15 locales) is NOT native-reviewed — recorded in STATE; a wording
+that reads oddly in a non-en locale is reviewer-queue material, not a gate FAIL, unless it makes a
+CLAIM the English does not (that IS a FAIL — the fly-225 class).
+
+---
+
 ## Adding a gate to this file
 
 1. Name the **change under test** by commit SHA.
