@@ -10,18 +10,16 @@ Classes are **additive and orthogonal** to the existing `[P0]`–`[P3]` ratings 
 
 | class | meaning | count |
 |---|---|---|
-| **[LAUNCH]** | blocks the B2B-interim route going live to a real customer | **3** |
+| **[LAUNCH]** | blocks the B2B-interim route going live to a real customer | **0 — EMPTY** |
 | **[COMPLIANCE]** | legal / regulatory / data-protection obligation | **5** |
 | **[HONESTY]** | the product currently tells the user something untrue or misleading | **14** |
-| [DONE] | already fixed / resolved / accepted; retained for the record only | 29 |
-| [OTHER] | quality, hygiene, tooling, opportunistic | 60 |
-| | **total** | **111** |
+| [DONE] | already fixed / resolved / accepted; retained for the record only | 32 |
+| [OTHER] | quality, hygiene, tooling, opportunistic | 61 |
+| | **total** | **112** |
 
-#### 🔴 [LAUNCH] — the short list
+#### ✅ [LAUNCH] — EMPTY as of 2026-08-11
 
-- `[P0 · ops/stability — pre-launch]` OpenAI auto-recharge OFF + prepaid credit EXPIRES
-- `[P1 → Round 2B + 3 完成後一起 E2E 測試]` Clerk email sign-up/sign-in end-to-end 驗證
-- `[P2 → Dodo 付費啟用前]` `CLERK_SECRET_KEY` 仍是 `sk_live_` 對 Dev instance user checkout 會 500
+**Nothing in `TECH_DEBT.md` blocks the B2B-interim route going live.** All three former entries were retired on 2026-08-11 — and *none* was retired by new work: one by founder re-confirmation (OpenAI auto-recharge, resolved 2026-06-18 but recorded only in its body), one by **configuration convergence** (`CLERK_SECRET_KEY`, resolved by fly secrets with no commit to signal it), and one by **founder dashboard verification** (Clerk SSO merge). ⚠️ **All three had been resolved for weeks or months before anyone asked** — see `[P2 · debt-hygiene / observability of the DEBT ITSELF]`.
 
 #### [COMPLIANCE]
 
@@ -870,7 +868,9 @@ When entries are resolved, mark with the resolving commit SHA (git log is the re
   - Maps to advisor **Phase-2 "contradiction circuit-breaker."** Recorded as feasibility context for the OPEN route decision — not a committed build.
   - **Discovered**: 2026-06-14 during Task-A QA (gate feasibility assessment).
 
-- [LAUNCH] **[P0 · ops/stability — pre-launch] OpenAI auto-recharge OFF + prepaid credit EXPIRES**
+- [DONE] **[P0 · ops/stability — pre-launch] ✅ RESOLVED 2026-08-11** — ❌ ~~OpenAI auto-recharge OFF~~ → **auto-recharge is ON** — **+ prepaid credit EXPIRES**
+  - **✅ RESOLVED 2026-08-11 (founder re-confirmed today).** Auto-recharge ON; the credit-zero service-down risk is closed.
+  - **🔴 THE LESSON — this entry stayed open for ~2 MONTHS while already resolved, because the resolution lived in the BODY and the HEADER kept the stale claim.** The `2026-06-18 update — auto-recharge ON (founder-confirmed)` bullet sat four lines below a header that still read *"auto-recharge OFF"*. **The 2026-08-11 class-tagging pass then inherited the header's wrongness and tagged it `[LAUNCH]`** — putting a resolved item at the top of the launch-blocker list. **Headers are what get read**: by a skim, by a grep, and by any classifier. A resolution recorded only in a body is a resolution that has not been communicated.
   - Auto-recharge is OFF and prepaid credit expires (Andrew already lost ~$28 to expired grants). Credit-zero = the WHOLE service returns `[ERROR]` to ALL users — every Research/Verify/Explain call hits OpenAI. A public-traffic stability risk for **either** B2C or B2B.
   - **Resolution (record-only)**: enable auto-recharge before any launch; add a low-balance alert.
   - **Discovered**: 2026-06-15 during Task-A QA session (ops review).
@@ -904,7 +904,13 @@ When entries are resolved, mark with the resolving commit SHA (git log is the re
 - [DONE] **[P2 → mostly SHIPPED] Verify 答案品質 nuance issues — dogfooding 發現 (2026-05-06) — 4/5 DONE, only #3 survives**
   - The 2026-05-06 dogfooding 5-issue set (query「為什麼亞洲老年人 polypharmacy 問題嚴重」, all citations real / 0 hallucination) is mostly shipped: **#1 citation-scope-mismatch + #2 geographic-coverage → Research v185 (`20a84c9`)**; **#5 no-self-rating → Verify v184 (`bf1c5ec`)**; **#4 counterintuitive-mechanism → absorbed by the reversal-defense direction-of-effect chain** (see the TECH_DEBT P0 "Direction-of-effect reversal" entry + BACKLOG §706a). **Only #3 survives** = citation-ranking bias toward recency over scope-match (the best-match PMID 37574369, Malaysia primary-care 393pt, ranked 4th behind narrower China inpatient studies) → tracked as **BACKLOG [P2] "Citation retrieval ranking evaluation"** (pre-req: 5-10 dogfooding samples) + the related "Research canonical-term under-coverage" entry below. (Original 5-issue diagnosis preserved in git history pre-trim.)
 
-- [LAUNCH] **[P1 → Round 2B + 3 完成後一起 E2E 測試]** Clerk email sign-up/sign-in end-to-end 驗證
+- [DONE] **[P1 → Round 2B + 3 完成後一起 E2E 測試] ✅ RESOLVED 2026-08-11** — ~~Clerk email sign-up/sign-in end-to-end 驗證~~
+  - **✅ All three named unverified items are now closed:**
+    - **(i) Email code delivery** — **PROVEN**, founder used it on prod 2026-08-11.
+    - **(ii) register → Clerk user → backend JWT → `/research` loads** — **PROVEN**, founder used it on prod 2026-08-11.
+    - **(iii) Google SSO on the same email** — **VERIFIED 2026-08-11** via the Clerk dashboard: **ONE user row carrying BOTH Email and Google connections. Clerk merges.** This was the only item a working login could not prove, and it was checked directly.
+  - **Why the DATABASE half was never at risk** (2026-08-11 recon, structural): **there is no Clerk webhook at all** — `user_usage` is created **lazily on first authenticated use** (`api/services/usage_service.py:26-54`, via `get_or_create_usage` `:98`/`:124`/`:141`), so there is no webhook that could fail to fire. **`clerk_user_id` is the PRIMARY KEY** (`api/models/sql_models.py:48`), so a duplicate row for a returning user is **structurally impossible**. Quota defaults are column-level (`:49-51`). A deleted account's **frozen** row raises `AccountDeleted` 403 rather than being recreated (`usage_service.py:41-43`).
+  - **⚠️ RESIDUAL, recorded honestly — this entry closes on FOUNDER VERIFICATION, not on test coverage.** A grep of `tests/` found **no automated test** covering sign-up or `user_usage` creation, and no gate row covers it either. **Deliberately NOT filed as a new entry** (founder decision 2026-08-11) — recorded here so the basis of the closure is not mistaken for a regression guard.
   - **背景**: 2026-04-22 localhost /sign-in 已確認 Clerk Development instance 有 email input(切 Dev instance + 啟用 email code verification 後解決)。Production instance email 設定也已確認 ON。
   - **尚未驗證**:
     - Email code 能否真的發到使用者信箱(依賴 Clerk email 發送能力)
@@ -1039,7 +1045,14 @@ When entries are resolved, mark with the resolving commit SHA (git log is the re
   - **Discovered**: 2026-05-06 during §4.5 PHASE B implementation; deviation accepted by reviewer to avoid widening PHASE B scope.
   - **2026-05-06 update**: Resolution scope unchanged but now applies to BOTH `variant='inline'` (history.tsx) and `variant='navbar'` (research/verify/explain pages, commit ca571ce). When implemented, fix in one place propagates to both call sites since both share the same anon-gating code path inside `components/ShareButton.tsx`.
 
-- [LAUNCH] **[P2 → Dodo 付費啟用前]** `CLERK_SECRET_KEY` 仍是 `sk_live_` 對 Dev instance user checkout 會 500
+- [DONE] **[P2 → Dodo 付費啟用前] ✅ RESOLVED 2026-08-11** — ❌ ~~`CLERK_SECRET_KEY` 仍是 `sk_live_` 對 Dev instance user checkout 會 500~~
+  - **✅ RESOLVED 2026-08-11.** The mismatch cannot exist on prod. Evidence chain (2026-08-11 recon, read-only):
+    1. the frontend ships **`pk_live_`** (`fly.toml:8`), whose encoded domain is **`clerk.vela.an-tho.com`** — the **production** Clerk instance;
+    2. **sign-in works on prod** → `CLERK_JWKS_URL` (`api/server.py:350`) verifies production-instance tokens;
+    3. **Dodo checkout works on prod** → `/api/checkout/dodo` (`api/server.py:1871`) can only return a payment link **after** `GET api.clerk.com/v1/users/{id}` succeeds using `CLERK_SECRET_KEY` (`:1885-1906`);
+    4. ⇒ **the secret key and the token's instance necessarily match.**
+  - **❌ THE ENTRY'S OWN PREDICTION WAS WRONG WHEN WRITTEN, and is re-pointed rather than quietly dropped.** It claimed a mismatch yields **500**. It does not: the lookup failure is caught (`api/server.py:1902`) and the handler returns **`422 "Could not retrieve user email"`** (`:1905-1906`). A **500** arises only from a **Dodo** API exception (`:1942`). That 422 path **predates the entry** — `create_dodo_checkout` was last touched **2026-03-26**, the entry was filed **2026-04-22** — so the predicted symptom was never the real one.
+  - **🔴 THE CLASS LESSON — CONFIG-RESOLVED DEBT IS INVISIBLE TO EVERY AUTOMATED CHECK THIS REPO HAS.** This was resolved by **configuration convergence** (`fly secrets`), not by a commit. `git log -S "CLERK_SECRET_KEY"` since 2026-05-19 returns **nothing**, so **no code signal ever existed to prompt closure** — the entry could only ever be closed by someone thinking to ask. Filed as its own process entry below, **not** as an instrument-blind row; see that entry for the reasoning.
   - **現況**: Round 2B JWT Dev/Prod mismatch fix 只改 `CLERK_JWKS_URL` 指向 Dev instance (`joint-guppy-23.clerk.accounts.dev`);`CLERK_SECRET_KEY` 仍為 Prod `sk_live_NhG...`
   - **影響範圍**: Dodo checkout path 會用 `CLERK_SECRET_KEY` call Clerk Backend API 取 user email/name;Dev instance user ID 對 Prod secret key 查不到 → 500 error
   - **現行不爆的原因**: Round 2B 測試只跑 Research + Verify,沒動到 Dodo checkout;Dodo 付費要到 Phase 1A 才啟用
@@ -1118,7 +1131,21 @@ When entries are resolved, mark with the resolving commit SHA (git log is the re
   - **驗證方法**: After fix, verify `_app.tsx` no longer references `publicMetadata.plan`; PostHog identify event includes `plan_type` from backend response.
   - **Discovered**: 2026-05-19 pre-deploy DB state audit (3 Pro users in user_usage: 1 real + 1 orphan-now-cleaned + 1 TEST_MODE marker; orphan row had `dodo_customer_id = test_cust_*` Dodo sandbox leftover, cleaned same session)
 
+- [OTHER] **[P2 · debt-hygiene / observability of the DEBT ITSELF — surfaced 2026-08-11 by the launch-blocker close-out] CONFIG-RESOLVED DEBT IS INVISIBLE TO EVERY AUTOMATED CHECK THIS REPO HAS**
+  - **What:** an entry can be **fully resolved by a change this repo cannot observe** — a `fly secrets` value, a Clerk dashboard toggle, an OpenAI billing setting. Nothing in the repo changes, so `git log -S` finds nothing, no test flips, no gate notices. **The entry stays open until a human happens to ask.**
+  - **Two measured instances, both found on the same day (2026-08-11):**
+    - **`CLERK_SECRET_KEY` vs Dev instance** — resolved by fly-secret convergence. `git log -S "CLERK_SECRET_KEY"` since 2026-05-19 returns **nothing**. Open ~3.5 months after it stopped being true.
+    - **OpenAI auto-recharge** — resolved by a dashboard toggle on 2026-06-18, recorded in the entry BODY, header left stale. Open ~2 months after it stopped being true.
+  - **Both were tagged `[LAUNCH]` on 2026-08-11 and were already resolved.** The classification pass could not have known: it read headers, and neither header reflected reality.
+  - **🔴 WHY THIS IS NOT AN INSTRUMENT-BLIND ROW** (considered and rejected 2026-08-11): that class is *"an instrument that is BLIND TO THE THING IT MEASURES"* — every member is a probe, harness, gate or metric that measured the wrong thing or the wrong arm. **Here no instrument was wrong; no instrument EXISTS** over the config surface. Forcing it into that table would dilute a class whose value is its sharpness — the table exists so the shape *"stops being rediscovered"*, and this is a different shape. **Filed as its own process entry instead.**
+  - **NO FIX PROPOSED.** Noted only that the observable signal would have to come from outside the repo (a periodic config audit, or recording the config state in-repo at deploy time — the build-provenance entry solved the analogous problem for the deployed commit).
+  - **Priority [P2]:** no user-facing harm. The cost is that the debt file overstates the remaining work, and did so at the exact moment it was used to decide what blocks launch.
+
 - [COMPLIANCE] **[P2 → Phase 1A §3.1] Clerk user.deleted webhook → user_usage cleanup not wired — discovered 2026-05-19** — **[CONSOLIDATED: the Clerk `user.deleted` webhook is also one of the 3 Triggers in BACKLOG "Deletion-feature C" (the superset record); this entry = the `user_usage`-cleanup slice. Verified 2026-06-25: still no `/api/webhooks/clerk` handler. Pair with the publicMetadata.plan entry above under one user-lifecycle ADR.]**
+  - **🔴 SCOPE CORRECTED 2026-08-11 — this is NOT one missing handler. There is NO Clerk webhook surface AT ALL.** The 2026-08-11 recon grepped every route: the only webhook endpoints in the codebase are **`/api/webhooks/lemonsqueezy`** (`api/server.py:1946`) and **`/api/webhook/dodo`** (`:2026`). There is **no `user.created`, no `user.deleted`, no svix verification, nothing Clerk-facing**. The entry's title reads as a single unwired handler; the reality is that the entire inbound-Clerk-event surface is absent.
+  - **The gap, plainly: a user deleting their account in Clerk produces NO SIGNAL to Vela's database.** The `user_usage` row — including `deleted_at`, the freeze marker the deletion design depends on — is never told. Deletion can only be initiated from Vela's side today.
+  - **Stays OPEN and stays `[COMPLIANCE]`. No fix proposed, no re-rating** (founder decision 2026-08-11 — scope correction only).
+  - **Read together with** (cross-reference only, neither changed): **`[P2]` Clerk JWT `authorized_parties` (azp) claim 未驗證** — same auth surface, and a working login does not prove azp is validated; and **`[P2 → Phase 1A §3.1]` Clerk `publicMetadata.plan` dormant dual-source vs `user_usage.plan_type`** — ⚠️ **no longer dormant: payments work on prod as of 2026-08-11, so that dual-source is LIVE.**
   - **背景**: user_3B939OrkarbJWpfTT8nCi9kDJ1B was deleted from Clerk Dashboard at unknown earlier date but user_usage row persisted with plan_type='pro'. No automatic sync between Clerk user.deleted webhook and user_usage table. Manually cleaned 2026-05-19 via psycopg2 transaction; full backup preserved in docs/retrospectives/phase-0-2026-05.md § 1.2.
   - **影響範圍**: Low for current production scale (1 known orphan row in 2 months). Risk compounds over time + after soft launch: deleted users leave dangling user_usage rows skewing plan_type distribution analytics, holding stale Dodo customer references, no path for Right-to-Erasure GDPR compliance.
   - **Resolution**: Phase 1A §3.1 scope. Wire Clerk webhook `user.deleted` event to a new handler in `api/server.py` that performs (soft-delete vs hard-delete decision TBD during §3.1 work) on the user_usage row. Decision tradeoff: hard-delete simpler but loses analytics history; soft-delete (e.g. `deleted_at` timestamp column) preserves history but adds complexity to all queries.
