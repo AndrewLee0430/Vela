@@ -27,15 +27,10 @@
   --vela-coral-light: #ffb347;        /* DERIVED — no app counterpart (unused today) */
   --vela-verify: #2563eb;             /* app light --color-info (unused today) */
   --vela-explain: #16a34a;            /* app light --color-success (unused today) */
-  /* fly 220 — DARKENED past the app's .light severity tokens. Those are tuned for
-     TEXT; here they paint a 3px left border on a near-white card, where WCAG 1.4.11
-     (non-text, 3:1) applied and they FAILED: success 2.97:1, warning 2.65:1, slate
-     2.31:1. These values clear it with margin. Deviation from the app tokens is
-     deliberate and is a contrast requirement, not a palette choice. */
-  --vela-evidence-strong: #15803d;    /* 4.52:1 — app --color-success darkened */
-  --vela-evidence-moderate: #a16207;  /* 4.44:1 — app --color-warning darkened */
-  --vela-evidence-limited: #dc2626;   /* 4.35:1 — app light --color-danger, already passes */
-  --vela-evidence-default: #64748b;   /* 4.29:1 — DERIVED slate */
+  /* fly 221 — the four evidence-strength accent tokens are GONE with the dead
+     accent system. One NEUTRAL border remains, mirroring the app exactly:
+     components/ResearchSection.tsx:18-19 uses 3px solid rgb(var(--color-text)/0.15). */
+  --vela-evidence-border: rgba(23,23,23,0.15);
   --vela-bg-1: #ffffff;               /* app light --color-bg-1 */
   --vela-bg-2: #f9fafb;               /* app light --color-bg-2 */
   --vela-bg-3: #f3f4f6;               /* app light --color-bg-3 */
@@ -81,10 +76,7 @@
   --vela-coral-light: #ffb347;
   --vela-verify: #63b3ed;
   --vela-explain: #68d391;
-  --vela-evidence-strong: #22c55e;
-  --vela-evidence-moderate: #eab308;
-  --vela-evidence-limited: #ef4444;
-  --vela-evidence-default: #475569;
+  --vela-evidence-border: rgba(255,255,255,0.15);
   --vela-bg-1: #0a1628;
   --vela-bg-2: #0f2040;
   --vela-bg-3: #1a1035;
@@ -204,7 +196,7 @@ body {
 .vela-answer-stack { margin-bottom: 16px; }
 .vela-evidence-card {
   background: var(--vela-section-bg);
-  border-left: 3px solid var(--vela-evidence-default);
+  border-left: 3px solid var(--vela-evidence-border);
   border-radius: 8px;
   padding: 16px;
   margin-bottom: 12px;

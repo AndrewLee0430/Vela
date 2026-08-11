@@ -22,9 +22,9 @@
 
 <div class="vela-answer-stack">
   {% for section in sections %}
-  <div class="vela-evidence-card" style="border-left-color: {{ section.border_color }};">
+  <div class="vela-evidence-card">
     {% if section.title %}
-    <p class="vela-evidence-title">{% if section.marker %}{{ section.marker }} {% endif %}{{ section.title }}</p>
+    <p class="vela-evidence-title">{{ section.title }}</p>
     {% endif %}
     <div class="vela-prose">{{ section.html }}</div>
   </div>

@@ -10,8 +10,9 @@ unifies i18n source-of-truth across utils/i18n-share.ts and this dict.
 
 UX polish 1 (2026-05-07): full alignment with main-site design system.
 - Ports parseResearchSections() from pages/research.tsx so the public
-  page can render evidence-strength cards with the same colored
-  left-border treatment.
+  page splits the answer into the same Summary / Clinical Notes cards.
+  (The colored evidence-strength border was removed at fly 221 — see
+  _HEADER_RE.)
 - Augments citations with the source-type / credibility config tables
   ported from components/CitationPanel.tsx so visitor sees the same
   source label color and credibility pill.
@@ -107,67 +108,59 @@ _HTML_LANG_MAP = {"en": "en", "zh-TW": "zh-Hant"}
 
 
 # ============================================================
-# Section parser — port of parseResearchSections() in
-# pages/research.tsx 61-82. Splits the answer markdown by H2 headers
-# of the form:
-#     ## Title 🟢 — Language
-#     ## Title 🟡 — Language
-#     ## Title 🔴 — Language
-#     ## Title  (no marker, fallback)
-# Returns a list of dicts: {title, marker, content}. If no headers
-# are found, returns a single section with title=None marker=None and
-# the whole answer as content (so the caller can still render a card).
+# Section parser — port of parseResearchSections() in pages/research.tsx.
+# Returns a list of dicts: {title, content}. If no headers are found it
+# returns one section with title=None and the whole answer as content, so
+# the caller can still render a card.
 # ============================================================
+# Matches the format `api/rag/generator.py:358-375` actually instructs:
+#     ## Summary — <section name in the user's language>
+#     ## Clinical Notes — <section name in the user's language>
+# No square brackets (afe0bdf, 2026-06-05) and NO 🟢🟡🔴 marker (3ad3ddc, 2026-06-10).
+# The emoji alternation is retained but NO LONGER CAPTURED — its only remaining job is
+# to strip a stray marker out of the TITLE of a LEGACY answer stored before
+# 2026-06-10. Dropping it would leave "Summary 🟡" showing as a title on old shares.
 _HEADER_RE = re.compile(
-    r"^##\s+(?P<title>.+?)(?:\s+(?P<marker>\U0001F7E2|\U0001F7E1|\U0001F534))?\s*(?:—\s*.+)?$",
+    r"^##\s+(?P<title>.+?)(?:\s+(?:\U0001F7E2|\U0001F7E1|\U0001F534))?\s*(?:—\s*.+)?$",
     re.MULTILINE,
 )
 
-# Color table for evidence-strength markers — matches
-# components/ResearchSection.tsx borderColors (lines 11-15).
-# 2026-08-10 (fly 219): values moved from literal hex to CSS VARIABLES so that
-# prefers-color-scheme can reach them. Dark keeps the exact shipped colours; light
-# uses the app's .light severity tokens (contrast-shifted for AA on white). This is
-# a THEMEABILITY change only — the colour language is unchanged in dark.
-# ⚠️ NOT neutralised: components/ResearchSection.tsx:18-19 shows the main app uses a
-# NEUTRAL accent (rgb(var(--color-text) / 0.15)) with no severity colour at all, so
-# full convergence would drop these too. That is a medical-communication decision
-# (🟢🟡🔴 conveys evidence strength) and is FLAGGED for the founder, not taken here.
-_MARKER_BORDER_COLORS: dict[str | None, str] = {
-    "\U0001F7E2": "var(--vela-evidence-strong)",    # 🟢 strong
-    "\U0001F7E1": "var(--vela-evidence-moderate)",  # 🟡 moderate
-    "\U0001F534": "var(--vela-evidence-limited)",   # 🔴 limited
-    None: "var(--vela-evidence-default)",           # default slate
-}
+# _MARKER_BORDER_COLORS REMOVED 2026-08-10 (fly 221). The evidence-strength accent
+# was DEAD CODE: 3ad3ddc (2026-06-10) stopped the generator emitting the markers
+# because they were an UNVERIFIED LLM self-label - unstable run-to-run, and they
+# conflated retrieval sparsity with study-design strength. The share page kept
+# parsing for a marker that could no longer arrive, so every bar rendered the
+# None default for two months. REMOVED rather than neutralised in place: a map
+# holding neutral values would preserve exactly the same trap. The app made the
+# same call for its own accent - components/ResearchSection.tsx:18-19 is neutral.
 
 
 def parse_research_sections(answer_text: str) -> list[dict[str, Any]]:
-    """Split an answer into evidence-strength sections.
+    """Split an answer into its `## ` sections.
 
     Mirrors the JS implementation in pages/research.tsx so the public
     page renders the same card UI a logged-in user sees on /research.
     """
     if not answer_text or not answer_text.strip():
-        return [{"title": None, "marker": None, "content": ""}]
+        return [{"title": None, "content": ""}]
 
     matches = list(_HEADER_RE.finditer(answer_text))
     if not matches:
-        return [{"title": None, "marker": None, "content": answer_text.strip()}]
+        return [{"title": None, "content": answer_text.strip()}]
 
     sections: list[dict[str, Any]] = []
     for i, m in enumerate(matches):
         title = (m.group("title") or "").strip()
-        marker = m.group("marker")
         start = m.end()
         end = matches[i + 1].start() if i + 1 < len(matches) else len(answer_text)
         content = answer_text[start:end]
         # Strip leading "---" separator (matches JS behavior).
         content = re.sub(r"^\s*---\s*", "", content).strip()
         if content:
-            sections.append({"title": title, "marker": marker, "content": content})
+            sections.append({"title": title, "content": content})
 
     if not sections:
-        return [{"title": None, "marker": None, "content": answer_text.strip()}]
+        return [{"title": None, "content": answer_text.strip()}]
     return sections
 
 
@@ -492,8 +485,6 @@ def render_public_page(share, locale: str) -> str:
     for sec in parsed:
         sections.append({
             "title": sec["title"],
-            "marker": sec["marker"],
-            "border_color": _MARKER_BORDER_COLORS.get(sec["marker"], _MARKER_BORDER_COLORS[None]),
             "html": Markup(_markdown_to_html(sec["content"])),
         })
 

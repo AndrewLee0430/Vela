@@ -309,3 +309,74 @@ def test_both_templates_ship_light_default_and_dark_media_block():
             f"{name}: light must be the DEFAULT block, dark inside the media query"
         )
         assert "vela-credibility-pill" not in css, f"{name}: orphaned pill CSS remains"
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# fly 221 — the dead evidence-accent system is REMOVED
+#
+# THE BUSINESS RULE (Rule 17): the share page must not carry a colour path for a
+# signal the generator no longer produces. `3ad3ddc` (2026-06-10) stopped emitting
+# 🟢🟡🔴 because it was an UNVERIFIED LLM self-label that conflated retrieval
+# sparsity with study-design strength. A fake evidence-strength cue on a medical
+# page is worse than none. The parser kept looking for it for two months.
+#
+# What must still work: SPLITTING. The parser's job is Summary / Clinical Notes;
+# only the marker→colour path is gone.
+# ═══════════════════════════════════════════════════════════════════════════
+
+def test_sections_still_split_on_the_format_the_generator_actually_emits():
+    """The parser's real job survives removal of the marker group."""
+    answer = (
+        "## Summary — English\nDirect answer first.\n\n---\n\n"
+        "## Clinical Notes — English\nMonitoring and contraindications."
+    )
+    secs = sr.parse_research_sections(answer)
+    assert [s["title"] for s in secs] == ["Summary", "Clinical Notes"]
+    assert secs[0]["content"].startswith("Direct answer")
+    assert "Monitoring" in secs[1]["content"]
+    assert all("marker" not in s and "border_color" not in s for s in secs), (
+        "the marker/colour path came back"
+    )
+
+
+def test_legacy_answer_with_markers_renders_without_error_or_colour():
+    """LEGACY rows stored before 2026-06-10 may still carry 🟢/🟡 in a heading.
+
+    They must parse, split correctly, and carry NO colour — and the stray marker
+    must not leak into the visible title.
+    """
+    legacy = (
+        "## Summary 🟢 — English\nStrong evidence here.\n\n"
+        "## Clinical Notes 🟡 — English\nModerate evidence here."
+    )
+    secs = sr.parse_research_sections(legacy)
+    assert [s["title"] for s in secs] == ["Summary", "Clinical Notes"], (
+        "a legacy marker leaked into the title"
+    )
+    assert all("border_color" not in s for s in secs)
+
+
+def test_markers_left_in_body_prose_are_tolerated():
+    """A legacy answer may carry markers in BODY text, not just headings. The
+    parser must not choke, and they stay as ordinary characters."""
+    answer = "## Summary — English\nEvidence rated 🟢 strong and 🟡 moderate.\n"
+    secs = sr.parse_research_sections(answer)
+    assert len(secs) == 1
+    assert "🟢" in secs[0]["content"] and "🟡" in secs[0]["content"]
+
+
+def test_no_evidence_accent_remains_in_either_surface():
+    """Removal must be complete on BOTH bases and BOTH page templates —
+    a leftover token or inline style would be a dead path all over again."""
+    from pathlib import Path as _P
+    tdir = _P(__file__).resolve().parents[1] / "api" / "templates"
+    for name in ("q_base.jinja2", "explore_base.jinja2"):
+        css = (tdir / name).read_text(encoding="utf-8")
+        for tok in ("--vela-evidence-strong", "--vela-evidence-moderate",
+                    "--vela-evidence-limited", "--vela-evidence-default"):
+            assert tok not in css, f"{name}: {tok} survived"
+        assert "--vela-evidence-border" in css, f"{name}: neutral border token missing"
+    for name in ("q_public.jinja2", "q_explore.jinja2"):
+        html = (tdir / name).read_text(encoding="utf-8")
+        assert "border_color" not in html, f"{name}: inline accent survived"
+        assert "section.marker" not in html, f"{name}: marker echo survived"

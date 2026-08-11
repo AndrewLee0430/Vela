@@ -5,7 +5,6 @@ public-page renderer helpers from `api/services/share_renderer.py`:
 - parse_research_sections() for evidence-strength card splitting
 - _augment_citations() for citation chrome (source label, cred pill)
 - _markdown_to_html() for markdown → HTML
-- _MARKER_BORDER_COLORS for evidence card left-border colors
 - _base_url() for canonical URL building
 - _truncate() for OG meta sizing
 - resolve_locale() for locale fallback
@@ -31,7 +30,6 @@ from markupsafe import Markup
 from PIL import Image
 
 from api.services.share_renderer import (
-    _MARKER_BORDER_COLORS,
     _augment_citations,
     _base_url,
     _markdown_to_html,
@@ -178,8 +176,6 @@ def render_explore_page(db, slug: str, requested_locale: str | None) -> tuple[st
     for sec in parsed:
         sections.append({
             "title": sec["title"],
-            "marker": sec["marker"],
-            "border_color": _MARKER_BORDER_COLORS.get(sec["marker"], _MARKER_BORDER_COLORS[None]),
             "html": Markup(_markdown_to_html(sec["content"])),
         })
 
