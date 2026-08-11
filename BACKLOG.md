@@ -25,11 +25,11 @@ Same taxonomy as `TECH_DEBT.md`, **additive to** the existing `[P0]`–`[P3]` ra
 
 #### [HONESTY]
 
-- `:878` — Citation source-verification exists on EXACTLY ONE surface — History and shared pages offer no source links
-- `:894` — Danger-path WRONG-OBJECT citation intrusion — a safety section about a different clinical object cited on a safety query (re-scope
-- `:956` — Verify DailyMed None-`attribution_kind` caption fast-follow (cosmetic, honesty-preserving)
+- [P3] Citation source-verification exists on EXACTLY ONE surface — History and shared pages offer no source links
+- [P2] Danger-path WRONG-OBJECT citation intrusion — a safety section about a different clinical object cited on a safety query (re-scoped surface 3 of 3)
+- [P3] Verify DailyMed None-`attribution_kind` caption fast-follow (cosmetic, honesty-preserving)
 
-⚠️ Line numbers drift; the entry TITLE is the durable reference.
+⚠️ Listed by TITLE, not line number — line numbers rot the moment anything is inserted above them. Search the title.
 
 ---
 

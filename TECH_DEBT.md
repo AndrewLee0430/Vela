@@ -19,36 +19,36 @@ Classes are **additive and orthogonal** to the existing `[P0]`–`[P3]` ratings 
 
 #### 🔴 [LAUNCH] — the short list
 
-- `:823` — OpenAI auto-recharge OFF + prepaid credit EXPIRES
-- `:857` — 
-- `:992` — 
+- `[P0 · ops/stability — pre-launch]` OpenAI auto-recharge OFF + prepaid credit EXPIRES
+- `[P1 → Round 2B + 3 完成後一起 E2E 測試]` Clerk email sign-up/sign-in end-to-end 驗證
+- `[P2 → Dodo 付費啟用前]` `CLERK_SECRET_KEY` 仍是 `sk_live_` 對 Dev instance user checkout 會 500
 
 #### [COMPLIANCE]
 
-- `:1003` — 
-- `:1010` — 
-- `:1071` — Clerk user.deleted webhook → user_usage cleanup not wired — discovered 2026-05-19
-- `:1108` — chat-history privacy model — docs were stale + behavior is "honest but not maximal"
-- `:1136` — `ChatHistory.answer` stored unsanitized (all features)
+- `[P2]` Native-speaker review pending for §4.5 share i18n legal-weighted strings
+- `[P2]` /terms + /privacy pages are en-only — i18n retrofit pending
+- `[P2 → Phase 1A §3.1]` Clerk user.deleted webhook → user_usage cleanup not wired — discovered 2026-05-19
+- `[P2 → Phase 2 candidate]` chat-history privacy model — docs were stale + behavior is "honest but not maximal"
+- `[P2 · R5 privacy]` `ChatHistory.answer` stored unsanitized (all features)
 
 #### [HONESTY]
 
-- `:20` — The 690-doc LOCAL drug corpus is 100% EMPTY STUBS — every document is field labels with no values (max 5 chars of content) — yet it is Tier-2-boosted
-- `:80` — 15 pinned DailyMed reference labels are NOT human drug labels; at least 7 are VETERINARY, and 2 of those are CITABLE as safety sources
-- `:97` — `aspirin contraindications` cites ACECLOFENAC as its SOLE source, and Reye's syndrome is STRUCTURALLY UNREACHABLE
-- `:118` — Published `/explore` and `/q/` pages serve pre-c1 EMPTY LOCAL STUBS indefinitely — under a credibility pill reading "Official"
-- `:174` — The TFDA indication corpus is built from a PINNED snapshot and cites licences that EXPIRE; 有效日期 was DROPPED at build so no runtime staleness check is
-- `:191` — The 在地差異 panel tells the user "Vela has NOT integrated data from these authorities" on a screen whose ONLY source IS that authority's data
-- `:199` — THREE user-visible strings make false provenance claims. Fix as ONE sweep, not three separate 16-language changes
-- `:212` — The EFFECTIVE working Research source count is THREE, not five
-- `:240` — openFDA is STRUCTURALLY INERT in Research: its query construction can never match, so the advertised "5th source" contributes NOTHING — and its URL is
-- `:272` — The Research DailyMed corpus has an UNMEASURED common-drug safety-coverage hole: 36.9% of reference labels dropped at build; 11% of 47 commonly-prescr
-- `:437` — Verify falls back to openFDA when a DailyMed label lacks the 34073-7 interactions section; RESEARCH HAS NO SUCH FALLBACK — the same known gap is mitig
-- `:665` — Verify UI mixes 實證 / 循證 (both "evidence-based")
-- `:704` — DailyMed outbound-link chip label + host-mapping inconsistency (deferred from the 2026-06-25 DailyMed sweep)
-- `:710` — `explain_system.md` lists "FDA DailyMed" as a source category to the LLM (deferred 2026-06-25)
+- `[P1 · retrieval-corpus integrity / honesty — PROPOSED RATING, founder to ratify; surfaced by the fly-214 citation gate 2026-07-29]` The 690-doc LOCAL drug corpus is
+- `[P2 · wrong-object / honesty — measured 2026-08-04]` 15 pinned DailyMed reference labels are NOT human drug labels; at least 7 are VETERINARY, and 2 of those are CI
+- `[P1 · honesty / wrong-drug citation — TWO LIVE PROD INSTANCES captured at the fly-215 gate 2026-08-03]` `aspirin contraindications` cites ACECLOFENAC as its SOLE so
+- `[P2 · honesty / persisted artifacts — surfaced by the c1 Task-3.7.2 re-verification 2026-08-03]` Published `/explore` and `/q/` pages serve pre-c1 EMPTY LOCAL STUBS
+- `[P2 · TFDA data staleness — surfaced by the fly-214 citation gate 2026-07-29]` The TFDA indication corpus is built from a PINNED snapshot and cites licences that EX
+- `[P2 · honesty / user-visible contradiction — ESCALATED from BACKLOG (d) by the fly-214 citation gate 2026-07-29]` The 在地差異 panel tells the user "Vela has NOT integr
+- `[P2 · honesty / provenance strings — CONSOLIDATED 2026-07-29; ⚠️ SEQUENCED AFTER the local-corpus decision]` THREE user-visible strings make false provenance claims
+- `[P2 · honesty / advertised capability — measured 2026-07-29]` The EFFECTIVE working Research source count is THREE, not five
+- `[P2 · retrieval-source integrity / honesty — surfaced by the citation deep-link baton 2026-07-29]` openFDA is STRUCTURALLY INERT in Research: its query construction
+- `[P2 · DailyMed corpus coverage / honesty — surfaced by the pair-aware probe 2026-07-27]` The Research DailyMed corpus has an UNMEASURED common-drug safety-coverage 
+- `[P2 · retrieval honesty / mitigation-not-carried-across — surfaced by the pair-aware probe 2026-07-27]` Verify falls back to openFDA when a DailyMed label lacks the
+- `[P3 · verify honesty/consistency — surfaced at the Baton A prod gate 2026-07-09]` Verify UI mixes 實證 / 循證 (both "evidence-based")
+- `[P2 · honesty / consistency]` DailyMed outbound-link chip label + host-mapping inconsistency (deferred from the 2026-06-25 DailyMed sweep)
+- `[P2 · honesty — PROMPT-GATED, out of frontend-sweep scope]` `explain_system.md` lists "FDA DailyMed" as a source category to the LLM (deferred 2026-06-25)
 
-⚠️ Line numbers are a convenience and will drift; the entry TITLE is the durable reference.
+⚠️ Listed by TITLE, not line number — line numbers rot the moment anything is inserted above them. Search the title.
 
 ---
 
