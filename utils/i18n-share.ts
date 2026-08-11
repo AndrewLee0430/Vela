@@ -168,7 +168,7 @@ const zhCN: ShareTranslations = {
   publicShortDisclaimer: '⚠️ 本信息仅供参考，请依据临床指南并咨询合格专业人员。',
   publicRevoked: '此分享已被撤回',
   publicFlagged: '此分享因违反使用条款已下架',
-  headerTagline: '用你的语言提问,由官方来源验证。',
+  headerTagline: '用你的语言提问，由官方来源验证。',
 
   settingsTabTitle: '我的分享',
   settingsRevokeButton: '撤回',
@@ -528,7 +528,7 @@ const ar: ShareTranslations = {
   publicShortDisclaimer: '⚠️ هذه المعلومات للأغراض المرجعية فقط. يرجى التحقق من الإرشادات السريرية واستشارة متخصص مؤهل.',
   publicRevoked: 'تم إلغاء هذه المشاركة.',
   publicFlagged: 'تمت إزالة هذه المشاركة لانتهاك شروط الخدمة.',
-  headerTagline: 'اطرح سؤالك بلغتك. تحقق من المصادر الرسمية.',
+  headerTagline: 'اسأل بلغتك. تم التحقق من المصادر الرسمية.',
 
   settingsTabTitle: 'مشاركاتي',
   settingsRevokeButton: 'إلغاء',

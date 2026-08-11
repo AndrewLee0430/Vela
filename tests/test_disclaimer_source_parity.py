@@ -54,18 +54,20 @@ _RENDERER = _ROOT / "api" / "services" / "share_renderer.py"
 # actually hold it — the .ts and explore files carry 16 locales, share_renderer
 # carries en + zh-TW, so the comparison set is computed, not assumed.
 SHARED_KEYS = ("publicDisclaimer", "publicShortDisclaimer",
-               "publicRevoked", "publicFlagged")
+               "publicRevoked", "publicFlagged", "headerTagline")
 
 ALL_LOCALES = ("en", "zh-TW", "zh-CN", "ja", "ko", "es", "fr", "de",
                "it", "pt", "th", "ar", "hi", "bn", "he", "vi")
 
-# 🔴 headerTagline is the ONE remaining key duplicated across the two 16-locale
-# files that is NOT under parity: at fly 224 it still diverges in 10 of 16
-# locales. It is not legal-weighted and converging it was not authorised, so it
-# is excluded deliberately rather than by oversight — and
-# test_the_only_unguarded_duplicate_is_known below fails if that set ever
-# changes, so a NEW duplicated key cannot be added silently.
-_KNOWN_UNGUARDED_DUPLICATES = {"headerTagline"}
+# ✅ EMPTY as of fly 225. headerTagline was the last exclusion — it diverged in
+# 10 of 16 locales, and in Bengali the explore copy escalated "official sources"
+# to "সরকারি" (GOVERNMENT sources), a stronger claim than the English makes on a
+# medical product. Converged and brought under parity, so every key duplicated
+# across the two 16-locale files is now guarded.
+#
+# Keep this empty. A new entry here is a decision to let a duplicated key drift,
+# and needs a written reason next to it.
+_KNOWN_UNGUARDED_DUPLICATES: set[str] = set()
 
 _TS_CONST_TO_LOCALE = {"en": "en", "zhTW": "zh-TW", "zhCN": "zh-CN",
                        "ja": "ja", "ko": "ko", "es": "es", "fr": "fr",
@@ -304,18 +306,20 @@ def test_the_guard_actually_fires_on_divergence(sources):
     )
 
 
-def test_the_only_unguarded_duplicate_is_known(sources):
-    """No key may be duplicated across the two 16-locale files without a decision.
+def test_no_duplicated_key_is_left_unguarded(sources):
+    """Every key duplicated across the two 16-locale files must be under parity.
 
-    THE BUSINESS RULE: the fly-224 convergence fixed the two disclaimers, but the
-    underlying trap is structural — two files independently machine-translated the
-    same English source and nothing compared them. Converging today does not stop
-    a NEW shared key being added tomorrow and drifting the same way.
+    THE BUSINESS RULE: the trap is structural — two files independently machine-
+    translated the same English source and nothing compared them. Converging the
+    keys that exist today does not stop a NEW shared key being added tomorrow and
+    drifting the same way.
 
-    This computes the overlap set live. Add a key to both files and this fails
-    until you either put it under parity (add it to SHARED_KEYS) or record it as
-    a deliberate exclusion. headerTagline is the one current exclusion: it still
-    diverges in 10 of 16 locales and converging it was not authorised.
+    This computes the overlap set live, so adding a key to both files fails here
+    until you either put it under parity (add it to SHARED_KEYS) or record a
+    deliberate exclusion in _KNOWN_UNGUARDED_DUPLICATES with a reason.
+
+    As of fly 225 the exclusion set is EMPTY and this test expects zero unguarded
+    duplicates. That is the point: there is no longer a "known bad" list to hide in.
     """
     ts_keys = set(sources["utils/i18n-share.ts"]["en"])
     ex_keys = set(sources["api/i18n/explore_strings.py"]["en"])
