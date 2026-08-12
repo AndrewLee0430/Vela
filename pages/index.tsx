@@ -255,38 +255,29 @@ function LandingPage() {
           }}
         />
       </Head>
+      {/* B4 D-B4-1: the LOGGED-OUT landing is LIGHT-ONLY. The `light` class
+          re-scopes every token var for descendants regardless of the html
+          theme class; colorScheme:'light' keeps native controls (input,
+          scrollbars) light too. Purge rule: compiled `dark:` selectors are
+          html-class-scoped (`.dark .dark\:x`) and would still match through
+          this wrapper — so NO `dark:` variant may exist in the landing tree
+          (this file + LandingSections; verified in the SSG smoke). The
+          signed-in Dashboard and product pages keep the user's theme. */}
       <div
-        className="min-h-screen flex flex-col"
+        className="light min-h-screen flex flex-col"
+        style={{ colorScheme: 'light' }}
         dir={isRtl ? 'rtl' : undefined}
       >
         <UpgradeModal isOpen={showUpgradeModal} onClose={() => setShowUpgradeModal(false)} />
 
-        {/* Landing hero zone — single-fold hero (nav + input + mode selector + chips
-            + privacy) + footer. RESPECTS THE THEME (Stage 3.8): the `.landing-bg`
-            class (styles/globals.css) renders the warm-orange radial gradient in
-            light (the Stage-4 brand first-impression, default theme) and the
-            standard `bg-app-bg` token gradient in dark — class-driven off the root
-            <html> theme class (set by the FOUC head script in _document.tsx) so it's
-            flicker-free with NO useTheme/mounted logic here. Reversed the 3.3
-            forced-`.light` wrapper now that all hero elements are token-based and the
-            two landing dropdowns (mode selector + settings) were tokenized to flip.
-            Dual-`/`: the signed-in Dashboard is a SEPARATE component (its own
-            `bg-app-bg`) and likewise respects the theme. */}
-        {/* B1 (2026-08-11): `.landing-bg` moved from this wrapper onto the
-            FIRST-VIEWPORT div below, scoping the warm radial gradient to the
-            hero. Reason: the gradient's ellipse center is a PERCENTAGE OF THE
-            ELEMENT — with the below-fold sections inside the old wrapper it
-            would migrate down the page. The wrapper gets `bg-app-bg` so the
-            sections + footer sit on the app's standard themed background.
-            Hero-visual delta: the gradient element is now exactly 100vh where
-            it was 100vh+footer (~4vh center shift) — imperceptible inside the
-            30%→70% falloff; render-gate row 1 verifies. */}
-        {/* B3 R1: LIGHT is one continuous PAPER page (bg-paper); DARK keeps
-            today's bg-app-bg gradient (background-image paints over the paper
-            token's dark under-color) — one className, token-driven fork. */}
-        <div className="bg-paper dark:bg-app-bg flex flex-col">
+        {/* B4: one continuous PAPER page — the full-page hero radial
+            (.landing-bg) is gone; the hero warmth is now the spotlight behind
+            the composer only (see the form below). History of this zone:
+            Stage 3.8 theme-following radial → B1 first-viewport scoping →
+            B3 paper page + warmed outer stop → B4 removal. */}
+        <div className="bg-paper flex flex-col">
           {/* First viewport: nav + hero (relative: anchors the scroll hint) */}
-          <div className="landing-bg relative min-h-screen flex flex-col">
+          <div className="relative min-h-screen flex flex-col">
           {/* Top bar */}
           <nav className="flex-shrink-0 flex justify-between items-center gap-2 px-4 md:px-10 py-4">
             <Link href="/" className="flex items-center gap-2">
@@ -321,7 +312,14 @@ function LandingPage() {
               {lc.subtitle}
             </p>
 
-            <form onSubmit={handleHeroSubmit} className="w-full max-w-2xl" dir="ltr">
+            <form onSubmit={handleHeroSubmit} className="relative z-0 w-full max-w-2xl" dir="ltr">
+              {/* B4 spotlight: soft warm radial behind the composer only —
+                  ~1.9× the box, centered, behind (negative z), no layout
+                  shift. Gradient defined in globals.css (.hero-spotlight). */}
+              <div
+                aria-hidden="true"
+                className="hero-spotlight absolute -z-10 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[190%] h-[260%] pointer-events-none"
+              />
               <div className="bg-bg-1 rounded-2xl border border-text/15 shadow-sm transition-shadow focus-within:ring-2 focus-within:ring-brand/30">
                 {/* Input row — typewriter overlay scoped to THIS row only (not the control row) */}
                 <div className="relative">
@@ -396,9 +394,8 @@ function LandingPage() {
             <div>{t.footerDisclaimer}</div>
             {/* B1: section anchors + Pricing (ui.pricingTitle, reused verbatim) */}
             <div className="flex flex-wrap justify-center gap-4 text-xs">
-              <a href="#who" className="hover:underline transition duration-200">{lc.whoHeading}</a>
+              {/* B4: #who and #privacy anchors removed with their sections. */}
               <a href="#features" className="hover:underline transition duration-200">{lc.featuresHeading}</a>
-              <a href="#privacy" className="hover:underline transition duration-200">{lc.privacyHeading}</a>
               <Link href="/pricing" className="hover:underline transition duration-200">{ui.pricingTitle}</Link>
               <Link href="/faq" className="hover:underline transition duration-200">FAQ</Link>
             </div>

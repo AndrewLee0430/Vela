@@ -15,6 +15,10 @@ interface SettingsControlsProps {
      *  Only affects native <option> styling; the <select> chrome + theme cards use
      *  design tokens that resolve per .dark/.light zone. */
     surface?: 'dark' | 'light';
+    /** B4 D-B4-1: the logged-out landing is LIGHT-ONLY, so its dropdown hides
+     *  the theme control (a toggle that visibly does nothing there would be a
+     *  broken-looking control). Product surfaces omit this — theme stays. */
+    hideTheme?: boolean;
 }
 
 /**
@@ -28,7 +32,7 @@ interface SettingsControlsProps {
  * correctly) — NOT `resolvedTheme`. A `mounted` guard avoids a hydration mismatch
  * since `theme` is undefined on the server (preserves 3.1's zero-warning state).
  */
-export default function SettingsControls({ surface }: SettingsControlsProps) {
+export default function SettingsControls({ surface, hideTheme }: SettingsControlsProps) {
     const { lang, setLang } = useLang();
     const ui = getUI(lang);
     const { theme, setTheme, resolvedTheme } = useTheme();
@@ -50,6 +54,7 @@ export default function SettingsControls({ surface }: SettingsControlsProps) {
     return (
         <>
             {/* Theme toggle — cosmetic only (Stage 3 wires next-themes useTheme()) */}
+            {!hideTheme && (
             <div className="px-4 py-3 border-b border-text/7">
                 <p className="text-xs font-semibold mb-2" style={{ color: 'rgb(var(--color-text) / 0.5)' }}>{ui.theme}</p>
                 <div role="radiogroup" aria-label={ui.theme} className="flex gap-2">
@@ -75,6 +80,7 @@ export default function SettingsControls({ surface }: SettingsControlsProps) {
                     })}
                 </div>
             </div>
+            )}
 
             {/* Language */}
             <div className="px-4 py-3 border-b border-text/7">

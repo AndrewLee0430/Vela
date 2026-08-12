@@ -75,6 +75,8 @@ v1.1 → v1.2 主要變更(詳見章節末更新記錄):
 
 Vela 採用 Privacy-first 定位,採取「透明定義」做法。以下清單應出現在 Landing Page、About、Privacy Policy,所有地方一致。
 
+> **⚠️ AMENDED 2026-08-12 (B4, founder-ratified): the LANDING PAGE is EXEMPTED from this mandate.** The B4 final-form landing removes the below-fold privacy section (the full list had shipped there fly 227–229); the landing keeps only the three-chip privacy line in the hero. **`/privacy` fulfills the full-list requirement.** The "所有地方一致" consistency rule continues to apply to every surface that DOES render the list. This is a knowing reversal, recorded with the rest of the B4 reversal ledger in STATE.
+
 **What 'Privacy-first' means at Vela**
 
 - We don't verify your identity or license(不驗證身份或執照)

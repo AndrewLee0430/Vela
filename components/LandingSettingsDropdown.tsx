@@ -53,7 +53,7 @@ export default function LandingSettingsDropdown() {
                         backdropFilter: 'blur(20px)',
                     }}
                 >
-                    <SettingsControls />
+                    <SettingsControls hideTheme /> {/* B4 D-B4-1: landing is light-only */}
 
                     {/* Sign In — anon entry point (matches the nav sign-in pill → /sign-in) */}
                     <SignedOut>

@@ -213,6 +213,38 @@ unless it STRENGTHENS a claim, which is a FAIL).
 
 ---
 
+## Gate 5 — B4: final-form landing (BLANK — founder runs post-deploy · ALL LIGHT, D-B4-1 halves the matrix)
+
+**Change under test:** the B4 build commit of 2026-08-12 (SHA in the baton report; **confirm
+`/health` `revision` contains it before row 1**). Gate 4 was superseded before running — this is
+the operative form for the fly-229→230 landing change.
+
+**What changed:** warm-white paper page (#FFF9F5 family), hero spotlight replacing the full-page
+radial, black GSAP scroll panel replacing WHO, simplified bordered cards (no icons, no metadata
+rows), privacy section REMOVED (PRD §0.3 amended; disclaimer keeps its footer render), landing is
+LIGHT-ONLY. **The old "hero pixel-identical" claim is retired — this gate judges the new design.**
+
+| # | URL | context | check | what PASS looks like | observed | VERDICT | NOTES |
+|---|---|---|---|---|---|---|---|
+| 1 | `https://vela.an-tho.com/` | desktop | **hero spotlight + clean paper bg** | warm glow sits behind the composer only, soft edges, no banding; the rest of the viewport is clean paper; headline/chips/privacy line unchanged in layout | | | |
+| 2 | `https://vela.an-tho.com/` | desktop, normal motion | **panel full cycle** | scroll: panel widens 70→95vw, pins; intro → seg1 → seg2 → seg3 cross-fade in order; 3 dots appear during segs with the current one highlighted; unpins after seg3; **reverse scroll plays it backwards cleanly** | | | |
+| 3 | `https://vela.an-tho.com/` | desktop | **scroll performance** | no jank/stutter through the pinned range on a normal machine; page scroll elsewhere unaffected | | | |
+| 4 | `https://vela.an-tho.com/` | desktop, **OS reduced-motion ON** | reduced-motion static | NO pin, NO width animation: intro + three segments statically stacked, each with its pill; dots hidden; cards don't fade in | | | |
+| 5 | `https://vela.an-tho.com/` | **mobile ≤ 390px** | mobile static stack | same static panel stack, full-width; pills tappable; no horizontal scroll anywhere | | | |
+| 6 | `https://vela.an-tho.com/` | **ar** (RTL) | RTL | panel text centered correctly; ALL pill arrows point LEFT and hover-shift LEFT; cards read correctly | | | |
+| 7 | `https://vela.an-tho.com/` | **zh-TW** | serif fallback | panel serif lines + card descriptions fall back to system faces and look intentional | | | |
+| 8 | `https://vela.an-tho.com/` | desktop | **cards + borders legibility** | near-white sheets with visible-but-quiet hairline borders + faint shadow on the warm page; serif descs readable | | | |
+| 9 | `https://vela.an-tho.com/` | any | disclaimer visible | the research-tool disclaimer renders in the footer (its surviving render point) | | | |
+| 10 | *(no URL — content row)* | en | **copy sign-off** | founder's final word on the panel copy (intro + 3 tags/descs) and the 3 card descriptions AS RENDERED | | | |
+
+**Known and expected — do NOT record as failures:** the landing no longer follows the theme
+(D-B4-1 — html.dark users get the light landing by design; product surfaces still follow theme);
+the 165 MT cells are not native-reviewed and the pipeline is frozen (odd non-en phrasing is
+future-round material unless it STRENGTHENS a claim — that is a FAIL); the hero composer keeps
+its small shadow.
+
+---
+
 ## Adding a gate to this file
 
 1. Name the **change under test** by commit SHA.

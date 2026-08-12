@@ -131,9 +131,13 @@ body {
                 tokens are RGB triples and an alpha'd hairline would push
                 alpha to every use-site)
      Ink is the EXISTING text token (23 23 23) — no new near-black. */
-  --color-paper: 255 244 237;
-  --color-paper-2: 255 236 225;
-  --color-hairline: 255 225 205;
+  /* B4 (final form) supersedes the B3 derivation: paper #FFF9F5 = ratified
+     warm-white page (H24° R-pinned; page bg everywhere incl. behind the hero);
+     paper-2 #FCFCFA = ratified crisp near-white card sheet; hairline #E5E2DA =
+     ratified warm-gray border family. Ink/panel = the existing text token. */
+  --color-paper: 255 249 245;
+  --color-paper-2: 252 252 250;
+  --color-hairline: 229 226 218;
   --color-success: 22 163 74;
   --color-warning: 202 138 4;
   --color-danger: 220 38 38;
@@ -146,10 +150,18 @@ body {
    no useTheme/mounted logic in LandingPage. Light = the warm-orange Stage-4 brand
    gradient (the default theme); dark = the standard bg-app-bg token gradient (same
    as functional pages). */
-/* B3 R2 (Option B, founder-chosen): the LIGHT hero's final stop is warmed
-   from #ffffff to the paper base so the fold seam is structurally gone.
-   The ellipse center stops (#ffd9c4, #fff3ec) are byte-untouched; dark is
-   untouched. Amended standing claim: "hero unchanged except the outer
-   gradient stop warmed to paper." */
-.landing-bg { background: radial-gradient(ellipse at 50% 45%, #ffd9c4 0%, #fff3ec 30%, rgb(var(--color-paper)) 70%); }
-.dark .landing-bg { background: linear-gradient(135deg, rgb(var(--color-bg-1)) 0%, rgb(var(--color-bg-2)) 45%, rgb(var(--color-bg-3)) 75%, rgb(var(--color-bg-4)) 100%); }
+/* B4: the full-page hero radial (.landing-bg, light AND dark rules) is
+   REMOVED — the logged-out page is one continuous paper field (light-only,
+   D-B4-1). The hero keeps a SPOTLIGHT: a soft radial behind the composer
+   only, derived from the old #ffd9c4/#fff3ec family at reduced opacity,
+   fully transparent edges. Raw color literals live only in this file. */
+.hero-spotlight {
+  background: radial-gradient(ellipse at center,
+    rgb(255 217 196 / 0.55) 0%,
+    rgb(255 243 236 / 0.30) 45%,
+    transparent 72%);
+}
+
+/* B4 card shadow — defined ONCE here so no rgba literal appears in
+   components (token-guard compliance). Consumed via tailwind `shadow-card`. */
+:root { --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.04); }

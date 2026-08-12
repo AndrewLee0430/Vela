@@ -26,6 +26,11 @@ module.exports = {
           'info':        'rgb(var(--color-info) / <alpha-value>)',
           'danger-soft': 'rgb(var(--color-danger-soft) / <alpha-value>)',
         },
+        boxShadow: {
+          // B4: value defined once in globals.css (--shadow-card) so no rgba
+          // literal appears in components.
+          card: 'var(--shadow-card)',
+        },
         backgroundImage: {
           'app-bg': 'linear-gradient(135deg, rgb(var(--color-bg-1)) 0%, rgb(var(--color-bg-2)) 45%, rgb(var(--color-bg-3)) 75%, rgb(var(--color-bg-4)) 100%)',
         },
