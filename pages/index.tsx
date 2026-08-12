@@ -275,7 +275,13 @@ function LandingPage() {
             the composer only (see the form below). History of this zone:
             Stage 3.8 theme-following radial → B1 first-viewport scoping →
             B3 paper page + warmed outer stop → B4 removal. */}
-        <div className="bg-paper flex flex-col">
+        {/* B4.1a: `flex flex-col` REMOVED from this wrapper — ScrollTrigger's
+            pin-spacer for the panel section is injected as a child here, and
+            as a FLEX ITEM its height was overridden (flex-shrink), so the
+            +=350% pin reservation never held and the cards scrolled over the
+            pinned panel. The children are stacked block sections; normal
+            block flow needs no flex. */}
+        <div className="bg-paper">
           {/* First viewport: nav + hero (relative: anchors the scroll hint) */}
           <div className="relative min-h-screen flex flex-col">
           {/* Top bar */}

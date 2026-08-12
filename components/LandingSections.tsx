@@ -81,9 +81,21 @@ function useFadeIn(ref: React.RefObject<HTMLElement | null>) {
     el.style.opacity = '0';
     el.style.transform = 'translateY(20px)';
     el.style.transition = 'opacity 600ms ease, transform 600ms ease';
+    // B4.1a: clear ALL inline animation styles once the entry transition
+    // completes. A retained `transform: translateY(0)` creates a stacking
+    // context that painted this (later-DOM) section OVER the position:fixed
+    // pinned panel when the pin-spacer defect let them meet. Entry animations
+    // must leave no residue near ScrollTrigger pins.
+    const clear = () => {
+      el.style.removeProperty('opacity');
+      el.style.removeProperty('transform');
+      el.style.removeProperty('transition');
+      el.removeEventListener('transitionend', clear);
+    };
     const io = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting) {
+          el.addEventListener('transitionend', clear);
           el.style.opacity = '1';
           el.style.transform = 'translateY(0)';
           io.disconnect();
@@ -92,7 +104,10 @@ function useFadeIn(ref: React.RefObject<HTMLElement | null>) {
       { threshold: 0.15 },
     );
     io.observe(el);
-    return () => io.disconnect();
+    return () => {
+      io.disconnect();
+      el.removeEventListener('transitionend', clear);
+    };
   }, [ref]);
 }
 
