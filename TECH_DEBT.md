@@ -13,9 +13,9 @@ Classes are **additive and orthogonal** to the existing `[P0]`–`[P3]` ratings 
 | **[LAUNCH]** | blocks the B2B-interim route going live to a real customer | **0 — EMPTY** |
 | **[COMPLIANCE]** | legal / regulatory / data-protection obligation | **6** |
 | **[HONESTY]** | the product currently tells the user something untrue or misleading | **16** |
-| [DONE] | already fixed / resolved / accepted; retained for the record only | 34 |
+| [DONE] | already fixed / resolved / accepted; retained for the record only | 35 |
 | [OTHER] | quality, hygiene, tooling, opportunistic | 65 |
-| | **total** | **121** |
+| | **total** | **122** |
 
 <!-- ⚠️ COUNT REPAIR 2026-08-11 (B0 commit): the table above had gone STALE by three entries —
      the fly-223 pytest-infra [OTHER] addition and the fly-224 duplicated-source [COMPLIANCE] +
@@ -92,6 +92,12 @@ When entries are resolved, mark with the resolving commit SHA (git log is the re
   - **Confirmed present in all 16 locales** (the earlier "≥8, pattern-limited" count was my pattern list's reach, not the defect's — every locale had the entry).
   - **Fix (this commit):** the evidence-strength Q&A **DELETED in all 16 locales** (ratified D1: deleted, not rewritten); the Research answer reworded without "evidence-graded"; the two source-enumeration answers reworded **claim-light and NON-COUNTING** (never "three databases" — the effective Research source count is recorded as THREE in the `[P2 · honesty / advertised capability]` entry below, so a count in either direction creates a false claim) and now name TFDA, closing the enumeration-omits-TFDA drift found in the same recon. Guard: `tests/test_faq_no_dead_features.py` — a regression guard for THIS feature (scope stated in its docstring), with a fires-proof.
   - **Class lesson, same family as the [DONE] OpenAI-auto-recharge retirement:** feature-removal batons check code paths, not marketing surfaces. `3ad3ddc` and fly 221 both did their jobs; nobody grepped the FAQ. The removal checklist should include: **grep FAQ + landing + pricing for the feature's name.**
+
+- [DONE] **[P2 · HONESTY-class / Explain overstated restriction — founder-ratified 2026-08-12; ✅ RESOLVED same day by the B3 commit (SHA in the fly-229 STATE entry at deploy)]** The mode selector's `pro: true` + the B2 feature card's inherited Pro tag claimed Explain is a Pro feature — **a claim STRONGER than reality** (the fly-225 class, inverted: against ourselves)
+  - **Backend truth (the file:line trio):** anonymous **blocked** — `api/server.py:1524-1525` (`FeatureNotAvailable("explain")`, Decision 001 v0.3); **signed-in Free CAN use text Explain** — the `/api/explain` body has **no plan check** (PHI + credits only; Explain costs 2 of the free 10/day); **Pro gates only the image-upload path** — `/api/explain/extract-image`, `:1654-1658` (403 `pro_required`).
+  - **The cost of the overstatement:** it turns away exactly the users the landing courts — a Free user who reads "Pro" walks past a feature they can use today. Pricing even says so correctly (`pricingFree2`: *"Explain: 2"* credits on Free).
+  - **How it propagated (Rule 19's shape, one step earlier):** the selector's `pro: true` was a single UI flag with no backend derivation; B2 then copied it onto the feature card as "visual consistency = honesty consistency" — **consistency faithfully propagated an unverified claim.** Consistency is only honesty when the source of truth is checked first.
+  - **Fixed by the B3 commit:** flag + tag + dead prop removed (`components/HeroComposerModeSelector.tsx`); the card's ACCESS metadata row now states the verified truth per feature (`accessNoAccount` ×2, `accessFreeAccount` for Explain). **Pre-flight grep of pricing / FAQ / i18n surfaces found zero other overstating strings** (pricing and FAQ already scope Pro to upload). **No remaining surfaces; no open items.**
 
 - [HONESTY] **[P2 · explore stored metadata / legacy evidence marker — founder-ratified 2026-08-11; discovered by the B1 P0.1 render-check]** The one published explore page's STORED metadata leaks the removed evidence-grading marker into Google/social snippets
   - **What leaks:** `explore_page.meta_description` (and the og:description / twitter:description built from it) for `metformin-contraindications-renal` reads **`"Summary 🟢 Metformin is contraindicated…"`** — the 🟢 marker verbatim, in machine-visible copy that search engines and social cards republish.

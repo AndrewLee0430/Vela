@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect } from 'react';
-import { ChevronDown, Check, Sparkles } from 'lucide-react';
+import { ChevronDown, Check } from 'lucide-react';
 import type { translations } from '../utils/i18n';
 
 export type ComposerMode = 'research' | 'verify' | 'explain';
@@ -28,10 +28,15 @@ export default function HeroComposerModeSelector({ mode, onChange, t }: Props) {
     const [open, setOpen] = useState(false);
     const ref = useRef<HTMLDivElement>(null);
 
-    const modes: { key: ComposerMode; label: string; desc: string; pro?: boolean }[] = [
+    // B3 R4 honesty fix: the former `pro: true` on Explain OVERSTATED the
+    // restriction — the backend truth is anonymous-blocked (server.py:1524-1525)
+    // / signed-in FREE can use text Explain / Pro gates only the image-upload
+    // path (:1654-1658). The Pro tag and the dead `pro` prop are removed; all
+    // three modes now render identically (label + description).
+    const modes: { key: ComposerMode; label: string; desc: string }[] = [
         { key: 'research', label: t.research, desc: t.composerModeDescResearch },
         { key: 'verify', label: t.verify, desc: t.composerModeDescVerify },
-        { key: 'explain', label: t.explain, desc: t.composerModeDescExplain, pro: true },
+        { key: 'explain', label: t.explain, desc: t.composerModeDescExplain },
     ];
     const current = modes.find(m => m.key === mode) ?? modes[0];
 
@@ -91,15 +96,7 @@ export default function HeroComposerModeSelector({ mode, onChange, t }: Props) {
                                     {active && <Check size={16} strokeWidth={2.5} className="text-brand" />}
                                 </span>
                                 <span className="min-w-0 flex-1">
-                                    <span className="flex items-center gap-2">
-                                        <span className="text-sm font-medium text-text">{m.label}</span>
-                                        {m.pro && (
-                                            <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium bg-brand/15 text-brand">
-                                                <Sparkles size={11} strokeWidth={2} />
-                                                Pro
-                                            </span>
-                                        )}
-                                    </span>
+                                    <span className="text-sm font-medium text-text">{m.label}</span>
                                     <span className="block text-sm text-text/60 leading-snug mt-0.5">{m.desc}</span>
                                 </span>
                             </button>

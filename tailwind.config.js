@@ -15,6 +15,11 @@ module.exports = {
           'text':    'rgb(var(--color-text) / <alpha-value>)',
           'card':    'rgb(var(--color-text) / <alpha-value>)',
           'brand':   'rgb(var(--color-brand) / <alpha-value>)',
+          // B3 paper palette (NOT named 'card' — that name is already bound
+          // to the text variable above).
+          'paper':    'rgb(var(--color-paper) / <alpha-value>)',
+          'paper-2':  'rgb(var(--color-paper-2) / <alpha-value>)',
+          'hairline': 'rgb(var(--color-hairline) / <alpha-value>)',
           'success':     'rgb(var(--color-success) / <alpha-value>)',
           'warning':     'rgb(var(--color-warning) / <alpha-value>)',
           'danger':      'rgb(var(--color-danger) / <alpha-value>)',
@@ -33,6 +38,11 @@ module.exports = {
         },
         fontFamily: {
           sans: ['var(--font-sans)', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', '"Noto Sans"', '"Noto Sans CJK TC"', 'sans-serif'],
+          // B3 editorial serif — deliberate fallback stack: Latin gets Source
+          // Serif 4 (self-hosted); non-Latin scripts fall through to system
+          // serifs / the existing CJK entry. Gate 4 verifies zh-TW + ar look
+          // intentional under fallback.
+          serif: ['var(--font-serif)', 'Georgia', '"Times New Roman"', '"Noto Sans CJK TC"', 'serif'],
         },
         keyframes: {
           slideUp: {

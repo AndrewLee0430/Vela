@@ -1,48 +1,38 @@
-// components/LandingSections.tsx — B2 card-based below-fold sections (2026-08-11).
-// Supersedes the B1 bare-text layout after the Gate 2 finding: functionally
-// PASS, visually "reads as bare text".
+// components/LandingSections.tsx — B3 paper redesign (editorial/print register,
+// 2026-08-12). Supersedes the B2 card system after the Gate 3 aesthetic FAIL.
+// All copy is IDENTICAL to B2 except the four B3 metadata keys.
 //
-// HARD CONSTRAINTS (fly 219/220 regression class — see tests/test_landing_
-// sections_tokens.py):
-//   - TOKEN COLORS ONLY. Every color goes through the variable system
-//     (text-text, bg-bg-1, bg-brand/15, rgb(var(--color-text) / …)). No hex
-//     codes, no alpha-color functions — hardcoded achromatics are exactly how
-//     light-mode legibility broke on the share pages at fly 219.
-//   - RTL-SAFE. dir=rtl is inherited for ar/he; grids auto-flip; the WHO
-//     accent bar uses the LOGICAL borderInlineStart property; the scroll hint
-//     centers physically (left-1/2 -translate-x-1/2 — direction-agnostic).
-//   - Gutters match the hero (px-4 md:px-10); section headings one step below
-//     the hero's scale.
+// THE PAPER SYSTEM (founder-ratified R1-R9):
+//   - Light is ONE CONTINUOUS PAPER PAGE (bg-paper on the wrapper in
+//     pages/index.tsx); layering comes from cards (bg-paper-2), hairlines
+//     (border-hairline) and spacing. NO shadows, NO gradients, NO band tints
+//     below the fold. Dark maps the same tokens onto the existing dark family
+//     — new layout + type, today's palette ("day is paper, night is ink").
+//   - CORAL BELOW THE FOLD = ZERO (R3). No icon chips, no brand accents; the
+//     WHO bar and whoP3 are ink. (Above-the-fold coral is out of scope.)
+//   - TOKEN COLORS ONLY (the fly 219/220 regression class — see
+//     tests/test_landing_sections_tokens.py). Raw hex lives solely in the
+//     globals.css token definitions.
+//   - RTL-SAFE: logical properties for the WHO bar; the pill arrow flips and
+//     its hover shift flips (rtl: variants — Tailwind 3.4, dir-attribute
+//     driven; the wrapper sets dir=rtl for ar/he).
+//   - Type: sans = Noto Sans (headings, bold 32-40px, >=48px space below);
+//     serif = Source Serif 4 via --font-serif (body 18-20px, lh ~1.6);
+//     10 of 16 locales render serif via the deliberate system fallback.
+//   - Container max-w-7xl; rhythm py-32 md:py-40; gutters px-4 md:px-10.
 //
-// VISUAL SYSTEM (B2, founder-ratified):
-//   - Cards: bg-bg-1 (light: white surface over the grayish app-bg gradient;
-//     dark: the elevated navy), rounded-2xl, p-8, NO borders. shadow-sm in
-//     light only (dark:shadow-none — a black drop shadow on the navy gradient
-//     reads muddy, verified against the token values).
-//   - ACCENT TREATMENT CHOSEN: the icon chip carries the coral tint (the
-//     exact DNA of the B1 numbered step badges — bg-brand/12 circle,
-//     text-brand glyph). Chosen over the 3px top hairline because it reuses
-//     the Gate-2-approved badge DNA, keeps the no-border card rule intact,
-//     and holds the coral accent count per card at exactly one.
-//   - Icons: lucide-react (already a dependency — the hero imports ChevronDown,
-//     the mode selector Sparkles/Check). currentColor via the chip's
-//     text-brand, aria-hidden.
-//
-// i18n: strings come from landingContent (utils/i18n.ts, 16 locales) or are
-// REUSED VERBATIM (feature titles/descriptions = the mode-selector keys; the
-// privacy card sentences = privacyPromise1-3; Pro tag = same treatment as
-// HeroComposerModeSelector). Per R3 there are NO invented short card titles —
-// each privacy card is icon + the full shipped sentence, never stronger than
-// the promise it reuses.
+// HONESTY (R4, encoded in the ACCESS metadata row): Research/Verify =
+// accessNoAccount (anonymous-usable, server.py anon paths); Explain =
+// accessFreeAccount (anon blocked at server.py:1524-1525; signed-in Free CAN
+// use text Explain — Pro gates only image upload, :1654-1658). The B2 Pro tag
+// OVERSTATED the restriction and is removed.
 
 import { useEffect, useState } from 'react';
-import {
-  ChevronDown, Search, ShieldCheck, FlaskConical,
-  Fingerprint, EyeOff, Lock, UserX, Sparkles,
-} from 'lucide-react';
+import Link from 'next/link';
+import { ChevronDown, ArrowRight } from 'lucide-react';
 import type { LandingContent, Translations } from '../utils/i18n';
 
-// ─── Scroll hint — unchanged from B1 (fades on first scroll, zero hero layout) ─
+// ─── Scroll hint — unchanged from B1/B2 (fades on first scroll) ───────────────
 export function ScrollHint({ label }: { label: string }) {
   const [faded, setFaded] = useState(false);
   useEffect(() => {
@@ -71,23 +61,21 @@ export function ScrollHint({ label }: { label: string }) {
   );
 }
 
-// ─── Shared card primitives ───────────────────────────────────────────────────
-function IconChip({ children }: { children: React.ReactNode }) {
-  // The B1 numbered-badge DNA: coral-tinted circle, brand-colored glyph.
+// ─── Metadata row (R5.4): hairline-topped, UPPERCASE label / value ───────────
+function MetaRow({ label, value }: { label: string; value: string }) {
   return (
-    <div
-      className="w-10 h-10 rounded-full flex items-center justify-center mb-5 text-brand"
-      style={{ background: 'rgb(var(--color-brand) / 0.12)' }}
-      aria-hidden="true"
-    >
-      {children}
+    <div className="flex items-center justify-between gap-4 py-3 border-t border-hairline">
+      <span
+        className="text-[13px] font-medium uppercase tracking-[0.05em]"
+        style={{ color: 'rgb(var(--color-text) / 0.5)' }}
+      >
+        {label}
+      </span>
+      <span className="text-sm text-text">{value}</span>
     </div>
   );
 }
 
-const CARD = 'rounded-2xl p-8 bg-bg-1 shadow-sm dark:shadow-none';
-
-// ─── The sections ─────────────────────────────────────────────────────────────
 interface Props {
   lc: LandingContent;
   t: Translations;
@@ -95,120 +83,127 @@ interface Props {
 
 export default function LandingSections({ lc, t }: Props) {
   const features = [
-    { key: 'research', title: t.research, desc: t.composerModeDescResearch, Icon: Search, pro: false },
-    { key: 'verify', title: t.verify, desc: t.composerModeDescVerify, Icon: ShieldCheck, pro: false },
-    { key: 'explain', title: t.explain, desc: t.composerModeDescExplain, Icon: FlaskConical, pro: true },
+    { key: 'research', title: t.research, desc: t.composerModeDescResearch, href: '/research', access: lc.accessNoAccount },
+    { key: 'verify', title: t.verify, desc: t.composerModeDescVerify, href: '/verify', access: lc.accessNoAccount },
+    // Explain: accessFreeAccount is the HONEST value (R4) — the sign-in wall
+    // is declared before the click, and no Pro tag overstates the restriction.
+    { key: 'explain', title: t.explain, desc: t.composerModeDescExplain, href: '/explain', access: lc.accessFreeAccount },
   ];
-  const privacyCards = [
-    { key: 'p1', text: t.privacyPromise1, Icon: Fingerprint },
-    { key: 'p2', text: t.privacyPromise2, Icon: EyeOff },
-    { key: 'p3', text: t.privacyPromise3, Icon: Lock },
-    { key: 'p4', text: lc.privacyPromise4, Icon: UserX },
-  ];
+  const promises = [t.privacyPromise1, t.privacyPromise2, t.privacyPromise3, lc.privacyPromise4];
 
   return (
     <>
-      {/* §1 — WHO. Deliberately NOT carded (a manifesto). Two touches only:
-          the inline-start coral accent bar (logical property — RTL-safe) and
-          the final line stepped up + brand-colored. */}
-      <section id="who" className="px-4 md:px-10 py-24 md:py-32">
-        <div className="max-w-2xl mx-auto">
-          <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-text mb-8">
-            {lc.whoHeading}
-          </h2>
-          <div
-            className="space-y-5 text-base sm:text-lg leading-relaxed"
-            style={{
-              color: 'rgb(var(--color-text) / 0.7)',
-              borderInlineStart: '3px solid rgb(var(--color-brand))',
-              paddingInlineStart: '1.5rem',
-            }}
-          >
-            <p>{lc.whoP1}</p>
-            <p>{lc.whoP2}</p>
-            <p className="text-lg sm:text-xl font-medium" style={{ color: 'rgb(var(--color-brand))' }}>
-              {lc.whoP3}
-            </p>
+      {/* §1 — WHO (R8): serif manifesto, 2px INK bar (logical, RTL-safe),
+          final line bold ink one size up. Prose sits in a narrower measure
+          inside the max-w-7xl container — a 1280px paragraph is unreadable. */}
+      <section id="who" className="px-4 md:px-10 py-32 md:py-40">
+        <div className="max-w-7xl mx-auto">
+          <div className="max-w-2xl">
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-text mb-12">
+              {lc.whoHeading}
+            </h2>
+            <div
+              className="space-y-6 font-serif text-xl leading-relaxed"
+              style={{
+                color: 'rgb(var(--color-text) / 0.75)',
+                borderInlineStart: '2px solid rgb(var(--color-text))',
+                paddingInlineStart: '1.5rem',
+              }}
+            >
+              <p>{lc.whoP1}</p>
+              <p>{lc.whoP2}</p>
+              <p className="text-2xl font-semibold text-text">{lc.whoP3}</p>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* §2 — FEATURES (replaces the B1 how-steps per R1). Card content is
-          REUSED keys only (R2): titles = the mode-selector labels,
-          descriptions = composerModeDesc* verbatim, Explain carries the same
-          Pro tag treatment the selector uses. Band background = the B1 tint
-          (text/3%) so the white/elevated cards read one step off in BOTH
-          schemes — bg-bg-1 as the band itself would equal the cards in light. */}
-      <section id="features" className="px-4 md:px-10 py-24 md:py-32" style={{ background: 'rgb(var(--color-text) / 0.03)' }}>
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-text mb-2">
+      {/* §2 — FEATURES (R5): paper-2 cards, no icons, no shadows. Anatomy:
+          bold sans title → serif description → spacer → hairline metadata
+          rows (LANGUAGES / ACCESS) → ink pill with arrow. */}
+      <section id="features" className="px-4 md:px-10 py-32 md:py-40">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-text mb-2">
             {lc.featuresHeading}
           </h2>
-          <p className="text-base mb-12" style={{ color: 'rgb(var(--color-text) / 0.55)' }}>
+          <p className="font-serif text-lg mb-12" style={{ color: 'rgb(var(--color-text) / 0.55)' }}>
             {lc.featuresIntro}
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
-            {features.map(({ key, title, desc, Icon, pro }) => (
-              <div key={key} className={`${CARD} flex flex-col`}>
-                <IconChip><Icon size={20} strokeWidth={2} /></IconChip>
-                <div className="flex items-center gap-2 mb-2">
-                  <h3 className="text-base font-semibold text-text">{title}</h3>
-                  {pro && (
-                    <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium bg-brand/15 text-brand">
-                      <Sparkles size={11} strokeWidth={2} />
-                      Pro
-                    </span>
-                  )}
-                </div>
-                <p className="text-sm leading-relaxed" style={{ color: 'rgb(var(--color-text) / 0.6)' }}>
+            {features.map(({ key, title, desc, href, access }) => (
+              <div key={key} className="rounded-2xl p-8 bg-paper-2 flex flex-col">
+                <h3 className="text-lg font-bold text-text mb-3">{title}</h3>
+                <p className="font-serif text-lg leading-relaxed" style={{ color: 'rgb(var(--color-text) / 0.7)' }}>
                   {desc}
                 </p>
+                <div className="flex-grow" aria-hidden="true" />
+                <div className="mt-8">
+                  <MetaRow label={lc.metaLanguages} value="16" />
+                  <MetaRow label={lc.metaAccess} value={access} />
+                </div>
+                <div className="mt-6">
+                  <Link
+                    href={href}
+                    className="group inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium bg-text text-paper transition-opacity duration-200 hover:opacity-90"
+                  >
+                    <span>{title}</span>
+                    <ArrowRight
+                      size={16}
+                      strokeWidth={2}
+                      aria-hidden="true"
+                      className="transition-transform duration-200 group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1"
+                    />
+                  </Link>
+                </div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* §3 — PRIVACY: four cards (the three shipped promises verbatim +
-          privacyPromise4), then the honest-limits sub-block (R5 — a quiet
-          register, not a fourth content band), then trustLine / disclaimer /
-          founderNote in their B1 placement. */}
-      <section id="privacy" className="px-4 md:px-10 py-24 md:py-32">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-text mb-10">
+      {/* §3 — PRIVACY (R7): editorial two-column. Left: trustLine RELOCATED
+          as the bold declaration (moved, not duplicated). Right: the four
+          promises as hairline-separated rows, then the limits block in quiet
+          serif, then disclaimer + founderNote. Mobile: declaration stacks
+          above the rows. */}
+      <section id="privacy" className="px-4 md:px-10 py-32 md:py-40">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-text mb-12">
             {lc.privacyHeading}
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
-            {privacyCards.map(({ key, text, Icon }) => (
-              <div key={key} className={CARD}>
-                <IconChip><Icon size={20} strokeWidth={2} /></IconChip>
-                <p className="text-base leading-relaxed" style={{ color: 'rgb(var(--color-text) / 0.75)' }}>
-                  {text}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-16">
+            <div className="md:col-span-1">
+              <p className="text-3xl font-bold leading-snug text-text">{lc.trustLine}</p>
+            </div>
+            <div className="md:col-span-2">
+              <div className="border-t border-hairline">
+                {promises.map((text) => (
+                  <p key={text} className="py-6 text-lg font-semibold text-text border-b border-hairline">
+                    {text}
+                  </p>
+                ))}
+              </div>
+
+              <div className="mt-12 max-w-2xl">
+                <h3 className="text-sm font-semibold mb-3" style={{ color: 'rgb(var(--color-text) / 0.55)' }}>
+                  {lc.privacyLimitsHeading}
+                </h3>
+                <ul className="space-y-2 font-serif text-base leading-relaxed" style={{ color: 'rgb(var(--color-text) / 0.55)' }}>
+                  <li>{lc.privacyLimit1}</li>
+                  <li>{lc.privacyLimit2}</li>
+                  <li>{lc.privacyLimit3}</li>
+                </ul>
+              </div>
+
+              <div className="mt-12 max-w-2xl">
+                <p className="font-serif text-sm" style={{ color: 'rgb(var(--color-text) / 0.55)' }}>
+                  {t.footerDisclaimer}
+                </p>
+                <p className="mt-8 text-xs leading-relaxed" style={{ color: 'rgb(var(--color-text) / 0.4)' }}>
+                  {lc.founderNote}
                 </p>
               </div>
-            ))}
-          </div>
-
-          {/* Honest-limits sub-block — small heading + three quiet lines. */}
-          <div className="mt-12 max-w-2xl">
-            <h3 className="text-sm font-semibold mb-3" style={{ color: 'rgb(var(--color-text) / 0.55)' }}>
-              {lc.privacyLimitsHeading}
-            </h3>
-            <ul className="space-y-2 text-sm leading-relaxed" style={{ color: 'rgb(var(--color-text) / 0.5)' }}>
-              <li>{lc.privacyLimit1}</li>
-              <li>{lc.privacyLimit2}</li>
-              <li>{lc.privacyLimit3}</li>
-            </ul>
-          </div>
-
-          <div className="mt-12 max-w-2xl">
-            <p className="text-sm" style={{ color: 'rgb(var(--color-text) / 0.55)' }}>
-              {t.footerDisclaimer}
-            </p>
-            <p className="mt-3 text-base font-medium text-text">{lc.trustLine}</p>
-            <p className="mt-10 text-xs leading-relaxed" style={{ color: 'rgb(var(--color-text) / 0.4)' }}>
-              {lc.founderNote}
-            </p>
+            </div>
           </div>
         </div>
       </section>

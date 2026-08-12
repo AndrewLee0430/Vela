@@ -177,6 +177,42 @@ STRENGTHENS a claim (that is a FAIL — the fly-225 class).
 
 ---
 
+## Gate 4 — B3: paper redesign of the landing below-fold (BLANK — founder runs post-deploy)
+
+**Change under test:** the B3 commit of 2026-08-12 (`feat(landing): [B3] …` — SHA in the baton
+report; fill in at gate time and **confirm `/health` `revision` contains it before row 1**).
+
+**What changed vs Gate 3:** editorial/print register — paper palette (three new R=255-pinned
+tokens in the hero's 20–25° hue band), serif body type (Source Serif 4, Latin subset,
+system-fallback elsewhere), no icons / no shadows / no band tints below the fold, coral
+below-fold = zero (sole survivor REMOVED with the Pro tag per the R4 honesty fix), feature-card
+metadata rows (LANGUAGES / ACCESS) + ink pills, privacy as editorial two-column, `max-w-7xl` /
+`py-32 md:py-40` rhythm. **Hero claim (AMENDED, R2 Option B): unchanged except the LIGHT outer
+gradient stop warmed from #ffffff to paper — the fold seam is structurally gone.** Dark palette
+unchanged; dark gets the new layout + type only.
+
+| # | URL | locale / scheme | check | what PASS looks like | observed | VERDICT | NOTES |
+|---|---|---|---|---|---|---|---|
+| 1 | `https://vela.an-tho.com/` | en · **light** | **hero: amended claim, both halves** | (a) everything except the outer stop identical to fly 228; (b) scrolling past the fold shows NO seam — hero blends into the paper page | | | |
+| 2 | `https://vela.an-tho.com/` | en · **dark** | hero unchanged | dark hero identical to fly 228 (gradient untouched) | | | |
+| 3 | `https://vela.an-tho.com/` | en · light | **paper page + cards legibility** | one continuous paper field; paper-2 cards read as surfaces WITHOUT borders or shadows; **hairlines visible but quiet** (the metadata separators must not vanish into paper-2) | | | |
+| 4 | `https://vela.an-tho.com/` | en · **dark** | dark = today's palette, new layout | navy family unchanged; cards elevated; hairlines visible; nothing muddy | | | |
+| 5 | `https://vela.an-tho.com/` | en · either | **serif register** | WHO + card descriptions + limits block render in Source Serif; the sans/serif contrast reads deliberate, not accidental | | | |
+| 6 | `https://vela.an-tho.com/` | **zh-TW** · either | serif fallback typography | CJK falls back to the system stack — must look intentional, not broken (no mixed-weight mush, no faux-italic) | | | |
+| 7 | `https://vela.an-tho.com/` | **ar** (RTL) · either | RTL: fallback type + pill arrow | serif fallback acceptable; WHO ink bar sits inline-start (right); **pill arrow points LEFT and its hover shift moves LEFT** | | | |
+| 8 | `https://vela.an-tho.com/` | en · either | **pill hover** | arrow translates ~4px on hover, 200ms, smooth; pill inverts correctly in dark | | | |
+| 9 | `https://vela.an-tho.com/` | en · **md+ then mobile** | privacy editorial layout | md+: declaration left (~1/3), promise rows right with hairline separators; mobile: declaration stacks ABOVE the rows | | | |
+| 10 | `https://vela.an-tho.com/` | en · **mobile ≤ 390px** | full-scroll | hero → who → features (stacked cards) → privacy → footer, no horizontal scroll, pills tappable | | | |
+| 11 | *(no URL — truth row)* | — | **metadata truth sign-off** | founder confirms the ACCESS values match deployed reality: Research/Verify = "No account needed" (anonymous-usable), Explain = "Free account required" (sign-in wall; text free; upload Pro) | | | |
+
+**Known and expected — do NOT record as failures:** the hero composer keeps its `shadow-sm`
+(above the fold, out of scope); 10 of 16 locales render serif via system fallback by design
+(rows 6–7 judge acceptability, not identity); the four new metadata strings are MT baseline,
+not native-reviewed (reviewer subset now 9 keys — odd phrasing is reviewer-queue material
+unless it STRENGTHENS a claim, which is a FAIL).
+
+---
+
 ## Adding a gate to this file
 
 1. Name the **change under test** by commit SHA.

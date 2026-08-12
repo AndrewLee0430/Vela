@@ -2,7 +2,7 @@ import { ClerkProvider, useUser } from '@clerk/nextjs';
 import { ThemeProvider } from 'next-themes';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
-import { Noto_Sans } from 'next/font/google';
+import { Noto_Sans, Source_Serif_4 } from 'next/font/google';
 import posthog from 'posthog-js';
 import { PostHogProvider } from 'posthog-js/react';
 import { useEffect, useRef } from 'react';
@@ -20,6 +20,18 @@ const notoSans = Noto_Sans({
   subsets: ['latin'],
   weight: ['400', '500', '600', '700'],
   variable: '--font-sans',
+  display: 'swap',
+});
+
+// B3 serif — next/font SELF-HOSTS at build time (same proven path as Noto Sans
+// above; files ship from /_next/static/media). Never a Google Fonts CDN link:
+// the landing's privacy section says data is never shared, and a runtime CDN
+// fetch would leak visitor IPs. Latin subset only — 10 of 16 locales render
+// serif via the deliberate system-fallback stack (tailwind.config.js).
+const sourceSerif = Source_Serif_4({
+  subsets: ['latin'],
+  weight: ['400', '600'],
+  variable: '--font-serif',
   display: 'swap',
 });
 
@@ -125,7 +137,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
   const canonicalUrl = `https://vela.an-tho.com${path}`;
 
   return (
-    <div className={`${notoSans.variable} font-sans`}>
+    <div className={`${notoSans.variable} ${sourceSerif.variable} font-sans`}>
     <PostHogProvider client={posthog}>
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />

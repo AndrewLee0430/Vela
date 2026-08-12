@@ -142,6 +142,10 @@ export interface LandingContent {
   privacyLimit1: string;
   privacyLimit2: string;
   privacyLimit3: string;
+  metaLanguages: string;
+  metaAccess: string;
+  accessNoAccount: string;
+  accessFreeAccount: string;
 }
 
 const landingEn: LandingContent = {
@@ -162,6 +166,10 @@ const landingEn: LandingContent = {
   privacyLimit1: 'Vela is not end-to-end encrypted \u2014 queries pass through our servers to the AI provider.',
   privacyLimit2: 'We collect anonymous usage analytics to improve the product.',
   privacyLimit3: 'Payment requires an email for receipts, not linked to your queries.',
+  metaLanguages: 'Languages',
+  metaAccess: 'Access',
+  accessNoAccount: 'No account needed',
+  accessFreeAccount: 'Free account required',
 };
 
 const landingZhTW: LandingContent = {
@@ -182,6 +190,10 @@ const landingZhTW: LandingContent = {
   privacyLimit1: 'Vela 並非端對端加密——查詢會經過我們的伺服器傳送至 AI 供應商。',
   privacyLimit2: '我們收集匿名使用分析以改進產品。',
   privacyLimit3: '付費需要電子郵件以寄送收據，但不會與您的查詢連結。',
+  metaLanguages: '語言',
+  metaAccess: '使用方式',
+  accessNoAccount: '無需帳號',
+  accessFreeAccount: '需免費帳號',
 };
 
 const landingZhCN: LandingContent = {
@@ -202,6 +214,10 @@ const landingZhCN: LandingContent = {
   privacyLimit1: 'Vela 并非端到端加密——查询会经过我们的服务器传送至 AI 供应商。',
   privacyLimit2: '我们收集匿名使用分析以改进产品。',
   privacyLimit3: '付费需要电子邮件以发送收据，但不会与您的查询关联。',
+  metaLanguages: '语言',
+  metaAccess: '使用方式',
+  accessNoAccount: '无需账号',
+  accessFreeAccount: '需免费账号',
 };
 
 const landingJa: LandingContent = {
@@ -222,6 +238,10 @@ const landingJa: LandingContent = {
   privacyLimit1: 'Vela はエンドツーエンド暗号化ではありません——クエリは当社のサーバーを経由して AI プロバイダーに送られます。',
   privacyLimit2: '製品改善のため匿名の利用分析を収集しています。',
   privacyLimit3: 'お支払いには領収書送付用のメールアドレスが必要ですが、クエリとは紐付けられません。',
+  metaLanguages: '言語',
+  metaAccess: '利用条件',
+  accessNoAccount: 'アカウント不要',
+  accessFreeAccount: '無料アカウントが必要',
 };
 
 const landingKo: LandingContent = {
@@ -242,6 +262,10 @@ const landingKo: LandingContent = {
   privacyLimit1: 'Vela는 종단 간 암호화가 아닙니다 \u2014 쿼리는 당사 서버를 거쳐 AI 제공업체로 전달됩니다.',
   privacyLimit2: '제품 개선을 위해 익명 사용 분석을 수집합니다.',
   privacyLimit3: '결제에는 영수증용 이메일이 필요하지만 쿼리와 연결되지 않습니다.',
+  metaLanguages: '언어',
+  metaAccess: '이용 조건',
+  accessNoAccount: '계정 불필요',
+  accessFreeAccount: '무료 계정 필요',
 };
 
 const landingEs: LandingContent = {
@@ -262,6 +286,10 @@ const landingEs: LandingContent = {
   privacyLimit1: 'Vela no tiene cifrado de extremo a extremo \u2014 las consultas pasan por nuestros servidores hacia el proveedor de IA.',
   privacyLimit2: 'Recopilamos analíticas de uso anónimas para mejorar el producto.',
   privacyLimit3: 'El pago requiere un correo electrónico para los recibos, no vinculado a sus consultas.',
+  metaLanguages: 'Idiomas',
+  metaAccess: 'Acceso',
+  accessNoAccount: 'No requiere cuenta',
+  accessFreeAccount: 'Requiere cuenta gratuita',
 };
 
 const landingFr: LandingContent = {
@@ -282,6 +310,10 @@ const landingFr: LandingContent = {
   privacyLimit1: 'Vela n\u2019est pas chiffré de bout en bout \u2014 les requêtes transitent par nos serveurs vers le fournisseur d\u2019IA.',
   privacyLimit2: 'Nous collectons des analyses d\u2019usage anonymes pour améliorer le produit.',
   privacyLimit3: 'Le paiement requiert un e-mail pour les reçus, non lié à vos requêtes.',
+  metaLanguages: 'Langues',
+  metaAccess: 'Accès',
+  accessNoAccount: 'Aucun compte requis',
+  accessFreeAccount: 'Compte gratuit requis',
 };
 
 const landingDe: LandingContent = {
@@ -302,6 +334,10 @@ const landingDe: LandingContent = {
   privacyLimit1: 'Vela ist nicht Ende-zu-Ende-verschlüsselt \u2014 Anfragen laufen über unsere Server zum KI-Anbieter.',
   privacyLimit2: 'Wir erfassen anonyme Nutzungsanalysen, um das Produkt zu verbessern.',
   privacyLimit3: 'Die Zahlung erfordert eine E-Mail für Belege, die nicht mit Ihren Anfragen verknüpft ist.',
+  metaLanguages: 'Sprachen',
+  metaAccess: 'Zugang',
+  accessNoAccount: 'Kein Konto erforderlich',
+  accessFreeAccount: 'Kostenloses Konto erforderlich',
 };
 
 const landingIt: LandingContent = {
@@ -322,6 +358,10 @@ const landingIt: LandingContent = {
   privacyLimit1: 'Vela non è crittografato end-to-end \u2014 le query passano dai nostri server al fornitore di IA.',
   privacyLimit2: 'Raccogliamo analisi d\u2019uso anonime per migliorare il prodotto.',
   privacyLimit3: 'Il pagamento richiede un\u2019email per le ricevute, non collegata alle tue query.',
+  metaLanguages: 'Lingue',
+  metaAccess: 'Accesso',
+  accessNoAccount: 'Nessun account richiesto',
+  accessFreeAccount: 'Richiede un account gratuito',
 };
 
 const landingPt: LandingContent = {
@@ -342,6 +382,10 @@ const landingPt: LandingContent = {
   privacyLimit1: 'O Vela não tem criptografia de ponta a ponta \u2014 as consultas passam pelos nossos servidores até o provedor de IA.',
   privacyLimit2: 'Coletamos análises de uso anônimas para melhorar o produto.',
   privacyLimit3: 'O pagamento exige um e-mail para recibos, não vinculado às suas consultas.',
+  metaLanguages: 'Idiomas',
+  metaAccess: 'Acesso',
+  accessNoAccount: 'Sem necessidade de conta',
+  accessFreeAccount: 'Requer conta gratuita',
 };
 
 const landingTh: LandingContent = {
@@ -362,6 +406,10 @@ const landingTh: LandingContent = {
   privacyLimit1: 'Vela ไม่ได้เข้ารหัสแบบ end-to-end \u2014 คำถามจะผ่านเซิร์ฟเวอร์ของเราไปยังผู้ให้บริการ AI',
   privacyLimit2: 'เราเก็บข้อมูลวิเคราะห์การใช้งานแบบไม่ระบุตัวตนเพื่อปรับปรุงผลิตภัณฑ์',
   privacyLimit3: 'การชำระเงินต้องใช้อีเมลสำหรับใบเสร็จ แต่ไม่เชื่อมโยงกับคำถามของคุณ',
+  metaLanguages: 'ภาษา',
+  metaAccess: 'การเข้าถึง',
+  accessNoAccount: 'ไม่ต้องมีบัญชี',
+  accessFreeAccount: 'ต้องมีบัญชีฟรี',
 };
 
 const landingAr: LandingContent = {
@@ -382,6 +430,10 @@ const landingAr: LandingContent = {
   privacyLimit1: 'Vela ليس مشفراً من طرف إلى طرف \u2014 تمر الاستعلامات عبر خوادمنا إلى مزود الذكاء الاصطناعي.',
   privacyLimit2: 'نجمع تحليلات استخدام مجهولة لتحسين المنتج.',
   privacyLimit3: 'يتطلب الدفع بريداً إلكترونياً للإيصالات، غير مرتبط باستعلاماتك.',
+  metaLanguages: 'اللغات',
+  metaAccess: 'الوصول',
+  accessNoAccount: 'لا حاجة إلى حساب',
+  accessFreeAccount: 'يتطلب حساباً مجانياً',
 };
 
 const landingHi: LandingContent = {
@@ -402,6 +454,10 @@ const landingHi: LandingContent = {
   privacyLimit1: 'Vela एंड-टू-एंड एन्क्रिप्टेड नहीं है \u2014 क्वेरी हमारे सर्वर से होकर AI प्रदाता तक जाती हैं।',
   privacyLimit2: 'हम उत्पाद सुधारने के लिए अनाम उपयोग विश्लेषण एकत्र करते हैं।',
   privacyLimit3: 'भुगतान के लिए रसीदों हेतु ईमेल चाहिए, जो आपकी क्वेरी से जुड़ा नहीं होता।',
+  metaLanguages: 'भाषाएँ',
+  metaAccess: 'पहुँच',
+  accessNoAccount: 'खाते की ज़रूरत नहीं',
+  accessFreeAccount: 'मुफ़्त खाता आवश्यक',
 };
 
 const landingBn: LandingContent = {
@@ -422,6 +478,10 @@ const landingBn: LandingContent = {
   privacyLimit1: 'Vela এন্ড-টু-এন্ড এনক্রিপ্টেড নয় \u2014 কোয়েরি আমাদের সার্ভার হয়ে AI প্রদানকারীর কাছে যায়।',
   privacyLimit2: 'পণ্য উন্নত করতে আমরা বেনামী ব্যবহার বিশ্লেষণ সংগ্রহ করি।',
   privacyLimit3: 'পেমেন্টে রসিদের জন্য একটি ইমেল লাগে, যা আপনার কোয়েরির সঙ্গে যুক্ত নয়।',
+  metaLanguages: 'ভাষা',
+  metaAccess: 'অ্যাক্সেস',
+  accessNoAccount: 'অ্যাকাউন্টের প্রয়োজন নেই',
+  accessFreeAccount: 'বিনামূল্যের অ্যাকাউন্ট প্রয়োজন',
 };
 
 const landingHe: LandingContent = {
@@ -442,6 +502,10 @@ const landingHe: LandingContent = {
   privacyLimit1: 'Vela אינו מוצפן מקצה לקצה \u2014 שאילתות עוברות דרך השרתים שלנו לספק ה-AI.',
   privacyLimit2: 'אנו אוספים ניתוחי שימוש אנונימיים לשיפור המוצר.',
   privacyLimit3: 'תשלום דורש אימייל לקבלות, שאינו מקושר לשאילתות שלכם.',
+  metaLanguages: 'שפות',
+  metaAccess: 'גישה',
+  accessNoAccount: 'אין צורך בחשבון',
+  accessFreeAccount: 'נדרש חשבון חינמי',
 };
 
 const landingVi: LandingContent = {
@@ -462,6 +526,10 @@ const landingVi: LandingContent = {
   privacyLimit1: 'Vela không mã hóa đầu-cuối \u2014 truy vấn đi qua máy chủ của chúng tôi đến nhà cung cấp AI.',
   privacyLimit2: 'Chúng tôi thu thập phân tích sử dụng ẩn danh để cải thiện sản phẩm.',
   privacyLimit3: 'Thanh toán cần một email để nhận biên lai, không liên kết với truy vấn của bạn.',
+  metaLanguages: 'Ngôn ngữ',
+  metaAccess: 'Truy cập',
+  accessNoAccount: 'Không cần tài khoản',
+  accessFreeAccount: 'Cần tài khoản miễn phí',
 };
 
 export const landingContent: Record<LangCode, LandingContent> = {

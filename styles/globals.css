@@ -87,6 +87,15 @@ body {
   --color-bg-4: 13 26 46;
   --color-text: 255 255 255;
   --color-brand: 255 142 110;
+  /* B3 paper tokens — dark maps to the EXISTING dark family so components keep
+     one code path while dark keeps today's appearance ("day is paper, night is
+     ink"). paper = the gradient's end tone (under-color beneath bg-app-bg);
+     paper-2 = the elevated navy (what B2 cards used); hairline = ink at 15%
+     composited over the elevated navy, PRECOMPUTED as a solid triple (tokens
+     are RGB triples — a runtime alpha would leak into use-sites). */
+  --color-paper: 13 26 46;
+  --color-paper-2: 10 22 40;
+  --color-hairline: 47 57 72;
   --color-success: 34 197 94;
   --color-warning: 234 179 8;
   --color-danger: 239 68 68;
@@ -112,6 +121,19 @@ body {
   --color-bg-4: 229 231 235;
   --color-text: 23 23 23;
   --color-brand: 255 142 110;
+  /* B3 paper palette — derived from the hero family, NOT Anthropic's #FAF9F5
+     (wrong hue family). All three stay R=255-pinned (S=100%, like every hero
+     stop) inside the hero's 20-25° hue band:
+       paper    #FFF4ED = H23.3° L96.5%  (page)
+       paper-2  #FFECE1 = H22.0° L94.1%  (card surface, one step deeper)
+       hairline #FFE1CD = H24.0° L90.2%  (one step deeper again — the SOLID
+                third-step option was chosen over ink-at-low-alpha because
+                tokens are RGB triples and an alpha'd hairline would push
+                alpha to every use-site)
+     Ink is the EXISTING text token (23 23 23) — no new near-black. */
+  --color-paper: 255 244 237;
+  --color-paper-2: 255 236 225;
+  --color-hairline: 255 225 205;
   --color-success: 22 163 74;
   --color-warning: 202 138 4;
   --color-danger: 220 38 38;
@@ -124,5 +146,10 @@ body {
    no useTheme/mounted logic in LandingPage. Light = the warm-orange Stage-4 brand
    gradient (the default theme); dark = the standard bg-app-bg token gradient (same
    as functional pages). */
-.landing-bg { background: radial-gradient(ellipse at 50% 45%, #ffd9c4 0%, #fff3ec 30%, #ffffff 70%); }
+/* B3 R2 (Option B, founder-chosen): the LIGHT hero's final stop is warmed
+   from #ffffff to the paper base so the fold seam is structurally gone.
+   The ellipse center stops (#ffd9c4, #fff3ec) are byte-untouched; dark is
+   untouched. Amended standing claim: "hero unchanged except the outer
+   gradient stop warmed to paper." */
+.landing-bg { background: radial-gradient(ellipse at 50% 45%, #ffd9c4 0%, #fff3ec 30%, rgb(var(--color-paper)) 70%); }
 .dark .landing-bg { background: linear-gradient(135deg, rgb(var(--color-bg-1)) 0%, rgb(var(--color-bg-2)) 45%, rgb(var(--color-bg-3)) 75%, rgb(var(--color-bg-4)) 100%); }
