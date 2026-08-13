@@ -1,22 +1,24 @@
-// components/LandingSections.tsx — B4 FINAL-FORM landing below-fold
-// (2026-08-12): black interactive panel + simplified cards. Supersedes B3's
-// paper editorial sections; the WHO and PRIVACY sections are REMOVED
-// (founder-ratified reversal ledger in STATE — PRD §0.3 amended; the
-// research-tool disclaimer keeps its footer render point, verified P0.1).
+// components/LandingSections.tsx — B4.1b (local iteration, 2026-08-12/13):
+// panel content REPLACED — the intro state and the three tool segments (and
+// their pills) are retired; the panel now carries THREE CLAIM TAGLINES with a
+// word-level scrub-linked reveal. Tool entry points live in the cards below —
+// the double-pathway is deliberately dissolved. Cards: pure-white sheets with
+// a split card-border token and a deepened shadow.
 //
-// SYSTEM RULES:
-//   - LIGHT-ONLY LANDING (D-B4-1): no `dark:` variants anywhere in this file;
-//     the logged-out tree is wrapped in a `.light` token scope in index.tsx.
-//   - TOKEN COLORS ONLY (guard: tests/test_landing_sections_tokens.py). The
-//     panel is the INK token; pills invert (paper-on-ink / ink-on-paper);
-//     card shadow via the `shadow-card` utility (rgba lives in globals.css).
-//   - RTL-SAFE: pill arrows rotate + hover-shift flips via rtl: variants.
-//   - MOTION: GSAP ScrollTrigger (3.15, Standard no-charge license) drives
-//     the desktop panel: width 70vw→95vw scrub, then PIN through
-//     intro→seg1→seg2→seg3 with progress dots. Mobile (<md) and
-//     prefers-reduced-motion get the static stack. ALL text + pills are in
-//     the SSG DOM in every mode — animation only controls visibility.
-//     Elsewhere: one-time fade-in on viewport entry, reduced-motion-disabled.
+// SYSTEM RULES (unchanged from B4):
+//   - LIGHT-ONLY LANDING (D-B4-1); no `dark:` variants in this file.
+//   - TOKEN COLORS ONLY (guard: tests/test_landing_sections_tokens.py).
+//   - RTL-SAFE: card pill arrows rotate + hover-shift flips via rtl: variants;
+//     panel word order follows DOM order = reading order in either direction.
+//   - MOTION: GSAP ScrollTrigger pins the panel on desktop; scrub is native
+//     in both directions. Mobile (<md) + prefers-reduced-motion: static stack
+//     of the three lines, no dots. ALL text is in the SSG DOM in every mode.
+//   - PIN LENGTH (B4.1b addendum — re-derived, not inherited): B4's +=350%
+//     covered 5 dwell units (width expand + 4 content states). B4.1b has 4
+//     (expand + 3 lines); keeping per-unit scroll depth constant:
+//     350% × 4/5 = +=280%.
+//   - Word-level reveal degrades to LINE-level for space-less scripts
+//     (zh/ja/th split to a single "word") — expected, not a defect.
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
@@ -52,14 +54,12 @@ export function ScrollHint({ label }: { label: string }) {
   );
 }
 
-// ─── Shared: ink pill (paper text) / white pill (ink text, panel use) ─────────
-function Pill({ href, label, onPanel }: { href: string; label: string; onPanel?: boolean }) {
+// ─── Ink pill — card use only since B4.1b (the panel has no pills) ───────────
+function Pill({ href, label }: { href: string; label: string }) {
   return (
     <Link
       href={href}
-      className={`group inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium transition-opacity duration-200 hover:opacity-90 ${
-        onPanel ? 'bg-paper text-text' : 'bg-text text-paper'
-      }`}
+      className="group inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium bg-text text-paper transition-opacity duration-200 hover:opacity-90"
     >
       <span>{label}</span>
       <ArrowRight
@@ -73,6 +73,8 @@ function Pill({ href, label, onPanel }: { href: string; label: string; onPanel?:
 }
 
 // ─── One-time fade-in on viewport entry (reduced-motion: off) ────────────────
+// B4.1a lesson: clears ALL inline styles on completion — residue transforms
+// near ScrollTrigger pins paint later-DOM sections over fixed elements.
 function useFadeIn(ref: React.RefObject<HTMLElement | null>) {
   useEffect(() => {
     const el = ref.current;
@@ -81,11 +83,6 @@ function useFadeIn(ref: React.RefObject<HTMLElement | null>) {
     el.style.opacity = '0';
     el.style.transform = 'translateY(20px)';
     el.style.transition = 'opacity 600ms ease, transform 600ms ease';
-    // B4.1a: clear ALL inline animation styles once the entry transition
-    // completes. A retained `transform: translateY(0)` creates a stacking
-    // context that painted this (later-DOM) section OVER the position:fixed
-    // pinned panel when the pin-spacer defect let them meet. Entry animations
-    // must leave no residue near ScrollTrigger pins.
     const clear = () => {
       el.style.removeProperty('opacity');
       el.style.removeProperty('transform');
@@ -120,23 +117,16 @@ export default function LandingSections({ lc, t }: Props) {
   const panelSectionRef = useRef<HTMLElement | null>(null);
   const panelRef = useRef<HTMLDivElement | null>(null);
   const cardsRef = useRef<HTMLElement | null>(null);
-  const [activeSeg, setActiveSeg] = useState(-1); // -1 = intro/static
+  const [activeLine, setActiveLine] = useState(-1); // -1 = pre-reveal/static
   const [animated, setAnimated] = useState(false);
   useFadeIn(cardsRef);
 
-  // Panel content — ALL states in the DOM in every mode (SEO text never
-  // absent). In animated mode GSAP absolutely-stacks and cross-fades them;
-  // in static mode they flow normally.
-  const segments = [
-    { tag: lc.panelTag1, desc: lc.panelDesc1, href: '/research', label: t.research },
-    { tag: lc.panelTag2, desc: lc.panelDesc2, href: '/verify', label: t.verify },
-    { tag: lc.panelTag3, desc: lc.panelDesc3, href: '/explain', label: t.explain },
-  ];
+  const lines = [lc.panelLine1, lc.panelLine2, lc.panelLine3];
 
   useEffect(() => {
     const desktop = window.matchMedia('(min-width: 768px)').matches;
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (!desktop || reduced) return; // static stack — no GSAP at all
+    if (!desktop || reduced) return; // static stack — GSAP never loads
 
     let ctx: { revert: () => void } | undefined;
     let cancelled = false;
@@ -151,38 +141,51 @@ export default function LandingSections({ lc, t }: Props) {
       const section = panelSectionRef.current;
       const panel = panelRef.current;
       if (!section || !panel) return;
-      const states = Array.from(panel.querySelectorAll<HTMLElement>('[data-panel-state]'));
-      if (states.length !== 4) return;
+      const lineEls = Array.from(panel.querySelectorAll<HTMLElement>('[data-panel-line]'));
+      if (lineEls.length !== 3) return;
 
       setAnimated(true);
       ctx = gsap.context(() => {
-        // Animated mode: stack the four states; only intro visible initially.
         gsap.set(panel, { width: '70vw', maxWidth: 'none', margin: '0 auto' });
-        gsap.set(states, { position: 'absolute', inset: 0, display: 'flex', opacity: 0 });
-        gsap.set(states[0], { opacity: 1 });
+        // Animated mode: stack the three lines; nothing visible pre-reveal.
+        gsap.set(lineEls, { position: 'absolute', inset: 0, display: 'flex', opacity: 0 });
 
         const tl = gsap.timeline({
           scrollTrigger: {
             trigger: section,
             start: 'top top',
-            end: '+=350%',
+            // B4.1b addendum: re-derived — 4 dwell units × B4's per-unit depth
+            // (350%/5) = 280%, not an inherited figure.
+            end: '+=280%',
             scrub: 0.5,
             pin: true,
             onUpdate: (self: { progress: number }) => {
               const p = self.progress;
-              setActiveSeg(p < 0.3 ? -1 : p < 0.53 ? 0 : p < 0.76 ? 1 : 2);
+              setActiveLine(p < 0.25 ? -1 : p < 0.5 ? 0 : p < 0.75 ? 1 : 2);
             },
           },
         });
         // 0→25%: width breakout 70vw → 95vw
         tl.to(panel, { width: '95vw', ease: 'none', duration: 0.25 }, 0);
-        // 25→30%: intro → seg1; then seg cross-fades
-        tl.to(states[0], { opacity: 0, duration: 0.04 }, 0.26);
-        tl.to(states[1], { opacity: 1, duration: 0.04 }, 0.3);
-        tl.to(states[1], { opacity: 0, duration: 0.04 }, 0.49);
-        tl.to(states[2], { opacity: 1, duration: 0.04 }, 0.53);
-        tl.to(states[2], { opacity: 0, duration: 0.04 }, 0.72);
-        tl.to(states[3], { opacity: 1, duration: 0.04 }, 0.76);
+        // Each line: container visible for its third; WORDS stagger-reveal
+        // (fade + rise) scrub-linked inside it; container fades out at the
+        // end of its third (lines 1-2) — line 3 stays until unpin.
+        const phases = [
+          { el: lineEls[0], start: 0.25, out: 0.47 },
+          { el: lineEls[1], start: 0.5, out: 0.72 },
+          { el: lineEls[2], start: 0.75, out: null as number | null },
+        ];
+        for (const { el, start, out } of phases) {
+          const words = Array.from(el.querySelectorAll<HTMLElement>('[data-word]'));
+          gsap.set(words, { opacity: 0, y: 14 });
+          tl.set(el, { opacity: 1 }, start);
+          tl.to(words, { opacity: 1, y: 0, duration: 0.1, stagger: { amount: 0.08 }, ease: 'none' }, start + 0.01);
+          if (out !== null) tl.to(el, { opacity: 0, duration: 0.03 }, out);
+        }
+        // TEMP local-iteration diagnostic — remove before stabilization deploy.
+        (window as unknown as Record<string, unknown>).__panelDiag = {
+          st: tl.scrollTrigger, tl, ScrollTrigger,
+        };
       }, section);
     })();
 
@@ -190,28 +193,19 @@ export default function LandingSections({ lc, t }: Props) {
       cancelled = true;
       ctx?.revert();
       setAnimated(false);
-      setActiveSeg(-1);
+      setActiveLine(-1);
     };
-  }, []);
-
-  const stateBlock = (children: React.ReactNode, key: string) => (
-    <div
-      key={key}
-      data-panel-state={key}
-      className="flex flex-col items-center justify-center text-center gap-4 px-6 py-16 md:py-0"
-    >
-      {children}
-    </div>
-  );
+    // Re-init when the locale swaps (post-hydration en → stored locale
+    // replaces the word <span>s; a [] dep would leave the timeline tweening
+    // detached nodes). ctx.revert() in the cleanup restores DOM state first.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lc.panelLine1, lc.panelLine2, lc.panelLine3]);
 
   return (
     <>
-      {/* §1 — BLACK PANEL (replaces WHO). The only large dark block on the
-          page; ink token, 24px radius; ≥120px clearance both sides via
-          section padding. Text is white via the paper-token inversion
-          (panel bg = text token → white text = paper... on the ink panel the
-          readable color is the PAGE token pair: we use literal token classes
-          text-paper for body on ink). */}
+      {/* §1 — BLACK PANEL: three claim taglines, word-level reveal. No pills
+          (tool entry = the cards below). Static/SSR: all three lines stacked
+          and visible — SEO text never absent. */}
       <section
         id="panel"
         ref={panelSectionRef}
@@ -221,47 +215,40 @@ export default function LandingSections({ lc, t }: Props) {
           ref={panelRef}
           className="relative w-full max-w-7xl mx-auto rounded-3xl bg-text text-paper overflow-hidden md:min-h-[70vh]"
         >
-          {/* intro */}
-          {stateBlock(
-            <>
-              <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl leading-tight">{lc.panelIntroTitle}</h2>
-              <p className="text-base md:text-lg" style={{ color: 'rgb(var(--color-paper) / 0.7)' }}>{lc.panelIntroSub}</p>
-            </>,
-            'intro',
-          )}
-          {/* segments */}
-          {segments.map((s, i) =>
-            stateBlock(
-              <>
-                <h3 className="font-serif text-2xl sm:text-3xl md:text-4xl leading-tight">{s.tag}</h3>
-                <p className="max-w-xl text-base md:text-lg" style={{ color: 'rgb(var(--color-paper) / 0.7)' }}>{s.desc}</p>
-                <div className="mt-2">
-                  <Pill href={s.href} label={s.label} onPanel />
-                </div>
-              </>,
-              `seg${i + 1}`,
-            ),
-          )}
-          {/* progress dots — animated mode only, during the segs */}
+          {lines.map((line, i) => (
+            <p
+              key={i}
+              data-panel-line={i + 1}
+              className="flex flex-wrap items-center justify-center content-center text-center gap-x-0 px-6 py-12 md:py-0 font-serif text-3xl sm:text-4xl md:text-5xl leading-tight"
+            >
+              {line.split(/\s+/).map((w, j, arr) => (
+                <span key={j} data-word className="inline-block">
+                  {w}
+                  {j < arr.length - 1 ? ' ' : ''}
+                </span>
+              ))}
+            </p>
+          ))}
+          {/* progress dots — one per line, animated mode only */}
           <div
             aria-hidden="true"
             className={`absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 transition-opacity duration-300 ${
-              animated && activeSeg >= 0 ? 'opacity-100' : 'opacity-0'
+              animated && activeLine >= 0 ? 'opacity-100' : 'opacity-0'
             } ${animated ? '' : 'hidden'}`}
           >
             {[0, 1, 2].map((i) => (
               <span
                 key={i}
                 className="w-2 h-2 rounded-full"
-                style={{ background: i === activeSeg ? 'rgb(var(--color-paper))' : 'rgb(var(--color-paper) / 0.3)' }}
+                style={{ background: i === activeLine ? 'rgb(var(--color-paper))' : 'rgb(var(--color-paper) / 0.3)' }}
               />
             ))}
           </div>
         </div>
       </section>
 
-      {/* §2 — CARDS ("What Vela does"): paper-2 sheets, hairline border,
-          shadow-card, no icons, no metadata rows, no intro line. */}
+      {/* §2 — CARDS ("What Vela does"): B4.1b — pure-white sheets (paper-2
+          token now full white), split card-border token, deepened shadow. */}
       <section id="features" ref={cardsRef} className="px-4 md:px-10 py-32 md:py-40">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-text mb-12">
@@ -273,7 +260,7 @@ export default function LandingSections({ lc, t }: Props) {
               { key: 'verify', title: t.verify, desc: lc.cardDescVerify, href: '/verify' },
               { key: 'explain', title: t.explain, desc: lc.cardDescExplain, href: '/explain' },
             ].map(({ key, title, desc, href }) => (
-              <div key={key} className="rounded-2xl p-8 bg-paper-2 border border-hairline shadow-card flex flex-col">
+              <div key={key} className="rounded-2xl p-8 bg-paper-2 border border-card-border shadow-card flex flex-col">
                 <h3 className="text-lg font-bold text-text mb-3">{title}</h3>
                 <p className="font-serif text-lg leading-relaxed" style={{ color: 'rgb(var(--color-text) / 0.7)' }}>
                   {desc}

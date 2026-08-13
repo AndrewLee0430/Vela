@@ -20,6 +20,9 @@ module.exports = {
           'paper':    'rgb(var(--color-paper) / <alpha-value>)',
           'paper-2':  'rgb(var(--color-paper-2) / <alpha-value>)',
           'hairline': 'rgb(var(--color-hairline) / <alpha-value>)',
+          // B4.1b: card borders split from hairline (hairline also borders
+          // the footer; the deepening must not leak there).
+          'card-border': 'rgb(var(--color-card-border) / <alpha-value>)',
           'success':     'rgb(var(--color-success) / <alpha-value>)',
           'warning':     'rgb(var(--color-warning) / <alpha-value>)',
           'danger':      'rgb(var(--color-danger) / <alpha-value>)',
