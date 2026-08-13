@@ -1,28 +1,40 @@
-// components/LandingSections.tsx — B4.1c (local iteration, 2026-08-13):
-// panel SIMPLIFIED — the slideshow is gone (no pin, no line switching, no
-// word reveal, no dots). Content = one static H1 + one subheadline, white on
-// ink. The founder-praised expand-on-scroll FEEL is kept, but GSAP is
-// RETIRED: a lightweight rAF scroll handler interpolates the panel's
-// max-width (64rem → min(80rem, 94vw)) as the section traverses the
-// viewport — both directions, no pin, no added scroll length. Card pills
-// carry the try* labels.
+// components/LandingSections.tsx — B4.1d (local iteration, 2026-08-13):
+// the static panel gains a SCROLL-LINKED WORD REVEAL and a gradient headline.
+// GSAP stays RETIRED — the reveal is driven by the SAME rAF progress value the
+// width interpolation already computes, so there is one handler, one scroll
+// listener and no animation library.
+//
+// Panel behaviour, in one place:
+//   - width      max-width 64rem → min(80rem, 94vw), linear in progress p
+//   - reveal     per-word opacity 0→1 + translateY 14px→0, staggered across
+//                H1 words then sub words, mapped from a slice of the same p
+//   - height     md:min-h-[80vh] (B4.1d), content vertically centered
+//   - gradient   .panel-gradient-text per H1 word span (globals.css)
+// All of it is a PURE FUNCTION of scroll position, so reversing the scroll
+// reverses the animation exactly — there is no timeline and no hysteresis.
 //
 // SYSTEM RULES (unchanged):
 //   - LIGHT-ONLY LANDING (D-B4-1); no `dark:` variants in this file.
-//   - TOKEN COLORS ONLY (guard: tests/test_landing_sections_tokens.py).
-//   - RTL-SAFE: pill arrows rotate + hover-shift flips via rtl: variants.
-//   - MOTION: width interpolation only, disabled under prefers-reduced-motion
-//     and <md (static 64rem). H1/sub are NEVER animated per-word — the
-//     locale-swap tween-on-detached-nodes bug class is structurally gone, so
-//     no locale-dependent effect deps are needed.
-//   - Gap rhythm (B4.1c supersedes B4's ≥120px-clearance rule): panel section
-//     pt-12 md:pt-16 / pb-16 md:pb-20; hero is min-h-[90vh] (index.tsx) so
-//     the panel top peeks above the fold as a scroll cue.
+//   - TOKEN COLORS ONLY (guard: tests/test_landing_sections_tokens.py). The
+//     headline gradient is a globals.css class, itself token-only.
+//   - RTL-SAFE: pill arrows rotate + hover-shift flips via rtl: variants. Word
+//     spans split on spaces only, which never breaks Arabic joining (joining
+//     already breaks at spaces) and leaves bidi ordering to the paragraph.
+//   - MOTION: reveal + width are a VISUAL LAYER ONLY. Under
+//     prefers-reduced-motion and <md the handler never runs, so the words keep
+//     their default styles — full text, fully visible — which is also exactly
+//     what the static export ships.
 
-import { useEffect, useRef, useState } from 'react';
+import { Fragment, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { ChevronDown, ArrowRight } from 'lucide-react';
 import type { LandingContent, Translations } from '../utils/i18n';
+
+// Layout effect on the client, plain effect during the static export — avoids
+// both the SSR warning and a one-frame flash of un-revealed words.
+const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
+
+const clamp01 = (v: number) => (v < 0 ? 0 : v > 1 ? 1 : v);
 
 // ─── Scroll hint — unchanged (fades on first scroll) ─────────────────────────
 export function ScrollHint({ label }: { label: string }) {
@@ -71,6 +83,32 @@ function Pill({ href, label }: { href: string; label: string }) {
   );
 }
 
+// ─── Word splitter for the scroll reveal ─────────────────────────────────────
+// Splits on spaces ONLY. Space-less scripts (zh, ja, th) therefore yield ONE
+// unit per line and the reveal degrades to a line-level fade — expected and
+// accepted, the same degradation B4.1b documented for the retired word-scrub.
+// Splitting further would need Intl.Segmenter and would break CJK line-breaking.
+//
+// Spans are inline-block so translateY applies to them; the separator is a real
+// space text node, so wrapping and justification behave exactly as they do for
+// unsplit text. No initial hidden style — the words render VISIBLE and the
+// handler is what hides them, which keeps the static export readable.
+function Words({ text, spanClassName = '' }: { text: string; spanClassName?: string }) {
+  const words = text.split(' ');
+  return (
+    <>
+      {words.map((word, i) => (
+        <Fragment key={i}>
+          <span data-reveal-word className={`inline-block ${spanClassName}`}>
+            {word}
+          </span>
+          {i < words.length - 1 ? ' ' : ''}
+        </Fragment>
+      ))}
+    </>
+  );
+}
+
 // ─── One-time fade-in on viewport entry (reduced-motion: off) ────────────────
 // B4.1a lesson: clears ALL inline styles on completion.
 function useFadeIn(ref: React.RefObject<HTMLElement | null>) {
@@ -106,16 +144,37 @@ function useFadeIn(ref: React.RefObject<HTMLElement | null>) {
   }, [ref]);
 }
 
-// ─── B4.1c width interpolation — the expand feel without GSAP ─────────────────
-// max-width goes 64rem → min(80rem, 94vw) as the section top travels from the
-// viewport bottom to the viewport top. Pure function of scroll position, so
-// reversing the scroll reverses the width. Disabled <md and under
-// reduced-motion (panel stays at the resting 64rem via its className).
-function usePanelExpand(
+// ─── Panel scroll handler: width interpolation + word reveal ─────────────────
+// p = 0 when the section's top sits at the viewport bottom, 1 when it reaches
+// the viewport top.
+//
+// The reveal consumes the SLICE p ∈ [0.32, 0.86] rather than all of p. That
+// window is derived from the layout, not picked by feel: the hero is 90vh and
+// the panel is 80vh, so the headline (vertically centered) only crosses into
+// view around p ≈ 0.36 and is comfortably mid-screen by p ≈ 0.86. Because every
+// term is vh-relative, the window holds across viewport heights. Starting the
+// reveal at p = 0 would finish it entirely below the fold — the user would
+// scroll to an already-revealed headline and see nothing happen.
+const REVEAL_START = 0.32;
+const REVEAL_END = 0.86;
+const WORD_DURATION = 0.35; // share of the reveal window one word occupies; the
+                            // overlap is what makes it read as a wave, not a queue
+const RISE_PX = 14;
+
+// `copyKey` exists ONLY to re-run the effect when the panel copy changes. The
+// locale swap is post-hydration (LangContext seeds 'en' for SSR parity, then
+// swaps in a passive effect), and Words() keys by index with no style prop, so
+// React reuses the surviving spans IN PLACE — inline styles written for the old
+// copy survive, and any spans beyond the old count mount with none at all.
+// Without this dep the handler would not re-run and the panel would sit in a
+// mixed state until the next scroll event. Re-running is cheap: cleanup wipes
+// every span's inline style, then update() re-derives the whole set.
+function usePanelScroll(
   sectionRef: React.RefObject<HTMLElement | null>,
   panelRef: React.RefObject<HTMLDivElement | null>,
+  copyKey: string,
 ) {
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     const desktop = window.matchMedia('(min-width: 768px)').matches;
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (!desktop || reduced) return;
@@ -126,12 +185,44 @@ function usePanelExpand(
     let raf = 0;
     const update = () => {
       const r = section.getBoundingClientRect();
-      // progress 0 → section top at viewport bottom; 1 → section top at viewport top
-      const p = Math.min(1, Math.max(0, (window.innerHeight - r.top) / window.innerHeight));
-      const from = 1024; // 64rem
-      const to = Math.min(1280, window.innerWidth * 0.94); // min(80rem, 94vw)
+      const p = clamp01((window.innerHeight - r.top) / window.innerHeight);
+
+      // (1) width — 64rem → min(80rem, 94vw)
+      const from = 1024;
+      const to = Math.min(1280, window.innerWidth * 0.94);
       panel.style.maxWidth = `${Math.round(from + p * (to - from))}px`;
+
+      // (2) word reveal. Queried FRESH every frame, so the handler can never
+      // write to DETACHED nodes after a locale swap — that half of the B4.1b
+      // bug class is structurally impossible here. Keeping the REVEAL STATE
+      // consistent across a swap is a separate problem, and it is the `copyKey`
+      // dep below that solves it, not the fresh query.
+      const words = panel.querySelectorAll<HTMLElement>('[data-reveal-word]');
+      const n = words.length;
+      if (n === 0) return;
+      const q = clamp01((p - REVEAL_START) / (REVEAL_END - REVEAL_START));
+      const step = n > 1 ? (1 - WORD_DURATION) / (n - 1) : 0;
+      for (let i = 0; i < n; i++) {
+        const local = clamp01((q - i * step) / WORD_DURATION);
+        const eased = 1 - Math.pow(1 - local, 3); // ease-out cubic
+        const s = words[i].style;
+        // Epsilon, not `=== 1`: the cubic approaches 1 asymptotically, so an
+        // exact test leaves a `translateY(0.00px)` on any word that is visually
+        // finished but numerically 0.9999 — an inline transform, and therefore
+        // a stacking context, exactly the residue the B4.1a defect was made of.
+        if (eased > 0.999) {
+          // Settled = NO inline styles, identical to the reduced-motion and
+          // static-export state. Also avoids leaving a transform behind, which
+          // is what created the stacking context in the B4.1a defect.
+          s.removeProperty('opacity');
+          s.removeProperty('transform');
+        } else {
+          s.opacity = eased.toFixed(3);
+          s.transform = `translateY(${((1 - eased) * RISE_PX).toFixed(2)}px)`;
+        }
+      }
     };
+
     const onScroll = () => {
       cancelAnimationFrame(raf);
       raf = requestAnimationFrame(update);
@@ -144,8 +235,12 @@ function usePanelExpand(
       window.removeEventListener('resize', onScroll);
       cancelAnimationFrame(raf);
       panel.style.removeProperty('max-width');
+      panel.querySelectorAll<HTMLElement>('[data-reveal-word]').forEach((w) => {
+        w.style.removeProperty('opacity');
+        w.style.removeProperty('transform');
+      });
     };
-  }, [sectionRef, panelRef]);
+  }, [sectionRef, panelRef, copyKey]);
 }
 
 interface Props {
@@ -158,12 +253,13 @@ export default function LandingSections({ lc, t }: Props) {
   const panelRef = useRef<HTMLDivElement | null>(null);
   const cardsRef = useRef<HTMLElement | null>(null);
   useFadeIn(cardsRef);
-  usePanelExpand(panelSectionRef, panelRef);
+  usePanelScroll(panelSectionRef, panelRef, `${lc.panelHeadline} ${lc.panelSub}`);
 
   return (
     <>
       {/* §1 — BLACK PANEL: one static H1 + sub, centered, white on ink.
-          Resting width 64rem; scroll interpolates toward min(80rem, 94vw). */}
+          Resting width 64rem; scroll interpolates toward min(80rem, 94vw) and
+          reveals the words. B4.1d: md:min-h-[80vh]. */}
       <section
         id="panel"
         ref={panelSectionRef}
@@ -171,13 +267,13 @@ export default function LandingSections({ lc, t }: Props) {
       >
         <div
           ref={panelRef}
-          className="w-full max-w-5xl mx-auto rounded-3xl bg-text text-paper px-6 py-20 md:py-28 flex flex-col items-center justify-center text-center gap-5"
+          className="w-full max-w-5xl mx-auto rounded-3xl bg-text text-paper px-6 py-20 md:py-28 md:min-h-[80vh] flex flex-col items-center justify-center text-center gap-5"
         >
           <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl leading-tight max-w-3xl">
-            {lc.panelHeadline}
+            <Words text={lc.panelHeadline} spanClassName="panel-gradient-text" />
           </h2>
           <p className="text-base md:text-lg max-w-2xl" style={{ color: 'rgb(var(--color-paper) / 0.7)' }}>
-            {lc.panelSub}
+            <Words text={lc.panelSub} />
           </p>
         </div>
       </section>

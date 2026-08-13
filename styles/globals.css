@@ -172,3 +172,60 @@ body {
 /* B4 card shadow — defined ONCE here so no rgba literal appears in
    components (token-guard compliance). Consumed via tailwind `shadow-card`. */
 :root { --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.06); } /* B4.1b: deepened for white cards */
+
+/* B4.1d — panel headline gradient (white → light gray on the ink panel).
+   Lives HERE rather than inline in the component for the same reason
+   `.hero-spotlight` does: this file is the sanctioned home for raw CSS, and a
+   class is the only way to attach the forced-colors fallback below. TOKENS
+   ONLY — no literals — so `.light`/`.dark` both reach it.
+
+   Applied PER WORD SPAN (not to the heading) so every word, and therefore
+   every wrapped line, carries the SAME top-white → bottom-gray ramp instead of
+   one ramp stretched across the whole block.
+
+   Bottom stop 0.55: composited over the ink panel (--color-text 23 23 23) that
+   is rgb(151 147 145) = 5.90:1 contrast — clears AA normal text (4.5:1) and AA
+   large (3:1), so the ramp's WORST point is still comfortably legible. Because
+   the span is an inline-block its box is the full line box, so glyphs occupy
+   roughly the middle 80% of the ramp and never actually reach the 0.55 end. */
+.panel-gradient-text {
+  background: linear-gradient(
+    to bottom,
+    rgb(var(--color-paper)) 0%,
+    rgb(var(--color-paper) / 0.55) 100%
+  );
+  /* One ramp PER LINE, not one ramp per span. For English each span is a single
+     word one line tall, so this is a no-op. It is load-bearing for the
+     space-less scripts (zh, ja, th): there the whole headline is ONE span that
+     wraps to two lines, and without the per-line tile the second line renders
+     visibly grayer than the first — measured 768x96px = 2 lines in zh-TW.
+     `lh` degrades safely: where it is unsupported the declaration is dropped
+     and the span simply falls back to a single ramp. */
+  background-size: 100% 1lh;
+  background-repeat: repeat-y;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Selection: the glyphs have no ink of their own — every visible pixel comes
+   from the element background, which the ::selection highlight paints OVER. So
+   dragging across the headline would blank the selected words. Give the
+   selected run real ink. Token-only, same as everything else here. */
+.panel-gradient-text::selection {
+  color: rgb(var(--color-text));
+  -webkit-text-fill-color: rgb(var(--color-text));
+  background-color: rgb(var(--color-paper));
+}
+
+/* Windows High Contrast / forced-colors: `background-clip: text` with a
+   transparent fill renders the headline COMPLETELY INVISIBLE. Restore a solid
+   system color — the gradient is decoration, the words are the content. */
+@media (forced-colors: active) {
+  .panel-gradient-text {
+    background: none;
+    color: CanvasText;
+    -webkit-text-fill-color: CanvasText;
+  }
+}
