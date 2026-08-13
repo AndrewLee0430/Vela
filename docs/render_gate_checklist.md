@@ -106,7 +106,13 @@ so it is the only row that can catch a locale-resolution fault.
 
 ---
 
-## Gate 2 — B1: landing below-fold sections (BLANK — founder runs post-deploy)
+## Gate 2 — B1: landing below-fold sections
+
+> ## ✅ GATE 2 CLOSED (2026-08-11, against fly 227) — FUNCTIONAL PASS · visual finding → B2
+> Founder-run. Functional rows passed; the founder's visual finding — sections read as bare
+> text — spawned the B2 card system. Row 9 (founderNote copy) was PASS — PRE-APPROVED. The
+> observation cells below were not filled row-by-row; the verdict is recorded here and in the
+> STATE B0+D3+B1 entry. **No pending rows remain.**
 
 **Change under test:** the B1 landing-sections commit of 2026-08-11 (`fix(landing): [B1] …` —
 SHA recorded in the baton report and the STATE draft entry; fill in here at gate time, and
@@ -142,7 +148,14 @@ CLAIM the English does not (that IS a FAIL — the fly-225 class).
 
 ---
 
-## Gate 3 — B2: landing card-based visual upgrade (BLANK — founder runs post-deploy)
+## Gate 3 — B2: landing card-based visual upgrade
+
+> ## ⚠️ GATE 3 CLOSED (2026-08-12, against fly 228) — PARTIALLY RUN, honestly recorded
+> **Rows 7 (mobile) and 8 (ar RTL) were run by founder eyes: both PASS** — the ar screenshot
+> (reviewed 2026-08-12) showed the RTL grid flipping, the inline-start accent placement, and no
+> breakage. Rows 7/8 are filled below. **The remaining rows were SUPERSEDED by the founder's
+> aesthetic verdict — too plain → B3** — and were never run. This is a partial run recorded as
+> such, not a pass. **No pending rows remain.**
 
 **Change under test:** the B2 commit of 2026-08-11 (`feat(landing): [B2] …` — SHA in the baton
 report; fill in at gate time and **confirm `/health` `revision` contains it before row 1**).
@@ -162,8 +175,8 @@ rounded-2xl, no borders, shadow in light only; accent = coral icon chips (the B1
 | 4 | `https://vela.an-tho.com/` | en · **dark** | feature cards legibility | cards read as ELEVATED navy on the deep gradient — no muddy shadow (shadow is light-only), no washed-out text | | | |
 | 5 | `https://vela.an-tho.com/` | en · light | **privacy cards + limits block** | 2×2 cards, full sentences (no invented titles); the limits sub-block reads QUIETER than the cards but still legible — it must not disappear | | | |
 | 6 | `https://vela.an-tho.com/` | en · **dark** | privacy cards + limits block | same, dark | | | |
-| 7 | `https://vela.an-tho.com/` | en · either · **mobile ≤ 390px** | stacking | features 3→1 col, privacy 2×2→1 col, equal-height cards don't stretch oddly, no horizontal scroll | | | |
-| 8 | `https://vela.an-tho.com/` | **ar** (RTL) · either | RTL grid + accent bar | grids flip; the WHO coral bar sits on the RIGHT (inline-start); icon chips lead each card correctly | | | |
+| 7 | `https://vela.an-tho.com/` | en · either · **mobile ≤ 390px** | stacking | features 3→1 col, privacy 2×2→1 col, equal-height cards don't stretch oddly, no horizontal scroll | stacked correctly, no horizontal scroll (founder eyes) | **PASS** | run 2026-08-12 against fly 228 |
+| 8 | `https://vela.an-tho.com/` | **ar** (RTL) · either | RTL grid + accent bar | grids flip; the WHO coral bar sits on the RIGHT (inline-start); icon chips lead each card correctly | RTL grid flipped, inline-start bar correct, no breakage (founder screenshot, reviewed 2026-08-12) | **PASS** | the only two rows run; the rest superseded → B3 |
 | 9 | `https://vela.an-tho.com/` | en · either | **WHO accent treatment** | the manifesto block reads as deliberate (bar + coral final line), not like a styling accident; "This tool is for you." is the emphasis point of the section | | | |
 | 10 | `https://vela.an-tho.com/` | en · either | chevron still behaves | visible at hero bottom, fades on first scroll, click scrolls to §who | | | |
 
@@ -177,7 +190,12 @@ STRENGTHENS a claim (that is a FAIL — the fly-225 class).
 
 ---
 
-## Gate 4 — B3: paper redesign of the landing below-fold (BLANK — founder runs post-deploy)
+## Gate 4 — B3: paper redesign of the landing below-fold
+
+> ## ❌ GATE 4 CLOSED (2026-08-12) — NEVER RUN, superseded
+> The founder's design review of fly 229 ratified B4 (final form) before any row was run.
+> Recorded as never-run, not as passed. **No pending rows remain.** The rows below stand as
+> the historical form only.
 
 **Change under test:** the B3 commit of 2026-08-12 (`feat(landing): [B3] …` — SHA in the baton
 report; fill in at gate time and **confirm `/health` `revision` contains it before row 1**).
@@ -213,7 +231,15 @@ unless it STRENGTHENS a claim, which is a FAIL).
 
 ---
 
-## Gate 5 — B4: final-form landing (BLANK — founder runs post-deploy · ALL LIGHT, D-B4-1 halves the matrix)
+## Gate 5 — B4: final-form landing
+
+> ## ⚠️ GATE 5 CLOSED (2026-08-12, against fly 230) — INFORMALLY RUN, superseded by LOCAL ITERATION MODE
+> The founder's scroll review judged the direction right (**「好很多了」**) AND surfaced the
+> panel pin-overlap defect → hotfixed as **fly 231** (`4be2f55`). The formal 10-row run is
+> **SUPERSEDED**: the landing entered **LOCAL ITERATION MODE** (D-B4.1-1) — UI iterates on
+> localhost, no per-iteration deploys, no per-iteration gates. **The definitive gate runs ONCE,
+> at the stabilization deploy — it will be Gate 6, form to be written then.** No pending rows
+> remain here; the rows below stand as the historical form only.
 
 **Change under test:** the B4 build commit of 2026-08-12 (SHA in the baton report; **confirm
 `/health` `revision` contains it before row 1**). Gate 4 was superseded before running — this is
