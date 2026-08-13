@@ -301,7 +301,9 @@ function LandingPage() {
               `min(190%, 100vw)` alternative is scrollbar-unsafe (100vw counts
               the scrollbar, leaving ~8px of overflow) and would visibly narrow
               the blob for every viewport between ~700px and ~1277px. */}
-          <div className="relative min-h-screen flex flex-col overflow-x-clip">
+          {/* B4.1c: min-h-screen -> min-h-[90vh] so the panel top peeks above
+              the fold as a scroll cue; hero content re-centers. */}
+          <div className="relative min-h-[90vh] flex flex-col overflow-x-clip">
           {/* Top bar */}
           <nav className="flex-shrink-0 flex justify-between items-center gap-2 px-4 md:px-10 py-4">
             <Link href="/" className="flex items-center gap-2">
