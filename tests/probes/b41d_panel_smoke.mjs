@@ -220,13 +220,18 @@ const checks = [
   ],
 
   // ── Zero CLS, carried across from B4.2 with the REAL encode dimensions ────
-  // 1440x812 is what ffprobe reports for research-demo.mp4. Reusing the PNG's
+  // 1440x828 is what ffprobe reports for the B4.6 re-cut research-demo.mp4
+  // (the new master is 1646x946; the first take was 1662x938 -> 1440x812, so
+  // these numbers move with every re-record and must be re-read, not carried
+  // over — a stale pair squashes the frame silently). Reusing the PNG's
   // 1975x1114 would reserve a 0.08%-wrong box and squash the frame.
   ['video carries width="1440"', /<video[^>]*width="1440"/.test(html), "—"],
-  ['video carries height="812"', /<video[^>]*height="812"/.test(html), "—"],
+  ['video carries height="828"', /<video[^>]*height="828"/.test(html), "—"],
+  // The superseded first-take geometry must not survive anywhere in the markup.
+  ['the first take\'s 812 height is gone', !/(?:height|\/)\s*="?812/.test(html), "—"],
   [
     "explicit aspect-ratio restates the encode ratio (not UA-dependent)",
-    /aspect-ratio:\s*1440\s*\/\s*812/.test(html),
+    /aspect-ratio:\s*1440\s*\/\s*828/.test(html),
     "—",
   ],
   [

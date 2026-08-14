@@ -454,8 +454,11 @@ export default function LandingSections({ lc, t }: Props) {
 
               B4.3 R4 — the still is now the demo VIDEO. ZERO CLS is carried
               across from B4.2 rather than assumed: width/height are the
-              encode's REAL output dimensions (1440x812, from ffprobe — the
-              1975x1114 PNG ratio would have squashed it by 0.08%), and the
+              encode's REAL output dimensions, read from ffprobe rather than
+              assumed — B4.6 re-cut a NEW master (1646x946, not the first
+              take's 1662x938) and the output moved 1440x812 -> 1440x828, so
+              these three numbers are re-derived per encode, never carried
+              over. Reusing a stale pair squashes the frame silently. And the
               explicit aspectRatio restates it in CSS so the reservation does
               not depend on UA behaviour for <video>. Playback gating lives in
               usePanelVideo; the reveal below is untouched and still off <md
@@ -469,13 +472,13 @@ export default function LandingSections({ lc, t }: Props) {
               src="/media/research-demo.mp4"
               poster="/media/research-demo-poster.jpg"
               width={1440}
-              height={812}
+              height={828}
               muted
               loop
               playsInline
               preload="none"
               aria-label={lc.panelDemoAlt}
-              style={{ aspectRatio: '1440 / 812' }}
+              style={{ aspectRatio: '1440 / 828' }}
               className="rounded-xl border border-paper/15 object-contain w-full h-auto md:w-auto md:h-full md:max-w-full"
             />
           </div>

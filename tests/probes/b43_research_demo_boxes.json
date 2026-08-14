@@ -1,6 +1,6 @@
 {
   "file": "public/media/research-demo.mp4",
-  "bytes": 2013596,
+  "bytes": 2325186,
   "topLevelOrder": [
     "ftyp",
     "moov",
@@ -16,21 +16,21 @@
     {
       "type": "moov",
       "offset": 32,
-      "size": 5487
+      "size": 5671
     },
     {
       "type": "free",
-      "offset": 5519,
+      "offset": 5703,
       "size": 8
     },
     {
       "type": "mdat",
-      "offset": 5527,
-      "size": 2008069
+      "offset": 5711,
+      "size": 2319475
     }
   ],
   "moovOffset": 32,
-  "mdatOffset": 5527,
+  "mdatOffset": 5711,
   "faststart": true,
   "handlers": [
     "vide",
