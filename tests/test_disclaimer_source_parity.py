@@ -16,6 +16,13 @@ Nothing joins them. On 2026-08-11 a read-only audit found all three still
 byte-identical — by luck, not by construction. This test converts that luck
 into a guard: edit one file and the other two fail here, loudly, before deploy.
 
+A FOURTH file, utils/i18n.ts (the 16-locale landing + app copy), joined this
+module at B4.1e. It carries NONE of the legal parity keys, so it adds no parity
+obligation — it is here for the zh-TW punctuation RULE below, which had been
+sampling three files while the largest locale file in the repo went unchecked.
+Extending it immediately found 3 ASCII "?" adjacent to CJK, in example-chip
+strings no one had looked at since they were written.
+
 WHY THIS IS THE RULE-19 FAILURE CLASS
 -------------------------------------
 Rule 19 ("when extending a data path to a SECOND surface, carry its mitigations
@@ -44,6 +51,7 @@ _ROOT = Path(__file__).resolve().parents[1]
 _TS = _ROOT / "utils" / "i18n-share.ts"
 _EXPLORE = _ROOT / "api" / "i18n" / "explore_strings.py"
 _RENDERER = _ROOT / "api" / "services" / "share_renderer.py"
+_I18N = _ROOT / "utils" / "i18n.ts"          # landing copy — added to the RULE at B4.1e
 
 # Keys under parity. The other two legal-weighted share keys
 # (modalConsentCheckbox, settingsRevokeConfirm) live only in the .ts file and
@@ -123,6 +131,75 @@ def _parse_ts() -> dict:
     return out
 
 
+_LANDING_CONST_TO_LOCALE = {
+    "landingEn": "en", "landingZhTW": "zh-TW", "landingZhCN": "zh-CN",
+    "landingJa": "ja", "landingKo": "ko", "landingEs": "es", "landingFr": "fr",
+    "landingDe": "de", "landingIt": "it", "landingPt": "pt", "landingTh": "th",
+    "landingAr": "ar", "landingHi": "hi", "landingBn": "bn", "landingHe": "he",
+    "landingVi": "vi",
+}
+
+
+def _kv_at_indent(block: str, indent: int) -> dict:
+    """`key: '…'` pairs at exactly `indent` spaces. Same indent-based approach
+    _parse_ts uses — these files are Prettier-formatted, so indent is reliable
+    and a brace-depth parser would be more machinery for no more coverage."""
+    vals = {}
+    for m in re.finditer(r"^ {%d}(\w+):\s*" % indent, block, re.M):
+        j = m.end()
+        while j < len(block) and block[j] in " \t\r\n":
+            j += 1
+        if j < len(block) and block[j] in "'\"`":
+            vals[m.group(1)] = _read_js_string(block, j)
+    return vals
+
+
+def _parse_i18n() -> dict:
+    """{locale: {key: value}} for utils/i18n.ts — the LANDING copy file.
+
+    Brought under the punctuation rule at B4.1e. This file holds the 16-locale
+    landing + app strings and was NOT covered by the fly-223 rule, even though
+    that rule's whole lesson was that a rule must not sample. It has exactly two
+    string containers and BOTH are parsed:
+      * `const landing<X>: LandingContent = {…}`  → prefix "landingContent."
+      * `translations['xx'] = {…}` (and the `en,` shorthand referencing
+        `const en: Translations`) → prefix "translations."
+    Keys are PREFIXED so the two containers cannot shadow each other, and so no
+    key here can collide with SHARED_KEYS — this file carries none of the legal
+    parity strings, and prefixing keeps it that way structurally.
+    """
+    src = _I18N.read_text(encoding="utf-8")
+    out: dict[str, dict] = {}
+
+    # (1) landing<Locale> consts
+    starts = [(m.group(1), m.start())
+              for m in re.finditer(r"^const (landing\w+): LandingContent = \{", src, re.M)]
+    assert starts, "no LandingContent blocks found — did utils/i18n.ts change shape?"
+    for const_name, pos in starts:
+        locale = _LANDING_CONST_TO_LOCALE.get(const_name)
+        assert locale, f"unmapped LandingContent const {const_name!r} — add it to the map"
+        end = src.index("\n};", pos)
+        for k, v in _kv_at_indent(src[pos:end], 2).items():
+            out.setdefault(locale, {})[f"landingContent.{k}"] = v
+
+    # (2) the translations record: inline `'xx': {` blocks plus the `en,` shorthand
+    t_pos = src.index("export const translations: Record<LangCode, Translations> = {")
+    t_block = src[t_pos:]
+    # [A-Za-z-]: the locale keys are 'zh-TW' / 'zh-CN', not lowercase-only.
+    inline = [(m.group(1), m.start()) for m in re.finditer(r"^  '([A-Za-z-]+)': \{", t_block, re.M)]
+    assert inline, "no inline locale blocks in `translations` — did the shape change?"
+    for idx, (locale, pos) in enumerate(inline):
+        end = inline[idx + 1][1] if idx + 1 < len(inline) else len(t_block)
+        for k, v in _kv_at_indent(t_block[pos:end], 4).items():
+            out.setdefault(locale, {})[f"translations.{k}"] = v
+    if re.search(r"^  en,$", t_block, re.M):          # shorthand → `const en: Translations`
+        en_pos = src.index("const en: Translations = {")
+        for k, v in _kv_at_indent(src[en_pos:src.index("\n};", en_pos)], 2).items():
+            out.setdefault("en", {})[f"translations.{k}"] = v
+
+    return out
+
+
 def _parse_py(path: Path, varname: str) -> dict:
     """literal_eval a module-level dict without importing the module."""
     tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
@@ -145,6 +222,9 @@ def sources():
         "utils/i18n-share.ts": _parse_ts(),
         "api/i18n/explore_strings.py": _parse_py(_EXPLORE, "EXPLORE_STRINGS"),
         "api/services/share_renderer.py": _parse_py(_RENDERER, "_STRINGS"),
+        # Carries none of SHARED_KEYS, so it adds no parity obligation; it is
+        # here so the zh-TW punctuation RULE below reaches the landing copy.
+        "utils/i18n.ts": _parse_i18n(),
     }
 
 
@@ -219,7 +299,8 @@ def _punctuation_violations(text: str):
 
 @pytest.mark.parametrize("fname", ["utils/i18n-share.ts",
                                    "api/i18n/explore_strings.py",
-                                   "api/services/share_renderer.py"])
+                                   "api/services/share_renderer.py",
+                                   "utils/i18n.ts"])
 def test_no_ascii_sentence_punctuation_in_any_zh_tw_string(sources, fname):
     """EVERY zh-TW string in this file, including keys added after this was written.
 
@@ -336,16 +417,42 @@ def test_no_duplicated_key_is_left_unguarded(sources):
     )
 
 
-def test_all_three_sources_were_actually_parsed(sources):
+# Per source: how many locales it must yield, and two canary keys that must
+# parse non-empty in BOTH en and zh-TW. Canaries are per-source because
+# utils/i18n.ts carries none of the legal disclaimer keys.
+_PARSE_EXPECTATIONS = {
+    "utils/i18n-share.ts": (16, ("publicDisclaimer", "publicShortDisclaimer")),
+    "api/i18n/explore_strings.py": (16, ("publicDisclaimer", "publicShortDisclaimer")),
+    "api/services/share_renderer.py": (2, ("publicDisclaimer", "publicShortDisclaimer")),
+    "utils/i18n.ts": (16, ("landingContent.panelSub", "landingContent.cardDescResearch")),
+}
+
+
+def test_every_source_was_actually_parsed(sources):
     """Guard the guard: a parser that silently returns {} would pass everything above."""
-    expected_locales = {"utils/i18n-share.ts": 16,
-                        "api/i18n/explore_strings.py": 16,
-                        "api/services/share_renderer.py": 2}
+    assert set(sources) == set(_PARSE_EXPECTATIONS), (
+        "a source was added to the fixture without an expectation here — "
+        f"fixture={sorted(sources)} expectations={sorted(_PARSE_EXPECTATIONS)}"
+    )
     for fname, store in sources.items():
-        assert len(store) == expected_locales[fname], (
-            f"{fname} parsed {len(store)} locales, expected {expected_locales[fname]}")
+        n_locales, canaries = _PARSE_EXPECTATIONS[fname]
+        assert len(store) == n_locales, (
+            f"{fname} parsed {len(store)} locales, expected {n_locales}")
         for locale in ("en", "zh-TW"):
-            for key in ("publicDisclaimer", "publicShortDisclaimer"):
+            for key in canaries:
                 text = store.get(locale, {}).get(key)
                 assert text, f"{fname} [{locale}][{key}] parsed as empty — parser is broken"
                 assert len(text) > 20, f"{fname} [{locale}][{key}] suspiciously short: {text!r}"
+
+
+def test_i18n_parser_covers_both_string_containers():
+    """utils/i18n.ts holds its zh-TW copy in TWO places. A parser that found only
+    one would report "clean" over half the file — the fly-222 sampling failure
+    wearing a parser costume, which is precisely what this file exists to stop."""
+    zh = _parse_i18n()["zh-TW"]
+    landing = [k for k in zh if k.startswith("landingContent.")]
+    app = [k for k in zh if k.startswith("translations.")]
+    assert len(landing) >= 10, f"landingContent block under-parsed: {len(landing)} keys"
+    assert len(app) >= 30, f"translations block under-parsed: {len(app)} keys"
+    # The two containers must not silently merge into one namespace.
+    assert not (set(landing) & set(app))
