@@ -253,11 +253,54 @@ function ResearchForm() {
     const heroQueryConsumedRef = useRef(false);
     const [selectedSuggestion, setSelectedSuggestion] = useState<string | null>(null);
 
+    // Follow the stream while it is running.
     useEffect(() => {
         if (answerRef.current && answer) {
             answerRef.current.scrollTop = answerRef.current.scrollHeight;
         }
     }, [answer]);
+
+    // B4.5 A — …then LAND ON THE SUMMARY when generation actually finishes.
+    //
+    // The defect: the effect above pins the pane to the bottom on every token,
+    // so when the last chunk arrives the user is parked at the END of a long
+    // answer and has to scroll UP to find the Summary — the payoff of the whole
+    // query. Founder-reported on /research.
+    //
+    // The trigger is the `loading` true→false EDGE, not a timeout and not a gap
+    // in tokens. `loading` goes false in exactly two places, both real end-of-
+    // stream signals: the SSE `done` event and `onclose()`. A premature scroll
+    // that later tokens undo would be worse than the current behaviour, so the
+    // edge — not `loading === false` — is what fires this.
+    //
+    // ORDERING: `loading` is also what swaps the raw stream for the composed
+    // render (ProvenanceLine + parseResearchSections → <ResearchSection> cards,
+    // all gated on `!loading` below). Because both are driven by the same state
+    // change, this effect runs AFTER React has committed that new DOM, so the
+    // scroll lands on the composed Summary rather than being invalidated by it.
+    // Scrolling to 0 is also height-independent, so the re-render changing the
+    // pane's scrollHeight cannot affect where we end up.
+    //
+    // NOT FIGHTING THE USER: there is no user scroll position to preserve here.
+    // The follow effect above overwrites scrollTop on EVERY chunk, so a manual
+    // scroll during generation is already destroyed within one token — the
+    // "user scrolled away deliberately" state cannot survive to completion in
+    // the first place. Given that, snapping to the top is strictly better than
+    // being left at the bottom. (Making the follow yield to a manual scroll is
+    // a separate, larger change and is not in this baton.)
+    const wasLoadingRef = useRef(false);
+    useEffect(() => {
+        const wasLoading = wasLoadingRef.current;
+        wasLoadingRef.current = loading;
+        if (!wasLoading || loading) return;      // only the true→false edge
+        const el = answerRef.current;
+        if (!el || !answer) return;              // nothing to land on
+        // Reduced motion gets an instant jump; everyone else gets the smooth
+        // travel, which also makes it legible that the pane MOVED.
+        const reduce = typeof window !== 'undefined'
+            && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        el.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
+    }, [loading, answer]);
 
     // PRD § 4.5 UX polish 2/3 — Navbar Share button is driven by
     // ShareContext. Populate when the answer is fully ready (not loading,

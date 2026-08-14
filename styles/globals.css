@@ -161,7 +161,23 @@ body {
        gradient bottom @0.60 ......... 5.47:1   (was 5.90 at @0.55 on ink)
        CTA pill label ................ 12.13:1
      Every one clears AA normal (4.5:1). */
-  --color-panel: 62 48 40;
+  /* B4.5 B — NEAR-BLACK, founder-ratified 2026-08-14. This REVERSES B4.3's
+     warm brown-charcoal on purpose: the founder has seen #3E3028 rendered and
+     chose #121212 knowingly. It is an aesthetic decision, NOT a regression, so
+     the B4.3 reasoning above is kept as the record of what was traded away:
+     the paper→panel lightness cliff goes back to ~91 points (98.0% → 7.1%,
+     wider than the 89 of the original ink panel), and at S=0% the panel now
+     sits OUTSIDE the paper/hero hue family (H24°) rather than inside it.
+     Measured against #121212 (WCAG 2.x, computed not estimated):
+       paper @1.0 headline + body ..... 17.95:1  (was 12.13 on #3E3028)
+       paper @0.70 sub ................ 9.08:1   (was 6.83)
+       CTA pill label (panel on paper)  17.95:1  (was 12.13)
+       media hairline @0.15 ........... 1.52:1   (decorative, not text)
+     Every text value clears AA normal (4.5:1) with far more margin than
+     #3E3028 had. The headline gradient that used to need a measured bottom
+     stop here is GONE at B4.5 C — the headline is now solid paper, so the
+     weakest text on the panel is the sub at 9.07:1. */
+  --color-panel: 18 18 18;
   --color-success: 22 163 74;
   --color-warning: 202 138 4;
   --color-danger: 220 38 38;
@@ -190,62 +206,20 @@ body {
    components (token-guard compliance). Consumed via tailwind `shadow-card`. */
 :root { --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.06); } /* B4.1b: deepened for white cards */
 
-/* B4.1d — panel headline gradient (white → light gray on the ink panel).
-   Lives HERE rather than inline in the component for the same reason
-   `.hero-spotlight` does: this file is the sanctioned home for raw CSS, and a
-   class is the only way to attach the forced-colors fallback below. TOKENS
-   ONLY — no literals — so `.light`/`.dark` both reach it.
-
-   Applied PER WORD SPAN (not to the heading) so every word, and therefore
-   every wrapped line, carries the SAME top-white → bottom-gray ramp instead of
-   one ramp stretched across the whole block.
-
-   Bottom stop RAISED 0.55 -> 0.60 at B4.3, because the panel itself lightened
-   (--color-panel #3E3028) and a lighter backdrop compresses the ramp's
-   contrast. Measured over the NEW panel: 0.55 would give 4.86:1 (passing, but
-   only 1.08x over the AA floor) and 0.60 gives 5.47:1, restoring nearly the
-   5.90:1 the ramp had on the old ink panel. Clears AA normal (4.5:1) and AA
-   large (3:1), so the ramp's WORST point is still comfortably legible. Because
-   the span is an inline-block its box is the full line box, so glyphs occupy
-   roughly the middle 80% of the ramp and never actually reach the 0.55 end. */
-.panel-gradient-text {
-  background: linear-gradient(
-    to bottom,
-    rgb(var(--color-paper)) 0%,
-    rgb(var(--color-paper) / 0.60) 100%
-  );
-  /* One ramp PER LINE, not one ramp per span. For English each span is a single
-     word one line tall, so this is a no-op. It is load-bearing for the
-     space-less scripts (zh, ja, th): there the whole headline is ONE span that
-     wraps to two lines, and without the per-line tile the second line renders
-     visibly grayer than the first — measured 768x96px = 2 lines in zh-TW.
-     `lh` degrades safely: where it is unsupported the declaration is dropped
-     and the span simply falls back to a single ramp. */
-  background-size: 100% 1lh;
-  background-repeat: repeat-y;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
-}
-
-/* Selection: the glyphs have no ink of their own — every visible pixel comes
-   from the element background, which the ::selection highlight paints OVER. So
-   dragging across the headline would blank the selected words. Give the
-   selected run real ink. Token-only, same as everything else here. */
-.panel-gradient-text::selection {
-  color: rgb(var(--color-panel));
-  -webkit-text-fill-color: rgb(var(--color-panel));
-  background-color: rgb(var(--color-paper));
-}
-
-/* Windows High Contrast / forced-colors: `background-clip: text` with a
-   transparent fill renders the headline COMPLETELY INVISIBLE. Restore a solid
-   system color — the gradient is decoration, the words are the content. */
-@media (forced-colors: active) {
-  .panel-gradient-text {
-    background: none;
-    color: CanvasText;
-    -webkit-text-fill-color: CanvasText;
-  }
-}
+/* B4.5 C — `.panel-gradient-text` REMOVED (founder-ratified 2026-08-14).
+   The panel headline is now SOLID paper, bold — see components/LandingSections.tsx.
+   Deleted WITH the class, because all three existed only to make the gradient
+   safe and none of them guards anything once the text has real ink:
+     - the per-line `background-size: 100% 1lh` tile (B4.1d: zh/ja/th have no
+       spaces, so the whole headline is ONE span and a single ramp stretched
+       across both wrapped lines)
+     - the `::selection` rule (clipped glyphs have no ink of their own, so the
+       selection highlight painted OVER the only visible pixels and blanked the
+       selected words)
+     - the `forced-colors` fallback (`background-clip: text` + transparent fill
+       renders the headline COMPLETELY INVISIBLE in Windows High Contrast)
+   The two pytest guards that pinned them are deleted in the same commit
+   (tests/test_landing_sections_tokens.py): an assertion over a rule that no
+   longer exists is dead weight, not extra safety.
+   The scroll-linked WORD REVEAL is orthogonal and STAYS — it writes opacity
+   and transform on the same spans and never depended on this class. */

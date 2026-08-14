@@ -30,6 +30,17 @@ const collectChunks = (dir) => {
 collectChunks(chunkDir);
 const bundle = chunkFiles.map((f) => readFileSync(f, "utf8")).join("\n");
 
+// B4.5 — two more surfaces to read. The panel token lives in the built CSS
+// (asserting it in index.html would assert nothing), and "the source masters
+// are not shipped" is a claim about the export's FILE LIST, which no amount of
+// markup inspection can see.
+const cssDir = new URL("../../out/_next/static/css/", import.meta.url);
+const css = readdirSync(cssDir)
+  .filter((n) => n.endsWith(".css"))
+  .map((n) => readFileSync(new URL(n, cssDir), "utf8"))
+  .join("\n");
+const shippedMedia = readdirSync(new URL("../../out/media/", import.meta.url));
+
 // Tags out, entities decoded, whitespace collapsed — what a reader actually sees.
 const text = html
   .replace(/<script[\s\S]*?<\/script>/gi, " ")
@@ -75,7 +86,6 @@ const mediaSlot = (() => {
 const HEADLINE_WORDS = HEADLINE.split(" ").length; // 8
 const SUB_WORDS = SUB.split(" ").length; // 17
 const revealSpans = countHtml("data-reveal-word");
-const gradientSpans = countHtml("panel-gradient-text");
 
 const checks = [
   // ── Copy: present exactly once, as readable text ──────────────────────────
@@ -93,7 +103,47 @@ const checks = [
     revealSpans === HEADLINE_WORDS + SUB_WORDS,
     revealSpans,
   ],
-  ["gradient class on the headline words only", gradientSpans === HEADLINE_WORDS, gradientSpans],
+  // ── B4.5 C — the gradient is GONE, the headline is solid paper + bold ─────
+  // Checked in BOTH the document and the CSS: the class could survive in one
+  // without the other, and either survivor is a resurrection.
+  [
+    "gradient class absent from the export (markup + CSS + bundle)",
+    countHtml("panel-gradient-text") === 0 &&
+      !css.includes("panel-gradient-text") &&
+      !bundle.includes("panel-gradient-text"),
+    `html ${countHtml("panel-gradient-text")}`,
+  ],
+  // The headline spans must carry NOTHING but the layout class. This is the
+  // check that would catch a gradient (or any other clipping treatment) being
+  // reattached under a different class name.
+  //
+  // It deliberately does NOT grep the CSS for `background-clip: text` /
+  // `-webkit-text-fill-color: transparent`. That was tried and was UNSOUND in
+  // both directions: Tailwind emits a `.bg-clip-text` utility because the PRO
+  // badge (Navbar, PlanBadge) and the hero at pages/index.tsx use it, so the
+  // built CSS legitimately contains the string; and the source file matched too
+  // — on this probe's own tombstone COMMENT describing the removal. Same
+  // prose-satisfies-the-check hazard the deleted pytest guards were written
+  // around, in both directions at once.
+  [
+    "headline word spans carry only the layout class (no clipping treatment)",
+    (html.match(/<span data-reveal-word="true" class="([^"]*)"/g) || []).every((s) =>
+      /class="inline-block\s*"/.test(s)
+    ),
+    (html.match(/<span data-reveal-word="true" class="([^"]*)"/g) || [])
+      .map((s) => s.match(/class="([^"]*)"/)[1])
+      .filter((c) => c.trim() !== "inline-block")
+      .join(" | ") || "(all clean)",
+  ],
+  ["headline is solid + BOLD (font-serif font-bold)", /font-serif font-bold/.test(html), "—"],
+  // The reveal is orthogonal to the gradient and must have survived its removal
+  // — the spans were what CARRIED the gradient, so deleting too much here is
+  // the live risk. Word count is asserted above; this pins the headline half.
+  [
+    "headline words are STILL reveal spans after the gradient removal",
+    countHtml("data-reveal-word") === HEADLINE_WORDS + SUB_WORDS,
+    countHtml("data-reveal-word"),
+  ],
   [
     "words ship VISIBLE — no inline opacity/transform in the export",
     !/data-reveal-word[^>]*style="[^"]*(?:opacity|transform)/.test(html),
@@ -231,7 +281,66 @@ const checks = [
   ],
   ["CTA reuses the tryResearch string (no new key)", count("Try Research") === 2, count("Try Research")],
   ["CTA is the inverted tone (bg-paper text-panel)", html.includes("bg-paper text-panel"), "—"],
-  ["media hairline raised to paper/20", html.includes("border-paper/20"), "—"],
+  // B4.5 B — back to /15. The /20 raise was compensation for B4.3 lightening
+  // the panel; near-black is darker than the ink /15 originally sat on, so the
+  // compensation outlived its cause. Both directions asserted: leaving /20 in
+  // place is exactly the regression this is here to catch.
+  [
+    "media hairline back to paper/15 (not the B4.3 /20)",
+    html.includes("border-paper/15") && !html.includes("border-paper/20"),
+    "—",
+  ],
+
+  // ── B4.5 B — near-black panel token, asserted in the BUILT CSS ───────────
+  // The dark-theme :root also defines --color-panel, so this pins the .light
+  // value specifically; a bare "18 18 18 appears somewhere" check would pass
+  // with the landing value left at the B4.3 brown.
+  [
+    "panel token is near-black in the light theme",
+    /\.light\{[^}]*--color-panel:\s*18 18 18/.test(css),
+    (css.match(/--color-panel:\s*[0-9 ]+/g) || []).join(" | "),
+  ],
+  [
+    "the B4.3 warm-brown panel value is gone",
+    !/--color-panel:\s*62 48 40/.test(css),
+    "—",
+  ],
+
+  // ── B4.5 D1 — source masters are NOT in the export ───────────────────────
+  // public/ is copied wholesale, so an unreferenced master ships silently.
+  // This reads the export's file list; no markup check can see it.
+  [
+    "source masters absent from out/media",
+    !shippedMedia.includes("Research_Demo_Video.mp4") &&
+      !shippedMedia.includes("demo-research-20260814.png"),
+    shippedMedia.join(", "),
+  ],
+  [
+    "the two SHIPPED media files are present and are the only ones",
+    shippedMedia.length === 2 &&
+      shippedMedia.includes("research-demo.mp4") &&
+      shippedMedia.includes("research-demo-poster.jpg"),
+    shippedMedia.join(", "),
+  ],
+
+  // ── B4.5 D2 — controls in the non-playing states ─────────────────────────
+  // Runtime-applied, so it cannot be read off the static HTML; the discriminator
+  // is that BOTH branches ship — the set (below md / reduced motion) and the
+  // clear (desktop, observer-driven). Losing the clear would put player chrome
+  // on the desktop panel; losing the set makes the phone poster unplayable again.
+  [
+    "controls are SET in the non-playing branch",
+    (bundle.match(/setAttribute\(["']controls["']/g) || []).length === 1,
+    (bundle.match(/setAttribute\(["']controls["']/g) || []).length,
+  ],
+  [
+    "controls are CLEARED in the desktop autoplay branch",
+    (bundle.match(/removeAttribute\(["']controls["']/g) || []).length === 1,
+    (bundle.match(/removeAttribute\(["']controls["']/g) || []).length,
+  ],
+  // preload must survive D2: controls do not fetch media, and that is the whole
+  // reason a phone can be given a play button without paying 1.92 MB up front.
+  ['preload="none" still holds after adding controls', /<video[^>]*preload="none"/i.test(html), "—"],
 
   // ── Geometry ──────────────────────────────────────────────────────────────
   ["panel + cards containers at max-w-5xl (2)", countHtml("max-w-5xl") === 2, countHtml("max-w-5xl")],

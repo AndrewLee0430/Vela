@@ -8,8 +8,14 @@
 //   - width      max-width 64rem → min(80rem, 94vw), linear in progress p
 //   - reveal     per-word opacity 0→1 + translateY 14px→0, staggered across
 //                H1 words then sub words, mapped from a slice of the same p
-//   - height     md:min-h-[80vh] (B4.1d), content vertically centered
-//   - gradient   .panel-gradient-text per H1 word span (globals.css)
+//   - height     md:h-[92vh] + md:max-h-[92vh] (B4.3 R2). A DEFINITE height,
+//                NOT a min-height: `flex-1` on the media needs one, and a
+//                min-height is exactly how B4.2 ended up 111.3vh tall.
+//                (This line read `md:min-h-[80vh] (B4.1d)` until B4.5 — stale
+//                since B4.3 R2 removed that token.)
+//   - headline   solid paper, BOLD (B4.5 C). The `.panel-gradient-text` ramp
+//                and its ::selection / forced-colors fallbacks were deleted;
+//                see the tombstone at the end of styles/globals.css.
 //   - media      B4.3 R4: the Research demo VIDEO, poster-first. It plays only
 //                when ALL of md+, motion-allowed and in-viewport hold; see
 //                usePanelVideo. Everywhere else the poster is the media.
@@ -295,8 +301,8 @@ function usePanelScroll(
 //   md+, no reduced-motion  → an IntersectionObserver drives play/pause
 //   prefers-reduced-motion  → never autoplays; gains `controls` so the demo
 //                             stays reachable by the user's own input
-//   below md                → never autoplays; the POSTER is the media, which
-//                             is the same still treatment B4.2/B4.3 shipped
+//   below md                → never autoplays; poster + controls (B4.5 D2), so
+//                             a phone can actually start the demo on a tap
 //
 // Playback is driven ENTIRELY by the observer, and the element deliberately
 // carries no `autoplay` attribute. The attribute starts the video as soon as
@@ -331,10 +337,13 @@ function usePanelVideo(videoRef: React.RefObject<HTMLVideoElement | null>) {
 
       if (!wide.matches || reduced.matches) {
         v.pause();
-        // Controls for reduced-motion only. Below md they would put browser
-        // chrome across the panel's media on the smallest surface we have.
-        if (reduced.matches) v.setAttribute('controls', '');
-        else v.removeAttribute('controls');
+        // B4.5 D2 — controls in BOTH non-playing states, not just reduced
+        // motion. Below md the video never autoplays by design, so without
+        // controls a phone could only ever see the poster — and phones are the
+        // primary traffic. The browser chrome is worth strictly more than a
+        // demo nobody can start. `preload="none"` still holds: controls do not
+        // fetch the media, so the 1.92 MB is still only paid on a real tap.
+        v.setAttribute('controls', '');
         return;
       }
 
@@ -410,8 +419,14 @@ export default function LandingSections({ lc, t }: Props) {
           ref={panelRef}
           className="w-full max-w-5xl mx-auto rounded-3xl bg-panel text-paper px-6 py-10 md:py-14 md:h-[92vh] md:max-h-[92vh] flex flex-col items-center justify-center text-center gap-5"
         >
-          <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl leading-tight max-w-3xl">
-            <Words text={lc.panelHeadline} spanClassName="panel-gradient-text" />
+          {/* B4.5 C — SOLID paper, BOLD. The gradient is gone (globals.css
+              tombstone explains what went with it). No color class here on
+              purpose: the panel wrapper sets `text-paper`, so the headline
+              inherits the full-strength token — 17.95:1 on the near-black
+              panel. The word spans stay; the reveal writes opacity/transform
+              on them and never depended on the gradient class. */}
+          <h2 className="font-serif font-bold text-3xl sm:text-4xl md:text-5xl leading-tight max-w-3xl">
+            <Words text={lc.panelHeadline} />
           </h2>
           <p className="text-base md:text-lg max-w-2xl" style={{ color: 'rgb(var(--color-paper) / 0.7)' }}>
             <Words text={lc.panelSub} />
@@ -427,8 +442,15 @@ export default function LandingSections({ lc, t }: Props) {
               the media itself is HEIGHT-driven (md:h-full, w-auto) so the
               width expand never changes the panel's height. Below md it falls
               back to the stacked, width-driven treatment.
-              The border is raised paper/15 -> paper/20: the panel lightened at
-              B4.3, so the same alpha reads weaker against it.
+              The border goes BACK to paper/15 at B4.5. The /15 -> /20 raise was
+              compensation for B4.3 lightening the panel, and that cause is gone:
+              the B4.5 near-black panel is DARKER than the ink the /15 hairline
+              originally sat on (measured 1.52:1 on near-black vs 1.55:1 on the
+              old ink, i.e. the original look restored; /20 would read 1.82:1).
+              It is a decorative separator, not text, so no AA floor applies.
+              The literal lives in styles/globals.css, the sanctioned home for
+              raw color — naming it here would trip this file's token guard,
+              which reads comments too (verified: it caught exactly that).
 
               B4.3 R4 — the still is now the demo VIDEO. ZERO CLS is carried
               across from B4.2 rather than assumed: width/height are the
@@ -454,7 +476,7 @@ export default function LandingSections({ lc, t }: Props) {
               preload="none"
               aria-label={lc.panelDemoAlt}
               style={{ aspectRatio: '1440 / 812' }}
-              className="rounded-xl border border-paper/20 object-contain w-full h-auto md:w-auto md:h-full md:max-w-full"
+              className="rounded-xl border border-paper/15 object-contain w-full h-auto md:w-auto md:h-full md:max-w-full"
             />
           </div>
         </div>
