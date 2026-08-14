@@ -44,6 +44,10 @@ const HEADLINE = "Ask in your language. Decisions grounded in evidence.";
 const SUB =
   "Access authoritative medical evidence in the language you know best, backed by sources you can verify.";
 const RETIRED_SUB_TAIL = "with citations you can open and check";
+// B4.2 — the Research demo still. The filename is asserted literally: a probe
+// that only checked "an <img> exists" would pass against a placeholder.
+const DEMO_SRC = "/media/demo-research-20260814.png";
+const DEMO_ALT = "Screenshot of a Research answer with citations.";
 
 const countIn = (haystack, needle) => haystack.split(needle).length - 1;
 const count = (needle) => countIn(text, needle);
@@ -88,6 +92,30 @@ const checks = [
     countHtml("</span> <span data-reveal-word") === HEADLINE_WORDS + SUB_WORDS - 2,
     countHtml("</span> <span data-reveal-word"),
   ],
+
+  // ── B4.2 demo image ───────────────────────────────────────────────────────
+  ["demo image present exactly once", countHtml(DEMO_SRC) === 1, countHtml(DEMO_SRC)],
+  // Raw HTML, not the extracted text: alt lives in an ATTRIBUTE, and the
+  // tag-stripping above deletes attributes along with the tag.
+  ["demo alt text present", countHtml(`alt="${DEMO_ALT}"`) === 1, countHtml(`alt="${DEMO_ALT}"`)],
+  // The no-CLS guarantee: explicit intrinsic dimensions AND an aspect-ratio
+  // container. Losing either reintroduces layout shift on load; losing the
+  // aspect-ratio also means the planned <video> swap becomes a layout change.
+  ['img carries width="1975"', /<img[^>]*width="1975"/.test(html), "—"],
+  ['img carries height="1114"', /<img[^>]*height="1114"/.test(html), "—"],
+  ["container carries the intrinsic aspect-ratio", html.includes("aspect-[1975/1114]"), "—"],
+  ['img is lazy + async', /<img[^>]*loading="lazy"/.test(html) && /<img[^>]*decoding="async"/.test(html), "—"],
+  [
+    "demo image ships VISIBLE (no inline opacity/transform)",
+    !/data-reveal-media[^>]*style="[^"]*(?:opacity|transform)/.test(html),
+    "—",
+  ],
+  [
+    "demo image is NOT word-revealed",
+    !/data-reveal-media[\s\S]{0,400}?data-reveal-word/.test(html),
+    "—",
+  ],
+  ["hairline border is token-based (no literal)", html.includes("border-paper/15"), "—"],
 
   // ── Retired machinery stays retired (checked in the BUNDLE, not the doc) ──
   ["no panelLine markup/ids", !/panelLine|panel-line/i.test(html), "—"],

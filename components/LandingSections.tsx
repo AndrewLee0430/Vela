@@ -26,6 +26,7 @@
 //     what the static export ships.
 
 import { Fragment, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { ChevronDown, ArrowRight } from 'lucide-react';
 import type { LandingContent, Translations } from '../utils/i18n';
@@ -161,6 +162,17 @@ const WORD_DURATION = 0.35; // share of the reveal window one word occupies; the
                             // overlap is what makes it read as a wave, not a queue
 const RISE_PX = 14;
 
+// B4.2 — the demo image gets its OWN later slice so it lands after the sub has
+// finished (text ends at 0.86). It is not word-revealed; it is one fade+rise.
+// Window derived from layout like the text one: with the image in place the
+// panel content puts the image top on screen around p ≈ 0.51, and p clamps at 1
+// when the section top reaches the viewport top, so [0.78, 1.0] is the widest
+// slice that both starts after the image is approaching view and completes
+// while the user can still see it happen.
+const MEDIA_START = 0.78;
+const MEDIA_END = 1.0;
+const MEDIA_RISE_PX = 24;
+
 // `copyKey` exists ONLY to re-run the effect when the panel copy changes. The
 // locale swap is post-hydration (LangContext seeds 'en' for SSR parity, then
 // swaps in a passive effect), and Words() keys by index with no style prop, so
@@ -199,26 +211,45 @@ function usePanelScroll(
       // dep below that solves it, not the fresh query.
       const words = panel.querySelectorAll<HTMLElement>('[data-reveal-word]');
       const n = words.length;
-      if (n === 0) return;
-      const q = clamp01((p - REVEAL_START) / (REVEAL_END - REVEAL_START));
-      const step = n > 1 ? (1 - WORD_DURATION) / (n - 1) : 0;
-      for (let i = 0; i < n; i++) {
-        const local = clamp01((q - i * step) / WORD_DURATION);
-        const eased = 1 - Math.pow(1 - local, 3); // ease-out cubic
-        const s = words[i].style;
-        // Epsilon, not `=== 1`: the cubic approaches 1 asymptotically, so an
-        // exact test leaves a `translateY(0.00px)` on any word that is visually
-        // finished but numerically 0.9999 — an inline transform, and therefore
-        // a stacking context, exactly the residue the B4.1a defect was made of.
+      // NOT an early return: the media reveal below must still run even if the
+      // copy ever renders zero word spans.
+      if (n > 0) {
+        const q = clamp01((p - REVEAL_START) / (REVEAL_END - REVEAL_START));
+        const step = n > 1 ? (1 - WORD_DURATION) / (n - 1) : 0;
+        for (let i = 0; i < n; i++) {
+          const local = clamp01((q - i * step) / WORD_DURATION);
+          const eased = 1 - Math.pow(1 - local, 3); // ease-out cubic
+          const s = words[i].style;
+          // Epsilon, not `=== 1`: the cubic approaches 1 asymptotically, so an
+          // exact test leaves a `translateY(0.00px)` on any word that is visually
+          // finished but numerically 0.9999 — an inline transform, and therefore
+          // a stacking context, exactly the residue the B4.1a defect was made of.
+          if (eased > 0.999) {
+            // Settled = NO inline styles, identical to the reduced-motion and
+            // static-export state. Also avoids leaving a transform behind, which
+            // is what created the stacking context in the B4.1a defect.
+            s.removeProperty('opacity');
+            s.removeProperty('transform');
+          } else {
+            s.opacity = eased.toFixed(3);
+            s.transform = `translateY(${((1 - eased) * RISE_PX).toFixed(2)}px)`;
+          }
+        }
+      }
+
+      // (3) demo image — ONE fade+rise on a later slice, so it lands after the
+      // sub. Queried fresh for the same locale-swap reason as the words.
+      const media = panel.querySelector<HTMLElement>('[data-reveal-media]');
+      if (media) {
+        const mp = clamp01((p - MEDIA_START) / (MEDIA_END - MEDIA_START));
+        const eased = 1 - Math.pow(1 - mp, 3);
+        const s = media.style;
         if (eased > 0.999) {
-          // Settled = NO inline styles, identical to the reduced-motion and
-          // static-export state. Also avoids leaving a transform behind, which
-          // is what created the stacking context in the B4.1a defect.
           s.removeProperty('opacity');
           s.removeProperty('transform');
         } else {
           s.opacity = eased.toFixed(3);
-          s.transform = `translateY(${((1 - eased) * RISE_PX).toFixed(2)}px)`;
+          s.transform = `translateY(${((1 - eased) * MEDIA_RISE_PX).toFixed(2)}px)`;
         }
       }
     };
@@ -235,9 +266,9 @@ function usePanelScroll(
       window.removeEventListener('resize', onScroll);
       cancelAnimationFrame(raf);
       panel.style.removeProperty('max-width');
-      panel.querySelectorAll<HTMLElement>('[data-reveal-word]').forEach((w) => {
-        w.style.removeProperty('opacity');
-        w.style.removeProperty('transform');
+      panel.querySelectorAll<HTMLElement>('[data-reveal-word],[data-reveal-media]').forEach((w) => {
+        (w as HTMLElement).style.removeProperty('opacity');
+        (w as HTMLElement).style.removeProperty('transform');
       });
     };
   }, [sectionRef, panelRef, copyKey]);
@@ -275,6 +306,33 @@ export default function LandingSections({ lc, t }: Props) {
           <p className="text-base md:text-lg max-w-2xl" style={{ color: 'rgb(var(--color-paper) / 0.7)' }}>
             <Words text={lc.panelSub} />
           </p>
+
+          {/* B4.2 — Research demo still. Layout A: stacked under the sub.
+              SIZED BY ASPECT-RATIO, not by the image's pixel height, so the
+              planned swap to <video> is a tag change and not a layout change.
+              `aspect-[1975/1114]` is the asset's exact intrinsic ratio (1.7729,
+              near-16:9 but not exactly, so the literal ratio avoids squashing).
+              Explicit width/height on the <img> too — between them there is
+              zero layout shift on load.
+              Hairline border at paper/15: the screenshot has its own near-white
+              chrome, and without a border it bleeds into the ink panel. No
+              shadow — the panel is already the page's only dark block.
+              Top gap = this margin PLUS the parent's gap-5 (20px): 32px mobile,
+              52px desktop. Mobile is full width minus the panel's own px-6. */}
+          <div
+            data-reveal-media
+            className="mt-3 md:mt-8 w-full md:w-[85%] aspect-[1975/1114] rounded-xl overflow-hidden border border-paper/15"
+          >
+            <Image
+              src="/media/demo-research-20260814.png"
+              alt={lc.panelDemoAlt}
+              width={1975}
+              height={1114}
+              loading="lazy"
+              decoding="async"
+              className="w-full h-full object-cover"
+            />
+          </div>
         </div>
       </section>
 
