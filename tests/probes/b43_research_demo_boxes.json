@@ -1,0 +1,41 @@
+{
+  "file": "public/media/research-demo.mp4",
+  "bytes": 2013596,
+  "topLevelOrder": [
+    "ftyp",
+    "moov",
+    "free",
+    "mdat"
+  ],
+  "boxes": [
+    {
+      "type": "ftyp",
+      "offset": 0,
+      "size": 32
+    },
+    {
+      "type": "moov",
+      "offset": 32,
+      "size": 5487
+    },
+    {
+      "type": "free",
+      "offset": 5519,
+      "size": 8
+    },
+    {
+      "type": "mdat",
+      "offset": 5527,
+      "size": 2008069
+    }
+  ],
+  "moovOffset": 32,
+  "mdatOffset": 5527,
+  "faststart": true,
+  "handlers": [
+    "vide",
+    "mdir"
+  ],
+  "videoTracks": 1,
+  "audioTracks": 0
+}

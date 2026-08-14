@@ -10,6 +10,9 @@
 //                H1 words then sub words, mapped from a slice of the same p
 //   - height     md:min-h-[80vh] (B4.1d), content vertically centered
 //   - gradient   .panel-gradient-text per H1 word span (globals.css)
+//   - media      B4.3 R4: the Research demo VIDEO, poster-first. It plays only
+//                when ALL of md+, motion-allowed and in-viewport hold; see
+//                usePanelVideo. Everywhere else the poster is the media.
 // All of it is a PURE FUNCTION of scroll position, so reversing the scroll
 // reverses the animation exactly — there is no timeline and no hysteresis.
 //
@@ -26,7 +29,6 @@
 //     what the static export ships.
 
 import { Fragment, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { ChevronDown, ArrowRight } from 'lucide-react';
 import type { LandingContent, Translations } from '../utils/i18n';
@@ -288,6 +290,88 @@ function usePanelScroll(
   }, [sectionRef, panelRef, copyKey]);
 }
 
+// ─── Panel demo video: viewport-gated playback ───────────────────────────────
+// B4.3 R4. Three states, and the video plays in exactly one of them:
+//   md+, no reduced-motion  → an IntersectionObserver drives play/pause
+//   prefers-reduced-motion  → never autoplays; gains `controls` so the demo
+//                             stays reachable by the user's own input
+//   below md                → never autoplays; the POSTER is the media, which
+//                             is the same still treatment B4.2/B4.3 shipped
+//
+// Playback is driven ENTIRELY by the observer, and the element deliberately
+// carries no `autoplay` attribute. The attribute starts the video as soon as
+// the element is parseable, which would leave "never plays off-screen" resting
+// on a browser heuristic — Chrome defers off-screen muted autoplay, Firefox
+// does not. Observer-driven, the guarantee is ours and holds everywhere.
+// The cost is that with JS disabled the poster never advances; that is the
+// state <md already ships deliberately, so it degrades into a design we accept
+// rather than into a broken one.
+//
+// `preload="none"` means the 1.92 MB never leaves the server until the panel
+// is actually scrolled to — on mobile, where we never play, it is never
+// fetched at all and the 95 KB poster is the whole cost.
+function usePanelVideo(videoRef: React.RefObject<HTMLVideoElement | null>) {
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+
+    const wide = window.matchMedia('(min-width: 768px)');
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let io: IntersectionObserver | null = null;
+
+    const apply = () => {
+      if (io) {
+        io.disconnect();
+        io = null;
+      }
+      // React applies `muted` as a DOM PROPERTY on the client, not as an
+      // attribute, and the property is what the autoplay policy reads. Assert
+      // it before any play() so a policy rejection is impossible by construction.
+      v.muted = true;
+
+      if (!wide.matches || reduced.matches) {
+        v.pause();
+        // Controls for reduced-motion only. Below md they would put browser
+        // chrome across the panel's media on the smallest surface we have.
+        if (reduced.matches) v.setAttribute('controls', '');
+        else v.removeAttribute('controls');
+        return;
+      }
+
+      v.removeAttribute('controls');
+      io = new IntersectionObserver(
+        (entries) => {
+          for (const e of entries) {
+            if (e.isIntersecting) {
+              // play() rejects when the tab is hidden or the policy blocks it.
+              // Unhandled that is a console error on the landing page, and
+              // there is nothing to recover — the poster stays up. Swallow it.
+              void v.play().catch(() => {});
+            } else {
+              v.pause();
+            }
+          }
+        },
+        { threshold: 0.25 },
+      );
+      io.observe(v);
+    };
+
+    apply();
+    // Re-evaluate when the user crosses the md breakpoint or flips the OS
+    // motion preference mid-session; otherwise a resize past 768px would leave
+    // a permanently-paused video, and enabling reduced-motion would not stop one.
+    wide.addEventListener('change', apply);
+    reduced.addEventListener('change', apply);
+    return () => {
+      if (io) io.disconnect();
+      wide.removeEventListener('change', apply);
+      reduced.removeEventListener('change', apply);
+      v.pause();
+    };
+  }, [videoRef]);
+}
+
 interface Props {
   lc: LandingContent;
   t: Translations;
@@ -297,7 +381,9 @@ export default function LandingSections({ lc, t }: Props) {
   const panelSectionRef = useRef<HTMLElement | null>(null);
   const panelRef = useRef<HTMLDivElement | null>(null);
   const cardsRef = useRef<HTMLElement | null>(null);
+  const demoVideoRef = useRef<HTMLVideoElement | null>(null);
   useFadeIn(cardsRef);
+  usePanelVideo(demoVideoRef);
   usePanelScroll(panelSectionRef, panelRef, `${lc.panelHeadline} ${lc.panelSub}`);
 
   return (
@@ -342,18 +428,32 @@ export default function LandingSections({ lc, t }: Props) {
               width expand never changes the panel's height. Below md it falls
               back to the stacked, width-driven treatment.
               The border is raised paper/15 -> paper/20: the panel lightened at
-              B4.3, so the same alpha reads weaker against it. */}
+              B4.3, so the same alpha reads weaker against it.
+
+              B4.3 R4 — the still is now the demo VIDEO. ZERO CLS is carried
+              across from B4.2 rather than assumed: width/height are the
+              encode's REAL output dimensions (1440x812, from ffprobe — the
+              1975x1114 PNG ratio would have squashed it by 0.08%), and the
+              explicit aspectRatio restates it in CSS so the reservation does
+              not depend on UA behaviour for <video>. Playback gating lives in
+              usePanelVideo; the reveal below is untouched and still off <md
+              and under reduced-motion. */}
           <div
             data-reveal-media
             className="w-full md:flex-1 md:min-h-0 flex items-center justify-center"
           >
-            <Image
-              src="/media/demo-research-20260814.png"
-              alt={lc.panelDemoAlt}
-              width={1975}
-              height={1114}
-              loading="lazy"
-              decoding="async"
+            <video
+              ref={demoVideoRef}
+              src="/media/research-demo.mp4"
+              poster="/media/research-demo-poster.jpg"
+              width={1440}
+              height={812}
+              muted
+              loop
+              playsInline
+              preload="none"
+              aria-label={lc.panelDemoAlt}
+              style={{ aspectRatio: '1440 / 812' }}
               className="rounded-xl border border-paper/20 object-contain w-full h-auto md:w-auto md:h-full md:max-w-full"
             />
           </div>
