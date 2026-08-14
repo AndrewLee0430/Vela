@@ -66,12 +66,26 @@ export function ScrollHint({ label }: { label: string }) {
   );
 }
 
-// ─── Ink pill (cards) ─────────────────────────────────────────────────────────
-function Pill({ href, label }: { href: string; label: string }) {
+// ─── Pill ─────────────────────────────────────────────────────────────────────
+// Two tones, same shape. `ink` (default) is the cards' pill on the paper page;
+// `paper` is B4.3's panel CTA — the SAME pill inverted, which is what keeps it
+// distinct from the cards without inventing a second component. Measured
+// 12.13:1 either way, since both are the paper/panel pair swapped.
+function Pill({
+  href,
+  label,
+  tone = 'ink',
+}: {
+  href: string;
+  label: string;
+  tone?: 'ink' | 'paper';
+}) {
   return (
     <Link
       href={href}
-      className="group inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium bg-text text-paper transition-opacity duration-200 hover:opacity-90"
+      className={`group inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium transition-opacity duration-200 hover:opacity-90 ${
+        tone === 'paper' ? 'bg-paper text-panel' : 'bg-text text-paper'
+      }`}
     >
       <span>{label}</span>
       <ArrowRight
@@ -296,9 +310,19 @@ export default function LandingSections({ lc, t }: Props) {
         ref={panelSectionRef}
         className="px-4 md:px-10 pt-12 md:pt-16 pb-16 md:pb-20"
       >
+        {/* B4.3 — SINGLE VIEWPORT. md:h-[92vh] (not min-h) is what lets the
+            media claim the leftover space: `flex-1` needs a DEFINITE parent
+            height, and a min-height leaves the panel content-sized, which is
+            how B4.2 ended up 111.3vh tall. md:max-h-[92vh] states the cap
+            explicitly even though h- already equals it.
+            This also fixes the B4.2 side effect where the panel GREW 111px
+            during the width expand: height is now viewport-derived, and the
+            media is height-driven with width:auto, so expanding changes width
+            ONLY. Below md the panel stays content-sized and the media is
+            width-driven, per the stacked mobile treatment. */}
         <div
           ref={panelRef}
-          className="w-full max-w-5xl mx-auto rounded-3xl bg-text text-paper px-6 py-20 md:py-28 md:min-h-[80vh] flex flex-col items-center justify-center text-center gap-5"
+          className="w-full max-w-5xl mx-auto rounded-3xl bg-panel text-paper px-6 py-10 md:py-14 md:h-[92vh] md:max-h-[92vh] flex flex-col items-center justify-center text-center gap-5"
         >
           <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl leading-tight max-w-3xl">
             <Words text={lc.panelHeadline} spanClassName="panel-gradient-text" />
@@ -307,21 +331,21 @@ export default function LandingSections({ lc, t }: Props) {
             <Words text={lc.panelSub} />
           </p>
 
-          {/* B4.2 — Research demo still. Layout A: stacked under the sub.
-              SIZED BY ASPECT-RATIO, not by the image's pixel height, so the
-              planned swap to <video> is a tag change and not a layout change.
-              `aspect-[1975/1114]` is the asset's exact intrinsic ratio (1.7729,
-              near-16:9 but not exactly, so the literal ratio avoids squashing).
-              Explicit width/height on the <img> too — between them there is
-              zero layout shift on load.
-              Hairline border at paper/15: the screenshot has its own near-white
-              chrome, and without a border it bleeds into the ink panel. No
-              shadow — the panel is already the page's only dark block.
-              Top gap = this margin PLUS the parent's gap-5 (20px): 32px mobile,
-              52px desktop. Mobile is full width minus the panel's own px-6. */}
+          {/* B4.3 R3 — Research CTA, between the sub and the media. Reuses the
+              existing tryResearch key (zero new strings); the paper tone is the
+              cards' pill inverted, 12.13:1 on the new panel. */}
+          <Pill href="/research" label={lc.tryResearch} tone="paper" />
+
+          {/* B4.3 R2/R4 — the media takes whatever height is left.
+              md:flex-1 + md:min-h-0 claims the remainder of the 92vh panel;
+              the media itself is HEIGHT-driven (md:h-full, w-auto) so the
+              width expand never changes the panel's height. Below md it falls
+              back to the stacked, width-driven treatment.
+              The border is raised paper/15 -> paper/20: the panel lightened at
+              B4.3, so the same alpha reads weaker against it. */}
           <div
             data-reveal-media
-            className="mt-3 md:mt-8 w-full md:w-[85%] aspect-[1975/1114] rounded-xl overflow-hidden border border-paper/15"
+            className="w-full md:flex-1 md:min-h-0 flex items-center justify-center"
           >
             <Image
               src="/media/demo-research-20260814.png"
@@ -330,7 +354,7 @@ export default function LandingSections({ lc, t }: Props) {
               height={1114}
               loading="lazy"
               decoding="async"
-              className="w-full h-full object-cover"
+              className="rounded-xl border border-paper/20 object-contain w-full h-auto md:w-auto md:h-full md:max-w-full"
             />
           </div>
         </div>

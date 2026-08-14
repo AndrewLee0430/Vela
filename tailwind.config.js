@@ -20,6 +20,10 @@ module.exports = {
           'paper':    'rgb(var(--color-paper) / <alpha-value>)',
           'paper-2':  'rgb(var(--color-paper-2) / <alpha-value>)',
           'hairline': 'rgb(var(--color-hairline) / <alpha-value>)',
+          // B4.3 — the landing panel block. Its own token, NOT `text`: the
+          // panel used to borrow the body-text colour, which is why it was
+          // near-black and clashed with the paper page.
+          'panel':    'rgb(var(--color-panel) / <alpha-value>)',
           // B4.1b: card borders split from hairline (hairline also borders
           // the footer; the deepening must not leak there).
           'card-border': 'rgb(var(--color-card-border) / <alpha-value>)',

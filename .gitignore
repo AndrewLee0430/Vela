@@ -136,7 +136,14 @@ data/*
 
 #?冽銝??隞?
 uploads/
-media/
+# B4.3: was a bare `media/`, which git matches at ANY depth — it was silently
+# swallowing public/media/ (B4.2 had to `git add -f` the demo asset). That is a
+# DEPLOY hazard, not tidiness: .dockerignore has no media rule, so a deploy from
+# a developer machine bundles the untracked files and looks fine, while a deploy
+# from a fresh clone or CI ships broken media. Root-anchored so it still covers
+# an upload dir at the repo root and nothing else. public/media was the only
+# media/ directory in the repo when this was narrowed.
+/media/
 
 # ?遢?辣
 *.bak

@@ -97,6 +97,10 @@ body {
   --color-paper-2: 10 22 40;
   --color-hairline: 47 57 72;
   --color-card-border: 47 57 72;
+  /* B4.3: the landing is light-only (D-B4-1), so this value never paints on
+     the landing. It exists so `bg-panel` compiles in both themes and so any
+     future non-landing use has a sane dark mapping — the deepest dark bg. */
+  --color-panel: 10 22 40;
   --color-success: 34 197 94;
   --color-warning: 234 179 8;
   --color-danger: 239 68 68;
@@ -145,6 +149,19 @@ body {
   --color-paper-2: 255 255 255;
   --color-hairline: 229 226 218;
   --color-card-border: 221 216 206;
+  /* B4.3 — the panel block. Was `bg-text` (23 23 23, L=9%), which put an
+     89-POINT lightness cliff between the paper page and the panel; that gap,
+     not the page colour, is what read as 格格不入. This is a deep warm
+     brown-charcoal in the SAME hue family as the paper and the hero
+     (#3E3028 = H21.8° S22% L20%, against paper H24°), which brings the cliff
+     to 78 points and keeps the coral brand accent at home on it.
+     Measured against this value (WCAG 2.x, computed not estimated):
+       paper @1.0 body text .......... 12.13:1  (was 17.18 on ink)
+       paper @0.70 sub ............... 6.83:1   (was 8.83)
+       gradient bottom @0.60 ......... 5.47:1   (was 5.90 at @0.55 on ink)
+       CTA pill label ................ 12.13:1
+     Every one clears AA normal (4.5:1). */
+  --color-panel: 62 48 40;
   --color-success: 22 163 74;
   --color-warning: 202 138 4;
   --color-danger: 220 38 38;
@@ -183,8 +200,11 @@ body {
    every wrapped line, carries the SAME top-white → bottom-gray ramp instead of
    one ramp stretched across the whole block.
 
-   Bottom stop 0.55: composited over the ink panel (--color-text 23 23 23) that
-   is rgb(151 147 145) = 5.90:1 contrast — clears AA normal text (4.5:1) and AA
+   Bottom stop RAISED 0.55 -> 0.60 at B4.3, because the panel itself lightened
+   (--color-panel #3E3028) and a lighter backdrop compresses the ramp's
+   contrast. Measured over the NEW panel: 0.55 would give 4.86:1 (passing, but
+   only 1.08x over the AA floor) and 0.60 gives 5.47:1, restoring nearly the
+   5.90:1 the ramp had on the old ink panel. Clears AA normal (4.5:1) and AA
    large (3:1), so the ramp's WORST point is still comfortably legible. Because
    the span is an inline-block its box is the full line box, so glyphs occupy
    roughly the middle 80% of the ramp and never actually reach the 0.55 end. */
@@ -192,7 +212,7 @@ body {
   background: linear-gradient(
     to bottom,
     rgb(var(--color-paper)) 0%,
-    rgb(var(--color-paper) / 0.55) 100%
+    rgb(var(--color-paper) / 0.60) 100%
   );
   /* One ramp PER LINE, not one ramp per span. For English each span is a single
      word one line tall, so this is a no-op. It is load-bearing for the
@@ -214,8 +234,8 @@ body {
    dragging across the headline would blank the selected words. Give the
    selected run real ink. Token-only, same as everything else here. */
 .panel-gradient-text::selection {
-  color: rgb(var(--color-text));
-  -webkit-text-fill-color: rgb(var(--color-text));
+  color: rgb(var(--color-panel));
+  -webkit-text-fill-color: rgb(var(--color-panel));
   background-color: rgb(var(--color-paper));
 }
 

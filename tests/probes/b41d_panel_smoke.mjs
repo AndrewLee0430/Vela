@@ -103,7 +103,11 @@ const checks = [
   // aspect-ratio also means the planned <video> swap becomes a layout change.
   ['img carries width="1975"', /<img[^>]*width="1975"/.test(html), "—"],
   ['img carries height="1114"', /<img[^>]*height="1114"/.test(html), "—"],
-  ["container carries the intrinsic aspect-ratio", html.includes("aspect-[1975/1114]"), "—"],
+  // B4.3 changed the CLS mechanism: the media is height-driven inside a flex
+  // parent, so the container no longer carries an aspect-ratio class. The
+  // guarantee now rests entirely on the img's intrinsic width/height
+  // attributes (asserted above), from which the browser derives the ratio.
+  ["container is height-driven, not aspect-ratio boxed", !html.includes("aspect-[1975/1114]"), "—"],
   ['img is lazy + async', /<img[^>]*loading="lazy"/.test(html) && /<img[^>]*decoding="async"/.test(html), "—"],
   [
     "demo image ships VISIBLE (no inline opacity/transform)",
@@ -115,7 +119,9 @@ const checks = [
     !/data-reveal-media[\s\S]{0,400}?data-reveal-word/.test(html),
     "—",
   ],
-  ["hairline border is token-based (no literal)", html.includes("border-paper/15"), "—"],
+  // Alpha-agnostic on purpose — B4.3 raised it /15 -> /20 because the panel
+  // lightened. What must not regress is that it stays a TOKEN, not a literal.
+  ["hairline border is token-based (no literal)", /border-paper\/\d+/.test(html), "—"],
 
   // ── Retired machinery stays retired (checked in the BUNDLE, not the doc) ──
   ["no panelLine markup/ids", !/panelLine|panel-line/i.test(html), "—"],
@@ -129,15 +135,29 @@ const checks = [
   ["no pin-spacer", !/pin-spacer/i.test(html) && !/pin-spacer/i.test(bundle), "—"],
 
   // ── Pills ─────────────────────────────────────────────────────────────────
-  ["pill: Try Research", count("Try Research") === 1, count("Try Research")],
+  // Two now: the card pill AND the B4.3 panel CTA (same key, by design).
+  ["pill: Try Research (card + panel CTA)", count("Try Research") === 2, count("Try Research")],
   ["pill: Try Verify", count("Try Verify") === 1, count("Try Verify")],
   ["pill: Try Explain", count("Try Explain") === 1, count("Try Explain")],
+
+  // ── B4.3 recolor / single-viewport / CTA ─────────────────────────────────
+  ["panel uses the new bg-panel token", html.includes("bg-panel"), "—"],
+  ["panel no longer borrows bg-text", !/rounded-3xl bg-text/.test(html), "—"],
+  ["min-h-[80vh] removed", !html.includes("md:min-h-[80vh]"), "—"],
+  ["panel capped at md:max-h-[92vh]", html.includes("md:max-h-[92vh]"), "—"],
+  ["panel has a definite md:h-[92vh] (flex-1 needs it)", html.includes("md:h-[92vh]"), "—"],
+  ["media claims the remainder (md:flex-1 + md:min-h-0)",
+   html.includes("md:flex-1") && html.includes("md:min-h-0"), "—"],
+  ["CTA pill present exactly once, href=/research",
+   countHtml('href="/research"') === 2, countHtml('href="/research"')],
+  ["CTA reuses the tryResearch string (no new key)", count("Try Research") === 2, count("Try Research")],
+  ["CTA is the inverted tone (bg-paper text-panel)", html.includes("bg-paper text-panel"), "—"],
+  ["media hairline raised to paper/20", html.includes("border-paper/20"), "—"],
 
   // ── Geometry ──────────────────────────────────────────────────────────────
   ["panel + cards containers at max-w-5xl (2)", countHtml("max-w-5xl") === 2, countHtml("max-w-5xl")],
   ["no max-w-7xl on landing", countHtml("max-w-7xl") === 0, countHtml("max-w-7xl")],
   ["hero at min-h-[90vh]", html.includes("min-h-[90vh]"), "—"],
-  ["panel at md:min-h-[80vh] (B4.1d)", html.includes("md:min-h-[80vh]"), "—"],
   ["panel section pt-12 md:pt-16", /pt-12\s+md:pt-16/.test(html), "—"],
   ["panel section pb-16 md:pb-20", /pb-16\s+md:pb-20/.test(html), "—"],
 
