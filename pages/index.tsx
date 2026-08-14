@@ -283,7 +283,25 @@ function LandingPage() {
             block flow needs no flex. */}
         <div className="bg-paper">
           {/* First viewport: nav + hero (relative: anchors the scroll hint) */}
-          <div className="relative min-h-screen flex flex-col">
+          {/* fly 232 hotfix — `overflow-x-clip` contains the hero spotlight.
+              The blob below is 190% of the composer FORM (max-w-2xl = 672px),
+              i.e. ~1277px wide, centered on the viewport. So it overflows the
+              right edge on EVERY viewport narrower than ~1277px — not just
+              phones — producing real horizontal page scroll (measured at 375px:
+              scrollWidth 491 vs clientWidth 360). Founder confirmed on device:
+              the page scrolled sideways, hero text clipped left, blank right.
+
+              CLIP, never `hidden`: `hidden` would make this a scroll container
+              and force the other axis to `auto`, and ScrollTrigger's pin for
+              the panel section is LIVE in this build. `clip` establishes no
+              scroll container and leaves the vertical axis visible.
+
+              Chosen over resizing the blob because clipping changes NO
+              geometry, so desktop is pixel-identical by construction. The
+              `min(190%, 100vw)` alternative is scrollbar-unsafe (100vw counts
+              the scrollbar, leaving ~8px of overflow) and would visibly narrow
+              the blob for every viewport between ~700px and ~1277px. */}
+          <div className="relative min-h-screen flex flex-col overflow-x-clip">
           {/* Top bar */}
           <nav className="flex-shrink-0 flex justify-between items-center gap-2 px-4 md:px-10 py-4">
             <Link href="/" className="flex items-center gap-2">
