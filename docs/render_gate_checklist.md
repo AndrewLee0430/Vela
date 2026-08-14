@@ -271,6 +271,102 @@ its small shadow.
 
 ---
 
+## Gate 6 — B4.1b→B4.6: the stabilization gate for LOCAL ITERATION MODE
+
+> ## ⏳ GATE 6 — BLANK, NOT YET RUN. Written 2026-08-14.
+> This is **the single formal gate D-B4.1-1 reserved**. Local iteration mode ends when this
+> passes and the build deploys. It runs against a **LOCAL build first** — the design has never
+> been on prod — then a **short prod re-check** after the deploy (subset named at the bottom).
+
+**Change under test:** the **11 unpushed commits `4d0c8fe`…`8b173e1`** (B4.1b → B4.6), i.e.
+everything the founder has been reviewing on localhost. ⚠️ The deploy will also carry
+`61d49f1` (a docs-only STATE header bump already on `origin/main`), so **12 commits separate
+prod from HEAD** — 11 of them product. Prod is **fly 232 = `2c1e5db`**; confirm `/health`
+`revision` matches `8b173e1` before running the prod subset.
+
+**ALL ROWS ARE LIGHT.** D-B4-1 makes the logged-out landing light-only, so there are no dark
+rows in this gate by design — that is not an omission.
+
+**What changed vs fly 232:** panel slideshow removed and GSAP retired (rAF width expand
+instead); panel copy replaced by one headline + one sub with a scroll-linked per-word reveal;
+panel recoloured to near-black `#121212` and the headline gradient **deleted** in favour of
+solid bold paper; panel pinned to a single viewport (`md:h-[92vh]`); a Research CTA pill added;
+the demo **video** (poster-first, viewport-gated) added below the CTA; cards narrowed to 64rem;
+and — the only non-landing change — the `/research` answer pane now scrolls back to the Summary
+when a stream completes.
+
+| # | URL | context | check | what PASS looks like | observed | VERDICT | NOTES |
+|---|---|---|---|---|---|---|---|
+| 1 | `http://127.0.0.1:4321/` | desktop · light | **hero** | warm spotlight sits **behind the composer only**, soft edges, no banding; the rest of the first viewport is clean paper; **no horizontal scrollbar at any desktop width** — the fly-232 fix is on prod already and this build must not regress it | | | |
+| 2 | `http://127.0.0.1:4321/` | desktop | **panel appearance** | panel is **near-black** (not the warm brown of B4.3, not pure black); headline is **solid paper-white, BOLD serif, with NO gradient or colour ramp**; the sub is **visibly lighter/not bold**; the **Try Research** pill reads clearly as an inverted paper pill | | | |
+| 3 | `http://127.0.0.1:4321/` | desktop, normal motion | **word reveal, BOTH directions** | scrolling down: headline words then sub words fade+rise in a staggered wave, finishing before the panel leaves; **scrolling back up plays it in reverse and the words return to the same partial states** — no words stuck opaque, no flicker, nothing left half-faded at rest | | | |
+| 4 | `http://127.0.0.1:4321/` | desktop | **panel geometry** | the whole panel — headline, sub, CTA, video — **fits in one viewport without internal scrolling**; as you scroll, the panel **widens** but its **height does not change** (watch the top and bottom edges: they should stay put while the sides move out) | | | |
+| 5 | `http://127.0.0.1:4321/` | desktop | **video behaviour** | the demo **starts playing when the panel comes into view** and **pauses when you scroll away** (scroll back: it resumes, it does not restart from a black frame); it **never plays while off-screen** | | | |
+| 6 | `http://127.0.0.1:4321/` | desktop | **video image quality** | text inside the demo is **sharp, not squashed or stretched** — circles round, the UI's own type not condensed; the frame fills its box with no letterbox bars; **before it plays, the poster shows the finished answer with the Summary card at the TOP of the pane** (not mid-answer) | | | |
+| 7 | `http://127.0.0.1:4321/` | desktop | **cards** | three **white sheets on the warm paper**, each with a **visible but quiet hairline border**; the three **Try Research / Try Verify / Try Explain** pills all present and legible | | | |
+| 8 | `http://127.0.0.1:4321/` | **mobile ≤ 390px** | **mobile full scroll** | hero → panel → cards → footer scrolls cleanly with **no sideways scroll at any point**; the panel is **static** (no width animation, no reveal); the video shows the **poster with visible, tappable controls** and playing it works on tap | | | |
+| 9 | `http://127.0.0.1:4321/` | **ar** (RTL) · desktop | **RTL** | panel headline and sub stay **centred**; the card **pill arrows point LEFT** and their hover-shift moves LEFT; nothing overlaps, no clipped text, no horizontal scroll | | | |
+| 10 | `http://127.0.0.1:4321/` | **zh-TW** · desktop | **CJK typography + reveal unit** | the serif falls back to a system CJK face and **looks intentional** — no faux-bold mush, no mixed weights; the panel headline **reveals as ONE unit rather than word-by-word** (expected: no spaces to split on) and still reads as deliberate rather than broken | | | |
+| 11 | `http://127.0.0.1:4321/` | desktop · **OS reduced-motion ON** | **reduced motion** | **no word reveal** (all text fully visible immediately), **no width animation** (panel sits at its resting width), and the **video does NOT autoplay** — it shows the **poster with controls**. Nothing is hidden or mid-transition at rest | | | |
+| 12 | *(no URL — content row)* | en | **copy sign-off** | the founder's **final word on the words as rendered**: `panelHeadline`, `panelSub`, and the three card descriptions (`cardDescResearch` / `cardDescVerify` / `cardDescExplain`). This row records approval or names the edit | | | |
+
+### Known and expected — do NOT record these as failures
+
+- **The video's share of the panel height varies with window height.** It is the flex remainder
+  after the headline/sub/CTA block, which costs a fixed number of pixels — so a shorter window
+  gives the video proportionally less. Measured 52.6% at one window height and 49.1% at another;
+  both are correct. Only a video that has become a thin strip (below ~40%) is a finding.
+- **The poster carries a small mouse cursor** near the source chips. It is a screen recording and
+  the same cursor is in the video; the frame was kept for continuity with the video's last frame.
+- **Non-Latin locales fall back to a system serif.** 10 of 16 locales have no Source Serif
+  coverage. Rows 9–10 judge whether the fallback looks *intentional*, not whether it matches Latin.
+- **The machine-translated cells are NOT native-reviewed.** ⚠️ **90 cells, not 45** — see the
+  ledger note below; the count was corrected while writing this form. Odd phrasing in a non-en
+  locale is **reviewer-queue material, not a gate FAIL** — *unless* it makes or strengthens a
+  CLAIM the English does not make. That **is** a FAIL (the fly-225 class, where the Bengali
+  `/explore` copy asserted government endorsement the English never claimed).
+- **The demo video shows a query that took ~34s in real life.** The cut opens after the wait.
+  Founder-ruled 2026-08-14: a cut selects a segment, it does not distort time, and no timer is
+  on screen. Not a gate row.
+
+### How to run it — LOCAL
+
+The render gate must run against **the built static export**, because that is the artifact that
+deploys. `npm run dev` renders the same components but is *not* the shipped output; use it for
+quick re-checks only, never for the gate verdict.
+
+```bash
+npm run build                 # writes out/
+cd out && python -m http.server 4321 --bind 127.0.0.1
+# then open http://127.0.0.1:4321/
+```
+
+- **Locale rows (9, 10):** switch language with the in-page settings dropdown (top right).
+- **Mobile row (8):** DevTools device toolbar at ≤390px, **or** a real phone pointed at the
+  machine's LAN IP on port 4321. A real phone is worth it for row 8's tap test.
+- **Reduced motion (row 11):** Windows → Settings → Accessibility → Visual effects → Animation
+  effects OFF. Reload the page after changing it.
+- **Row 3 needs a slow, deliberate scroll in both directions** — a fast flick will not show the
+  stagger, and reverse is the half that has regressed before.
+
+### Prod re-check after deploy — SHORT SUBSET
+
+The full 12 rows run **once, locally, before the deploy**. After deploying, confirm `/health`
+`revision` = the deployed SHA, then repeat **only** these against `https://vela.an-tho.com/`:
+
+| repeat | why this row and not the others |
+|---|---|
+| **1 — hero** | the fly-232 horizontal-overflow defect was **prod-only-visible** and founder-caught on a real phone; the local build cannot fully retire that risk |
+| **2 — panel appearance** | the single highest-visibility change; a CDN/CSS-ordering fault would show here first |
+| **5 + 6 — video** | the only row whose asset is fetched over the network at runtime; `preload="none"` + range requests behave differently on a real host than on `http.server` |
+| **8 — mobile** | phones are the primary traffic and the one surface where local emulation has already proved insufficient |
+
+Rows 3, 4, 7, 9, 10, 11, 12 are **not repeated**: they are properties of the built bundle and the
+copy, which the deploy does not alter. If any of them failed locally the deploy should not have
+happened at all.
+
+---
+
 ## Adding a gate to this file
 
 1. Name the **change under test** by commit SHA.
