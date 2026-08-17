@@ -36,14 +36,6 @@ interface HistoryItem {
     created_at: string;
 }
 
-interface DrugInteraction {
-    drug_pair: [string, string];
-    severity: string;
-    description: string;
-    clinical_recommendation: string;
-    source: string;
-}
-
 function TypeTag({ type }: { type: string }) {
     return (
         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold tracking-wide bg-text/8 text-text/85 border border-text/15">
@@ -72,12 +64,6 @@ function HistoryList() {
         return 'free';
     });
     const [searchQuery, setSearchQuery] = useState('');
-
-    const [verifyDetails, setVerifyDetails] = useState<{[key: number]: {
-        interactions: DrugInteraction[];
-        risk_level: string;
-        loading: boolean;
-    }}>({});
 
     useEffect(() => { loadPlanAndHistory(); }, []);
 
@@ -109,57 +95,13 @@ function HistoryList() {
         }
     }
 
-    async function fetchVerifyDetails(item: HistoryItem) {
-        const match = item.question.match(/Drugs:\s*(.+)/);
-        if (!match) return;
-        const drugs = match[1].split(',').map(d => d.trim());
-
-        setVerifyDetails(prev => ({
-            ...prev,
-            [item.id]: { interactions: [], risk_level: 'Unknown', loading: true },
-        }));
-
-        try {
-            const token = await getToken({ skipCache: true });
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/verify`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                body: JSON.stringify({ drugs, patient_context: null }),
-            });
-            if (!res.ok) throw new Error('Failed');
-            const data = await res.json();
-            setVerifyDetails(prev => ({
-                ...prev,
-                [item.id]: { interactions: data.interactions || [], risk_level: data.risk_level || 'Unknown', loading: false },
-            }));
-        } catch {
-            setVerifyDetails(prev => ({
-                ...prev,
-                [item.id]: { interactions: [], risk_level: 'Unknown', loading: false },
-            }));
-        }
-    }
-
     function handleToggle(item: HistoryItem) {
         if (expandedId === item.id) {
             setExpandedId(null);
         } else {
             setExpandedId(item.id);
-            if (item.session_type === 'verify' && !verifyDetails[item.id]) {
-                fetchVerifyDetails(item);
-            }
         }
     }
-
-    const getSeverityAccent = (severity: string) => {
-        switch (severity) {
-            case 'Critical': return 'rgb(var(--color-danger))';
-            case 'Major':    return 'rgb(var(--color-danger))';
-            case 'Moderate': return 'rgb(var(--color-warning))';
-            case 'Minor':    return 'rgb(var(--color-info))';
-            default:         return 'rgb(var(--color-text) / 0.4)';
-        }
-    };
 
     if (loading) {
         return (
@@ -345,53 +287,6 @@ function HistoryList() {
                                         <div className="rounded-lg p-4" style={{ background: "rgb(var(--color-text) / 0.05)" }}>
                                             <p className="text-sm" style={{ color: "rgb(var(--color-text) / 0.75)" }}>{item.answer}</p>
                                         </div>
-
-                                        {verifyDetails[item.id]?.loading && (
-                                            <div className="text-center py-6">
-                                                <div className="animate-spin rounded-full h-6 w-6 border-2 border-t-blue-400 mx-auto" style={{ borderColor: "rgb(var(--color-text) / 0.15)", borderTopColor: "rgb(var(--color-brand))" }} />
-                                                <p className="mt-2 text-xs" style={{ color: "rgb(var(--color-text) / 0.4)" }}>Loading interaction details...</p>
-                                            </div>
-                                        )}
-
-                                        {!verifyDetails[item.id]?.loading && (verifyDetails[item.id]?.interactions?.length ?? 0) > 0 && (
-                                            <div className="space-y-3">
-                                                <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: "rgb(var(--color-text) / 0.4)" }}>
-                                                    Interactions ({verifyDetails[item.id].interactions.length})
-                                                </p>
-                                                {verifyDetails[item.id].interactions.map((interaction, idx) => (
-                                                    <div 
-                                                        key={idx} 
-                                                        className="rounded-lg p-4"
-                                                        style={{ 
-                                                            background: "rgb(var(--color-text) / 0.05)",
-                                                            borderLeft: `3px solid ${getSeverityAccent(interaction.severity)}`,
-                                                            border: `1px solid rgb(var(--color-text) / 0.08)`,
-                                                            borderLeftColor: getSeverityAccent(interaction.severity),
-                                                        }}
-                                                    >
-                                                        <div className="flex justify-between items-start mb-2">
-                                                            <p className="font-semibold text-sm" style={{ color: "rgb(var(--color-text))" }}>
-                                                                {interaction.drug_pair[0]} ↔ {interaction.drug_pair[1]}
-                                                            </p>
-                                                            <span 
-                                                                className="text-xs font-medium px-2 py-0.5 rounded-full ml-2 flex-shrink-0"
-                                                                style={{
-                                                                    color: getSeverityAccent(interaction.severity)
-                                                                }}
-                                                            >
-                                                                {interaction.severity}
-                                                            </span>
-                                                        </div>
-                                                        <p className="text-xs leading-relaxed" style={{ color: "rgb(var(--color-text) / 0.7)" }}>{interaction.description}</p>
-                                                        {interaction.clinical_recommendation && (
-                                                            <p className="text-xs mt-2" style={{ color: "rgb(var(--color-text) / 0.5)" }}>
-                                                                {interaction.clinical_recommendation}
-                                                            </p>
-                                                        )}
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        )}
                                     </div>
                                 )}
                             </div>
