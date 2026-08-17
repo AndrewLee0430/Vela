@@ -29,6 +29,40 @@
 // DELETE THIS PROBE DELIBERATELY, in the same commit, with the reasoning
 // written down. Removing it IS the decision point. That is its entire job.
 // (Same pattern as the Clerk non-destructive guard, tests/test_deletion_coverage.py.)
+//
+// ─────────────────────────────────────────────────────────────────────────────
+// ⚠️ SCOPE OF WHAT THIS PROBE PROVES  (added 2026-08-17)
+// ─────────────────────────────────────────────────────────────────────────────
+// This probe reads THE SOURCE TEXT OF pages/history.tsx AND NOTHING ELSE.
+// It does not read that file's imported components, and it does not walk the
+// transitive mount tree. Green here means:
+//
+//     "no write ORIGINATES in this page's own source"
+//
+// It does NOT mean "this page cannot write", and the difference is not
+// hypothetical. pages/history.tsx renders ShareButton, and clicking Share does
+// issue a write. Mounting this page transitively reaches four distinct write
+// endpoints:
+//
+//   /api/share/create        components/ShareModal.tsx:107
+//                            ^ NOT ShareButton.tsx — that file has no fetch at
+//                              all; it only renders the modal (:159). Anyone
+//                              re-deriving this scope note will look in the
+//                              wrong file first, as the first draft of it did.
+//   /api/checkout/dodo       components/UpgradeModal.tsx:32
+//                            ^ reachable from this page's OWN direct import,
+//                              and again via ProFeatureOverlay and Navbar.
+//   /api/subscription/cancel components/Navbar.tsx:138      (via PageShell)
+//   /api/bug-report          components/BugReportButton.tsx:84 (via PageShell)
+//
+// Three of the four arrive through PageShell / ProFeatureOverlay — chrome this
+// page never names. That is fine: a user clicking Share or Upgrade is not a
+// read-path write, and the read-path write is the whole subject of this probe.
+//
+// 🔴 DO NOT WIDEN THIS PROBE TO THE MOUNT TREE. It would then fail on ordinary
+// chrome, and a probe that fails on ordinary chrome gets deleted inside a
+// month — taking the assertion that actually matters with it. The scope is
+// narrow ON PURPOSE. Widen the SENTENCE you write about it instead.
 
 import { readFileSync } from "node:fs";
 
