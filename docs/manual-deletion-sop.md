@@ -27,8 +27,8 @@ the `user_id` columns of most tables **and** in `user_usage.clerk_user_id`.
 
 ## Step 0 — Identify the user (email → Clerk user_id)
 
-There is **no reverse email→id lookup in our code** (only the forward `user_id → email` at
-`server.py:1448`). Resolve via Clerk directly:
+There is **no reverse email→id lookup in our code** (only the forward `user_id → email`, inside
+`create_dodo_checkout()` in `api/server.py`). Resolve via Clerk directly:
 
 - **Clerk Dashboard** → Users → search the requester's email → copy the `user_...` id, **or**
 - **Clerk API** (`CLERK_SECRET_KEY` bearer):
@@ -52,8 +52,8 @@ SELECT plan_type, dodo_subscription_id, dodo_customer_id
 FROM user_usage WHERE clerk_user_id = :user_id;
 ```
 
-If `dodo_subscription_id` is present, run the same call the app uses (`cancel_subscription`,
-`server.py:1819`) with the **prod** key (`fly ssh console -a vela-ai-medical → echo $DODO_API_KEY`):
+If `dodo_subscription_id` is present, run the same call the app uses (`cancel_subscription()` in
+`api/server.py`) with the **prod** key (`fly ssh console -a vela-ai-medical → echo $DODO_API_KEY`):
 
 ```bash
 curl -X PATCH "https://live.dodopayments.com/subscriptions/<dodo_subscription_id>" \
@@ -64,7 +64,8 @@ curl -X PATCH "https://live.dodopayments.com/subscriptions/<dodo_subscription_id
 
 **VERIFY no active subscription remains** before proceeding: re-`GET` the subscription shows
 `cancelled`, **or** confirm the Dodo webhook fired (`subscription_cancelled` → `plan_type`
-flips to `free`, `server.py:1605-1606`). **Do not freeze until cancellation is confirmed.**
+flips to `free`, in `dodo_webhook()` in `api/server.py`). **Do not freeze until cancellation is
+confirmed.**
 
 ---
 
@@ -79,7 +80,7 @@ fly ssh console -a vela-ai-medical -C 'printenv SHARE_CREATED_BY_SALT'
 ```
 ```python
 # created_by = sha256(f"{SHARE_CREATED_BY_SALT}:{user_id}")[:16]
-# (verbatim from _hash_created_by(), server.py:2934-2938 — note the ':' separator)
+# (verbatim from _hash_created_by() in api/server.py — note the ':' separator)
 import hashlib
 salt = "<the PROD value from above>"
 user_id = "user_2abc..."

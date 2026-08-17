@@ -913,7 +913,7 @@ Phase 1B work items per advisor discussion 2026-05-04 (preserved in git commit 3
 - **Founder question:** should History and shared pages offer source links at all? Shared pages are **public and SEO-facing**, so outbound official-source links may be desirable there for reasons beyond user verification.
 - ❌ ~~**⚠️ Cross-ref the related [P2]:** those same shared/`/explore` pages currently serve **pre-c1 empty local stubs marked "Official"**. **Decide that entry first** — adding source links to pages whose citations are 1-character stubs would surface the stub, not fix it.~~
   - **✅ BLOCKER DISCHARGED 2026-08-10 (post-`a7e47c2`, gate-passed on fly 216).** A `local` citation now renders as a **tombstone**: no source label, no credibility pill, and `url` is `''` — so `{% if c.url %}` (`q_public.jinja2:68`) **never emits its link in the first place**. **A stub cannot be surfaced by a link it never gets.** The #7 dependency is removed.
-- **🔴 WHAT #12 ACTUALLY IS NOW — a NEW FEATURE, not wiring (determined 2026-08-10 from the repo, no DB query needed).** **Research citations are NOT PERSISTED with history.** `ChatHistory` (`api/models/sql_models.py:17-25`) has exactly six columns — `id · user_id · session_type · question · answer · created_at` — and **no citations column**; none of the five write sites (`api/server.py:928, 1324, 1366, 1462, 1570`) passes one, and the schema could not accept it. So History has **nothing to link to**: #12 requires a **schema change + a write path + a render path**, not a link-plumbing change. **Re-scope not performed — reported only.**
+- **🔴 WHAT #12 ACTUALLY IS NOW — a NEW FEATURE, not wiring (determined 2026-08-10 from the repo, no DB query needed).** **Research citations are NOT PERSISTED with history.** `ChatHistory` (`api/models/sql_models.py`) has exactly six columns — `id · user_id · session_type · question · answer · created_at` — and **no citations column**; none of the five write sites (`api/server.py:928, 1324, 1366, 1462, 1570`) passes one, and the schema could not accept it. So History has **nothing to link to**: #12 requires a **schema change + a write path + a render path**, not a link-plumbing change. **Re-scope not performed — reported only.**
 
 ### [OTHER] [P2] Research recall — `SSRI + NSAID` total miss (re-scoped surface 2 of 3)
 - **Evidence (2026-07-27):** `SSRI NSAID bleeding risk interaction` scored **0/8 on the ANY-drug metric** — the only canonical query where **no** whitelisted safety section was cited at all, and **none appeared in the pool at any composite rank**. Reproduces the 2026-07-22 threshold probe's single STABLE-MISS.
@@ -1748,7 +1748,7 @@ lives**, and where the **wrong-drug defect occurs**.
 
 | RCT component | Vela status | evidence |
 |---|---|---|
-| **Selective-attention cue** (disagreement) | ✅ **already exists as a detector** — `RETRIEVAL_REFUSAL_SHADOW` (Lever 1) detects one-sided pools and has logged **real prod traffic since fly 181 (2026-06-18)** | hook `api/server.py:957-959` (flag-gated `create_task`) → `_run_retrieval_refusal_background` `api/server.py:572` → `rr.assess()` `:585` |
+| **Selective-attention cue** (disagreement) | ✅ **already exists as a detector** — `RETRIEVAL_REFUSAL_SHADOW` (Lever 1) detects one-sided pools and has logged **real prod traffic since fly 181 (2026-06-18)** | hook `api/server.py:957-959` (flag-gated `create_task`) → `_run_retrieval_refusal_background` in `api/server.py` → `rr.assess()` |
 | **Honest gap flagging** | ✅ exists | the v190 no-retrieval honesty instruction `api/rag/generator.py:54-60`; and the aspirin gate answer's *Missing Information* section naming *"children with viral infections"* |
 | **Verifiable sources** | ✅ exists | citation deep-links, repaired fly 214/215 — `isUsableSourceUrl` gate in `components/CitationPanel.tsx` |
 | **ANCHORING CUE** (model benchmark accuracy shown before the recommendation) | ❌ **NOT PRESENT — the missing piece** | no equivalent anywhere in `components/` |
@@ -1770,7 +1770,7 @@ Any calibration-UI work **depends on that data being uncensored first**:
 - **`api/server.py:583`** — `if len(sources) < 2: return`, so the **most extreme one-sided pools never
   reach `assess()` at all**. *(⚠️ The baton cited `server.py:571-572`; the early return is at **:583**,
   inside `_run_retrieval_refusal_background` which begins at :572. Corrected here.)*
-- **`api/services/retrieval_refusal.py:69-79`** — `pool_sources_from_documents` counts **PubMed
+- **`pool_sources_from_documents` in `api/services/retrieval_refusal.py`** — counts **PubMed
   documents only** (`if getattr(d, "source_type", None) != SourceType.PUBMED: continue`), so a pool that
   is entirely DailyMed/TFDA/label-sourced registers as **zero sources** and is dropped by the same guard.
 - **Cross-ref the existing [P2] `RETRIEVAL_REFUSAL_SHADOW` is structurally blind entry** — same defect,

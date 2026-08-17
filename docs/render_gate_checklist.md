@@ -277,24 +277,37 @@ its small shadow.
 > **Founder verdict, verbatim:** *"GATE 6: RUN AND PASSED (founder, 2026-08-14, local build on
 > :4321) — 12/12 PASS."*
 >
-> ⚠️ **Caveat recorded as given, not smoothed over:** *"Row 8 (mobile) was verified via DevTools
-> 390px emulation because LAN access to the local server could not be established (Chrome fell
-> back to search; firewall/IP not diagnosed) — controls visible, static panel, no horizontal
-> scroll; the TOUCH-PLAY half is deferred to the prod re-check."* Rows the founder explicitly
-> confirmed: **word reveal forward · panel height constant while widening · video pauses on
-> scroll-away · mobile controls present.**
+> ✅ **ROW 8 IS NOW COMPLETE — PASSED BY REAL DEVICE (founder, 2026-08-17).** On a real iPhone the
+> demo **PLAYS** and **SEEK WORKS**. That closes the touch-play half that the original run had to
+> defer.
+>
+> ⚠️ **The original caveat is PRESERVED AS HISTORY, not deleted** — it is the record of how the
+> row was first run: *"Row 8 (mobile) was verified via DevTools 390px emulation because LAN access
+> to the local server could not be established (Chrome fell back to search; firewall/IP not
+> diagnosed) — controls visible, static panel, no horizontal scroll; the TOUCH-PLAY half is
+> deferred to the prod re-check."* Rows the founder explicitly confirmed at the original run:
+> **word reveal forward · panel height constant while widening · video pauses on scroll-away ·
+> mobile controls present.**
 >
 > **Deployed as fly 233** (2026-08-15), `/health` `revision` = `78b96ab6b052ba501451eec33c4153a73f282bcb`.
 >
-> 🔴 **THE DEFERRED TOUCH-PLAY CHECK HAS A KNOWN LIKELY FAILURE WAITING FOR IT.** The post-deploy
-> spot-checks found that **the shipped mp4 does not support HTTP byte-range requests** (`Range:
-> bytes=0-1023` → **200** with the full 2,325,186 bytes, no `Accept-Ranges`, no `Content-Range`),
-> and **iOS Safari requires ranges to play `<video>`**. Cause: `fastapi==0.111.0` pins Starlette
-> ≈0.37; Range support landed in Starlette 0.45. **If row 8's tap-to-play fails on a real iPhone,
-> that is this already-diagnosed defect — record it as such, not as a new finding.** Desktop
-> playback and the poster are unaffected.
+> ❌ ~~**THE DEFERRED TOUCH-PLAY CHECK HAS A KNOWN LIKELY FAILURE WAITING FOR IT.**~~ **THAT
+> PREDICTION IS REFUTED — recorded, not quietly deleted.** Both of the following are true, and
+> neither cancels the other:
+> - **The mechanism is real and still measured.** The shipped mp4 serves **no HTTP byte ranges**:
+>   `Range: bytes=0-1023` → **200** with the full 2,325,186 bytes, no `Accept-Ranges`, no
+>   `Content-Range`. Cause: `fastapi==0.111.0` pins Starlette ≈0.37, and **Range support landed in
+>   Starlette 0.39.0 — NOT 0.45** (0.38.6 has none; 0.39.0 has `accept-ranges`, `206` and
+>   `_parse_range_header`). The minimum bump is therefore **`fastapi 0.115.2`, not 0.115.7**.
+> - **No user-visible harm was observed.** The video plays and seeks on a real iPhone. A browser
+>   that simply fetches the whole file is entirely **consistent** with seek working.
 >
-> **The 4-row prod re-check (rows 1, 2, 5+6, 8) is the one step still outstanding.**
+> ⚠️ **Evidence boundary: ONE 2.3 MB file, ONE device, ONE network.** This does **not** clear the
+> gap for larger files or poor mobile networks — which is exactly where whole-file fetching is the
+> failure ranges exist to prevent. Filed as `[OTHER][P2]` TECH_DEBT (correctness gap, no observed
+> harm), **not** as a defect.
+>
+> **The prod re-check is now rows 1, 2 and 5+6 — row 8 is done.**
 
 **Change under test:** the **11 unpushed commits `4d0c8fe`…`8b173e1`** (B4.1b → B4.6), i.e.
 everything the founder has been reviewing on localhost. ⚠️ The deploy will also carry
