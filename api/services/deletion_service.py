@@ -63,6 +63,7 @@ an ops document outside the database (ratified decision (b)). The counts this
 returns are what the operator records there.
 """
 
+import re
 from typing import Dict
 from sqlalchemy import func
 from sqlalchemy.orm import Session
@@ -77,6 +78,11 @@ from api.models.sql_models import (
     UserUsage,
     SharedQuery,
 )
+
+# The shape `_hash_created_by()` produces: sha256(...).hexdigest()[:16] — 16
+# LOWERCASE hex characters (api/server.py:2934-2938). Shape only; see the
+# FLAG #2 note in _hard_delete_user's docstring for what this cannot catch.
+_CREATED_BY_HASH_RE = re.compile(r"^[0-9a-f]{16}$")
 
 # The eight tables SOP Step 3 touches. Exposed as data (not a hand-typed list in
 # a test) so `tests/test_deletion_table_coverage.py` can prove that every table
@@ -152,13 +158,44 @@ def _hard_delete_user(db: Session, user_id: str, *, created_by_hash: str) -> Dic
               ``Path("static/og").mkdir()``. A deletion helper must not drag
               that in.
 
+              **Its SHAPE is validated (16 lowercase hex chars, matching
+              ``_hash_created_by`` at ``api/server.py:2934-2938``), which catches
+              an empty string, ``None``, a truncated paste and an obvious typo.**
+
+              🔴 **The shape check does NOT and CANNOT catch the failure SOP
+              FLAG #2 actually describes: a WELL-FORMED hash computed with the
+              WRONG SALT.** That value passes every check here, matches ZERO
+              ``shared_query`` rows, and leaves the authorship links silently
+              intact — deletion reports success while the public pages remain
+              attributed. Nothing inside this helper can close that gap: the
+              salt lives in the caller's environment and the helper has no way
+              to know which one was used. **The only defence is the SOP's own
+              Step 2 instruction — confirm the pre-flight count is non-zero for
+              a user known to have shared something — and it is a HUMAN check.**
+              Do not read the shape assertion as FLAG #2 being handled.
+
     Returns:
         ``{"user_id", "created_by_hash", "before": {...}, "after": {...}}`` —
         the per-table counts SOP Step 7 requires the operator to record.
 
     Raises:
-        Whatever the database raises. By design (contract point 2).
+        ValueError: if ``user_id`` is empty or ``created_by_hash`` is not the
+            16-lowercase-hex shape ``_hash_created_by`` produces. Raised BEFORE
+            any statement runs, so a malformed call deletes nothing.
+        Otherwise: whatever the database raises. By design (contract point 2).
     """
+    # Fail before touching anything. A ValueError (not an `assert`) because
+    # asserts vanish under `python -O` and this is a data-destruction guard.
+    if not user_id:
+        raise ValueError("user_id is required")
+    if not isinstance(created_by_hash, str) or not _CREATED_BY_HASH_RE.match(created_by_hash):
+        raise ValueError(
+            "created_by_hash must be 16 lowercase hex characters, as produced by "
+            "_hash_created_by(). NOTE: this only checks SHAPE — a well-formed hash "
+            "computed with the WRONG SALT passes here and silently matches zero "
+            "shared_query rows (SOP FLAG #2)."
+        )
+
     before = _scope_counts(db, user_id, created_by_hash)
 
     # ---- HARD DELETE: personal data, removed outright (SOP L110-114) --------

@@ -26,6 +26,8 @@ DB-free by construction: importing the models builds SQLAlchemy metadata and a
 lazy Engine; no connection is opened. The contract test drives a mock session.
 """
 
+import re
+from pathlib import Path
 from unittest.mock import MagicMock
 
 import api.models.sql_models  # noqa: F401 — imported for its side effect on Base.metadata
@@ -35,6 +37,8 @@ from api.services.deletion_service import (
     OUT_OF_SCOPE_TABLES,
     _hard_delete_user,
 )
+
+SERVER_PY = Path(__file__).resolve().parents[1] / "api" / "server.py"
 
 
 def _model_tables() -> set:
@@ -118,6 +122,97 @@ def test_hard_delete_user_actually_issues_the_sop_mutations():
     # read as "the row was deleted" — the exact misreading the freeze prevents.
     assert "user_usage_total" in result["before"]
     assert "user_usage_active" in result["before"]
+
+
+def _clerk_handler_code() -> str:
+    """The `/api/webhooks/clerk` handler body with DOCSTRINGS STRIPPED.
+
+    Stripping matters: the handler's docstring says, in prose, that it does not
+    call `_hard_delete_user()` and does not touch `user_usage`. A naive substring
+    search over the raw source therefore finds those names and 'passes' for
+    exactly the wrong reason — the same prose-satisfies-the-check hazard this
+    repo has hit before.
+    """
+    src = SERVER_PY.read_text(encoding="utf-8", errors="replace")
+    lines = src.split("\n")
+    start = next(i for i, l in enumerate(lines) if '@app.post("/api/webhooks/clerk")' in l)
+    end = next(i for i in range(start + 1, len(lines)) if lines[i].startswith("@app."))
+    body = "\n".join(lines[start:end])
+    return re.sub(r'"""[\s\S]*?"""', "", body)
+
+
+def test_clerk_webhook_stays_non_destructive():
+    """WHAT BREAKS IF THIS FAILS: the Clerk webhook stops being a recording
+    surface and starts deleting user data on an inbound event.
+
+    🔴 THIS GUARD IS NOT HERE TO BLOCK THAT WIRING. Connecting `user.deleted` to
+    `_hard_delete_user()` is a planned, wanted step of Deletion-feature C. The
+    guard exists so that whoever does it must **DELETE THIS TEST DELIBERATELY**,
+    in the same commit, with the reasoning written down — rather than the
+    endpoint drifting from non-destructive to destructive as a side effect of
+    some other change, on a surface whose whole documented claim is that it only
+    writes `webhook_events`.
+
+    Removing this test IS the decision point. That is its entire job.
+    """
+    code = _clerk_handler_code()
+
+    assert "_hard_delete_user" not in code, (
+        "the Clerk webhook now calls the deletion helper in CODE. If that is "
+        "intended, delete this test in the same commit and say so — do not "
+        "weaken it."
+    )
+    for name in ("UserUsage", "user_usage"):
+        assert name not in code, (
+            f"the Clerk webhook now references {name} in CODE; it is documented "
+            f"as writing webhook_events ONLY (it must not touch the billing row, "
+            f"including the deleted_at freeze marker)"
+        )
+    assert "deleted_at" not in code, "the Clerk webhook now touches the freeze marker"
+
+    # Positive control: the slice really is the handler, so the assertions above
+    # are not passing because we accidentally isolated an empty string.
+    assert "webhook_events" in code or "WebhookEvent" in code, (
+        "handler slice does not contain its own WebhookEvent write — the "
+        "isolation is wrong and every assertion above is vacuous"
+    )
+    assert "CLERK_WEBHOOK_SECRET" in code
+
+
+def test_created_by_hash_shape_is_validated():
+    """Shape only — 16 lowercase hex, matching `_hash_created_by`.
+
+    🔴 Deliberately NOT a claim that SOP FLAG #2 is handled. A well-formed hash
+    computed with the WRONG SALT passes every assertion here, matches zero
+    `shared_query` rows, and leaves authorship silently intact. That gap cannot
+    be closed inside the helper — the salt lives in the caller's environment.
+    """
+    db = MagicMock()
+    good = "0123456789abcdef"
+
+    for bad in ("", "not-a-hash", "ABCDEF0123456789", "0123456789abcde",
+                "0123456789abcdef0", None, 12345):
+        try:
+            _hard_delete_user(db, "user_TEST", created_by_hash=bad)  # type: ignore[arg-type]
+            raise AssertionError(f"accepted malformed created_by_hash {bad!r}")
+        except ValueError:
+            pass
+
+    # A malformed call must delete NOTHING — the guard runs before any statement.
+    assert db.query.call_count == 0, "statements ran before the shape check"
+
+    # And the valid shape is accepted.
+    _hard_delete_user(db, "user_TEST", created_by_hash=good)
+    assert db.query.call_count > 0
+
+    # Empty user_id is refused too, and again before any statement.
+    db2 = MagicMock()
+    try:
+        _hard_delete_user(db2, "", created_by_hash=good)
+        raise AssertionError("accepted an empty user_id")
+    except ValueError:
+        pass
+    assert db2.query.call_count == 0
 
 
 def test_created_by_hash_is_required_and_keyword_only():

@@ -79,7 +79,7 @@ fly ssh console -a vela-ai-medical -C 'printenv SHARE_CREATED_BY_SALT'
 ```
 ```python
 # created_by = sha256(f"{SHARE_CREATED_BY_SALT}:{user_id}")[:16]
-# (verbatim from _hash_created_by(), server.py:2370-2374 — note the ':' separator)
+# (verbatim from _hash_created_by(), server.py:2934-2938 — note the ':' separator)
 import hashlib
 salt = "<the PROD value from above>"
 user_id = "user_2abc..."
@@ -218,6 +218,11 @@ requesters.)*
 
 ---
 
-*When deletion-feature C ships, this manual SOP is superseded by `_hard_delete_user(db, user_id)`
-(reused by the in-app button + the Clerk `user.deleted` webhook). Until then, this runbook is
-the binding process.*
+*When deletion-feature C ships, this manual SOP is superseded by
+`_hard_delete_user(db, user_id, *, created_by_hash)`
+(`api/services/deletion_service.py`, reused by the in-app button + the Clerk `user.deleted`
+webhook). `created_by_hash` is **required and keyword-only on purpose**: FLAG #2 above means a
+missing or wrong hash matches ZERO rows and silently leaves authorship links intact, so
+forgetting it must be a `TypeError` at the call site rather than a quiet no-op. The helper
+implements **Step 3 only** — it does NOT cancel the Dodo subscription (Step 1) and does NOT
+reconcile Clerk (Step 5). Until feature C ships, this runbook is the binding process.*
