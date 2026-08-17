@@ -2175,6 +2175,122 @@ async def dodo_webhook(request: Request, db: Session = Depends(get_db)):
     return {"status": "ok", "event": event_type}
 
 
+# ============================================================
+# Clerk webhook — SURFACE ONLY, NON-DESTRUCTIVE
+# ============================================================
+@app.post("/api/webhooks/clerk")
+async def clerk_webhook(request: Request, db: Session = Depends(get_db)):
+    """Verify and RECORD inbound Clerk events. Writes `webhook_events` ONLY.
+
+    🔴 THIS IS THE SURFACE, NOT THE AUTOMATION. It does **not** call
+    `_hard_delete_user()`, does **not** touch `user_usage`, and takes **no
+    action** on `user.deleted`. An account deleted in Clerk still requires the
+    manual runbook (`docs/manual-deletion-sop.md`) — Step 5 "Clerk
+    reconciliation" remains a human step. What exists after this is a verified,
+    idempotent landing pad that records that an event arrived; the orphan-row
+    gap is NOT closed.
+
+    SIGNATURE — Standard Webhooks (https://www.standardwebhooks.com/), the same
+    scheme `dodo_webhook` above verifies by hand. Clerk signs with svix, which
+    IS Standard Webhooks, so no `svix` package is pinned, installed or needed.
+    ⚠️ Clerk sends `svix-id` / `svix-timestamp` / `svix-signature`; the spec (and
+    our Dodo handler) uses `webhook-*`. BOTH spellings are read, svix-* first.
+    **UNVERIFIED against a real Clerk delivery** — spec-correct is not the same
+    as confirmed (CLAUDE.md Rule 18).
+
+    IDEMPOTENCY — insert-first, catch `IntegrityError`. The two handlers above
+    are read-then-write (SELECT, then INSERT), which is a TOCTOU race: a
+    concurrent duplicate delivery reaches the `event_id` PK, raises, is not
+    caught, and returns 500 instead of `already_processed`. That known defect is
+    deliberately NOT carried to a third surface — Rule 19 read in reverse.
+    """
+    body_bytes = await request.body()
+
+    clerk_secret = os.getenv("CLERK_WEBHOOK_SECRET", "")
+    if not clerk_secret:
+        logger.error("[Clerk Webhook] CLERK_WEBHOOK_SECRET not configured, rejecting")
+        return JSONResponse(status_code=500, content={"detail": "Webhook not configured"})
+
+    def _hdr(*names: str) -> str:
+        """First non-empty of the given header names (svix-* then webhook-*)."""
+        for n in names:
+            v = request.headers.get(n, "")
+            if v:
+                return v
+        return ""
+
+    webhook_id        = _hdr("svix-id", "webhook-id")
+    webhook_timestamp = _hdr("svix-timestamp", "webhook-timestamp")
+    webhook_signature = _hdr("svix-signature", "webhook-signature")
+
+    if not webhook_id or not webhook_timestamp or not webhook_signature:
+        return JSONResponse(status_code=401, content={"detail": "Missing signature headers"})
+
+    # Replay protection: reject timestamps older than 5 minutes (mirrors Dodo).
+    try:
+        ts = int(webhook_timestamp)
+        if abs(time.time() - ts) > 300:
+            return JSONResponse(status_code=401, content={"detail": "Timestamp too old"})
+    except ValueError:
+        return JSONResponse(status_code=401, content={"detail": "Invalid timestamp"})
+
+    import base64
+    raw_secret = clerk_secret[len("whsec_"):] if clerk_secret.startswith("whsec_") else clerk_secret
+    try:
+        secret_bytes = base64.b64decode(raw_secret)
+    except Exception:
+        # Malformed secret is a configuration fault, not a caller fault.
+        logger.error("[Clerk Webhook] CLERK_WEBHOOK_SECRET is not valid base64")
+        return JSONResponse(status_code=500, content={"detail": "Webhook not configured"})
+
+    # Signed payload: {id}.{timestamp}.{raw_body}
+    signed_payload = f"{webhook_id}.{webhook_timestamp}.".encode() + body_bytes
+    expected_sig = base64.b64encode(
+        hmac.new(secret_bytes, signed_payload, hashlib.sha256).digest()
+    ).decode()
+
+    # Header may carry several space-separated "v1,<sig>" entries.
+    received_sigs = [
+        part.split(",", 1)[1]
+        for part in webhook_signature.split(" ")
+        if part.startswith("v1,")
+    ]
+    if not received_sigs or not any(hmac.compare_digest(expected_sig, s) for s in received_sigs):
+        return JSONResponse(status_code=401, content={"detail": "Invalid signature"})
+
+    try:
+        payload = json.loads(body_bytes)
+    except ValueError:
+        return JSONResponse(status_code=400, content={"detail": "Malformed payload"})
+    event_type = payload.get("type", "") if isinstance(payload, dict) else ""
+
+    # The svix message id IS the delivery's idempotency key — prefer it over
+    # anything dug out of the body. Prefixed `clerk_` because Dodo prefixes and
+    # LemonSqueezy stores a bare uuid; an unprefixed third provider is a
+    # cross-provider PK collision waiting to happen.
+    event_key = f"clerk_{webhook_id}"
+
+    from sqlalchemy.exc import IntegrityError
+    from api.models.sql_models import WebhookEvent
+
+    # Insert-first. The PK does the de-duplication, so there is no window
+    # between the check and the write. NOTE: `_safe_db_write()` (Rule 7) cannot
+    # express this — it catches every exception and returns False, which would
+    # report a database outage as `already_processed`. Narrow catch instead;
+    # flagged for ratification rather than self-granted, and note the two
+    # handlers above already commit directly without it.
+    try:
+        db.add(WebhookEvent(event_id=event_key, event_type=event_type))
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        logger.info("[Clerk Webhook] duplicate delivery ignored: %s", event_key)
+        return {"status": "already_processed"}
+
+    logger.info("[Clerk Webhook] recorded %s (%s)", event_key, event_type or "no-type")
+    return {"status": "ok", "event": event_type}
+
+
 @app.get("/api/user/status")
 async def user_status(
     creds: Optional[HTTPAuthorizationCredentials] = Depends(require_auth),

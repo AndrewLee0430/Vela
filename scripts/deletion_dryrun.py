@@ -16,6 +16,14 @@ Modes:
   --execute        : run on the dev branch, assert the design-E post-state,
                      then ROLLBACK (zero residue).
 
+Implementations (--impl, applies to --execute only):
+  sql    (default) : execute the SOP's literal Step-3 SQL — the lawyer-confirmed
+                     artifact. This is the pre-existing behaviour, unchanged.
+  python           : execute api.services.deletion_service._hard_delete_user()
+                     instead. The SAME 14 asserts run either way; both passing is
+                     the evidence that the helper has not diverged from the
+                     legally signed-off SQL.
+
 Design E: user_usage is RETAINED IN ORIGINAL FORM but FROZEN (deleted_at set) —
 NOT pseudonymized, NOT deleted. The decisive proof is that get_active_usage(target)
 raises AccountDeleted (the freeze hides the retained row from all product logic).
@@ -94,7 +102,7 @@ def print_trace(user_id: str, h: str) -> None:
           "ROLLBACK-only transaction)")
 
 
-def run_execute(url: str) -> None:
+def run_execute(url: str, impl: str = "sql") -> None:
     from sqlalchemy import create_engine, text
     from sqlalchemy.orm import sessionmaker
     from api.models.sql_models import (
@@ -135,17 +143,32 @@ def run_execute(url: str) -> None:
         db.add(SharedQuery(share_id=f"sq_{uid}", query_text="qt", answer_text="at",
                            citations=[], created_by=h, is_public=True, view_count=0, flagged=False))
 
-    print(f"\n=== EXECUTE (rollback-only) | target={target} control={control} ===")
+    print(f"\n=== EXECUTE (rollback-only) | impl={impl} | target={target} control={control} ===")
     try:
         seed(target, h_t)
         seed(control, h_c)
         db.flush()
         cost_before = db.execute(text("SELECT count(*) FROM api_cost_log")).scalar()
 
-        # --- run the SOP's literal SQL within the uncommitted transaction ---
-        params = {"user_id": target, "created_by_hash": h_t}
-        for _, sql in SOP_SQL:
-            db.execute(text(sql), params)
+        # --- run the deletion within the uncommitted transaction -------------
+        # EQUIVALENCE IS THE WHOLE POINT OF --impl. The SQL in SOP_SQL is the
+        # LAWYER-CONFIRMED artifact (SOP Step 3, design E); _hard_delete_user is
+        # a second, independent implementation of the same behaviour in ORM
+        # calls. Running the SAME 14 asserts under BOTH paths is the evidence
+        # that the Python helper has not diverged from the legally signed-off
+        # behaviour. Note the Python path deliberately does NOT re-execute these
+        # strings — a helper that just replayed SOP_SQL would make this
+        # comparison a tautology and prove nothing.
+        if impl == "python":
+            from api.services.deletion_service import _hard_delete_user
+            counts = _hard_delete_user(db, target, created_by_hash=h_t)
+            print(f"[impl=python] _hard_delete_user() returned counts for Step 7:")
+            print(f"              before = {counts['before']}")
+            print(f"              after  = {counts['after']}")
+        else:
+            params = {"user_id": target, "created_by_hash": h_t}
+            for _, sql in SOP_SQL:
+                db.execute(text(sql), params)
         db.flush()
         db.expire_all()   # force ORM reads (get_active_usage) to re-fetch post-SOP state
 
@@ -208,13 +231,18 @@ def main() -> None:
                       help="read-trace only, opens NO DB connection (DEFAULT)")
     mode.add_argument("--execute", action="store_true",
                       help="run on the dev branch (rollback-only); allow-list guarded")
+    ap.add_argument("--impl", choices=("sql", "python"), default="sql",
+                    help="which implementation to exercise under --execute: the "
+                         "lawyer-confirmed SOP SQL (default) or the "
+                         "_hard_delete_user() helper. The same 14 asserts run "
+                         "either way — that is how equivalence is proven.")
     args = ap.parse_args()
 
     if args.execute:
         # Guard runs AFTER load_dotenv (module level): allow-list is the absolute
         # last line of defense before any connection.
         url = guard()
-        run_execute(url)
+        run_execute(url, args.impl)
         return
 
     # no-arg OR --plan: pure read-trace. Opens NO database connection.
@@ -230,6 +258,8 @@ def main() -> None:
     print("\n[plan] read-trace only — nothing executed, no DB connection opened.")
     print("[plan] to run for real on dev:")
     print("       DELETION_DRYRUN_ALLOW=1 python scripts/deletion_dryrun.py --execute")
+    print("       DELETION_DRYRUN_ALLOW=1 python scripts/deletion_dryrun.py --execute --impl python")
+    print("[plan] both must pass the same 14 asserts — that is the equivalence proof.")
 
 
 if __name__ == "__main__":
