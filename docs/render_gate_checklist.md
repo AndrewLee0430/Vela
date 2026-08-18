@@ -307,7 +307,12 @@ its small shadow.
 > failure ranges exist to prevent. Filed as `[OTHER][P2]` TECH_DEBT (correctness gap, no observed
 > harm), **not** as a defect.
 >
-> **The prod re-check is now rows 1, 2 and 5+6 — row 8 is done.**
+> ~~**The prod re-check is now rows 1, 2 and 5+6 — row 8 is done.**~~ ✅ **PROD RE-CHECK DONE —
+> founder-run 2026-08-18 against `https://vela.an-tho.com/` on fly 236 (revision `35ce47e`):
+> rows 1, 2 and 5+6 = 4/4 PASS.** Hero clean with no horizontal scroll at any width · panel
+> near-black / solid-paper as specified · video plays/pauses/resumes correctly · quality and
+> poster correct. Combined with row 8 (real iPhone, 2026-08-17):
+> 🎉 **GATE 6 IS FULLY CLOSED — 12/12 local + full prod subset. No pending rows remain.**
 
 **Change under test:** the **11 unpushed commits `4d0c8fe`…`8b173e1`** (B4.1b → B4.6), i.e.
 everything the founder has been reviewing on localhost. ⚠️ The deploy will also carry
