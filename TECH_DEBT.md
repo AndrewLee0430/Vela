@@ -12,10 +12,10 @@ Classes are **additive and orthogonal** to the existing `[P0]`–`[P3]` ratings 
 |---|---|---|
 | **[LAUNCH]** | blocks the B2B-interim route going live to a real customer | **0 — EMPTY** |
 | **[COMPLIANCE]** | legal / regulatory / data-protection obligation | **8** |
-| **[HONESTY]** | the product currently tells the user something untrue or misleading | **17** |
-| [DONE] | already fixed / resolved / accepted; retained for the record only | 35 |
-| [OTHER] | quality, hygiene, tooling, opportunistic | 73 |
-| | **total** | **133** |
+| **[HONESTY]** | the product currently tells the user something untrue or misleading | **18** |
+| [DONE] | already fixed / resolved / accepted; retained for the record only | 34 |
+| [OTHER] | quality, hygiene, tooling, opportunistic | 74 |
+| | **total** | **134** |
 
 <!-- ⚠️ COUNT REPAIR 2026-08-11 (B0 commit): the table above had gone STALE by three entries —
      the fly-223 pytest-infra [OTHER] addition and the fly-224 duplicated-source [COMPLIANCE] +
@@ -47,6 +47,15 @@ Classes are **additive and orthogonal** to the existing `[P0]`–`[P3]` ratings 
      capability that does not exist) and three [OTHER] (openapi.json internal publication; the pytest
      baseline having no reproducible path; shared_query.query_id being polymorphic). The [COMPLIANCE]
      listing below now holds 7 of 8 titles — the fly-224 orphan above still sits outside its own header. -->
+
+<!-- ⚠️ RECOUNT 2026-08-18 (second filing commit of the day): 133 -> 134, RE-DERIVED by the validated
+     method, not incremented. `^- ` = 168 total, `^- \[` = 134, `^- [^\[]` = 34, and 134 + 34 = 168;
+     0 indented class tags; 0 alternate list markers; 0 unrecognised tags; per-class sum
+     0+8+18+34+74 = 134 equals the independent `^- \[` total. Movement: +1 [OTHER] (dead landing
+     keys entry) and ONE RE-TAG [DONE] -> [HONESTY] (the label-drift entry, whose [DONE] tag
+     contradicted its own "label half remains open" body) — so [DONE] 35->34, [HONESTY] 17->18,
+     [OTHER] 73->74. The prediction matched the derivation; the cells record the derivation. -->
+
 
 
 
@@ -84,6 +93,7 @@ Classes are **additive and orthogonal** to the existing `[P0]`–`[P3]` ratings 
 - `[P2 · landing tagline / fourth unguarded surface — discovered by the 2026-08-11 landing recon]` `landingContent.tagline` is a 16-locale MT provenance claim outside BOTH the parity guard and the sent reviewer CSV
 - `[P2 · explore stored metadata / legacy evidence marker — founder-ratified 2026-08-11]` The published explore page's stored meta_description leaks "Summary 🟢" into search/social snippets
 - `[P2 · verify history write ordering — surfaced 2026-08-17, FILED NOT FIXED by founder ruling]` `chat_history.answer` for Verify stores the un-corrected, un-grounded summary — and a share created from the history page carries it to a PUBLIC page
+- `[P2 · label drift — surfaced 2026-08-06, re-tagged out of [DONE] 2026-08-18]` `local` renders as "Local" on the server and "FDA" in the frontend map — label half still open (live-session residual, founder-accepted)
 
 ⚠️ Listed by TITLE, not line number — line numbers rot the moment anything is inserted above them. Search the title.
 
@@ -103,6 +113,13 @@ Classes are **additive and orthogonal** to the existing `[P0]`–`[P3]` ratings 
 When entries are resolved, mark with the resolving commit SHA (git log is the record), then remove.
 
 ---
+
+- [OTHER] **[P3 · dead i18n keys — surfaced by the 2026-08-18 provenance recon, NOT fixed] `researchSub` / `verifySub` / `explainSub` are DEAD LANDING KEYS — 48 tsc-enforced cells, ZERO consumers**
+  - **現況**: declared in the `LandingContent` interface (`utils/i18n.ts:41-43`) and therefore **maintained across all 16 locales = 48 cells** (the interface is a full `Record`, so tsc forces every locale to fill them) — yet **rendered NOWHERE**: a word-boundary grep over `pages/`, `components/`, `utils/`, `contexts/` returns zero consumers. The near-matches are the unrelated `researchSubtitle`/`verifySubtitle`/`explainSubtitle` keys, which is presumably how the deadness survived — a substring glance finds "consumers" that are a different key.
+  - ⚠️ **One dead cell carries an over-claim: `explainSub: 'LOINC + FDA + NLM'`** — Explain performs **no FDA lookup** (see the PROMPT-GATED entry below), so had this rendered it would be a false source claim. **It is DEAD WEIGHT, not a live claim** — nothing renders it — which is why this files as `[OTHER]` hygiene, not `[HONESTY]`.
+  - **Fix = DELETE the 3 keys × 16 locales + the 3 interface lines.** Not translation, not rewording. Can ride any frontend commit. **Rule 16 not triggered** — pure removal, no new user-visible string.
+  - **Evidence (Rule 20 escape clause, stated): the grep census is NOT retained as an artifact** — re-running the word-boundary grep at any HEAD reproduces the zero-consumer result in seconds; a snapshot would add nothing a fresh derivation does not.
+  - **Surfaced**: 2026-08-18, during the provenance-string recon.
 
 - [COMPLIANCE] **[P2 · legal-page promise vs shipped capability — surfaced 2026-08-18, NOT fixed] 🔴 `/privacy` §4 tells users they can delete their CHAT HISTORY. There is no way to delete anything — `@app.delete` appears ZERO times in `api/`**
   - **Verbatim at HEAD, `pages/privacy.tsx:50`** (executable JSX, rendered text — not a comment), under the §4 heading `4. Data Retention, Deletion, and User Rights` (`:45`): *"When you delete your account **or chat history**, the eligible personal data (excluding the statutory financial records described above) will be immediately and permanently deleted from our active production databases."*
@@ -425,7 +442,7 @@ When entries are resolved, mark with the resolving commit SHA (git log is the re
   - Research fans out to five sources; **two contribute nothing**: **`local`** is 690 empty field-label stubs (its 2 documents in the §2.7 pools carry 1 character each) and **openFDA is structurally inert** (`fda.py:127` asks for a brand name equal to an entire rewritten sentence). **The three that actually work are PubMed · DailyMed · TFDA.**
   - **Cross-ref the [P2] Full-site DailyMed over-claim sweep** — same family: a described capability that the system does not have. Note this is the *inverse* of that entry's original case (there we named a source we had not integrated; here we integrate, advertise and pay latency for sources that return nothing or nothing usable).
   - **✅ The public claim SURVIVES deprecation — verified, stated plainly:** every FDA claim in the copy is attached to **Verify** (`i18n-faq.ts`, `i18n-extra.ts` `dashVerifyDesc`, `pages/index.tsx:156,226`), and Verify is DailyMed-primary with a **working** openFDA fallback (it passes a single drug name, which `fda.py:127` matches correctly). DailyMed **is** the FDA/NLM SPL archive (`_meta.source`: *"DailyMed v2 SPL (US labels)"*). **No true claim depends on the `local` Research store.**
-  - **Two naming notes (record only):** "local authorities" in the landing copy means *regulatory* authorities (the TFDA/NHI locale panel), **not** the `local` vector store — do not conflate. And the copy's "FDA drug labels **(OpenFDA)**" parenthetical was chosen by the v189 sweep when DailyMed was *not* integrated; DailyMed has been the 5th Research source since fly 206, so the parenthetical is now stale **in the opposite direction**. Belongs in the consolidated provenance-string sweep above.
+  - **Two naming notes (record only):** "local authorities" in the landing copy means *regulatory* authorities (the TFDA/NHI locale panel), **not** the `local` vector store — do not conflate. And the copy's "FDA drug labels **(OpenFDA)**" parenthetical was chosen by the v189 sweep when DailyMed was *not* integrated; DailyMed has been the 5th Research source since fly 206, so the parenthetical is now stale **in the opposite direction**. Belongs in the consolidated provenance-string sweep above. ⚠️ **SURFACE ADDED 2026-08-18 — the same stale "(OpenFDA)" parenthetical also lives on the FAQ, which this note did not enumerate:** `utils/i18n-faq.ts:14` (the "What data sources" answer) and `:22` (the "What is Verify" answer) — en shown, **mirrored across all 16 locales**, rendered by `pages/faq.tsx`. At HEAD **Verify is DailyMed-PRIMARY** (Tier 1 `api/server.py:1214-1229`) with **openFDA as fall-through only** (`:1231-1232`), and **Research's openFDA is structurally inert** (its own `[P2]` entry) — so "(OpenFDA)" names the fallback as the mechanism on one answer and a non-producing source on the other. **The sweep's string inventory must include these two FAQ answers.**
   - **Recorded:** 2026-07-29. **Evidence:** [`docs/local_corpus_decision_20260729.md`](docs/local_corpus_decision_20260729.md) §2.
 
 - [DONE] **[P3 — ✅ CLOSED-BY-DEPRECATION 2026-07-29 (c1); NO tooltip built, NO 16-language work needed] FDA(local) citations rendered with no "View source" and looked broken to users**
@@ -581,7 +598,8 @@ When entries are resolved, mark with the resolving commit SHA (git log is the re
   - **NO FIX PROPOSED** — this is an API contract change (typed citation model + server-side validation, and a decision about what to do with non-conforming payloads), and it needs its own scoping.
   - **Priority [P2]:** no observed abuse — the 18 stored rows were inspected and all citations are well-formed. Recorded because the trust boundary is wrong, not because it has been exploited.
 
-- [DONE] **[P2 · label drift — surfaced 2026-08-06] `local` renders as "Local" on the server and "FDA" in the frontend map — same stored citation, two labels, and one of them is the chip c1 shipped to remove**
+- [HONESTY] **[P2 · label drift — surfaced 2026-08-06] `local` renders as "Local" on the server and "FDA" in the frontend map — same stored citation, two labels, and one of them is the chip c1 shipped to remove**
+  - 📋 **RE-TAGGED `[DONE]` → `[HONESTY]` 2026-08-18, founder-ratified — the tag contradicted the entry's own body.** The body's closing line reads *"Only the LABEL half (`local` → 'FDA') remains open"*, and the 2026-08-18 recon confirmed it at HEAD `b6bfca7`: `share_renderer.py:206` still maps `"local"` → `"Local"` while `sourceLabels.ts` still maps `local` → `'FDA'` (the host-map half IS resolved on both sides). **A `[DONE]` tag on a half-open entry fed the nav-table class counts a wrong number and hid the open half from the `[HONESTY]` listing.** Class chosen per content: a user-visible label asserting "FDA" for a non-FDA-attributable stub on the residual path is an honesty/drift item. Rating unchanged `[P2]`; status unchanged (open at residual-accepted, live-session-only). **The `[DONE]` period (2026-08-06 → 2026-08-18) is recorded here rather than erased, so the tag history is auditable.**
   - **What:** `api/services/share_renderer.py:203` maps `local` → **"Local"**; `utils/sourceLabels.ts:68` maps `local` → **"FDA"** (documented there as a deliberate legacy fallback, since cached FDA labeling merges into the FDA chip).
   - ⚠️ **CURRENTLY UNREACHABLE for the #7 rows — verified by trace 2026-08-06, not assumed.** `/q/` and `/explore` are **FastAPI-rendered** (`api/server.py:2483`, `:2676`) with **no Next.js page**; `sourceLabels.ts` is consumed only by `components/CitationPanel.tsx`, which is rendered only by `pages/research.tsx` — i.e. **live-session answers**. `pages/history.tsx:337` passes `citations={[]}`, so history renders none. Since `enable_local=False`, live retrieval cannot produce a `local` citation. **The two surfaces never render the same stored row.**
   - **The residual:** a **stale client** holding a pre-c1 answer in an open session would render "FDA" on an empty stub — the exact chip c1 removed.
@@ -654,6 +672,9 @@ When entries are resolved, mark with the resolving commit SHA (git log is the re
   - **Surfaced:** 2026-07-27. **Evidence:** `docs/pair_aware_retrieval_probe.md` §7.3.
 
 - [DONE] **[P2 · Windows tooling — RE-RATED from [P3] 2026-07-27, proposed for founder ratification] cp950 console-encoding crash: emoji in `print()` on Windows-hosted paths. Site 1 `api/database/vector_store.py:52` (PRODUCT CODE — untouched) · Site 2 `tests/run_golden_tests.py:731` (✅ FIXED)**
+  - 🔴 **CORRECTED 2026-08-18 (original heading preserved above as history): the filed "Site 1 = `vector_store.py:52`" points at the DORMANT SIBLING — the site that ACTUALLY FIRES at server import is `vector_store.py:180`, the TFDA loader.** Chain, verified at HEAD `b6bfca7`: `api/server.py:62` imports `HybridRetriever` → **module-level** `retriever = HybridRetriever(...)` at `server.py:449` → `get_tfda_store()` → `TFDACorpusStore._load_compact()` → `print(f"✅ TFDA indication corpus loaded: …")` at `:180`. **`:52` belongs to the deprecated `local` store, which `enable_local=False` leaves UN-CONSTRUCTED** — a fix aimed at the filed line would repair a print that never runs and leave the crash in place.
+  - **Reproduced empirically 2026-08-18:** generating the OpenAPI schema without `PYTHONIOENCODING` crashed `UnicodeEncodeError: 'cp950'` at exactly `vector_store.py:180` (the ✅) then `:182` (the ⚠️ in the except handler — **the error handler itself crashes on the same defect**, masking the original error).
+  - **The file holds TEN `print(` calls, not one site — re-derived at HEAD:** `:44, :52` (deprecated local store) · `:170, :177, :180, :182` (TFDA loader — the live path) · `:225, :232, :235, :237` (DailyMed loader — **also on the live import path**, fires right after TFDA). **Rule 4 breach confirmed; any fix should sweep all ten, with the TFDA/DailyMed loaders first — they are the ones a Windows `import api.server` cannot get past.**
   - **⬆️ WHY [P3] → [P2] (re-rating rationale):** it was rated [P3] "quality-of-life / cosmetic". It is not cosmetic — **it is costing real test coverage today.** `STATE.md:249` records that the §3.1 **endpoint-level TestClient tests are DEFERRED** *"per the cp950 import-crash workaround documented in `tests/models/test_user_profile.py`"*, and that file (`:10-18`) lists exactly what is missing as a result: **POST 403 free-user gate · POST 422 missing-field · GET 404 · GET 200 round-trip**. A defect that deletes four endpoint tests from a Pro-gated, PII-adjacent surface is a coverage gap, not a console annoyance. [P2] ("affects code quality or upcoming task") is the correct tier; not [P1] because prod is unaffected (Linux containers, not cp950).
   - **✅ SITE 2 FIXED (this baton, tests-only):** `tests/run_golden_tests.py` now calls `sys.stdout/stderr.reconfigure(encoding="utf-8", errors="replace")` at module top, guarded in `try/except`. **Verified: `python tests/run_golden_tests.py --filter R15` now runs on Windows with NO `PYTHONIOENCODING` prefix.** `reconfigure()` mutates the existing stream in place — deliberately **not** a second `TextIOWrapper` over the same buffer, which is the construction that produces `ValueError: I/O operation on closed file` when the first wrapper is garbage-collected.
   - **🔴 SITE 1 — `api/database/vector_store.py:52` — NOT TOUCHED (product code, out of scope for a tests-only baton). Reported for founder decision:**
@@ -922,7 +943,9 @@ When entries are resolved, mark with the resolving commit SHA (git log is the re
 - [HONESTY] **[P2 · honesty — PROMPT-GATED, out of frontend-sweep scope] `explain_system.md` lists "FDA DailyMed" as a source category to the LLM (deferred 2026-06-25)**
   - `api/prompts/explain_system.md` (~L120 "**D. FDA DailyMed** — for prescription drug labels (when available)"; ~L228 example `"url": "https://dailymed.nlm.nih.gov/..."`) tells the **LLM** that "FDA DailyMed" is a source category, which can cause the model to NAME DailyMed in Explain output — the same over-claim family as the frontend copy, but at the prompt layer.
   - **Why deferred:** editing this edits a **system prompt** → requires a **§2.7 ExplainJudge re-baseline** (CLAUDE.md Rule 17), so it was OUT of scope for the frontend copy sweep (PART I). **Batch with the next Explain prompt edit / re-baseline.**
-  - **Discovered:** 2026-06-25 during the DailyMed reference inventory.
+  - 🔴 **SCOPE WIDENED 2026-08-18 — the filed entry names `explain_system.md` only; TWO FURTHER COPIES of the same FDA-citing instruction exist, verified at HEAD `b6bfca7`:** **(i)** `api/services/explain_service.py:69` — the **in-code FALLBACK prompt** (`_EXPLAIN_PROMPT_FALLBACK`, used when the prompt file fails to load) instructs the LLM verbatim: *"Cite inline: [Source: LOINC], [Source: MedlinePlus], **[Source: FDA]**."* — so even a future fix to `explain_system.md` leaves the fallback authorizing FDA citations; **(ii)** `explain_service.py:4` — the **module docstring** claims *"Stage 2: Parallel API lookups (LOINC, RxNorm, MedlinePlus, **FDA**)"*. **The premise is code-verified: the service imports ONLY `loinc_client` / `rxnorm_client` / `medlineplus_client` (`:27-29`), its three lookup functions are `_lookup_loinc` / `_lookup_rxnorm_and_medlineplus` / `_lookup_diagnoses`, and `SourceType.FDA` appears ZERO times in the module — no FDA lookup exists, so any `[Source: FDA]` the LLM emits is training-data attribution dressed as a pipeline source.** Any fix must touch **all three copies** (Rule 19 — a mitigation applied to one copy does not travel).
+  - ⚠️ **Also recorded, public-surface variant of the same drift:** the **endpoint** docstring (`explain_report`, published **verbatim** on the public `/openapi.json` as the operation description) says **3** sources — *"(LOINC, RxNorm, MedlinePlus)"* — while the **service** docstring says **4** (with FDA). An internal inconsistency, with one side of it on a public surface; whichever way the fix goes, the two must converge.
+  - **Discovered:** 2026-06-25 during the DailyMed reference inventory; widened 2026-08-18.
 
 - [DONE] **[P2 · tooling / lint] ESLint flat-config breakage — `npm run lint` failed repo-wide — ✅ RESOLVED 2026-06-25 (`eslint.config.mjs` added)**
   - **Correct cause (the earlier 2026-06-24 note MISDIAGNOSED this as "repo still carries the old `.eslintrc`" — verified WRONG: there was NO `.eslintrc*` AND NO `eslint.config.*` of any kind):** ESLint 9 + a bare `"lint": "eslint"` script + **no config file at all** → ESLint 9 errors before linting, so `npm run lint` exited non-zero repo-wide (NOT a code lint error — identical on a clean checkout). The repo already shipped the flat-config deps (`@eslint/eslintrc` FlatCompat shim + `eslint-config-next` 15.5.5); only the config file was missing.
