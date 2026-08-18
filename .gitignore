@@ -152,6 +152,11 @@ uploads/
 .tmp-docs/
 
 .claude/settings.local.json
+# Claude Code harness state, not project content: this file holds a session UUID,
+# a PID and an acquisition timestamp, so it churns on every session and was
+# showing as modified in every baton. Untracked here AND removed from the index
+# (`git rm --cached`) 2026-08-18 — the working file stays on disk.
+.claude/scheduled_tasks.lock
 
 # ==========================================
 # Local dev artifacts

@@ -2178,31 +2178,61 @@ async def dodo_webhook(request: Request, db: Session = Depends(get_db)):
 # ============================================================
 # Clerk webhook — SURFACE ONLY, NON-DESTRUCTIVE
 # ============================================================
+# 🔴 DESIGN RATIONALE LIVES IN THESE `#` COMMENTS, NOT IN THE DOCSTRING.
+# FastAPI publishes a handler's docstring VERBATIM as the OpenAPI `description`
+# field, and /openapi.json is PUBLIC and unauthenticated. `#` comments are not
+# published. Both directions were verified by generating the schema and grepping
+# it (2026-08-18), not assumed. Anything a stranger should not read stays here.
+# ⚠️ This is also why a post-deploy check misfired: a substring search for
+# `hard_delete` hit the docstring PROSE below and "found" the opposite of the
+# truth. That was the fourth time prose has satisfied a substring check in this
+# repo — see `tests/test_deletion_coverage.py`, which strips docstrings first.
+#
+# 🔴 THIS IS THE SURFACE, NOT THE AUTOMATION. It does NOT call
+# `_hard_delete_user()`, does NOT touch `user_usage`, and takes NO action on
+# `user.deleted`. An account deleted in Clerk still requires the manual runbook
+# (`docs/manual-deletion-sop.md`) — Step 5 "Clerk reconciliation" remains a human
+# step. What exists here is an idempotent landing pad that records that an event
+# arrived; the orphan-row gap is NOT closed.
+#
+# SIGNATURE — Standard Webhooks (https://www.standardwebhooks.com/), the same
+# scheme `dodo_webhook` above verifies by hand. Clerk signs with svix, which IS
+# Standard Webhooks, so no `svix` package is pinned, installed or needed.
+# ⚠️ Clerk sends `svix-id` / `svix-timestamp` / `svix-signature`; the spec (and
+# our Dodo handler) uses `webhook-*`. BOTH spellings are read, svix-* first.
+#
+# ✅ VERIFIED AGAINST A REAL CLERK DELIVERY, 2026-08-17. This REPLACES the note
+# that stood here — "**UNVERIFIED against a real Clerk delivery** — spec-correct
+# is not the same as confirmed (CLAUDE.md Rule 18)" — which was true when written
+# and became false that day. Measured: live delivery (`user.deleted`, 14:28) ->
+# HTTP 200; Replay of the BYTE-IDENTICAL svix-id at 14:31 -> `already_processed`;
+# `webhook_events` holds exactly ONE row for it, which is evidence independent of
+# the handler's own reply. The delivery also settled the header question: Clerk
+# really does send `svix-*`, so THAT half of the lookup is load-bearing — without
+# it every real delivery would 401 below — and the `webhook-*` half is an
+# unexercised spec-conformance fallback.
+# ⚠️ SCOPE, NOT OVERSTATED: what is verified is the SURFACE — signature
+# verification, header handling, idempotency, and the `webhook_events` write.
+# NOTHING about deletion automation was tested, because this handler performs
+# none. Do not read "verified" as "account deletion works".
+#
+# IDEMPOTENCY — insert-first, catch `IntegrityError`. The two handlers above are
+# read-then-write (SELECT, then INSERT), which is a TOCTOU race: a concurrent
+# duplicate delivery reaches the `event_id` PK, raises, is not caught, and
+# returns 500 instead of `already_processed`. That known defect is deliberately
+# NOT carried to a third surface — Rule 19 read in reverse.
+# ============================================================
 @app.post("/api/webhooks/clerk")
 async def clerk_webhook(request: Request, db: Session = Depends(get_db)):
-    """Verify and RECORD inbound Clerk events. Writes `webhook_events` ONLY.
+    """Receive and record a signed Clerk webhook event.
 
-    🔴 THIS IS THE SURFACE, NOT THE AUTOMATION. It does **not** call
-    `_hard_delete_user()`, does **not** touch `user_usage`, and takes **no
-    action** on `user.deleted`. An account deleted in Clerk still requires the
-    manual runbook (`docs/manual-deletion-sop.md`) — Step 5 "Clerk
-    reconciliation" remains a human step. What exists after this is a verified,
-    idempotent landing pad that records that an event arrived; the orphan-row
-    gap is NOT closed.
+    Accepts a Standard Webhooks signed request: the Clerk event payload as the
+    JSON body, with the signature headers present. Unsigned, badly signed, or
+    stale requests are rejected.
 
-    SIGNATURE — Standard Webhooks (https://www.standardwebhooks.com/), the same
-    scheme `dodo_webhook` above verifies by hand. Clerk signs with svix, which
-    IS Standard Webhooks, so no `svix` package is pinned, installed or needed.
-    ⚠️ Clerk sends `svix-id` / `svix-timestamp` / `svix-signature`; the spec (and
-    our Dodo handler) uses `webhook-*`. BOTH spellings are read, svix-* first.
-    **UNVERIFIED against a real Clerk delivery** — spec-correct is not the same
-    as confirmed (CLAUDE.md Rule 18).
-
-    IDEMPOTENCY — insert-first, catch `IntegrityError`. The two handlers above
-    are read-then-write (SELECT, then INSERT), which is a TOCTOU race: a
-    concurrent duplicate delivery reaches the `event_id` PK, raises, is not
-    caught, and returns 500 instead of `already_processed`. That known defect is
-    deliberately NOT carried to a third surface — Rule 19 read in reverse.
+    Returns `{"status": "ok", "event": <event type>}` when the delivery is
+    recorded, or `{"status": "already_processed"}` when the same delivery is
+    redelivered.
     """
     body_bytes = await request.body()
 
