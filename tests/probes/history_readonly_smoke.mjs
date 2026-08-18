@@ -25,9 +25,17 @@
 // display helper reads like data loading. It survived six months of review.
 //
 // 🔴 THIS GUARD IS NOT HERE TO FORBID A FUTURE MUTATION. If history genuinely
-// needs to write — a per-entry delete is already scoped — whoever builds it must
-// DELETE THIS PROBE DELIBERATELY, in the same commit, with the reasoning
-// written down. Removing it IS the decision point. That is its entire job.
+// needs to write, whoever builds it must DELETE THIS PROBE DELIBERATELY, in the
+// same commit, with the reasoning written down. Removing it IS the decision
+// point. That is its entire job.
+//
+// The concrete case is scoped and written down: BACKLOG.md → "Deletion-feature
+// C" → the "History-only option (per-entry delete)" sub-bullet, which carries
+// the full scoping as of 2026-08-18 — why chat_history and audit_logs cannot be
+// correlated, the three sized options, and the i18n/modal surface a delete UI
+// would need. This clause used to say only "a per-entry delete is already
+// scoped", which was true but pointed nowhere; it now names the entry, so the
+// builder can read the constraints instead of rediscovering them.
 // (Same pattern as the Clerk non-destructive guard, tests/test_deletion_coverage.py.)
 //
 // ─────────────────────────────────────────────────────────────────────────────
@@ -50,14 +58,33 @@
 //                              re-deriving this scope note will look in the
 //                              wrong file first, as the first draft of it did.
 //   /api/checkout/dodo       components/UpgradeModal.tsx:32
-//                            ^ reachable from this page's OWN direct import,
-//                              and again via ProFeatureOverlay and Navbar.
+//                            ^ CORRECTED 2026-08-18: this file DOES import
+//                              UpgradeModal (line 7), but never renders it —
+//                              zero `<UpgradeModal` in the JSX, a dead import
+//                              already recorded in STATE. So at RENDER time the
+//                              endpoint is reachable ONLY via
+//                              ProFeatureOverlay.tsx:156 and Navbar.tsx:362.
+//                              The earlier wording, "reachable from this page's
+//                              OWN direct import", confused an import with a
+//                              mount and contradicted STATE's own dead-import
+//                              finding.
 //   /api/subscription/cancel components/Navbar.tsx:138      (via PageShell)
 //   /api/bug-report          components/BugReportButton.tsx:84 (via PageShell)
 //
-// Three of the four arrive through PageShell / ProFeatureOverlay — chrome this
-// page never names. That is fine: a user clicking Share or Upgrade is not a
-// read-path write, and the read-path write is the whole subject of this probe.
+// Three of the four arrive through PageShell / ProFeatureOverlay. CORRECTED
+// 2026-08-18: the earlier wording said "chrome this page never names", which is
+// wrong — this page names AND renders both PageShell (:9, :305) and
+// ProFeatureOverlay (:8, :142). What it never names are the components that
+// actually CONTAIN the fetches: Navbar, BugReportButton and ShareModal.
+//
+// (Why 3-of-4 and not 4-of-4: /api/share/create arrives via <ShareButton> at
+// :274-281, which this page does name. It would ALSO arrive through
+// PageShell -> Navbar.tsx:201, except that slot is gated `{shareData && (`,
+// shareData starts null, and this page never touches ShareContext — so the
+// Navbar share pill is not rendered on /history.)
+//
+// That is all fine: a user clicking Share or Upgrade is not a read-path write,
+// and the read-path write is the whole subject of this probe.
 //
 // 🔴 DO NOT WIDEN THIS PROBE TO THE MOUNT TREE. It would then fail on ordinary
 // chrome, and a probe that fails on ordinary chrome gets deleted inside a
