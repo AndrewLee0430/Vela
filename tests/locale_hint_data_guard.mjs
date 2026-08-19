@@ -6,15 +6,15 @@
 // stay byte-identical (b1 is a restructure, and the fly-210 TW gate is now a regression suite);
 // (3) detection must be language-aware — the answer language picks WHICH keyword list.
 //
-// No test runner → transpile utils/localeHint.ts standalone (its only import is `import type` from
-// ./country, erased at transpile). Run: node tests/locale_hint_data_guard.mjs
+// No test runner → transpile utils/localeHint.ts standalone (its only imports are `import type`
+// from ./country and ./sourceLabels, erased at transpile). Run: node tests/locale_hint_data_guard.mjs
 import { readFileSync } from 'node:fs';
 import ts from 'typescript';
 
 const src = readFileSync(new URL('../utils/localeHint.ts', import.meta.url), 'utf8');
 const js = ts.transpileModule(src, { compilerOptions: { module: 'ESNext', target: 'ES2020' } }).outputText;
 const mod = await import('data:text/javascript,' + encodeURIComponent(js));
-const { getTier1Authorities, TIER2_AUTHORITIES, detectLocaleCategories, getAuthoritiesForCategories, getCategoryLabelOverride } = mod;
+const { getTier1Authorities, TIER2_AUTHORITIES, detectLocaleCategories, getAuthoritiesForCategories, getCategoryLabelOverride, INTEGRATED_AUTHORITY_KEYS, filterUngroundedAuthorities } = mod;
 
 const CATS = ['dosing', 'reimbursement', 'indication', 'contraindication'];
 const COUNTRIES = ['TW', 'SG', 'MY', 'JP', 'KR', 'TH'];
@@ -123,8 +123,51 @@ for (const line of catLines) {
   check(!bad, `i18n localeHintCat* default must be country-neutral, found "${bad}" in: ${line.trim()}`);
 }
 
+// 9. ADR-007 (d) authority-row suppression (option ii). WHAT BREAKS IF THIS FAILS: the panel tells
+//    a Taiwanese user "Vela has not integrated data from these authorities" on a screen whose ONLY
+//    source IS the integrated TFDA corpus (fly-214 gate Finding 3) — OR, inverted, the protective
+//    pointer disappears from un-grounded answers where it is the only safeguard.
+check(typeof filterUngroundedAuthorities === 'function', 'filterUngroundedAuthorities must exist and be exported');
+check(INTEGRATED_AUTHORITY_KEYS instanceof Set, 'INTEGRATED_AUTHORITY_KEYS must exist and be a Set');
+check(INTEGRATED_AUTHORITY_KEYS.has('tfda'), "INTEGRATED_AUTHORITY_KEYS must contain 'tfda' (the v193 corpus)");
+const tfda2 = getTier1Authorities('TW').authorities.find(a => a.short_name === 'TFDA');
+eq(tfda2?.integrated_source, 'tfda', "TW_TFDA.integrated_source must map to citation source_type 'tfda'");
+
+// (i) REMOVES the integrated authority when its source_type grounded the answer (NHI untouched —
+//     part of (iii): authorities outside the set pass through even when the filter fires).
+const twAuths = getTier1Authorities('TW').authorities;
+const grounded = filterUngroundedAuthorities(twAuths, new Set(['tfda', 'pubmed']));
+check(!grounded.some(a => a.short_name === 'TFDA'), 'grounded answer: TFDA pointer row must be REMOVED');
+check(grounded.some(a => a.short_name === 'NHI'), 'grounded answer: NHI (outside the set) must SURVIVE');
+
+// (ii) KEEPS it when the answer is NOT grounded in that source — the protective pointer survives.
+const ungrounded = filterUngroundedAuthorities(twAuths, new Set(['pubmed', 'dailymed']));
+check(ungrounded.some(a => a.short_name === 'TFDA'), 'un-grounded answer: TFDA pointer row must be KEPT');
+eq(ungrounded.length, twAuths.length, 'un-grounded answer: nothing may be dropped');
+eq(filterUngroundedAuthorities(twAuths, new Set()).length, twAuths.length, 'empty citation set: nothing may be dropped');
+
+// (iii) NEVER touches authorities outside the set — SG/MY/Tier-2 pass through byte-identically
+//       even when 'tfda' (and everything else) is present in the citations.
+const everything = new Set(['tfda', 'pubmed', 'dailymed', 'fda', 'who', 'nice', 'ema', 'cochrane']);
+for (const [label, set] of [
+  ['SG', getTier1Authorities('SG').authorities],
+  ['MY', getTier1Authorities('MY').authorities],
+  ['TIER2', TIER2_AUTHORITIES],
+]) {
+  eq(filterUngroundedAuthorities(set, everything), set, `${label} authorities must pass through the filter untouched`);
+}
+
+// (v) positive control: the filter genuinely fires on the general mechanism, not on a TFDA
+//     special-case — a synthetic authority carrying an integrated key is removed too...
+const synthetic = { short_name: 'SYN', name_native: 'x', name_en: 'x', url_native: 'https://x/', covers: ['dosing'], integrated_source: 'tfda' };
+eq(filterUngroundedAuthorities([synthetic], new Set(['tfda'])).length, 0, 'positive control: synthetic integrated authority removed');
+// ...while a mapped-but-NOT-integrated key (not in the set) survives even when cited — the set is
+// load-bearing (mutation M3: emptying it must flip the removes-when-present checks above only).
+const mappedNotIntegrated = { ...synthetic, integrated_source: 'dailymed' };
+eq(filterUngroundedAuthorities([mappedNotIntegrated], new Set(['dailymed'])).length, 1, 'a key outside INTEGRATED_AUTHORITY_KEYS must never suppress');
+
 if (failures.length) {
   console.error(`localeHint data GUARD FAILED (${failures.length}):\n - ` + failures.join('\n - '));
   process.exit(1);
 }
-console.log('PASS  localeHint data — Tier-1 lookup + no-data→Tier-2, TW byte-identical, SG/MY verified, language-aware detection, category filter');
+console.log('PASS  localeHint data — Tier-1 lookup + no-data→Tier-2, TW byte-identical, SG/MY verified, language-aware detection, category filter, ADR-007 (d) suppression');

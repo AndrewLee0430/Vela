@@ -4,6 +4,7 @@ import type { LangCode } from '../utils/i18n';
 import { track } from '../utils/analytics';
 import {
   LocaleCategory,
+  filterUngroundedAuthorities,
   getAuthoritiesForCategories,
   getCategoryLabelOverride,
   getTier1Authorities,
@@ -30,15 +31,27 @@ interface LocaleHintPanelProps {
   resolvedCountry: CountryCode | null; // waterfall output — picks authorities (null → Tier-2)
   resolutionLevel: ResolutionLevel;    // which waterfall level produced the country (analytics)
   resetKey?: string | null;            // changes per new query → re-shows a dismissed panel
+  // ADR-007 (d): the answer's normalized citation source_types (detectSourceType over the SSE
+  // citations). Prop, not internal state, so freshness comes from React's render model: research.tsx
+  // re-renders on setCitations, so this can never be staler than the citations on screen.
+  citationSourceTypes: ReadonlySet<string>;
 }
 
-export default function LocaleHintPanel({ matchedCategories, lang, resolvedCountry, resolutionLevel, resetKey }: LocaleHintPanelProps) {
+export default function LocaleHintPanel({ matchedCategories, lang, resolvedCountry, resolutionLevel, resetKey, citationSourceTypes }: LocaleHintPanelProps) {
   const ui = getUI(lang as LangCode);
 
   const tier1 = getTier1Authorities(resolvedCountry);
   const tier: 1 | 2 = tier1 ? 1 : 2;
   const authoritySet = tier1 ? tier1.authorities : TIER2_AUTHORITIES;
-  const authorities = getAuthoritiesForCategories(authoritySet, matchedCategories);
+  // ADR-007 (d) authority-row suppression: an authority whose integrated corpus grounded THIS
+  // answer is dropped — localeHintNote ("Vela has not integrated data from these authorities")
+  // stays true for every row that survives. When the filter empties the list (TFDA-only grounded
+  // answer), the `!authorities.length` guard below is the INTENDED collapse path — the whole panel
+  // self-suppresses; do not add a second mechanism.
+  const authorities = filterUngroundedAuthorities(
+    getAuthoritiesForCategories(authoritySet, matchedCategories),
+    citationSourceTypes,
+  );
 
   // Country name for the heading/lead, in the PANEL language (en / zh-TW only in b1).
   const panelLang: 'en' | 'zh-TW' = lang === 'zh-TW' ? 'zh-TW' : 'en';

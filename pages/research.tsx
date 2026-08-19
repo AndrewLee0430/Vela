@@ -11,7 +11,7 @@ import Head from 'next/head';
 import { fetchEventSource } from '@microsoft/fetch-event-source';
 import { FatalError, makeOnOpen, sseOnError } from '../utils/sse';
 import CitationPanel, { Citation } from '../components/CitationPanel';
-import { sourceLabelFor, resolvedSourceLabel, sourceCountTooltip } from '../utils/sourceLabels';
+import { detectSourceType, sourceLabelFor, resolvedSourceLabel, sourceCountTooltip } from '../utils/sourceLabels';
 import FeedbackBar from '../components/FeedbackBar';
 import { useShareContext } from '../contexts/ShareContext';
 import UpgradeModal from '../components/UpgradeModal';
@@ -217,6 +217,18 @@ function ResearchForm() {
         });
         return { categories, country, level };
     }, [localeHintEnabled, lang, loading, isFallback, question, answer]);
+
+    // ADR-007 (d) authority-row suppression — the answer's normalized citation source_types, for
+    // LocaleHintPanel's filterUngroundedAuthorities. WIRING CHOICE (closes the stale-deps hazard
+    // rather than inheriting it): the trigger memo above deliberately does NOT read `citations`,
+    // so its dep array stays honest and untouched; this is its own memo keyed on [citations], and
+    // the filter runs INSIDE the panel from this prop — every setCitations re-renders the panel
+    // with the fresh set (the SSE `citations` event precedes `done`, and even a late citation
+    // update would still re-render the filter). No manually-synchronized dep list involved.
+    const citationSourceTypes = useMemo(
+        () => new Set<string>(citations.map(c => detectSourceType(c))),
+        [citations],
+    );
 
     const [plan, setPlan] = useState<'free' | 'pro'>(() => {
         if (typeof window === 'undefined') return 'free';
@@ -773,9 +785,10 @@ function ResearchForm() {
                 </div>
             </div>
 
-            {/* 在地差異提示 (Probe 1) — renders only when enabled + zh-TW + ≥1 category matched;
+            {/* 在地差異提示 — renders only when enabled + zh-TW/en answer + ≥1 category matched + at
+                least one authority row survives the ADR-007 (d) grounded-answer suppression;
                 otherwise renders nothing (no layout shift). Does not alter answer/citations/disclaimer. */}
-            <LocaleHintPanel matchedCategories={localeHint.categories} lang={lang} resolvedCountry={localeHint.country} resolutionLevel={localeHint.level} resetKey={localQueryId} />
+            <LocaleHintPanel matchedCategories={localeHint.categories} lang={lang} resolvedCountry={localeHint.country} resolutionLevel={localeHint.level} resetKey={localQueryId} citationSourceTypes={citationSourceTypes} />
 
             {answer && (
             <p className="text-xs mt-4 text-center" style={{ color: "rgb(var(--color-text) / 0.35)" }}>

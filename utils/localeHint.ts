@@ -10,6 +10,7 @@
 // selects WHICH authorities; the answer/UI language selects WHICH keyword list + the panel text.
 
 import type { CountryCode } from './country';
+import type { CitationSourceType } from './sourceLabels';
 
 export type LocaleCategory = 'dosing' | 'reimbursement' | 'indication' | 'contraindication';
 
@@ -19,6 +20,12 @@ export interface Authority {
   name_en: string;
   url_native: string;
   covers: LocaleCategory[];
+  // ADR-007 (d): the citation `source_type` this authority's documents carry once Vela has
+  // ingested its corpus (TFDA → 'tfda'). DATA, not a user-visible string — the match key is the
+  // source_type enum value, matched EXACTLY against the answer's citations (Rule 23: never derive
+  // the key by name/substring). Absent → this authority has no integrated corpus and the
+  // grounded-answer suppression below can never touch it.
+  integrated_source?: CitationSourceType;
 }
 
 export interface LocaleAuthorities {
@@ -44,6 +51,10 @@ const TW_TFDA: Authority = {
   name_en: 'Taiwan Food and Drug Administration',
   url_native: 'https://www.fda.gov.tw/',
   covers: ['dosing', 'indication', 'contraindication'],
+  // ADR-007 (d): v193 shipped the 10,941-doc TFDA indication corpus; its citations carry
+  // source_type 'tfda' (utils/sourceLabels.ts detectSourceType). Display fields above are
+  // BYTE-IDENTICAL to fly-210 — this key is additive data, not a re-authoring.
+  integrated_source: 'tfda',
 };
 const TW_NHI: Authority = {
   short_name: 'NHI',
@@ -219,4 +230,32 @@ export function detectLocaleCategories(text: string, lang: string): LocaleCatego
 export function getAuthoritiesForCategories(authorities: Authority[], cats: LocaleCategory[]): Authority[] {
   if (!cats.length) return [];
   return authorities.filter(a => a.covers.some(c => cats.includes(c)));
+}
+
+// ── ADR-007 (d) pointer→grounding graduation, option (ii): authority-row suppression. ──
+//
+// The registry of citation source_types Vela has ACTUALLY integrated into Research retrieval.
+// PLURAL BY CONSTRUCTION (Rule 23): today it holds only 'tfda' (the v193 indication corpus).
+// When a b2 ingest lands (JP/KR/TH — or any future authority corpus), EXTEND THIS SET (and set
+// `integrated_source` on the authority) — never rewrite the mechanism.
+export const INTEGRATED_AUTHORITY_KEYS: ReadonlySet<string> = new Set(['tfda']);
+
+/**
+ * ADR-007 (d): drop the pointer row for an authority whose integrated corpus GROUNDED this very
+ * answer — on that screen `localeHintNote` ("Vela has not integrated data from these authorities")
+ * is false for that row (the fly-214 gate Finding 3 contradiction). Keeps every authority that
+ * (a) has no `integrated_source`, or (b) whose key is not in INTEGRATED_AUTHORITY_KEYS (mapped but
+ * not yet ingested), or (c) whose source_type is absent from this answer's citations — so
+ * un-grounded answers keep the protective pointer. Pure + exported so the data guard can assert
+ * it (the getCategoryLabelOverride precedent).
+ */
+export function filterUngroundedAuthorities(
+  authorities: Authority[],
+  citationSourceTypes: ReadonlySet<string>,
+): Authority[] {
+  return authorities.filter(a =>
+    !a.integrated_source
+    || !INTEGRATED_AUTHORITY_KEYS.has(a.integrated_source)
+    || !citationSourceTypes.has(a.integrated_source)
+  );
 }

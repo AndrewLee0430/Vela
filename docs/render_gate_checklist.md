@@ -403,6 +403,44 @@ happened at all.
 
 ---
 
+## Gate 7 — "Gate (d)": ADR-007 (d) locale-panel authority-row suppression on grounded answers
+
+> ## ⏳ PENDING — founder-run, NOT yet run. Blank form; fill the observation cells at gate time.
+> This gate is **OWED before any deploy carrying the ADR-007 (d) commit** (🔴 render change on
+> `/research`). The change is committed LOCALLY and NOT pushed/deployed until this is scheduled.
+
+**Change under test:** the ADR-007 (d) option (ii) commit of 2026-08-19 (`feat(locale-hint): …` —
+SHA in the STATE ship-ledger entry; fill in here at gate time and **confirm `/health` `revision`
+contains it before row 1**).
+
+**What changed:** when an answer's citations include a source whose authority is in
+`INTEGRATED_AUTHORITY_KEYS` (today: TFDA via source_type `tfda`), that authority's pointer row is
+dropped from the 在地差異 panel — `localeHintNote` ("Vela 未整合上述機關資料") is then true for every
+row that survives. A TFDA-only panel collapses entirely via the existing empty-authorities guard
+(**absent-or-panel-absent is expected — both are PASS shapes for "row ABSENT"**). Un-grounded
+answers keep the pointer. Zero string changes; the flag `NEXT_PUBLIC_LOCALE_HINT_ENABLED` is
+already ON in prod, so this ships inside the existing flag. Panel renders in zh-TW/en only.
+
+**Rows follow convention 5 below** (never bare "TFDA"). Queries are suggestions — any query
+producing the stated citation state is valid; per the fly-214 Finding 2 lesson, a grounded row
+that retrieves no TFDA citation needs **stronger phrasing, not a FAIL** (the canonical grounded
+query is `冠脂妥台灣核准的適應症是什麼`).
+
+| # | URL | UI lang / setup | query (suggested) | what PASS looks like | observed | VERDICT | NOTES |
+|---|---|---|---|---|---|---|---|
+| 1 | `https://vela.an-tho.com/research` | **zh-TW**, country resolves TW | `冠脂妥台灣核准的適應症是什麼` | **the citation chip reading 『TFDA 核准適應症』 is present** → **the locale-panel pointer row "TFDA" is ABSENT** (row absent, or the whole panel absent via the collapse path — both PASS); if the reimbursement category matched, the NHI pointer row is PRESENT; the note 「Vela 未整合上述機關資料」 renders ONLY if ≥1 pointer row survives | | | |
+| 2 | `https://vela.an-tho.com/research` | **en**, country resolves TW | `What is the approved indication of 冠脂妥 in Taiwan?` (must fire an EN keyword, e.g. "approved indication", AND produce the TFDA citation chip) | same assertions as row 1, English panel text | | | |
+| 3 | `https://vela.an-tho.com/research` | **zh-TW**, country resolves TW | `metformin 起始劑量與最大劑量` (keyword fires; retrieval expected PubMed/DailyMed, **no** TFDA citation; must NOT be an isFallback answer — that suppresses the panel for a different reason) | **no citation chip reading 『TFDA 核准適應症』** → **the locale-panel pointer row "TFDA" is PRESENT** and the note is PRESENT — the protective behavior survives un-grounded | | | |
+| 4 | `https://vela.an-tho.com/research` | **en**, Settings → Country/region = **SG** (control) | `What is the starting dose of metformin?` | panel byte-identical to pre-change: HSA pointer row present, note present — the suppression must not touch authorities outside `INTEGRATED_AUTHORITY_KEYS` (SG/MY/Tier-2 pass through) | | | |
+
+**Known and expected — do NOT record as failures:** on row 1/2, the panel disappearing entirely
+(rather than rendering with fewer rows) is the DESIGNED collapse path when TFDA was the only
+matched authority; the un-grounded-TW residual of the naming collision (row 3 shows the pointer
+row "TFDA" while non-TFDA citation chips are visible) is **deferred by option (C)**, not a defect
+of this change.
+
+---
+
 ## Adding a gate to this file
 
 1. Name the **change under test** by commit SHA.
@@ -413,6 +451,15 @@ happened at all.
    citation.
 4. Add a row for **anything a unit test cannot see** — legibility, locale resolution, layout,
    link behaviour. That is the whole reason a human is running this.
+5. **"TFDA" is never written bare in a gate row** — write **the citation chip reading
+   『TFDA 核准適應症』** or **the locale-panel pointer row "TFDA"**. Standing rule per the fly-214
+   gate's naming collision (`docs/citation_gate_findings_20260729.md` Finding 2(ii)), resolved as
+   **option (C), founder-ratified 2026-08-19**: fix the checklist wording only. Options (A)
+   (rename the pointer, a 16-language string change) and (B) (visual pointer-vs-citation
+   distinction) are **consciously deferred** — ADR-007 (d) suppression makes the collision's
+   confusing instances disappear by construction on grounded screens; the residual (an
+   un-grounded TW answer where the pointer row and non-TFDA citation chips are both visible) is
+   **recorded here as deferred, not fixed**.
 
 ## Related
 
