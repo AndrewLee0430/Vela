@@ -12,8 +12,8 @@ Classes are **additive and orthogonal** to the existing `[P0]`–`[P3]` ratings 
 |---|---|---|
 | **[LAUNCH]** | blocks the B2B-interim route going live to a real customer | **0 — EMPTY** |
 | **[COMPLIANCE]** | legal / regulatory / data-protection obligation | **8** |
-| **[HONESTY]** | the product currently tells the user something untrue or misleading | **18** |
-| [DONE] | already fixed / resolved / accepted; retained for the record only | 34 |
+| **[HONESTY]** | the product currently tells the user something untrue or misleading | **17** |
+| [DONE] | already fixed / resolved / accepted; retained for the record only | 35 |
 | [OTHER] | quality, hygiene, tooling, opportunistic | 75 |
 | | **total** | **135** |
 
@@ -62,6 +62,13 @@ Classes are **additive and orthogonal** to the existing `[P0]`–`[P3]` ratings 
      0+8+18+34+75 = 135 equals the independent `^- \[` total. Movement: +1 [OTHER] (the Rule 7
      CHECK-baseline entry, filed at rule adoption per the ratified text's own closing sentence). -->
 
+<!-- ⚠️ RECOUNT 2026-08-19 (verify write-ordering fix commit): total UNCHANGED at 135, RE-DERIVED:
+     `^- ` = 168 = `^- \[` 135 + `^- [^\[]` 33; per-class 0+8+17+35+75 = 135 equals the independent
+     total; 0 indented tags, 0 alternate markers. Movement: the verify-write-ordering entry
+     [HONESTY] -> [DONE] (fixed), so [HONESTY] 18->17 and [DONE] 34->35; its title row is REMOVED
+     from the [HONESTY] listing below ([DONE] has no listing — symmetric with the 2026-08-18
+     label-drift re-tag, which ADDED a row on the way in). -->
+
 
 
 
@@ -98,7 +105,6 @@ Classes are **additive and orthogonal** to the existing `[P0]`–`[P3]` ratings 
 - `[P2 · honesty — PROMPT-GATED, out of frontend-sweep scope]` `explain_system.md` lists "FDA DailyMed" as a source category to the LLM (deferred 2026-06-25)
 - `[P2 · landing tagline / fourth unguarded surface — discovered by the 2026-08-11 landing recon]` `landingContent.tagline` is a 16-locale MT provenance claim outside BOTH the parity guard and the sent reviewer CSV
 - `[P2 · explore stored metadata / legacy evidence marker — founder-ratified 2026-08-11]` The published explore page's stored meta_description leaks "Summary 🟢" into search/social snippets
-- `[P2 · verify history write ordering — surfaced 2026-08-17, FILED NOT FIXED by founder ruling]` `chat_history.answer` for Verify stores the un-corrected, un-grounded summary — and a share created from the history page carries it to a PUBLIC page
 - `[P2 · label drift — surfaced 2026-08-06, re-tagged out of [DONE] 2026-08-18]` `local` renders as "Local" on the server and "FDA" in the frontend map — label half still open (live-session residual, founder-accepted)
 
 ⚠️ Listed by TITLE, not line number — line numbers rot the moment anything is inserted above them. Search the title.
@@ -192,7 +198,10 @@ When entries are resolved, mark with the resolving commit SHA (git log is the re
   - ⚠️ **NOT FIXED and no fix proposed here.** The obvious repair (move the sleep to the end of the loop, or run once at startup) is a one-line product-code change and this baton is docs-only.
   - **Surfaced**: 2026-08-17, during the Deletion-feature C closeout.
 
-- [HONESTY] **[P2 · verify history write ordering — surfaced 2026-08-17, FILED NOT FIXED BY FOUNDER RULING] 🔴 `chat_history.answer` for Verify stores the UN-CORRECTED, UN-GROUNDED summary — and it reaches a PUBLIC surface**
+- [DONE] **[P2 · verify history write ordering — surfaced 2026-08-17, ✅ FIXED 2026-08-19 (SHA in `git log`, the write-ordering commit)] 🔴 `chat_history.answer` for Verify stores the UN-CORRECTED, UN-GROUNDED summary — and it reaches a PUBLIC surface**
+  - ✅ **FIXED 2026-08-19 — the recorded pure-move fix, applied as recorded:** the single `_safe_db_write(AuditLog, ChatHistory)` call moved to **after** both `summary` mutations; the premise re-verified at HEAD first (between the old write position and the new one there were exactly the two mutation `if`s — no DB read, nothing depending on the write; the response path, credit deduction and cost logging all sit after in both versions and are untouched). **The call was moved WHOLE, not split** — the AuditLog and ChatHistory rows are one all-or-nothing transaction, and splitting them to pin the AuditLog's source line would have changed failure semantics; the AuditLog's content and its ordering relative to everything that touches the DB are unchanged. **Guarded by `tests/test_verify_write_ordering.py`** — a source-order assertion (comment-stripped, positive controls, mutation-tested: the pre-fix order makes it FAIL).
+  - 🔴 **ONE-WAY DOOR, permanent caveat (same shape as the `/history` re-run contamination):** rows written **before** this fix still hold the pre-mutation text, and **nothing distinguishes them from post-fix rows** — no version column, no marker. Any reading of historical `chat_history` verify rows, and any share already created from them, carries the un-prefixed summary forever. The fix stops new degraded rows; it corrects nothing retroactively.
+  - **§2.7 re-baseline: NOT owed** — derived from the diff, not asserted: the change moves one write and adds comments/tests; no prompt, no retrieval, no generation, and the live response uses the same local variable either way. Answer CONTENT is byte-identical; only which version gets persisted changed.
   - **現況**: in the Verify handler, the `_safe_db_write()` that persists `answer=summary` runs **BEFORE** `summary` is mutated **twice** — first the spelling corrections, then the TFDA grounding. The row therefore stores the raw pre-mutation text. Nothing between the write and the mutations reads the DB.
   - **Blast radius — checked, not assumed.** `FeedbackBar` does **NOT** read it: `pages/verify.tsx:580` passes `result.summary` from the live response. **`ShareButton` DOES** — but only via `pages/history.tsx:278` (`answerText={item.answer}`). 🔴 **So a share created FROM THE HISTORY PAGE carries the un-prefixed summary, and share pages are PUBLIC.** That is what makes this `[HONESTY]` rather than a cosmetic ordering nit: the degraded text is the text a stranger reads.
   - **The fix is a PURE MOVE** of the `_safe_db_write()` call to after both mutations. No new state, no schema change, nothing in between reads the DB.

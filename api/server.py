@@ -1455,6 +1455,17 @@ async def verify_drug_interaction(
 
     elapsed_ms = int((time.time()-start_time)*1000)
 
+    if spelling_corrections:
+        summary = "Note: " + "; ".join(spelling_corrections) + ". Please verify. " + summary
+    if tfda_notes:
+        summary = "TFDA grounding — " + "; ".join(tfda_notes) + ". " + summary
+
+    # Write ordering (fixed 2026-08-19): this write MUST stay AFTER both summary
+    # mutations above — it used to run before them, so chat_history.answer stored
+    # the un-corrected, un-grounded text, and a share created from /history
+    # carried that degraded copy to a public page. Rows written before the fix
+    # still hold the pre-mutation text and cannot be retroactively distinguished.
+    # Guarded by tests/test_verify_write_ordering.py (source-order assertion).
     if not is_anonymous:
         _safe_db_write(db,
             AuditLog(id=audit_id, user_id=user_id,
@@ -1462,11 +1473,6 @@ async def verify_drug_interaction(
             ChatHistory(user_id=user_id, session_type="verify",
                 question=f"Drugs: {', '.join(body.drugs)}", answer=summary),
             label="Verify")
-
-    if spelling_corrections:
-        summary = "Note: " + "; ".join(spelling_corrections) + ". Please verify. " + summary
-    if tfda_notes:
-        summary = "TFDA grounding — " + "; ".join(tfda_notes) + ". " + summary
 
     # 成功後扣減 credits + log cost
     if is_anonymous:
