@@ -6,7 +6,7 @@ Usage:
     TEST_USER_EMAIL=a22817112@gmail.com \
     TEST_USER_ID=user_3B939OrkarbJWpfTT8nCi9kDJ1B \
     DODO_WEBHOOK_SECRET=whsec_xxx \
-    uv run python tests/test_webhook_cancel.py
+    uv run python scripts/smoke_webhook_cancel.py
 
 Requires:
     - Backend running locally with TEST_MODE=true
@@ -25,18 +25,29 @@ import base64
 import uuid
 import requests
 
+import pytest
+
 API_URL = os.getenv("API_URL", "http://localhost:8000")
 TEST_EMAIL = os.getenv("TEST_USER_EMAIL", "")
 TEST_USER_ID = os.getenv("TEST_USER_ID", "")
 DODO_SECRET = os.getenv("DODO_WEBHOOK_SECRET", "")
 
+# Collection-safety (founder ruling 2026-08-19, option (c)): these gates were
+# module-scope sys.exit(1), which ABORTS pytest collection for the ENTIRE suite
+# with INTERNALERROR when the env vars are unset — the recorded 291/28 baseline
+# was only reproducible by --ignore-ing this file. pytest.skip with
+# allow_module_level=True degrades to a SKIP under pytest and to a Skipped
+# traceback under plain `python` — either way the rest of the world keeps
+# running. Any future manual script copied from this one inherits the safe
+# pattern. (Run manually per the usage block above; the prints below are a
+# filed Rule 4 flag, deliberately left.)
 if not TEST_EMAIL or not TEST_USER_ID:
     print("ERROR: Set TEST_USER_EMAIL and TEST_USER_ID environment variables")
-    sys.exit(1)
+    pytest.skip("manual script: TEST_USER_EMAIL/TEST_USER_ID unset", allow_module_level=True)
 
 if not DODO_SECRET:
     print("ERROR: Set DODO_WEBHOOK_SECRET environment variable")
-    sys.exit(1)
+    pytest.skip("manual script: DODO_WEBHOOK_SECRET unset", allow_module_level=True)
 
 
 def make_webhook_payload(event_type: str) -> dict:
