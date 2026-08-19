@@ -2407,10 +2407,13 @@ async def cancel_subscription(
 # Rate limit: 10/hour via RATE_LIMITS entry above. Pro-gate uses
 # user_usage.plan_type (G4 decision; do NOT read Clerk publicMetadata).
 #
-# Note (CLAUDE.md Rule #7 deviation): uses pg_insert().on_conflict_do_update()
-# directly instead of _safe_db_write() because the helper is INSERT-only
-# (db.add + commit) and cannot express atomic UPSERT semantics. Extending
-# the helper would change its signature for all 12 existing call sites.
+# Note (CLAUDE.md Rule #7 deviation, class (a) — upsert): uses
+# pg_insert().on_conflict_do_update() directly instead of _safe_db_write()
+# because the helper is INSERT-only (db.add + commit) and cannot express atomic
+# UPSERT semantics. Extending the helper would change its signature for all 11
+# existing call sites. (Count corrected 2026-08-19 from the stale "12" — the
+# 2026-08-18 census found 11 EXECUTABLE call sites; a bare grep returns 15
+# because 3 hits are `#` comments and 1 is the definition.)
 
 class UserContextHashRequest(BaseModel):
     """PRD §3.1 v1.6: body carries ONLY the hash + locale. Raw
