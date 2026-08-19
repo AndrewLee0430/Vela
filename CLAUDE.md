@@ -128,7 +128,7 @@ docker run -p 8000:8000 vela
 4. **Never use `print()`** — use `logging.getLogger()`
 5. **Never expose `str(e)` in API responses** — use generic error messages
 6. **Never use `["*"]` for CORS origins**
-7. **Always use `_safe_db_write()` for DB writes** in server.py
+7. **`_safe_db_write()` is the required path for INSERTing new records across `api/`** — not just `server.py`. A direct `db.commit()` is permitted only when: **(a)** the DML is something the helper cannot express (bulk delete/update, upsert, raw SQL, or needing the inserted row back via refresh/RETURNING), or **(b)** the site requires different failure semantics — the exception must propagate, or a specific exception type must be distinguished (e.g. `IntegrityError` for idempotency; a billing-critical INSERT whose failure must not be swallowed). **Every (a)/(b) site states its reason in a comment at the call site** (precedent: `user_context_hash_upsert`, `clerk_webhook`). **CHECK: every `db.commit()` under `api/` outside `_safe_db_write` either is DML the helper cannot express, or carries a call-site comment naming its (a)/(b) reason. A bare-INSERT commit with neither is a violation.** *Baseline at adoption (2026-08-18): the CHECK fails at exactly 5 sites — `explain_identify_feedback`, `create_feedback`, `dodo_webhook` (ignored-event branch), `cost_tracker.log_api_cost`, `log_api_cost_standalone` — filed as debt, not grandfathered silently.*
 8. **`fda_cached.py` is dead code** — do not import or use it
 9. **`/api/consultation` was removed** — do not reference it
 10. **Disclaimers are frontend-rendered** — never instruct LLM to generate disclaimers; `generator.py` says "Do NOT add any disclaimer"

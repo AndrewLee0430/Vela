@@ -14,8 +14,8 @@ Classes are **additive and orthogonal** to the existing `[P0]`–`[P3]` ratings 
 | **[COMPLIANCE]** | legal / regulatory / data-protection obligation | **8** |
 | **[HONESTY]** | the product currently tells the user something untrue or misleading | **18** |
 | [DONE] | already fixed / resolved / accepted; retained for the record only | 34 |
-| [OTHER] | quality, hygiene, tooling, opportunistic | 74 |
-| | **total** | **134** |
+| [OTHER] | quality, hygiene, tooling, opportunistic | 75 |
+| | **total** | **135** |
 
 <!-- ⚠️ COUNT REPAIR 2026-08-11 (B0 commit): the table above had gone STALE by three entries —
      the fly-223 pytest-infra [OTHER] addition and the fly-224 duplicated-source [COMPLIANCE] +
@@ -55,6 +55,12 @@ Classes are **additive and orthogonal** to the existing `[P0]`–`[P3]` ratings 
      keys entry) and ONE RE-TAG [DONE] -> [HONESTY] (the label-drift entry, whose [DONE] tag
      contradicted its own "label half remains open" body) — so [DONE] 35->34, [HONESTY] 17->18,
      [OTHER] 73->74. The prediction matched the derivation; the cells record the derivation. -->
+
+<!-- ⚠️ RECOUNT 2026-08-19 (Rule 7 adoption commit): 134 -> 135, RE-DERIVED by the validated method,
+     not incremented. `^- ` = 169 total, `^- \[` = 135, `^- [^\[]` = 34, and 135 + 34 = 169;
+     0 indented class tags; 0 alternate list markers; 0 unrecognised tags; per-class sum
+     0+8+18+34+75 = 135 equals the independent `^- \[` total. Movement: +1 [OTHER] (the Rule 7
+     CHECK-baseline entry, filed at rule adoption per the ratified text's own closing sentence). -->
 
 
 
@@ -113,6 +119,13 @@ Classes are **additive and orthogonal** to the existing `[P0]`–`[P3]` ratings 
 When entries are resolved, mark with the resolving commit SHA (git log is the record), then remove.
 
 ---
+
+- [OTHER] **[P2 · Rule 7 CHECK baseline — filed at rule adoption 2026-08-18, NOT fixed] 5 bare-INSERT direct-commit sites owe migration to `_safe_db_write()` or a reason comment**
+  - **現況**: CLAUDE.md Rule 7 was rewritten 2026-08-18 (founder-ratified) to cover the whole `api/` tree, with a CHECK: *every `db.commit()` outside the helper either is DML the helper cannot express, or carries a call-site comment naming its (a)/(b) reason.* **At adoption the CHECK fails at exactly these 5 sites** (re-derived at HEAD, symbols + current lines): `explain_identify_feedback` (`api/server.py:1630`) · `create_feedback` (`:1732`) · **`dodo_webhook` — the IGNORED-EVENT branch only** (`:2091`, bare `db.add(WebhookEvent)` + commit; **the MAIN dodo path at `:2174` is class (a)** — a multi-statement UPDATE+INSERT transaction — and is NOT in scope here) · `cost_tracker.log_api_cost` (`api/services/cost_tracker.py:55`) · `cost_tracker.log_api_cost_standalone` (`:85`). **This entry is the debt ledger; the rule text carries only the baseline count — neither doc claims the other's job.**
+  - 🔴 **`explain_identify_feedback` and `create_feedback` carry a REAL CORRECTNESS DEFECT, not just nonconformance:** their hand-rolled `except Exception` blocks (`:1632-1634`, `:1734-1736`) **never call `db.rollback()`** — a failed INSERT leaves the session dirty for whatever touches it next. They re-implement the helper's contract minus its rollback. **Migrating them to `_safe_db_write()` fixes conformance and the defect in one move.**
+  - **`log_api_cost` / `log_api_cost_standalone`: migration is SAFE, and Rule 13 is an argument FOR it, not against.** Rule 13's never-block intent is **compatible** with the helper's swallow-and-return-False semantics — the Rule 13 `try/except` wrappers sit at the callers. Also an internal inconsistency the migration would normalize: **`log_api_cost_standalone` does `rollback + raise` (`:86-88`, inside its own outer catch at `:91`) while `log_api_cost` has no visible catch at the site** — two cost-logging paths, two different failure behaviours today.
+  - **Fix cost: small, mechanical, five call-site edits.** None is a medical-output path — feedback capture, webhook bookkeeping, cost logging. **Per-site gates beyond pytest: NONE owed** — no prompt changes (no §2.7 re-baseline), no render changes (no human-eye gate), no schema changes (no migration). Standard suite + tsc suffices; the dodo branch edit warrants one extra look because it sits in a payment webhook file, but the branch itself only records ignored events.
+  - **Surfaced**: 2026-08-18, by the Rule 7 adoption census (25 commit sites → 24 non-helper → 16 class (a) + 3 class (b) + these 5).
 
 - [OTHER] **[P3 · dead i18n keys — surfaced by the 2026-08-18 provenance recon, NOT fixed] `researchSub` / `verifySub` / `explainSub` are DEAD LANDING KEYS — 48 tsc-enforced cells, ZERO consumers**
   - **現況**: declared in the `LandingContent` interface (`utils/i18n.ts:41-43`) and therefore **maintained across all 16 locales = 48 cells** (the interface is a full `Record`, so tsc forces every locale to fill them) — yet **rendered NOWHERE**: a word-boundary grep over `pages/`, `components/`, `utils/`, `contexts/` returns zero consumers. The near-matches are the unrelated `researchSubtitle`/`verifySubtitle`/`explainSubtitle` keys, which is presumably how the deadness survived — a substring glance finds "consumers" that are a different key.
