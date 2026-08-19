@@ -115,6 +115,8 @@ Last shipped (to prod): **v190 — 2026-06-29 (fly version 190, nrt, image `depl
 
 ### 📋 OPEN ITEMS — consolidated for founder sequencing (reconciled 2026-08-03, post-fly-215)
 
+> 📋 **FOUNDER'S INTEGRATED SEQUENCING (2026-08-19, from the consultant-evaluation session — a dated note, not a re-write of the table below):** **Segment 1 — governance closeout:** Rule 7 ✅ · pytest collection contract ✅ · verify write-ordering fix ✅ (+ the three-commit deploy car in flight). **Segment 2 — honesty line:** TFDA re-pull + M3 (rows 6/1b) · ADR-007 (d) suppression (row 4) · the consolidated provenance sweep (row 5, absorbing old queue item 4's panel string). **Segment 3 — retrieval correctness:** ownership-anchored eval harness → reserved-seat mechanism (主線 A #1) → ownership interception → Lever 1 de-censoring (row #20's gate) → openFDA repair under its URL-first constraint (row 3). **Parallel:** EU SmPC probe + the hygiene batch. **C/D lines** per the BACKLOG stubs (MFDS · cross-country comparison · CIMA-gated-on-probe · pricing flag), each behind its recorded gate. **Landing: closed at Gate 6, frozen.** Entries live in BACKLOG (Product direction candidates, 2026-08-19 additions) — this note sequences, it does not restate.
+
 **Proposed order. Not a decision — the founder sequences.** Rationale for the ordering: (1) c2 is the only item with *live prod evidence of user-visible harm*; (2) two items are **blocked-by** c2 and must not be built before it; (3) the cheap honesty/hygiene items are batched so the 16-language pass happens **once**.
 
 | # | item | pri | where | why here |

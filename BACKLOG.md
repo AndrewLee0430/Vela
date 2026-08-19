@@ -1683,7 +1683,7 @@ waiting for evidence. The evidence arrived and points the other way.
 
 ---
 
-### [P3 — GATED, LOW priority] LAYER 2: Structured rendering of ALREADY-VALIDATED data (Verify)
+### ⛔ [RULED OUT 2026-08-19 — see the REJECTED DIRECTIONS entry at the end of this section; was: P3 — GATED, LOW priority] LAYER 2: Structured rendering of ALREADY-VALIDATED data (Verify)
 
 > **Formerly "TIER 1 Verify generative-UI PoC".** Survives the 2026-08-03 review, with corrections.
 
@@ -1723,6 +1723,8 @@ context. **Layer 3 is the differentiated direction; this is a polish item.** Dem
 ---
 
 ### [P2 — NEW 2026-08-03, GATED] LAYER 3: **Calibration UI** — help users know which answers deserve a second look
+
+> 📋 **CONSULTANT-MVP ADDENDUM 2026-08-19 (filed here, not as a new stub — dedup: this entry already owns the direction).** The consultant proposed a Calibration-UI MVP, citing NEJM AI / medRxiv literature — **recorded as his citations, unverified**. **THE GATE IS THE DURABLE CONTENT: do NOT build while Lever 1 remains structurally blind** (TECH_DEBT's `RETRIEVAL_REFUSAL_SHADOW` entry — the shadow skips the most one-sided pools, so its signal UNDERSTATES the problem) — **a confidence label computed from a censored signal, attached to an answer that may cite the wrong drug, is worse than no label.** Unlocks only after **Lever 1 de-censoring (open item #7 in the STATE queue sense — the shadow-gate widening)** AND a router-or-equivalent decision. This tightens, and does not replace, the ②-gates below.
 
 > **This is the differentiated direction.** Filed as its own entry, not a sub-tier, because **its goal is
 > different**: not *"easier to read"* but **"help the user know which answers deserve a second look."**
@@ -1847,3 +1849,37 @@ trustworthiness signal to output whose provenance is still being repaired.
 - **⚠️ Sequencing (part of the entry, per this section's convention): build this as 主線 A #1's FIRST STEP, not as a separate line** — it is the A/B instrument the reserved-seat measurement needs; a seat mechanism shipped without it cannot show what it changed.
 - **Cross-references (dedup checked 2026-08-18 — no existing entry covers a retrieval eval harness; "MRR"/"nDCG" appear nowhere else in BACKLOG/TECH_DEBT):** reuse, don't duplicate — **T1's ownership-assertion instrument** (`tests/probes/wrongdrug/owner_assertion.py`, six non-collapsing outcomes) is the per-case adjudicator this harness generalizes; the **Rule 17 metric-qualification lesson** on the K-union CITED-recovery number (any-whitelisted-LOINC ≠ question-answering — see the fly-211 entry's 2026-07-27 qualification) is the failure mode the key-derived qrels exist to prevent; and a new harness is a **10th constructor site** for TECH_DEBT open item #8 (`build_production_retriever()`) — build it against the shared constructor if #8 lands first, and note the coupling either way.
 - **Not scheduled. Founder sequences.**
+
+### [P2 · candidate — 主線 A #1, founder-ratified 2026-08-19] Reserved-seat mechanism for owned documents (threshold layer) — OFFLINE MEASUREMENT FIRST, build second
+
+- **What:** a deterministic seat for the queried drug's OWN documents — a lookup-based bypass keyed on `moiety`/`setid` (Rules 21/23), NOT a score change. **This is the FIFTH direction on the wrong-drug line and is NOT in the c2 closeout's excluded four** (`docs/c2_line_closeout_20260804.md` §0 excluded: c2's six options · the mention filter · the title-prefix re-embed · a threshold change) — **this entry IS the "new information" its do-not-reopen clause requires**, a direction outside all four.
+- **Why a seat sidesteps direction 4's blast radius:** it does **not** move the shared `local_threshold` (`api/server.py:450`, consumed by all three offline stores — local/TFDA/DailyMed), so nothing changes for any query without an ownership hit.
+- **Design constraint (2026-08-18 recon): TWO gates, not one** — the `min_score` floor AND the in-store `n_results=5` cutoff (`vector_store.py:120-121`). A seat that only bypasses the floor can still lose the seat to the cutoff; the mechanism must handle both.
+- **Acceptance instrument: the ownership-anchored eval harness (its own entry above, filed 2026-08-19) — build the harness as this line's FIRST STEP.** Smoke test: the deterministic **aspirin→ACECLOFENAC** probe (12/12 — the one case where N=1 is interpretable). **Consultant pass bar for the line: wrong-attribution <1% over ~100 high-risk drug-name queries.**
+- 🔴 **Medical-output when it ships: §2.7 + danger-path + human-eye gate.** The offline measurement phase owes none of those; the build phase owes all three.
+- **Not scheduled. Founder sequences (Segment 3 of the 2026-08-19 sequencing note in STATE).**
+
+### [P3 · measurement, half-day, offline, founder-ratified 2026-08-19] EU SmPC probe — test "Asian labels follow EU more than US" BEFORE any CIMA build
+
+- **What:** a ~30-drug offline comparison of label content (EU SmPC vs US label vs the Asian reference), testing the consultant's hypothesis that Asian labels track EU more closely than US.
+- **🔒 PRE-REGISTERED DECISION RULE, recorded verbatim so the outcome cannot be argued after the fact:** *divergent cases where EU is closer ≥30% → hypothesis stands, CIMA integration unlocks; <15% → PERMANENTLY REJECTED, file as a rejected direction; 15–30% → founder re-decides with the data.*
+- **Gates NOTHING except the CIMA stub below. Does not touch prod.** Output per Rule 20: script + result JSON under `tests/probes/`.
+
+### [SEQUENCING RULING · recorded 2026-08-19 so it is not re-proposed] Pre-retrieval router — DOWNGRADED from direct build to measurement-first
+
+- The consultant proposed a deterministic locale×intent router as a large build, citing external literature (MASDR-RAG arXiv 2606.11350; Xiang et al. ICLR 2026; RAGRoute) — **recorded as the consultant's citations, NOT verified**.
+- **Founder ruling 2026-08-19: NOT queued as a build.** Reasons: **(i)** the repo's own router-adjacent hypothesis carries a **measured partial refutation** — the Tier-B zero-reach finding (this file, the b2-BUILT/K-union region around the "Tier B contributed ZERO reach" bullet): `detect_brands_in_text` resolves 太田胃散 ambiguous with `ingredients=[]`, and Latin-script names never hit the CJK-keyed TFDA index; **(ii)** house discipline — large builds enter via an OFFLINE measurement with pre-registered pass/abandon conditions (the EU-probe pattern above), not via external papers.
+- **What would re-open it: a designed offline router measurement.** Until one is written and ratified, do not re-propose the build.
+
+### [REJECTED DIRECTIONS · recorded 2026-08-19] Generative UI (Layers 1+2) and Japan data ingest — ruled OUT
+
+- **Consultant's own recommendation, founder-concurred.** Recorded so future sessions do not re-propose them. **Re-opening requires new information, stated in writing.**
+- **Generative UI:** LAYER 1 was already NOT-PURSUING (decided 2026-08-03 — its entry above stands; this ruling CONCURS, it does not re-decide). **LAYER 2 is now ruled OUT as well** — its `[P3 — GATED]` entry above is superseded by this ruling; the gates recorded there no longer constitute a path back without new written information. (LAYER 3 / Calibration UI is NOT rejected — see its entry, extended this date.)
+- **Japan data ingest** (retrieval-corpus ingestion of Japanese regulatory data): ruled out. ⚠️ **Distinct from the b2 JP Tier-1 locale-panel data item** (authority names for the locale hint panel, blocked on native review) — that item is untouched by this ruling; do not conflate the two.
+
+### STUBS — scope on pickup (Product direction candidates; consultant-session 2026-08-18/19)
+
+- **(STUB — scope on pickup) [C-line] Korea MFDS DUR + 허가정보 batch ingest, locale-gated default OFF.** Consultant claims dev-account auto-approval / 10,000 calls/day — ⚠️ **external claims, MUST be re-verified live at pickup.** Gated on 主線 A passing the <1% wrong-attribution bar. *(Distinct from b2's KR Tier-1 locale-panel data — same country, different artifact.)*
+- **(STUB — scope on pickup) [C-line] Cross-country approval-status comparison (TW/KR/HK/SG).** Consultant claims all four registries are open-data with commercial reuse — ⚠️ **same re-verify-at-pickup flag.** Same 主線-A gate.
+- **(STUB — scope on pickup) Spain CIMA integration — gated HARD on the EU SmPC probe reading ≥30%.** **If the probe reads <15% this entry deletes itself per the probe's pre-registered rule.**
+- **(STUB — scope on pickup) Pricing A/B flag ($9.99 vs $19).** Build is ~1 day but **DO NOT run or read without traffic** — founder-deferred until a traffic threshold the founder sets at pickup.
