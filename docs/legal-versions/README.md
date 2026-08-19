@@ -91,7 +91,8 @@ section while still displaying `2026-05-08`.
 | v08 | 2026-08-11 | 2026-08-11 | `105fade` | `2026-06-12` ⚠️ | Third-party (Clerk) deletion notice added to §4 — counsel interim mitigation (fly 222) | [privacy_v08](privacy_v08_2026-08-11_to_2026-08-11.md) |
 | v09 | 2026-08-11 | 2026-08-11 | `493df70` | `2026-06-12` ⚠️ | Supremacy clause promoted from header note to titled §10 (fly 223) | [privacy_v09](privacy_v09_2026-08-11_to_2026-08-11.md) |
 | v10 | 2026-08-11 | 2026-08-11 | `64cca4e` | `2026-06-12` ⚠️ | Supremacy clause text standardised on counsel's 2026-08-11 wording (fly 224) | [privacy_v10](privacy_v10_2026-08-11_to_2026-08-11.md) |
-| **current** | **2026-08-11** | — | *this commit* | **`2026-08-11`** | "Last updated" corrected; prior-versions contact note added (fly 226) | `pages/privacy.tsx` |
+| v11 | 2026-08-11 | 2026-08-19 | `8a9fc1e` | `2026-08-11` | "Last updated" corrected; prior-versions contact note added (fly 226) | [privacy_v11](privacy_v11_2026-08-11_to_2026-08-19.md) |
+| **current** | **2026-08-19** | — | `4f50c57` | **`2026-08-18`** ⚠️ | §4 third-party-deletion clause replaced (counsel-approved 2026-08-19); label bumped at edit time (2026-08-18), text effective at deploy (2026-08-19) | `pages/privacy.tsx` |
 
 ⚠️ Four texts (v07–v10) all displayed `2026-06-12`.
 
