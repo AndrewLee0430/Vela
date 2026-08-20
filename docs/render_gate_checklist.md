@@ -408,12 +408,18 @@ happened at all.
 
 ## Gate 7 — "Gate (d)": ADR-007 (d) locale-panel authority-row suppression on grounded answers
 
-> ## ✅ LOCAL RUN 2026-08-19/20 — founder-run, 4/4 PASS (+1 bonus row) · ⏳ PROD RE-VERIFICATION PENDING
-> **Run deviation, recorded:** the local run used the **`:3000` dev server** — CORS blocked the
-> static-export serve on `:4321`. These are behavior-logic rows (does the filter fire?), and the
-> shipped bundle is covered by the probes; **the prod re-verification below runs against the built
-> artifact.** Results filed in the observation cells; row 4 is **PASS-BY-EVIDENCE** with a prod
-> residual — see its cells and the corrected setup.
+> ## 🎉 GATE 7 CLOSED (2026-08-20) — LOCAL 4/4 (+1 bonus) · PROD P1–P3 3/3 · sweep spot-check 4/4. No pending rows remain.
+> Founder-run end to end: the local run 2026-08-19/20 (rows above), the prod re-verification
+> 2026-08-20 against **fly 238** (the `5e9aaa3` deploy — `/health` revision carries `a8b8e1e`), and
+> the provenance-sweep render spot-check in the same session (recorded below the P-table). The same
+> founder session block also passed the **5-page light-scheme theme eye row** (post deploy-car-3,
+> fly 239) — that row's record lives in the STATE closeout entry and the TECH_DEBT theme entries.
+>
+> **Local-run deviation, preserved as history:** the local run used the **`:3000` dev server** —
+> CORS blocked the static-export serve on `:4321`. These are behavior-logic rows (does the filter
+> fire?), and the shipped bundle is covered by the probes; **the prod re-verification ran against
+> the built artifact**, which is what retires the deviation. Row 4 was **PASS-BY-EVIDENCE** with a
+> prod residual — discharged by P2.
 
 **Change under test:** **`a8b8e1e`** (`feat(locale-hint): suppress the integrated authority's
 pointer row on grounded answers (ADR-007 (d) option ii)`, 2026-08-19). At the prod re-verification,
@@ -460,16 +466,24 @@ matched authority; the un-grounded-TW residual of the naming collision (row 3 sh
 row "TFDA" while non-TFDA citation chips are visible) is **deferred by option (C)**, not a defect
 of this change.
 
-### Prod re-verification — ⏳ PENDING, founder-run after the deploy carrying `a8b8e1e` + the sweep
+### Prod re-verification — ✅ RUN AND PASSED 3/3, founder-run 2026-08-20 against fly 238 (`5e9aaa3` deploy)
 
-Confirm `/health` `revision` first. Any "note PRESENT" assertion reads the **NEW** `localeHintNote`
-text quoted in the amendment above.
+Any "note PRESENT" assertion reads the **NEW** `localeHintNote` text quoted in the amendment above.
 
 | # | URL | setup | query | what PASS looks like | observed | VERDICT | NOTES |
 |---|---|---|---|---|---|---|---|
-| P1 | `https://vela.an-tho.com/research` | **zh-TW**, country resolves TW | `冠脂妥台灣核准的適應症是什麼` | row 1's assertion on the built artifact: chip 『TFDA 核准適應症』 present → pointer row "TFDA" ABSENT (or whole panel absent) | | | |
-| P2 | `https://vela.an-tho.com/research` | **en** · `/settings` → **My Context** tab → **Country / region** → Singapore → Save → confirm `?localeDebug=1` shows `country=SG · level=settings`; restore afterwards | `What is the starting dose of metformin?` | HSA pointer row present + the NEW note text present — SG pass-through eyeballed on prod (the half row 4 deferred) | | | |
-| P3 | `https://vela.an-tho.com/research` | **zh-TW**, country resolves TW | `metformin 起始劑量與最大劑量` | pointer row "TFDA" PRESENT + the **NEW zh-TW note** 「本回答未使用上述機關的資料，連結僅供你自行查證。」 rendered verbatim | | | |
+| P1 | `https://vela.an-tho.com/research` | **zh-TW**, country resolves TW | `冠脂妥台灣核准的適應症是什麼` | row 1's assertion on the built artifact: chip 『TFDA 核准適應症』 present → pointer row "TFDA" ABSENT (or whole panel absent) | citation chips 『TFDA 核准適應症』 ×4 → **whole panel ABSENT** (collapse path — same shape as the local run, now on the built artifact) | **PASS** | founder, 2026-08-20, fly 238 |
+| P2 | `https://vela.an-tho.com/research` | **en** · `/settings` → **My Context** tab → **Country / region** → Singapore → Save → confirm `?localeDebug=1` shows `country=SG · level=settings`; restore afterwards | `What is the starting dose of metformin?` | HSA pointer row present + the NEW note text present — SG pass-through eyeballed on prod (the half row 4 deferred) | `level=settings` verified via `?localeDebug=1` · panel renders (Singapore) · **HSA pointer row PRESENT** · the NEW note text PRESENT · **zero suppression** | **PASS** | discharges row 4's deferred SG eyeball — the corrected My-Context steps worked first try |
+| P3 | `https://vela.an-tho.com/research` | **zh-TW**, country resolves TW | `metformin 起始劑量與最大劑量` | pointer row "TFDA" PRESENT + the **NEW zh-TW note** 「本回答未使用上述機關的資料，連結僅供你自行查證。」 rendered verbatim | un-grounded answer → **pointer row "TFDA" PRESENT** + the NEW zh-TW note rendered **verbatim** | **PASS** | the protective behavior survives on prod |
+
+### Provenance-sweep render spot-check — ✅ 4/4 PASS, same founder session (2026-08-20)
+
+| # | surface | what PASS looks like | VERDICT |
+|---|---|---|---|
+| S1 | `/research` footer | `researchAttr2` names DailyMed (FDA/NLM) · **new `researchAttr4` OGDL line renders** | **PASS** |
+| S2 | `/verify` footer | `verifyAttr1` reads "(DailyMed, with OpenFDA fallback)" | **PASS** |
+| S3 | `/faq` | both answers carry the new parentheticals ("DailyMed, FDA/NLM" · "DailyMed, with OpenFDA fallback") | **PASS** |
+| S4 | TFDA chip tooltip | the zh-TW `tfdaSourceTip` cell verified **verbatim** on the chip (no longer the wrong-agency `officialTip`) | **PASS** |
 
 ---
 
