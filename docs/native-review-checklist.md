@@ -28,7 +28,7 @@ normal-confidence and are **out of scope** for this gate.
 > Review + edit happen **in the `.ts` files**; this doc tracks the English reference,
 > risk level, file location, and per-cell status.
 
-**Inventory: 47 keys × 6 locales = 282 cells.** *(2026-07-03: +5 Verify transparency keys #40–44, shipped best-effort in fly v194 — deferred-verification + TFDA grounding-note strings; +3 keys #45–47, shipped v196 — failed_no_data messages + TFDA chip label. All in `utils/i18n-ui.ts`.)*
+**Inventory: 53 keys × 6 locales = 318 cells.** *(2026-07-03: +5 Verify transparency keys #40–44, shipped best-effort in fly v194 — deferred-verification + TFDA grounding-note strings; +3 keys #45–47, shipped v196 — failed_no_data messages + TFDA chip label. All in `utils/i18n-ui.ts`. 2026-08-20: +6 keys #48–53, the provenance sweep — new TFDA tooltip + OGDL attribution + reworded DailyMed/OpenFDA provenance strings, MT baseline; #48–51 in `utils/i18n-ui.ts`, #52–53 in `utils/i18n-faq.ts`. `localeHintNote` was also reworded but is NOT inventoried here — its th/ar/hi/bn/he/vi cells are deliberate EN placeholders until 在地差異 (d) lands real copy.)*
 
 ---
 
@@ -85,9 +85,15 @@ Risk: 🔴 = specialised clinical/medical terminology (highest review priority) 
 | 45 | `verifyFailedMsg` | i18n-ui.ts | The check could not be completed — no drug label data was available for this request. | 🟡 |
 | 46 | `verifyFailedAdvice` | i18n-ui.ts | Please try again later, or consult a pharmacist or physician. | 🟡 |
 | 47 | `tfdaSourceLabel` | i18n-ui.ts | TFDA Approved Indication | 🔴 |
+| 48 | `tfdaSourceTip` | i18n-ui.ts | From Taiwan FDA (TFDA) drug licence data | 🔴 |
+| 49 | `researchAttr2` | i18n-ui.ts | Drug label data from DailyMed (FDA/NLM official drug labels). | 🟡 |
+| 50 | `researchAttr4` | i18n-ui.ts | Taiwan drug licence data from the TFDA (Ministry of Health and Welfare, Food and Drug Administration), used under the Open Government Data License v1.0. | 🟡 |
+| 51 | `verifyAttr1` | i18n-ui.ts | Drug interaction data from official FDA drug labels (DailyMed, with OpenFDA fallback). | 🟡 |
+| 52 | *(FAQ data-sources answer)* | i18n-faq.ts | …FDA drug labels (DailyMed, FDA/NLM), TFDA license data, and LOINC/MedlinePlus reference information. | 🟡 |
+| 53 | *(FAQ Verify answer)* | i18n-faq.ts | Verify checks drug interactions using official FDA drug label data (DailyMed, with OpenFDA fallback). … | 🟡 |
 
 ⚪ generic (lowest priority): #1, 4–7, 9–11*, 15, 16, 22–25, 38, 39 (\*9–11 are 🟡 — common clinical role nouns; verify but not specialised).
-🔴 specialised (review first): #8, 12–14, 17–21, 26–37, 41–42 (41–42 are safety-relevant — a softened translation would make a REFUSED verification read as reassurance), 47 (scope-accurate chip: must read as "approved INDICATION", never as bare TFDA approval/full-label authority — the FDA-Label-Analysis mislabel lesson).
+🔴 specialised (review first): #8, 12–14, 17–21, 26–37, 41–42 (41–42 are safety-relevant — a softened translation would make a REFUSED verification read as reassurance), 47 (scope-accurate chip: must read as "approved INDICATION", never as bare TFDA approval/full-label authority — the FDA-Label-Analysis mislabel lesson), 48 (agency provenance: must read as TAIWAN FDA licence data, never US FDA labeling — the wrong-agency tooltip this key exists to replace).
 
 ---
 

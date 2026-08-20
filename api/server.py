@@ -2936,7 +2936,7 @@ Vela serves three workflows for clinicians outside the US English market — phy
 
 ## Data sources
 
-Vela's evidence pipeline retrieves from PubMed (40M+ peer-reviewed articles), FDA drug labels (official US drug labels and interactions, via OpenFDA), and NIH LOINC + RxNorm + MedlinePlus (lab/drug/condition standards). FDA DailyMed and local-regulator augmentation (TFDA/PMDA/MFDS/HSA) are roadmapped.
+Vela's evidence pipeline retrieves from PubMed (40M+ peer-reviewed articles), FDA drug labels via DailyMed (FDA/NLM official labeling), TFDA licence data (Taiwan approved indications), and NIH LOINC + RxNorm + MedlinePlus (lab/drug/condition standards). Local-regulator augmentation beyond Taiwan (PMDA/MFDS/HSA) is roadmapped.
 
 ## Privacy
 

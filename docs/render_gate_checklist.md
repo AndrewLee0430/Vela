@@ -51,6 +51,9 @@ NOTES; this is **not** a PASS).
 **Change under test:** `a7e47c2` — a `source_type == 'local'` citation keeps its slot and its `[N]`
 but renders with **no credibility pill** and **no source label**, reading *"Source withdrawn"* /
 *"來源已撤回"*, and is excluded from the source-chip summary.
+*(⚠️ Correction 2026-08-20: this line briefly read `a8b8e1e` — a misplaced edit; `a8b8e1e` is the
+ADR-007 (d) commit and belongs to Gate 7 below. Gate 1 ran 2026-08-07 against fly 216 on the
+tombstone commit `a7e47c2`; restored, not silently.)*
 
 ❌ ~~⚠️ **Requires a deployed build.** Nothing was deployed when this form was written.~~ → ✅ **RUN 2026-08-07 against fly 216** (deployed the same day, health 200). **Result: 4/4 PASS, plus both of the rows a unit test could never check.**
 
@@ -405,13 +408,16 @@ happened at all.
 
 ## Gate 7 — "Gate (d)": ADR-007 (d) locale-panel authority-row suppression on grounded answers
 
-> ## ⏳ PENDING — founder-run, NOT yet run. Blank form; fill the observation cells at gate time.
-> This gate is **OWED before any deploy carrying the ADR-007 (d) commit** (🔴 render change on
-> `/research`). The change is committed LOCALLY and NOT pushed/deployed until this is scheduled.
+> ## ✅ LOCAL RUN 2026-08-19/20 — founder-run, 4/4 PASS (+1 bonus row) · ⏳ PROD RE-VERIFICATION PENDING
+> **Run deviation, recorded:** the local run used the **`:3000` dev server** — CORS blocked the
+> static-export serve on `:4321`. These are behavior-logic rows (does the filter fire?), and the
+> shipped bundle is covered by the probes; **the prod re-verification below runs against the built
+> artifact.** Results filed in the observation cells; row 4 is **PASS-BY-EVIDENCE** with a prod
+> residual — see its cells and the corrected setup.
 
-**Change under test:** the ADR-007 (d) option (ii) commit of 2026-08-19 (`feat(locale-hint): …` —
-SHA in the STATE ship-ledger entry; fill in here at gate time and **confirm `/health` `revision`
-contains it before row 1**).
+**Change under test:** **`a8b8e1e`** (`feat(locale-hint): suppress the integrated authority's
+pointer row on grounded answers (ADR-007 (d) option ii)`, 2026-08-19). At the prod re-verification,
+**confirm `/health` `revision` contains it before row P1**.
 
 **What changed:** when an answer's citations include a source whose authority is in
 `INTEGRATED_AUTHORITY_KEYS` (today: TFDA via source_type `tfda`), that authority's pointer row is
@@ -421,6 +427,12 @@ row that survives. A TFDA-only panel collapses entirely via the existing empty-a
 answers keep the pointer. Zero string changes; the flag `NEXT_PUBLIC_LOCALE_HINT_ENABLED` is
 already ON in prod, so this ships inside the existing flag. Panel renders in zh-TW/en only.
 
+**⚠️ AMENDMENT 2026-08-20 — the deploy car now also carries the provenance sweep, which REWORDS
+`localeHintNote`** (semantic level corpus→per-answer, founder-ratified with this local run already
+passed on the OLD string). At the prod re-verification, any "note PRESENT" assertion reads the
+**NEW** text: zh-TW **「本回答未使用上述機關的資料，連結僅供你自行查證。」** / en **"This answer did
+not use data from these authorities; the links are pointers for your own verification."**
+
 **Rows follow convention 5 below** (never bare "TFDA"). Queries are suggestions — any query
 producing the stated citation state is valid; per the fly-214 Finding 2 lesson, a grounded row
 that retrieves no TFDA citation needs **stronger phrasing, not a FAIL** (the canonical grounded
@@ -428,16 +440,36 @@ query is `冠脂妥台灣核准的適應症是什麼`).
 
 | # | URL | UI lang / setup | query (suggested) | what PASS looks like | observed | VERDICT | NOTES |
 |---|---|---|---|---|---|---|---|
-| 1 | `https://vela.an-tho.com/research` | **zh-TW**, country resolves TW | `冠脂妥台灣核准的適應症是什麼` | **the citation chip reading 『TFDA 核准適應症』 is present** → **the locale-panel pointer row "TFDA" is ABSENT** (row absent, or the whole panel absent via the collapse path — both PASS); if the reimbursement category matched, the NHI pointer row is PRESENT; the note 「Vela 未整合上述機關資料」 renders ONLY if ≥1 pointer row survives | | | |
-| 2 | `https://vela.an-tho.com/research` | **en**, country resolves TW | `What is the approved indication of 冠脂妥 in Taiwan?` (must fire an EN keyword, e.g. "approved indication", AND produce the TFDA citation chip) | same assertions as row 1, English panel text | | | |
-| 3 | `https://vela.an-tho.com/research` | **zh-TW**, country resolves TW | `metformin 起始劑量與最大劑量` (keyword fires; retrieval expected PubMed/DailyMed, **no** TFDA citation; must NOT be an isFallback answer — that suppresses the panel for a different reason) | **no citation chip reading 『TFDA 核准適應症』** → **the locale-panel pointer row "TFDA" is PRESENT** and the note is PRESENT — the protective behavior survives un-grounded | | | |
-| 4 | `https://vela.an-tho.com/research` | **en**, Settings → Country/region = **SG** (control) | `What is the starting dose of metformin?` | panel byte-identical to pre-change: HSA pointer row present, note present — the suppression must not touch authorities outside `INTEGRATED_AUTHORITY_KEYS` (SG/MY/Tier-2 pass through) | | | |
+| 1 | `https://vela.an-tho.com/research` | **zh-TW**, country resolves TW | `冠脂妥台灣核准的適應症是什麼` | **the citation chip reading 『TFDA 核准適應症』 is present** → **the locale-panel pointer row "TFDA" is ABSENT** (row absent, or the whole panel absent via the collapse path — both PASS); if the reimbursement category matched, the NHI pointer row is PRESENT; the note renders ONLY if ≥1 pointer row survives | citation chips 『TFDA 核准適應症』 ×4 → **whole panel ABSENT** (collapse path — TFDA was the only matched authority) | **PASS** | local `:3000` run, 2026-08-19/20 |
+| 2 | `https://vela.an-tho.com/research` | **en**, country resolves TW | `What is the approved indication of 冠脂妥 in Taiwan?` (must fire an EN keyword, e.g. "approved indication", AND produce the TFDA citation chip) | same assertions as row 1, English panel text | chip 『TFDA 核准適應症』 ×1 → **panel ABSENT** (same collapse path, en) | **PASS** | local `:3000` run |
+| 3 | `https://vela.an-tho.com/research` | **zh-TW**, country resolves TW | `metformin 起始劑量與最大劑量` (keyword fires; retrieval expected PubMed/DailyMed, **no** TFDA citation; must NOT be an isFallback answer — that suppresses the panel for a different reason) | **no citation chip reading 『TFDA 核准適應症』** → **the locale-panel pointer row "TFDA" is PRESENT** and the note is PRESENT — the protective behavior survives un-grounded | DailyMed-only citations → **panel PRESENT, pointer row "TFDA" PRESENT, note PRESENT** | **PASS** | local run against the OLD note string; prod re-verification reads the NEW text (amendment above) |
+| 4 | `https://vela.an-tho.com/research` | **en** · `/settings` → **My Context** tab (second tab — default is My Shares) → **Country / region** → Singapore → **Save** (writes `vela_user_context.locale = "SG"` — waterfall **L1**, authoritative over L2/L3/L4). Confirm with `?localeDebug=1` → `country=SG · level=settings`. Restore the previous value after the row. | `What is the starting dose of metformin?` | panel byte-identical to pre-change: HSA pointer row present, note present — the suppression must not touch authorities outside `INTEGRATED_AUTHORITY_KEYS` (SG/MY/Tier-2 pass through) | **PASS-BY-EVIDENCE, prod residual:** the run's original cell named a non-existent path ("Settings → Country/region" without the tab — form error, corrected in this cell), and a DevTools timezone override (Asia/Singapore) was overridden by an upstream waterfall layer (see below). Pass-through established by (a) the mutation-tested guard's SG/MY/Tier-2 byte-identical assertions + (b) the observed zero-suppression TW panel on an un-grounded answer. **SG UI eyeball moves to the prod re-verification (row P2).** | **PASS-BY-EVIDENCE** | see waterfall note below |
+| 5 *(bonus, recorded)* | `https://vela.an-tho.com/research` | **en**, country resolves TW | un-grounded en query (locale keyword fired, no TFDA citation) | pointer + note present on the **en** path too | **pointer row "TFDA" PRESENT, note PRESENT** | **PASS** | protective behavior confirmed on the en path |
+
+**Why the DevTools timezone override could not work (row 4, investigated 2026-08-20):** the
+waterfall (`utils/country.ts` `resolveCountry`) is **L1 `vela_user_context.locale` (Settings → My
+Context → Country/region) > L2 `vela_user_context.work_language` > L3 IANA timezone > L4 UI
+language**. A signed-in founder profile carries L1 and/or L2 in the `vela_user_context`
+localStorage blob, so an L3 timezone override can never win; DevTools sensor overrides also reset
+silently between queries (the documented `?localeDebug=1` rationale). **The real SG reproduction
+is the L1 path now written into row 4's setup cell.**
 
 **Known and expected — do NOT record as failures:** on row 1/2, the panel disappearing entirely
 (rather than rendering with fewer rows) is the DESIGNED collapse path when TFDA was the only
 matched authority; the un-grounded-TW residual of the naming collision (row 3 shows the pointer
 row "TFDA" while non-TFDA citation chips are visible) is **deferred by option (C)**, not a defect
 of this change.
+
+### Prod re-verification — ⏳ PENDING, founder-run after the deploy carrying `a8b8e1e` + the sweep
+
+Confirm `/health` `revision` first. Any "note PRESENT" assertion reads the **NEW** `localeHintNote`
+text quoted in the amendment above.
+
+| # | URL | setup | query | what PASS looks like | observed | VERDICT | NOTES |
+|---|---|---|---|---|---|---|---|
+| P1 | `https://vela.an-tho.com/research` | **zh-TW**, country resolves TW | `冠脂妥台灣核准的適應症是什麼` | row 1's assertion on the built artifact: chip 『TFDA 核准適應症』 present → pointer row "TFDA" ABSENT (or whole panel absent) | | | |
+| P2 | `https://vela.an-tho.com/research` | **en** · `/settings` → **My Context** tab → **Country / region** → Singapore → Save → confirm `?localeDebug=1` shows `country=SG · level=settings`; restore afterwards | `What is the starting dose of metformin?` | HSA pointer row present + the NEW note text present — SG pass-through eyeballed on prod (the half row 4 deferred) | | | |
+| P3 | `https://vela.an-tho.com/research` | **zh-TW**, country resolves TW | `metformin 起始劑量與最大劑量` | pointer row "TFDA" PRESENT + the **NEW zh-TW note** 「本回答未使用上述機關的資料，連結僅供你自行查證。」 rendered verbatim | | | |
 
 ---
 

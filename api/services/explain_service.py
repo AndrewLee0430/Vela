@@ -1,7 +1,7 @@
 """
 Explain Feature — 3-Stage Pipeline
 Stage 1: Extract entities (entity_extractor.py)
-Stage 2: Parallel API lookups (LOINC, RxNorm, MedlinePlus, FDA)
+Stage 2: Parallel API lookups (LOINC, RxNorm, MedlinePlus)
 Stage 3: Generate plain-language explanation (streaming)
 
 §2.1 PHASE B (PRD v1.4 + ADR 005): Stage 3 generation wired through

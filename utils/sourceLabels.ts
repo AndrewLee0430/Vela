@@ -46,7 +46,7 @@ export interface SourceLike {
 export interface SourceLabel {
     label: string;                    // static fallback (proper nouns; also the safety net)
     labelKey?: 'tfdaSourceLabel';     // optional i18n indirection, resolved via getUI
-    tooltipKey?: 'peerReviewedTip' | 'officialTip';
+    tooltipKey?: 'peerReviewedTip' | 'officialTip' | 'tfdaSourceTip';
 }
 
 // Resolve the user-language display label. Callers pass getUI(lang); the structural
@@ -83,7 +83,10 @@ export const SOURCE_LABELS: Record<string, SourceLabel> = {
     // ADR 007 grounding-lite: SCOPE-ACCURATE label (approved indication ONLY) — deliberately
     // NOT a bare "TFDA" that would imply full-label/safety authority (cf. the "FDA Label
     // Analysis" mislabel lesson). Kept as its OWN bucket — must NOT merge with FDA.
-    tfda:           { label: 'TFDA 核准適應症', labelKey: 'tfdaSourceLabel', tooltipKey: 'officialTip' },
+    // Provenance sweep 2026-08-20: tooltip is its OWN key too — officialTip claims "FDA drug
+    // labeling", the wrong agency for a Taiwanese 許可證 citation (fly-214 provenance finding).
+    // officialTip stays true for its remaining consumers (fda / local / dailymed — all FDA labeling).
+    tfda:           { label: 'TFDA 核准適應症', labelKey: 'tfdaSourceLabel', tooltipKey: 'tfdaSourceTip' },
     dailymed:       { label: 'DailyMed',   tooltipKey: 'officialTip' },   // reserved (Phase 1B)
     loinc:          { label: 'LOINC' },
     medlineplus:    { label: 'MedlinePlus' },

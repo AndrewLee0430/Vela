@@ -801,6 +801,9 @@ function ResearchForm() {
                 <p dangerouslySetInnerHTML={{ __html: ui.researchAttr1 }} />
                 <p dangerouslySetInnerHTML={{ __html: ui.researchAttr2 }} />
                 <p dangerouslySetInnerHTML={{ __html: ui.researchAttr3 }} />
+                {/* TFDA OGDL v1.0 顯名 attribution (provenance sweep 2026-08-20) — the TFDA licence
+                    corpus has been a Research source since v193; the footer must attribute it. */}
+                <p dangerouslySetInnerHTML={{ __html: ui.researchAttr4 }} />
             </div>
 
         <UpgradeModal isOpen={showUpgradeModal} onClose={() => setShowUpgradeModal(false)} />
