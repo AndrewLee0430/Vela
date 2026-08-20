@@ -1,0 +1,6402 @@
+{
+ "generated": "2026-08-20 09:27:35Z",
+ "git_head": "0dd3aa3a955da8453d8a902239a0b76f55b10e27",
+ "seed": 20260820,
+ "store": "dailymed",
+ "arm": "raw",
+ "level": "pool",
+ "min_score": 0.6,
+ "n_results": 5,
+ "param_provenance": {
+  "min_score_source": "api/server.py HybridRetriever(local_threshold=…), cross-checked retriever.py default",
+  "n_results_source": "api/server.py retrieve(max_results=body.max_results or N), cross-checked retrieve() default"
+ },
+ "corpus_docs": 4608,
+ "eligible_drugs": 910,
+ "multi_key_sets": [
+  [
+   "ACETYLSALICYLIC ACID",
+   "ASPIRIN"
+  ]
+ ],
+ "embedding_calls": 103,
+ "queries": [
+  {
+   "qid": "Q000",
+   "drug_id": "ACAMPROSATE CALCIUM",
+   "key_set": [
+    "ACAMPROSATE CALCIUM"
+   ],
+   "key_used": "ACAMPROSATE CALCIUM",
+   "template": "{drug} drug interactions",
+   "query": "acamprosate calcium drug interactions",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.6429,
+     "setid": "fe6f754f-62b4-4c86-805d-221332409516",
+     "moiety": "ACAMPROSATE CALCIUM",
+     "loinc": "34070-3",
+     "title": "Campral (acamprosate calcium) — Contraindications",
+     "label": "relevant"
+    },
+    {
+     "rank": 1,
+     "score": 0.6165,
+     "setid": "fe6f754f-62b4-4c86-805d-221332409516",
+     "moiety": "ACAMPROSATE CALCIUM",
+     "loinc": "34073-7",
+     "title": "Campral (acamprosate calcium) — Drug Interactions",
+     "label": "relevant"
+    }
+   ],
+   "n_pool": 2,
+   "r_corpus": 5,
+   "has_relevant": true,
+   "first_relevant_rank": 0,
+   "rr": 1.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.5531,
+   "best_corpus_relevant": {
+    "score": 0.6429,
+    "overall_rank": 0,
+    "setid": "fe6f754f-62b4-4c86-805d-221332409516",
+    "loinc": "34070-3",
+    "title": "Campral (acamprosate calcium) — Contraindications",
+    "shortfall_vs_min_score": -0.0429
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.6429,
+    "overall_rank": 0,
+    "setid": "fe6f754f-62b4-4c86-805d-221332409516",
+    "loinc": "34070-3",
+    "title": "Campral (acamprosate calcium) — Contraindications",
+    "shortfall_vs_min_score": -0.0429
+   },
+   "corpus_top1": {
+    "score": 0.6429,
+    "moiety": "ACAMPROSATE CALCIUM",
+    "loinc": "34070-3",
+    "title": "Campral (acamprosate calcium) — Contraindications"
+   }
+  },
+  {
+   "qid": "Q001",
+   "drug_id": "ACETYLCYSTEINE",
+   "key_set": [
+    "ACETYLCYSTEINE"
+   ],
+   "key_used": "ACETYLCYSTEINE",
+   "template": "{drug} drug interactions",
+   "query": "acetylcysteine drug interactions",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.6121,
+     "setid": "472f158a-5ab9-4308-8e49-1116e6ea3d39",
+     "moiety": "ACETYLCYSTEINE",
+     "loinc": "34070-3",
+     "title": "ACETADOTE (Acetylcysteine) — Contraindications",
+     "label": "relevant"
+    }
+   ],
+   "n_pool": 1,
+   "r_corpus": 4,
+   "has_relevant": true,
+   "first_relevant_rank": 0,
+   "rr": 1.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.3904,
+   "best_corpus_relevant": {
+    "score": 0.6121,
+    "overall_rank": 0,
+    "setid": "472f158a-5ab9-4308-8e49-1116e6ea3d39",
+    "loinc": "34070-3",
+    "title": "ACETADOTE (Acetylcysteine) — Contraindications",
+    "shortfall_vs_min_score": -0.0121
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.6121,
+    "overall_rank": 0,
+    "setid": "472f158a-5ab9-4308-8e49-1116e6ea3d39",
+    "loinc": "34070-3",
+    "title": "ACETADOTE (Acetylcysteine) — Contraindications",
+    "shortfall_vs_min_score": -0.0121
+   },
+   "corpus_top1": {
+    "score": 0.6121,
+    "moiety": "ACETYLCYSTEINE",
+    "loinc": "34070-3",
+    "title": "ACETADOTE (Acetylcysteine) — Contraindications"
+   }
+  },
+  {
+   "qid": "Q002",
+   "drug_id": "ADAGRASIB",
+   "key_set": [
+    "ADAGRASIB"
+   ],
+   "key_used": "ADAGRASIB",
+   "template": "{drug} warnings and precautions",
+   "query": "adagrasib warnings and precautions",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.6068,
+     "setid": "fe0ced75-ccbf-4d2e-bd0d-b57e60ab913f",
+     "moiety": "TIROFIBAN HYDROCHLORIDE MONOHYDRATE",
+     "loinc": "43685-7",
+     "title": "AGGRASTAT (TIROFIBAN) — Warnings and Precautions",
+     "label": "wrong_object"
+    },
+    {
+     "rank": 1,
+     "score": 0.6007,
+     "setid": "0b8bf078-34c2-4f45-9012-38a8ac082b01",
+     "moiety": "ADAGRASIB",
+     "loinc": "34073-7",
+     "title": "KRAZATI (adagrasib) — Drug Interactions",
+     "label": "relevant"
+    }
+   ],
+   "n_pool": 2,
+   "r_corpus": 5,
+   "has_relevant": true,
+   "first_relevant_rank": 1,
+   "rr": 0.5,
+   "has_wrong_object": true,
+   "wrong_object_at_rank1": true,
+   "ndcg5": 0.214,
+   "best_corpus_relevant": {
+    "score": 0.6007,
+    "overall_rank": 1,
+    "setid": "0b8bf078-34c2-4f45-9012-38a8ac082b01",
+    "loinc": "34073-7",
+    "title": "KRAZATI (adagrasib) — Drug Interactions",
+    "shortfall_vs_min_score": -0.0007
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.6007,
+    "overall_rank": 1,
+    "setid": "0b8bf078-34c2-4f45-9012-38a8ac082b01",
+    "loinc": "34073-7",
+    "title": "KRAZATI (adagrasib) — Drug Interactions",
+    "shortfall_vs_min_score": -0.0007
+   },
+   "corpus_top1": {
+    "score": 0.6068,
+    "moiety": "TIROFIBAN HYDROCHLORIDE MONOHYDRATE",
+    "loinc": "43685-7",
+    "title": "AGGRASTAT (TIROFIBAN) — Warnings and Precautions"
+   }
+  },
+  {
+   "qid": "Q003",
+   "drug_id": "AMANTADINE HCL",
+   "key_set": [
+    "AMANTADINE HCL"
+   ],
+   "key_used": "AMANTADINE HCL",
+   "template": "{drug} drug interactions",
+   "query": "amantadine hcl drug interactions",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.7058,
+     "setid": "461e6444-189e-62ed-6c61-1c36a04459c6",
+     "moiety": "AMANTADINE HCL",
+     "loinc": "34073-7",
+     "title": "Amantadine HCl (AMANTADINE HYDROCHLORIDE) — Drug Interactions",
+     "label": "relevant"
+    },
+    {
+     "rank": 1,
+     "score": 0.6038,
+     "setid": "461e6444-189e-62ed-6c61-1c36a04459c6",
+     "moiety": "AMANTADINE HCL",
+     "loinc": "34070-3",
+     "title": "Amantadine HCl (AMANTADINE HYDROCHLORIDE) — Contraindications",
+     "label": "relevant"
+    }
+   ],
+   "n_pool": 2,
+   "r_corpus": 4,
+   "has_relevant": true,
+   "first_relevant_rank": 0,
+   "rr": 1.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.6367,
+   "best_corpus_relevant": {
+    "score": 0.7058,
+    "overall_rank": 0,
+    "setid": "461e6444-189e-62ed-6c61-1c36a04459c6",
+    "loinc": "34073-7",
+    "title": "Amantadine HCl (AMANTADINE HYDROCHLORIDE) — Drug Interactions",
+    "shortfall_vs_min_score": -0.1058
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.7058,
+    "overall_rank": 0,
+    "setid": "461e6444-189e-62ed-6c61-1c36a04459c6",
+    "loinc": "34073-7",
+    "title": "Amantadine HCl (AMANTADINE HYDROCHLORIDE) — Drug Interactions",
+    "shortfall_vs_min_score": -0.1058
+   },
+   "corpus_top1": {
+    "score": 0.7058,
+    "moiety": "AMANTADINE HCL",
+    "loinc": "34073-7",
+    "title": "Amantadine HCl (AMANTADINE HYDROCHLORIDE) — Drug Interactions"
+   }
+  },
+  {
+   "qid": "Q004",
+   "drug_id": "AMISULPRIDE",
+   "key_set": [
+    "AMISULPRIDE"
+   ],
+   "key_used": "AMISULPRIDE",
+   "template": "{drug} warnings and precautions",
+   "query": "amisulpride warnings and precautions",
+   "scope": "sampled",
+   "pool": [],
+   "n_pool": 0,
+   "r_corpus": 5,
+   "has_relevant": false,
+   "first_relevant_rank": null,
+   "rr": 0.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.0,
+   "best_corpus_relevant": {
+    "score": 0.5305,
+    "overall_rank": 6,
+    "setid": "ab23bc6e-b6a8-165f-e053-2a95a90ab144",
+    "loinc": "34070-3",
+    "title": "Barhemsys (Amisulpride) — Contraindications",
+    "shortfall_vs_min_score": 0.0695
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.5305,
+    "overall_rank": 6,
+    "setid": "ab23bc6e-b6a8-165f-e053-2a95a90ab144",
+    "loinc": "34070-3",
+    "title": "Barhemsys (Amisulpride) — Contraindications",
+    "shortfall_vs_min_score": 0.0695
+   },
+   "corpus_top1": {
+    "score": 0.5521,
+    "moiety": "PAROXETINE HYDROCHLORIDE HEMIHYDRATE",
+    "loinc": "34070-3",
+    "title": "PAROXETINE (PAROXETINE HYDROCHLORIDE HEMIHYDRATE) — Contraindications"
+   }
+  },
+  {
+   "qid": "Q005",
+   "drug_id": "AMOXICILLIN",
+   "key_set": [
+    "AMOXICILLIN"
+   ],
+   "key_used": "AMOXICILLIN",
+   "template": "{drug} drug interactions",
+   "query": "amoxicillin drug interactions",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.7316,
+     "setid": "c1d9749c-5d8b-4632-9368-9586f77935b0",
+     "moiety": "AMOXICILLIN",
+     "loinc": "34073-7",
+     "title": "AMOXICILLIN (amoxicillin) — Drug Interactions",
+     "label": "relevant"
+    },
+    {
+     "rank": 1,
+     "score": 0.6957,
+     "setid": "0a66c5c3-63bf-46e3-835e-26b555ab6954",
+     "moiety": "AMPICILLIN",
+     "loinc": "34073-7",
+     "title": "Ampicillin (Ampicillin) — Drug Interactions",
+     "label": "wrong_object"
+    },
+    {
+     "rank": 2,
+     "score": 0.6641,
+     "setid": "c1d9749c-5d8b-4632-9368-9586f77935b0",
+     "moiety": "AMOXICILLIN",
+     "loinc": "43685-7",
+     "title": "AMOXICILLIN (amoxicillin) — Warnings and Precautions",
+     "label": "relevant"
+    },
+    {
+     "rank": 3,
+     "score": 0.6468,
+     "setid": "1e4824cc-4d52-4f20-9674-cfcb9ee66574",
+     "moiety": "ETODOLAC",
+     "loinc": "34073-7",
+     "title": "Etodolac (Etodolac) — Drug Interactions",
+     "label": "wrong_object"
+    },
+    {
+     "rank": 4,
+     "score": 0.6424,
+     "setid": "3e4842ec-773b-4aeb-b37d-1c4e3cf53424",
+     "moiety": "DICLOXACILLIN",
+     "loinc": "34073-7",
+     "title": "Dicloxacillin Sodium (Dicloxacillin Sodium) — Drug Interactions",
+     "label": "wrong_object"
+    }
+   ],
+   "n_pool": 5,
+   "r_corpus": 5,
+   "has_relevant": true,
+   "first_relevant_rank": 0,
+   "rr": 1.0,
+   "has_wrong_object": true,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.5087,
+   "best_corpus_relevant": {
+    "score": 0.7316,
+    "overall_rank": 0,
+    "setid": "c1d9749c-5d8b-4632-9368-9586f77935b0",
+    "loinc": "34073-7",
+    "title": "AMOXICILLIN (amoxicillin) — Drug Interactions",
+    "shortfall_vs_min_score": -0.1316
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.7316,
+    "overall_rank": 0,
+    "setid": "c1d9749c-5d8b-4632-9368-9586f77935b0",
+    "loinc": "34073-7",
+    "title": "AMOXICILLIN (amoxicillin) — Drug Interactions",
+    "shortfall_vs_min_score": -0.1316
+   },
+   "corpus_top1": {
+    "score": 0.7316,
+    "moiety": "AMOXICILLIN",
+    "loinc": "34073-7",
+    "title": "AMOXICILLIN (amoxicillin) — Drug Interactions"
+   }
+  },
+  {
+   "qid": "Q006",
+   "drug_id": "ANTHRALIN",
+   "key_set": [
+    "ANTHRALIN"
+   ],
+   "key_used": "ANTHRALIN",
+   "template": "{drug} contraindications",
+   "query": "anthralin contraindications",
+   "scope": "sampled",
+   "pool": [],
+   "n_pool": 0,
+   "r_corpus": 3,
+   "has_relevant": false,
+   "first_relevant_rank": null,
+   "rr": 0.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.0,
+   "best_corpus_relevant": {
+    "score": 0.5995,
+    "overall_rank": 0,
+    "setid": "253fdee7-5060-4b49-ad26-257eb54cccfa",
+    "loinc": "34070-3",
+    "title": "Zithranol (Anthralin) — Contraindications",
+    "shortfall_vs_min_score": 0.0005
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.5995,
+    "overall_rank": 0,
+    "setid": "253fdee7-5060-4b49-ad26-257eb54cccfa",
+    "loinc": "34070-3",
+    "title": "Zithranol (Anthralin) — Contraindications",
+    "shortfall_vs_min_score": 0.0005
+   },
+   "corpus_top1": {
+    "score": 0.5995,
+    "moiety": "ANTHRALIN",
+    "loinc": "34070-3",
+    "title": "Zithranol (Anthralin) — Contraindications"
+   }
+  },
+  {
+   "qid": "Q007",
+   "drug_id": "ATOMOXETINE HYDROCHLORIDE",
+   "key_set": [
+    "ATOMOXETINE HYDROCHLORIDE"
+   ],
+   "key_used": "ATOMOXETINE HYDROCHLORIDE",
+   "template": "{drug} warnings and precautions",
+   "query": "atomoxetine hydrochloride warnings and precautions",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.6126,
+     "setid": "fd1c71bc-1445-4ac6-8a8d-79050e61b03a",
+     "moiety": "ATOMOXETINE HYDROCHLORIDE",
+     "loinc": "34070-3",
+     "title": "Strattera (Atomoxetine hydrochloride) — Contraindications",
+     "label": "relevant"
+    }
+   ],
+   "n_pool": 1,
+   "r_corpus": 6,
+   "has_relevant": true,
+   "first_relevant_rank": 0,
+   "rr": 1.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.3392,
+   "best_corpus_relevant": {
+    "score": 0.6126,
+    "overall_rank": 0,
+    "setid": "fd1c71bc-1445-4ac6-8a8d-79050e61b03a",
+    "loinc": "34070-3",
+    "title": "Strattera (Atomoxetine hydrochloride) — Contraindications",
+    "shortfall_vs_min_score": -0.0126
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.6126,
+    "overall_rank": 0,
+    "setid": "fd1c71bc-1445-4ac6-8a8d-79050e61b03a",
+    "loinc": "34070-3",
+    "title": "Strattera (Atomoxetine hydrochloride) — Contraindications",
+    "shortfall_vs_min_score": -0.0126
+   },
+   "corpus_top1": {
+    "score": 0.6126,
+    "moiety": "ATOMOXETINE HYDROCHLORIDE",
+    "loinc": "34070-3",
+    "title": "Strattera (Atomoxetine hydrochloride) — Contraindications"
+   }
+  },
+  {
+   "qid": "Q008",
+   "drug_id": "ATROPINE SULFATE",
+   "key_set": [
+    "ATROPINE SULFATE"
+   ],
+   "key_used": "ATROPINE SULFATE",
+   "template": "{drug} drug interactions",
+   "query": "atropine sulfate drug interactions",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.6131,
+     "setid": "2741d8fd-51c2-46be-880b-99f2b20a6137",
+     "moiety": "PRALIDOXIME CHLORIDE",
+     "loinc": "34073-7",
+     "title": "Protopam Chloride (pralidoxime chloride) — Drug Interactions",
+     "label": "wrong_object"
+    },
+    {
+     "rank": 1,
+     "score": 0.6095,
+     "setid": "bfdb85b2-86d0-4f32-a8fa-272af48a191c",
+     "moiety": "ATROPINE SULFATE MONOHYDRATE",
+     "loinc": "34073-7",
+     "title": "Atropine Sulfate (Atropine Sulfate Monohydrate) — Drug Interactions",
+     "label": "wrong_object"
+    },
+    {
+     "rank": 2,
+     "score": 0.6066,
+     "setid": "ad8916e7-206e-409e-2582-30d072845dd4",
+     "moiety": "ATROPINE SULFATE",
+     "loinc": "34067-9",
+     "title": "Atropine Sulfate (ATROPINE SULFATE) — Indications and Usage",
+     "label": "relevant"
+    }
+   ],
+   "n_pool": 3,
+   "r_corpus": 5,
+   "has_relevant": true,
+   "first_relevant_rank": 2,
+   "rr": 0.3333333333333333,
+   "has_wrong_object": true,
+   "wrong_object_at_rank1": true,
+   "ndcg5": 0.1696,
+   "best_corpus_relevant": {
+    "score": 0.6066,
+    "overall_rank": 2,
+    "setid": "ad8916e7-206e-409e-2582-30d072845dd4",
+    "loinc": "34067-9",
+    "title": "Atropine Sulfate (ATROPINE SULFATE) — Indications and Usage",
+    "shortfall_vs_min_score": -0.0066
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.5819,
+    "overall_rank": 3,
+    "setid": "ad8916e7-206e-409e-2582-30d072845dd4",
+    "loinc": "43685-7",
+    "title": "Atropine Sulfate (ATROPINE SULFATE) — Warnings and Precautions",
+    "shortfall_vs_min_score": 0.0181
+   },
+   "corpus_top1": {
+    "score": 0.6131,
+    "moiety": "PRALIDOXIME CHLORIDE",
+    "loinc": "34073-7",
+    "title": "Protopam Chloride (pralidoxime chloride) — Drug Interactions"
+   }
+  },
+  {
+   "qid": "Q009",
+   "drug_id": "ATROPINE SULFATE MONOHYDRATE",
+   "key_set": [
+    "ATROPINE SULFATE MONOHYDRATE"
+   ],
+   "key_used": "ATROPINE SULFATE MONOHYDRATE",
+   "template": "{drug} drug interactions",
+   "query": "atropine sulfate monohydrate drug interactions",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.6254,
+     "setid": "bfdb85b2-86d0-4f32-a8fa-272af48a191c",
+     "moiety": "ATROPINE SULFATE MONOHYDRATE",
+     "loinc": "34073-7",
+     "title": "Atropine Sulfate (Atropine Sulfate Monohydrate) — Drug Interactions",
+     "label": "relevant"
+    }
+   ],
+   "n_pool": 1,
+   "r_corpus": 5,
+   "has_relevant": true,
+   "first_relevant_rank": 0,
+   "rr": 1.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.3392,
+   "best_corpus_relevant": {
+    "score": 0.6254,
+    "overall_rank": 0,
+    "setid": "bfdb85b2-86d0-4f32-a8fa-272af48a191c",
+    "loinc": "34073-7",
+    "title": "Atropine Sulfate (Atropine Sulfate Monohydrate) — Drug Interactions",
+    "shortfall_vs_min_score": -0.0254
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.6254,
+    "overall_rank": 0,
+    "setid": "bfdb85b2-86d0-4f32-a8fa-272af48a191c",
+    "loinc": "34073-7",
+    "title": "Atropine Sulfate (Atropine Sulfate Monohydrate) — Drug Interactions",
+    "shortfall_vs_min_score": -0.0254
+   },
+   "corpus_top1": {
+    "score": 0.6254,
+    "moiety": "ATROPINE SULFATE MONOHYDRATE",
+    "loinc": "34073-7",
+    "title": "Atropine Sulfate (Atropine Sulfate Monohydrate) — Drug Interactions"
+   }
+  },
+  {
+   "qid": "Q010",
+   "drug_id": "AXITINIB",
+   "key_set": [
+    "AXITINIB"
+   ],
+   "key_used": "AXITINIB",
+   "template": "{drug} contraindications",
+   "query": "axitinib contraindications",
+   "scope": "sampled",
+   "pool": [],
+   "n_pool": 0,
+   "r_corpus": 5,
+   "has_relevant": false,
+   "first_relevant_rank": null,
+   "rr": 0.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.0,
+   "best_corpus_relevant": {
+    "score": 0.5888,
+    "overall_rank": 0,
+    "setid": "84137882-e000-47da-bd5b-fa76ab3c76f9",
+    "loinc": "34073-7",
+    "title": "INLYTA (axitinib) — Drug Interactions",
+    "shortfall_vs_min_score": 0.0112
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.5888,
+    "overall_rank": 0,
+    "setid": "84137882-e000-47da-bd5b-fa76ab3c76f9",
+    "loinc": "34073-7",
+    "title": "INLYTA (axitinib) — Drug Interactions",
+    "shortfall_vs_min_score": 0.0112
+   },
+   "corpus_top1": {
+    "score": 0.5888,
+    "moiety": "AXITINIB",
+    "loinc": "34073-7",
+    "title": "INLYTA (axitinib) — Drug Interactions"
+   }
+  },
+  {
+   "qid": "Q011",
+   "drug_id": "AZACITIDINE",
+   "key_set": [
+    "AZACITIDINE"
+   ],
+   "key_used": "AZACITIDINE",
+   "template": "{drug} drug interactions",
+   "query": "azacitidine drug interactions",
+   "scope": "sampled",
+   "pool": [],
+   "n_pool": 0,
+   "r_corpus": 4,
+   "has_relevant": false,
+   "first_relevant_rank": null,
+   "rr": 0.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.0,
+   "best_corpus_relevant": {
+    "score": 0.586,
+    "overall_rank": 0,
+    "setid": "3495a71a-cc04-4776-851f-f185956f32af",
+    "loinc": "43685-7",
+    "title": "VIDAZA (azacitidine) — Warnings and Precautions",
+    "shortfall_vs_min_score": 0.014
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.586,
+    "overall_rank": 0,
+    "setid": "3495a71a-cc04-4776-851f-f185956f32af",
+    "loinc": "43685-7",
+    "title": "VIDAZA (azacitidine) — Warnings and Precautions",
+    "shortfall_vs_min_score": 0.014
+   },
+   "corpus_top1": {
+    "score": 0.586,
+    "moiety": "AZACITIDINE",
+    "loinc": "43685-7",
+    "title": "VIDAZA (azacitidine) — Warnings and Precautions"
+   }
+  },
+  {
+   "qid": "Q012",
+   "drug_id": "BALSALAZIDE DISODIUM DIHYDRATE",
+   "key_set": [
+    "BALSALAZIDE DISODIUM DIHYDRATE"
+   ],
+   "key_used": "BALSALAZIDE DISODIUM DIHYDRATE",
+   "template": "{drug} drug interactions",
+   "query": "balsalazide disodium dihydrate drug interactions",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.696,
+     "setid": "cd73c9f1-d83b-4206-b2c6-1bd111e11263",
+     "moiety": "BALSALAZIDE DISODIUM DIHYDRATE",
+     "loinc": "34070-3",
+     "title": "Balsalazide Disodium (Balsalazide Disodium) — Contraindications",
+     "label": "relevant"
+    },
+    {
+     "rank": 1,
+     "score": 0.646,
+     "setid": "cd73c9f1-d83b-4206-b2c6-1bd111e11263",
+     "moiety": "BALSALAZIDE DISODIUM DIHYDRATE",
+     "loinc": "34068-7",
+     "title": "Balsalazide Disodium (Balsalazide Disodium) — Dosage and Administration",
+     "label": "relevant"
+    },
+    {
+     "rank": 2,
+     "score": 0.6389,
+     "setid": "cd73c9f1-d83b-4206-b2c6-1bd111e11263",
+     "moiety": "BALSALAZIDE DISODIUM DIHYDRATE",
+     "loinc": "43685-7",
+     "title": "Balsalazide Disodium (Balsalazide Disodium) — Warnings and Precautions",
+     "label": "relevant"
+    },
+    {
+     "rank": 3,
+     "score": 0.6255,
+     "setid": "cd73c9f1-d83b-4206-b2c6-1bd111e11263",
+     "moiety": "BALSALAZIDE DISODIUM DIHYDRATE",
+     "loinc": "34067-9",
+     "title": "Balsalazide Disodium (Balsalazide Disodium) — Indications and Usage",
+     "label": "relevant"
+    }
+   ],
+   "n_pool": 4,
+   "r_corpus": 5,
+   "has_relevant": true,
+   "first_relevant_rank": 0,
+   "rr": 1.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.8688,
+   "best_corpus_relevant": {
+    "score": 0.696,
+    "overall_rank": 0,
+    "setid": "cd73c9f1-d83b-4206-b2c6-1bd111e11263",
+    "loinc": "34070-3",
+    "title": "Balsalazide Disodium (Balsalazide Disodium) — Contraindications",
+    "shortfall_vs_min_score": -0.096
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.696,
+    "overall_rank": 0,
+    "setid": "cd73c9f1-d83b-4206-b2c6-1bd111e11263",
+    "loinc": "34070-3",
+    "title": "Balsalazide Disodium (Balsalazide Disodium) — Contraindications",
+    "shortfall_vs_min_score": -0.096
+   },
+   "corpus_top1": {
+    "score": 0.696,
+    "moiety": "BALSALAZIDE DISODIUM DIHYDRATE",
+    "loinc": "34070-3",
+    "title": "Balsalazide Disodium (Balsalazide Disodium) — Contraindications"
+   }
+  },
+  {
+   "qid": "Q013",
+   "drug_id": "BINIMETINIB",
+   "key_set": [
+    "BINIMETINIB"
+   ],
+   "key_used": "BINIMETINIB",
+   "template": "{drug} drug interactions",
+   "query": "binimetinib drug interactions",
+   "scope": "sampled",
+   "pool": [],
+   "n_pool": 0,
+   "r_corpus": 5,
+   "has_relevant": false,
+   "first_relevant_rank": null,
+   "rr": 0.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.0,
+   "best_corpus_relevant": {
+    "score": 0.5,
+    "overall_rank": 55,
+    "setid": "6c3408ac-d401-4925-8a03-26591afbc240",
+    "loinc": "43685-7",
+    "title": "MEKTOVI (BINIMETINIB) — Warnings and Precautions",
+    "shortfall_vs_min_score": 0.1
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.5,
+    "overall_rank": 55,
+    "setid": "6c3408ac-d401-4925-8a03-26591afbc240",
+    "loinc": "43685-7",
+    "title": "MEKTOVI (BINIMETINIB) — Warnings and Precautions",
+    "shortfall_vs_min_score": 0.1
+   },
+   "corpus_top1": {
+    "score": 0.5926,
+    "moiety": "COBIMETINIB HEMIFUMARATE",
+    "loinc": "34073-7",
+    "title": "Cotellic (COBIMETINIB) — Drug Interactions"
+   }
+  },
+  {
+   "qid": "Q014",
+   "drug_id": "BORTEZOMIB",
+   "key_set": [
+    "BORTEZOMIB"
+   ],
+   "key_used": "BORTEZOMIB",
+   "template": "{drug} drug interactions",
+   "query": "bortezomib drug interactions",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.6467,
+     "setid": "1521d321-e724-4ffc-adad-34bf4f44fac7",
+     "moiety": "BORTEZOMIB",
+     "loinc": "34073-7",
+     "title": "VELCADE (bortezomib) — Drug Interactions",
+     "label": "relevant"
+    }
+   ],
+   "n_pool": 1,
+   "r_corpus": 5,
+   "has_relevant": true,
+   "first_relevant_rank": 0,
+   "rr": 1.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.3392,
+   "best_corpus_relevant": {
+    "score": 0.6467,
+    "overall_rank": 0,
+    "setid": "1521d321-e724-4ffc-adad-34bf4f44fac7",
+    "loinc": "34073-7",
+    "title": "VELCADE (bortezomib) — Drug Interactions",
+    "shortfall_vs_min_score": -0.0467
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.6467,
+    "overall_rank": 0,
+    "setid": "1521d321-e724-4ffc-adad-34bf4f44fac7",
+    "loinc": "34073-7",
+    "title": "VELCADE (bortezomib) — Drug Interactions",
+    "shortfall_vs_min_score": -0.0467
+   },
+   "corpus_top1": {
+    "score": 0.6467,
+    "moiety": "BORTEZOMIB",
+    "loinc": "34073-7",
+    "title": "VELCADE (bortezomib) — Drug Interactions"
+   }
+  },
+  {
+   "qid": "Q015",
+   "drug_id": "BORTEZOMIB",
+   "key_set": [
+    "BORTEZOMIB"
+   ],
+   "key_used": "BORTEZOMIB",
+   "template": "{drug} warnings and precautions",
+   "query": "bortezomib warnings and precautions",
+   "scope": "sampled",
+   "pool": [],
+   "n_pool": 0,
+   "r_corpus": 5,
+   "has_relevant": false,
+   "first_relevant_rank": null,
+   "rr": 0.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.0,
+   "best_corpus_relevant": {
+    "score": 0.5892,
+    "overall_rank": 0,
+    "setid": "1521d321-e724-4ffc-adad-34bf4f44fac7",
+    "loinc": "34070-3",
+    "title": "VELCADE (bortezomib) — Contraindications",
+    "shortfall_vs_min_score": 0.0108
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.5892,
+    "overall_rank": 0,
+    "setid": "1521d321-e724-4ffc-adad-34bf4f44fac7",
+    "loinc": "34070-3",
+    "title": "VELCADE (bortezomib) — Contraindications",
+    "shortfall_vs_min_score": 0.0108
+   },
+   "corpus_top1": {
+    "score": 0.5892,
+    "moiety": "BORTEZOMIB",
+    "loinc": "34070-3",
+    "title": "VELCADE (bortezomib) — Contraindications"
+   }
+  },
+  {
+   "qid": "Q016",
+   "drug_id": "BUSPIRONE HCL",
+   "key_set": [
+    "BUSPIRONE HCL"
+   ],
+   "key_used": "BUSPIRONE HCL",
+   "template": "{drug} drug interactions",
+   "query": "buspirone hcl drug interactions",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.6627,
+     "setid": "138b84a5-966b-47d7-a3d6-395df83f8aa5",
+     "moiety": "BUSPIRONE HCL",
+     "loinc": "34073-7",
+     "title": "busPIRone HCl (buspirone hydrochloride) — Drug Interactions",
+     "label": "relevant"
+    },
+    {
+     "rank": 1,
+     "score": 0.6368,
+     "setid": "138b84a5-966b-47d7-a3d6-395df83f8aa5",
+     "moiety": "BUSPIRONE HCL",
+     "loinc": "34070-3",
+     "title": "busPIRone HCl (buspirone hydrochloride) — Contraindications",
+     "label": "relevant"
+    },
+    {
+     "rank": 2,
+     "score": 0.6211,
+     "setid": "138b84a5-966b-47d7-a3d6-395df83f8aa5",
+     "moiety": "BUSPIRONE HCL",
+     "loinc": "34068-7",
+     "title": "busPIRone HCl (buspirone hydrochloride) — Dosage and Administration",
+     "label": "relevant"
+    }
+   ],
+   "n_pool": 3,
+   "r_corpus": 4,
+   "has_relevant": true,
+   "first_relevant_rank": 0,
+   "rr": 1.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.8319,
+   "best_corpus_relevant": {
+    "score": 0.6627,
+    "overall_rank": 0,
+    "setid": "138b84a5-966b-47d7-a3d6-395df83f8aa5",
+    "loinc": "34073-7",
+    "title": "busPIRone HCl (buspirone hydrochloride) — Drug Interactions",
+    "shortfall_vs_min_score": -0.0627
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.6627,
+    "overall_rank": 0,
+    "setid": "138b84a5-966b-47d7-a3d6-395df83f8aa5",
+    "loinc": "34073-7",
+    "title": "busPIRone HCl (buspirone hydrochloride) — Drug Interactions",
+    "shortfall_vs_min_score": -0.0627
+   },
+   "corpus_top1": {
+    "score": 0.6627,
+    "moiety": "BUSPIRONE HCL",
+    "loinc": "34073-7",
+    "title": "busPIRone HCl (buspirone hydrochloride) — Drug Interactions"
+   }
+  },
+  {
+   "qid": "Q017",
+   "drug_id": "CASPOFUNGIN",
+   "key_set": [
+    "CASPOFUNGIN"
+   ],
+   "key_used": "CASPOFUNGIN",
+   "template": "{drug} drug interactions",
+   "query": "caspofungin drug interactions",
+   "scope": "sampled",
+   "pool": [],
+   "n_pool": 0,
+   "r_corpus": 5,
+   "has_relevant": false,
+   "first_relevant_rank": null,
+   "rr": 0.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.0,
+   "best_corpus_relevant": {
+    "score": 0.4832,
+    "overall_rank": 60,
+    "setid": "3bad23a6-09a6-4194-9182-093ed61bc71c",
+    "loinc": "34067-9",
+    "title": "CANCIDAS (CASPOFUNGIN ACETATE) — Indications and Usage",
+    "shortfall_vs_min_score": 0.1168
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.4769,
+    "overall_rank": 75,
+    "setid": "3bad23a6-09a6-4194-9182-093ed61bc71c",
+    "loinc": "34073-7",
+    "title": "CANCIDAS (CASPOFUNGIN ACETATE) — Drug Interactions",
+    "shortfall_vs_min_score": 0.1231
+   },
+   "corpus_top1": {
+    "score": 0.5966,
+    "moiety": "ANIDULAFUNGIN",
+    "loinc": "34073-7",
+    "title": "ERAXIS (anidulafungin) — Drug Interactions"
+   }
+  },
+  {
+   "qid": "Q018",
+   "drug_id": "CEFTRIAXONE SODIUM",
+   "key_set": [
+    "CEFTRIAXONE SODIUM"
+   ],
+   "key_used": "CEFTRIAXONE SODIUM",
+   "template": "{drug} drug interactions",
+   "query": "ceftriaxone sodium drug interactions",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.6645,
+     "setid": "67153914-16bc-490d-82d7-638061618467",
+     "moiety": "CEFTRIAXONE",
+     "loinc": "34073-7",
+     "title": "CEFTRIAXONE AND DEXTROSE (CEFTRIAXONE) — Drug Interactions",
+     "label": "wrong_object"
+    },
+    {
+     "rank": 1,
+     "score": 0.6496,
+     "setid": "4c5c2d3f-5038-41a1-a2fe-4dcd048dbac1",
+     "moiety": "CEFTRIAXONE SODIUM",
+     "loinc": "34070-3",
+     "title": "Ceftriaxone (Ceftriaxone Sodium) — Contraindications",
+     "label": "relevant"
+    },
+    {
+     "rank": 2,
+     "score": 0.6345,
+     "setid": "67153914-16bc-490d-82d7-638061618467",
+     "moiety": "CEFTRIAXONE",
+     "loinc": "34067-9",
+     "title": "CEFTRIAXONE AND DEXTROSE (CEFTRIAXONE) — Indications and Usage",
+     "label": "other"
+    },
+    {
+     "rank": 3,
+     "score": 0.629,
+     "setid": "67153914-16bc-490d-82d7-638061618467",
+     "moiety": "CEFTRIAXONE",
+     "loinc": "43685-7",
+     "title": "CEFTRIAXONE AND DEXTROSE (CEFTRIAXONE) — Warnings and Precautions",
+     "label": "wrong_object"
+    },
+    {
+     "rank": 4,
+     "score": 0.6286,
+     "setid": "4c5c2d3f-5038-41a1-a2fe-4dcd048dbac1",
+     "moiety": "CEFTRIAXONE SODIUM",
+     "loinc": "34067-9",
+     "title": "Ceftriaxone (Ceftriaxone Sodium) — Indications and Usage",
+     "label": "relevant"
+    }
+   ],
+   "n_pool": 5,
+   "r_corpus": 3,
+   "has_relevant": true,
+   "first_relevant_rank": 1,
+   "rr": 0.5,
+   "has_wrong_object": true,
+   "wrong_object_at_rank1": true,
+   "ndcg5": 0.4776,
+   "best_corpus_relevant": {
+    "score": 0.6496,
+    "overall_rank": 1,
+    "setid": "4c5c2d3f-5038-41a1-a2fe-4dcd048dbac1",
+    "loinc": "34070-3",
+    "title": "Ceftriaxone (Ceftriaxone Sodium) — Contraindications",
+    "shortfall_vs_min_score": -0.0496
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.6496,
+    "overall_rank": 1,
+    "setid": "4c5c2d3f-5038-41a1-a2fe-4dcd048dbac1",
+    "loinc": "34070-3",
+    "title": "Ceftriaxone (Ceftriaxone Sodium) — Contraindications",
+    "shortfall_vs_min_score": -0.0496
+   },
+   "corpus_top1": {
+    "score": 0.6645,
+    "moiety": "CEFTRIAXONE",
+    "loinc": "34073-7",
+    "title": "CEFTRIAXONE AND DEXTROSE (CEFTRIAXONE) — Drug Interactions"
+   }
+  },
+  {
+   "qid": "Q019",
+   "drug_id": "CLOPIDOGREL BISULFATE",
+   "key_set": [
+    "CLOPIDOGREL BISULFATE"
+   ],
+   "key_used": "CLOPIDOGREL BISULFATE",
+   "template": "{drug} warnings and precautions",
+   "query": "clopidogrel bisulfate warnings and precautions",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.6175,
+     "setid": "de8b0b67-eb25-4684-83b5-7ad785314227",
+     "moiety": "CLOPIDOGREL HYDROGEN SULFATE",
+     "loinc": "34070-3",
+     "title": "Plavix (clopidogrel) — Contraindications",
+     "label": "wrong_object"
+    },
+    {
+     "rank": 1,
+     "score": 0.6175,
+     "setid": "f1d77dba-9dae-4f30-b3e3-b4898993f865",
+     "moiety": "CLOPIDOGREL BISULFATE",
+     "loinc": "34070-3",
+     "title": "Plavix (clopidogrel bisulfate) — Contraindications",
+     "label": "relevant"
+    }
+   ],
+   "n_pool": 2,
+   "r_corpus": 6,
+   "has_relevant": true,
+   "first_relevant_rank": 1,
+   "rr": 0.5,
+   "has_wrong_object": true,
+   "wrong_object_at_rank1": true,
+   "ndcg5": 0.214,
+   "best_corpus_relevant": {
+    "score": 0.6175,
+    "overall_rank": 1,
+    "setid": "f1d77dba-9dae-4f30-b3e3-b4898993f865",
+    "loinc": "34070-3",
+    "title": "Plavix (clopidogrel bisulfate) — Contraindications",
+    "shortfall_vs_min_score": -0.0175
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.6175,
+    "overall_rank": 1,
+    "setid": "f1d77dba-9dae-4f30-b3e3-b4898993f865",
+    "loinc": "34070-3",
+    "title": "Plavix (clopidogrel bisulfate) — Contraindications",
+    "shortfall_vs_min_score": -0.0175
+   },
+   "corpus_top1": {
+    "score": 0.6175,
+    "moiety": "CLOPIDOGREL HYDROGEN SULFATE",
+    "loinc": "34070-3",
+    "title": "Plavix (clopidogrel) — Contraindications"
+   }
+  },
+  {
+   "qid": "Q020",
+   "drug_id": "CRISABOROLE",
+   "key_set": [
+    "CRISABOROLE"
+   ],
+   "key_used": "CRISABOROLE",
+   "template": "{drug} warnings and precautions",
+   "query": "crisaborole warnings and precautions",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.6285,
+     "setid": "609b77de-1ca3-4783-b8f5-01a9c0f1d77d",
+     "moiety": "CRISABOROLE",
+     "loinc": "34070-3",
+     "title": "Eucrisa (crisaborole) — Contraindications",
+     "label": "relevant"
+    }
+   ],
+   "n_pool": 1,
+   "r_corpus": 4,
+   "has_relevant": true,
+   "first_relevant_rank": 0,
+   "rr": 1.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.3904,
+   "best_corpus_relevant": {
+    "score": 0.6285,
+    "overall_rank": 0,
+    "setid": "609b77de-1ca3-4783-b8f5-01a9c0f1d77d",
+    "loinc": "34070-3",
+    "title": "Eucrisa (crisaborole) — Contraindications",
+    "shortfall_vs_min_score": -0.0285
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.6285,
+    "overall_rank": 0,
+    "setid": "609b77de-1ca3-4783-b8f5-01a9c0f1d77d",
+    "loinc": "34070-3",
+    "title": "Eucrisa (crisaborole) — Contraindications",
+    "shortfall_vs_min_score": -0.0285
+   },
+   "corpus_top1": {
+    "score": 0.6285,
+    "moiety": "CRISABOROLE",
+    "loinc": "34070-3",
+    "title": "Eucrisa (crisaborole) — Contraindications"
+   }
+  },
+  {
+   "qid": "Q021",
+   "drug_id": "DICLOXACILLIN",
+   "key_set": [
+    "DICLOXACILLIN"
+   ],
+   "key_used": "DICLOXACILLIN",
+   "template": "{drug} drug interactions",
+   "query": "dicloxacillin drug interactions",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.6506,
+     "setid": "3e4842ec-773b-4aeb-b37d-1c4e3cf53424",
+     "moiety": "DICLOXACILLIN",
+     "loinc": "34073-7",
+     "title": "Dicloxacillin Sodium (Dicloxacillin Sodium) — Drug Interactions",
+     "label": "relevant"
+    },
+    {
+     "rank": 1,
+     "score": 0.632,
+     "setid": "3e4842ec-773b-4aeb-b37d-1c4e3cf53424",
+     "moiety": "DICLOXACILLIN",
+     "loinc": "34070-3",
+     "title": "Dicloxacillin Sodium (Dicloxacillin Sodium) — Contraindications",
+     "label": "relevant"
+    }
+   ],
+   "n_pool": 2,
+   "r_corpus": 4,
+   "has_relevant": true,
+   "first_relevant_rank": 0,
+   "rr": 1.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.6367,
+   "best_corpus_relevant": {
+    "score": 0.6506,
+    "overall_rank": 0,
+    "setid": "3e4842ec-773b-4aeb-b37d-1c4e3cf53424",
+    "loinc": "34073-7",
+    "title": "Dicloxacillin Sodium (Dicloxacillin Sodium) — Drug Interactions",
+    "shortfall_vs_min_score": -0.0506
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.6506,
+    "overall_rank": 0,
+    "setid": "3e4842ec-773b-4aeb-b37d-1c4e3cf53424",
+    "loinc": "34073-7",
+    "title": "Dicloxacillin Sodium (Dicloxacillin Sodium) — Drug Interactions",
+    "shortfall_vs_min_score": -0.0506
+   },
+   "corpus_top1": {
+    "score": 0.6506,
+    "moiety": "DICLOXACILLIN",
+    "loinc": "34073-7",
+    "title": "Dicloxacillin Sodium (Dicloxacillin Sodium) — Drug Interactions"
+   }
+  },
+  {
+   "qid": "Q022",
+   "drug_id": "DIPYRIDAMOLE",
+   "key_set": [
+    "DIPYRIDAMOLE"
+   ],
+   "key_used": "DIPYRIDAMOLE",
+   "template": "{drug} contraindications",
+   "query": "dipyridamole contraindications",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.8134,
+     "setid": "a18b2af5-7c4a-4b7f-92c7-8a76e34da373",
+     "moiety": "DIPYRIDAMOLE",
+     "loinc": "34070-3",
+     "title": "Dipyridamole (DIPYRIDAMOLE) — Contraindications",
+     "label": "relevant"
+    },
+    {
+     "rank": 1,
+     "score": 0.7037,
+     "setid": "a18b2af5-7c4a-4b7f-92c7-8a76e34da373",
+     "moiety": "DIPYRIDAMOLE",
+     "loinc": "34073-7",
+     "title": "Dipyridamole (DIPYRIDAMOLE) — Drug Interactions",
+     "label": "relevant"
+    },
+    {
+     "rank": 2,
+     "score": 0.6797,
+     "setid": "a18b2af5-7c4a-4b7f-92c7-8a76e34da373",
+     "moiety": "DIPYRIDAMOLE",
+     "loinc": "34067-9",
+     "title": "Dipyridamole (DIPYRIDAMOLE) — Indications and Usage",
+     "label": "relevant"
+    }
+   ],
+   "n_pool": 3,
+   "r_corpus": 4,
+   "has_relevant": true,
+   "first_relevant_rank": 0,
+   "rr": 1.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.8319,
+   "best_corpus_relevant": {
+    "score": 0.8134,
+    "overall_rank": 0,
+    "setid": "a18b2af5-7c4a-4b7f-92c7-8a76e34da373",
+    "loinc": "34070-3",
+    "title": "Dipyridamole (DIPYRIDAMOLE) — Contraindications",
+    "shortfall_vs_min_score": -0.2134
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.8134,
+    "overall_rank": 0,
+    "setid": "a18b2af5-7c4a-4b7f-92c7-8a76e34da373",
+    "loinc": "34070-3",
+    "title": "Dipyridamole (DIPYRIDAMOLE) — Contraindications",
+    "shortfall_vs_min_score": -0.2134
+   },
+   "corpus_top1": {
+    "score": 0.8134,
+    "moiety": "DIPYRIDAMOLE",
+    "loinc": "34070-3",
+    "title": "Dipyridamole (DIPYRIDAMOLE) — Contraindications"
+   }
+  },
+  {
+   "qid": "Q023",
+   "drug_id": "DOBUTAMINE HCL",
+   "key_set": [
+    "DOBUTAMINE HCL"
+   ],
+   "key_used": "DOBUTAMINE HCL",
+   "template": "{drug} drug interactions",
+   "query": "dobutamine hcl drug interactions",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.6909,
+     "setid": "9943a961-3b50-4847-8a84-d8414ce38daa",
+     "moiety": "DOBUTAMINE",
+     "loinc": "34073-7",
+     "title": "Dobutamine in Dextrose (Dobutamine in Dextrose) — Drug Interactions",
+     "label": "wrong_object"
+    },
+    {
+     "rank": 1,
+     "score": 0.682,
+     "setid": "6b17b98b-e06d-42ed-925f-69aa2699dead",
+     "moiety": "DOBUTAMINE HCL",
+     "loinc": "34073-7",
+     "title": "Dobutamine Hydrochloride in Dextrose (Dobutamine Hydrochloride) — Drug Interactions",
+     "label": "relevant"
+    }
+   ],
+   "n_pool": 2,
+   "r_corpus": 4,
+   "has_relevant": true,
+   "first_relevant_rank": 1,
+   "rr": 0.5,
+   "has_wrong_object": true,
+   "wrong_object_at_rank1": true,
+   "ndcg5": 0.2463,
+   "best_corpus_relevant": {
+    "score": 0.682,
+    "overall_rank": 1,
+    "setid": "6b17b98b-e06d-42ed-925f-69aa2699dead",
+    "loinc": "34073-7",
+    "title": "Dobutamine Hydrochloride in Dextrose (Dobutamine Hydrochloride) — Drug Interactions",
+    "shortfall_vs_min_score": -0.082
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.682,
+    "overall_rank": 1,
+    "setid": "6b17b98b-e06d-42ed-925f-69aa2699dead",
+    "loinc": "34073-7",
+    "title": "Dobutamine Hydrochloride in Dextrose (Dobutamine Hydrochloride) — Drug Interactions",
+    "shortfall_vs_min_score": -0.082
+   },
+   "corpus_top1": {
+    "score": 0.6909,
+    "moiety": "DOBUTAMINE",
+    "loinc": "34073-7",
+    "title": "Dobutamine in Dextrose (Dobutamine in Dextrose) — Drug Interactions"
+   }
+  },
+  {
+   "qid": "Q024",
+   "drug_id": "DROPERIDOL",
+   "key_set": [
+    "DROPERIDOL"
+   ],
+   "key_used": "DROPERIDOL",
+   "template": "{drug} contraindications",
+   "query": "droperidol contraindications",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.7557,
+     "setid": "147e033d-d997-4ef6-8bb5-a9ba372590b2",
+     "moiety": "DROPERIDOL",
+     "loinc": "34070-3",
+     "title": "Droperidol (Droperidol) — Contraindications",
+     "label": "relevant"
+    },
+    {
+     "rank": 1,
+     "score": 0.7321,
+     "setid": "147e033d-d997-4ef6-8bb5-a9ba372590b2",
+     "moiety": "DROPERIDOL",
+     "loinc": "34066-1",
+     "title": "Droperidol (Droperidol) — Boxed Warning",
+     "label": "relevant"
+    },
+    {
+     "rank": 2,
+     "score": 0.7003,
+     "setid": "147e033d-d997-4ef6-8bb5-a9ba372590b2",
+     "moiety": "DROPERIDOL",
+     "loinc": "34068-7",
+     "title": "Droperidol (Droperidol) — Dosage and Administration",
+     "label": "relevant"
+    },
+    {
+     "rank": 3,
+     "score": 0.6976,
+     "setid": "147e033d-d997-4ef6-8bb5-a9ba372590b2",
+     "moiety": "DROPERIDOL",
+     "loinc": "34073-7",
+     "title": "Droperidol (Droperidol) — Drug Interactions",
+     "label": "relevant"
+    },
+    {
+     "rank": 4,
+     "score": 0.6273,
+     "setid": "147e033d-d997-4ef6-8bb5-a9ba372590b2",
+     "moiety": "DROPERIDOL",
+     "loinc": "34067-9",
+     "title": "Droperidol (Droperidol) — Indications and Usage",
+     "label": "relevant"
+    }
+   ],
+   "n_pool": 5,
+   "r_corpus": 5,
+   "has_relevant": true,
+   "first_relevant_rank": 0,
+   "rr": 1.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 1.0,
+   "best_corpus_relevant": {
+    "score": 0.7557,
+    "overall_rank": 0,
+    "setid": "147e033d-d997-4ef6-8bb5-a9ba372590b2",
+    "loinc": "34070-3",
+    "title": "Droperidol (Droperidol) — Contraindications",
+    "shortfall_vs_min_score": -0.1557
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.7557,
+    "overall_rank": 0,
+    "setid": "147e033d-d997-4ef6-8bb5-a9ba372590b2",
+    "loinc": "34070-3",
+    "title": "Droperidol (Droperidol) — Contraindications",
+    "shortfall_vs_min_score": -0.1557
+   },
+   "corpus_top1": {
+    "score": 0.7557,
+    "moiety": "DROPERIDOL",
+    "loinc": "34070-3",
+    "title": "Droperidol (Droperidol) — Contraindications"
+   }
+  },
+  {
+   "qid": "Q025",
+   "drug_id": "ENCORAFENIB",
+   "key_set": [
+    "ENCORAFENIB"
+   ],
+   "key_used": "ENCORAFENIB",
+   "template": "{drug} contraindications",
+   "query": "encorafenib contraindications",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.6107,
+     "setid": "6c3408ac-d401-4925-8a03-26591afbc240",
+     "moiety": "BINIMETINIB",
+     "loinc": "43685-7",
+     "title": "MEKTOVI (BINIMETINIB) — Warnings and Precautions",
+     "label": "wrong_object"
+    },
+    {
+     "rank": 1,
+     "score": 0.6008,
+     "setid": "b7919013-1511-44f0-a759-3fa78a9fa178",
+     "moiety": "SORAFENIB TOSYLATE",
+     "loinc": "34070-3",
+     "title": "Sorafenib Tosylate (Sorafenib) — Contraindications",
+     "label": "wrong_object"
+    }
+   ],
+   "n_pool": 2,
+   "r_corpus": 5,
+   "has_relevant": false,
+   "first_relevant_rank": null,
+   "rr": 0.0,
+   "has_wrong_object": true,
+   "wrong_object_at_rank1": true,
+   "ndcg5": 0.0,
+   "best_corpus_relevant": {
+    "score": 0.5206,
+    "overall_rank": 13,
+    "setid": "235dfc38-0f0b-4037-b501-7a9f4294740c",
+    "loinc": "34073-7",
+    "title": "BRAFTOVI (Encorafenib) — Drug Interactions",
+    "shortfall_vs_min_score": 0.0794
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.5206,
+    "overall_rank": 13,
+    "setid": "235dfc38-0f0b-4037-b501-7a9f4294740c",
+    "loinc": "34073-7",
+    "title": "BRAFTOVI (Encorafenib) — Drug Interactions",
+    "shortfall_vs_min_score": 0.0794
+   },
+   "corpus_top1": {
+    "score": 0.6107,
+    "moiety": "BINIMETINIB",
+    "loinc": "43685-7",
+    "title": "MEKTOVI (BINIMETINIB) — Warnings and Precautions"
+   }
+  },
+  {
+   "qid": "Q026",
+   "drug_id": "FENFLURAMINE HCL",
+   "key_set": [
+    "FENFLURAMINE HCL"
+   ],
+   "key_used": "FENFLURAMINE HCL",
+   "template": "{drug} contraindications",
+   "query": "fenfluramine hcl contraindications",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.6781,
+     "setid": "e88f360e-33ad-4cd6-b2de-5ef885857c5d",
+     "moiety": "FENFLURAMINE HCL",
+     "loinc": "34070-3",
+     "title": "Fintepla (fenfluramine) — Contraindications",
+     "label": "relevant"
+    }
+   ],
+   "n_pool": 1,
+   "r_corpus": 6,
+   "has_relevant": true,
+   "first_relevant_rank": 0,
+   "rr": 1.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.3392,
+   "best_corpus_relevant": {
+    "score": 0.6781,
+    "overall_rank": 0,
+    "setid": "e88f360e-33ad-4cd6-b2de-5ef885857c5d",
+    "loinc": "34070-3",
+    "title": "Fintepla (fenfluramine) — Contraindications",
+    "shortfall_vs_min_score": -0.0781
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.6781,
+    "overall_rank": 0,
+    "setid": "e88f360e-33ad-4cd6-b2de-5ef885857c5d",
+    "loinc": "34070-3",
+    "title": "Fintepla (fenfluramine) — Contraindications",
+    "shortfall_vs_min_score": -0.0781
+   },
+   "corpus_top1": {
+    "score": 0.6781,
+    "moiety": "FENFLURAMINE HCL",
+    "loinc": "34070-3",
+    "title": "Fintepla (fenfluramine) — Contraindications"
+   }
+  },
+  {
+   "qid": "Q027",
+   "drug_id": "FINGOLIMOD HCL",
+   "key_set": [
+    "FINGOLIMOD HCL"
+   ],
+   "key_used": "FINGOLIMOD HCL",
+   "template": "{drug} warnings and precautions",
+   "query": "fingolimod hcl warnings and precautions",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.6108,
+     "setid": "cc9e1c8c-0e2b-44e2-878b-27057f786be9",
+     "moiety": "FINGOLIMOD HCL",
+     "loinc": "34070-3",
+     "title": "Gilenya (Fingolimod hcl) — Contraindications",
+     "label": "relevant"
+    },
+    {
+     "rank": 1,
+     "score": 0.6082,
+     "setid": "cc9e1c8c-0e2b-44e2-878b-27057f786be9",
+     "moiety": "FINGOLIMOD HCL",
+     "loinc": "43685-7",
+     "title": "Gilenya (Fingolimod hcl) — Warnings and Precautions",
+     "label": "relevant"
+    }
+   ],
+   "n_pool": 2,
+   "r_corpus": 6,
+   "has_relevant": true,
+   "first_relevant_rank": 0,
+   "rr": 1.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.5531,
+   "best_corpus_relevant": {
+    "score": 0.6108,
+    "overall_rank": 0,
+    "setid": "cc9e1c8c-0e2b-44e2-878b-27057f786be9",
+    "loinc": "34070-3",
+    "title": "Gilenya (Fingolimod hcl) — Contraindications",
+    "shortfall_vs_min_score": -0.0108
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.6108,
+    "overall_rank": 0,
+    "setid": "cc9e1c8c-0e2b-44e2-878b-27057f786be9",
+    "loinc": "34070-3",
+    "title": "Gilenya (Fingolimod hcl) — Contraindications",
+    "shortfall_vs_min_score": -0.0108
+   },
+   "corpus_top1": {
+    "score": 0.6108,
+    "moiety": "FINGOLIMOD HCL",
+    "loinc": "34070-3",
+    "title": "Gilenya (Fingolimod hcl) — Contraindications"
+   }
+  },
+  {
+   "qid": "Q028",
+   "drug_id": "FLUDROCORTISONE ACETATE",
+   "key_set": [
+    "FLUDROCORTISONE ACETATE"
+   ],
+   "key_used": "FLUDROCORTISONE ACETATE",
+   "template": "{drug} contraindications",
+   "query": "fludrocortisone acetate contraindications",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.7004,
+     "setid": "3d6f1a89-ea11-474d-aaca-64fea02a3beb",
+     "moiety": "FLUDROCORTISONE ACETATE",
+     "loinc": "34067-9",
+     "title": "Fludrocortisone Acetate (Fludrocortisone Acetate) — Indications and Usage",
+     "label": "relevant"
+    },
+    {
+     "rank": 1,
+     "score": 0.6682,
+     "setid": "b20c9420-8fb4-4a49-93f0-c0e4074d6d71",
+     "moiety": "DIFLORASONE DIACETATE",
+     "loinc": "34070-3",
+     "title": "Diflorasone Diacetate (Diflorasone Diacetate) — Contraindications",
+     "label": "wrong_object"
+    },
+    {
+     "rank": 2,
+     "score": 0.6557,
+     "setid": "3d6f1a89-ea11-474d-aaca-64fea02a3beb",
+     "moiety": "FLUDROCORTISONE ACETATE",
+     "loinc": "34068-7",
+     "title": "Fludrocortisone Acetate (Fludrocortisone Acetate) — Dosage and Administration",
+     "label": "relevant"
+    },
+    {
+     "rank": 3,
+     "score": 0.6302,
+     "setid": "3d6f1a89-ea11-474d-aaca-64fea02a3beb",
+     "moiety": "FLUDROCORTISONE ACETATE",
+     "loinc": "34070-3",
+     "title": "Fludrocortisone Acetate (Fludrocortisone Acetate) — Contraindications",
+     "label": "relevant"
+    },
+    {
+     "rank": 4,
+     "score": 0.6283,
+     "setid": "0093b694-9fcb-46ae-b1ab-7d0fa204c6c8",
+     "moiety": "HYDROCORTISONE ACETATE",
+     "loinc": "34070-3",
+     "title": "Cortifoam (hydrocortisone acetate) — Contraindications",
+     "label": "wrong_object"
+    }
+   ],
+   "n_pool": 5,
+   "r_corpus": 4,
+   "has_relevant": true,
+   "first_relevant_rank": 0,
+   "rr": 1.0,
+   "has_wrong_object": true,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.7537,
+   "best_corpus_relevant": {
+    "score": 0.7004,
+    "overall_rank": 0,
+    "setid": "3d6f1a89-ea11-474d-aaca-64fea02a3beb",
+    "loinc": "34067-9",
+    "title": "Fludrocortisone Acetate (Fludrocortisone Acetate) — Indications and Usage",
+    "shortfall_vs_min_score": -0.1004
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.6302,
+    "overall_rank": 3,
+    "setid": "3d6f1a89-ea11-474d-aaca-64fea02a3beb",
+    "loinc": "34070-3",
+    "title": "Fludrocortisone Acetate (Fludrocortisone Acetate) — Contraindications",
+    "shortfall_vs_min_score": -0.0302
+   },
+   "corpus_top1": {
+    "score": 0.7004,
+    "moiety": "FLUDROCORTISONE ACETATE",
+    "loinc": "34067-9",
+    "title": "Fludrocortisone Acetate (Fludrocortisone Acetate) — Indications and Usage"
+   }
+  },
+  {
+   "qid": "Q029",
+   "drug_id": "FLUTEMETAMOL",
+   "key_set": [
+    "FLUTEMETAMOL"
+   ],
+   "key_used": "FLUTEMETAMOL",
+   "template": "{drug} contraindications",
+   "query": "flutemetamol contraindications",
+   "scope": "sampled",
+   "pool": [],
+   "n_pool": 0,
+   "r_corpus": 4,
+   "has_relevant": false,
+   "first_relevant_rank": null,
+   "rr": 0.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.0,
+   "best_corpus_relevant": {
+    "score": 0.4137,
+    "overall_rank": 744,
+    "setid": "b3558f16-8f9a-4e55-8d9c-836427ebaa57",
+    "loinc": "34070-3",
+    "title": "Vizamyl (Flutemetamol F-18) — Contraindications",
+    "shortfall_vs_min_score": 0.1863
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.4137,
+    "overall_rank": 744,
+    "setid": "b3558f16-8f9a-4e55-8d9c-836427ebaa57",
+    "loinc": "34070-3",
+    "title": "Vizamyl (Flutemetamol F-18) — Contraindications",
+    "shortfall_vs_min_score": 0.1863
+   },
+   "corpus_top1": {
+    "score": 0.59,
+    "moiety": "FENFLURAMINE HCL",
+    "loinc": "34070-3",
+    "title": "Fintepla (fenfluramine) — Contraindications"
+   }
+  },
+  {
+   "qid": "Q030",
+   "drug_id": "GALLIUM CITRATE",
+   "key_set": [
+    "GALLIUM CITRATE"
+   ],
+   "key_used": "GALLIUM CITRATE",
+   "template": "{drug} warnings and precautions",
+   "query": "gallium citrate warnings and precautions",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.6143,
+     "setid": "5f670c12-cca5-4d73-8a88-241f753d1bc7",
+     "moiety": "GALLIUM CITRATE",
+     "loinc": "34068-7",
+     "title": "GALLIUM CITRATE GA-67 (gallium citrate ga-67) — Dosage and Administration",
+     "label": "relevant"
+    },
+    {
+     "rank": 1,
+     "score": 0.6128,
+     "setid": "5f670c12-cca5-4d73-8a88-241f753d1bc7",
+     "moiety": "GALLIUM CITRATE",
+     "loinc": "34067-9",
+     "title": "GALLIUM CITRATE GA-67 (gallium citrate ga-67) — Indications and Usage",
+     "label": "relevant"
+    }
+   ],
+   "n_pool": 2,
+   "r_corpus": 3,
+   "has_relevant": true,
+   "first_relevant_rank": 0,
+   "rr": 1.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.7654,
+   "best_corpus_relevant": {
+    "score": 0.6143,
+    "overall_rank": 0,
+    "setid": "5f670c12-cca5-4d73-8a88-241f753d1bc7",
+    "loinc": "34068-7",
+    "title": "GALLIUM CITRATE GA-67 (gallium citrate ga-67) — Dosage and Administration",
+    "shortfall_vs_min_score": -0.0143
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.4106,
+    "overall_rank": 331,
+    "setid": "5f670c12-cca5-4d73-8a88-241f753d1bc7",
+    "loinc": "34070-3",
+    "title": "GALLIUM CITRATE GA-67 (gallium citrate ga-67) — Contraindications",
+    "shortfall_vs_min_score": 0.1894
+   },
+   "corpus_top1": {
+    "score": 0.6143,
+    "moiety": "GALLIUM CITRATE",
+    "loinc": "34068-7",
+    "title": "GALLIUM CITRATE GA-67 (gallium citrate ga-67) — Dosage and Administration"
+   }
+  },
+  {
+   "qid": "Q031",
+   "drug_id": "GEMCITABINE HYDROCHLORIDE",
+   "key_set": [
+    "GEMCITABINE HYDROCHLORIDE"
+   ],
+   "key_used": "GEMCITABINE HYDROCHLORIDE",
+   "template": "{drug} contraindications",
+   "query": "gemcitabine hydrochloride contraindications",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.7025,
+     "setid": "9f8fe5ba-943f-4f0a-9618-6083101faa28",
+     "moiety": "GEMCITABINE HYDROCHLORIDE",
+     "loinc": "34070-3",
+     "title": "gemcitabine hydrochloride (gemcitabine hydrochloride) — Contraindications",
+     "label": "relevant"
+    },
+    {
+     "rank": 1,
+     "score": 0.6333,
+     "setid": "9f8fe5ba-943f-4f0a-9618-6083101faa28",
+     "moiety": "GEMCITABINE HYDROCHLORIDE",
+     "loinc": "43685-7",
+     "title": "gemcitabine hydrochloride (gemcitabine hydrochloride) — Warnings and Precautions",
+     "label": "relevant"
+    },
+    {
+     "rank": 2,
+     "score": 0.6184,
+     "setid": "446f6765-5375-6368-4755-4944574f5721",
+     "moiety": "CYTARABINE",
+     "loinc": "34070-3",
+     "title": "Cytarabine (Cytarabine) — Contraindications",
+     "label": "wrong_object"
+    },
+    {
+     "rank": 3,
+     "score": 0.6183,
+     "setid": "9f8fe5ba-943f-4f0a-9618-6083101faa28",
+     "moiety": "GEMCITABINE HYDROCHLORIDE",
+     "loinc": "34067-9",
+     "title": "gemcitabine hydrochloride (gemcitabine hydrochloride) — Indications and Usage",
+     "label": "relevant"
+    }
+   ],
+   "n_pool": 4,
+   "r_corpus": 4,
+   "has_relevant": true,
+   "first_relevant_rank": 0,
+   "rr": 1.0,
+   "has_wrong_object": true,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.8048,
+   "best_corpus_relevant": {
+    "score": 0.7025,
+    "overall_rank": 0,
+    "setid": "9f8fe5ba-943f-4f0a-9618-6083101faa28",
+    "loinc": "34070-3",
+    "title": "gemcitabine hydrochloride (gemcitabine hydrochloride) — Contraindications",
+    "shortfall_vs_min_score": -0.1025
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.7025,
+    "overall_rank": 0,
+    "setid": "9f8fe5ba-943f-4f0a-9618-6083101faa28",
+    "loinc": "34070-3",
+    "title": "gemcitabine hydrochloride (gemcitabine hydrochloride) — Contraindications",
+    "shortfall_vs_min_score": -0.1025
+   },
+   "corpus_top1": {
+    "score": 0.7025,
+    "moiety": "GEMCITABINE HYDROCHLORIDE",
+    "loinc": "34070-3",
+    "title": "gemcitabine hydrochloride (gemcitabine hydrochloride) — Contraindications"
+   }
+  },
+  {
+   "qid": "Q032",
+   "drug_id": "GENTAMICIN",
+   "key_set": [
+    "GENTAMICIN"
+   ],
+   "key_used": "GENTAMICIN",
+   "template": "{drug} warnings and precautions",
+   "query": "gentamicin warnings and precautions",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.6806,
+     "setid": "977180b3-a222-4282-d485-4a3217674305",
+     "moiety": "GENTAMICIN",
+     "loinc": "34066-1",
+     "title": "Gentamicin Sulfate (GENTAMICIN SULFATE) — Boxed Warning",
+     "label": "relevant"
+    },
+    {
+     "rank": 1,
+     "score": 0.6669,
+     "setid": "977180b3-a222-4282-d485-4a3217674305",
+     "moiety": "GENTAMICIN",
+     "loinc": "34070-3",
+     "title": "Gentamicin Sulfate (GENTAMICIN SULFATE) — Contraindications",
+     "label": "relevant"
+    },
+    {
+     "rank": 2,
+     "score": 0.6255,
+     "setid": "977180b3-a222-4282-d485-4a3217674305",
+     "moiety": "GENTAMICIN",
+     "loinc": "34067-9",
+     "title": "Gentamicin Sulfate (GENTAMICIN SULFATE) — Indications and Usage",
+     "label": "relevant"
+    }
+   ],
+   "n_pool": 3,
+   "r_corpus": 4,
+   "has_relevant": true,
+   "first_relevant_rank": 0,
+   "rr": 1.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.8319,
+   "best_corpus_relevant": {
+    "score": 0.6806,
+    "overall_rank": 0,
+    "setid": "977180b3-a222-4282-d485-4a3217674305",
+    "loinc": "34066-1",
+    "title": "Gentamicin Sulfate (GENTAMICIN SULFATE) — Boxed Warning",
+    "shortfall_vs_min_score": -0.0806
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.6806,
+    "overall_rank": 0,
+    "setid": "977180b3-a222-4282-d485-4a3217674305",
+    "loinc": "34066-1",
+    "title": "Gentamicin Sulfate (GENTAMICIN SULFATE) — Boxed Warning",
+    "shortfall_vs_min_score": -0.0806
+   },
+   "corpus_top1": {
+    "score": 0.6806,
+    "moiety": "GENTAMICIN",
+    "loinc": "34066-1",
+    "title": "Gentamicin Sulfate (GENTAMICIN SULFATE) — Boxed Warning"
+   }
+  },
+  {
+   "qid": "Q033",
+   "drug_id": "GLATIRAMER ACETATE",
+   "key_set": [
+    "GLATIRAMER ACETATE"
+   ],
+   "key_used": "GLATIRAMER ACETATE",
+   "template": "{drug} contraindications",
+   "query": "glatiramer acetate contraindications",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.6096,
+     "setid": "aa88f583-4f5f-433b-80b4-1f4c9fb28357",
+     "moiety": "GLATIRAMER ACETATE",
+     "loinc": "34070-3",
+     "title": "Copaxone (Glatiramer Acetate) — Contraindications",
+     "label": "relevant"
+    }
+   ],
+   "n_pool": 1,
+   "r_corpus": 5,
+   "has_relevant": true,
+   "first_relevant_rank": 0,
+   "rr": 1.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.3392,
+   "best_corpus_relevant": {
+    "score": 0.6096,
+    "overall_rank": 0,
+    "setid": "aa88f583-4f5f-433b-80b4-1f4c9fb28357",
+    "loinc": "34070-3",
+    "title": "Copaxone (Glatiramer Acetate) — Contraindications",
+    "shortfall_vs_min_score": -0.0096
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.6096,
+    "overall_rank": 0,
+    "setid": "aa88f583-4f5f-433b-80b4-1f4c9fb28357",
+    "loinc": "34070-3",
+    "title": "Copaxone (Glatiramer Acetate) — Contraindications",
+    "shortfall_vs_min_score": -0.0096
+   },
+   "corpus_top1": {
+    "score": 0.6096,
+    "moiety": "GLATIRAMER ACETATE",
+    "loinc": "34070-3",
+    "title": "Copaxone (Glatiramer Acetate) — Contraindications"
+   }
+  },
+  {
+   "qid": "Q034",
+   "drug_id": "GLATIRAMER ACETATE",
+   "key_set": [
+    "GLATIRAMER ACETATE"
+   ],
+   "key_used": "GLATIRAMER ACETATE",
+   "template": "{drug} drug interactions",
+   "query": "glatiramer acetate drug interactions",
+   "scope": "sampled",
+   "pool": [],
+   "n_pool": 0,
+   "r_corpus": 5,
+   "has_relevant": false,
+   "first_relevant_rank": null,
+   "rr": 0.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.0,
+   "best_corpus_relevant": {
+    "score": 0.5296,
+    "overall_rank": 8,
+    "setid": "aa88f583-4f5f-433b-80b4-1f4c9fb28357",
+    "loinc": "43685-7",
+    "title": "Copaxone (Glatiramer Acetate) — Warnings and Precautions",
+    "shortfall_vs_min_score": 0.0704
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.5296,
+    "overall_rank": 8,
+    "setid": "aa88f583-4f5f-433b-80b4-1f4c9fb28357",
+    "loinc": "43685-7",
+    "title": "Copaxone (Glatiramer Acetate) — Warnings and Precautions",
+    "shortfall_vs_min_score": 0.0704
+   },
+   "corpus_top1": {
+    "score": 0.5531,
+    "moiety": "GEMFIBROZIL",
+    "loinc": "34073-7",
+    "title": "Lopid (gemfibrozil) — Drug Interactions"
+   }
+  },
+  {
+   "qid": "Q035",
+   "drug_id": "GRANISETRON HYDROCHLORIDE",
+   "key_set": [
+    "GRANISETRON HYDROCHLORIDE"
+   ],
+   "key_used": "GRANISETRON HYDROCHLORIDE",
+   "template": "{drug} warnings and precautions",
+   "query": "granisetron hydrochloride warnings and precautions",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.6699,
+     "setid": "02f350c9-b7d2-4906-af28-70ed4461ff23",
+     "moiety": "GRANISETRON HYDROCHLORIDE",
+     "loinc": "34070-3",
+     "title": "Granisetron Hydrochloride (Granisetron Hydrochloride) — Contraindications",
+     "label": "relevant"
+    },
+    {
+     "rank": 1,
+     "score": 0.6365,
+     "setid": "02f350c9-b7d2-4906-af28-70ed4461ff23",
+     "moiety": "GRANISETRON HYDROCHLORIDE",
+     "loinc": "43685-7",
+     "title": "Granisetron Hydrochloride (Granisetron Hydrochloride) — Warnings and Precautions",
+     "label": "relevant"
+    },
+    {
+     "rank": 2,
+     "score": 0.6193,
+     "setid": "02f350c9-b7d2-4906-af28-70ed4461ff23",
+     "moiety": "GRANISETRON HYDROCHLORIDE",
+     "loinc": "34073-7",
+     "title": "Granisetron Hydrochloride (Granisetron Hydrochloride) — Drug Interactions",
+     "label": "relevant"
+    },
+    {
+     "rank": 3,
+     "score": 0.6109,
+     "setid": "02f350c9-b7d2-4906-af28-70ed4461ff23",
+     "moiety": "GRANISETRON HYDROCHLORIDE",
+     "loinc": "34067-9",
+     "title": "Granisetron Hydrochloride (Granisetron Hydrochloride) — Indications and Usage",
+     "label": "relevant"
+    },
+    {
+     "rank": 4,
+     "score": 0.6071,
+     "setid": "f7c7ffdd-8270-4030-bc1e-a1cb28a6de56",
+     "moiety": "GRANISETRON",
+     "loinc": "34070-3",
+     "title": "SUSTOL (granisetron) — Contraindications",
+     "label": "wrong_object"
+    }
+   ],
+   "n_pool": 5,
+   "r_corpus": 5,
+   "has_relevant": true,
+   "first_relevant_rank": 0,
+   "rr": 1.0,
+   "has_wrong_object": true,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.8688,
+   "best_corpus_relevant": {
+    "score": 0.6699,
+    "overall_rank": 0,
+    "setid": "02f350c9-b7d2-4906-af28-70ed4461ff23",
+    "loinc": "34070-3",
+    "title": "Granisetron Hydrochloride (Granisetron Hydrochloride) — Contraindications",
+    "shortfall_vs_min_score": -0.0699
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.6699,
+    "overall_rank": 0,
+    "setid": "02f350c9-b7d2-4906-af28-70ed4461ff23",
+    "loinc": "34070-3",
+    "title": "Granisetron Hydrochloride (Granisetron Hydrochloride) — Contraindications",
+    "shortfall_vs_min_score": -0.0699
+   },
+   "corpus_top1": {
+    "score": 0.6699,
+    "moiety": "GRANISETRON HYDROCHLORIDE",
+    "loinc": "34070-3",
+    "title": "Granisetron Hydrochloride (Granisetron Hydrochloride) — Contraindications"
+   }
+  },
+  {
+   "qid": "Q036",
+   "drug_id": "HYDROXOCOBALAMIN",
+   "key_set": [
+    "HYDROXOCOBALAMIN"
+   ],
+   "key_used": "HYDROXOCOBALAMIN",
+   "template": "{drug} warnings and precautions",
+   "query": "hydroxocobalamin warnings and precautions",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.6368,
+     "setid": "697e0e52-c01b-4b53-9994-f79c46eb6b4f",
+     "moiety": "CYANOCOBALAMIN",
+     "loinc": "34070-3",
+     "title": "Nascobal (cyanocobalamin) — Contraindications",
+     "label": "wrong_object"
+    },
+    {
+     "rank": 1,
+     "score": 0.6261,
+     "setid": "d56fcc8d-bd64-46ab-b0c0-2124bd745a6b",
+     "moiety": "HYDROXOCOBALAMIN",
+     "loinc": "34068-7",
+     "title": "Cyanokit (Hydroxocobalamin) — Dosage and Administration",
+     "label": "relevant"
+    }
+   ],
+   "n_pool": 2,
+   "r_corpus": 5,
+   "has_relevant": true,
+   "first_relevant_rank": 1,
+   "rr": 0.5,
+   "has_wrong_object": true,
+   "wrong_object_at_rank1": true,
+   "ndcg5": 0.214,
+   "best_corpus_relevant": {
+    "score": 0.6261,
+    "overall_rank": 1,
+    "setid": "d56fcc8d-bd64-46ab-b0c0-2124bd745a6b",
+    "loinc": "34068-7",
+    "title": "Cyanokit (Hydroxocobalamin) — Dosage and Administration",
+    "shortfall_vs_min_score": -0.0261
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.5939,
+    "overall_rank": 2,
+    "setid": "d56fcc8d-bd64-46ab-b0c0-2124bd745a6b",
+    "loinc": "34073-7",
+    "title": "Cyanokit (Hydroxocobalamin) — Drug Interactions",
+    "shortfall_vs_min_score": 0.0061
+   },
+   "corpus_top1": {
+    "score": 0.6368,
+    "moiety": "CYANOCOBALAMIN",
+    "loinc": "34070-3",
+    "title": "Nascobal (cyanocobalamin) — Contraindications"
+   }
+  },
+  {
+   "qid": "Q037",
+   "drug_id": "HYDROXYPROGESTERONE CAPROATE",
+   "key_set": [
+    "HYDROXYPROGESTERONE CAPROATE"
+   ],
+   "key_used": "HYDROXYPROGESTERONE CAPROATE",
+   "template": "{drug} contraindications",
+   "query": "hydroxyprogesterone caproate contraindications",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.7422,
+     "setid": "79cd136b-2098-43a4-aeec-7d8b8869f6ae",
+     "moiety": "HYDROXYPROGESTERONE CAPROATE",
+     "loinc": "34070-3",
+     "title": "Hydroxyprogesterone Caproate (Hydroxyprogesterone Caproate) — Contraindications",
+     "label": "relevant"
+    },
+    {
+     "rank": 1,
+     "score": 0.7324,
+     "setid": "79cd136b-2098-43a4-aeec-7d8b8869f6ae",
+     "moiety": "HYDROXYPROGESTERONE CAPROATE",
+     "loinc": "43685-7",
+     "title": "Hydroxyprogesterone Caproate (Hydroxyprogesterone Caproate) — Warnings and Precautions",
+     "label": "relevant"
+    },
+    {
+     "rank": 2,
+     "score": 0.6848,
+     "setid": "79cd136b-2098-43a4-aeec-7d8b8869f6ae",
+     "moiety": "HYDROXYPROGESTERONE CAPROATE",
+     "loinc": "34067-9",
+     "title": "Hydroxyprogesterone Caproate (Hydroxyprogesterone Caproate) — Indications and Usage",
+     "label": "relevant"
+    },
+    {
+     "rank": 3,
+     "score": 0.6842,
+     "setid": "79cd136b-2098-43a4-aeec-7d8b8869f6ae",
+     "moiety": "HYDROXYPROGESTERONE CAPROATE",
+     "loinc": "34073-7",
+     "title": "Hydroxyprogesterone Caproate (Hydroxyprogesterone Caproate) — Drug Interactions",
+     "label": "relevant"
+    },
+    {
+     "rank": 4,
+     "score": 0.6423,
+     "setid": "79cd136b-2098-43a4-aeec-7d8b8869f6ae",
+     "moiety": "HYDROXYPROGESTERONE CAPROATE",
+     "loinc": "34068-7",
+     "title": "Hydroxyprogesterone Caproate (Hydroxyprogesterone Caproate) — Dosage and Administration",
+     "label": "relevant"
+    }
+   ],
+   "n_pool": 5,
+   "r_corpus": 5,
+   "has_relevant": true,
+   "first_relevant_rank": 0,
+   "rr": 1.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 1.0,
+   "best_corpus_relevant": {
+    "score": 0.7422,
+    "overall_rank": 0,
+    "setid": "79cd136b-2098-43a4-aeec-7d8b8869f6ae",
+    "loinc": "34070-3",
+    "title": "Hydroxyprogesterone Caproate (Hydroxyprogesterone Caproate) — Contraindications",
+    "shortfall_vs_min_score": -0.1422
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.7422,
+    "overall_rank": 0,
+    "setid": "79cd136b-2098-43a4-aeec-7d8b8869f6ae",
+    "loinc": "34070-3",
+    "title": "Hydroxyprogesterone Caproate (Hydroxyprogesterone Caproate) — Contraindications",
+    "shortfall_vs_min_score": -0.1422
+   },
+   "corpus_top1": {
+    "score": 0.7422,
+    "moiety": "HYDROXYPROGESTERONE CAPROATE",
+    "loinc": "34070-3",
+    "title": "Hydroxyprogesterone Caproate (Hydroxyprogesterone Caproate) — Contraindications"
+   }
+  },
+  {
+   "qid": "Q038",
+   "drug_id": "IBRUTINIB",
+   "key_set": [
+    "IBRUTINIB"
+   ],
+   "key_used": "IBRUTINIB",
+   "template": "{drug} contraindications",
+   "query": "ibrutinib contraindications",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.6408,
+     "setid": "2ea1617f-41d3-479a-87d5-177013d39193",
+     "moiety": "BOSUTINIB MONOHYDRATE",
+     "loinc": "34070-3",
+     "title": "Bosutinib (Bosutinib) — Contraindications",
+     "label": "wrong_object"
+    },
+    {
+     "rank": 1,
+     "score": 0.623,
+     "setid": "0dfd0279-ff17-4ea9-89be-9803c71bab44",
+     "moiety": "IBRUTINIB",
+     "loinc": "34073-7",
+     "title": "Imbruvica (Ibrutinib) — Drug Interactions",
+     "label": "relevant"
+    },
+    {
+     "rank": 2,
+     "score": 0.6102,
+     "setid": "3e08fe23-d70e-424c-bc51-1222e320f902",
+     "moiety": "ZANUBRUTINIB",
+     "loinc": "43685-7",
+     "title": "BRUKINSA (zanubrutinib) — Warnings and Precautions",
+     "label": "wrong_object"
+    }
+   ],
+   "n_pool": 3,
+   "r_corpus": 5,
+   "has_relevant": true,
+   "first_relevant_rank": 1,
+   "rr": 0.5,
+   "has_wrong_object": true,
+   "wrong_object_at_rank1": true,
+   "ndcg5": 0.214,
+   "best_corpus_relevant": {
+    "score": 0.623,
+    "overall_rank": 1,
+    "setid": "0dfd0279-ff17-4ea9-89be-9803c71bab44",
+    "loinc": "34073-7",
+    "title": "Imbruvica (Ibrutinib) — Drug Interactions",
+    "shortfall_vs_min_score": -0.023
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.623,
+    "overall_rank": 1,
+    "setid": "0dfd0279-ff17-4ea9-89be-9803c71bab44",
+    "loinc": "34073-7",
+    "title": "Imbruvica (Ibrutinib) — Drug Interactions",
+    "shortfall_vs_min_score": -0.023
+   },
+   "corpus_top1": {
+    "score": 0.6408,
+    "moiety": "BOSUTINIB MONOHYDRATE",
+    "loinc": "34070-3",
+    "title": "Bosutinib (Bosutinib) — Contraindications"
+   }
+  },
+  {
+   "qid": "Q039",
+   "drug_id": "IMIPRAMINE HCL",
+   "key_set": [
+    "IMIPRAMINE HCL"
+   ],
+   "key_used": "IMIPRAMINE HCL",
+   "template": "{drug} contraindications",
+   "query": "imipramine hcl contraindications",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.7206,
+     "setid": "53faac6a-fdb9-4d60-814d-b4aab9c9da58",
+     "moiety": "IMIPRAMINE HCL",
+     "loinc": "34070-3",
+     "title": "IMIPRAMINE PAMOATE (IMIPRAMINE PAMOATE) — Contraindications",
+     "label": "relevant"
+    },
+    {
+     "rank": 1,
+     "score": 0.6106,
+     "setid": "fee7d073-0b99-48f2-7985-0d8cf970894b",
+     "moiety": "SUMATRIPTAN",
+     "loinc": "34070-3",
+     "title": "IMITREX (sumatriptan) — Contraindications",
+     "label": "wrong_object"
+    },
+    {
+     "rank": 2,
+     "score": 0.6048,
+     "setid": "53faac6a-fdb9-4d60-814d-b4aab9c9da58",
+     "moiety": "IMIPRAMINE HCL",
+     "loinc": "34068-7",
+     "title": "IMIPRAMINE PAMOATE (IMIPRAMINE PAMOATE) — Dosage and Administration",
+     "label": "relevant"
+    }
+   ],
+   "n_pool": 3,
+   "r_corpus": 5,
+   "has_relevant": true,
+   "first_relevant_rank": 0,
+   "rr": 1.0,
+   "has_wrong_object": true,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.5087,
+   "best_corpus_relevant": {
+    "score": 0.7206,
+    "overall_rank": 0,
+    "setid": "53faac6a-fdb9-4d60-814d-b4aab9c9da58",
+    "loinc": "34070-3",
+    "title": "IMIPRAMINE PAMOATE (IMIPRAMINE PAMOATE) — Contraindications",
+    "shortfall_vs_min_score": -0.1206
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.7206,
+    "overall_rank": 0,
+    "setid": "53faac6a-fdb9-4d60-814d-b4aab9c9da58",
+    "loinc": "34070-3",
+    "title": "IMIPRAMINE PAMOATE (IMIPRAMINE PAMOATE) — Contraindications",
+    "shortfall_vs_min_score": -0.1206
+   },
+   "corpus_top1": {
+    "score": 0.7206,
+    "moiety": "IMIPRAMINE HCL",
+    "loinc": "34070-3",
+    "title": "IMIPRAMINE PAMOATE (IMIPRAMINE PAMOATE) — Contraindications"
+   }
+  },
+  {
+   "qid": "Q040",
+   "drug_id": "IOPAMIDOL",
+   "key_set": [
+    "IOPAMIDOL"
+   ],
+   "key_used": "IOPAMIDOL",
+   "template": "{drug} warnings and precautions",
+   "query": "iopamidol warnings and precautions",
+   "scope": "sampled",
+   "pool": [],
+   "n_pool": 0,
+   "r_corpus": 5,
+   "has_relevant": false,
+   "first_relevant_rank": null,
+   "rr": 0.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.0,
+   "best_corpus_relevant": {
+    "score": 0.4322,
+    "overall_rank": 418,
+    "setid": "ae8c18c9-3e7d-4515-b980-120025a88fc1",
+    "loinc": "34066-1",
+    "title": "ISOVUE (IOPAMIDOL) — Boxed Warning",
+    "shortfall_vs_min_score": 0.1678
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.4322,
+    "overall_rank": 418,
+    "setid": "ae8c18c9-3e7d-4515-b980-120025a88fc1",
+    "loinc": "34066-1",
+    "title": "ISOVUE (IOPAMIDOL) — Boxed Warning",
+    "shortfall_vs_min_score": 0.1678
+   },
+   "corpus_top1": {
+    "score": 0.5644,
+    "moiety": "POMALIDOMIDE",
+    "loinc": "34070-3",
+    "title": "Pomalyst (pomalidomide) — Contraindications"
+   }
+  },
+  {
+   "qid": "Q041",
+   "drug_id": "IRON",
+   "key_set": [
+    "IRON"
+   ],
+   "key_used": "IRON",
+   "template": "{drug} contraindications",
+   "query": "iron contraindications",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.6125,
+     "setid": "94b01b1e-794b-4bea-8e24-2e54683fc023",
+     "moiety": "IRON DEXTRAN",
+     "loinc": "34070-3",
+     "title": "INFeD (Iron Dextran) — Contraindications",
+     "label": "wrong_object"
+    }
+   ],
+   "n_pool": 1,
+   "r_corpus": 5,
+   "has_relevant": false,
+   "first_relevant_rank": null,
+   "rr": 0.0,
+   "has_wrong_object": true,
+   "wrong_object_at_rank1": true,
+   "ndcg5": 0.0,
+   "best_corpus_relevant": {
+    "score": 0.5115,
+    "overall_rank": 12,
+    "setid": "626dc9e5-c6b4-4f9c-9bf4-774fd3ae619a",
+    "loinc": "43685-7",
+    "title": "Venofer (iron sucrose) — Warnings and Precautions",
+    "shortfall_vs_min_score": 0.0885
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.5115,
+    "overall_rank": 12,
+    "setid": "626dc9e5-c6b4-4f9c-9bf4-774fd3ae619a",
+    "loinc": "43685-7",
+    "title": "Venofer (iron sucrose) — Warnings and Precautions",
+    "shortfall_vs_min_score": 0.0885
+   },
+   "corpus_top1": {
+    "score": 0.6125,
+    "moiety": "IRON DEXTRAN",
+    "loinc": "34070-3",
+    "title": "INFeD (Iron Dextran) — Contraindications"
+   }
+  },
+  {
+   "qid": "Q042",
+   "drug_id": "KETAMINE",
+   "key_set": [
+    "KETAMINE"
+   ],
+   "key_used": "KETAMINE",
+   "template": "{drug} drug interactions",
+   "query": "ketamine drug interactions",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.6185,
+     "setid": "14e8f864-8b8a-4e7e-8439-e510d3107063",
+     "moiety": "KETAMINE",
+     "loinc": "34073-7",
+     "title": "Ketalar (ketamine hydrochloride) — Drug Interactions",
+     "label": "relevant"
+    },
+    {
+     "rank": 1,
+     "score": 0.6042,
+     "setid": "14e8f864-8b8a-4e7e-8439-e510d3107063",
+     "moiety": "KETAMINE",
+     "loinc": "43685-7",
+     "title": "Ketalar (ketamine hydrochloride) — Warnings and Precautions",
+     "label": "relevant"
+    }
+   ],
+   "n_pool": 2,
+   "r_corpus": 5,
+   "has_relevant": true,
+   "first_relevant_rank": 0,
+   "rr": 1.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.5531,
+   "best_corpus_relevant": {
+    "score": 0.6185,
+    "overall_rank": 0,
+    "setid": "14e8f864-8b8a-4e7e-8439-e510d3107063",
+    "loinc": "34073-7",
+    "title": "Ketalar (ketamine hydrochloride) — Drug Interactions",
+    "shortfall_vs_min_score": -0.0185
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.6185,
+    "overall_rank": 0,
+    "setid": "14e8f864-8b8a-4e7e-8439-e510d3107063",
+    "loinc": "34073-7",
+    "title": "Ketalar (ketamine hydrochloride) — Drug Interactions",
+    "shortfall_vs_min_score": -0.0185
+   },
+   "corpus_top1": {
+    "score": 0.6185,
+    "moiety": "KETAMINE",
+    "loinc": "34073-7",
+    "title": "Ketalar (ketamine hydrochloride) — Drug Interactions"
+   }
+  },
+  {
+   "qid": "Q043",
+   "drug_id": "LOXAPINE SUCCINATE",
+   "key_set": [
+    "LOXAPINE SUCCINATE"
+   ],
+   "key_used": "LOXAPINE SUCCINATE",
+   "template": "{drug} warnings and precautions",
+   "query": "loxapine succinate warnings and precautions",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.6263,
+     "setid": "dee2537b-1bd8-42f6-990f-62359e646822",
+     "moiety": "LOXAPINE SUCCINATE",
+     "loinc": "34067-9",
+     "title": "Loxapine (Loxapine succinate) — Indications and Usage",
+     "label": "relevant"
+    },
+    {
+     "rank": 1,
+     "score": 0.6228,
+     "setid": "dee2537b-1bd8-42f6-990f-62359e646822",
+     "moiety": "LOXAPINE SUCCINATE",
+     "loinc": "34073-7",
+     "title": "Loxapine (Loxapine succinate) — Drug Interactions",
+     "label": "relevant"
+    }
+   ],
+   "n_pool": 2,
+   "r_corpus": 4,
+   "has_relevant": true,
+   "first_relevant_rank": 0,
+   "rr": 1.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.6367,
+   "best_corpus_relevant": {
+    "score": 0.6263,
+    "overall_rank": 0,
+    "setid": "dee2537b-1bd8-42f6-990f-62359e646822",
+    "loinc": "34067-9",
+    "title": "Loxapine (Loxapine succinate) — Indications and Usage",
+    "shortfall_vs_min_score": -0.0263
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.6228,
+    "overall_rank": 1,
+    "setid": "dee2537b-1bd8-42f6-990f-62359e646822",
+    "loinc": "34073-7",
+    "title": "Loxapine (Loxapine succinate) — Drug Interactions",
+    "shortfall_vs_min_score": -0.0228
+   },
+   "corpus_top1": {
+    "score": 0.6263,
+    "moiety": "LOXAPINE SUCCINATE",
+    "loinc": "34067-9",
+    "title": "Loxapine (Loxapine succinate) — Indications and Usage"
+   }
+  },
+  {
+   "qid": "Q044",
+   "drug_id": "MEMANTINE HYDROCHLORIDE",
+   "key_set": [
+    "MEMANTINE HYDROCHLORIDE"
+   ],
+   "key_used": "MEMANTINE HYDROCHLORIDE",
+   "template": "{drug} drug interactions",
+   "query": "memantine hydrochloride drug interactions",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.6283,
+     "setid": "1fa2b7bc-94e5-4566-a7c5-419f8fd393a7",
+     "moiety": "MEMANTINE HYDROCHLORIDE",
+     "loinc": "34073-7",
+     "title": "Namenda (memantine hydrochloride) — Drug Interactions",
+     "label": "relevant"
+    },
+    {
+     "rank": 1,
+     "score": 0.6038,
+     "setid": "1fa2b7bc-94e5-4566-a7c5-419f8fd393a7",
+     "moiety": "MEMANTINE HYDROCHLORIDE",
+     "loinc": "43685-7",
+     "title": "Namenda (memantine hydrochloride) — Warnings and Precautions",
+     "label": "relevant"
+    }
+   ],
+   "n_pool": 2,
+   "r_corpus": 5,
+   "has_relevant": true,
+   "first_relevant_rank": 0,
+   "rr": 1.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.5531,
+   "best_corpus_relevant": {
+    "score": 0.6283,
+    "overall_rank": 0,
+    "setid": "1fa2b7bc-94e5-4566-a7c5-419f8fd393a7",
+    "loinc": "34073-7",
+    "title": "Namenda (memantine hydrochloride) — Drug Interactions",
+    "shortfall_vs_min_score": -0.0283
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.6283,
+    "overall_rank": 0,
+    "setid": "1fa2b7bc-94e5-4566-a7c5-419f8fd393a7",
+    "loinc": "34073-7",
+    "title": "Namenda (memantine hydrochloride) — Drug Interactions",
+    "shortfall_vs_min_score": -0.0283
+   },
+   "corpus_top1": {
+    "score": 0.6283,
+    "moiety": "MEMANTINE HYDROCHLORIDE",
+    "loinc": "34073-7",
+    "title": "Namenda (memantine hydrochloride) — Drug Interactions"
+   }
+  },
+  {
+   "qid": "Q045",
+   "drug_id": "MEROPENEM TRIHYDRATE",
+   "key_set": [
+    "MEROPENEM TRIHYDRATE"
+   ],
+   "key_used": "MEROPENEM TRIHYDRATE",
+   "template": "{drug} warnings and precautions",
+   "query": "meropenem trihydrate warnings and precautions",
+   "scope": "sampled",
+   "pool": [],
+   "n_pool": 0,
+   "r_corpus": 5,
+   "has_relevant": false,
+   "first_relevant_rank": null,
+   "rr": 0.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.0,
+   "best_corpus_relevant": {
+    "score": 0.5913,
+    "overall_rank": 0,
+    "setid": "3b952a55-6ef7-45c8-be21-16eefe37ec2e",
+    "loinc": "43685-7",
+    "title": "Meropenem and Sodium Chloride (Meropenem and Sodium Chloride) — Warnings and Precautions",
+    "shortfall_vs_min_score": 0.0087
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.5913,
+    "overall_rank": 0,
+    "setid": "3b952a55-6ef7-45c8-be21-16eefe37ec2e",
+    "loinc": "43685-7",
+    "title": "Meropenem and Sodium Chloride (Meropenem and Sodium Chloride) — Warnings and Precautions",
+    "shortfall_vs_min_score": 0.0087
+   },
+   "corpus_top1": {
+    "score": 0.5913,
+    "moiety": "MEROPENEM TRIHYDRATE",
+    "loinc": "43685-7",
+    "title": "Meropenem and Sodium Chloride (Meropenem and Sodium Chloride) — Warnings and Precautions"
+   }
+  },
+  {
+   "qid": "Q046",
+   "drug_id": "METOLAZONE",
+   "key_set": [
+    "METOLAZONE"
+   ],
+   "key_used": "METOLAZONE",
+   "template": "{drug} contraindications",
+   "query": "metolazone contraindications",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.7187,
+     "setid": "58935d94-5bf1-4065-b8b5-ac61292436a7",
+     "moiety": "METOLAZONE",
+     "loinc": "34070-3",
+     "title": "Zaroxolyn (metolazone) — Contraindications",
+     "label": "relevant"
+    },
+    {
+     "rank": 1,
+     "score": 0.6217,
+     "setid": "58935d94-5bf1-4065-b8b5-ac61292436a7",
+     "moiety": "METOLAZONE",
+     "loinc": "34073-7",
+     "title": "Zaroxolyn (metolazone) — Drug Interactions",
+     "label": "relevant"
+    },
+    {
+     "rank": 2,
+     "score": 0.6063,
+     "setid": "669afcc1-d587-4dc0-8f6e-99109bcfed36",
+     "moiety": "CHLORZOXAZONE",
+     "loinc": "34070-3",
+     "title": "CHLORZOXAZONE (CHLORZOXAZONE) — Contraindications",
+     "label": "wrong_object"
+    }
+   ],
+   "n_pool": 3,
+   "r_corpus": 4,
+   "has_relevant": true,
+   "first_relevant_rank": 0,
+   "rr": 1.0,
+   "has_wrong_object": true,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.6367,
+   "best_corpus_relevant": {
+    "score": 0.7187,
+    "overall_rank": 0,
+    "setid": "58935d94-5bf1-4065-b8b5-ac61292436a7",
+    "loinc": "34070-3",
+    "title": "Zaroxolyn (metolazone) — Contraindications",
+    "shortfall_vs_min_score": -0.1187
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.7187,
+    "overall_rank": 0,
+    "setid": "58935d94-5bf1-4065-b8b5-ac61292436a7",
+    "loinc": "34070-3",
+    "title": "Zaroxolyn (metolazone) — Contraindications",
+    "shortfall_vs_min_score": -0.1187
+   },
+   "corpus_top1": {
+    "score": 0.7187,
+    "moiety": "METOLAZONE",
+    "loinc": "34070-3",
+    "title": "Zaroxolyn (metolazone) — Contraindications"
+   }
+  },
+  {
+   "qid": "Q047",
+   "drug_id": "MIDODRINE HYDROCHLORIDE",
+   "key_set": [
+    "MIDODRINE HYDROCHLORIDE"
+   ],
+   "key_used": "MIDODRINE HYDROCHLORIDE",
+   "template": "{drug} drug interactions",
+   "query": "midodrine hydrochloride drug interactions",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.6078,
+     "setid": "eef6babc-241f-40b6-b8c8-daa92bbd0a25",
+     "moiety": "HYOSCYAMINE SULFATE",
+     "loinc": "34073-7",
+     "title": "Hyoscyamine Sulfate ODT (hyoscyamine sulfate) — Drug Interactions",
+     "label": "wrong_object"
+    },
+    {
+     "rank": 1,
+     "score": 0.6066,
+     "setid": "7d66dbf9-3966-4949-b7c9-d2ca8c7f3278",
+     "moiety": "METHYLPHENIDATE HCL",
+     "loinc": "34073-7",
+     "title": "Methylphenidate HCl (Methylphenidate HCl) — Drug Interactions",
+     "label": "wrong_object"
+    }
+   ],
+   "n_pool": 2,
+   "r_corpus": 4,
+   "has_relevant": false,
+   "first_relevant_rank": null,
+   "rr": 0.0,
+   "has_wrong_object": true,
+   "wrong_object_at_rank1": true,
+   "ndcg5": 0.0,
+   "best_corpus_relevant": {
+    "score": 0.5506,
+    "overall_rank": 23,
+    "setid": "9e8874f0-ad2e-41ce-8a35-bed819615a5d",
+    "loinc": "34068-7",
+    "title": "ProAmatine (midodrine hydrochloride) — Dosage and Administration",
+    "shortfall_vs_min_score": 0.0494
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.4949,
+    "overall_rank": 92,
+    "setid": "9e8874f0-ad2e-41ce-8a35-bed819615a5d",
+    "loinc": "34070-3",
+    "title": "ProAmatine (midodrine hydrochloride) — Contraindications",
+    "shortfall_vs_min_score": 0.1051
+   },
+   "corpus_top1": {
+    "score": 0.6078,
+    "moiety": "HYOSCYAMINE SULFATE",
+    "loinc": "34073-7",
+    "title": "Hyoscyamine Sulfate ODT (hyoscyamine sulfate) — Drug Interactions"
+   }
+  },
+  {
+   "qid": "Q048",
+   "drug_id": "MIFEPRISTONE",
+   "key_set": [
+    "MIFEPRISTONE"
+   ],
+   "key_used": "MIFEPRISTONE",
+   "template": "{drug} contraindications",
+   "query": "mifepristone contraindications",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.6582,
+     "setid": "542f3fae-8bc8-4f00-9228-e4b66c9ad6a9",
+     "moiety": "MIFEPRISTONE",
+     "loinc": "34066-1",
+     "title": "Korlym (Mifepristone) — Boxed Warning",
+     "label": "relevant"
+    }
+   ],
+   "n_pool": 1,
+   "r_corpus": 6,
+   "has_relevant": true,
+   "first_relevant_rank": 0,
+   "rr": 1.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.3392,
+   "best_corpus_relevant": {
+    "score": 0.6582,
+    "overall_rank": 0,
+    "setid": "542f3fae-8bc8-4f00-9228-e4b66c9ad6a9",
+    "loinc": "34066-1",
+    "title": "Korlym (Mifepristone) — Boxed Warning",
+    "shortfall_vs_min_score": -0.0582
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.6582,
+    "overall_rank": 0,
+    "setid": "542f3fae-8bc8-4f00-9228-e4b66c9ad6a9",
+    "loinc": "34066-1",
+    "title": "Korlym (Mifepristone) — Boxed Warning",
+    "shortfall_vs_min_score": -0.0582
+   },
+   "corpus_top1": {
+    "score": 0.6582,
+    "moiety": "MIFEPRISTONE",
+    "loinc": "34066-1",
+    "title": "Korlym (Mifepristone) — Boxed Warning"
+   }
+  },
+  {
+   "qid": "Q049",
+   "drug_id": "MILNACIPRAN HYDROCHLORIDE",
+   "key_set": [
+    "MILNACIPRAN HYDROCHLORIDE"
+   ],
+   "key_used": "MILNACIPRAN HYDROCHLORIDE",
+   "template": "{drug} warnings and precautions",
+   "query": "milnacipran hydrochloride warnings and precautions",
+   "scope": "sampled",
+   "pool": [],
+   "n_pool": 0,
+   "r_corpus": 6,
+   "has_relevant": false,
+   "first_relevant_rank": null,
+   "rr": 0.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.0,
+   "best_corpus_relevant": {
+    "score": 0.5201,
+    "overall_rank": 4,
+    "setid": "16a4a314-f97e-4e91-95e9-576a3773d284",
+    "loinc": "43685-7",
+    "title": "Savella (milnacipran hydrochloride) — Warnings and Precautions",
+    "shortfall_vs_min_score": 0.0799
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.5201,
+    "overall_rank": 4,
+    "setid": "16a4a314-f97e-4e91-95e9-576a3773d284",
+    "loinc": "43685-7",
+    "title": "Savella (milnacipran hydrochloride) — Warnings and Precautions",
+    "shortfall_vs_min_score": 0.0799
+   },
+   "corpus_top1": {
+    "score": 0.5295,
+    "moiety": "IMIPRAMINE HCL",
+    "loinc": "34070-3",
+    "title": "IMIPRAMINE PAMOATE (IMIPRAMINE PAMOATE) — Contraindications"
+   }
+  },
+  {
+   "qid": "Q050",
+   "drug_id": "MIRABEGRON",
+   "key_set": [
+    "MIRABEGRON"
+   ],
+   "key_used": "MIRABEGRON",
+   "template": "{drug} drug interactions",
+   "query": "mirabegron drug interactions",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.7365,
+     "setid": "ba9e9e15-e666-4c56-9271-2e24739cfa2d",
+     "moiety": "MIRABEGRON",
+     "loinc": "34073-7",
+     "title": "Myrbetriq (mirabegron) — Drug Interactions",
+     "label": "relevant"
+    },
+    {
+     "rank": 1,
+     "score": 0.6365,
+     "setid": "ba9e9e15-e666-4c56-9271-2e24739cfa2d",
+     "moiety": "MIRABEGRON",
+     "loinc": "43685-7",
+     "title": "Myrbetriq (mirabegron) — Warnings and Precautions",
+     "label": "relevant"
+    },
+    {
+     "rank": 2,
+     "score": 0.6219,
+     "setid": "ba9e9e15-e666-4c56-9271-2e24739cfa2d",
+     "moiety": "MIRABEGRON",
+     "loinc": "34070-3",
+     "title": "Myrbetriq (mirabegron) — Contraindications",
+     "label": "relevant"
+    }
+   ],
+   "n_pool": 3,
+   "r_corpus": 5,
+   "has_relevant": true,
+   "first_relevant_rank": 0,
+   "rr": 1.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.7227,
+   "best_corpus_relevant": {
+    "score": 0.7365,
+    "overall_rank": 0,
+    "setid": "ba9e9e15-e666-4c56-9271-2e24739cfa2d",
+    "loinc": "34073-7",
+    "title": "Myrbetriq (mirabegron) — Drug Interactions",
+    "shortfall_vs_min_score": -0.1365
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.7365,
+    "overall_rank": 0,
+    "setid": "ba9e9e15-e666-4c56-9271-2e24739cfa2d",
+    "loinc": "34073-7",
+    "title": "Myrbetriq (mirabegron) — Drug Interactions",
+    "shortfall_vs_min_score": -0.1365
+   },
+   "corpus_top1": {
+    "score": 0.7365,
+    "moiety": "MIRABEGRON",
+    "loinc": "34073-7",
+    "title": "Myrbetriq (mirabegron) — Drug Interactions"
+   }
+  },
+  {
+   "qid": "Q051",
+   "drug_id": "NATAMYCIN",
+   "key_set": [
+    "NATAMYCIN"
+   ],
+   "key_used": "NATAMYCIN",
+   "template": "{drug} warnings and precautions",
+   "query": "natamycin warnings and precautions",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.6574,
+     "setid": "2818fcb8-5bac-41fb-864e-3b598308a428",
+     "moiety": "NATAMYCIN",
+     "loinc": "34070-3",
+     "title": "NATACYN (natamycin) — Contraindications",
+     "label": "relevant"
+    }
+   ],
+   "n_pool": 1,
+   "r_corpus": 3,
+   "has_relevant": true,
+   "first_relevant_rank": 0,
+   "rr": 1.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.4693,
+   "best_corpus_relevant": {
+    "score": 0.6574,
+    "overall_rank": 0,
+    "setid": "2818fcb8-5bac-41fb-864e-3b598308a428",
+    "loinc": "34070-3",
+    "title": "NATACYN (natamycin) — Contraindications",
+    "shortfall_vs_min_score": -0.0574
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.6574,
+    "overall_rank": 0,
+    "setid": "2818fcb8-5bac-41fb-864e-3b598308a428",
+    "loinc": "34070-3",
+    "title": "NATACYN (natamycin) — Contraindications",
+    "shortfall_vs_min_score": -0.0574
+   },
+   "corpus_top1": {
+    "score": 0.6574,
+    "moiety": "NATAMYCIN",
+    "loinc": "34070-3",
+    "title": "NATACYN (natamycin) — Contraindications"
+   }
+  },
+  {
+   "qid": "Q052",
+   "drug_id": "NEOMYCIN",
+   "key_set": [
+    "NEOMYCIN"
+   ],
+   "key_used": "NEOMYCIN",
+   "template": "{drug} contraindications",
+   "query": "neomycin contraindications",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.7471,
+     "setid": "f430c5d9-ae82-3314-e053-2a95a90af04c",
+     "moiety": "NEOMYCIN",
+     "loinc": "34070-3",
+     "title": "Neomycin Sulfate (Neomycin Sulfate) — Contraindications",
+     "label": "relevant"
+    },
+    {
+     "rank": 1,
+     "score": 0.7154,
+     "setid": "f430c5d9-ae82-3314-e053-2a95a90af04c",
+     "moiety": "NEOMYCIN",
+     "loinc": "34066-1",
+     "title": "Neomycin Sulfate (Neomycin Sulfate) — Boxed Warning",
+     "label": "relevant"
+    },
+    {
+     "rank": 2,
+     "score": 0.667,
+     "setid": "f430c5d9-ae82-3314-e053-2a95a90af04c",
+     "moiety": "NEOMYCIN",
+     "loinc": "34073-7",
+     "title": "Neomycin Sulfate (Neomycin Sulfate) — Drug Interactions",
+     "label": "relevant"
+    },
+    {
+     "rank": 3,
+     "score": 0.6546,
+     "setid": "f430c5d9-ae82-3314-e053-2a95a90af04c",
+     "moiety": "NEOMYCIN",
+     "loinc": "34067-9",
+     "title": "Neomycin Sulfate (Neomycin Sulfate) — Indications and Usage",
+     "label": "relevant"
+    }
+   ],
+   "n_pool": 4,
+   "r_corpus": 5,
+   "has_relevant": true,
+   "first_relevant_rank": 0,
+   "rr": 1.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.8688,
+   "best_corpus_relevant": {
+    "score": 0.7471,
+    "overall_rank": 0,
+    "setid": "f430c5d9-ae82-3314-e053-2a95a90af04c",
+    "loinc": "34070-3",
+    "title": "Neomycin Sulfate (Neomycin Sulfate) — Contraindications",
+    "shortfall_vs_min_score": -0.1471
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.7471,
+    "overall_rank": 0,
+    "setid": "f430c5d9-ae82-3314-e053-2a95a90af04c",
+    "loinc": "34070-3",
+    "title": "Neomycin Sulfate (Neomycin Sulfate) — Contraindications",
+    "shortfall_vs_min_score": -0.1471
+   },
+   "corpus_top1": {
+    "score": 0.7471,
+    "moiety": "NEOMYCIN",
+    "loinc": "34070-3",
+    "title": "Neomycin Sulfate (Neomycin Sulfate) — Contraindications"
+   }
+  },
+  {
+   "qid": "Q053",
+   "drug_id": "NEOMYCIN",
+   "key_set": [
+    "NEOMYCIN"
+   ],
+   "key_used": "NEOMYCIN",
+   "template": "{drug} warnings and precautions",
+   "query": "neomycin warnings and precautions",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.7238,
+     "setid": "f430c5d9-ae82-3314-e053-2a95a90af04c",
+     "moiety": "NEOMYCIN",
+     "loinc": "34066-1",
+     "title": "Neomycin Sulfate (Neomycin Sulfate) — Boxed Warning",
+     "label": "relevant"
+    },
+    {
+     "rank": 1,
+     "score": 0.6966,
+     "setid": "f430c5d9-ae82-3314-e053-2a95a90af04c",
+     "moiety": "NEOMYCIN",
+     "loinc": "34070-3",
+     "title": "Neomycin Sulfate (Neomycin Sulfate) — Contraindications",
+     "label": "relevant"
+    },
+    {
+     "rank": 2,
+     "score": 0.6818,
+     "setid": "f430c5d9-ae82-3314-e053-2a95a90af04c",
+     "moiety": "NEOMYCIN",
+     "loinc": "34073-7",
+     "title": "Neomycin Sulfate (Neomycin Sulfate) — Drug Interactions",
+     "label": "relevant"
+    },
+    {
+     "rank": 3,
+     "score": 0.6445,
+     "setid": "f430c5d9-ae82-3314-e053-2a95a90af04c",
+     "moiety": "NEOMYCIN",
+     "loinc": "34067-9",
+     "title": "Neomycin Sulfate (Neomycin Sulfate) — Indications and Usage",
+     "label": "relevant"
+    }
+   ],
+   "n_pool": 4,
+   "r_corpus": 5,
+   "has_relevant": true,
+   "first_relevant_rank": 0,
+   "rr": 1.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.8688,
+   "best_corpus_relevant": {
+    "score": 0.7238,
+    "overall_rank": 0,
+    "setid": "f430c5d9-ae82-3314-e053-2a95a90af04c",
+    "loinc": "34066-1",
+    "title": "Neomycin Sulfate (Neomycin Sulfate) — Boxed Warning",
+    "shortfall_vs_min_score": -0.1238
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.7238,
+    "overall_rank": 0,
+    "setid": "f430c5d9-ae82-3314-e053-2a95a90af04c",
+    "loinc": "34066-1",
+    "title": "Neomycin Sulfate (Neomycin Sulfate) — Boxed Warning",
+    "shortfall_vs_min_score": -0.1238
+   },
+   "corpus_top1": {
+    "score": 0.7238,
+    "moiety": "NEOMYCIN",
+    "loinc": "34066-1",
+    "title": "Neomycin Sulfate (Neomycin Sulfate) — Boxed Warning"
+   }
+  },
+  {
+   "qid": "Q054",
+   "drug_id": "NEPAFENAC",
+   "key_set": [
+    "NEPAFENAC"
+   ],
+   "key_used": "NEPAFENAC",
+   "template": "{drug} contraindications",
+   "query": "nepafenac contraindications",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.6355,
+     "setid": "d33ad329-1ca6-ac2e-e053-2995a90a15c5",
+     "moiety": "FENOPROFEN",
+     "loinc": "34070-3",
+     "title": "Fenoprofen Calcium (Fenoprofen Calcium) — Contraindications",
+     "label": "wrong_object"
+    },
+    {
+     "rank": 1,
+     "score": 0.6293,
+     "setid": "9b8b3e03-4801-4ae8-b44e-e01d1ab1e34b",
+     "moiety": "MEFENAMIC ACID",
+     "loinc": "34070-3",
+     "title": "Mefenamic acid (Mefenamic acid) — Contraindications",
+     "label": "wrong_object"
+    }
+   ],
+   "n_pool": 2,
+   "r_corpus": 4,
+   "has_relevant": false,
+   "first_relevant_rank": null,
+   "rr": 0.0,
+   "has_wrong_object": true,
+   "wrong_object_at_rank1": true,
+   "ndcg5": 0.0,
+   "best_corpus_relevant": {
+    "score": 0.4552,
+    "overall_rank": 229,
+    "setid": "10f411d3-a81e-074a-e063-6294a90ab547",
+    "loinc": "34070-3",
+    "title": "ILEVRO (nepafenac) — Contraindications",
+    "shortfall_vs_min_score": 0.1448
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.4552,
+    "overall_rank": 229,
+    "setid": "10f411d3-a81e-074a-e063-6294a90ab547",
+    "loinc": "34070-3",
+    "title": "ILEVRO (nepafenac) — Contraindications",
+    "shortfall_vs_min_score": 0.1448
+   },
+   "corpus_top1": {
+    "score": 0.6355,
+    "moiety": "FENOPROFEN",
+    "loinc": "34070-3",
+    "title": "Fenoprofen Calcium (Fenoprofen Calcium) — Contraindications"
+   }
+  },
+  {
+   "qid": "Q055",
+   "drug_id": "NEPAFENAC",
+   "key_set": [
+    "NEPAFENAC"
+   ],
+   "key_used": "NEPAFENAC",
+   "template": "{drug} warnings and precautions",
+   "query": "nepafenac warnings and precautions",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.6269,
+     "setid": "d33ad329-1ca6-ac2e-e053-2995a90a15c5",
+     "moiety": "FENOPROFEN",
+     "loinc": "43685-7",
+     "title": "Fenoprofen Calcium (Fenoprofen Calcium) — Warnings and Precautions",
+     "label": "wrong_object"
+    },
+    {
+     "rank": 1,
+     "score": 0.6246,
+     "setid": "d33ad329-1ca6-ac2e-e053-2995a90a15c5",
+     "moiety": "FENOPROFEN",
+     "loinc": "34070-3",
+     "title": "Fenoprofen Calcium (Fenoprofen Calcium) — Contraindications",
+     "label": "wrong_object"
+    },
+    {
+     "rank": 2,
+     "score": 0.6126,
+     "setid": "9b8b3e03-4801-4ae8-b44e-e01d1ab1e34b",
+     "moiety": "MEFENAMIC ACID",
+     "loinc": "34070-3",
+     "title": "Mefenamic acid (Mefenamic acid) — Contraindications",
+     "label": "wrong_object"
+    },
+    {
+     "rank": 3,
+     "score": 0.6043,
+     "setid": "d33ad329-1ca6-ac2e-e053-2995a90a15c5",
+     "moiety": "FENOPROFEN",
+     "loinc": "34066-1",
+     "title": "Fenoprofen Calcium (Fenoprofen Calcium) — Boxed Warning",
+     "label": "wrong_object"
+    }
+   ],
+   "n_pool": 4,
+   "r_corpus": 4,
+   "has_relevant": false,
+   "first_relevant_rank": null,
+   "rr": 0.0,
+   "has_wrong_object": true,
+   "wrong_object_at_rank1": true,
+   "ndcg5": 0.0,
+   "best_corpus_relevant": {
+    "score": 0.4765,
+    "overall_rank": 151,
+    "setid": "10f411d3-a81e-074a-e063-6294a90ab547",
+    "loinc": "43685-7",
+    "title": "ILEVRO (nepafenac) — Warnings and Precautions",
+    "shortfall_vs_min_score": 0.1235
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.4765,
+    "overall_rank": 151,
+    "setid": "10f411d3-a81e-074a-e063-6294a90ab547",
+    "loinc": "43685-7",
+    "title": "ILEVRO (nepafenac) — Warnings and Precautions",
+    "shortfall_vs_min_score": 0.1235
+   },
+   "corpus_top1": {
+    "score": 0.6269,
+    "moiety": "FENOPROFEN",
+    "loinc": "43685-7",
+    "title": "Fenoprofen Calcium (Fenoprofen Calcium) — Warnings and Precautions"
+   }
+  },
+  {
+   "qid": "Q056",
+   "drug_id": "NIRAPARIB TOSYLATE MONOHYDRATE",
+   "key_set": [
+    "NIRAPARIB TOSYLATE MONOHYDRATE"
+   ],
+   "key_used": "NIRAPARIB TOSYLATE MONOHYDRATE",
+   "template": "{drug} drug interactions",
+   "query": "niraparib tosylate monohydrate drug interactions",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.6195,
+     "setid": "741ff3e3-dc1a-45a6-84e5-2481b27131aa",
+     "moiety": "OLAPARIB",
+     "loinc": "34073-7",
+     "title": "Lynparza (olaparib) — Drug Interactions",
+     "label": "wrong_object"
+    }
+   ],
+   "n_pool": 1,
+   "r_corpus": 4,
+   "has_relevant": false,
+   "first_relevant_rank": null,
+   "rr": 0.0,
+   "has_wrong_object": true,
+   "wrong_object_at_rank1": true,
+   "ndcg5": 0.0,
+   "best_corpus_relevant": {
+    "score": 0.476,
+    "overall_rank": 123,
+    "setid": "b7f675e2-159c-490c-b6f4-3f16d9492b7d",
+    "loinc": "43685-7",
+    "title": "ZEJULA (niraparib) — Warnings and Precautions",
+    "shortfall_vs_min_score": 0.124
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.476,
+    "overall_rank": 123,
+    "setid": "b7f675e2-159c-490c-b6f4-3f16d9492b7d",
+    "loinc": "43685-7",
+    "title": "ZEJULA (niraparib) — Warnings and Precautions",
+    "shortfall_vs_min_score": 0.124
+   },
+   "corpus_top1": {
+    "score": 0.6195,
+    "moiety": "OLAPARIB",
+    "loinc": "34073-7",
+    "title": "Lynparza (olaparib) — Drug Interactions"
+   }
+  },
+  {
+   "qid": "Q057",
+   "drug_id": "NITROFURANTOIN",
+   "key_set": [
+    "NITROFURANTOIN"
+   ],
+   "key_used": "NITROFURANTOIN",
+   "template": "{drug} drug interactions",
+   "query": "nitrofurantoin drug interactions",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.7718,
+     "setid": "a4afd48b-003f-4ffa-9ca0-9432b8b0e22b",
+     "moiety": "NITROFURANTOIN",
+     "loinc": "34073-7",
+     "title": "Nitrofurantoin Monohydrate/ Macrocrystalline (Nitrofurantoin Monohydrate/Macrocrystalline) — Drug Interactions",
+     "label": "relevant"
+    },
+    {
+     "rank": 1,
+     "score": 0.6998,
+     "setid": "a4afd48b-003f-4ffa-9ca0-9432b8b0e22b",
+     "moiety": "NITROFURANTOIN",
+     "loinc": "34070-3",
+     "title": "Nitrofurantoin Monohydrate/ Macrocrystalline (Nitrofurantoin Monohydrate/Macrocrystalline) — Contraindications",
+     "label": "relevant"
+    },
+    {
+     "rank": 2,
+     "score": 0.6779,
+     "setid": "a4afd48b-003f-4ffa-9ca0-9432b8b0e22b",
+     "moiety": "NITROFURANTOIN",
+     "loinc": "34067-9",
+     "title": "Nitrofurantoin Monohydrate/ Macrocrystalline (Nitrofurantoin Monohydrate/Macrocrystalline) — Indications and Usage",
+     "label": "relevant"
+    },
+    {
+     "rank": 3,
+     "score": 0.6612,
+     "setid": "a4afd48b-003f-4ffa-9ca0-9432b8b0e22b",
+     "moiety": "NITROFURANTOIN",
+     "loinc": "34068-7",
+     "title": "Nitrofurantoin Monohydrate/ Macrocrystalline (Nitrofurantoin Monohydrate/Macrocrystalline) — Dosage and Administration",
+     "label": "relevant"
+    }
+   ],
+   "n_pool": 4,
+   "r_corpus": 4,
+   "has_relevant": true,
+   "first_relevant_rank": 0,
+   "rr": 1.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 1.0,
+   "best_corpus_relevant": {
+    "score": 0.7718,
+    "overall_rank": 0,
+    "setid": "a4afd48b-003f-4ffa-9ca0-9432b8b0e22b",
+    "loinc": "34073-7",
+    "title": "Nitrofurantoin Monohydrate/ Macrocrystalline (Nitrofurantoin Monohydrate/Macrocrystalline) — Drug Interactions",
+    "shortfall_vs_min_score": -0.1718
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.7718,
+    "overall_rank": 0,
+    "setid": "a4afd48b-003f-4ffa-9ca0-9432b8b0e22b",
+    "loinc": "34073-7",
+    "title": "Nitrofurantoin Monohydrate/ Macrocrystalline (Nitrofurantoin Monohydrate/Macrocrystalline) — Drug Interactions",
+    "shortfall_vs_min_score": -0.1718
+   },
+   "corpus_top1": {
+    "score": 0.7718,
+    "moiety": "NITROFURANTOIN",
+    "loinc": "34073-7",
+    "title": "Nitrofurantoin Monohydrate/ Macrocrystalline (Nitrofurantoin Monohydrate/Macrocrystalline) — Drug Interactions"
+   }
+  },
+  {
+   "qid": "Q058",
+   "drug_id": "OCTREOTIDE",
+   "key_set": [
+    "OCTREOTIDE"
+   ],
+   "key_used": "OCTREOTIDE",
+   "template": "{drug} contraindications",
+   "query": "octreotide contraindications",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.6481,
+     "setid": "d0b7fe9e-7000-4b79-ba3b-291ce92c14f9",
+     "moiety": "OCTREOTIDE",
+     "loinc": "34073-7",
+     "title": "Sandostatin LAR Depot (octreotide acetate) — Drug Interactions",
+     "label": "relevant"
+    }
+   ],
+   "n_pool": 1,
+   "r_corpus": 5,
+   "has_relevant": true,
+   "first_relevant_rank": 0,
+   "rr": 1.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.3392,
+   "best_corpus_relevant": {
+    "score": 0.6481,
+    "overall_rank": 0,
+    "setid": "d0b7fe9e-7000-4b79-ba3b-291ce92c14f9",
+    "loinc": "34073-7",
+    "title": "Sandostatin LAR Depot (octreotide acetate) — Drug Interactions",
+    "shortfall_vs_min_score": -0.0481
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.6481,
+    "overall_rank": 0,
+    "setid": "d0b7fe9e-7000-4b79-ba3b-291ce92c14f9",
+    "loinc": "34073-7",
+    "title": "Sandostatin LAR Depot (octreotide acetate) — Drug Interactions",
+    "shortfall_vs_min_score": -0.0481
+   },
+   "corpus_top1": {
+    "score": 0.6481,
+    "moiety": "OCTREOTIDE",
+    "loinc": "34073-7",
+    "title": "Sandostatin LAR Depot (octreotide acetate) — Drug Interactions"
+   }
+  },
+  {
+   "qid": "Q059",
+   "drug_id": "OXYBUTYNIN CHLORIDE",
+   "key_set": [
+    "OXYBUTYNIN CHLORIDE"
+   ],
+   "key_used": "OXYBUTYNIN CHLORIDE",
+   "template": "{drug} warnings and precautions",
+   "query": "oxybutynin chloride warnings and precautions",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.6867,
+     "setid": "20dee37f-1412-44ed-9e8b-f4379ce23eb0",
+     "moiety": "OXYBUTYNIN",
+     "loinc": "43685-7",
+     "title": "OXYTROL (Oxybutynin) — Warnings and Precautions",
+     "label": "wrong_object"
+    },
+    {
+     "rank": 1,
+     "score": 0.6299,
+     "setid": "45285692-de51-413e-8a51-7fb792eccc81",
+     "moiety": "BETHANECHOL CHLORIDE",
+     "loinc": "34070-3",
+     "title": "Bethanechol Chloride (Bethanechol Chloride) — Contraindications",
+     "label": "wrong_object"
+    },
+    {
+     "rank": 2,
+     "score": 0.6185,
+     "setid": "20dee37f-1412-44ed-9e8b-f4379ce23eb0",
+     "moiety": "OXYBUTYNIN",
+     "loinc": "34070-3",
+     "title": "OXYTROL (Oxybutynin) — Contraindications",
+     "label": "wrong_object"
+    }
+   ],
+   "n_pool": 3,
+   "r_corpus": 4,
+   "has_relevant": false,
+   "first_relevant_rank": null,
+   "rr": 0.0,
+   "has_wrong_object": true,
+   "wrong_object_at_rank1": true,
+   "ndcg5": 0.0,
+   "best_corpus_relevant": {
+    "score": 0.582,
+    "overall_rank": 3,
+    "setid": "2b0384a5-c65a-454d-9761-716af8afe5bd",
+    "loinc": "34073-7",
+    "title": "Ditropan (oxybutynin chloride) — Drug Interactions",
+    "shortfall_vs_min_score": 0.018
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.582,
+    "overall_rank": 3,
+    "setid": "2b0384a5-c65a-454d-9761-716af8afe5bd",
+    "loinc": "34073-7",
+    "title": "Ditropan (oxybutynin chloride) — Drug Interactions",
+    "shortfall_vs_min_score": 0.018
+   },
+   "corpus_top1": {
+    "score": 0.6867,
+    "moiety": "OXYBUTYNIN",
+    "loinc": "43685-7",
+    "title": "OXYTROL (Oxybutynin) — Warnings and Precautions"
+   }
+  },
+  {
+   "qid": "Q060",
+   "drug_id": "PENICILLIN G BENZATHINE",
+   "key_set": [
+    "PENICILLIN G BENZATHINE"
+   ],
+   "key_used": "PENICILLIN G BENZATHINE",
+   "template": "{drug} contraindications",
+   "query": "penicillin g benzathine contraindications",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.7248,
+     "setid": "012d46f1-d0a0-4676-a879-cd320297ab16",
+     "moiety": "PENICILLIN G BENZATHINE",
+     "loinc": "34067-9",
+     "title": "BICILLIN L-A (penicillin G benzathine) — Indications and Usage",
+     "label": "relevant"
+    },
+    {
+     "rank": 1,
+     "score": 0.7013,
+     "setid": "23b6d4a3-b273-4e10-9da9-1376933fdbdf",
+     "moiety": "PENICILLIN G SODIUM",
+     "loinc": "34070-3",
+     "title": "Penicillin G Sodium (Penicillin G Sodium) — Contraindications",
+     "label": "wrong_object"
+    },
+    {
+     "rank": 2,
+     "score": 0.6972,
+     "setid": "012d46f1-d0a0-4676-a879-cd320297ab16",
+     "moiety": "PENICILLIN G BENZATHINE",
+     "loinc": "34066-1",
+     "title": "BICILLIN L-A (penicillin G benzathine) — Boxed Warning",
+     "label": "relevant"
+    },
+    {
+     "rank": 3,
+     "score": 0.6886,
+     "setid": "4ad879d4-eb32-49f0-af73-c47fc7581936",
+     "moiety": "PENICILLIN V POTASSIUM",
+     "loinc": "34070-3",
+     "title": "Penicillin V Potassium (Penicillin V Potassium) — Contraindications",
+     "label": "wrong_object"
+    },
+    {
+     "rank": 4,
+     "score": 0.6878,
+     "setid": "152758c0-d225-4761-abeb-3f1cb0190806",
+     "moiety": "OXACILLIN SODIUM",
+     "loinc": "34070-3",
+     "title": "Oxacillin (Oxacillin Sodium) — Contraindications",
+     "label": "wrong_object"
+    }
+   ],
+   "n_pool": 5,
+   "r_corpus": 5,
+   "has_relevant": true,
+   "first_relevant_rank": 0,
+   "rr": 1.0,
+   "has_wrong_object": true,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.5087,
+   "best_corpus_relevant": {
+    "score": 0.7248,
+    "overall_rank": 0,
+    "setid": "012d46f1-d0a0-4676-a879-cd320297ab16",
+    "loinc": "34067-9",
+    "title": "BICILLIN L-A (penicillin G benzathine) — Indications and Usage",
+    "shortfall_vs_min_score": -0.1248
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.6972,
+    "overall_rank": 2,
+    "setid": "012d46f1-d0a0-4676-a879-cd320297ab16",
+    "loinc": "34066-1",
+    "title": "BICILLIN L-A (penicillin G benzathine) — Boxed Warning",
+    "shortfall_vs_min_score": -0.0972
+   },
+   "corpus_top1": {
+    "score": 0.7248,
+    "moiety": "PENICILLIN G BENZATHINE",
+    "loinc": "34067-9",
+    "title": "BICILLIN L-A (penicillin G benzathine) — Indications and Usage"
+   }
+  },
+  {
+   "qid": "Q061",
+   "drug_id": "PHENAZOPYRIDINE HCL",
+   "key_set": [
+    "PHENAZOPYRIDINE HCL"
+   ],
+   "key_used": "PHENAZOPYRIDINE HCL",
+   "template": "{drug} warnings and precautions",
+   "query": "phenazopyridine hcl warnings and precautions",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.7159,
+     "setid": "53c8b026-121b-4767-8b0d-36d72f8b8f90",
+     "moiety": "PHENAZOPYRIDINE HCL",
+     "loinc": "34070-3",
+     "title": "Phenazopyridine HCl 100mg (Phenazopyridine Hydrochloride) — Contraindications",
+     "label": "relevant"
+    },
+    {
+     "rank": 1,
+     "score": 0.6476,
+     "setid": "53c8b026-121b-4767-8b0d-36d72f8b8f90",
+     "moiety": "PHENAZOPYRIDINE HCL",
+     "loinc": "34073-7",
+     "title": "Phenazopyridine HCl 100mg (Phenazopyridine Hydrochloride) — Drug Interactions",
+     "label": "relevant"
+    },
+    {
+     "rank": 2,
+     "score": 0.6061,
+     "setid": "c0f1fcfd-8863-4032-bf80-185df60a4ba0",
+     "moiety": "CHLORPROMAZINE HCL",
+     "loinc": "34070-3",
+     "title": "Chlorpromazine hydrochloride (Chlorpromazine hydrochloride) — Contraindications",
+     "label": "wrong_object"
+    },
+    {
+     "rank": 3,
+     "score": 0.6061,
+     "setid": "3b8545ef-312d-4af6-a082-2497b84ff161",
+     "moiety": "CHLORPROMAZINE",
+     "loinc": "34070-3",
+     "title": "Chlorpromazine Hydrochloride (Chlorpromazine Hydrochloride) — Contraindications",
+     "label": "wrong_object"
+    },
+    {
+     "rank": 4,
+     "score": 0.6032,
+     "setid": "7e3aa80a-3a5f-4937-b5aa-4ce2aa6ece1b",
+     "moiety": "PROCHLORPERAZINE",
+     "loinc": "34070-3",
+     "title": "PROCHLORPERAZINE MALEATE (Prochlorperazine maleate) — Contraindications",
+     "label": "wrong_object"
+    }
+   ],
+   "n_pool": 5,
+   "r_corpus": 4,
+   "has_relevant": true,
+   "first_relevant_rank": 0,
+   "rr": 1.0,
+   "has_wrong_object": true,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.6367,
+   "best_corpus_relevant": {
+    "score": 0.7159,
+    "overall_rank": 0,
+    "setid": "53c8b026-121b-4767-8b0d-36d72f8b8f90",
+    "loinc": "34070-3",
+    "title": "Phenazopyridine HCl 100mg (Phenazopyridine Hydrochloride) — Contraindications",
+    "shortfall_vs_min_score": -0.1159
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.7159,
+    "overall_rank": 0,
+    "setid": "53c8b026-121b-4767-8b0d-36d72f8b8f90",
+    "loinc": "34070-3",
+    "title": "Phenazopyridine HCl 100mg (Phenazopyridine Hydrochloride) — Contraindications",
+    "shortfall_vs_min_score": -0.1159
+   },
+   "corpus_top1": {
+    "score": 0.7159,
+    "moiety": "PHENAZOPYRIDINE HCL",
+    "loinc": "34070-3",
+    "title": "Phenazopyridine HCl 100mg (Phenazopyridine Hydrochloride) — Contraindications"
+   }
+  },
+  {
+   "qid": "Q062",
+   "drug_id": "PIOGLITAZONE HYDROCHLORIDE",
+   "key_set": [
+    "PIOGLITAZONE HYDROCHLORIDE"
+   ],
+   "key_used": "PIOGLITAZONE HYDROCHLORIDE",
+   "template": "{drug} warnings and precautions",
+   "query": "pioglitazone hydrochloride warnings and precautions",
+   "scope": "sampled",
+   "pool": [],
+   "n_pool": 0,
+   "r_corpus": 5,
+   "has_relevant": false,
+   "first_relevant_rank": null,
+   "rr": 0.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.0,
+   "best_corpus_relevant": {
+    "score": 0.5182,
+    "overall_rank": 24,
+    "setid": "fd156adc-3174-44da-bff7-eeaef5983f18",
+    "loinc": "34073-7",
+    "title": "Actos (pioglitazone hydrochloride) — Drug Interactions",
+    "shortfall_vs_min_score": 0.0818
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.5182,
+    "overall_rank": 24,
+    "setid": "fd156adc-3174-44da-bff7-eeaef5983f18",
+    "loinc": "34073-7",
+    "title": "Actos (pioglitazone hydrochloride) — Drug Interactions",
+    "shortfall_vs_min_score": 0.0818
+   },
+   "corpus_top1": {
+    "score": 0.5867,
+    "moiety": "GLYBURIDE",
+    "loinc": "34070-3",
+    "title": "GLYBURIDE (GLYBURIDE) — Contraindications"
+   }
+  },
+  {
+   "qid": "Q063",
+   "drug_id": "POTASSIUM ACETATE",
+   "key_set": [
+    "POTASSIUM ACETATE"
+   ],
+   "key_used": "POTASSIUM ACETATE",
+   "template": "{drug} warnings and precautions",
+   "query": "potassium acetate warnings and precautions",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.6393,
+     "setid": "8123cce8-42e3-49e4-a488-3bb836ecccd0",
+     "moiety": "POTASSIUM ACETATE",
+     "loinc": "34067-9",
+     "title": "Potassium Acetate (POTASSIUM ACETATE) — Indications and Usage",
+     "label": "relevant"
+    },
+    {
+     "rank": 1,
+     "score": 0.6021,
+     "setid": "8123cce8-42e3-49e4-a488-3bb836ecccd0",
+     "moiety": "POTASSIUM ACETATE",
+     "loinc": "34068-7",
+     "title": "Potassium Acetate (POTASSIUM ACETATE) — Dosage and Administration",
+     "label": "relevant"
+    }
+   ],
+   "n_pool": 2,
+   "r_corpus": 3,
+   "has_relevant": true,
+   "first_relevant_rank": 0,
+   "rr": 1.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.7654,
+   "best_corpus_relevant": {
+    "score": 0.6393,
+    "overall_rank": 0,
+    "setid": "8123cce8-42e3-49e4-a488-3bb836ecccd0",
+    "loinc": "34067-9",
+    "title": "Potassium Acetate (POTASSIUM ACETATE) — Indications and Usage",
+    "shortfall_vs_min_score": -0.0393
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.5665,
+    "overall_rank": 2,
+    "setid": "8123cce8-42e3-49e4-a488-3bb836ecccd0",
+    "loinc": "34070-3",
+    "title": "Potassium Acetate (POTASSIUM ACETATE) — Contraindications",
+    "shortfall_vs_min_score": 0.0335
+   },
+   "corpus_top1": {
+    "score": 0.6393,
+    "moiety": "POTASSIUM ACETATE",
+    "loinc": "34067-9",
+    "title": "Potassium Acetate (POTASSIUM ACETATE) — Indications and Usage"
+   }
+  },
+  {
+   "qid": "Q064",
+   "drug_id": "PRAZIQUANTEL",
+   "key_set": [
+    "PRAZIQUANTEL"
+   ],
+   "key_used": "PRAZIQUANTEL",
+   "template": "{drug} drug interactions",
+   "query": "praziquantel drug interactions",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.6912,
+     "setid": "34ce1cdd-648e-4f1e-8512-bf3d4cc22eb9",
+     "moiety": "PRAZIQUANTEL",
+     "loinc": "34073-7",
+     "title": "Biltricide (praziquantel) — Drug Interactions",
+     "label": "relevant"
+    }
+   ],
+   "n_pool": 1,
+   "r_corpus": 5,
+   "has_relevant": true,
+   "first_relevant_rank": 0,
+   "rr": 1.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.3392,
+   "best_corpus_relevant": {
+    "score": 0.6912,
+    "overall_rank": 0,
+    "setid": "34ce1cdd-648e-4f1e-8512-bf3d4cc22eb9",
+    "loinc": "34073-7",
+    "title": "Biltricide (praziquantel) — Drug Interactions",
+    "shortfall_vs_min_score": -0.0912
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.6912,
+    "overall_rank": 0,
+    "setid": "34ce1cdd-648e-4f1e-8512-bf3d4cc22eb9",
+    "loinc": "34073-7",
+    "title": "Biltricide (praziquantel) — Drug Interactions",
+    "shortfall_vs_min_score": -0.0912
+   },
+   "corpus_top1": {
+    "score": 0.6912,
+    "moiety": "PRAZIQUANTEL",
+    "loinc": "34073-7",
+    "title": "Biltricide (praziquantel) — Drug Interactions"
+   }
+  },
+  {
+   "qid": "Q065",
+   "drug_id": "PROBENECID",
+   "key_set": [
+    "PROBENECID"
+   ],
+   "key_used": "PROBENECID",
+   "template": "{drug} warnings and precautions",
+   "query": "probenecid warnings and precautions",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.7054,
+     "setid": "a4f4b3e1-44a9-4b3a-9f7f-f9749ed451ca",
+     "moiety": "PROBENECID",
+     "loinc": "34070-3",
+     "title": "Probenecid (Probenecid) — Contraindications",
+     "label": "relevant"
+    },
+    {
+     "rank": 1,
+     "score": 0.6459,
+     "setid": "a4f4b3e1-44a9-4b3a-9f7f-f9749ed451ca",
+     "moiety": "PROBENECID",
+     "loinc": "34073-7",
+     "title": "Probenecid (Probenecid) — Drug Interactions",
+     "label": "relevant"
+    },
+    {
+     "rank": 2,
+     "score": 0.6169,
+     "setid": "a4f4b3e1-44a9-4b3a-9f7f-f9749ed451ca",
+     "moiety": "PROBENECID",
+     "loinc": "34067-9",
+     "title": "Probenecid (Probenecid) — Indications and Usage",
+     "label": "relevant"
+    }
+   ],
+   "n_pool": 3,
+   "r_corpus": 4,
+   "has_relevant": true,
+   "first_relevant_rank": 0,
+   "rr": 1.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.8319,
+   "best_corpus_relevant": {
+    "score": 0.7054,
+    "overall_rank": 0,
+    "setid": "a4f4b3e1-44a9-4b3a-9f7f-f9749ed451ca",
+    "loinc": "34070-3",
+    "title": "Probenecid (Probenecid) — Contraindications",
+    "shortfall_vs_min_score": -0.1054
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.7054,
+    "overall_rank": 0,
+    "setid": "a4f4b3e1-44a9-4b3a-9f7f-f9749ed451ca",
+    "loinc": "34070-3",
+    "title": "Probenecid (Probenecid) — Contraindications",
+    "shortfall_vs_min_score": -0.1054
+   },
+   "corpus_top1": {
+    "score": 0.7054,
+    "moiety": "PROBENECID",
+    "loinc": "34070-3",
+    "title": "Probenecid (Probenecid) — Contraindications"
+   }
+  },
+  {
+   "qid": "Q066",
+   "drug_id": "PROMETHAZINE HCL",
+   "key_set": [
+    "PROMETHAZINE HCL"
+   ],
+   "key_used": "PROMETHAZINE HCL",
+   "template": "{drug} warnings and precautions",
+   "query": "promethazine hcl warnings and precautions",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.7078,
+     "setid": "eec705f7-123a-7926-e053-2a95a90af46d",
+     "moiety": "PROMETHAZINE HCL",
+     "loinc": "34070-3",
+     "title": "Phenergan (Promethazine HCL) — Contraindications",
+     "label": "relevant"
+    },
+    {
+     "rank": 1,
+     "score": 0.6304,
+     "setid": "eec705f7-123a-7926-e053-2a95a90af46d",
+     "moiety": "PROMETHAZINE HCL",
+     "loinc": "34068-7",
+     "title": "Phenergan (Promethazine HCL) — Dosage and Administration",
+     "label": "relevant"
+    },
+    {
+     "rank": 2,
+     "score": 0.6091,
+     "setid": "7e3aa80a-3a5f-4937-b5aa-4ce2aa6ece1b",
+     "moiety": "PROCHLORPERAZINE",
+     "loinc": "34070-3",
+     "title": "PROCHLORPERAZINE MALEATE (Prochlorperazine maleate) — Contraindications",
+     "label": "wrong_object"
+    }
+   ],
+   "n_pool": 3,
+   "r_corpus": 3,
+   "has_relevant": true,
+   "first_relevant_rank": 0,
+   "rr": 1.0,
+   "has_wrong_object": true,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.7654,
+   "best_corpus_relevant": {
+    "score": 0.7078,
+    "overall_rank": 0,
+    "setid": "eec705f7-123a-7926-e053-2a95a90af46d",
+    "loinc": "34070-3",
+    "title": "Phenergan (Promethazine HCL) — Contraindications",
+    "shortfall_vs_min_score": -0.1078
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.7078,
+    "overall_rank": 0,
+    "setid": "eec705f7-123a-7926-e053-2a95a90af46d",
+    "loinc": "34070-3",
+    "title": "Phenergan (Promethazine HCL) — Contraindications",
+    "shortfall_vs_min_score": -0.1078
+   },
+   "corpus_top1": {
+    "score": 0.7078,
+    "moiety": "PROMETHAZINE HCL",
+    "loinc": "34070-3",
+    "title": "Phenergan (Promethazine HCL) — Contraindications"
+   }
+  },
+  {
+   "qid": "Q067",
+   "drug_id": "QUETIAPINE FUMARATE",
+   "key_set": [
+    "QUETIAPINE FUMARATE"
+   ],
+   "key_used": "QUETIAPINE FUMARATE",
+   "template": "{drug} contraindications",
+   "query": "quetiapine fumarate contraindications",
+   "scope": "sampled",
+   "pool": [],
+   "n_pool": 0,
+   "r_corpus": 8,
+   "has_relevant": false,
+   "first_relevant_rank": null,
+   "rr": 0.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.0,
+   "best_corpus_relevant": {
+    "score": 0.503,
+    "overall_rank": 27,
+    "setid": "51927f2e-3d56-4644-a6a8-40e0b9a5b579",
+    "loinc": "34070-3",
+    "title": "SEROQUEL (Quetiapine fumarate) — Contraindications",
+    "shortfall_vs_min_score": 0.097
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.503,
+    "overall_rank": 27,
+    "setid": "51927f2e-3d56-4644-a6a8-40e0b9a5b579",
+    "loinc": "34070-3",
+    "title": "SEROQUEL (Quetiapine fumarate) — Contraindications",
+    "shortfall_vs_min_score": 0.097
+   },
+   "corpus_top1": {
+    "score": 0.5699,
+    "moiety": "ATOGEPANT",
+    "loinc": "34070-3",
+    "title": "Qulipta (Atogepant) — Contraindications"
+   }
+  },
+  {
+   "qid": "Q068",
+   "drug_id": "REGORAFENIB",
+   "key_set": [
+    "REGORAFENIB"
+   ],
+   "key_used": "REGORAFENIB",
+   "template": "{drug} contraindications",
+   "query": "regorafenib contraindications",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.6046,
+     "setid": "b7919013-1511-44f0-a759-3fa78a9fa178",
+     "moiety": "SORAFENIB TOSYLATE",
+     "loinc": "34070-3",
+     "title": "Sorafenib Tosylate (Sorafenib) — Contraindications",
+     "label": "wrong_object"
+    }
+   ],
+   "n_pool": 1,
+   "r_corpus": 6,
+   "has_relevant": false,
+   "first_relevant_rank": null,
+   "rr": 0.0,
+   "has_wrong_object": true,
+   "wrong_object_at_rank1": true,
+   "ndcg5": 0.0,
+   "best_corpus_relevant": {
+    "score": 0.5753,
+    "overall_rank": 1,
+    "setid": "824f19c9-0546-4a8a-8d8f-c4055c04f7c7",
+    "loinc": "34073-7",
+    "title": "Stivarga (regorafenib) — Drug Interactions",
+    "shortfall_vs_min_score": 0.0247
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.5753,
+    "overall_rank": 1,
+    "setid": "824f19c9-0546-4a8a-8d8f-c4055c04f7c7",
+    "loinc": "34073-7",
+    "title": "Stivarga (regorafenib) — Drug Interactions",
+    "shortfall_vs_min_score": 0.0247
+   },
+   "corpus_top1": {
+    "score": 0.6046,
+    "moiety": "SORAFENIB TOSYLATE",
+    "loinc": "34070-3",
+    "title": "Sorafenib Tosylate (Sorafenib) — Contraindications"
+   }
+  },
+  {
+   "qid": "Q069",
+   "drug_id": "REGORAFENIB",
+   "key_set": [
+    "REGORAFENIB"
+   ],
+   "key_used": "REGORAFENIB",
+   "template": "{drug} drug interactions",
+   "query": "regorafenib drug interactions",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.6522,
+     "setid": "fee1e6b1-e1a5-4254-9f2e-a70e0f8dbdea",
+     "moiety": "DABRAFENIB MESYLATE",
+     "loinc": "34073-7",
+     "title": "Tafinlar (dabrafenib) — Drug Interactions",
+     "label": "wrong_object"
+    },
+    {
+     "rank": 1,
+     "score": 0.6289,
+     "setid": "824f19c9-0546-4a8a-8d8f-c4055c04f7c7",
+     "moiety": "REGORAFENIB",
+     "loinc": "34073-7",
+     "title": "Stivarga (regorafenib) — Drug Interactions",
+     "label": "relevant"
+    },
+    {
+     "rank": 2,
+     "score": 0.6244,
+     "setid": "38eea320-7e0c-485a-bc30-98c3c45e2763",
+     "moiety": "VEMURAFENIB",
+     "loinc": "34073-7",
+     "title": "ZELBORAF (Vemurafenib) — Drug Interactions",
+     "label": "wrong_object"
+    },
+    {
+     "rank": 3,
+     "score": 0.6109,
+     "setid": "b7919013-1511-44f0-a759-3fa78a9fa178",
+     "moiety": "SORAFENIB TOSYLATE",
+     "loinc": "34073-7",
+     "title": "Sorafenib Tosylate (Sorafenib) — Drug Interactions",
+     "label": "wrong_object"
+    }
+   ],
+   "n_pool": 4,
+   "r_corpus": 6,
+   "has_relevant": true,
+   "first_relevant_rank": 1,
+   "rr": 0.5,
+   "has_wrong_object": true,
+   "wrong_object_at_rank1": true,
+   "ndcg5": 0.214,
+   "best_corpus_relevant": {
+    "score": 0.6289,
+    "overall_rank": 1,
+    "setid": "824f19c9-0546-4a8a-8d8f-c4055c04f7c7",
+    "loinc": "34073-7",
+    "title": "Stivarga (regorafenib) — Drug Interactions",
+    "shortfall_vs_min_score": -0.0289
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.6289,
+    "overall_rank": 1,
+    "setid": "824f19c9-0546-4a8a-8d8f-c4055c04f7c7",
+    "loinc": "34073-7",
+    "title": "Stivarga (regorafenib) — Drug Interactions",
+    "shortfall_vs_min_score": -0.0289
+   },
+   "corpus_top1": {
+    "score": 0.6522,
+    "moiety": "DABRAFENIB MESYLATE",
+    "loinc": "34073-7",
+    "title": "Tafinlar (dabrafenib) — Drug Interactions"
+   }
+  },
+  {
+   "qid": "Q070",
+   "drug_id": "REMIFENTANIL",
+   "key_set": [
+    "REMIFENTANIL"
+   ],
+   "key_used": "REMIFENTANIL",
+   "template": "{drug} contraindications",
+   "query": "remifentanil contraindications",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.6475,
+     "setid": "8b4c8696-e23e-4c51-a4d2-babab5bd945a",
+     "moiety": "REMIFENTANIL",
+     "loinc": "34070-3",
+     "title": "Ultiva (Remifentanil Hydrochloride) — Contraindications",
+     "label": "relevant"
+    },
+    {
+     "rank": 1,
+     "score": 0.6235,
+     "setid": "95e639db-1ca3-4328-b347-7ea348f6cc72",
+     "moiety": "SUFENTANIL CITRATE",
+     "loinc": "34070-3",
+     "title": "Sufentanil Citrate (Sufentanil Citrate) — Contraindications",
+     "label": "wrong_object"
+    },
+    {
+     "rank": 2,
+     "score": 0.6175,
+     "setid": "bb56df52-5abf-47dc-ab8d-902cfe19ccb2",
+     "moiety": "ALFENTANIL HCL",
+     "loinc": "34070-3",
+     "title": "ALFENTANIL HCL (Alfentanil Hydrochloride) — Contraindications",
+     "label": "wrong_object"
+    }
+   ],
+   "n_pool": 3,
+   "r_corpus": 6,
+   "has_relevant": true,
+   "first_relevant_rank": 0,
+   "rr": 1.0,
+   "has_wrong_object": true,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.3392,
+   "best_corpus_relevant": {
+    "score": 0.6475,
+    "overall_rank": 0,
+    "setid": "8b4c8696-e23e-4c51-a4d2-babab5bd945a",
+    "loinc": "34070-3",
+    "title": "Ultiva (Remifentanil Hydrochloride) — Contraindications",
+    "shortfall_vs_min_score": -0.0475
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.6475,
+    "overall_rank": 0,
+    "setid": "8b4c8696-e23e-4c51-a4d2-babab5bd945a",
+    "loinc": "34070-3",
+    "title": "Ultiva (Remifentanil Hydrochloride) — Contraindications",
+    "shortfall_vs_min_score": -0.0475
+   },
+   "corpus_top1": {
+    "score": 0.6475,
+    "moiety": "REMIFENTANIL",
+    "loinc": "34070-3",
+    "title": "Ultiva (Remifentanil Hydrochloride) — Contraindications"
+   }
+  },
+  {
+   "qid": "Q071",
+   "drug_id": "REMIMAZOLAM BESYLATE",
+   "key_set": [
+    "REMIMAZOLAM BESYLATE"
+   ],
+   "key_used": "REMIMAZOLAM BESYLATE",
+   "template": "{drug} drug interactions",
+   "query": "remimazolam besylate drug interactions",
+   "scope": "sampled",
+   "pool": [],
+   "n_pool": 0,
+   "r_corpus": 6,
+   "has_relevant": false,
+   "first_relevant_rank": null,
+   "rr": 0.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.0,
+   "best_corpus_relevant": {
+    "score": 0.4379,
+    "overall_rank": 495,
+    "setid": "4e1838f2-b999-41a7-a761-d94f09aa531f",
+    "loinc": "34073-7",
+    "title": "BYFAVO (remimazolam besylate) — Drug Interactions",
+    "shortfall_vs_min_score": 0.1621
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.4379,
+    "overall_rank": 495,
+    "setid": "4e1838f2-b999-41a7-a761-d94f09aa531f",
+    "loinc": "34073-7",
+    "title": "BYFAVO (remimazolam besylate) — Drug Interactions",
+    "shortfall_vs_min_score": 0.1621
+   },
+   "corpus_top1": {
+    "score": 0.5967,
+    "moiety": "RAMELTEON",
+    "loinc": "34073-7",
+    "title": "Rozerem (ramelteon) — Drug Interactions"
+   }
+  },
+  {
+   "qid": "Q072",
+   "drug_id": "RIBAVIRIN",
+   "key_set": [
+    "RIBAVIRIN"
+   ],
+   "key_used": "RIBAVIRIN",
+   "template": "{drug} warnings and precautions",
+   "query": "ribavirin warnings and precautions",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.6513,
+     "setid": "3631ee95-692a-4426-8edf-62c27f7c32cb",
+     "moiety": "RIBAVIRIN",
+     "loinc": "34070-3",
+     "title": "Ribavirin (Ribavirin) — Contraindications",
+     "label": "relevant"
+    },
+    {
+     "rank": 1,
+     "score": 0.6373,
+     "setid": "3631ee95-692a-4426-8edf-62c27f7c32cb",
+     "moiety": "RIBAVIRIN",
+     "loinc": "34066-1",
+     "title": "Ribavirin (Ribavirin) — Boxed Warning",
+     "label": "relevant"
+    },
+    {
+     "rank": 2,
+     "score": 0.6365,
+     "setid": "d3d0b5ef-8226-49d6-ab66-987943413ccc",
+     "moiety": "TENOFOVIR DISOPROXIL SUCCINATE",
+     "loinc": "34066-1",
+     "title": "Viread (TENOFOVIR DISOPROXIL FUMARATE) — Boxed Warning",
+     "label": "wrong_object"
+    },
+    {
+     "rank": 3,
+     "score": 0.6187,
+     "setid": "33fd6418-fbdc-42ca-a50d-ce2a476a5418",
+     "moiety": "TENOFOVIR DISOPROXIL FUMARATE",
+     "loinc": "34066-1",
+     "title": "Viread (TENOFOVIR DISOPROXIL FUMARATE) — Boxed Warning",
+     "label": "wrong_object"
+    },
+    {
+     "rank": 4,
+     "score": 0.6156,
+     "setid": "33fd6418-fbdc-42ca-a50d-ce2a476a5418",
+     "moiety": "TENOFOVIR DISOPROXIL FUMARATE",
+     "loinc": "43685-7",
+     "title": "Viread (TENOFOVIR DISOPROXIL FUMARATE) — Warnings and Precautions",
+     "label": "wrong_object"
+    }
+   ],
+   "n_pool": 5,
+   "r_corpus": 5,
+   "has_relevant": true,
+   "first_relevant_rank": 0,
+   "rr": 1.0,
+   "has_wrong_object": true,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.5531,
+   "best_corpus_relevant": {
+    "score": 0.6513,
+    "overall_rank": 0,
+    "setid": "3631ee95-692a-4426-8edf-62c27f7c32cb",
+    "loinc": "34070-3",
+    "title": "Ribavirin (Ribavirin) — Contraindications",
+    "shortfall_vs_min_score": -0.0513
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.6513,
+    "overall_rank": 0,
+    "setid": "3631ee95-692a-4426-8edf-62c27f7c32cb",
+    "loinc": "34070-3",
+    "title": "Ribavirin (Ribavirin) — Contraindications",
+    "shortfall_vs_min_score": -0.0513
+   },
+   "corpus_top1": {
+    "score": 0.6513,
+    "moiety": "RIBAVIRIN",
+    "loinc": "34070-3",
+    "title": "Ribavirin (Ribavirin) — Contraindications"
+   }
+  },
+  {
+   "qid": "Q073",
+   "drug_id": "ROPINIROLE HYDROCHLORIDE",
+   "key_set": [
+    "ROPINIROLE HYDROCHLORIDE"
+   ],
+   "key_used": "ROPINIROLE HYDROCHLORIDE",
+   "template": "{drug} contraindications",
+   "query": "ropinirole hydrochloride contraindications",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.6089,
+     "setid": "2deb758c-659e-4e5a-a087-0e9c422f2fe1",
+     "moiety": "ROPINIROLE HYDROCHLORIDE",
+     "loinc": "34073-7",
+     "title": "REQUIP (ropinirole hydrochloride) — Drug Interactions",
+     "label": "relevant"
+    }
+   ],
+   "n_pool": 1,
+   "r_corpus": 5,
+   "has_relevant": true,
+   "first_relevant_rank": 0,
+   "rr": 1.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.3392,
+   "best_corpus_relevant": {
+    "score": 0.6089,
+    "overall_rank": 0,
+    "setid": "2deb758c-659e-4e5a-a087-0e9c422f2fe1",
+    "loinc": "34073-7",
+    "title": "REQUIP (ropinirole hydrochloride) — Drug Interactions",
+    "shortfall_vs_min_score": -0.0089
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.6089,
+    "overall_rank": 0,
+    "setid": "2deb758c-659e-4e5a-a087-0e9c422f2fe1",
+    "loinc": "34073-7",
+    "title": "REQUIP (ropinirole hydrochloride) — Drug Interactions",
+    "shortfall_vs_min_score": -0.0089
+   },
+   "corpus_top1": {
+    "score": 0.6089,
+    "moiety": "ROPINIROLE HYDROCHLORIDE",
+    "loinc": "34073-7",
+    "title": "REQUIP (ropinirole hydrochloride) — Drug Interactions"
+   }
+  },
+  {
+   "qid": "Q074",
+   "drug_id": "SAXAGLIPTIN",
+   "key_set": [
+    "SAXAGLIPTIN"
+   ],
+   "key_used": "SAXAGLIPTIN",
+   "template": "{drug} warnings and precautions",
+   "query": "saxagliptin warnings and precautions",
+   "scope": "sampled",
+   "pool": [],
+   "n_pool": 0,
+   "r_corpus": 5,
+   "has_relevant": false,
+   "first_relevant_rank": null,
+   "rr": 0.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.0,
+   "best_corpus_relevant": {
+    "score": 0.5942,
+    "overall_rank": 0,
+    "setid": "d45fc842-2563-4421-86af-a55b3191e19b",
+    "loinc": "34073-7",
+    "title": "ONGLYZA (SAXAGLIPTIN) — Drug Interactions",
+    "shortfall_vs_min_score": 0.0058
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.5942,
+    "overall_rank": 0,
+    "setid": "d45fc842-2563-4421-86af-a55b3191e19b",
+    "loinc": "34073-7",
+    "title": "ONGLYZA (SAXAGLIPTIN) — Drug Interactions",
+    "shortfall_vs_min_score": 0.0058
+   },
+   "corpus_top1": {
+    "score": 0.5942,
+    "moiety": "SAXAGLIPTIN",
+    "loinc": "34073-7",
+    "title": "ONGLYZA (SAXAGLIPTIN) — Drug Interactions"
+   }
+  },
+  {
+   "qid": "Q075",
+   "drug_id": "SELENIUM SULFIDE",
+   "key_set": [
+    "SELENIUM SULFIDE"
+   ],
+   "key_used": "SELENIUM SULFIDE",
+   "template": "{drug} warnings and precautions",
+   "query": "selenium sulfide warnings and precautions",
+   "scope": "sampled",
+   "pool": [],
+   "n_pool": 0,
+   "r_corpus": 4,
+   "has_relevant": false,
+   "first_relevant_rank": null,
+   "rr": 0.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.0,
+   "best_corpus_relevant": {
+    "score": 0.5073,
+    "overall_rank": 0,
+    "setid": "28b84e3c-ae44-40bb-93c4-2625e19f7e61",
+    "loinc": "43685-7",
+    "title": "SELENIUM SULFIDE (SELENIUM SULFIDE) — Warnings and Precautions",
+    "shortfall_vs_min_score": 0.0927
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.5073,
+    "overall_rank": 0,
+    "setid": "28b84e3c-ae44-40bb-93c4-2625e19f7e61",
+    "loinc": "43685-7",
+    "title": "SELENIUM SULFIDE (SELENIUM SULFIDE) — Warnings and Precautions",
+    "shortfall_vs_min_score": 0.0927
+   },
+   "corpus_top1": {
+    "score": 0.5073,
+    "moiety": "SELENIUM SULFIDE",
+    "loinc": "43685-7",
+    "title": "SELENIUM SULFIDE (SELENIUM SULFIDE) — Warnings and Precautions"
+   }
+  },
+  {
+   "qid": "Q076",
+   "drug_id": "SELPERCATINIB",
+   "key_set": [
+    "SELPERCATINIB"
+   ],
+   "key_used": "SELPERCATINIB",
+   "template": "{drug} warnings and precautions",
+   "query": "selpercatinib warnings and precautions",
+   "scope": "sampled",
+   "pool": [],
+   "n_pool": 0,
+   "r_corpus": 5,
+   "has_relevant": false,
+   "first_relevant_rank": null,
+   "rr": 0.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.0,
+   "best_corpus_relevant": {
+    "score": 0.5194,
+    "overall_rank": 5,
+    "setid": "7fa848ba-a59c-4144-9f52-64d090f4d828",
+    "loinc": "34073-7",
+    "title": "RETEVMO (selpercatinib) — Drug Interactions",
+    "shortfall_vs_min_score": 0.0806
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.5194,
+    "overall_rank": 5,
+    "setid": "7fa848ba-a59c-4144-9f52-64d090f4d828",
+    "loinc": "34073-7",
+    "title": "RETEVMO (selpercatinib) — Drug Interactions",
+    "shortfall_vs_min_score": 0.0806
+   },
+   "corpus_top1": {
+    "score": 0.5414,
+    "moiety": "SORAFENIB TOSYLATE",
+    "loinc": "34070-3",
+    "title": "Sorafenib Tosylate (Sorafenib) — Contraindications"
+   }
+  },
+  {
+   "qid": "Q077",
+   "drug_id": "SEVOFLURANE",
+   "key_set": [
+    "SEVOFLURANE"
+   ],
+   "key_used": "SEVOFLURANE",
+   "template": "{drug} contraindications",
+   "query": "sevoflurane contraindications",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.7114,
+     "setid": "4c6e76bc-c964-4955-e0a3-511d3386a9cc",
+     "moiety": "SEVOFLURANE",
+     "loinc": "34073-7",
+     "title": "Ultane (Sevoflurane) — Drug Interactions",
+     "label": "relevant"
+    },
+    {
+     "rank": 1,
+     "score": 0.6749,
+     "setid": "4c6e76bc-c964-4955-e0a3-511d3386a9cc",
+     "moiety": "SEVOFLURANE",
+     "loinc": "34070-3",
+     "title": "Ultane (Sevoflurane) — Contraindications",
+     "label": "relevant"
+    },
+    {
+     "rank": 2,
+     "score": 0.6713,
+     "setid": "4c6e76bc-c964-4955-e0a3-511d3386a9cc",
+     "moiety": "SEVOFLURANE",
+     "loinc": "34068-7",
+     "title": "Ultane (Sevoflurane) — Dosage and Administration",
+     "label": "relevant"
+    },
+    {
+     "rank": 3,
+     "score": 0.6395,
+     "setid": "3d30eb8d-a62e-475f-926b-78ba63bee9c8",
+     "moiety": "ISOFLURANE",
+     "loinc": "34070-3",
+     "title": "FORANE (isoflurane) — Contraindications",
+     "label": "wrong_object"
+    }
+   ],
+   "n_pool": 4,
+   "r_corpus": 4,
+   "has_relevant": true,
+   "first_relevant_rank": 0,
+   "rr": 1.0,
+   "has_wrong_object": true,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.8319,
+   "best_corpus_relevant": {
+    "score": 0.7114,
+    "overall_rank": 0,
+    "setid": "4c6e76bc-c964-4955-e0a3-511d3386a9cc",
+    "loinc": "34073-7",
+    "title": "Ultane (Sevoflurane) — Drug Interactions",
+    "shortfall_vs_min_score": -0.1114
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.7114,
+    "overall_rank": 0,
+    "setid": "4c6e76bc-c964-4955-e0a3-511d3386a9cc",
+    "loinc": "34073-7",
+    "title": "Ultane (Sevoflurane) — Drug Interactions",
+    "shortfall_vs_min_score": -0.1114
+   },
+   "corpus_top1": {
+    "score": 0.7114,
+    "moiety": "SEVOFLURANE",
+    "loinc": "34073-7",
+    "title": "Ultane (Sevoflurane) — Drug Interactions"
+   }
+  },
+  {
+   "qid": "Q078",
+   "drug_id": "SODIUM BICARBONATE",
+   "key_set": [
+    "SODIUM BICARBONATE"
+   ],
+   "key_used": "SODIUM BICARBONATE",
+   "template": "{drug} drug interactions",
+   "query": "sodium bicarbonate drug interactions",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.6595,
+     "setid": "96093b76-5d98-4d2b-b851-20207a8864db",
+     "moiety": "SODIUM BICARBONATE",
+     "loinc": "34073-7",
+     "title": "Sodium Bicarbonate (Sodium Bicarbonate) — Drug Interactions",
+     "label": "relevant"
+    },
+    {
+     "rank": 1,
+     "score": 0.6414,
+     "setid": "96093b76-5d98-4d2b-b851-20207a8864db",
+     "moiety": "SODIUM BICARBONATE",
+     "loinc": "34070-3",
+     "title": "Sodium Bicarbonate (Sodium Bicarbonate) — Contraindications",
+     "label": "relevant"
+    },
+    {
+     "rank": 2,
+     "score": 0.6123,
+     "setid": "96093b76-5d98-4d2b-b851-20207a8864db",
+     "moiety": "SODIUM BICARBONATE",
+     "loinc": "34067-9",
+     "title": "Sodium Bicarbonate (Sodium Bicarbonate) — Indications and Usage",
+     "label": "relevant"
+    }
+   ],
+   "n_pool": 3,
+   "r_corpus": 4,
+   "has_relevant": true,
+   "first_relevant_rank": 0,
+   "rr": 1.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.8319,
+   "best_corpus_relevant": {
+    "score": 0.6595,
+    "overall_rank": 0,
+    "setid": "96093b76-5d98-4d2b-b851-20207a8864db",
+    "loinc": "34073-7",
+    "title": "Sodium Bicarbonate (Sodium Bicarbonate) — Drug Interactions",
+    "shortfall_vs_min_score": -0.0595
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.6595,
+    "overall_rank": 0,
+    "setid": "96093b76-5d98-4d2b-b851-20207a8864db",
+    "loinc": "34073-7",
+    "title": "Sodium Bicarbonate (Sodium Bicarbonate) — Drug Interactions",
+    "shortfall_vs_min_score": -0.0595
+   },
+   "corpus_top1": {
+    "score": 0.6595,
+    "moiety": "SODIUM BICARBONATE",
+    "loinc": "34073-7",
+    "title": "Sodium Bicarbonate (Sodium Bicarbonate) — Drug Interactions"
+   }
+  },
+  {
+   "qid": "Q079",
+   "drug_id": "STERILE WATER FOR INJECTION",
+   "key_set": [
+    "STERILE WATER FOR INJECTION"
+   ],
+   "key_used": "STERILE WATER FOR INJECTION",
+   "template": "{drug} contraindications",
+   "query": "sterile water for injection contraindications",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.7092,
+     "setid": "99e99a50-82d5-aff6-e053-2a95a90a8c56",
+     "moiety": "STERILE WATER FOR INJECTION",
+     "loinc": "34070-3",
+     "title": "Sterile Water (Sterile Water for Injection) — Contraindications",
+     "label": "relevant"
+    }
+   ],
+   "n_pool": 1,
+   "r_corpus": 4,
+   "has_relevant": true,
+   "first_relevant_rank": 0,
+   "rr": 1.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.3904,
+   "best_corpus_relevant": {
+    "score": 0.7092,
+    "overall_rank": 0,
+    "setid": "99e99a50-82d5-aff6-e053-2a95a90a8c56",
+    "loinc": "34070-3",
+    "title": "Sterile Water (Sterile Water for Injection) — Contraindications",
+    "shortfall_vs_min_score": -0.1092
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.7092,
+    "overall_rank": 0,
+    "setid": "99e99a50-82d5-aff6-e053-2a95a90a8c56",
+    "loinc": "34070-3",
+    "title": "Sterile Water (Sterile Water for Injection) — Contraindications",
+    "shortfall_vs_min_score": -0.1092
+   },
+   "corpus_top1": {
+    "score": 0.7092,
+    "moiety": "STERILE WATER FOR INJECTION",
+    "loinc": "34070-3",
+    "title": "Sterile Water (Sterile Water for Injection) — Contraindications"
+   }
+  },
+  {
+   "qid": "Q080",
+   "drug_id": "SULINDAC",
+   "key_set": [
+    "SULINDAC"
+   ],
+   "key_used": "SULINDAC",
+   "template": "{drug} contraindications",
+   "query": "sulindac contraindications",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.7527,
+     "setid": "eb7acb87-6565-4524-a91a-02064ea8bd1a",
+     "moiety": "SULINDAC",
+     "loinc": "34070-3",
+     "title": "SULINDAC (sulindac) — Contraindications",
+     "label": "relevant"
+    },
+    {
+     "rank": 1,
+     "score": 0.6628,
+     "setid": "eb7acb87-6565-4524-a91a-02064ea8bd1a",
+     "moiety": "SULINDAC",
+     "loinc": "34067-9",
+     "title": "SULINDAC (sulindac) — Indications and Usage",
+     "label": "relevant"
+    },
+    {
+     "rank": 2,
+     "score": 0.6459,
+     "setid": "eb7acb87-6565-4524-a91a-02064ea8bd1a",
+     "moiety": "SULINDAC",
+     "loinc": "34073-7",
+     "title": "SULINDAC (sulindac) — Drug Interactions",
+     "label": "relevant"
+    },
+    {
+     "rank": 3,
+     "score": 0.638,
+     "setid": "eb7acb87-6565-4524-a91a-02064ea8bd1a",
+     "moiety": "SULINDAC",
+     "loinc": "34066-1",
+     "title": "SULINDAC (sulindac) — Boxed Warning",
+     "label": "relevant"
+    },
+    {
+     "rank": 4,
+     "score": 0.6237,
+     "setid": "eb7acb87-6565-4524-a91a-02064ea8bd1a",
+     "moiety": "SULINDAC",
+     "loinc": "34068-7",
+     "title": "SULINDAC (sulindac) — Dosage and Administration",
+     "label": "relevant"
+    }
+   ],
+   "n_pool": 5,
+   "r_corpus": 5,
+   "has_relevant": true,
+   "first_relevant_rank": 0,
+   "rr": 1.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 1.0,
+   "best_corpus_relevant": {
+    "score": 0.7527,
+    "overall_rank": 0,
+    "setid": "eb7acb87-6565-4524-a91a-02064ea8bd1a",
+    "loinc": "34070-3",
+    "title": "SULINDAC (sulindac) — Contraindications",
+    "shortfall_vs_min_score": -0.1527
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.7527,
+    "overall_rank": 0,
+    "setid": "eb7acb87-6565-4524-a91a-02064ea8bd1a",
+    "loinc": "34070-3",
+    "title": "SULINDAC (sulindac) — Contraindications",
+    "shortfall_vs_min_score": -0.1527
+   },
+   "corpus_top1": {
+    "score": 0.7527,
+    "moiety": "SULINDAC",
+    "loinc": "34070-3",
+    "title": "SULINDAC (sulindac) — Contraindications"
+   }
+  },
+  {
+   "qid": "Q081",
+   "drug_id": "SUMATRIPTAN SUCCINATE",
+   "key_set": [
+    "SUMATRIPTAN SUCCINATE"
+   ],
+   "key_used": "SUMATRIPTAN SUCCINATE",
+   "template": "{drug} drug interactions",
+   "query": "sumatriptan succinate drug interactions",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.6146,
+     "setid": "fee7d073-0b99-48f2-7985-0d8cf970894b",
+     "moiety": "SUMATRIPTAN",
+     "loinc": "34073-7",
+     "title": "IMITREX (sumatriptan) — Drug Interactions",
+     "label": "wrong_object"
+    }
+   ],
+   "n_pool": 1,
+   "r_corpus": 5,
+   "has_relevant": false,
+   "first_relevant_rank": null,
+   "rr": 0.0,
+   "has_wrong_object": true,
+   "wrong_object_at_rank1": true,
+   "ndcg5": 0.0,
+   "best_corpus_relevant": {
+    "score": 0.5814,
+    "overall_rank": 2,
+    "setid": "6e5b104f-2b9e-416e-92fb-ef1bdaea867d",
+    "loinc": "43685-7",
+    "title": "ZEMBRACE SYMTOUCH (Sumatriptan Succinate) — Warnings and Precautions",
+    "shortfall_vs_min_score": 0.0186
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.5814,
+    "overall_rank": 2,
+    "setid": "6e5b104f-2b9e-416e-92fb-ef1bdaea867d",
+    "loinc": "43685-7",
+    "title": "ZEMBRACE SYMTOUCH (Sumatriptan Succinate) — Warnings and Precautions",
+    "shortfall_vs_min_score": 0.0186
+   },
+   "corpus_top1": {
+    "score": 0.6146,
+    "moiety": "SUMATRIPTAN",
+    "loinc": "34073-7",
+    "title": "IMITREX (sumatriptan) — Drug Interactions"
+   }
+  },
+  {
+   "qid": "Q082",
+   "drug_id": "SUNITINIB MALATE",
+   "key_set": [
+    "SUNITINIB MALATE"
+   ],
+   "key_used": "SUNITINIB MALATE",
+   "template": "{drug} warnings and precautions",
+   "query": "sunitinib malate warnings and precautions",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.6273,
+     "setid": "43a4d7f8-48ae-4a63-9108-2fa8e3ea9d9c",
+     "moiety": "SUNITINIB MALATE",
+     "loinc": "34073-7",
+     "title": "SUTENT (Sunitinib malate) — Drug Interactions",
+     "label": "relevant"
+    },
+    {
+     "rank": 1,
+     "score": 0.6117,
+     "setid": "43a4d7f8-48ae-4a63-9108-2fa8e3ea9d9c",
+     "moiety": "SUNITINIB MALATE",
+     "loinc": "43685-7",
+     "title": "SUTENT (Sunitinib malate) — Warnings and Precautions",
+     "label": "relevant"
+    }
+   ],
+   "n_pool": 2,
+   "r_corpus": 6,
+   "has_relevant": true,
+   "first_relevant_rank": 0,
+   "rr": 1.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.5531,
+   "best_corpus_relevant": {
+    "score": 0.6273,
+    "overall_rank": 0,
+    "setid": "43a4d7f8-48ae-4a63-9108-2fa8e3ea9d9c",
+    "loinc": "34073-7",
+    "title": "SUTENT (Sunitinib malate) — Drug Interactions",
+    "shortfall_vs_min_score": -0.0273
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.6273,
+    "overall_rank": 0,
+    "setid": "43a4d7f8-48ae-4a63-9108-2fa8e3ea9d9c",
+    "loinc": "34073-7",
+    "title": "SUTENT (Sunitinib malate) — Drug Interactions",
+    "shortfall_vs_min_score": -0.0273
+   },
+   "corpus_top1": {
+    "score": 0.6273,
+    "moiety": "SUNITINIB MALATE",
+    "loinc": "34073-7",
+    "title": "SUTENT (Sunitinib malate) — Drug Interactions"
+   }
+  },
+  {
+   "qid": "Q083",
+   "drug_id": "TAK-491 (AZILSARTAN MEDOXOMIL (AS POTASSIUM SALT))",
+   "key_set": [
+    "TAK-491 (AZILSARTAN MEDOXOMIL (AS POTASSIUM SALT))"
+   ],
+   "key_used": "TAK-491 (AZILSARTAN MEDOXOMIL (AS POTASSIUM SALT))",
+   "template": "{drug} contraindications",
+   "query": "tak-491 (azilsartan medoxomil (as potassium salt)) contraindications",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.6309,
+     "setid": "c09103d8-c094-473d-a303-bbb4f334aa8c",
+     "moiety": "TAK-491 (AZILSARTAN MEDOXOMIL (AS POTASSIUM SALT))",
+     "loinc": "43685-7",
+     "title": "Azilsartan Medoxomil (Azilsartan kamedoxomil) — Warnings and Precautions",
+     "label": "relevant"
+    },
+    {
+     "rank": 1,
+     "score": 0.6117,
+     "setid": "c09103d8-c094-473d-a303-bbb4f334aa8c",
+     "moiety": "TAK-491 (AZILSARTAN MEDOXOMIL (AS POTASSIUM SALT))",
+     "loinc": "34070-3",
+     "title": "Azilsartan Medoxomil (Azilsartan kamedoxomil) — Contraindications",
+     "label": "relevant"
+    }
+   ],
+   "n_pool": 2,
+   "r_corpus": 6,
+   "has_relevant": true,
+   "first_relevant_rank": 0,
+   "rr": 1.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.5531,
+   "best_corpus_relevant": {
+    "score": 0.6309,
+    "overall_rank": 0,
+    "setid": "c09103d8-c094-473d-a303-bbb4f334aa8c",
+    "loinc": "43685-7",
+    "title": "Azilsartan Medoxomil (Azilsartan kamedoxomil) — Warnings and Precautions",
+    "shortfall_vs_min_score": -0.0309
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.6309,
+    "overall_rank": 0,
+    "setid": "c09103d8-c094-473d-a303-bbb4f334aa8c",
+    "loinc": "43685-7",
+    "title": "Azilsartan Medoxomil (Azilsartan kamedoxomil) — Warnings and Precautions",
+    "shortfall_vs_min_score": -0.0309
+   },
+   "corpus_top1": {
+    "score": 0.6309,
+    "moiety": "TAK-491 (AZILSARTAN MEDOXOMIL (AS POTASSIUM SALT))",
+    "loinc": "43685-7",
+    "title": "Azilsartan Medoxomil (Azilsartan kamedoxomil) — Warnings and Precautions"
+   }
+  },
+  {
+   "qid": "Q084",
+   "drug_id": "TAMSULOSIN HYDROCHLORIDE",
+   "key_set": [
+    "TAMSULOSIN HYDROCHLORIDE"
+   ],
+   "key_used": "TAMSULOSIN HYDROCHLORIDE",
+   "template": "{drug} drug interactions",
+   "query": "tamsulosin hydrochloride drug interactions",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.6971,
+     "setid": "b3384748-92f1-0b49-e053-2a95a90abc73",
+     "moiety": "TAMSULOSIN HYDROCHLORIDE",
+     "loinc": "34073-7",
+     "title": "FLOMAX (tamsulosin hydrochloride) — Drug Interactions",
+     "label": "relevant"
+    },
+    {
+     "rank": 1,
+     "score": 0.6146,
+     "setid": "b3384748-92f1-0b49-e053-2a95a90abc73",
+     "moiety": "TAMSULOSIN HYDROCHLORIDE",
+     "loinc": "43685-7",
+     "title": "FLOMAX (tamsulosin hydrochloride) — Warnings and Precautions",
+     "label": "relevant"
+    }
+   ],
+   "n_pool": 2,
+   "r_corpus": 5,
+   "has_relevant": true,
+   "first_relevant_rank": 0,
+   "rr": 1.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.5531,
+   "best_corpus_relevant": {
+    "score": 0.6971,
+    "overall_rank": 0,
+    "setid": "b3384748-92f1-0b49-e053-2a95a90abc73",
+    "loinc": "34073-7",
+    "title": "FLOMAX (tamsulosin hydrochloride) — Drug Interactions",
+    "shortfall_vs_min_score": -0.0971
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.6971,
+    "overall_rank": 0,
+    "setid": "b3384748-92f1-0b49-e053-2a95a90abc73",
+    "loinc": "34073-7",
+    "title": "FLOMAX (tamsulosin hydrochloride) — Drug Interactions",
+    "shortfall_vs_min_score": -0.0971
+   },
+   "corpus_top1": {
+    "score": 0.6971,
+    "moiety": "TAMSULOSIN HYDROCHLORIDE",
+    "loinc": "34073-7",
+    "title": "FLOMAX (tamsulosin hydrochloride) — Drug Interactions"
+   }
+  },
+  {
+   "qid": "Q085",
+   "drug_id": "TESTOSTERONE",
+   "key_set": [
+    "TESTOSTERONE"
+   ],
+   "key_used": "TESTOSTERONE",
+   "template": "{drug} contraindications",
+   "query": "testosterone contraindications",
+   "scope": "sampled",
+   "pool": [],
+   "n_pool": 0,
+   "r_corpus": 6,
+   "has_relevant": false,
+   "first_relevant_rank": null,
+   "rr": 0.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.0,
+   "best_corpus_relevant": {
+    "score": 0.5292,
+    "overall_rank": 10,
+    "setid": "f4e8fc4e-d6ba-2783-e053-2a95a90a7ae7",
+    "loinc": "43685-7",
+    "title": "AndroGel (Testosterone) — Warnings and Precautions",
+    "shortfall_vs_min_score": 0.0708
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.5292,
+    "overall_rank": 10,
+    "setid": "f4e8fc4e-d6ba-2783-e053-2a95a90a7ae7",
+    "loinc": "43685-7",
+    "title": "AndroGel (Testosterone) — Warnings and Precautions",
+    "shortfall_vs_min_score": 0.0708
+   },
+   "corpus_top1": {
+    "score": 0.5772,
+    "moiety": "NANDROLONE DECANOATE",
+    "loinc": "34070-3",
+    "title": "NANDROLONE DECANOATE (Nandrolone Decanoate) — Contraindications"
+   }
+  },
+  {
+   "qid": "Q086",
+   "drug_id": "TESTOSTERONE",
+   "key_set": [
+    "TESTOSTERONE"
+   ],
+   "key_used": "TESTOSTERONE",
+   "template": "{drug} drug interactions",
+   "query": "testosterone drug interactions",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.6607,
+     "setid": "9bed4886-fcd0-4056-be8d-5bb4d15081ce",
+     "moiety": "METHYLTESTOSTERONE",
+     "loinc": "34073-7",
+     "title": "MethylTESTOSTERone (METHYLTESTOSTERONE) — Drug Interactions",
+     "label": "wrong_object"
+    },
+    {
+     "rank": 1,
+     "score": 0.6191,
+     "setid": "1e4824cc-4d52-4f20-9674-cfcb9ee66574",
+     "moiety": "ETODOLAC",
+     "loinc": "34073-7",
+     "title": "Etodolac (Etodolac) — Drug Interactions",
+     "label": "wrong_object"
+    },
+    {
+     "rank": 2,
+     "score": 0.6049,
+     "setid": "77215d87-ad22-4169-bd5f-a453f10b21ef",
+     "moiety": "TESTOSTERONE PROPIONATE",
+     "loinc": "34073-7",
+     "title": "Androgel (testosterone) — Drug Interactions",
+     "label": "wrong_object"
+    },
+    {
+     "rank": 3,
+     "score": 0.6022,
+     "setid": "f80f025b-17d8-40af-8739-20ce07902045",
+     "moiety": "TESTOSTERONE UNDECANOATE",
+     "loinc": "34073-7",
+     "title": "Aveed (testosterone undecanoate) — Drug Interactions",
+     "label": "wrong_object"
+    }
+   ],
+   "n_pool": 4,
+   "r_corpus": 6,
+   "has_relevant": false,
+   "first_relevant_rank": null,
+   "rr": 0.0,
+   "has_wrong_object": true,
+   "wrong_object_at_rank1": true,
+   "ndcg5": 0.0,
+   "best_corpus_relevant": {
+    "score": 0.5961,
+    "overall_rank": 4,
+    "setid": "f4e8fc4e-d6ba-2783-e053-2a95a90a7ae7",
+    "loinc": "34073-7",
+    "title": "AndroGel (Testosterone) — Drug Interactions",
+    "shortfall_vs_min_score": 0.0039
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.5961,
+    "overall_rank": 4,
+    "setid": "f4e8fc4e-d6ba-2783-e053-2a95a90a7ae7",
+    "loinc": "34073-7",
+    "title": "AndroGel (Testosterone) — Drug Interactions",
+    "shortfall_vs_min_score": 0.0039
+   },
+   "corpus_top1": {
+    "score": 0.6607,
+    "moiety": "METHYLTESTOSTERONE",
+    "loinc": "34073-7",
+    "title": "MethylTESTOSTERone (METHYLTESTOSTERONE) — Drug Interactions"
+   }
+  },
+  {
+   "qid": "Q087",
+   "drug_id": "TETROFOSMIN",
+   "key_set": [
+    "TETROFOSMIN"
+   ],
+   "key_used": "TETROFOSMIN",
+   "template": "{drug} contraindications",
+   "query": "tetrofosmin contraindications",
+   "scope": "sampled",
+   "pool": [],
+   "n_pool": 0,
+   "r_corpus": 4,
+   "has_relevant": false,
+   "first_relevant_rank": null,
+   "rr": 0.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.0,
+   "best_corpus_relevant": {
+    "score": 0.4361,
+    "overall_rank": 319,
+    "setid": "4a8e5ed7-57f4-4d48-93cd-5f307207a3a0",
+    "loinc": "34070-3",
+    "title": "Myoview (Tetrofosmin) — Contraindications",
+    "shortfall_vs_min_score": 0.1639
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.4361,
+    "overall_rank": 319,
+    "setid": "4a8e5ed7-57f4-4d48-93cd-5f307207a3a0",
+    "loinc": "34070-3",
+    "title": "Myoview (Tetrofosmin) — Contraindications",
+    "shortfall_vs_min_score": 0.1639
+   },
+   "corpus_top1": {
+    "score": 0.5831,
+    "moiety": "TOREMIFENE CITRATE",
+    "loinc": "34070-3",
+    "title": "Fareston (toremifene citrate) — Contraindications"
+   }
+  },
+  {
+   "qid": "Q088",
+   "drug_id": "THALIDOMIDE",
+   "key_set": [
+    "THALIDOMIDE"
+   ],
+   "key_used": "THALIDOMIDE",
+   "template": "{drug} contraindications",
+   "query": "thalidomide contraindications",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.6641,
+     "setid": "2eda833b-1357-4ed4-a093-194524fcb061",
+     "moiety": "THALIDOMIDE",
+     "loinc": "34070-3",
+     "title": "Thalomid (Thalidomide) — Contraindications",
+     "label": "relevant"
+    },
+    {
+     "rank": 1,
+     "score": 0.6024,
+     "setid": "5fa97bf5-28a2-48f1-8955-f56012d296be",
+     "moiety": "LENALIDOMIDE",
+     "loinc": "34070-3",
+     "title": "Revlimid (Lenalidomide) — Contraindications",
+     "label": "wrong_object"
+    }
+   ],
+   "n_pool": 2,
+   "r_corpus": 6,
+   "has_relevant": true,
+   "first_relevant_rank": 0,
+   "rr": 1.0,
+   "has_wrong_object": true,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.3392,
+   "best_corpus_relevant": {
+    "score": 0.6641,
+    "overall_rank": 0,
+    "setid": "2eda833b-1357-4ed4-a093-194524fcb061",
+    "loinc": "34070-3",
+    "title": "Thalomid (Thalidomide) — Contraindications",
+    "shortfall_vs_min_score": -0.0641
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.6641,
+    "overall_rank": 0,
+    "setid": "2eda833b-1357-4ed4-a093-194524fcb061",
+    "loinc": "34070-3",
+    "title": "Thalomid (Thalidomide) — Contraindications",
+    "shortfall_vs_min_score": -0.0641
+   },
+   "corpus_top1": {
+    "score": 0.6641,
+    "moiety": "THALIDOMIDE",
+    "loinc": "34070-3",
+    "title": "Thalomid (Thalidomide) — Contraindications"
+   }
+  },
+  {
+   "qid": "Q089",
+   "drug_id": "TIRZEPATIDE",
+   "key_set": [
+    "TIRZEPATIDE"
+   ],
+   "key_used": "TIRZEPATIDE",
+   "template": "{drug} drug interactions",
+   "query": "tirzepatide drug interactions",
+   "scope": "sampled",
+   "pool": [],
+   "n_pool": 0,
+   "r_corpus": 6,
+   "has_relevant": false,
+   "first_relevant_rank": null,
+   "rr": 0.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.0,
+   "best_corpus_relevant": {
+    "score": 0.5317,
+    "overall_rank": 16,
+    "setid": "487cd7e7-434c-4925-99fa-aa80b1cc776b",
+    "loinc": "34070-3",
+    "title": "ZEPBOUND (tirzepatide) — Contraindications",
+    "shortfall_vs_min_score": 0.0683
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.5317,
+    "overall_rank": 16,
+    "setid": "487cd7e7-434c-4925-99fa-aa80b1cc776b",
+    "loinc": "34070-3",
+    "title": "ZEPBOUND (tirzepatide) — Contraindications",
+    "shortfall_vs_min_score": 0.0683
+   },
+   "corpus_top1": {
+    "score": 0.5856,
+    "moiety": "TRIPTORELIN",
+    "loinc": "34073-7",
+    "title": "Trelstar (triptorelin pamoate) — Drug Interactions"
+   }
+  },
+  {
+   "qid": "Q090",
+   "drug_id": "TIZANIDINE",
+   "key_set": [
+    "TIZANIDINE"
+   ],
+   "key_used": "TIZANIDINE",
+   "template": "{drug} contraindications",
+   "query": "tizanidine contraindications",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.6523,
+     "setid": "043d9e51-bfa2-4add-9058-5ece332f7e99",
+     "moiety": "TIZANIDINE",
+     "loinc": "43685-7",
+     "title": "Zanaflex (tizanidine hydrochloride) — Warnings and Precautions",
+     "label": "relevant"
+    },
+    {
+     "rank": 1,
+     "score": 0.617,
+     "setid": "043d9e51-bfa2-4add-9058-5ece332f7e99",
+     "moiety": "TIZANIDINE",
+     "loinc": "34073-7",
+     "title": "Zanaflex (tizanidine hydrochloride) — Drug Interactions",
+     "label": "relevant"
+    },
+    {
+     "rank": 2,
+     "score": 0.6124,
+     "setid": "043d9e51-bfa2-4add-9058-5ece332f7e99",
+     "moiety": "TIZANIDINE",
+     "loinc": "34068-7",
+     "title": "Zanaflex (tizanidine hydrochloride) — Dosage and Administration",
+     "label": "relevant"
+    }
+   ],
+   "n_pool": 3,
+   "r_corpus": 5,
+   "has_relevant": true,
+   "first_relevant_rank": 0,
+   "rr": 1.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.7227,
+   "best_corpus_relevant": {
+    "score": 0.6523,
+    "overall_rank": 0,
+    "setid": "043d9e51-bfa2-4add-9058-5ece332f7e99",
+    "loinc": "43685-7",
+    "title": "Zanaflex (tizanidine hydrochloride) — Warnings and Precautions",
+    "shortfall_vs_min_score": -0.0523
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.6523,
+    "overall_rank": 0,
+    "setid": "043d9e51-bfa2-4add-9058-5ece332f7e99",
+    "loinc": "43685-7",
+    "title": "Zanaflex (tizanidine hydrochloride) — Warnings and Precautions",
+    "shortfall_vs_min_score": -0.0523
+   },
+   "corpus_top1": {
+    "score": 0.6523,
+    "moiety": "TIZANIDINE",
+    "loinc": "43685-7",
+    "title": "Zanaflex (tizanidine hydrochloride) — Warnings and Precautions"
+   }
+  },
+  {
+   "qid": "Q091",
+   "drug_id": "TOLMETIN SODIUM",
+   "key_set": [
+    "TOLMETIN SODIUM"
+   ],
+   "key_used": "TOLMETIN SODIUM",
+   "template": "{drug} drug interactions",
+   "query": "tolmetin sodium drug interactions",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.6248,
+     "setid": "7b26321c-4797-4664-a162-e29de4b8dd93",
+     "moiety": "TOLMETIN SODIUM DIHYDRATE",
+     "loinc": "34070-3",
+     "title": "Tolmetin Sodium (Tolmetin Sodium) — Contraindications",
+     "label": "wrong_object"
+    }
+   ],
+   "n_pool": 1,
+   "r_corpus": 5,
+   "has_relevant": false,
+   "first_relevant_rank": null,
+   "rr": 0.0,
+   "has_wrong_object": true,
+   "wrong_object_at_rank1": true,
+   "ndcg5": 0.0,
+   "best_corpus_relevant": {
+    "score": 0.584,
+    "overall_rank": 5,
+    "setid": "15467b19-e43a-5be9-e063-6294a90a3cca",
+    "loinc": "34073-7",
+    "title": "Tolectin (tolmetin sodium) — Drug Interactions",
+    "shortfall_vs_min_score": 0.016
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.584,
+    "overall_rank": 5,
+    "setid": "15467b19-e43a-5be9-e063-6294a90a3cca",
+    "loinc": "34073-7",
+    "title": "Tolectin (tolmetin sodium) — Drug Interactions",
+    "shortfall_vs_min_score": 0.016
+   },
+   "corpus_top1": {
+    "score": 0.6248,
+    "moiety": "TOLMETIN SODIUM DIHYDRATE",
+    "loinc": "34070-3",
+    "title": "Tolmetin Sodium (Tolmetin Sodium) — Contraindications"
+   }
+  },
+  {
+   "qid": "Q092",
+   "drug_id": "TRANEXAMIC ACID",
+   "key_set": [
+    "TRANEXAMIC ACID"
+   ],
+   "key_used": "TRANEXAMIC ACID",
+   "template": "{drug} warnings and precautions",
+   "query": "tranexamic acid warnings and precautions",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.6237,
+     "setid": "6e89a7d9-4da4-42aa-b7f8-c602c24eefe5",
+     "moiety": "TRANEXAMIC ACID",
+     "loinc": "34073-7",
+     "title": "Cyklokapron (tranexamic acid) — Drug Interactions",
+     "label": "relevant"
+    },
+    {
+     "rank": 1,
+     "score": 0.6007,
+     "setid": "6e89a7d9-4da4-42aa-b7f8-c602c24eefe5",
+     "moiety": "TRANEXAMIC ACID",
+     "loinc": "43685-7",
+     "title": "Cyklokapron (tranexamic acid) — Warnings and Precautions",
+     "label": "relevant"
+    }
+   ],
+   "n_pool": 2,
+   "r_corpus": 6,
+   "has_relevant": true,
+   "first_relevant_rank": 0,
+   "rr": 1.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.5531,
+   "best_corpus_relevant": {
+    "score": 0.6237,
+    "overall_rank": 0,
+    "setid": "6e89a7d9-4da4-42aa-b7f8-c602c24eefe5",
+    "loinc": "34073-7",
+    "title": "Cyklokapron (tranexamic acid) — Drug Interactions",
+    "shortfall_vs_min_score": -0.0237
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.6237,
+    "overall_rank": 0,
+    "setid": "6e89a7d9-4da4-42aa-b7f8-c602c24eefe5",
+    "loinc": "34073-7",
+    "title": "Cyklokapron (tranexamic acid) — Drug Interactions",
+    "shortfall_vs_min_score": -0.0237
+   },
+   "corpus_top1": {
+    "score": 0.6237,
+    "moiety": "TRANEXAMIC ACID",
+    "loinc": "34073-7",
+    "title": "Cyklokapron (tranexamic acid) — Drug Interactions"
+   }
+  },
+  {
+   "qid": "Q093",
+   "drug_id": "TRIMETHOPRIM",
+   "key_set": [
+    "TRIMETHOPRIM"
+   ],
+   "key_used": "TRIMETHOPRIM",
+   "template": "{drug} warnings and precautions",
+   "query": "trimethoprim warnings and precautions",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.6794,
+     "setid": "73ccebc1-7412-2424-d62c-a5180ec52d81",
+     "moiety": "TRIMETHOPRIM",
+     "loinc": "34070-3",
+     "title": "Trimethoprim (Trimethoprim) — Contraindications",
+     "label": "relevant"
+    },
+    {
+     "rank": 1,
+     "score": 0.6031,
+     "setid": "73ccebc1-7412-2424-d62c-a5180ec52d81",
+     "moiety": "TRIMETHOPRIM",
+     "loinc": "34067-9",
+     "title": "Trimethoprim (Trimethoprim) — Indications and Usage",
+     "label": "relevant"
+    }
+   ],
+   "n_pool": 2,
+   "r_corpus": 4,
+   "has_relevant": true,
+   "first_relevant_rank": 0,
+   "rr": 1.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.6367,
+   "best_corpus_relevant": {
+    "score": 0.6794,
+    "overall_rank": 0,
+    "setid": "73ccebc1-7412-2424-d62c-a5180ec52d81",
+    "loinc": "34070-3",
+    "title": "Trimethoprim (Trimethoprim) — Contraindications",
+    "shortfall_vs_min_score": -0.0794
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.6794,
+    "overall_rank": 0,
+    "setid": "73ccebc1-7412-2424-d62c-a5180ec52d81",
+    "loinc": "34070-3",
+    "title": "Trimethoprim (Trimethoprim) — Contraindications",
+    "shortfall_vs_min_score": -0.0794
+   },
+   "corpus_top1": {
+    "score": 0.6794,
+    "moiety": "TRIMETHOPRIM",
+    "loinc": "34070-3",
+    "title": "Trimethoprim (Trimethoprim) — Contraindications"
+   }
+  },
+  {
+   "qid": "Q094",
+   "drug_id": "UPADACITINIB HEMIHYDRATE",
+   "key_set": [
+    "UPADACITINIB HEMIHYDRATE"
+   ],
+   "key_used": "UPADACITINIB HEMIHYDRATE",
+   "template": "{drug} warnings and precautions",
+   "query": "upadacitinib hemihydrate warnings and precautions",
+   "scope": "sampled",
+   "pool": [],
+   "n_pool": 0,
+   "r_corpus": 6,
+   "has_relevant": false,
+   "first_relevant_rank": null,
+   "rr": 0.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.0,
+   "best_corpus_relevant": {
+    "score": 0.5339,
+    "overall_rank": 3,
+    "setid": "2966aec7-2ef0-923c-d8ff-fe1a957bf095",
+    "loinc": "34070-3",
+    "title": "Rinvoq (Upadacitinib) — Contraindications",
+    "shortfall_vs_min_score": 0.0661
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.5339,
+    "overall_rank": 3,
+    "setid": "2966aec7-2ef0-923c-d8ff-fe1a957bf095",
+    "loinc": "34070-3",
+    "title": "Rinvoq (Upadacitinib) — Contraindications",
+    "shortfall_vs_min_score": 0.0661
+   },
+   "corpus_top1": {
+    "score": 0.5402,
+    "moiety": "AXITINIB",
+    "loinc": "43685-7",
+    "title": "INLYTA (axitinib) — Warnings and Precautions"
+   }
+  },
+  {
+   "qid": "Q095",
+   "drug_id": "URSODIOL",
+   "key_set": [
+    "URSODIOL"
+   ],
+   "key_used": "URSODIOL",
+   "template": "{drug} drug interactions",
+   "query": "ursodiol drug interactions",
+   "scope": "sampled",
+   "pool": [],
+   "n_pool": 0,
+   "r_corpus": 5,
+   "has_relevant": false,
+   "first_relevant_rank": null,
+   "rr": 0.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.0,
+   "best_corpus_relevant": {
+    "score": 0.5134,
+    "overall_rank": 21,
+    "setid": "e8fc4fc2-fe5c-4cba-b6e0-5ceaf2157a61",
+    "loinc": "34070-3",
+    "title": "Urso 250 (Ursodiol) — Contraindications",
+    "shortfall_vs_min_score": 0.0866
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.5134,
+    "overall_rank": 21,
+    "setid": "e8fc4fc2-fe5c-4cba-b6e0-5ceaf2157a61",
+    "loinc": "34070-3",
+    "title": "Urso 250 (Ursodiol) — Contraindications",
+    "shortfall_vs_min_score": 0.0866
+   },
+   "corpus_top1": {
+    "score": 0.5541,
+    "moiety": "DOBUTAMINE",
+    "loinc": "34073-7",
+    "title": "Dobutamine in Dextrose (Dobutamine in Dextrose) — Drug Interactions"
+   }
+  },
+  {
+   "qid": "Q096",
+   "drug_id": "VALSARTAN",
+   "key_set": [
+    "VALSARTAN"
+   ],
+   "key_used": "VALSARTAN",
+   "template": "{drug} drug interactions",
+   "query": "valsartan drug interactions",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.6547,
+     "setid": "3bb7bc69-7752-4c16-9c60-e61eb5355a4d",
+     "moiety": "TELMISARTAN",
+     "loinc": "34073-7",
+     "title": "Micardis (TELMISARTAN) — Drug Interactions",
+     "label": "wrong_object"
+    },
+    {
+     "rank": 1,
+     "score": 0.6529,
+     "setid": "afd2d1ba-e7af-4e4e-8b7e-a9f72612fc97",
+     "moiety": "LOSARTAN POTASSIUM",
+     "loinc": "34073-7",
+     "title": "ARBLI (losartan potassium) — Drug Interactions",
+     "label": "wrong_object"
+    },
+    {
+     "rank": 2,
+     "score": 0.6344,
+     "setid": "5ddba454-f3e6-43c2-a7a6-58365d297213",
+     "moiety": "VALSARTAN",
+     "loinc": "34073-7",
+     "title": "Diovan (valsartan) — Drug Interactions",
+     "label": "relevant"
+    },
+    {
+     "rank": 3,
+     "score": 0.6149,
+     "setid": "c09103d8-c094-473d-a303-bbb4f334aa8c",
+     "moiety": "TAK-491 (AZILSARTAN MEDOXOMIL (AS POTASSIUM SALT))",
+     "loinc": "34073-7",
+     "title": "Azilsartan Medoxomil (Azilsartan kamedoxomil) — Drug Interactions",
+     "label": "wrong_object"
+    },
+    {
+     "rank": 4,
+     "score": 0.6077,
+     "setid": "18f1a4fc-dfca-4dde-8a11-f7e6d9e5656d",
+     "moiety": "OLMESARTAN MEDOXOMIL",
+     "loinc": "34073-7",
+     "title": "Benicar (olmesartan medoxomil) — Drug Interactions",
+     "label": "wrong_object"
+    }
+   ],
+   "n_pool": 5,
+   "r_corpus": 6,
+   "has_relevant": true,
+   "first_relevant_rank": 2,
+   "rr": 0.3333333333333333,
+   "has_wrong_object": true,
+   "wrong_object_at_rank1": true,
+   "ndcg5": 0.1696,
+   "best_corpus_relevant": {
+    "score": 0.6344,
+    "overall_rank": 2,
+    "setid": "5ddba454-f3e6-43c2-a7a6-58365d297213",
+    "loinc": "34073-7",
+    "title": "Diovan (valsartan) — Drug Interactions",
+    "shortfall_vs_min_score": -0.0344
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.6344,
+    "overall_rank": 2,
+    "setid": "5ddba454-f3e6-43c2-a7a6-58365d297213",
+    "loinc": "34073-7",
+    "title": "Diovan (valsartan) — Drug Interactions",
+    "shortfall_vs_min_score": -0.0344
+   },
+   "corpus_top1": {
+    "score": 0.6547,
+    "moiety": "TELMISARTAN",
+    "loinc": "34073-7",
+    "title": "Micardis (TELMISARTAN) — Drug Interactions"
+   }
+  },
+  {
+   "qid": "Q097",
+   "drug_id": "VONOPRAZAN FUMARATE",
+   "key_set": [
+    "VONOPRAZAN FUMARATE"
+   ],
+   "key_used": "VONOPRAZAN FUMARATE",
+   "template": "{drug} warnings and precautions",
+   "query": "vonoprazan fumarate warnings and precautions",
+   "scope": "sampled",
+   "pool": [],
+   "n_pool": 0,
+   "r_corpus": 5,
+   "has_relevant": false,
+   "first_relevant_rank": null,
+   "rr": 0.0,
+   "has_wrong_object": false,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.0,
+   "best_corpus_relevant": {
+    "score": 0.5617,
+    "overall_rank": 0,
+    "setid": "0cc52ac5-77ec-4d66-a770-762a1a960914",
+    "loinc": "34070-3",
+    "title": "VOQUEZNA (vonoprazan fumarate) — Contraindications",
+    "shortfall_vs_min_score": 0.0383
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.5617,
+    "overall_rank": 0,
+    "setid": "0cc52ac5-77ec-4d66-a770-762a1a960914",
+    "loinc": "34070-3",
+    "title": "VOQUEZNA (vonoprazan fumarate) — Contraindications",
+    "shortfall_vs_min_score": 0.0383
+   },
+   "corpus_top1": {
+    "score": 0.5617,
+    "moiety": "VONOPRAZAN FUMARATE",
+    "loinc": "34070-3",
+    "title": "VOQUEZNA (vonoprazan fumarate) — Contraindications"
+   }
+  },
+  {
+   "qid": "Q098",
+   "drug_id": "ZIDOVUDINE",
+   "key_set": [
+    "ZIDOVUDINE"
+   ],
+   "key_used": "ZIDOVUDINE",
+   "template": "{drug} contraindications",
+   "query": "zidovudine contraindications",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.7072,
+     "setid": "6df09f15-b102-431c-adde-d7aeef6f5d84",
+     "moiety": "ZIDOVUDINE",
+     "loinc": "34070-3",
+     "title": "RETROVIR (zidovudine) — Contraindications",
+     "label": "relevant"
+    },
+    {
+     "rank": 1,
+     "score": 0.6651,
+     "setid": "6df09f15-b102-431c-adde-d7aeef6f5d84",
+     "moiety": "ZIDOVUDINE",
+     "loinc": "34073-7",
+     "title": "RETROVIR (zidovudine) — Drug Interactions",
+     "label": "relevant"
+    },
+    {
+     "rank": 2,
+     "score": 0.6347,
+     "setid": "ca73b519-015a-436d-aa3c-af53492825a1",
+     "moiety": "ABACAVIR SULFATE",
+     "loinc": "34070-3",
+     "title": "ZIAGEN (abacavir sulfate) — Contraindications",
+     "label": "wrong_object"
+    },
+    {
+     "rank": 3,
+     "score": 0.6304,
+     "setid": "6df09f15-b102-431c-adde-d7aeef6f5d84",
+     "moiety": "ZIDOVUDINE",
+     "loinc": "34066-1",
+     "title": "RETROVIR (zidovudine) — Boxed Warning",
+     "label": "relevant"
+    },
+    {
+     "rank": 4,
+     "score": 0.6073,
+     "setid": "6df09f15-b102-431c-adde-d7aeef6f5d84",
+     "moiety": "ZIDOVUDINE",
+     "loinc": "43685-7",
+     "title": "RETROVIR (zidovudine) — Warnings and Precautions",
+     "label": "relevant"
+    }
+   ],
+   "n_pool": 5,
+   "r_corpus": 6,
+   "has_relevant": true,
+   "first_relevant_rank": 0,
+   "rr": 1.0,
+   "has_wrong_object": true,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.8304,
+   "best_corpus_relevant": {
+    "score": 0.7072,
+    "overall_rank": 0,
+    "setid": "6df09f15-b102-431c-adde-d7aeef6f5d84",
+    "loinc": "34070-3",
+    "title": "RETROVIR (zidovudine) — Contraindications",
+    "shortfall_vs_min_score": -0.1072
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.7072,
+    "overall_rank": 0,
+    "setid": "6df09f15-b102-431c-adde-d7aeef6f5d84",
+    "loinc": "34070-3",
+    "title": "RETROVIR (zidovudine) — Contraindications",
+    "shortfall_vs_min_score": -0.1072
+   },
+   "corpus_top1": {
+    "score": 0.7072,
+    "moiety": "ZIDOVUDINE",
+    "loinc": "34070-3",
+    "title": "RETROVIR (zidovudine) — Contraindications"
+   }
+  },
+  {
+   "qid": "Q099",
+   "drug_id": "ZIDOVUDINE",
+   "key_set": [
+    "ZIDOVUDINE"
+   ],
+   "key_used": "ZIDOVUDINE",
+   "template": "{drug} warnings and precautions",
+   "query": "zidovudine warnings and precautions",
+   "scope": "sampled",
+   "pool": [
+    {
+     "rank": 0,
+     "score": 0.6708,
+     "setid": "6df09f15-b102-431c-adde-d7aeef6f5d84",
+     "moiety": "ZIDOVUDINE",
+     "loinc": "34066-1",
+     "title": "RETROVIR (zidovudine) — Boxed Warning",
+     "label": "relevant"
+    },
+    {
+     "rank": 1,
+     "score": 0.6609,
+     "setid": "6df09f15-b102-431c-adde-d7aeef6f5d84",
+     "moiety": "ZIDOVUDINE",
+     "loinc": "34070-3",
+     "title": "RETROVIR (zidovudine) — Contraindications",
+     "label": "relevant"
+    },
+    {
+     "rank": 2,
+     "score": 0.6472,
+     "setid": "6df09f15-b102-431c-adde-d7aeef6f5d84",
+     "moiety": "ZIDOVUDINE",
+     "loinc": "34073-7",
+     "title": "RETROVIR (zidovudine) — Drug Interactions",
+     "label": "relevant"
+    },
+    {
+     "rank": 3,
+     "score": 0.6276,
+     "setid": "6df09f15-b102-431c-adde-d7aeef6f5d84",
+     "moiety": "ZIDOVUDINE",
+     "loinc": "43685-7",
+     "title": "RETROVIR (zidovudine) — Warnings and Precautions",
+     "label": "relevant"
+    },
+    {
+     "rank": 4,
+     "score": 0.6062,
+     "setid": "ca73b519-015a-436d-aa3c-af53492825a1",
+     "moiety": "ABACAVIR SULFATE",
+     "loinc": "34070-3",
+     "title": "ZIAGEN (abacavir sulfate) — Contraindications",
+     "label": "wrong_object"
+    }
+   ],
+   "n_pool": 5,
+   "r_corpus": 6,
+   "has_relevant": true,
+   "first_relevant_rank": 0,
+   "rr": 1.0,
+   "has_wrong_object": true,
+   "wrong_object_at_rank1": false,
+   "ndcg5": 0.8688,
+   "best_corpus_relevant": {
+    "score": 0.6708,
+    "overall_rank": 0,
+    "setid": "6df09f15-b102-431c-adde-d7aeef6f5d84",
+    "loinc": "34066-1",
+    "title": "RETROVIR (zidovudine) — Boxed Warning",
+    "shortfall_vs_min_score": -0.0708
+   },
+   "best_corpus_relevant_safety": {
+    "score": 0.6708,
+    "overall_rank": 0,
+    "setid": "6df09f15-b102-431c-adde-d7aeef6f5d84",
+    "loinc": "34066-1",
+    "title": "RETROVIR (zidovudine) — Boxed Warning",
+    "shortfall_vs_min_score": -0.0708
+   },
+   "corpus_top1": {
+    "score": 0.6708,
+    "moiety": "ZIDOVUDINE",
+    "loinc": "34066-1",
+    "title": "RETROVIR (zidovudine) — Boxed Warning"
+   }
+  }
+ ],
+ "aggregate": {
+  "n_queries": 100,
+  "owned_in_pool_rate": 0.65,
+  "mrr": 0.6017,
+  "wrong_object_in_pool_rate": 0.35,
+  "wrong_object_at_rank1_rate": 0.2,
+  "empty_pool_rate": 0.24,
+  "mean_ndcg5": 0.3729
+ },
+ "smoke": {
+  "records": [
+   {
+    "qid": "SMK-WD01",
+    "key_set": [
+     "ASPIRIN",
+     "ACETYLSALICYLIC ACID"
+    ],
+    "query": "aspirin contraindications and who should not take it",
+    "scope": "smoke",
+    "pool": [],
+    "n_pool": 0,
+    "r_corpus": 7,
+    "has_relevant": false,
+    "first_relevant_rank": null,
+    "rr": 0.0,
+    "has_wrong_object": false,
+    "wrong_object_at_rank1": false,
+    "ndcg5": 0.0,
+    "best_corpus_relevant": {
+     "score": 0.4733,
+     "overall_rank": 65,
+     "setid": "c623d479-f7c9-da5d-e053-2a95a90a898a",
+     "loinc": "34067-9",
+     "title": "VAZALORE (aspirin) — Indications and Usage",
+     "shortfall_vs_min_score": 0.1267
+    },
+    "best_corpus_relevant_safety": {
+     "score": 0.4118,
+     "overall_rank": 388,
+     "setid": "4c2a1403-3862-1efd-0a91-444989222b37",
+     "loinc": "34073-7",
+     "title": "DURLAZA (Acetylsalicylic Acid) — Drug Interactions",
+     "shortfall_vs_min_score": 0.1882
+    },
+    "corpus_top1": {
+     "score": 0.5787,
+     "moiety": "ACECLOFENAC",
+     "loinc": "34070-3",
+     "title": "Clanza (Aceclofenac) — Contraindications"
+    }
+   },
+   {
+    "qid": "SMK-WD02",
+    "key_set": [
+     "IBUPROFEN",
+     "IBUPROFEN LYSINE"
+    ],
+    "query": "ibuprofen warnings and precautions",
+    "scope": "smoke",
+    "pool": [],
+    "n_pool": 0,
+    "r_corpus": 7,
+    "has_relevant": false,
+    "first_relevant_rank": null,
+    "rr": 0.0,
+    "has_wrong_object": false,
+    "wrong_object_at_rank1": false,
+    "ndcg5": 0.0,
+    "best_corpus_relevant": {
+     "score": 0.5754,
+     "overall_rank": 0,
+     "setid": "6f5ede6f-b0b7-4fc8-969e-652f60ead047",
+     "loinc": "43685-7",
+     "title": "NEOPROFEN (ibuprofen lysine) — Warnings and Precautions",
+     "shortfall_vs_min_score": 0.0246
+    },
+    "best_corpus_relevant_safety": {
+     "score": 0.5754,
+     "overall_rank": 0,
+     "setid": "6f5ede6f-b0b7-4fc8-969e-652f60ead047",
+     "loinc": "43685-7",
+     "title": "NEOPROFEN (ibuprofen lysine) — Warnings and Precautions",
+     "shortfall_vs_min_score": 0.0246
+    },
+    "corpus_top1": {
+     "score": 0.5754,
+     "moiety": "IBUPROFEN LYSINE",
+     "loinc": "43685-7",
+     "title": "NEOPROFEN (ibuprofen lysine) — Warnings and Precautions"
+    }
+   },
+   {
+    "qid": "SMK-OMEP",
+    "key_set": [
+     "OMEPRAZOLE"
+    ],
+    "query": "omeprazole contraindications and warnings",
+    "scope": "smoke",
+    "pool": [],
+    "n_pool": 0,
+    "r_corpus": 2,
+    "has_relevant": false,
+    "first_relevant_rank": null,
+    "rr": 0.0,
+    "has_wrong_object": false,
+    "wrong_object_at_rank1": false,
+    "ndcg5": 0.0,
+    "best_corpus_relevant": {
+     "score": 0.3746,
+     "overall_rank": 1430,
+     "setid": "35a79458-79f6-44d6-b74c-b4f4aaf0dde0",
+     "loinc": "34068-7",
+     "title": "Prilosec OTC (OMEPRAZOLE MAGNESIUM) — Dosage and Administration",
+     "shortfall_vs_min_score": 0.2254
+    },
+    "best_corpus_relevant_safety": null,
+    "corpus_top1": {
+     "score": 0.5874,
+     "moiety": "ESOMEPRAZOLE SODIUM",
+     "loinc": "34070-3",
+     "title": "Esomeprazole Sodium (Esomeprazole Sodium) — Contraindications"
+    }
+   },
+   {
+    "qid": "SMK-WD03",
+    "query": "spironolactone potassium hyperkalemia contraindication",
+    "key_set": [
+     "SPIRONOLACTONE"
+    ],
+    "scope": "out_of_scope",
+    "out_of_scope_reason": "pair/interaction fixture — unclassified by design (owner_assertion decision (b)-i); excluded from every rate",
+    "pool": null,
+    "note": "not run against rates"
+   }
+  ],
+  "wd01_gate": {
+   "raw_pool_empty_as_recorded_0_of_4608": true,
+   "corpus_top1_is_aceclofenac_contraindications_below_floor": true,
+   "corpus_top1_score": 0.5787,
+   "owned_safety_doc": "DURLAZA (Acetylsalicylic Acid) — Drug Interactions",
+   "owned_safety_score": 0.4118,
+   "owned_safety_score_in_band_0.35_0.45": true,
+   "best_any_section_owned_score": 0.4733
+  }
+ },
+ "self_refutation": {
+  "relevant_samples": [
+   {
+    "qid": "Q000",
+    "query": "acamprosate calcium drug interactions",
+    "moiety": "ACAMPROSATE CALCIUM",
+    "title": "Campral (acamprosate calcium) — Contraindications"
+   },
+   {
+    "qid": "Q000",
+    "query": "acamprosate calcium drug interactions",
+    "moiety": "ACAMPROSATE CALCIUM",
+    "title": "Campral (acamprosate calcium) — Drug Interactions"
+   },
+   {
+    "qid": "Q001",
+    "query": "acetylcysteine drug interactions",
+    "moiety": "ACETYLCYSTEINE",
+    "title": "ACETADOTE (Acetylcysteine) — Contraindications"
+   },
+   {
+    "qid": "Q002",
+    "query": "adagrasib warnings and precautions",
+    "moiety": "ADAGRASIB",
+    "title": "KRAZATI (adagrasib) — Drug Interactions"
+   },
+   {
+    "qid": "Q003",
+    "query": "amantadine hcl drug interactions",
+    "moiety": "AMANTADINE HCL",
+    "title": "Amantadine HCl (AMANTADINE HYDROCHLORIDE) — Drug Interactions"
+   }
+  ],
+  "wrong_object_samples": [
+   {
+    "qid": "Q002",
+    "query": "adagrasib warnings and precautions",
+    "moiety": "TIROFIBAN HYDROCHLORIDE MONOHYDRATE",
+    "title": "AGGRASTAT (TIROFIBAN) — Warnings and Precautions"
+   },
+   {
+    "qid": "Q005",
+    "query": "amoxicillin drug interactions",
+    "moiety": "AMPICILLIN",
+    "title": "Ampicillin (Ampicillin) — Drug Interactions"
+   },
+   {
+    "qid": "Q005",
+    "query": "amoxicillin drug interactions",
+    "moiety": "ETODOLAC",
+    "title": "Etodolac (Etodolac) — Drug Interactions"
+   },
+   {
+    "qid": "Q005",
+    "query": "amoxicillin drug interactions",
+    "moiety": "DICLOXACILLIN",
+    "title": "Dicloxacillin Sodium (Dicloxacillin Sodium) — Drug Interactions"
+   },
+   {
+    "qid": "Q008",
+    "query": "atropine sulfate drug interactions",
+    "moiety": "PRALIDOXIME CHLORIDE",
+    "title": "Protopam Chloride (pralidoxime chloride) — Drug Interactions"
+   }
+  ],
+  "empty_key_set_queries": [],
+  "moiety_contains_key_but_wrong_object": [
+   {
+    "qid": "Q008",
+    "key_used": "ATROPINE SULFATE",
+    "moiety": "ATROPINE SULFATE MONOHYDRATE",
+    "title": "Atropine Sulfate (Atropine Sulfate Monohydrate) — Drug Interactions",
+    "note": "expected salt/combination case — listed, NOT relabeled"
+   },
+   {
+    "qid": "Q041",
+    "key_used": "IRON",
+    "moiety": "IRON DEXTRAN",
+    "title": "INFeD (Iron Dextran) — Contraindications",
+    "note": "expected salt/combination case — listed, NOT relabeled"
+   },
+   {
+    "qid": "Q086",
+    "key_used": "TESTOSTERONE",
+    "moiety": "METHYLTESTOSTERONE",
+    "title": "MethylTESTOSTERone (METHYLTESTOSTERONE) — Drug Interactions",
+    "note": "expected salt/combination case — listed, NOT relabeled"
+   },
+   {
+    "qid": "Q086",
+    "key_used": "TESTOSTERONE",
+    "moiety": "TESTOSTERONE PROPIONATE",
+    "title": "Androgel (testosterone) — Drug Interactions",
+    "note": "expected salt/combination case — listed, NOT relabeled"
+   },
+   {
+    "qid": "Q086",
+    "key_used": "TESTOSTERONE",
+    "moiety": "TESTOSTERONE UNDECANOATE",
+    "title": "Aveed (testosterone undecanoate) — Drug Interactions",
+    "note": "expected salt/combination case — listed, NOT relabeled"
+   },
+   {
+    "qid": "Q091",
+    "key_used": "TOLMETIN SODIUM",
+    "moiety": "TOLMETIN SODIUM DIHYDRATE",
+    "title": "Tolmetin Sodium (Tolmetin Sodium) — Contraindications",
+    "note": "expected salt/combination case — listed, NOT relabeled"
+   }
+  ]
+ }
+}

@@ -1,0 +1,1127 @@
+{
+ "seed": 20260820,
+ "sample_n_pairs": 100,
+ "templates": [
+  "{drug} contraindications",
+  "{drug} warnings and precautions",
+  "{drug} drug interactions"
+ ],
+ "alias_groups": [
+  [
+   "ACETYLSALICYLIC ACID",
+   "ASPIRIN"
+  ]
+ ],
+ "corpus_docs": 4608,
+ "distinct_moieties": 1038,
+ "eligible_drugs": 910,
+ "multi_key_sets": [
+  [
+   "ACETYLSALICYLIC ACID",
+   "ASPIRIN"
+  ]
+ ],
+ "n_queries": 100,
+ "queries": [
+  {
+   "qid": "Q000",
+   "drug_id": "ACAMPROSATE CALCIUM",
+   "key_set": [
+    "ACAMPROSATE CALCIUM"
+   ],
+   "key_used": "ACAMPROSATE CALCIUM",
+   "template": "{drug} drug interactions",
+   "query": "acamprosate calcium drug interactions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q001",
+   "drug_id": "ACETYLCYSTEINE",
+   "key_set": [
+    "ACETYLCYSTEINE"
+   ],
+   "key_used": "ACETYLCYSTEINE",
+   "template": "{drug} drug interactions",
+   "query": "acetylcysteine drug interactions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q002",
+   "drug_id": "ADAGRASIB",
+   "key_set": [
+    "ADAGRASIB"
+   ],
+   "key_used": "ADAGRASIB",
+   "template": "{drug} warnings and precautions",
+   "query": "adagrasib warnings and precautions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q003",
+   "drug_id": "AMANTADINE HCL",
+   "key_set": [
+    "AMANTADINE HCL"
+   ],
+   "key_used": "AMANTADINE HCL",
+   "template": "{drug} drug interactions",
+   "query": "amantadine hcl drug interactions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q004",
+   "drug_id": "AMISULPRIDE",
+   "key_set": [
+    "AMISULPRIDE"
+   ],
+   "key_used": "AMISULPRIDE",
+   "template": "{drug} warnings and precautions",
+   "query": "amisulpride warnings and precautions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q005",
+   "drug_id": "AMOXICILLIN",
+   "key_set": [
+    "AMOXICILLIN"
+   ],
+   "key_used": "AMOXICILLIN",
+   "template": "{drug} drug interactions",
+   "query": "amoxicillin drug interactions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q006",
+   "drug_id": "ANTHRALIN",
+   "key_set": [
+    "ANTHRALIN"
+   ],
+   "key_used": "ANTHRALIN",
+   "template": "{drug} contraindications",
+   "query": "anthralin contraindications",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q007",
+   "drug_id": "ATOMOXETINE HYDROCHLORIDE",
+   "key_set": [
+    "ATOMOXETINE HYDROCHLORIDE"
+   ],
+   "key_used": "ATOMOXETINE HYDROCHLORIDE",
+   "template": "{drug} warnings and precautions",
+   "query": "atomoxetine hydrochloride warnings and precautions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q008",
+   "drug_id": "ATROPINE SULFATE",
+   "key_set": [
+    "ATROPINE SULFATE"
+   ],
+   "key_used": "ATROPINE SULFATE",
+   "template": "{drug} drug interactions",
+   "query": "atropine sulfate drug interactions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q009",
+   "drug_id": "ATROPINE SULFATE MONOHYDRATE",
+   "key_set": [
+    "ATROPINE SULFATE MONOHYDRATE"
+   ],
+   "key_used": "ATROPINE SULFATE MONOHYDRATE",
+   "template": "{drug} drug interactions",
+   "query": "atropine sulfate monohydrate drug interactions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q010",
+   "drug_id": "AXITINIB",
+   "key_set": [
+    "AXITINIB"
+   ],
+   "key_used": "AXITINIB",
+   "template": "{drug} contraindications",
+   "query": "axitinib contraindications",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q011",
+   "drug_id": "AZACITIDINE",
+   "key_set": [
+    "AZACITIDINE"
+   ],
+   "key_used": "AZACITIDINE",
+   "template": "{drug} drug interactions",
+   "query": "azacitidine drug interactions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q012",
+   "drug_id": "BALSALAZIDE DISODIUM DIHYDRATE",
+   "key_set": [
+    "BALSALAZIDE DISODIUM DIHYDRATE"
+   ],
+   "key_used": "BALSALAZIDE DISODIUM DIHYDRATE",
+   "template": "{drug} drug interactions",
+   "query": "balsalazide disodium dihydrate drug interactions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q013",
+   "drug_id": "BINIMETINIB",
+   "key_set": [
+    "BINIMETINIB"
+   ],
+   "key_used": "BINIMETINIB",
+   "template": "{drug} drug interactions",
+   "query": "binimetinib drug interactions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q014",
+   "drug_id": "BORTEZOMIB",
+   "key_set": [
+    "BORTEZOMIB"
+   ],
+   "key_used": "BORTEZOMIB",
+   "template": "{drug} drug interactions",
+   "query": "bortezomib drug interactions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q015",
+   "drug_id": "BORTEZOMIB",
+   "key_set": [
+    "BORTEZOMIB"
+   ],
+   "key_used": "BORTEZOMIB",
+   "template": "{drug} warnings and precautions",
+   "query": "bortezomib warnings and precautions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q016",
+   "drug_id": "BUSPIRONE HCL",
+   "key_set": [
+    "BUSPIRONE HCL"
+   ],
+   "key_used": "BUSPIRONE HCL",
+   "template": "{drug} drug interactions",
+   "query": "buspirone hcl drug interactions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q017",
+   "drug_id": "CASPOFUNGIN",
+   "key_set": [
+    "CASPOFUNGIN"
+   ],
+   "key_used": "CASPOFUNGIN",
+   "template": "{drug} drug interactions",
+   "query": "caspofungin drug interactions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q018",
+   "drug_id": "CEFTRIAXONE SODIUM",
+   "key_set": [
+    "CEFTRIAXONE SODIUM"
+   ],
+   "key_used": "CEFTRIAXONE SODIUM",
+   "template": "{drug} drug interactions",
+   "query": "ceftriaxone sodium drug interactions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q019",
+   "drug_id": "CLOPIDOGREL BISULFATE",
+   "key_set": [
+    "CLOPIDOGREL BISULFATE"
+   ],
+   "key_used": "CLOPIDOGREL BISULFATE",
+   "template": "{drug} warnings and precautions",
+   "query": "clopidogrel bisulfate warnings and precautions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q020",
+   "drug_id": "CRISABOROLE",
+   "key_set": [
+    "CRISABOROLE"
+   ],
+   "key_used": "CRISABOROLE",
+   "template": "{drug} warnings and precautions",
+   "query": "crisaborole warnings and precautions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q021",
+   "drug_id": "DICLOXACILLIN",
+   "key_set": [
+    "DICLOXACILLIN"
+   ],
+   "key_used": "DICLOXACILLIN",
+   "template": "{drug} drug interactions",
+   "query": "dicloxacillin drug interactions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q022",
+   "drug_id": "DIPYRIDAMOLE",
+   "key_set": [
+    "DIPYRIDAMOLE"
+   ],
+   "key_used": "DIPYRIDAMOLE",
+   "template": "{drug} contraindications",
+   "query": "dipyridamole contraindications",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q023",
+   "drug_id": "DOBUTAMINE HCL",
+   "key_set": [
+    "DOBUTAMINE HCL"
+   ],
+   "key_used": "DOBUTAMINE HCL",
+   "template": "{drug} drug interactions",
+   "query": "dobutamine hcl drug interactions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q024",
+   "drug_id": "DROPERIDOL",
+   "key_set": [
+    "DROPERIDOL"
+   ],
+   "key_used": "DROPERIDOL",
+   "template": "{drug} contraindications",
+   "query": "droperidol contraindications",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q025",
+   "drug_id": "ENCORAFENIB",
+   "key_set": [
+    "ENCORAFENIB"
+   ],
+   "key_used": "ENCORAFENIB",
+   "template": "{drug} contraindications",
+   "query": "encorafenib contraindications",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q026",
+   "drug_id": "FENFLURAMINE HCL",
+   "key_set": [
+    "FENFLURAMINE HCL"
+   ],
+   "key_used": "FENFLURAMINE HCL",
+   "template": "{drug} contraindications",
+   "query": "fenfluramine hcl contraindications",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q027",
+   "drug_id": "FINGOLIMOD HCL",
+   "key_set": [
+    "FINGOLIMOD HCL"
+   ],
+   "key_used": "FINGOLIMOD HCL",
+   "template": "{drug} warnings and precautions",
+   "query": "fingolimod hcl warnings and precautions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q028",
+   "drug_id": "FLUDROCORTISONE ACETATE",
+   "key_set": [
+    "FLUDROCORTISONE ACETATE"
+   ],
+   "key_used": "FLUDROCORTISONE ACETATE",
+   "template": "{drug} contraindications",
+   "query": "fludrocortisone acetate contraindications",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q029",
+   "drug_id": "FLUTEMETAMOL",
+   "key_set": [
+    "FLUTEMETAMOL"
+   ],
+   "key_used": "FLUTEMETAMOL",
+   "template": "{drug} contraindications",
+   "query": "flutemetamol contraindications",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q030",
+   "drug_id": "GALLIUM CITRATE",
+   "key_set": [
+    "GALLIUM CITRATE"
+   ],
+   "key_used": "GALLIUM CITRATE",
+   "template": "{drug} warnings and precautions",
+   "query": "gallium citrate warnings and precautions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q031",
+   "drug_id": "GEMCITABINE HYDROCHLORIDE",
+   "key_set": [
+    "GEMCITABINE HYDROCHLORIDE"
+   ],
+   "key_used": "GEMCITABINE HYDROCHLORIDE",
+   "template": "{drug} contraindications",
+   "query": "gemcitabine hydrochloride contraindications",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q032",
+   "drug_id": "GENTAMICIN",
+   "key_set": [
+    "GENTAMICIN"
+   ],
+   "key_used": "GENTAMICIN",
+   "template": "{drug} warnings and precautions",
+   "query": "gentamicin warnings and precautions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q033",
+   "drug_id": "GLATIRAMER ACETATE",
+   "key_set": [
+    "GLATIRAMER ACETATE"
+   ],
+   "key_used": "GLATIRAMER ACETATE",
+   "template": "{drug} contraindications",
+   "query": "glatiramer acetate contraindications",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q034",
+   "drug_id": "GLATIRAMER ACETATE",
+   "key_set": [
+    "GLATIRAMER ACETATE"
+   ],
+   "key_used": "GLATIRAMER ACETATE",
+   "template": "{drug} drug interactions",
+   "query": "glatiramer acetate drug interactions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q035",
+   "drug_id": "GRANISETRON HYDROCHLORIDE",
+   "key_set": [
+    "GRANISETRON HYDROCHLORIDE"
+   ],
+   "key_used": "GRANISETRON HYDROCHLORIDE",
+   "template": "{drug} warnings and precautions",
+   "query": "granisetron hydrochloride warnings and precautions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q036",
+   "drug_id": "HYDROXOCOBALAMIN",
+   "key_set": [
+    "HYDROXOCOBALAMIN"
+   ],
+   "key_used": "HYDROXOCOBALAMIN",
+   "template": "{drug} warnings and precautions",
+   "query": "hydroxocobalamin warnings and precautions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q037",
+   "drug_id": "HYDROXYPROGESTERONE CAPROATE",
+   "key_set": [
+    "HYDROXYPROGESTERONE CAPROATE"
+   ],
+   "key_used": "HYDROXYPROGESTERONE CAPROATE",
+   "template": "{drug} contraindications",
+   "query": "hydroxyprogesterone caproate contraindications",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q038",
+   "drug_id": "IBRUTINIB",
+   "key_set": [
+    "IBRUTINIB"
+   ],
+   "key_used": "IBRUTINIB",
+   "template": "{drug} contraindications",
+   "query": "ibrutinib contraindications",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q039",
+   "drug_id": "IMIPRAMINE HCL",
+   "key_set": [
+    "IMIPRAMINE HCL"
+   ],
+   "key_used": "IMIPRAMINE HCL",
+   "template": "{drug} contraindications",
+   "query": "imipramine hcl contraindications",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q040",
+   "drug_id": "IOPAMIDOL",
+   "key_set": [
+    "IOPAMIDOL"
+   ],
+   "key_used": "IOPAMIDOL",
+   "template": "{drug} warnings and precautions",
+   "query": "iopamidol warnings and precautions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q041",
+   "drug_id": "IRON",
+   "key_set": [
+    "IRON"
+   ],
+   "key_used": "IRON",
+   "template": "{drug} contraindications",
+   "query": "iron contraindications",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q042",
+   "drug_id": "KETAMINE",
+   "key_set": [
+    "KETAMINE"
+   ],
+   "key_used": "KETAMINE",
+   "template": "{drug} drug interactions",
+   "query": "ketamine drug interactions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q043",
+   "drug_id": "LOXAPINE SUCCINATE",
+   "key_set": [
+    "LOXAPINE SUCCINATE"
+   ],
+   "key_used": "LOXAPINE SUCCINATE",
+   "template": "{drug} warnings and precautions",
+   "query": "loxapine succinate warnings and precautions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q044",
+   "drug_id": "MEMANTINE HYDROCHLORIDE",
+   "key_set": [
+    "MEMANTINE HYDROCHLORIDE"
+   ],
+   "key_used": "MEMANTINE HYDROCHLORIDE",
+   "template": "{drug} drug interactions",
+   "query": "memantine hydrochloride drug interactions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q045",
+   "drug_id": "MEROPENEM TRIHYDRATE",
+   "key_set": [
+    "MEROPENEM TRIHYDRATE"
+   ],
+   "key_used": "MEROPENEM TRIHYDRATE",
+   "template": "{drug} warnings and precautions",
+   "query": "meropenem trihydrate warnings and precautions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q046",
+   "drug_id": "METOLAZONE",
+   "key_set": [
+    "METOLAZONE"
+   ],
+   "key_used": "METOLAZONE",
+   "template": "{drug} contraindications",
+   "query": "metolazone contraindications",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q047",
+   "drug_id": "MIDODRINE HYDROCHLORIDE",
+   "key_set": [
+    "MIDODRINE HYDROCHLORIDE"
+   ],
+   "key_used": "MIDODRINE HYDROCHLORIDE",
+   "template": "{drug} drug interactions",
+   "query": "midodrine hydrochloride drug interactions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q048",
+   "drug_id": "MIFEPRISTONE",
+   "key_set": [
+    "MIFEPRISTONE"
+   ],
+   "key_used": "MIFEPRISTONE",
+   "template": "{drug} contraindications",
+   "query": "mifepristone contraindications",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q049",
+   "drug_id": "MILNACIPRAN HYDROCHLORIDE",
+   "key_set": [
+    "MILNACIPRAN HYDROCHLORIDE"
+   ],
+   "key_used": "MILNACIPRAN HYDROCHLORIDE",
+   "template": "{drug} warnings and precautions",
+   "query": "milnacipran hydrochloride warnings and precautions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q050",
+   "drug_id": "MIRABEGRON",
+   "key_set": [
+    "MIRABEGRON"
+   ],
+   "key_used": "MIRABEGRON",
+   "template": "{drug} drug interactions",
+   "query": "mirabegron drug interactions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q051",
+   "drug_id": "NATAMYCIN",
+   "key_set": [
+    "NATAMYCIN"
+   ],
+   "key_used": "NATAMYCIN",
+   "template": "{drug} warnings and precautions",
+   "query": "natamycin warnings and precautions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q052",
+   "drug_id": "NEOMYCIN",
+   "key_set": [
+    "NEOMYCIN"
+   ],
+   "key_used": "NEOMYCIN",
+   "template": "{drug} contraindications",
+   "query": "neomycin contraindications",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q053",
+   "drug_id": "NEOMYCIN",
+   "key_set": [
+    "NEOMYCIN"
+   ],
+   "key_used": "NEOMYCIN",
+   "template": "{drug} warnings and precautions",
+   "query": "neomycin warnings and precautions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q054",
+   "drug_id": "NEPAFENAC",
+   "key_set": [
+    "NEPAFENAC"
+   ],
+   "key_used": "NEPAFENAC",
+   "template": "{drug} contraindications",
+   "query": "nepafenac contraindications",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q055",
+   "drug_id": "NEPAFENAC",
+   "key_set": [
+    "NEPAFENAC"
+   ],
+   "key_used": "NEPAFENAC",
+   "template": "{drug} warnings and precautions",
+   "query": "nepafenac warnings and precautions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q056",
+   "drug_id": "NIRAPARIB TOSYLATE MONOHYDRATE",
+   "key_set": [
+    "NIRAPARIB TOSYLATE MONOHYDRATE"
+   ],
+   "key_used": "NIRAPARIB TOSYLATE MONOHYDRATE",
+   "template": "{drug} drug interactions",
+   "query": "niraparib tosylate monohydrate drug interactions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q057",
+   "drug_id": "NITROFURANTOIN",
+   "key_set": [
+    "NITROFURANTOIN"
+   ],
+   "key_used": "NITROFURANTOIN",
+   "template": "{drug} drug interactions",
+   "query": "nitrofurantoin drug interactions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q058",
+   "drug_id": "OCTREOTIDE",
+   "key_set": [
+    "OCTREOTIDE"
+   ],
+   "key_used": "OCTREOTIDE",
+   "template": "{drug} contraindications",
+   "query": "octreotide contraindications",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q059",
+   "drug_id": "OXYBUTYNIN CHLORIDE",
+   "key_set": [
+    "OXYBUTYNIN CHLORIDE"
+   ],
+   "key_used": "OXYBUTYNIN CHLORIDE",
+   "template": "{drug} warnings and precautions",
+   "query": "oxybutynin chloride warnings and precautions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q060",
+   "drug_id": "PENICILLIN G BENZATHINE",
+   "key_set": [
+    "PENICILLIN G BENZATHINE"
+   ],
+   "key_used": "PENICILLIN G BENZATHINE",
+   "template": "{drug} contraindications",
+   "query": "penicillin g benzathine contraindications",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q061",
+   "drug_id": "PHENAZOPYRIDINE HCL",
+   "key_set": [
+    "PHENAZOPYRIDINE HCL"
+   ],
+   "key_used": "PHENAZOPYRIDINE HCL",
+   "template": "{drug} warnings and precautions",
+   "query": "phenazopyridine hcl warnings and precautions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q062",
+   "drug_id": "PIOGLITAZONE HYDROCHLORIDE",
+   "key_set": [
+    "PIOGLITAZONE HYDROCHLORIDE"
+   ],
+   "key_used": "PIOGLITAZONE HYDROCHLORIDE",
+   "template": "{drug} warnings and precautions",
+   "query": "pioglitazone hydrochloride warnings and precautions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q063",
+   "drug_id": "POTASSIUM ACETATE",
+   "key_set": [
+    "POTASSIUM ACETATE"
+   ],
+   "key_used": "POTASSIUM ACETATE",
+   "template": "{drug} warnings and precautions",
+   "query": "potassium acetate warnings and precautions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q064",
+   "drug_id": "PRAZIQUANTEL",
+   "key_set": [
+    "PRAZIQUANTEL"
+   ],
+   "key_used": "PRAZIQUANTEL",
+   "template": "{drug} drug interactions",
+   "query": "praziquantel drug interactions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q065",
+   "drug_id": "PROBENECID",
+   "key_set": [
+    "PROBENECID"
+   ],
+   "key_used": "PROBENECID",
+   "template": "{drug} warnings and precautions",
+   "query": "probenecid warnings and precautions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q066",
+   "drug_id": "PROMETHAZINE HCL",
+   "key_set": [
+    "PROMETHAZINE HCL"
+   ],
+   "key_used": "PROMETHAZINE HCL",
+   "template": "{drug} warnings and precautions",
+   "query": "promethazine hcl warnings and precautions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q067",
+   "drug_id": "QUETIAPINE FUMARATE",
+   "key_set": [
+    "QUETIAPINE FUMARATE"
+   ],
+   "key_used": "QUETIAPINE FUMARATE",
+   "template": "{drug} contraindications",
+   "query": "quetiapine fumarate contraindications",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q068",
+   "drug_id": "REGORAFENIB",
+   "key_set": [
+    "REGORAFENIB"
+   ],
+   "key_used": "REGORAFENIB",
+   "template": "{drug} contraindications",
+   "query": "regorafenib contraindications",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q069",
+   "drug_id": "REGORAFENIB",
+   "key_set": [
+    "REGORAFENIB"
+   ],
+   "key_used": "REGORAFENIB",
+   "template": "{drug} drug interactions",
+   "query": "regorafenib drug interactions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q070",
+   "drug_id": "REMIFENTANIL",
+   "key_set": [
+    "REMIFENTANIL"
+   ],
+   "key_used": "REMIFENTANIL",
+   "template": "{drug} contraindications",
+   "query": "remifentanil contraindications",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q071",
+   "drug_id": "REMIMAZOLAM BESYLATE",
+   "key_set": [
+    "REMIMAZOLAM BESYLATE"
+   ],
+   "key_used": "REMIMAZOLAM BESYLATE",
+   "template": "{drug} drug interactions",
+   "query": "remimazolam besylate drug interactions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q072",
+   "drug_id": "RIBAVIRIN",
+   "key_set": [
+    "RIBAVIRIN"
+   ],
+   "key_used": "RIBAVIRIN",
+   "template": "{drug} warnings and precautions",
+   "query": "ribavirin warnings and precautions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q073",
+   "drug_id": "ROPINIROLE HYDROCHLORIDE",
+   "key_set": [
+    "ROPINIROLE HYDROCHLORIDE"
+   ],
+   "key_used": "ROPINIROLE HYDROCHLORIDE",
+   "template": "{drug} contraindications",
+   "query": "ropinirole hydrochloride contraindications",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q074",
+   "drug_id": "SAXAGLIPTIN",
+   "key_set": [
+    "SAXAGLIPTIN"
+   ],
+   "key_used": "SAXAGLIPTIN",
+   "template": "{drug} warnings and precautions",
+   "query": "saxagliptin warnings and precautions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q075",
+   "drug_id": "SELENIUM SULFIDE",
+   "key_set": [
+    "SELENIUM SULFIDE"
+   ],
+   "key_used": "SELENIUM SULFIDE",
+   "template": "{drug} warnings and precautions",
+   "query": "selenium sulfide warnings and precautions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q076",
+   "drug_id": "SELPERCATINIB",
+   "key_set": [
+    "SELPERCATINIB"
+   ],
+   "key_used": "SELPERCATINIB",
+   "template": "{drug} warnings and precautions",
+   "query": "selpercatinib warnings and precautions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q077",
+   "drug_id": "SEVOFLURANE",
+   "key_set": [
+    "SEVOFLURANE"
+   ],
+   "key_used": "SEVOFLURANE",
+   "template": "{drug} contraindications",
+   "query": "sevoflurane contraindications",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q078",
+   "drug_id": "SODIUM BICARBONATE",
+   "key_set": [
+    "SODIUM BICARBONATE"
+   ],
+   "key_used": "SODIUM BICARBONATE",
+   "template": "{drug} drug interactions",
+   "query": "sodium bicarbonate drug interactions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q079",
+   "drug_id": "STERILE WATER FOR INJECTION",
+   "key_set": [
+    "STERILE WATER FOR INJECTION"
+   ],
+   "key_used": "STERILE WATER FOR INJECTION",
+   "template": "{drug} contraindications",
+   "query": "sterile water for injection contraindications",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q080",
+   "drug_id": "SULINDAC",
+   "key_set": [
+    "SULINDAC"
+   ],
+   "key_used": "SULINDAC",
+   "template": "{drug} contraindications",
+   "query": "sulindac contraindications",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q081",
+   "drug_id": "SUMATRIPTAN SUCCINATE",
+   "key_set": [
+    "SUMATRIPTAN SUCCINATE"
+   ],
+   "key_used": "SUMATRIPTAN SUCCINATE",
+   "template": "{drug} drug interactions",
+   "query": "sumatriptan succinate drug interactions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q082",
+   "drug_id": "SUNITINIB MALATE",
+   "key_set": [
+    "SUNITINIB MALATE"
+   ],
+   "key_used": "SUNITINIB MALATE",
+   "template": "{drug} warnings and precautions",
+   "query": "sunitinib malate warnings and precautions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q083",
+   "drug_id": "TAK-491 (AZILSARTAN MEDOXOMIL (AS POTASSIUM SALT))",
+   "key_set": [
+    "TAK-491 (AZILSARTAN MEDOXOMIL (AS POTASSIUM SALT))"
+   ],
+   "key_used": "TAK-491 (AZILSARTAN MEDOXOMIL (AS POTASSIUM SALT))",
+   "template": "{drug} contraindications",
+   "query": "tak-491 (azilsartan medoxomil (as potassium salt)) contraindications",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q084",
+   "drug_id": "TAMSULOSIN HYDROCHLORIDE",
+   "key_set": [
+    "TAMSULOSIN HYDROCHLORIDE"
+   ],
+   "key_used": "TAMSULOSIN HYDROCHLORIDE",
+   "template": "{drug} drug interactions",
+   "query": "tamsulosin hydrochloride drug interactions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q085",
+   "drug_id": "TESTOSTERONE",
+   "key_set": [
+    "TESTOSTERONE"
+   ],
+   "key_used": "TESTOSTERONE",
+   "template": "{drug} contraindications",
+   "query": "testosterone contraindications",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q086",
+   "drug_id": "TESTOSTERONE",
+   "key_set": [
+    "TESTOSTERONE"
+   ],
+   "key_used": "TESTOSTERONE",
+   "template": "{drug} drug interactions",
+   "query": "testosterone drug interactions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q087",
+   "drug_id": "TETROFOSMIN",
+   "key_set": [
+    "TETROFOSMIN"
+   ],
+   "key_used": "TETROFOSMIN",
+   "template": "{drug} contraindications",
+   "query": "tetrofosmin contraindications",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q088",
+   "drug_id": "THALIDOMIDE",
+   "key_set": [
+    "THALIDOMIDE"
+   ],
+   "key_used": "THALIDOMIDE",
+   "template": "{drug} contraindications",
+   "query": "thalidomide contraindications",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q089",
+   "drug_id": "TIRZEPATIDE",
+   "key_set": [
+    "TIRZEPATIDE"
+   ],
+   "key_used": "TIRZEPATIDE",
+   "template": "{drug} drug interactions",
+   "query": "tirzepatide drug interactions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q090",
+   "drug_id": "TIZANIDINE",
+   "key_set": [
+    "TIZANIDINE"
+   ],
+   "key_used": "TIZANIDINE",
+   "template": "{drug} contraindications",
+   "query": "tizanidine contraindications",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q091",
+   "drug_id": "TOLMETIN SODIUM",
+   "key_set": [
+    "TOLMETIN SODIUM"
+   ],
+   "key_used": "TOLMETIN SODIUM",
+   "template": "{drug} drug interactions",
+   "query": "tolmetin sodium drug interactions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q092",
+   "drug_id": "TRANEXAMIC ACID",
+   "key_set": [
+    "TRANEXAMIC ACID"
+   ],
+   "key_used": "TRANEXAMIC ACID",
+   "template": "{drug} warnings and precautions",
+   "query": "tranexamic acid warnings and precautions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q093",
+   "drug_id": "TRIMETHOPRIM",
+   "key_set": [
+    "TRIMETHOPRIM"
+   ],
+   "key_used": "TRIMETHOPRIM",
+   "template": "{drug} warnings and precautions",
+   "query": "trimethoprim warnings and precautions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q094",
+   "drug_id": "UPADACITINIB HEMIHYDRATE",
+   "key_set": [
+    "UPADACITINIB HEMIHYDRATE"
+   ],
+   "key_used": "UPADACITINIB HEMIHYDRATE",
+   "template": "{drug} warnings and precautions",
+   "query": "upadacitinib hemihydrate warnings and precautions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q095",
+   "drug_id": "URSODIOL",
+   "key_set": [
+    "URSODIOL"
+   ],
+   "key_used": "URSODIOL",
+   "template": "{drug} drug interactions",
+   "query": "ursodiol drug interactions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q096",
+   "drug_id": "VALSARTAN",
+   "key_set": [
+    "VALSARTAN"
+   ],
+   "key_used": "VALSARTAN",
+   "template": "{drug} drug interactions",
+   "query": "valsartan drug interactions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q097",
+   "drug_id": "VONOPRAZAN FUMARATE",
+   "key_set": [
+    "VONOPRAZAN FUMARATE"
+   ],
+   "key_used": "VONOPRAZAN FUMARATE",
+   "template": "{drug} warnings and precautions",
+   "query": "vonoprazan fumarate warnings and precautions",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q098",
+   "drug_id": "ZIDOVUDINE",
+   "key_set": [
+    "ZIDOVUDINE"
+   ],
+   "key_used": "ZIDOVUDINE",
+   "template": "{drug} contraindications",
+   "query": "zidovudine contraindications",
+   "scope": "sampled"
+  },
+  {
+   "qid": "Q099",
+   "drug_id": "ZIDOVUDINE",
+   "key_set": [
+    "ZIDOVUDINE"
+   ],
+   "key_used": "ZIDOVUDINE",
+   "template": "{drug} warnings and precautions",
+   "query": "zidovudine warnings and precautions",
+   "scope": "sampled"
+  }
+ ]
+}
