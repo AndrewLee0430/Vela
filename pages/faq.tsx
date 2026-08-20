@@ -33,7 +33,7 @@ function Accordion({ item, isOpen, onToggle }: { item: FAQItem; isOpen: boolean;
         <div className="border-b border-text/7">
             <button
                 onClick={onToggle}
-                className="w-full flex items-center justify-between gap-4 py-5 text-left cursor-pointer transition-colors hover:text-white"
+                className="w-full flex items-center justify-between gap-4 py-5 text-left cursor-pointer transition-colors"
                 style={{ color: isOpen ? 'rgb(var(--color-text))' : 'rgb(var(--color-text) / 0.85)' }}
             >
                 <span className="text-sm sm:text-base font-medium">{item.q}</span>
@@ -90,7 +90,10 @@ export default function FAQ() {
 
                 {/* Header */}
                 <div className="container mx-auto px-4 pt-16 pb-8 max-w-3xl text-center">
-                    <h1 className="text-3xl sm:text-4xl font-bold text-white mb-3">
+                    {/* Headings use the text TOKEN, never text-white: this page is theme-aware
+                        (bg-app-bg) and light is the DEFAULT theme — hardcoded white was the
+                        founder-observed fly-238 light-scheme illegibility (dark-era fef4436). */}
+                    <h1 className="text-3xl sm:text-4xl font-bold text-text mb-3">
                         {ui.faqTitle}
                     </h1>
                     <p className="text-base text-text/50">
@@ -102,7 +105,7 @@ export default function FAQ() {
                 <div className="container mx-auto px-4 pb-16 max-w-3xl">
                     {sections.map((section: FAQSection, si: number) => (
                         <div key={si} className={si > 0 ? 'mt-10' : ''}>
-                            <h2 className="text-lg font-semibold text-white mb-2">{section.title}</h2>
+                            <h2 className="text-lg font-semibold text-text mb-2">{section.title}</h2>
                             <div>
                                 {section.items.map((item, qi) => {
                                     const id = `${si}-${qi}`;
@@ -130,10 +133,10 @@ export default function FAQ() {
                 <div className="flex flex-col items-center gap-2 px-4 md:px-10 py-6 text-sm border-t border-t-text/7 text-text/30">
                     <div>{ui.faqCopyright.replace('{year}', String(new Date().getFullYear()))}</div>
                     <div className="flex flex-wrap justify-center gap-4 text-xs">
-                        <Link href="/terms" className="hover:text-white transition-colors">{ui.termsOfService}</Link>
-                        <Link href="/privacy" className="hover:text-white transition-colors">{ui.privacyPolicy}</Link>
-                        <Link href="/refund" className="hover:text-white transition-colors">{ui.refundPolicy}</Link>
-                        <a href="mailto:support@an-tho.com" className="hover:text-white transition-colors">support@an-tho.com</a>
+                        <Link href="/terms" className="hover:text-text transition-colors">{ui.termsOfService}</Link>
+                        <Link href="/privacy" className="hover:text-text transition-colors">{ui.privacyPolicy}</Link>
+                        <Link href="/refund" className="hover:text-text transition-colors">{ui.refundPolicy}</Link>
+                        <a href="mailto:support@an-tho.com" className="hover:text-text transition-colors">support@an-tho.com</a>
                     </div>
                 </div>
             </main>

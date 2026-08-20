@@ -13,13 +13,16 @@ Classes are **additive and orthogonal** to the existing `[P0]`–`[P3]` ratings 
 | **[LAUNCH]** | blocks the B2B-interim route going live to a real customer | **0 — EMPTY** |
 | **[COMPLIANCE]** | legal / regulatory / data-protection obligation | **8** |
 | **[HONESTY]** | the product currently tells the user something untrue or misleading | **16** |
-| [DONE] | already fixed / resolved / accepted; retained for the record only | 37 |
-| [OTHER] | quality, hygiene, tooling, opportunistic | 74 |
-| | **total** | **135** |
+| [DONE] | already fixed / resolved / accepted; retained for the record only | 38 |
+| [OTHER] | quality, hygiene, tooling, opportunistic | 75 |
+| | **total** | **137** |
 
 <!-- ⚠️ CLASS-MOVE 2026-08-20 (provenance sweep, one local commit): the consolidated
      provenance-strings entry [HONESTY]→[DONE] and the dead-landing-keys entry [OTHER]→[DONE].
      Counts re-derived per the 2026-08-17 convention (no hand increments): 16 + 37 + 74 + 8 = 135. -->
+<!-- ➕ TWO NEW ENTRIES 2026-08-20 (the /faq light-scheme fix, local commit): the /faq
+     white-on-white defect filed-and-fixed-in-one ([DONE]) + the terms/privacy/refund/pricing
+     same-family flag ([OTHER][P2], open). Re-derived: 16 + 38 + 75 + 8 = 137. -->
 
 
 <!-- ⚠️ COUNT REPAIR 2026-08-11 (B0 commit): the table above had gone STALE by three entries —
@@ -138,6 +141,16 @@ When entries are resolved, mark with the resolving commit SHA (git log is the re
   - **`log_api_cost` / `log_api_cost_standalone`: migration is SAFE, and Rule 13 is an argument FOR it, not against.** Rule 13's never-block intent is **compatible** with the helper's swallow-and-return-False semantics — the Rule 13 `try/except` wrappers sit at the callers. Also an internal inconsistency the migration would normalize: **`log_api_cost_standalone` does `rollback + raise` (`:86-88`, inside its own outer catch at `:91`) while `log_api_cost` has no visible catch at the site** — two cost-logging paths, two different failure behaviours today.
   - **Fix cost: small, mechanical, five call-site edits.** None is a medical-output path — feedback capture, webhook bookkeeping, cost logging. **Per-site gates beyond pytest: NONE owed** — no prompt changes (no §2.7 re-baseline), no render changes (no human-eye gate), no schema changes (no migration). Standard suite + tsc suffices; the dodo branch edit warrants one extra look because it sits in a payment webhook file, but the branch itself only records ignored events.
   - **Surfaced**: 2026-08-18, by the Rule 7 adoption census (25 commit sites → 24 non-helper → 16 class (a) + 3 class (b) + these 5).
+
+- [DONE] **[P2 · light-scheme legibility — founder-observed on prod fly 238; FILED + FIXED in one local commit 2026-08-20] /faq headings rendered WHITE-ON-WHITE in the LIGHT scheme (the DEFAULT theme)**
+  - **What the founder saw:** on `/faq`, light scheme, the section headings (關於 Vela / 功能 / 隱私與安全) and the page h1 rendered white on the light `bg-app-bg` — illegible without selection. Dark rendered correctly (screenshot confirmed both).
+  - **Root cause + lineage (blamed before fixing):** the page was authored in the dark-only era — **`fef4436` (2026-04-08)** hardcoded `text-white` / `hover:text-white` — and the C2a/C2b/C3 theme migrations (`7f5ec4d`/`b5c7771`/`fe11e97`) tokenized the page's backgrounds and `white/NN` ALPHA consumers but never bare `text-white`. Latent for four months; became the default-visible state when light became the default theme (`0d7df96`). **NOT sweep-caused: `5e9aaa3` touched no styling on this page** (its verified file list has no `pages/faq.tsx`; its only FAQ touch was `i18n-faq.ts` answer TEXT).
+  - **Family sweep of /faq (all 7 in-file occurrences + 1 in-string):** h1 `text-white` (live defect) · section h2 `text-white` (the founder's headings, live) · 4 footer links `hover:text-white` (live on hover in light) · accordion button `hover:text-white` (INERT — its inline style always overrode the class; removed as dead code) · **the `faqCta` i18n HTML string itself embedded `style="color:rgba(255,255,255,0.6)" + hover:text-white` ×16 locales** (live — the CTA mailto was 60%-white on the light page). The nav sign-up button's inline `#fff` sits on the CONSTANT brand background — correct in both schemes, deliberately untouched.
+  - **Fix:** token substitution only, no redesign — `text-white`→`text-text`, `hover:text-white`→`hover:text-text` (footer), dead hover class removed (button), faqCta chunk → `style="color:rgb(var(--color-text) / 0.6)"` (byte-identical ×16, one replace-all). **Rule 16 not triggered** — class/style attributes only, zero visible-word changes. **Guard:** `tests/test_faq_theme_tokens.py` (4 tests: no white text-class on the token-background page · headings carry `text-text` · faqCta cells token-based with a ≥16-cell positive control · negative controls; mutation-checked — reverting the h2 fails 2 tests). The human-eye half is the one-row check in the open founder session (STATE).
+- [OTHER] **[P2 · light-scheme legibility / SAME FAMILY, NOT fixed — surfaced by the 2026-08-20 /faq fix's family grep] The other `bg-app-bg` standalone pages carry the SAME hardcoded-white class: terms (18) · privacy (29) · refund (13) · pricing (10)**
+  - All four use the theme-aware `bg-app-bg` background (verified) while carrying `text-white`/`hover:text-white` counts from the same dark-era authoring — **so their headings/links have the same light-scheme illegibility exposure, including `/privacy`, a LEGAL page.** Counts are occurrence greps, NOT adjudicated per-element (some may sit on constant-color sub-elements like brand buttons, which are correct — the /faq nav button precedent).
+  - **Fix-direction:** per-page pass in the /faq pattern (token substitution + extend or clone `tests/test_faq_theme_tokens.py`), each with a one-row light-scheme eyeball. **Deliberately NOT fixed in the /faq commit** — four pages × dozens of sites is its own slot, not a rider (CLAUDE.md: flag, don't silently expand scope). `research/verify/explain/index` each have 1–2 occurrences that looked constant-bg-correct on spot-check — include them in the audit anyway.
+  - **Surfaced:** 2026-08-20, by the /faq family grep (82 `text-white` occurrences repo-wide across 9 page files).
 
 - [DONE] **[P3 · dead i18n keys — surfaced by the 2026-08-18 provenance recon; ✅ FIXED 2026-08-20 by the provenance-sweep commit: the 3 keys deleted from the `LandingContent` interface + all 16 locale blocks (−48 cells + 3 interface lines), tsc 0 proving no consumer existed] `researchSub` / `verifySub` / `explainSub` are DEAD LANDING KEYS — 48 tsc-enforced cells, ZERO consumers**
   - **現況**: declared in the `LandingContent` interface (`utils/i18n.ts:41-43`) and therefore **maintained across all 16 locales = 48 cells** (the interface is a full `Record`, so tsc forces every locale to fill them) — yet **rendered NOWHERE**: a word-boundary grep over `pages/`, `components/`, `utils/`, `contexts/` returns zero consumers. The near-matches are the unrelated `researchSubtitle`/`verifySubtitle`/`explainSubtitle` keys, which is presumably how the deadness survived — a substring glance finds "consumers" that are a different key.
