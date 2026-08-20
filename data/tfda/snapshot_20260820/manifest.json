@@ -1,0 +1,14 @@
+{
+  "dataset_id": 37,
+  "dataset_name": "未註銷藥品許可證資料集 (active-only drug licenses)",
+  "source_url": "https://data.fda.gov.tw/data/opendata/export/37/json",
+  "access": "bulk-ZIP-only (application/zip); no queryable/paged API",
+  "license": "政府資料開放授權條款 (OGDL) v1.0 — commercial use OK",
+  "pulled_at": "2026-08-20",
+  "inner_file": "37_5.json",
+  "zip_sha256": "d8e16772ca8b02ade762ae073fdfb3ed6bec6bc70b9f550855804820a5ec2d71",
+  "record_count": 26054,
+  "cancelled_rows_in_set": 0,
+  "active_set_confirmed": true,
+  "note": "id=37 is the 未註銷 (active) set; 註銷狀態 empty for all 26054 rows (key present in all). Delta vs snapshot_20260630: +34 records (26020 -> 26054); inner filename and 28-field schema unchanged. Snapshot-only this round: corpora NOT rebuilt — builders still point at snapshot_20260630 (SNAPSHOT_ZIP at scripts/build_tfda_brand_ingredient.py:46 and scripts/build_tfda_indication_corpus.py:38). id=36=全部(incl cancelled), id=39=仿單(a2 full label). Pin + monthly re-pull."
+}
