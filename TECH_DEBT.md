@@ -13,8 +13,8 @@ Classes are **additive and orthogonal** to the existing `[P0]`–`[P3]` ratings 
 | **[LAUNCH]** | blocks the B2B-interim route going live to a real customer | **0 — EMPTY** |
 | **[COMPLIANCE]** | legal / regulatory / data-protection obligation | **8** |
 | **[HONESTY]** | the product currently tells the user something untrue or misleading | **16** |
-| [DONE] | already fixed / resolved / accepted; retained for the record only | 38 |
-| [OTHER] | quality, hygiene, tooling, opportunistic | 75 |
+| [DONE] | already fixed / resolved / accepted; retained for the record only | 39 |
+| [OTHER] | quality, hygiene, tooling, opportunistic | 74 |
 | | **total** | **137** |
 
 <!-- ⚠️ CLASS-MOVE 2026-08-20 (provenance sweep, one local commit): the consolidated
@@ -23,6 +23,9 @@ Classes are **additive and orthogonal** to the existing `[P0]`–`[P3]` ratings 
 <!-- ➕ TWO NEW ENTRIES 2026-08-20 (the /faq light-scheme fix, local commit): the /faq
      white-on-white defect filed-and-fixed-in-one ([DONE]) + the terms/privacy/refund/pricing
      same-family flag ([OTHER][P2], open). Re-derived: 16 + 38 + 75 + 8 = 137. -->
+<!-- ⚠️ CLASS-MOVE 2026-08-20 later same day (family-fix commit): the terms/privacy/refund/pricing
+     family flag [OTHER]→[DONE] (71 defects fixed · 0 dead · 3 legitimate kept, table in the entry).
+     Re-derived: 16 + 39 + 74 + 8 = 137. -->
 
 
 <!-- ⚠️ COUNT REPAIR 2026-08-11 (B0 commit): the table above had gone STALE by three entries —
@@ -147,10 +150,18 @@ When entries are resolved, mark with the resolving commit SHA (git log is the re
   - **Root cause + lineage (blamed before fixing):** the page was authored in the dark-only era — **`fef4436` (2026-04-08)** hardcoded `text-white` / `hover:text-white` — and the C2a/C2b/C3 theme migrations (`7f5ec4d`/`b5c7771`/`fe11e97`) tokenized the page's backgrounds and `white/NN` ALPHA consumers but never bare `text-white`. Latent for four months; became the default-visible state when light became the default theme (`0d7df96`). **NOT sweep-caused: `5e9aaa3` touched no styling on this page** (its verified file list has no `pages/faq.tsx`; its only FAQ touch was `i18n-faq.ts` answer TEXT).
   - **Family sweep of /faq (all 7 in-file occurrences + 1 in-string):** h1 `text-white` (live defect) · section h2 `text-white` (the founder's headings, live) · 4 footer links `hover:text-white` (live on hover in light) · accordion button `hover:text-white` (INERT — its inline style always overrode the class; removed as dead code) · **the `faqCta` i18n HTML string itself embedded `style="color:rgba(255,255,255,0.6)" + hover:text-white` ×16 locales** (live — the CTA mailto was 60%-white on the light page). The nav sign-up button's inline `#fff` sits on the CONSTANT brand background — correct in both schemes, deliberately untouched.
   - **Fix:** token substitution only, no redesign — `text-white`→`text-text`, `hover:text-white`→`hover:text-text` (footer), dead hover class removed (button), faqCta chunk → `style="color:rgb(var(--color-text) / 0.6)"` (byte-identical ×16, one replace-all). **Rule 16 not triggered** — class/style attributes only, zero visible-word changes. **Guard:** `tests/test_faq_theme_tokens.py` (4 tests: no white text-class on the token-background page · headings carry `text-text` · faqCta cells token-based with a ≥16-cell positive control · negative controls; mutation-checked — reverting the h2 fails 2 tests). The human-eye half is the one-row check in the open founder session (STATE).
-- [OTHER] **[P2 · light-scheme legibility / SAME FAMILY, NOT fixed — surfaced by the 2026-08-20 /faq fix's family grep] The other `bg-app-bg` standalone pages carry the SAME hardcoded-white class: terms (18) · privacy (29) · refund (13) · pricing (10)**
-  - All four use the theme-aware `bg-app-bg` background (verified) while carrying `text-white`/`hover:text-white` counts from the same dark-era authoring — **so their headings/links have the same light-scheme illegibility exposure, including `/privacy`, a LEGAL page.** Counts are occurrence greps, NOT adjudicated per-element (some may sit on constant-color sub-elements like brand buttons, which are correct — the /faq nav button precedent).
-  - **Fix-direction:** per-page pass in the /faq pattern (token substitution + extend or clone `tests/test_faq_theme_tokens.py`), each with a one-row light-scheme eyeball. **Deliberately NOT fixed in the /faq commit** — four pages × dozens of sites is its own slot, not a rider (CLAUDE.md: flag, don't silently expand scope). `research/verify/explain/index` each have 1–2 occurrences that looked constant-bg-correct on spot-check — include them in the audit anyway.
-  - **Surfaced:** 2026-08-20, by the /faq family grep (82 `text-white` occurrences repo-wide across 9 page files).
+- [DONE] **[P2 · light-scheme legibility / SAME FAMILY — surfaced by the 2026-08-20 /faq fix's family grep; ✅ RESOLVED same day by the family-fix commit (founder-ratified: whole family in one car, one eye session covers all five pages)] The other `bg-app-bg` standalone pages carried the SAME hardcoded-white class: terms (18) · privacy (29) · refund (13) · pricing (10)**
+  - **✅ PER-ELEMENT ADJUDICATION (the /faq discipline, not blanket replace) — 71 defects fixed · 0 dead · 3 legitimate kept:**
+    | page | defects fixed (i) | dead (ii) | legitimate kept (iii) |
+    |---|---|---|---|
+    | terms | **19** (h1 · 11 h2 · 4 `<strong>` · 3 hover links) | 0 | 0 |
+    | privacy | **29** (h1 · 10 h2 · 15 `<strong>` · 3 hover links) | 0 | 0 |
+    | refund | **13** (h1 · 6 h2 · 3 `<strong>` · 3 hover links) | 0 | 0 |
+    | pricing | **10** (h1 · 2 card h2 · 2 price spans · 4 hover links · 1 `rgba(255,255,255,0.1)` hover BACKGROUND on the token-bg Free CTA — the missed-C2b white-alpha class, → `rgb(var(--color-text) / 0.1)`) | 0 | **3** — nav button inline `#fff` on brand · Recommended badge inline `#fff` on brand · **Pro CTA `text-white` class on the constant `ACCENT` background (the ONE class-level keep, allow-listed BY EXACT LOCATION in the guard)** |
+  - The grep counts were occurrence counts, as this entry warned — pricing's 10 lines resolved to 9 class defects + 3 keeps; terms' 18 lines held 19 occurrences (one line carries two `<strong>`s). i18n files consumed by these pages re-swept: **clean** (faqCta was the only embedded white, already fixed in e106db2).
+  - **Guard generalized:** `tests/test_faq_theme_tokens.py` → **`tests/test_theme_tokens.py`** (git mv, history kept) — all 5 pages, white-class scan with the pinned allow-list (each allow-listed snippet must occur EXACTLY once, so the list cannot rot or grow silently), h1/h2 token assertions, white-alpha inline scan, i18n white scan, negative controls; mutation-checked (terms h2 reverted → fails). **`/privacy` determination, explicit:** class/style attributes only, zero wording changes — **styling is not a text revision, so NO `docs/legal-versions/` v12 snapshot is owed.**
+  - `research/verify/explain/index` spot-check: 1–2 occurrences each, constant-bg-correct (e.g. research's submit button, white-on-brand) — no action.
+  - **Surfaced:** 2026-08-20, by the /faq family grep (82 `text-white` occurrences repo-wide across 9 page files). **Resolved:** same day; the render half rides the ONE founder eye session (5 pages × light scheme).
 
 - [DONE] **[P3 · dead i18n keys — surfaced by the 2026-08-18 provenance recon; ✅ FIXED 2026-08-20 by the provenance-sweep commit: the 3 keys deleted from the `LandingContent` interface + all 16 locale blocks (−48 cells + 3 interface lines), tsc 0 proving no consumer existed] `researchSub` / `verifySub` / `explainSub` are DEAD LANDING KEYS — 48 tsc-enforced cells, ZERO consumers**
   - **現況**: declared in the `LandingContent` interface (`utils/i18n.ts:41-43`) and therefore **maintained across all 16 locales = 48 cells** (the interface is a full `Record`, so tsc forces every locale to fill them) — yet **rendered NOWHERE**: a word-boundary grep over `pages/`, `components/`, `utils/`, `contexts/` returns zero consumers. The near-matches are the unrelated `researchSubtitle`/`verifySubtitle`/`explainSubtitle` keys, which is presumably how the deadness survived — a substring glance finds "consumers" that are a different key.

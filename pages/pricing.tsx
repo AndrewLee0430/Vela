@@ -53,7 +53,7 @@ export default function Pricing() {
 
                 {/* Header */}
                 <div className="container mx-auto px-4 pt-16 pb-10 text-center">
-                    <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-white">{ui.pricingTitle}</h1>
+                    <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-text">{ui.pricingTitle}</h1>
                     <p className="mt-3 text-base text-text/50">
                         {ui.pricingSubtitle}
                     </p>
@@ -65,9 +65,9 @@ export default function Pricing() {
 
                         {/* Free Plan */}
                         <div className="rounded-xl p-6 flex flex-col bg-text/4 border border-text/10">
-                            <h2 className="text-lg font-semibold text-white">Free</h2>
+                            <h2 className="text-lg font-semibold text-text">Free</h2>
                             <div className="mt-4 mb-6">
-                                <span className="text-3xl font-bold text-white">$0</span>
+                                <span className="text-3xl font-bold text-text">$0</span>
                                 <span className="text-sm ml-1 text-text/40">{ui.perMonth}</span>
                             </div>
 
@@ -82,7 +82,7 @@ export default function Pricing() {
                             <Link
                                 href="/sign-up"
                                 className="mt-8 block text-center text-sm font-medium py-2.5 rounded-lg transition-all cursor-pointer border border-text/20 text-text/80"
-                                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.1)'; }}
+                                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgb(var(--color-text) / 0.1)'; }}
                                 onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                             >
                                 {ui.getStartedFree}
@@ -102,9 +102,9 @@ export default function Pricing() {
                                 {ui.recommended}
                             </span>
 
-                            <h2 className="text-lg font-semibold text-white">Pro</h2>
+                            <h2 className="text-lg font-semibold text-text">Pro</h2>
                             <div className="mt-4 mb-1">
-                                <span className="text-3xl font-bold text-white">$9.99</span>
+                                <span className="text-3xl font-bold text-text">$9.99</span>
                                 <span className="text-sm ml-1 text-text/40">{ui.perMonth}</span>
                             </div>
                             <p className="text-xs mb-6 text-text/40">
@@ -119,6 +119,9 @@ export default function Pricing() {
                                 ))}
                             </ul>
 
+                            {/* text-white KEPT deliberately on the next line: this CTA sits on the
+                                CONSTANT brand background (ACCENT), scheme-invariant — the guard
+                                allow-lists exactly this line. Same class as the nav button's inline #fff. */}
                             <Link
                                 href="/sign-up"
                                 className="mt-8 block text-center text-sm font-medium py-2.5 rounded-lg transition-opacity hover:opacity-90 text-white"
@@ -138,10 +141,10 @@ export default function Pricing() {
                 <div className="flex-shrink-0 flex flex-col items-center gap-2 px-4 py-5 text-sm border-t border-t-text/7 text-text/30">
                     <div>{ui.pricingDisclaimer}</div>
                     <div className="flex flex-wrap justify-center gap-4 text-xs">
-                        <Link href="/terms" className="hover:text-white transition-colors">{ui.termsOfService}</Link>
-                        <Link href="/privacy" className="hover:text-white transition-colors">{ui.privacyPolicy}</Link>
-                        <Link href="/refund" className="hover:text-white transition-colors">{ui.refundPolicy}</Link>
-                        <a href="mailto:support@an-tho.com" className="hover:text-white transition-colors">support@an-tho.com</a>
+                        <Link href="/terms" className="hover:text-text transition-colors">{ui.termsOfService}</Link>
+                        <Link href="/privacy" className="hover:text-text transition-colors">{ui.privacyPolicy}</Link>
+                        <Link href="/refund" className="hover:text-text transition-colors">{ui.refundPolicy}</Link>
+                        <a href="mailto:support@an-tho.com" className="hover:text-text transition-colors">support@an-tho.com</a>
                     </div>
                 </div>
             </main>
