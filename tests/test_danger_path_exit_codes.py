@@ -6,7 +6,11 @@ the return — so a run with 0 violations and outstanding mandatory founder rech
 exited 0 and read as a pass to any automated caller. That is the defect the
 ratification commit fixed; this test is what keeps it fixed.
 
-Criterion ratified 2026-08-21 — TECH_DEBT.md:242 (entry) / :245 (ratification).
+Criterion ratified 2026-08-21. The record is the TECH_DEBT.md entry headed
+"[P1 · gate integrity — the section-aware DANGER-PATH criterion had NO ratification record;
+created 2026-08-21 and the exit code fixed in the same commit]" — :270 (entry) / :273
+(ratification) at time of writing. ⚠️ Grep the heading, not the number: these read
+":242"/":245" until the 2026-08-21 docs car corrected them.
 
 DB-free and network-free: `gate_exit_code` is pure, and the module is loaded by
 file path so no `scripts/` package import is required.

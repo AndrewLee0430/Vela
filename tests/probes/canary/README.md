@@ -130,8 +130,14 @@ invented deny-list.
 Per query, **N=8** real `retrieve()` calls, **full pipeline / rewrite arm** (the
 same arm the predecessor used — deliberately not the raw arm).
 
-**PASS iff zero usable runs cite a whitelisted DailyMed safety LOINC in the final
-top-`max_results`.**
+**PASS iff zero usable runs cite a WRONG-OBJECT whitelisted DailyMed safety LOINC in
+the final top-`max_results`** — i.e. a whitelisted safety section whose moiety falls
+outside the query's resolved key set. An **owned** safety section does not fail the
+gate. *(Wording taken from the code, not from the amendment note: `evaluate()` fails a
+query on `q["wrong_object_cited"] > 0` — `canary_gate.py:338` — and `wrong_object_cited`
+counts usable runs whose `wrong_object_cited_ids` is non-empty, `:371`. The OLD
+criterion — ANY whitelisted safety LOINC — is still computed as `safety_cited` (`:370`,
+`:382`) and reported, but nothing gates on it.)*
 
 - **Whitelist is IMPORTED** from `api/rag/retriever.py` (`_SAFETY_SECTION_WHITELIST`),
   never copied. If the founder-locked list changes, this gate follows automatically.
@@ -141,8 +147,11 @@ top-`max_results`.**
   `retrieve()` short-circuits before any filter/rerank stage, so those runs cannot
   distinguish a miss from an outage. `status == "irrelevant"` **is** usable: documents
   were retrieved and the filter dropped them, which is a real retrieval outcome.
-- **`usable_runs < 6` of 8 FAILS the query.** A canary that mostly errored is not a
-  pass — this is the half the predecessor could not express at all.
+- **`usable_runs < 6` of 8 FAILS the query** (`canary_gate.py:343`), independently of
+  either counter. A canary that mostly errored is not a pass — this is the half the
+  predecessor could not express at all. The two failure kinds are reported separately in
+  the aggregate as `failed_on_wrong_object_citation` and `failed_on_insufficient_runs`;
+  either one makes `evaluate()` return exit 1 (`:361`).
 
 Exit codes: **0** all clean · **1** gate FAILED · **2** configuration could not be
 established (parse miss / cross-check mismatch).
@@ -187,11 +196,10 @@ cited (so the OLD criterion would have failed, and the JSON says so by name in
 `old_criterion_would_have_failed`) yet the gate passes, demonstrating that the two
 counters are genuinely independent rather than one being derived from the other.
 
-`python tests/probes/canary/canary_gate.py --self-test` runs both with **zero API
-calls**.
-
-`python tests/probes/canary/canary_gate.py --self-test` runs the control alone with
-**zero API calls**.
+`python tests/probes/canary/canary_gate.py --self-test` runs **all three** with **zero
+API calls** — `run_self_test()` (`canary_gate.py:415-485`) evaluates injection (a),
+injection (b) and the clean control, and returns `BROKEN` unless
+`code_a != 0 and code_b == 0 and code_clean == 0` (`:460`).
 
 ## Reproducibility — a dated snapshot, not a reproducible number
 
