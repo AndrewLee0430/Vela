@@ -1,7 +1,7 @@
 {
- "generated": "2026-08-21 06:22:54Z",
- "started": "2026-08-21 06:03:09Z",
- "git_head": "516f634ccf5ded4c88f101e0354f73ccf7949d42",
+ "generated": "2026-08-21 02:35:09Z",
+ "started": "2026-08-21 02:24:22Z",
+ "git_head": "b1269e7775e55fb679a9f2d0b42949518cac246a",
  "config": {
   "enable_local": false,
   "enable_pubmed": true,
@@ -63,19 +63,11 @@
   {
    "id": "metformin_moa",
    "query": "metformin mechanism of action",
-   "resolved_key_set": [
-    "METFORMIN",
-    "METFORMIN HCL"
-   ],
-   "resolver_matched": [
-    "METFORMIN"
-   ],
-   "resolver_via": "exact",
    "runs": [
     {
      "run": 0,
      "status": "ok",
-     "latency_s": 34.4,
+     "latency_s": 18.1,
      "cited_ids": [
       "PMID:32897388",
       "PMID:37397787",
@@ -83,13 +75,12 @@
       "PMID:25456737",
       "PMID:11602624"
      ],
-     "safety_cited_ids": [],
-     "wrong_object_cited_ids": []
+     "safety_cited_ids": []
     },
     {
      "run": 1,
      "status": "ok",
-     "latency_s": 26.8,
+     "latency_s": 13.1,
      "cited_ids": [
       "PMID:32897388",
       "PMID:37397787",
@@ -97,13 +88,12 @@
       "PMID:25456737",
       "PMID:11602624"
      ],
-     "safety_cited_ids": [],
-     "wrong_object_cited_ids": []
+     "safety_cited_ids": []
     },
     {
      "run": 2,
      "status": "ok",
-     "latency_s": 30.4,
+     "latency_s": 13.9,
      "cited_ids": [
       "PMID:32897388",
       "PMID:37397787",
@@ -111,13 +101,12 @@
       "PMID:25456737",
       "PMID:11602624"
      ],
-     "safety_cited_ids": [],
-     "wrong_object_cited_ids": []
+     "safety_cited_ids": []
     },
     {
      "run": 3,
      "status": "ok",
-     "latency_s": 31.3,
+     "latency_s": 13.4,
      "cited_ids": [
       "PMID:32897388",
       "PMID:37397787",
@@ -125,13 +114,12 @@
       "PMID:25456737",
       "PMID:11602624"
      ],
-     "safety_cited_ids": [],
-     "wrong_object_cited_ids": []
+     "safety_cited_ids": []
     },
     {
      "run": 4,
      "status": "ok",
-     "latency_s": 32.0,
+     "latency_s": 13.4,
      "cited_ids": [
       "PMID:32897388",
       "PMID:37397787",
@@ -139,13 +127,12 @@
       "PMID:25456737",
       "PMID:11602624"
      ],
-     "safety_cited_ids": [],
-     "wrong_object_cited_ids": []
+     "safety_cited_ids": []
     },
     {
      "run": 5,
      "status": "ok",
-     "latency_s": 31.6,
+     "latency_s": 14.3,
      "cited_ids": [
       "PMID:32897388",
       "PMID:37397787",
@@ -153,13 +140,12 @@
       "PMID:25456737",
       "PMID:11602624"
      ],
-     "safety_cited_ids": [],
-     "wrong_object_cited_ids": []
+     "safety_cited_ids": []
     },
     {
      "run": 6,
      "status": "ok",
-     "latency_s": 30.9,
+     "latency_s": 12.5,
      "cited_ids": [
       "PMID:32897388",
       "PMID:37397787",
@@ -167,13 +153,12 @@
       "PMID:25456737",
       "PMID:11602624"
      ],
-     "safety_cited_ids": [],
-     "wrong_object_cited_ids": []
+     "safety_cited_ids": []
     },
     {
      "run": 7,
      "status": "ok",
-     "latency_s": 26.0,
+     "latency_s": 13.0,
      "cited_ids": [
       "PMID:32897388",
       "PMID:37397787",
@@ -181,431 +166,334 @@
       "PMID:25456737",
       "PMID:11602624"
      ],
-     "safety_cited_ids": [],
-     "wrong_object_cited_ids": []
+     "safety_cited_ids": []
     }
    ],
    "usable_runs": 8,
    "network_excluded": 0,
    "errored": 0,
-   "safety_cited": 0,
-   "wrong_object_cited": 0,
-   "class_query_equivalence": {
-    "empty_key_set": false
-   }
+   "safety_cited": 0
   },
   {
    "id": "statin_moa",
    "query": "statin mechanism of action pharmacology",
-   "resolved_key_set": [],
-   "resolver_matched": [],
-   "resolver_via": null,
    "runs": [
     {
      "run": 0,
      "status": "ok",
-     "latency_s": 20.4,
+     "latency_s": 12.8,
      "cited_ids": [
-      "PMID:12067471",
       "PMID:11349148",
+      "PMID:12067471",
       "PMID:24657242",
-      "PMID:37486464",
       "PMID:15559032"
      ],
-     "safety_cited_ids": [],
-     "wrong_object_cited_ids": []
+     "safety_cited_ids": []
     },
     {
      "run": 1,
      "status": "ok",
-     "latency_s": 20.1,
+     "latency_s": 13.2,
      "cited_ids": [
       "PMID:11349148",
       "PMID:12067471",
       "PMID:24657242",
       "PMID:15559032"
      ],
-     "safety_cited_ids": [],
-     "wrong_object_cited_ids": []
+     "safety_cited_ids": []
     },
     {
      "run": 2,
      "status": "ok",
-     "latency_s": 25.2,
+     "latency_s": 13.3,
      "cited_ids": [
       "PMID:11349148",
       "PMID:12067471",
       "PMID:24657242",
       "PMID:15559032"
      ],
-     "safety_cited_ids": [],
-     "wrong_object_cited_ids": []
+     "safety_cited_ids": []
     },
     {
      "run": 3,
      "status": "ok",
-     "latency_s": 23.1,
+     "latency_s": 13.1,
      "cited_ids": [
       "PMID:11349148",
       "PMID:12067471",
       "PMID:24657242",
       "PMID:15559032"
      ],
-     "safety_cited_ids": [],
-     "wrong_object_cited_ids": []
+     "safety_cited_ids": []
     },
     {
      "run": 4,
      "status": "ok",
-     "latency_s": 25.9,
+     "latency_s": 12.9,
      "cited_ids": [
       "PMID:11349148",
       "PMID:12067471",
       "PMID:24657242",
       "PMID:15559032"
      ],
-     "safety_cited_ids": [],
-     "wrong_object_cited_ids": []
+     "safety_cited_ids": []
     },
     {
      "run": 5,
      "status": "ok",
-     "latency_s": 26.9,
+     "latency_s": 12.4,
      "cited_ids": [
       "PMID:11349148",
       "PMID:12067471",
       "PMID:24657242",
       "PMID:15559032"
      ],
-     "safety_cited_ids": [],
-     "wrong_object_cited_ids": []
+     "safety_cited_ids": []
     },
     {
      "run": 6,
      "status": "ok",
-     "latency_s": 26.9,
+     "latency_s": 13.7,
      "cited_ids": [
       "PMID:11349148",
       "PMID:12067471",
       "PMID:24657242",
       "PMID:15559032"
      ],
-     "safety_cited_ids": [],
-     "wrong_object_cited_ids": []
+     "safety_cited_ids": []
     },
     {
      "run": 7,
      "status": "ok",
-     "latency_s": 25.1,
+     "latency_s": 14.1,
      "cited_ids": [
       "PMID:11349148",
       "PMID:12067471",
       "PMID:24657242",
       "PMID:15559032"
      ],
-     "safety_cited_ids": [],
-     "wrong_object_cited_ids": []
+     "safety_cited_ids": []
     }
    ],
    "usable_runs": 8,
    "network_excluded": 0,
    "errored": 0,
-   "safety_cited": 0,
-   "wrong_object_cited": 0,
-   "class_query_equivalence": {
-    "empty_key_set": true,
-    "safety_cited": 0,
-    "wrong_object_cited": 0,
-    "equivalent": true,
-    "note": "empty key set => every safety section is wrong-object => the amended criterion is EXACTLY as strict as the old one for this query"
-   }
+   "safety_cited": 0
   },
   {
    "id": "glp1_weight",
    "query": "GLP-1 減重機轉",
-   "resolved_key_set": [],
-   "resolver_matched": [],
-   "resolver_via": null,
    "runs": [
     {
      "run": 0,
      "status": "ok",
-     "latency_s": 30.2,
+     "latency_s": 13.6,
      "cited_ids": [
       "PMID:39892489",
       "PMID:33977495",
-      "PMID:39114288",
       "PMID:36843578"
      ],
-     "safety_cited_ids": [],
-     "wrong_object_cited_ids": []
+     "safety_cited_ids": []
     },
     {
      "run": 1,
      "status": "ok",
-     "latency_s": 24.6,
+     "latency_s": 14.0,
      "cited_ids": [
       "PMID:39892489",
       "PMID:33977495",
       "PMID:36843578"
      ],
-     "safety_cited_ids": [],
-     "wrong_object_cited_ids": []
+     "safety_cited_ids": []
     },
     {
      "run": 2,
      "status": "ok",
-     "latency_s": 23.9,
+     "latency_s": 14.1,
      "cited_ids": [
       "PMID:39892489",
       "PMID:33977495",
-      "PMID:39114288",
       "PMID:36843578"
      ],
-     "safety_cited_ids": [],
-     "wrong_object_cited_ids": []
+     "safety_cited_ids": []
     },
     {
      "run": 3,
      "status": "ok",
-     "latency_s": 21.4,
+     "latency_s": 13.6,
      "cited_ids": [
       "PMID:39892489",
       "PMID:33977495",
       "PMID:36843578"
      ],
-     "safety_cited_ids": [],
-     "wrong_object_cited_ids": []
+     "safety_cited_ids": []
     },
     {
      "run": 4,
      "status": "ok",
-     "latency_s": 19.8,
+     "latency_s": 14.3,
      "cited_ids": [
       "PMID:39892489",
       "PMID:33977495",
+      "PMID:39114288",
       "PMID:36843578"
      ],
-     "safety_cited_ids": [],
-     "wrong_object_cited_ids": []
+     "safety_cited_ids": []
     },
     {
      "run": 5,
      "status": "ok",
-     "latency_s": 20.7,
+     "latency_s": 13.0,
      "cited_ids": [
       "PMID:39892489",
       "PMID:33977495",
-      "PMID:39114288",
       "PMID:36843578"
      ],
-     "safety_cited_ids": [],
-     "wrong_object_cited_ids": []
+     "safety_cited_ids": []
     },
     {
      "run": 6,
      "status": "ok",
-     "latency_s": 21.8,
+     "latency_s": 14.5,
      "cited_ids": [
       "PMID:39892489",
       "PMID:33977495",
-      "PMID:39114288",
       "PMID:36843578"
      ],
-     "safety_cited_ids": [],
-     "wrong_object_cited_ids": []
+     "safety_cited_ids": []
     },
     {
      "run": 7,
      "status": "ok",
-     "latency_s": 18.6,
+     "latency_s": 12.4,
      "cited_ids": [
       "PMID:39892489",
-      "PMID:36566341",
-      "PMID:27030669"
+      "PMID:33977495",
+      "PMID:36843578"
      ],
-     "safety_cited_ids": [],
-     "wrong_object_cited_ids": []
+     "safety_cited_ids": []
     }
    ],
    "usable_runs": 8,
    "network_excluded": 0,
    "errored": 0,
-   "safety_cited": 0,
-   "wrong_object_cited": 0,
-   "class_query_equivalence": {
-    "empty_key_set": true,
-    "safety_cited": 0,
-    "wrong_object_cited": 0,
-    "equivalent": true,
-    "note": "empty key set => every safety section is wrong-object => the amended criterion is EXACTLY as strict as the old one for this query"
-   }
+   "safety_cited": 0
   },
   {
    "id": "statin_efficacy",
    "query": "statin primary prevention efficacy",
-   "resolved_key_set": [],
-   "resolver_matched": [],
-   "resolver_via": null,
    "runs": [
     {
      "run": 0,
      "status": "ok",
-     "latency_s": 19.9,
+     "latency_s": 13.8,
      "cited_ids": [
       "PMID:42475062",
       "PMID:41824590",
       "PMID:30375494",
       "PMID:25672965"
      ],
-     "safety_cited_ids": [],
-     "wrong_object_cited_ids": []
+     "safety_cited_ids": []
     },
     {
      "run": 1,
      "status": "ok",
-     "latency_s": 22.8,
+     "latency_s": 12.7,
      "cited_ids": [
       "PMID:42475062",
       "PMID:41824590",
       "PMID:30375494",
       "PMID:25672965"
      ],
-     "safety_cited_ids": [],
-     "wrong_object_cited_ids": []
+     "safety_cited_ids": []
     },
     {
      "run": 2,
      "status": "ok",
-     "latency_s": 21.7,
+     "latency_s": 12.9,
      "cited_ids": [
       "PMID:42475062",
       "PMID:41824590",
-      "PMID:37486464",
       "PMID:30375494",
-      "PMID:40098556"
+      "PMID:37486464",
+      "PMID:25672965"
      ],
-     "safety_cited_ids": [],
-     "wrong_object_cited_ids": []
+     "safety_cited_ids": []
     },
     {
      "run": 3,
      "status": "ok",
-     "latency_s": 22.5,
+     "latency_s": 12.1,
      "cited_ids": [
       "PMID:42475062",
       "PMID:41824590",
       "PMID:30375494",
       "PMID:25672965"
      ],
-     "safety_cited_ids": [],
-     "wrong_object_cited_ids": []
+     "safety_cited_ids": []
     },
     {
      "run": 4,
      "status": "ok",
-     "latency_s": 20.3,
+     "latency_s": 19.0,
      "cited_ids": [
       "PMID:42475062",
       "PMID:41824590",
       "PMID:30375494",
       "PMID:25672965"
      ],
-     "safety_cited_ids": [],
-     "wrong_object_cited_ids": []
+     "safety_cited_ids": []
     },
     {
      "run": 5,
      "status": "ok",
-     "latency_s": 19.6,
+     "latency_s": 11.8,
      "cited_ids": [
       "PMID:42475062",
       "PMID:41824590",
       "PMID:30375494",
       "PMID:25672965"
      ],
-     "safety_cited_ids": [],
-     "wrong_object_cited_ids": []
+     "safety_cited_ids": []
     },
     {
      "run": 6,
      "status": "ok",
-     "latency_s": 21.3,
+     "latency_s": 12.7,
      "cited_ids": [
       "PMID:42475062",
       "PMID:41824590",
       "PMID:30375494",
       "PMID:25672965"
      ],
-     "safety_cited_ids": [],
-     "wrong_object_cited_ids": []
+     "safety_cited_ids": []
     },
     {
      "run": 7,
      "status": "ok",
-     "latency_s": 21.5,
+     "latency_s": 12.8,
      "cited_ids": [
       "PMID:42475062",
       "PMID:41824590",
       "PMID:30375494",
       "PMID:25672965"
      ],
-     "safety_cited_ids": [],
-     "wrong_object_cited_ids": []
+     "safety_cited_ids": []
     }
    ],
    "usable_runs": 8,
    "network_excluded": 0,
    "errored": 0,
-   "safety_cited": 0,
-   "wrong_object_cited": 0,
-   "class_query_equivalence": {
-    "empty_key_set": true,
-    "safety_cited": 0,
-    "wrong_object_cited": 0,
-    "equivalent": true,
-    "note": "empty key set => every safety section is wrong-object => the amended criterion is EXACTLY as strict as the old one for this query"
-   }
+   "safety_cited": 0
   },
   {
    "id": "sglt2_cv",
    "query": "SGLT2 inhibitor cardiovascular outcomes",
-   "resolved_key_set": [],
-   "resolver_matched": [],
-   "resolver_via": null,
    "runs": [
     {
      "run": 0,
      "status": "ok",
-     "latency_s": 20.9,
-     "cited_ids": [
-      "PMID:32877652",
-      "PMID:40884036",
-      "PMID:40968746",
-      "PMID:38696170",
-      "PMID:33197224"
-     ],
-     "safety_cited_ids": [],
-     "wrong_object_cited_ids": []
-    },
-    {
-     "run": 1,
-     "status": "ok",
-     "latency_s": 23.3,
-     "cited_ids": [
-      "PMID:32877652",
-      "PMID:40884036",
-      "PMID:40968746",
-      "PMID:38696170",
-      "PMID:33197224"
-     ],
-     "safety_cited_ids": [],
-     "wrong_object_cited_ids": []
-    },
-    {
-     "run": 2,
-     "status": "ok",
-     "latency_s": 18.5,
+     "latency_s": 15.5,
      "cited_ids": [
       "PMID:38696170",
       "PMID:35145275",
@@ -613,27 +501,25 @@
       "PMID:35409011",
       "PMID:35898359"
      ],
-     "safety_cited_ids": [],
-     "wrong_object_cited_ids": []
+     "safety_cited_ids": []
     },
     {
-     "run": 3,
+     "run": 1,
      "status": "ok",
-     "latency_s": 26.3,
+     "latency_s": 14.9,
      "cited_ids": [
       "PMID:32877652",
       "PMID:40884036",
-      "PMID:39816986",
-      "PMID:30132036",
-      "PMID:32665641"
+      "PMID:38696170",
+      "PMID:40968746",
+      "PMID:33197224"
      ],
-     "safety_cited_ids": [],
-     "wrong_object_cited_ids": []
+     "safety_cited_ids": []
     },
     {
-     "run": 4,
+     "run": 2,
      "status": "ok",
-     "latency_s": 28.5,
+     "latency_s": 12.5,
      "cited_ids": [
       "PMID:32877652",
       "PMID:40884036",
@@ -641,236 +527,212 @@
       "PMID:38696170",
       "PMID:33197224"
      ],
-     "safety_cited_ids": [],
-     "wrong_object_cited_ids": []
-    },
-    {
-     "run": 5,
-     "status": "ok",
-     "latency_s": 28.0,
-     "cited_ids": [
-      "PMID:32877652",
-      "PMID:40884036",
-      "PMID:38696170",
-      "PMID:38456601",
-      "PMID:40968746"
-     ],
-     "safety_cited_ids": [],
-     "wrong_object_cited_ids": []
-    },
-    {
-     "run": 6,
-     "status": "ok",
-     "latency_s": 26.3,
-     "cited_ids": [
-      "PMID:38696170",
-      "PMID:35145275",
-      "PMID:38456601",
-      "PMID:33197224",
-      "PMID:32000955"
-     ],
-     "safety_cited_ids": [],
-     "wrong_object_cited_ids": []
-    },
-    {
-     "run": 7,
-     "status": "ok",
-     "latency_s": 27.7,
-     "cited_ids": [
-      "PMID:35145275",
-      "PMID:38456601",
-      "PMID:33197224",
-      "PMID:32000955",
-      "PMID:40538814"
-     ],
-     "safety_cited_ids": [],
-     "wrong_object_cited_ids": []
-    }
-   ],
-   "usable_runs": 8,
-   "network_excluded": 0,
-   "errored": 0,
-   "safety_cited": 0,
-   "wrong_object_cited": 0,
-   "class_query_equivalence": {
-    "empty_key_set": true,
-    "safety_cited": 0,
-    "wrong_object_cited": 0,
-    "equivalent": true,
-    "note": "empty key set => every safety section is wrong-object => the amended criterion is EXACTLY as strict as the old one for this query"
-   }
-  },
-  {
-   "id": "statin_moa_tracked",
-   "query": "What is the mechanism of action of statins?",
-   "resolved_key_set": [],
-   "resolver_matched": [],
-   "resolver_via": null,
-   "runs": [
-    {
-     "run": 0,
-     "status": "ok",
-     "latency_s": 26.3,
-     "cited_ids": [
-      "PMID:12067471",
-      "PMID:24657242",
-      "PMID:28057795",
-      "PMID:15559032"
-     ],
-     "safety_cited_ids": [],
-     "wrong_object_cited_ids": []
-    },
-    {
-     "run": 1,
-     "status": "ok",
-     "latency_s": 25.0,
-     "cited_ids": [
-      "PMID:12067471",
-      "PMID:24657242",
-      "PMID:28057795",
-      "PMID:15559032"
-     ],
-     "safety_cited_ids": [],
-     "wrong_object_cited_ids": []
-    },
-    {
-     "run": 2,
-     "status": "ok",
-     "latency_s": 26.1,
-     "cited_ids": [
-      "PMID:12067471",
-      "PMID:24657242",
-      "PMID:28057795",
-      "PMID:15559032"
-     ],
-     "safety_cited_ids": [],
-     "wrong_object_cited_ids": []
+     "safety_cited_ids": []
     },
     {
      "run": 3,
      "status": "ok",
-     "latency_s": 24.7,
+     "latency_s": 14.1,
      "cited_ids": [
-      "PMID:12067471",
-      "PMID:28057795",
-      "PMID:24657242",
-      "PMID:15559032",
-      "PMID:28223230"
+      "PMID:32877652",
+      "PMID:40884036",
+      "PMID:38696170",
+      "PMID:40968746",
+      "PMID:33197224"
      ],
-     "safety_cited_ids": [],
-     "wrong_object_cited_ids": []
+     "safety_cited_ids": []
     },
     {
      "run": 4,
      "status": "ok",
-     "latency_s": 27.3,
+     "latency_s": 12.7,
      "cited_ids": [
-      "PMID:12067471",
-      "PMID:28057795",
-      "PMID:24657242",
-      "PMID:15559032",
-      "PMID:28223230"
+      "PMID:32877652",
+      "PMID:36041474",
+      "PMID:38696170",
+      "PMID:39210781",
+      "PMID:35145275"
      ],
-     "safety_cited_ids": [],
-     "wrong_object_cited_ids": []
+     "safety_cited_ids": []
     },
     {
      "run": 5,
      "status": "ok",
-     "latency_s": 20.9,
+     "latency_s": 13.3,
      "cited_ids": [
-      "PMID:12067471",
-      "PMID:24657242",
-      "PMID:28057795",
-      "PMID:15559032"
+      "PMID:38456601",
+      "PMID:32000955",
+      "PMID:33197224",
+      "PMID:40538814",
+      "PMID:35409011"
      ],
-     "safety_cited_ids": [],
-     "wrong_object_cited_ids": []
+     "safety_cited_ids": []
     },
     {
      "run": 6,
      "status": "ok",
-     "latency_s": 23.0,
+     "latency_s": 14.8,
      "cited_ids": [
-      "PMID:12067471",
-      "PMID:24657242",
-      "PMID:28057795",
-      "PMID:15559032"
+      "PMID:32877652",
+      "PMID:40884036",
+      "PMID:38696170",
+      "PMID:33197224",
+      "PMID:40968746"
      ],
-     "safety_cited_ids": [],
-     "wrong_object_cited_ids": []
+     "safety_cited_ids": []
     },
     {
      "run": 7,
      "status": "ok",
-     "latency_s": 22.7,
+     "latency_s": 12.9,
      "cited_ids": [
-      "PMID:12067471",
-      "PMID:24657242",
-      "PMID:28057795",
-      "PMID:15559032"
+      "PMID:38696170",
+      "PMID:35145275",
+      "PMID:33197224",
+      "PMID:32000955",
+      "PMID:35409011"
      ],
-     "safety_cited_ids": [],
-     "wrong_object_cited_ids": []
+     "safety_cited_ids": []
     }
    ],
    "usable_runs": 8,
    "network_excluded": 0,
    "errored": 0,
-   "safety_cited": 0,
-   "wrong_object_cited": 0,
-   "class_query_equivalence": {
-    "empty_key_set": true,
-    "safety_cited": 0,
-    "wrong_object_cited": 0,
-    "equivalent": true,
-    "note": "empty key set => every safety section is wrong-object => the amended criterion is EXACTLY as strict as the old one for this query"
-   }
+   "safety_cited": 0
+  },
+  {
+   "id": "statin_moa_tracked",
+   "query": "What is the mechanism of action of statins?",
+   "runs": [
+    {
+     "run": 0,
+     "status": "ok",
+     "latency_s": 12.7,
+     "cited_ids": [
+      "PMID:12067471",
+      "PMID:28057795",
+      "PMID:24657242",
+      "PMID:15559032",
+      "PMID:28223230"
+     ],
+     "safety_cited_ids": []
+    },
+    {
+     "run": 1,
+     "status": "ok",
+     "latency_s": 12.1,
+     "cited_ids": [
+      "PMID:12067471",
+      "PMID:28057795",
+      "PMID:24657242",
+      "PMID:15559032",
+      "PMID:28223230"
+     ],
+     "safety_cited_ids": []
+    },
+    {
+     "run": 2,
+     "status": "ok",
+     "latency_s": 12.4,
+     "cited_ids": [
+      "PMID:12067471",
+      "PMID:24657242",
+      "PMID:28057795",
+      "PMID:15559032"
+     ],
+     "safety_cited_ids": []
+    },
+    {
+     "run": 3,
+     "status": "ok",
+     "latency_s": 12.6,
+     "cited_ids": [
+      "PMID:12067471",
+      "PMID:28057795",
+      "PMID:24657242",
+      "PMID:15559032",
+      "PMID:28223230"
+     ],
+     "safety_cited_ids": []
+    },
+    {
+     "run": 4,
+     "status": "ok",
+     "latency_s": 12.8,
+     "cited_ids": [
+      "PMID:12067471",
+      "PMID:28057795",
+      "PMID:24657242",
+      "PMID:15559032",
+      "PMID:28223230"
+     ],
+     "safety_cited_ids": []
+    },
+    {
+     "run": 5,
+     "status": "ok",
+     "latency_s": 12.3,
+     "cited_ids": [
+      "PMID:12067471",
+      "PMID:28057795",
+      "PMID:24657242",
+      "PMID:15559032",
+      "PMID:28223230"
+     ],
+     "safety_cited_ids": []
+    },
+    {
+     "run": 6,
+     "status": "ok",
+     "latency_s": 13.1,
+     "cited_ids": [
+      "PMID:12067471",
+      "PMID:24657242",
+      "PMID:28057795",
+      "PMID:15559032"
+     ],
+     "safety_cited_ids": []
+    },
+    {
+     "run": 7,
+     "status": "ok",
+     "latency_s": 12.9,
+     "cited_ids": [
+      "PMID:12067471",
+      "PMID:24657242",
+      "PMID:28057795",
+      "PMID:15559032"
+     ],
+     "safety_cited_ids": []
+    }
+   ],
+   "usable_runs": 8,
+   "network_excluded": 0,
+   "errored": 0,
+   "safety_cited": 0
   }
  ],
  "aggregate": {
   "queries": 6,
   "passed": 6,
   "failed": 0,
-  "failed_on_wrong_object_citation": [],
+  "failed_on_safety_citation": [],
   "failed_on_insufficient_runs": [],
   "verdict": "PASS",
-  "criterion": "wrong-object safety LOINC in the final top-N (AMENDED 2026-08-21; the old criterion was ANY safety LOINC and is still recorded per query as safety_cited)",
-  "old_criterion_would_have_failed": [],
   "exit_code": 0,
   "reasons": []
  },
  "self_test": {
-  "outcome": "PASS — the gate fails on wrong-object and passes on owned",
-  "basis": "real result set (6 queries)",
+  "outcome": "PASS — the gate fails when it should",
+  "basis": "real result set, query 'metformin_moa'",
   "injected_source_id": "DailyMed:00000000-0000-0000-0000-000000000000#34073-7",
   "detected_loinc": "34073-7",
-  "a_wrong_object_injection": {
-   "expect": "non-zero",
-   "exit_code": 1,
-   "ok": true,
-   "reasons_seen": [
-    "metformin_moa: 1/8 usable runs cited a WRONG-OBJECT whitelisted DailyMed safety section (want 0)"
-   ]
-  },
-  "b_owned_injection_into_metformin_moa": {
-   "expect": "zero (the amendment)",
-   "exit_code": 0,
-   "ok": true,
-   "safety_cited": 1,
-   "wrong_object_cited": 0,
-   "counters_independent": true,
-   "old_criterion_would_have_failed": [
-    "metformin_moa"
-   ],
-   "note": "THIS is the control that proves the 2026-08-21 loosening landed: an owned safety section is cited (safety_cited=1, the OLD criterion would have failed) yet the gate exits 0 because it is not wrong-object."
-  },
-  "clean_control": {
-   "expect": "zero",
-   "exit_code": 0,
-   "ok": true
-  },
-  "note": "A gate that has never failed has not been shown to work. Both controls drive the SAME evaluate() the real gate uses."
+  "exit_code_with_injection": 1,
+  "exit_code_without_injection": 0,
+  "reasons_seen": [
+   "metformin_moa: 1/8 usable runs cited a whitelisted DailyMed safety section (want 0)"
+  ],
+  "note": "A gate that has never failed has not been shown to work. This control drives the SAME evaluate() the real gate uses."
  },
  "exclusions": {
   "network_zero_doc_runs": 0,
@@ -878,24 +740,13 @@
   "rule": "status in (\"no_results\",\"error\") is network noise — retrieve() short-circuits before any filter/rerank stage, so those runs cannot distinguish a miss from an outage. status==\"irrelevant\" is USABLE."
  },
  "wall_clock": {
-  "seconds": 1184.1,
+  "seconds": 647.1,
   "retrieve_calls": 48,
   "note": "6 queries x 8 runs, each a real retrieve() with an LLM rewrite and live PubMed/FDA"
- },
- "criterion_amendment": {
-  "date": "2026-08-21",
-  "type": "DELIBERATE LOOSENING of an existing gate — not a refinement",
-  "old": "zero whitelisted DailyMed safety LOINC in the final top-N",
-  "new": "zero WRONG-OBJECT safety LOINC in the final top-N (moiety outside the query's key set); an OWNED safety section no longer fails",
-  "reason_verbatim": "The canary was born on the wrong-drug line; what it exists to catch is wrong-DRUG intrusion. The reserved-seat mechanism (主線 A) injects a queried drug's OWN safety sections by key, so under the old criterion the seat fails `metformin mechanism of action` — measured in seat_v2.json: METFORMIN owns four whitelisted safety sections (Warnings 0.5263, Boxed Warning 0.5139, Contraindications 0.4945, Drug Interactions 0.4711), all below the 0.6 floor and therefore all seatable. Blocking the seat on that basis would use a proxy metric to veto the fix the metric exists to enable. The other five canaries are unaffected: statin / SGLT2 / GLP-1 are class terms with no corpus key.",
-  "known_uncovered_case": "The old criterion ALSO caught an OWNED safety section appearing in a mechanism-of-action question — topical mismatch. That is now UNGUARDED. Accepted on the founder ruling that an owned section is at worst noise, whereas a wrong-drug section is a safety claim about the wrong substance.",
-  "what_would_reopen_it": "User-visible evidence that owned-but-off-topic sections degrade answers.",
-  "resolver": "tests/probes/ownership_eval/resolver.py (SHARED module, loaded by path; it imports strip_salt_suffixes from seat_measurement.py — no logic is copied)"
  },
  "reproducibility_note": "PubMed drift makes exact reproduction impossible — the baseline is a dated snapshot. Every run queries live PubMed/FDA and calls a non-deterministic LLM rewrite (temperature=0 but no seed and no cache), so pool composition varies between runs and between days. Re-running this gate re-measures; it does not reproduce. The PASS criterion (zero safety citations) is stable under that drift by design — it asserts an absence, not a pool identity.",
  "historical": {
   "five_source_baseline": "0/8 each, 2026-07-27, enable_local=True, NOT reproducible at HEAD",
-  "head_old_criterion_baseline": "0/8 each on the OLD criterion (any whitelisted safety LOINC), 2026-08-21, HEAD four-source config, 6 queries, 48/48 usable runs, zero exclusions — canary_baseline_20260821.json, the pre-amendment baseline",
   "detail": "tests/results/pairaware_m1_20260727_161811.json (untracked): 5 canaries, 0/8 each, 8 usable runs, 0 exclusions, measured with enable_local=True before the 2026-07-29 c1 default flip (c9d36cf). Retained as a dated historical figure for the FIVE-SOURCE ERA; it is not a HEAD baseline and must not be compared as one."
  }
 }

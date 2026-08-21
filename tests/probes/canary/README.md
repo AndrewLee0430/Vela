@@ -58,7 +58,74 @@ Two files called the statin canary two different things. Keeping both is the
 founder ruling (2026-08-21): the machine gate and the human-eye form now assert
 the *same* query, and the historical M1 number keeps its own query.
 
-## Criterion — unchanged in substance, now enforced
+## ⚠️ CRITERION AMENDED 2026-08-21 — A DELIBERATE LOOSENING
+
+**This is a loosening of an existing gate, not a refinement.** Recorded as such
+so nobody later reads it as a tightening or a cleanup.
+
+| | criterion |
+|---|---|
+| **OLD** | zero whitelisted DailyMed safety LOINC in the final top-5 |
+| **NEW** | zero **WRONG-OBJECT** safety LOINC in the final top-5 — a whitelisted safety section whose **moiety is outside the query's key set**. An **owned** safety section no longer fails. |
+
+**Why (founder ruling 2026-08-21, verbatim):**
+
+> The canary was born on the wrong-drug line; what it exists to catch is
+> wrong-DRUG intrusion. The reserved-seat mechanism (主線 A) injects a queried
+> drug's OWN safety sections by key, so under the old criterion the seat fails
+> `metformin mechanism of action` — measured in seat_v2.json: METFORMIN owns four
+> whitelisted safety sections (Warnings 0.5263, Boxed Warning 0.5139,
+> Contraindications 0.4945, Drug Interactions 0.4711), all below the 0.6 floor and
+> therefore all seatable. Blocking the seat on that basis would use a proxy metric
+> to veto the fix the metric exists to enable. The other five canaries are
+> unaffected: statin / SGLT2 / GLP-1 are class terms with no corpus key.
+
+### 🔴 What the amendment COSTS — a KNOWN UNCOVERED CASE
+
+The old criterion **also** caught a second thing: an **owned** safety section
+appearing in a mechanism-of-action question — **topical mismatch**. **That is now
+unguarded.** Accepted on the founder ruling that an owned section is at worst
+noise, whereas a wrong-drug section is a safety claim about the wrong substance.
+
+**What would re-open it:** user-visible evidence that owned-but-off-topic sections
+degrade answers.
+
+### Two counters, kept independent
+
+Every query records **both** numbers, so the eras stay comparable and a future
+reader can see exactly what the loosening covered:
+
+- `safety_cited` — the **OLD** criterion. Still measured; no longer gated on.
+- `wrong_object_cited` — the **NEW** criterion. What the gate keys on.
+
+The aggregate also carries `old_criterion_would_have_failed`, naming any query
+that the pre-amendment gate would have failed.
+
+### Class queries stay exactly as strict — asserted, not assumed
+
+A query resolving to **no** key set (`statin`, `SGLT2`, `GLP-1` — class terms with
+no corpus key) has an **EMPTY** key set, so **every** whitelisted safety section is
+wrong-object for it. For those five queries the amended criterion is **identical**
+to the old one. The gate **asserts** `safety_cited == wrong_object_cited` whenever
+the key set is empty and **LOUD STOPs** if it ever diverges; the check is recorded
+per query as `class_query_equivalence`.
+
+Ownership is decided by key only (Rule 21): `source_id` → `DailyMed:{setid}#{loinc}`,
+then `setid` → `moiety` joined from `label_docs.json` (a total, conflict-free join —
+1,038 setids, 0 conflicts). An unresolvable setid is treated as **wrong-object**, so
+the failure mode leans strict rather than toward a silent pass.
+
+The key set comes from **`tests/probes/ownership_eval/resolver.py`** — a shared
+module placed beside the other key logic (`build_key_sets`, `strip_salt_suffixes`)
+and loaded here **by file path**. It **imports** `strip_salt_suffixes` from
+`seat_measurement.py`; no logic is copied. It expands plurally per Rule 23, so
+`metformin` resolves to `{METFORMIN, METFORMIN HCL}`, never one key. ⚠️ Its known
+false-positive mode (base→salt expansion firing on a common word, e.g. dietary
+"sodium" → `SODIUM ACETATE`) makes a key set **larger**, which makes this gate
+**less** strict — recorded in the resolver's docstring rather than patched with an
+invented deny-list.
+
+## Criterion — the enforcement mechanics
 
 Per query, **N=8** real `retrieve()` calls, **full pipeline / rewrite arm** (the
 same arm the predecessor used — deliberately not the raw arm).
@@ -103,14 +170,25 @@ Any parse miss or cross-check mismatch is a **LOUD STOP (exit 2)** — never a
 default. The fully resolved configuration and its per-field provenance are written
 into the result JSON, so a future reader can see exactly what was measured.
 
-## Negative control (Rule 17)
+## Negative control (Rule 17) — TWO injections since the amendment
 
-`run_self_test()` injects a synthetic whitelisted safety citation
-(`DailyMed:0000…0000#34073-7`) and requires the gate to exit non-zero, then
-confirms the same record without the injection exits zero. It drives the **same**
-`evaluate()` the real gate uses — a control exercising a different path would prove
-nothing. The outcome is recorded in the JSON under `self_test`, and a broken
-control fails the whole run.
+Both drive the **same** `evaluate()` the real gate uses; a control exercising a
+different path would prove nothing. Recorded in the JSON under `self_test`, and a
+broken control fails the whole run.
+
+| control | injection | must |
+|---|---|---|
+| **(a)** | a **wrong-object** safety doc | exit **non-zero** |
+| **(b)** | an **owned** safety doc into `metformin_moa` | exit **zero**, with `safety_cited=1` and `wrong_object_cited=0` |
+| clean | neither counter set | exit zero |
+
+**(b) is the one that proves the amendment landed** — an owned safety section is
+cited (so the OLD criterion would have failed, and the JSON says so by name in
+`old_criterion_would_have_failed`) yet the gate passes, demonstrating that the two
+counters are genuinely independent rather than one being derived from the other.
+
+`python tests/probes/canary/canary_gate.py --self-test` runs both with **zero API
+calls**.
 
 `python tests/probes/canary/canary_gate.py --self-test` runs the control alone with
 **zero API calls**.
@@ -123,13 +201,28 @@ between days. **Re-running this gate re-measures; it does not reproduce.** The P
 criterion is stable under that drift by design: it asserts an *absence* (zero safety
 citations), not a pool identity.
 
-## The historical five-source baseline
+## Three eras of baseline — keep all three legible
 
-`0/8 each, 2026-07-27, enable_local=True` — retained as a **dated historical figure
-for the five-source era**, from `tests/results/pairaware_m1_20260727_161811.json`
-(untracked; 5 canaries, 0/8 each, 8 usable runs, 0 exclusions, `complete=true`).
-**It is not a HEAD baseline and must not be compared as one** — it measured a
-configuration with a source that is now off.
+| era | criterion | config | result | artifact |
+|---|---|---|---|---|
+| **five-source** 2026-07-27 | any safety LOINC | `enable_local=True`, **5 sources** | 0/8 × 5 queries | `tests/results/pairaware_m1_20260727_161811.json` (**untracked**) |
+| **HEAD / old criterion** 2026-08-21 | any safety LOINC | 4 sources | 0/8 × 6, 48/48 usable | `canary_baseline_20260821_pre_amendment.json` |
+| **HEAD / new criterion** 2026-08-21 | wrong-object only | 4 sources | **0/8 × 6 on BOTH counters**, 48/48 usable | `canary_baseline_20260821.json` |
+
+The **five-source** figure is **not a HEAD baseline and must not be compared as
+one** — it measured a configuration with a source that is now off.
+
+⚠️ **Filename collision, handled explicitly:** both HEAD runs happened on
+2026-08-21, so the amended run overwrote the date-named file. The pre-amendment
+artifact was recovered from commit `6d4d099` and committed under
+`…_pre_amendment.json` so the two HEAD eras coexist rather than one silently
+replacing the other. It has **no `wrong_object_cited` field** — that counter did
+not exist yet, which is itself the record of what changed.
+
+**The amendment was a NO-OP on current behaviour, as predicted:** every query
+reports `safety_cited == wrong_object_cited == 0/8`. No seat exists yet, so
+nothing owned is being injected; the loosening changes what the gate *would*
+tolerate, not what it currently observes.
 
 ## Files
 
