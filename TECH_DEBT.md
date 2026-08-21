@@ -14,8 +14,13 @@ Classes are **additive and orthogonal** to the existing `[P0]`–`[P3]` ratings 
 | **[COMPLIANCE]** | legal / regulatory / data-protection obligation | **8** |
 | **[HONESTY]** | the product currently tells the user something untrue or misleading | **15** |
 | [DONE] | already fixed / resolved / accepted; retained for the record only | 40 |
-| [OTHER] | quality, hygiene, tooling, opportunistic | 74 |
-| | **total** | **137** |
+| [OTHER] | quality, hygiene, tooling, opportunistic | 75 |
+| | **total** | **138** |
+
+<!-- ➕ ONE NEW ENTRY 2026-08-21 (canary-gate commit): the Rule 20 exposure on
+     golden_results_*.json + direction_shadow_*.json ([OTHER][P2], open) — filed as the
+     half NOT fixed while the canary half was. Re-derived per the 2026-08-17 convention
+     (no hand increments): 15 + 40 + 75 + 8 = 138. -->
 
 <!-- ⚠️ CLASS-MOVE 2026-08-20 (honesty-line closeout commit): the user-visible contradiction
      entry [HONESTY]→[DONE] — suppression shipped fly 238, Gate 7 fully closed.
@@ -212,6 +217,13 @@ When entries are resolved, mark with the resolving commit SHA (git log is the re
     - **Empirical results at the ruling commit:** the new command collects cleanly and reproduces **291 passed / 28 skipped**; the OLD full command (now `--ignore`-ing a nonexistent path) also still gives **291/28** — pytest does not error on ignoring a missing path, so stale muscle memory degrades gracefully rather than breaking.
   - 🟡 **OPEN RESIDUAL — what keeps this entry open:** `tests/results/` is still collectible by bare `pytest`. Closable only by **(a)** (a `pytest.ini`/`norecursedirs`, which the founder declined for now) **or by a Rule-20-compatible relocation of the scratch directory**. Until one of those happens, anyone running plain `pytest` without the one remaining flag still hits the `UnicodeDecodeError`.
   - **Surfaced**: 2026-08-17 while verifying an unrelated change; the invocation was reverse-engineered rather than found written down, which is the finding.
+
+- [OTHER] **[P2 · Rule 20 / evidence reproducibility — the CANARY half FIXED 2026-08-21, these two NOT] 🔴 `golden_results_*.json` and `direction_shadow_*.json` are gitignored, so the most recent recorded verdicts for golden `R06` and for `B01` exist on ONE MACHINE ONLY**
+  - **The mechanism, same as the sibling entry above:** `.gitignore:113` is `tests/results/` — a directory rule, so it hides the whole tree (409 entries on this machine). Exactly **6** files were ever force-added (`_citation_url_audit.py`, `_discriminator_validation.py`, `_mem_attribution.py`, `_otc_singledrug_probe.py`, `_poolsize_harvest.py`, `_severity_probe.py`). **Every `golden_results_*.json`, `direction_shadow_*.json`, `adversarial_contradiction_*.json` and `recheck_*.json` is untracked.**
+  - **R06 (`How should heparin-induced thrombocytopenia (HIT) be managed?`):** most recent verdict **PASS**, in `tests/results/golden_results_20260729_230006.json` (2026-07-29 23:00) — untracked. R06 appears in 33 of the 110 local `golden_results_*.json`. **NO committed artifact records an R06 PASS/FAIL**: the only tracked mention is `docs/poolsize_distribution_harvest.md:42` (`| R06 | [5, 5, 5] | 5 | 5 | 5 | 0.0 | 1.0 |`), which records *pool stability* and states at `:24-26` that verdicts that round were **"NOT MEASURED, not estimated"**. R06 is never individually named in any golden ledger in `STATE.md` / `TECH_DEBT.md` / `BACKLOG.md` / `docs/` — those name only R01, R03, R08, R10, R15, R16, R20.
+  - **B01 (`Why is polypharmacy a serious problem in elderly Asian patients?`, `scripts/citation_truth_check.py:60`):** most recent verdict **still reversing**, in `tests/results/direction_shadow_20260617_143022.json` (2026-06-17 15:01) — untracked — where it runs under the id `P-L2` with `gt_reversed: true`, `c1_flagged: true`, `selected_anchor_pmid: "35268461"`. Committed **prose** corroborates it (`STATE.md:167` "0/3 fidelity on B01-loaded, 2/3 CONTRADICTS"; `STATE.md:67` "loaded-framing B01 still reverses"; `C1_inrepo_planback.md:186`) — **but every artifact those lines cite is gitignored.** The prose is the claim; the evidence is not shippable.
+  - ✅ **The canary half IS fixed, this baton:** `tests/probes/canary/` now carries the gate script **and** its result JSON, per Rule 20. Before it, the five canary IDs appeared in exactly two tracked lines in the whole repo (`docs/pair_aware_retrieval_probe.md:206-207`) and only as *results* — the query strings themselves lived only in gitignored scripts.
+  - **📋 NOT FIXED — deliberately out of this baton's scope (founder ruling 2026-08-21).** Migrating two more result families is its own baton: `golden_results_*.json` is a 110-file series whose retention policy is undecided, and `direction_shadow_*.json` belongs to a P0 line (`TECH_DEBT.md:1044`, `:1072`) that is still open. **CHECK: any report citing an R06 or B01 verdict must state that its artifact is untracked and one-machine-only, or cite the committed prose instead and say the underlying artifact is not retained.**
 
 - [OTHER] **[P2 · data integrity / polymorphic key — surfaced 2026-08-18 during verification, NOT fixed] 🔴 `shared_query.query_id` holds TWO DIFFERENT KINDS OF ID depending on which button created the share, and a unique index spans both namespaces**
   - **The column is documented and generally used as the audit id** (`res_…` / `ver_…` / `exp_…`, minted at `api/server.py:788`/`1068`/`1549` and emitted to the client as `query_id`). **`ShareModal` posts whatever `queryId` prop it was handed** (`components/ShareModal.tsx:114` → `api/server.py:3166`), and there are exactly **two** `ShareButton` mount sites:

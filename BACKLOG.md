@@ -1458,6 +1458,8 @@ Two i18n content drifts surfaced during Stage 2 landing redesign (Steps 2 / 4a /
 
 ## Tooling / repo hygiene (pre-existing, surfaced during audits)
 
+- [ ] **CLAUDE.md says "Full regression (127 golden cases)"; `tests/golden_dataset.json` holds 133** — surfaced 2026-08-21 during the canary-gate baton (counted from the file). The six added since the 2026-06-17 freeze are `TB01`–`TB05` + `V16`, diffable against the frozen roster in `tests/direction_shadow_corpus.json`. **Flagged only — CLAUDE.md deliberately NOT edited** (founder owns that file). One-line fix whenever CLAUDE.md is next touched.
+
 - [ ] **dev/prod DB safety: never point local `.env` at the prod Neon branch**
       **Surfaced 2026-06-05** (v172 batch, dev-DB work). Local backend `.env` `DATABASE_URL` was
       found pointing at the **production** Neon branch (`neondb`) during a routine "set test_user →
