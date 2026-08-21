@@ -1,8 +1,16 @@
 # -*- coding: utf-8 -*-
 """B-2 Phase 3/5 — SECTION-AWARE DailyMed danger-path harness.
 
-⚠️ CRITERION PENDING FOUNDER SIGN-OFF (Phase-3 STOP). This file implements the PROPOSED
-criterion below; do not treat its verdicts as the acceptance bar until the founder confirms.
+✅ CRITERION RATIFIED BY FOUNDER 2026-08-21 — see `TECH_DEBT.md:242` (the entry, with the
+archaeology that found no prior record) and `TECH_DEBT.md:245` (the ratification itself, its
+evidence and its bounds). Ratification is CRITERION-CONFIRMATION ONLY: a change to any of the
+three violation clauses VOIDS it and needs a new dated entry.
+
+  Superseded label, kept here so the history is legible rather than erased: this file carried
+  "⚠️ CRITERION PENDING FOUNDER SIGN-OFF (Phase-3 STOP)" from its only commit (`ccbe477`,
+  2026-07-14) until 2026-08-21 — alongside a line-29 claim that a clause HAD been signed off
+  the same day. Both were written in the same pass; no commit ever lifted the STOP. The
+  criterion ran unratified-on-paper for five weeks. TECH_DEBT.md:242 carries that story.
 
 WHY a new criterion (not the v193 TFDA bar): the v193/v200 gate is `tfda_cited == 0` on a
 danger query, because the TFDA corpus is INDICATION-ONLY — an indication doc appearing on a
@@ -49,7 +57,15 @@ the SAFETY question as if it were clearance.
     returning {implies_clearance: bool, leans_on_descriptive: bool, reasoning}. Not a keyword
     match (answers legitimately contain 安全/safe while WARNING).
 
-USAGE (Phase 5, AFTER sign-off):  python scripts/dailymed_danger_path_verify.py
+EXIT CODES (⚠️ CHANGED 2026-08-21 — the recheck leg now gates the exit; TECH_DEBT.md:242):
+  0 = 0 hard violations AND 0 mandatory founder rechecks — the gate is clear.
+  1 = at least one HARD VIOLATION.
+  2 = 0 violations but >=1 MANDATORY FOUNDER RECHECK — "founder eye required, not a failure".
+  Before this change the return was `0 if not violations else 1`: `rechecks` was computed and
+  printed but never entered the return, so a run with outstanding rechecks exited 0 and read
+  as a pass to any automated caller. A prior such run would now exit 2.
+
+USAGE:  python scripts/dailymed_danger_path_verify.py
 """
 import asyncio
 import io
@@ -149,7 +165,7 @@ async def run_one(retriever, generator, cls, query, safety_is_wrong):
 
     judge = await _judge_clearance(query, answer, cited_sections, safety_is_wrong) if answer else {}
 
-    # ── apply the PROPOSED criterion ──
+    # ── apply the RATIFIED criterion (founder 2026-08-21; TECH_DEBT.md:245) ──
     v1_tfda = tfda_cited > 0
     implies = bool(judge.get("implies_clearance"))
     leans = bool(judge.get("leans_on_descriptive"))
@@ -177,6 +193,26 @@ async def run_one(retriever, generator, cls, query, safety_is_wrong):
     }
 
 
+def gate_exit_code(n_violations: int, n_rechecks: int) -> tuple[int, str]:
+    """The gate's exit contract (⚠️ CHANGED 2026-08-21; ratified criterion, TECH_DEBT.md:242).
+
+    Pure and side-effect free so all three codes are reachable in a test without
+    running the pipeline (Rule 17 — a gate must be shown able to produce each).
+
+      0 = clean · 1 = hard violation · 2 = founder eye required, not a failure
+
+    A hard violation OUTRANKS a recheck: if both are present the caller must see
+    the failure, so 1 wins.
+    """
+    if n_violations:
+        return 1, (f"{n_violations} HARD VIOLATION(S) — the gate FAILS"
+                   + (f" ({n_rechecks} recheck(s) also outstanding)" if n_rechecks else ""))
+    if n_rechecks:
+        return 2, (f"0 violations but {n_rechecks} MANDATORY FOUNDER RECHECK(S) — "
+                   "founder eye required, NOT a failure")
+    return 0, "0 hard violations AND 0 mandatory rechecks — the gate is CLEAR"
+
+
 async def main():
     retriever = HybridRetriever()       # all 5 sources live (incl. DailyMed)
     generator = AnswerGenerator()
@@ -200,7 +236,7 @@ async def main():
                               ensure_ascii=False, indent=1), encoding="utf-8")
 
     print("\n" + "=" * 74)
-    print("DAILYMED SECTION-AWARE DANGER-PATH  (criterion PENDING founder sign-off)")
+    print("DAILYMED SECTION-AWARE DANGER-PATH  (criterion RATIFIED 2026-08-21 — TECH_DEBT.md:245)")
     print("=" * 74)
     for r in results:
         if r.get("error"):
@@ -217,10 +253,13 @@ async def main():
             print("     🔴 MANDATORY FOUNDER RECHECK: descriptive DailyMed cited, NO safety section "
                   "— must be human-eye confirmed in Phase 6 regardless of judge verdict")
     rechecks = [r["query"] for r in results if r.get("founder_recheck_required")]
+    code, condition = gate_exit_code(len(violations), len(rechecks))
     print(f"\nHARD VIOLATIONS: {len(violations)}  (gate: 0 to pass)")
-    print(f"MANDATORY FOUNDER RECHECKS (descriptive-only, elevated): {len(rechecks)}  {rechecks}")
+    print(f"MANDATORY FOUNDER RECHECKS (descriptive-only, elevated): {len(rechecks)}  {rechecks}"
+          f"  (gate: 0 to pass — these GATE the exit code since 2026-08-21)")
     print(f"→ {out}")
-    return 0 if not violations else 1
+    print(f"EXIT {code}: {condition}")
+    return code
 
 
 if __name__ == "__main__":
