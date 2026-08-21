@@ -1,0 +1,1347 @@
+{
+ "generated": "2026-08-21 03:26:21Z",
+ "git_head": "f3a0dbfc46c0d66edd36bfbd8b9221acc29ff705",
+ "base": "seat_v1.json (query set + seat definition); MULTI-SOURCE pools retrieved fresh",
+ "scope_note": "seat_v1 is DailyMed-ONLY / raw-arm. The post-pool stages operate on the MULTI-SOURCE merged pool, so replaying stages over seat_v1's pools would make the [:max_results*4] cut never bind and would report a false 'always survives'. This harness therefore performs REAL multi-source retrieval per query.",
+ "config": {
+  "enable_local": false,
+  "enable_pubmed": true,
+  "enable_fda": true,
+  "enable_tfda": true,
+  "enable_dailymed": true,
+  "local_threshold": 0.6,
+  "max_results": 5,
+  "source_weight_active": true,
+  "annotate_research_question": true,
+  "arm": "rewrite (full pipeline — real retrieve())",
+  "n_runs": 8,
+  "min_usable_runs": 6,
+  "provenance": {
+   "enable_local": "api/server.py HybridRetriever(...) construction",
+   "enable_pubmed": "api/server.py HybridRetriever(...) construction",
+   "enable_fda": "api/server.py HybridRetriever(...) construction",
+   "enable_tfda": "api/server.py HybridRetriever(...) construction",
+   "enable_dailymed": "NOT passed by api/server.py; constructor default in api/rag/retriever.py",
+   "local_threshold": "api/server.py construction, cross-checked against the api/rag/retriever.py constructor default",
+   "max_results": "api/server.py retrieve(max_results=body.max_results or N), cross-checked against the retrieve() signature default",
+   "source_weight_active": "env flag read at api/server.py (shape asserted here). Deployed value ON per docs/kunion_cut_exemption_build.md:72 and docs/local_corpus_deprecation_c1_build.md:20 (secret digest d8c5ac2e11c8e492, Deployed). Mirrors the predecessor probe.",
+   "annotate_research_question": "api/server.py applies it before retrieve()"
+  }
+ },
+ "subset": {
+  "rule": "every 5th qid of the sorted 100 (zero-seat queries RETAINED as controls)",
+  "n": 20,
+  "qids": [
+   "Q000",
+   "Q005",
+   "Q010",
+   "Q015",
+   "Q020",
+   "Q025",
+   "Q030",
+   "Q035",
+   "Q040",
+   "Q045",
+   "Q050",
+   "Q055",
+   "Q060",
+   "Q065",
+   "Q070",
+   "Q075",
+   "Q080",
+   "Q085",
+   "Q090",
+   "Q095"
+  ]
+ },
+ "method_per_stage": {
+  "stage3": {
+   "mode": "REAL",
+   "detail": "api/rag/retriever._filter_by_relevance called for real (one LLM call per query per variant)"
+  },
+  "stage4": {
+   "mode": "REAL",
+   "detail": "Reranker.rerank called for real, then rank_by_composite_v1 + _collapse_subchunks"
+  },
+  "mirror_caveat": "Stages are a MIRROR of retrieve():208-292, not retrieve() itself. Every stage with a real function calls it (_apply_year_boost, _cut_exemption, _filter_by_relevance, rerank, rank_by_composite_v1, _collapse_subchunks); only the dedup/sort/slice arithmetic is mirrored line-for-line. This is the instrument-blindness class of TECH_DEBT #8, unavoidable without instrumenting api/ (out of scope), and declared rather than hidden.",
+  "reranker_on_below_floor_docs": "NOT derivable from code: Reranker.rerank OVERWRITES relevance_score with its own 0-100/100 score (api/rag/reranker.py:248) and sorts by it, so a seated doc's below-floor cosine is ERASED at stage 4. Whether the LLM reranker scores a seated safety section highly is a model behaviour, measured here, not predicted."
+ },
+ "stages": {
+  "P0": {
+   "stage0_seeded_pool": {
+    "queries": 20,
+    "owned_in_pool_rate": 0.95,
+    "wrong_object_rate": 0.55,
+    "salt_sibling_rate": 0.05,
+    "empty_rate": 0.0,
+    "mean_size": 18.9,
+    "seated_surviving": 24,
+    "seated_total": 24,
+    "seated_survival_rate": 1.0
+   },
+   "stage1_dedup_boost_sort_cut": {
+    "queries": 20,
+    "owned_in_pool_rate": 0.95,
+    "wrong_object_rate": 0.55,
+    "salt_sibling_rate": 0.05,
+    "empty_rate": 0.0,
+    "mean_size": 11.1,
+    "seated_surviving": 24,
+    "seated_total": 24,
+    "seated_survival_rate": 1.0
+   },
+   "stage2_cut_exemption": {
+    "queries": 20,
+    "owned_in_pool_rate": 0.95,
+    "wrong_object_rate": 0.55,
+    "salt_sibling_rate": 0.05,
+    "empty_rate": 0.0,
+    "mean_size": 11.3,
+    "seated_surviving": 24,
+    "seated_total": 24,
+    "seated_survival_rate": 1.0
+   },
+   "stage3_relevance_filter": {
+    "queries": 20,
+    "owned_in_pool_rate": 0.95,
+    "wrong_object_rate": 0.55,
+    "salt_sibling_rate": 0.05,
+    "empty_rate": 0.0,
+    "mean_size": 4.7,
+    "seated_surviving": 24,
+    "seated_total": 24,
+    "seated_survival_rate": 1.0
+   },
+   "stage4_rerank_composite_collapse": {
+    "queries": 20,
+    "owned_in_pool_rate": 0.95,
+    "wrong_object_rate": 0.55,
+    "salt_sibling_rate": 0.05,
+    "empty_rate": 0.0,
+    "mean_size": 4.7,
+    "seated_surviving": 24,
+    "seated_total": 24,
+    "seated_survival_rate": 1.0
+   },
+   "stage5_final_slice": {
+    "queries": 20,
+    "owned_in_pool_rate": 0.9,
+    "wrong_object_rate": 0.55,
+    "salt_sibling_rate": 0.05,
+    "empty_rate": 0.0,
+    "mean_size": 3.85,
+    "seated_surviving": 22,
+    "seated_total": 24,
+    "seated_survival_rate": 0.9167
+   }
+  },
+  "P1": {
+   "stage0_seeded_pool": {
+    "queries": 20,
+    "owned_in_pool_rate": 0.95,
+    "wrong_object_rate": 0.55,
+    "salt_sibling_rate": 0.05,
+    "empty_rate": 0.0,
+    "mean_size": 18.9,
+    "seated_surviving": 24,
+    "seated_total": 24,
+    "seated_survival_rate": 1.0
+   },
+   "stage1_dedup_boost_sort_cut": {
+    "queries": 20,
+    "owned_in_pool_rate": 0.95,
+    "wrong_object_rate": 0.55,
+    "salt_sibling_rate": 0.05,
+    "empty_rate": 0.0,
+    "mean_size": 11.1,
+    "seated_surviving": 24,
+    "seated_total": 24,
+    "seated_survival_rate": 1.0
+   },
+   "stage2_cut_exemption": {
+    "queries": 20,
+    "owned_in_pool_rate": 0.95,
+    "wrong_object_rate": 0.55,
+    "salt_sibling_rate": 0.05,
+    "empty_rate": 0.0,
+    "mean_size": 11.3,
+    "seated_surviving": 24,
+    "seated_total": 24,
+    "seated_survival_rate": 1.0
+   },
+   "stage3_relevance_filter": {
+    "queries": 20,
+    "owned_in_pool_rate": 0.95,
+    "wrong_object_rate": 0.55,
+    "salt_sibling_rate": 0.05,
+    "empty_rate": 0.0,
+    "mean_size": 4.5,
+    "seated_surviving": 24,
+    "seated_total": 24,
+    "seated_survival_rate": 1.0
+   },
+   "stage4_rerank_composite_collapse": {
+    "queries": 20,
+    "owned_in_pool_rate": 0.95,
+    "wrong_object_rate": 0.55,
+    "salt_sibling_rate": 0.05,
+    "empty_rate": 0.0,
+    "mean_size": 4.5,
+    "seated_surviving": 24,
+    "seated_total": 24,
+    "seated_survival_rate": 1.0
+   },
+   "stage5_final_slice": {
+    "queries": 20,
+    "owned_in_pool_rate": 0.95,
+    "wrong_object_rate": 0.55,
+    "salt_sibling_rate": 0.05,
+    "empty_rate": 0.0,
+    "mean_size": 3.7,
+    "seated_surviving": 23,
+    "seated_total": 24,
+    "seated_survival_rate": 0.9583
+   }
+  },
+  "P2": {
+   "stage0_seeded_pool": {
+    "queries": 20,
+    "owned_in_pool_rate": 0.95,
+    "wrong_object_rate": 0.55,
+    "salt_sibling_rate": 0.05,
+    "empty_rate": 0.0,
+    "mean_size": 18.9,
+    "seated_surviving": 24,
+    "seated_total": 24,
+    "seated_survival_rate": 1.0
+   },
+   "stage1_dedup_boost_sort_cut": {
+    "queries": 20,
+    "owned_in_pool_rate": 0.95,
+    "wrong_object_rate": 0.55,
+    "salt_sibling_rate": 0.05,
+    "empty_rate": 0.0,
+    "mean_size": 11.1,
+    "seated_surviving": 24,
+    "seated_total": 24,
+    "seated_survival_rate": 1.0
+   },
+   "stage2_cut_exemption": {
+    "queries": 20,
+    "owned_in_pool_rate": 0.95,
+    "wrong_object_rate": 0.55,
+    "salt_sibling_rate": 0.05,
+    "empty_rate": 0.0,
+    "mean_size": 11.35,
+    "seated_surviving": 24,
+    "seated_total": 24,
+    "seated_survival_rate": 1.0
+   },
+   "stage3_relevance_filter": {
+    "queries": 20,
+    "owned_in_pool_rate": 0.95,
+    "wrong_object_rate": 0.55,
+    "salt_sibling_rate": 0.05,
+    "empty_rate": 0.0,
+    "mean_size": 4.6,
+    "seated_surviving": 24,
+    "seated_total": 24,
+    "seated_survival_rate": 1.0
+   },
+   "stage4_rerank_composite_collapse": {
+    "queries": 20,
+    "owned_in_pool_rate": 0.95,
+    "wrong_object_rate": 0.55,
+    "salt_sibling_rate": 0.05,
+    "empty_rate": 0.0,
+    "mean_size": 4.6,
+    "seated_surviving": 24,
+    "seated_total": 24,
+    "seated_survival_rate": 1.0
+   },
+   "stage5_final_slice": {
+    "queries": 20,
+    "owned_in_pool_rate": 0.95,
+    "wrong_object_rate": 0.5,
+    "salt_sibling_rate": 0.05,
+    "empty_rate": 0.0,
+    "mean_size": 3.7,
+    "seated_surviving": 24,
+    "seated_total": 24,
+    "seated_survival_rate": 1.0
+   }
+  },
+  "P3": {
+   "stage0_seeded_pool": {
+    "queries": 20,
+    "owned_in_pool_rate": 0.95,
+    "wrong_object_rate": 0.55,
+    "salt_sibling_rate": 0.05,
+    "empty_rate": 0.0,
+    "mean_size": 18.9,
+    "seated_surviving": 24,
+    "seated_total": 24,
+    "seated_survival_rate": 1.0
+   },
+   "stage1_dedup_boost_sort_cut": {
+    "queries": 20,
+    "owned_in_pool_rate": 0.95,
+    "wrong_object_rate": 0.55,
+    "salt_sibling_rate": 0.05,
+    "empty_rate": 0.0,
+    "mean_size": 11.1,
+    "seated_surviving": 24,
+    "seated_total": 24,
+    "seated_survival_rate": 1.0
+   },
+   "stage2_cut_exemption": {
+    "queries": 20,
+    "owned_in_pool_rate": 0.95,
+    "wrong_object_rate": 0.55,
+    "salt_sibling_rate": 0.05,
+    "empty_rate": 0.0,
+    "mean_size": 11.35,
+    "seated_surviving": 24,
+    "seated_total": 24,
+    "seated_survival_rate": 1.0
+   },
+   "stage3_relevance_filter": {
+    "queries": 20,
+    "owned_in_pool_rate": 0.95,
+    "wrong_object_rate": 0.55,
+    "salt_sibling_rate": 0.05,
+    "empty_rate": 0.0,
+    "mean_size": 4.6,
+    "seated_surviving": 24,
+    "seated_total": 24,
+    "seated_survival_rate": 1.0
+   },
+   "stage4_rerank_composite_collapse": {
+    "queries": 20,
+    "owned_in_pool_rate": 0.95,
+    "wrong_object_rate": 0.55,
+    "salt_sibling_rate": 0.05,
+    "empty_rate": 0.0,
+    "mean_size": 4.6,
+    "seated_surviving": 24,
+    "seated_total": 24,
+    "seated_survival_rate": 1.0
+   },
+   "stage5_final_slice": {
+    "queries": 20,
+    "owned_in_pool_rate": 0.95,
+    "wrong_object_rate": 0.55,
+    "salt_sibling_rate": 0.05,
+    "empty_rate": 0.0,
+    "mean_size": 3.7,
+    "seated_surviving": 23,
+    "seated_total": 24,
+    "seated_survival_rate": 0.9583
+   }
+  }
+ },
+ "protections": {
+  "P0": {
+   "stage5": {
+    "queries": 20,
+    "owned_in_pool_rate": 0.9,
+    "wrong_object_rate": 0.55,
+    "salt_sibling_rate": 0.05,
+    "empty_rate": 0.0,
+    "mean_size": 3.85,
+    "seated_surviving": 22,
+    "seated_total": 24,
+    "seated_survival_rate": 0.9167
+   },
+   "displaced_from_stage4_to_5": {
+    "total": 17,
+    "label_distribution": {
+     "other": 4,
+     "wrong_object": 7,
+     "relevant": 6
+    }
+   }
+  },
+  "P1": {
+   "stage5": {
+    "queries": 20,
+    "owned_in_pool_rate": 0.95,
+    "wrong_object_rate": 0.55,
+    "salt_sibling_rate": 0.05,
+    "empty_rate": 0.0,
+    "mean_size": 3.7,
+    "seated_surviving": 23,
+    "seated_total": 24,
+    "seated_survival_rate": 0.9583
+   },
+   "displaced_from_stage4_to_5": {
+    "total": 16,
+    "label_distribution": {
+     "other": 5,
+     "wrong_object": 9,
+     "relevant": 2
+    }
+   }
+  },
+  "P2": {
+   "stage5": {
+    "queries": 20,
+    "owned_in_pool_rate": 0.95,
+    "wrong_object_rate": 0.5,
+    "salt_sibling_rate": 0.05,
+    "empty_rate": 0.0,
+    "mean_size": 3.7,
+    "seated_surviving": 24,
+    "seated_total": 24,
+    "seated_survival_rate": 1.0
+   },
+   "displaced_from_stage4_to_5": {
+    "total": 18,
+    "label_distribution": {
+     "other": 6,
+     "wrong_object": 10,
+     "relevant": 2
+    }
+   }
+  },
+  "P3": {
+   "stage5": {
+    "queries": 20,
+    "owned_in_pool_rate": 0.95,
+    "wrong_object_rate": 0.55,
+    "salt_sibling_rate": 0.05,
+    "empty_rate": 0.0,
+    "mean_size": 3.7,
+    "seated_surviving": 23,
+    "seated_total": 24,
+    "seated_survival_rate": 0.9583
+   },
+   "displaced_from_stage4_to_5": {
+    "total": 18,
+    "label_distribution": {
+     "other": 6,
+     "wrong_object": 10,
+     "relevant": 2
+    }
+   }
+  }
+ },
+ "combined_with_I1_stage5": {
+  "P0": {
+   "queries": 20,
+   "owned_in_pool_rate": 0.95,
+   "wrong_object_rate": 0.0,
+   "salt_sibling_rate": 0.05,
+   "empty_rate": 0.0,
+   "mean_size": 3.05,
+   "seated_surviving": 24,
+   "seated_total": 24,
+   "seated_survival_rate": 1.0
+  },
+  "P1": {
+   "queries": 20,
+   "owned_in_pool_rate": 0.95,
+   "wrong_object_rate": 0.0,
+   "salt_sibling_rate": 0.05,
+   "empty_rate": 0.0,
+   "mean_size": 2.95,
+   "seated_surviving": 24,
+   "seated_total": 24,
+   "seated_survival_rate": 1.0
+  },
+  "P2": {
+   "queries": 20,
+   "owned_in_pool_rate": 0.95,
+   "wrong_object_rate": 0.0,
+   "salt_sibling_rate": 0.05,
+   "empty_rate": 0.0,
+   "mean_size": 2.9,
+   "seated_surviving": 24,
+   "seated_total": 24,
+   "seated_survival_rate": 1.0
+  },
+  "P3": {
+   "queries": 20,
+   "owned_in_pool_rate": 0.95,
+   "wrong_object_rate": 0.0,
+   "salt_sibling_rate": 0.05,
+   "empty_rate": 0.0,
+   "mean_size": 2.9,
+   "seated_surviving": 24,
+   "seated_total": 24,
+   "seated_survival_rate": 1.0
+  }
+ },
+ "cut_question": {
+  "note": "the :232 [:max_results*4] cut and the :292 [:max_results] slice, measured on the honest P0 ordering over the REAL multi-source pool",
+  "per_query": [
+   {
+    "qid": "Q000",
+    "pool_size_before_seat": 20,
+    "n_seats": 1,
+    "seat_sort_positions": [
+     19,
+     20
+    ],
+    "seats_outside_cut_20": 1,
+    "seats_outside_final_5": 2
+   },
+   {
+    "qid": "Q005",
+    "pool_size_before_seat": 43,
+    "n_seats": 0,
+    "seat_sort_positions": [],
+    "seats_outside_cut_20": 0,
+    "seats_outside_final_5": 0
+   },
+   {
+    "qid": "Q010",
+    "pool_size_before_seat": 4,
+    "n_seats": 2,
+    "seat_sort_positions": [
+     1,
+     3,
+     4,
+     5
+    ],
+    "seats_outside_cut_20": 0,
+    "seats_outside_final_5": 1
+   },
+   {
+    "qid": "Q015",
+    "pool_size_before_seat": 11,
+    "n_seats": 3,
+    "seat_sort_positions": [
+     11,
+     12,
+     13
+    ],
+    "seats_outside_cut_20": 0,
+    "seats_outside_final_5": 3
+   },
+   {
+    "qid": "Q020",
+    "pool_size_before_seat": 6,
+    "n_seats": 1,
+    "seat_sort_positions": [
+     6
+    ],
+    "seats_outside_cut_20": 0,
+    "seats_outside_final_5": 1
+   },
+   {
+    "qid": "Q025",
+    "pool_size_before_seat": 17,
+    "n_seats": 2,
+    "seat_sort_positions": [
+     17,
+     18
+    ],
+    "seats_outside_cut_20": 0,
+    "seats_outside_final_5": 2
+   },
+   {
+    "qid": "Q030",
+    "pool_size_before_seat": 9,
+    "n_seats": 0,
+    "seat_sort_positions": [],
+    "seats_outside_cut_20": 0,
+    "seats_outside_final_5": 0
+   },
+   {
+    "qid": "Q035",
+    "pool_size_before_seat": 29,
+    "n_seats": 0,
+    "seat_sort_positions": [],
+    "seats_outside_cut_20": 0,
+    "seats_outside_final_5": 0
+   },
+   {
+    "qid": "Q040",
+    "pool_size_before_seat": 7,
+    "n_seats": 0,
+    "seat_sort_positions": [],
+    "seats_outside_cut_20": 0,
+    "seats_outside_final_5": 0
+   },
+   {
+    "qid": "Q045",
+    "pool_size_before_seat": 0,
+    "n_seats": 3,
+    "seat_sort_positions": [
+     0,
+     1,
+     2
+    ],
+    "seats_outside_cut_20": 0,
+    "seats_outside_final_5": 0
+   },
+   {
+    "qid": "Q050",
+    "pool_size_before_seat": 25,
+    "n_seats": 0,
+    "seat_sort_positions": [],
+    "seats_outside_cut_20": 0,
+    "seats_outside_final_5": 0
+   },
+   {
+    "qid": "Q055",
+    "pool_size_before_seat": 10,
+    "n_seats": 1,
+    "seat_sort_positions": [
+     10
+    ],
+    "seats_outside_cut_20": 0,
+    "seats_outside_final_5": 1
+   },
+   {
+    "qid": "Q060",
+    "pool_size_before_seat": 34,
+    "n_seats": 1,
+    "seat_sort_positions": [
+     34
+    ],
+    "seats_outside_cut_20": 1,
+    "seats_outside_final_5": 1
+   },
+   {
+    "qid": "Q065",
+    "pool_size_before_seat": 25,
+    "n_seats": 0,
+    "seat_sort_positions": [],
+    "seats_outside_cut_20": 0,
+    "seats_outside_final_5": 0
+   },
+   {
+    "qid": "Q070",
+    "pool_size_before_seat": 25,
+    "n_seats": 1,
+    "seat_sort_positions": [
+     25
+    ],
+    "seats_outside_cut_20": 1,
+    "seats_outside_final_5": 1
+   },
+   {
+    "qid": "Q075",
+    "pool_size_before_seat": 3,
+    "n_seats": 1,
+    "seat_sort_positions": [
+     3
+    ],
+    "seats_outside_cut_20": 0,
+    "seats_outside_final_5": 0
+   },
+   {
+    "qid": "Q080",
+    "pool_size_before_seat": 37,
+    "n_seats": 0,
+    "seat_sort_positions": [],
+    "seats_outside_cut_20": 0,
+    "seats_outside_final_5": 0
+   },
+   {
+    "qid": "Q085",
+    "pool_size_before_seat": 7,
+    "n_seats": 4,
+    "seat_sort_positions": [
+     7,
+     8,
+     9,
+     10
+    ],
+    "seats_outside_cut_20": 0,
+    "seats_outside_final_5": 4
+   },
+   {
+    "qid": "Q090",
+    "pool_size_before_seat": 27,
+    "n_seats": 1,
+    "seat_sort_positions": [
+     27
+    ],
+    "seats_outside_cut_20": 1,
+    "seats_outside_final_5": 1
+   },
+   {
+    "qid": "Q095",
+    "pool_size_before_seat": 15,
+    "n_seats": 3,
+    "seat_sort_positions": [
+     15,
+     16,
+     17
+    ],
+    "seats_outside_cut_20": 0,
+    "seats_outside_final_5": 3
+   }
+  ],
+  "totals": {
+   "seats": 24,
+   "seats_outside_cut_20": 4,
+   "seats_outside_final_5": 20
+  }
+ },
+ "canary_tension": [
+  {
+   "id": "metformin_moa",
+   "query": "metformin mechanism of action",
+   "resolver_hits": [
+    "METFORMIN"
+   ],
+   "resolves": true,
+   "owned_safety_docs_in_corpus": 4,
+   "seat_would_inject": 4,
+   "seat_docs": [
+    {
+     "moiety": "METFORMIN",
+     "loinc": "43685-7",
+     "score": 0.5263
+    },
+    {
+     "moiety": "METFORMIN",
+     "loinc": "34066-1",
+     "score": 0.5139
+    },
+    {
+     "moiety": "METFORMIN",
+     "loinc": "34070-3",
+     "score": 0.4945
+    },
+    {
+     "moiety": "METFORMIN",
+     "loinc": "34073-7",
+     "score": 0.4711
+    }
+   ],
+   "BREAKS_CANARY": true
+  },
+  {
+   "id": "statin_moa",
+   "query": "statin mechanism of action pharmacology",
+   "resolver_hits": [],
+   "resolves": false,
+   "owned_safety_docs_in_corpus": 0,
+   "seat_would_inject": 0,
+   "seat_docs": [],
+   "BREAKS_CANARY": false
+  },
+  {
+   "id": "glp1_weight",
+   "query": "GLP-1 減重機轉",
+   "resolver_hits": [],
+   "resolves": false,
+   "owned_safety_docs_in_corpus": 0,
+   "seat_would_inject": 0,
+   "seat_docs": [],
+   "BREAKS_CANARY": false
+  },
+  {
+   "id": "statin_efficacy",
+   "query": "statin primary prevention efficacy",
+   "resolver_hits": [],
+   "resolves": false,
+   "owned_safety_docs_in_corpus": 0,
+   "seat_would_inject": 0,
+   "seat_docs": [],
+   "BREAKS_CANARY": false
+  },
+  {
+   "id": "sglt2_cv",
+   "query": "SGLT2 inhibitor cardiovascular outcomes",
+   "resolver_hits": [],
+   "resolves": false,
+   "owned_safety_docs_in_corpus": 0,
+   "seat_would_inject": 0,
+   "seat_docs": [],
+   "BREAKS_CANARY": false
+  },
+  {
+   "id": "statin_moa_tracked",
+   "query": "What is the mechanism of action of statins?",
+   "resolver_hits": [],
+   "resolves": false,
+   "owned_safety_docs_in_corpus": 0,
+   "seat_would_inject": 0,
+   "seat_docs": [],
+   "BREAKS_CANARY": false
+  }
+ ],
+ "per_query": [
+  {
+   "qid": "Q000",
+   "query": "acamprosate calcium drug interactions",
+   "n_seats": 1,
+   "pool_size": 20,
+   "protections": {
+    "P0": {
+     "stage5_size": 4,
+     "seated_surviving_stage5": 1,
+     "p3_note": null
+    },
+    "P1": {
+     "stage5_size": 4,
+     "seated_surviving_stage5": 1,
+     "p3_note": null
+    },
+    "P2": {
+     "stage5_size": 4,
+     "seated_surviving_stage5": 1,
+     "p3_note": null
+    },
+    "P3": {
+     "stage5_size": 4,
+     "seated_surviving_stage5": 1,
+     "p3_note": "seated scores rewritten to min(above-floor pool score)=0.6146 minus 1e-6*rank, preserving order among seats"
+    }
+   }
+  },
+  {
+   "qid": "Q005",
+   "query": "amoxicillin drug interactions",
+   "n_seats": 0,
+   "pool_size": 43,
+   "protections": {
+    "P0": {
+     "stage5_size": 5,
+     "seated_surviving_stage5": 0,
+     "p3_note": null
+    },
+    "P1": {
+     "stage5_size": 5,
+     "seated_surviving_stage5": 0,
+     "p3_note": null
+    },
+    "P2": {
+     "stage5_size": 5,
+     "seated_surviving_stage5": 0,
+     "p3_note": null
+    },
+    "P3": {
+     "stage5_size": 5,
+     "seated_surviving_stage5": 0,
+     "p3_note": null
+    }
+   }
+  },
+  {
+   "qid": "Q010",
+   "query": "axitinib contraindications",
+   "n_seats": 2,
+   "pool_size": 4,
+   "protections": {
+    "P0": {
+     "stage5_size": 3,
+     "seated_surviving_stage5": 2,
+     "p3_note": null
+    },
+    "P1": {
+     "stage5_size": 3,
+     "seated_surviving_stage5": 2,
+     "p3_note": null
+    },
+    "P2": {
+     "stage5_size": 3,
+     "seated_surviving_stage5": 2,
+     "p3_note": null
+    },
+    "P3": {
+     "stage5_size": 3,
+     "seated_surviving_stage5": 2,
+     "p3_note": "seated scores rewritten to min(above-floor pool score)=0.6018 minus 1e-6*rank, preserving order among seats"
+    }
+   }
+  },
+  {
+   "qid": "Q015",
+   "query": "bortezomib warnings and precautions",
+   "n_seats": 3,
+   "pool_size": 11,
+   "protections": {
+    "P0": {
+     "stage5_size": 4,
+     "seated_surviving_stage5": 3,
+     "p3_note": null
+    },
+    "P1": {
+     "stage5_size": 4,
+     "seated_surviving_stage5": 3,
+     "p3_note": null
+    },
+    "P2": {
+     "stage5_size": 4,
+     "seated_surviving_stage5": 3,
+     "p3_note": null
+    },
+    "P3": {
+     "stage5_size": 4,
+     "seated_surviving_stage5": 3,
+     "p3_note": "seated scores rewritten to min(above-floor pool score)=0.65 minus 1e-6*rank, preserving order among seats"
+    }
+   }
+  },
+  {
+   "qid": "Q020",
+   "query": "crisaborole warnings and precautions",
+   "n_seats": 1,
+   "pool_size": 6,
+   "protections": {
+    "P0": {
+     "stage5_size": 2,
+     "seated_surviving_stage5": 1,
+     "p3_note": null
+    },
+    "P1": {
+     "stage5_size": 2,
+     "seated_surviving_stage5": 1,
+     "p3_note": null
+    },
+    "P2": {
+     "stage5_size": 2,
+     "seated_surviving_stage5": 1,
+     "p3_note": null
+    },
+    "P3": {
+     "stage5_size": 2,
+     "seated_surviving_stage5": 1,
+     "p3_note": "seated scores rewritten to min(above-floor pool score)=0.6285 minus 1e-6*rank, preserving order among seats"
+    }
+   }
+  },
+  {
+   "qid": "Q025",
+   "query": "encorafenib contraindications",
+   "n_seats": 2,
+   "pool_size": 17,
+   "protections": {
+    "P0": {
+     "stage5_size": 5,
+     "seated_surviving_stage5": 2,
+     "p3_note": null
+    },
+    "P1": {
+     "stage5_size": 5,
+     "seated_surviving_stage5": 2,
+     "p3_note": null
+    },
+    "P2": {
+     "stage5_size": 5,
+     "seated_surviving_stage5": 2,
+     "p3_note": null
+    },
+    "P3": {
+     "stage5_size": 5,
+     "seated_surviving_stage5": 2,
+     "p3_note": "seated scores rewritten to min(above-floor pool score)=0.6089 minus 1e-6*rank, preserving order among seats"
+    }
+   }
+  },
+  {
+   "qid": "Q030",
+   "query": "gallium citrate warnings and precautions",
+   "n_seats": 0,
+   "pool_size": 9,
+   "protections": {
+    "P0": {
+     "stage5_size": 2,
+     "seated_surviving_stage5": 0,
+     "p3_note": null
+    },
+    "P1": {
+     "stage5_size": 2,
+     "seated_surviving_stage5": 0,
+     "p3_note": null
+    },
+    "P2": {
+     "stage5_size": 2,
+     "seated_surviving_stage5": 0,
+     "p3_note": null
+    },
+    "P3": {
+     "stage5_size": 2,
+     "seated_surviving_stage5": 0,
+     "p3_note": null
+    }
+   }
+  },
+  {
+   "qid": "Q035",
+   "query": "granisetron hydrochloride warnings and precautions",
+   "n_seats": 0,
+   "pool_size": 29,
+   "protections": {
+    "P0": {
+     "stage5_size": 4,
+     "seated_surviving_stage5": 0,
+     "p3_note": null
+    },
+    "P1": {
+     "stage5_size": 4,
+     "seated_surviving_stage5": 0,
+     "p3_note": null
+    },
+    "P2": {
+     "stage5_size": 4,
+     "seated_surviving_stage5": 0,
+     "p3_note": null
+    },
+    "P3": {
+     "stage5_size": 4,
+     "seated_surviving_stage5": 0,
+     "p3_note": null
+    }
+   }
+  },
+  {
+   "qid": "Q040",
+   "query": "iopamidol warnings and precautions",
+   "n_seats": 0,
+   "pool_size": 7,
+   "protections": {
+    "P0": {
+     "stage5_size": 4,
+     "seated_surviving_stage5": 0,
+     "p3_note": null
+    },
+    "P1": {
+     "stage5_size": 2,
+     "seated_surviving_stage5": 0,
+     "p3_note": null
+    },
+    "P2": {
+     "stage5_size": 2,
+     "seated_surviving_stage5": 0,
+     "p3_note": null
+    },
+    "P3": {
+     "stage5_size": 2,
+     "seated_surviving_stage5": 0,
+     "p3_note": null
+    }
+   }
+  },
+  {
+   "qid": "Q045",
+   "query": "meropenem trihydrate warnings and precautions",
+   "n_seats": 3,
+   "pool_size": 0,
+   "protections": {
+    "P0": {
+     "stage5_size": 3,
+     "seated_surviving_stage5": 3,
+     "p3_note": null
+    },
+    "P1": {
+     "stage5_size": 3,
+     "seated_surviving_stage5": 3,
+     "p3_note": null
+    },
+    "P2": {
+     "stage5_size": 3,
+     "seated_surviving_stage5": 3,
+     "p3_note": null
+    },
+    "P3": {
+     "stage5_size": 3,
+     "seated_surviving_stage5": 3,
+     "p3_note": "no above-floor doc in the pool — P3 left scores unchanged"
+    }
+   }
+  },
+  {
+   "qid": "Q050",
+   "query": "mirabegron drug interactions",
+   "n_seats": 0,
+   "pool_size": 25,
+   "protections": {
+    "P0": {
+     "stage5_size": 5,
+     "seated_surviving_stage5": 0,
+     "p3_note": null
+    },
+    "P1": {
+     "stage5_size": 5,
+     "seated_surviving_stage5": 0,
+     "p3_note": null
+    },
+    "P2": {
+     "stage5_size": 5,
+     "seated_surviving_stage5": 0,
+     "p3_note": null
+    },
+    "P3": {
+     "stage5_size": 5,
+     "seated_surviving_stage5": 0,
+     "p3_note": null
+    }
+   }
+  },
+  {
+   "qid": "Q055",
+   "query": "nepafenac warnings and precautions",
+   "n_seats": 1,
+   "pool_size": 10,
+   "protections": {
+    "P0": {
+     "stage5_size": 5,
+     "seated_surviving_stage5": 1,
+     "p3_note": null
+    },
+    "P1": {
+     "stage5_size": 5,
+     "seated_surviving_stage5": 1,
+     "p3_note": null
+    },
+    "P2": {
+     "stage5_size": 5,
+     "seated_surviving_stage5": 1,
+     "p3_note": null
+    },
+    "P3": {
+     "stage5_size": 5,
+     "seated_surviving_stage5": 1,
+     "p3_note": "seated scores rewritten to min(above-floor pool score)=0.69 minus 1e-6*rank, preserving order among seats"
+    }
+   }
+  },
+  {
+   "qid": "Q060",
+   "query": "penicillin g benzathine contraindications",
+   "n_seats": 1,
+   "pool_size": 34,
+   "protections": {
+    "P0": {
+     "stage5_size": 5,
+     "seated_surviving_stage5": 0,
+     "p3_note": null
+    },
+    "P1": {
+     "stage5_size": 5,
+     "seated_surviving_stage5": 1,
+     "p3_note": null
+    },
+    "P2": {
+     "stage5_size": 5,
+     "seated_surviving_stage5": 1,
+     "p3_note": null
+    },
+    "P3": {
+     "stage5_size": 5,
+     "seated_surviving_stage5": 1,
+     "p3_note": "seated scores rewritten to min(above-floor pool score)=0.6016 minus 1e-6*rank, preserving order among seats"
+    }
+   }
+  },
+  {
+   "qid": "Q065",
+   "query": "probenecid warnings and precautions",
+   "n_seats": 0,
+   "pool_size": 25,
+   "protections": {
+    "P0": {
+     "stage5_size": 4,
+     "seated_surviving_stage5": 0,
+     "p3_note": null
+    },
+    "P1": {
+     "stage5_size": 3,
+     "seated_surviving_stage5": 0,
+     "p3_note": null
+    },
+    "P2": {
+     "stage5_size": 3,
+     "seated_surviving_stage5": 0,
+     "p3_note": null
+    },
+    "P3": {
+     "stage5_size": 3,
+     "seated_surviving_stage5": 0,
+     "p3_note": null
+    }
+   }
+  },
+  {
+   "qid": "Q070",
+   "query": "remifentanil contraindications",
+   "n_seats": 1,
+   "pool_size": 25,
+   "protections": {
+    "P0": {
+     "stage5_size": 5,
+     "seated_surviving_stage5": 1,
+     "p3_note": null
+    },
+    "P1": {
+     "stage5_size": 5,
+     "seated_surviving_stage5": 1,
+     "p3_note": null
+    },
+    "P2": {
+     "stage5_size": 5,
+     "seated_surviving_stage5": 1,
+     "p3_note": null
+    },
+    "P3": {
+     "stage5_size": 5,
+     "seated_surviving_stage5": 1,
+     "p3_note": "seated scores rewritten to min(above-floor pool score)=0.6087 minus 1e-6*rank, preserving order among seats"
+    }
+   }
+  },
+  {
+   "qid": "Q075",
+   "query": "selenium sulfide warnings and precautions",
+   "n_seats": 1,
+   "pool_size": 3,
+   "protections": {
+    "P0": {
+     "stage5_size": 1,
+     "seated_surviving_stage5": 1,
+     "p3_note": null
+    },
+    "P1": {
+     "stage5_size": 1,
+     "seated_surviving_stage5": 1,
+     "p3_note": null
+    },
+    "P2": {
+     "stage5_size": 1,
+     "seated_surviving_stage5": 1,
+     "p3_note": null
+    },
+    "P3": {
+     "stage5_size": 1,
+     "seated_surviving_stage5": 1,
+     "p3_note": "seated scores rewritten to min(above-floor pool score)=0.7167 minus 1e-6*rank, preserving order among seats"
+    }
+   }
+  },
+  {
+   "qid": "Q080",
+   "query": "sulindac contraindications",
+   "n_seats": 0,
+   "pool_size": 37,
+   "protections": {
+    "P0": {
+     "stage5_size": 3,
+     "seated_surviving_stage5": 0,
+     "p3_note": null
+    },
+    "P1": {
+     "stage5_size": 3,
+     "seated_surviving_stage5": 0,
+     "p3_note": null
+    },
+    "P2": {
+     "stage5_size": 3,
+     "seated_surviving_stage5": 0,
+     "p3_note": null
+    },
+    "P3": {
+     "stage5_size": 3,
+     "seated_surviving_stage5": 0,
+     "p3_note": null
+    }
+   }
+  },
+  {
+   "qid": "Q085",
+   "query": "testosterone contraindications",
+   "n_seats": 4,
+   "pool_size": 7,
+   "protections": {
+    "P0": {
+     "stage5_size": 5,
+     "seated_surviving_stage5": 3,
+     "p3_note": null
+    },
+    "P1": {
+     "stage5_size": 5,
+     "seated_surviving_stage5": 3,
+     "p3_note": null
+    },
+    "P2": {
+     "stage5_size": 5,
+     "seated_surviving_stage5": 4,
+     "p3_note": null
+    },
+    "P3": {
+     "stage5_size": 5,
+     "seated_surviving_stage5": 3,
+     "p3_note": "seated scores rewritten to min(above-floor pool score)=0.69 minus 1e-6*rank, preserving order among seats"
+    }
+   }
+  },
+  {
+   "qid": "Q090",
+   "query": "tizanidine contraindications",
+   "n_seats": 1,
+   "pool_size": 27,
+   "protections": {
+    "P0": {
+     "stage5_size": 4,
+     "seated_surviving_stage5": 1,
+     "p3_note": null
+    },
+    "P1": {
+     "stage5_size": 4,
+     "seated_surviving_stage5": 1,
+     "p3_note": null
+    },
+    "P2": {
+     "stage5_size": 4,
+     "seated_surviving_stage5": 1,
+     "p3_note": null
+    },
+    "P3": {
+     "stage5_size": 4,
+     "seated_surviving_stage5": 1,
+     "p3_note": "seated scores rewritten to min(above-floor pool score)=0.602 minus 1e-6*rank, preserving order among seats"
+    }
+   }
+  },
+  {
+   "qid": "Q095",
+   "query": "ursodiol drug interactions",
+   "n_seats": 3,
+   "pool_size": 15,
+   "protections": {
+    "P0": {
+     "stage5_size": 4,
+     "seated_surviving_stage5": 3,
+     "p3_note": null
+    },
+    "P1": {
+     "stage5_size": 4,
+     "seated_surviving_stage5": 3,
+     "p3_note": null
+    },
+    "P2": {
+     "stage5_size": 4,
+     "seated_surviving_stage5": 3,
+     "p3_note": null
+    },
+    "P3": {
+     "stage5_size": 4,
+     "seated_surviving_stage5": 3,
+     "p3_note": "seated scores rewritten to min(above-floor pool score)=0.73 minus 1e-6*rank, preserving order among seats"
+    }
+   }
+  }
+ ],
+ "self_refutation": {
+  "i1_circularity": "wrong_object -> 0 under I1 is TAUTOLOGICAL at EVERY stage, because I1's rule IS the labeler's rule. Only the seat metrics and what I1 removes are non-tautological.",
+  "p3_is_not_a_threshold_change": "P3 rewrites the relevance_score of SEATED docs only, to min(above-floor pool score) - 1e-6*rank. No non-seated doc is touched; min_score/local_threshold are unchanged; the store still returns exactly what it returned.",
+  "non_dailymed_docs_are_other": "PubMed/FDA/TFDA docs carry no moiety and label as 'other'; they are never counted as owned or wrong_object."
+ },
+ "cost": {
+  "wall_clock_s": 527.9,
+  "llm_calls": {
+   "rewrite": 80,
+   "filter": 160,
+   "rerank": 160
+  },
+  "llm_calls_total": 400,
+  "note": "rewrite calls include the k=3 DailyMed union fan-out per query"
+ }
+}

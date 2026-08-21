@@ -120,10 +120,140 @@ and bounds score drift at 0.01, recording both values per drifted doc.
 no seat can help those. Sampled queries with zero: 0 — **by construction** (v1
 eligibility required ≥1), not a discovery.
 
+## Seat SURVIVAL to the answer (`seat_v2.json`, 2026-08-21)
+
+seat_v1 measured **pool membership only**. v2 asks whether a seated doc reaches
+the answer, stage by stage across `retriever.py:208-292`.
+
+### ⚠️ v2 could NOT be built from seat_v1.json alone
+
+seat_v1 is **DailyMed-only, raw-arm**. The post-pool stages operate on the
+**multi-source merged** pool (PubMed + FDA + TFDA + DailyMed). Replaying stages
+over a DailyMed-only pool of ≤5 docs would mean the `[:max_results*4]` = `[:20]`
+cut **never binds**, reporting a falsely optimistic "the seat always survives".
+v2 therefore performs **real multi-source retrieval** per query and reuses
+seat_v1 only for the query set and the seat definition.
+
+**Method — option (a), declared:** stages 3 and 4 are **REAL model calls**, on a
+rule-based subset (**every 5th qid** of the sorted 100 → N=20; zero-seat queries
+**retained as controls**). Retrieval runs once per query and is reused across all
+8 variants. **Cost: 527.9s, 400 LLM calls** (80 rewrite incl. the k=3 union
+fan-out, 160 filter, 160 rerank).
+
+**Mirror caveat:** the stages are a mirror of `retrieve()`, not `retrieve()`
+itself. Every stage with a real function calls it — `_apply_year_boost`,
+`_cut_exemption`, `_filter_by_relevance`, `rerank`, `rank_by_composite_v1`,
+`_collapse_subchunks`; only dedup/sort/slice arithmetic is mirrored line-for-line.
+This is the TECH_DEBT #8 instrument-blindness class, unavoidable without
+instrumenting `api/`, and declared rather than hidden.
+
+### Stage survival (P0 — the honest S1, no protection)
+
+| stage | owned | wrong_obj | salt | mean size | seats surviving |
+|---|---|---|---|---|---|
+| 0 seeded pool | 0.95 | 0.55 | 0.05 | 18.9 | 24/24 |
+| 1 dedup+boost+sort+cut `[:20]` | 0.95 | 0.55 | 0.05 | 11.1 | 24/24 |
+| 2 `_cut_exemption` | 0.95 | 0.55 | 0.05 | **11.3** | 24/24 |
+| 3 LLM relevance filter | 0.95 | 0.55 | 0.05 | 4.7 | **24/24** |
+| 4 rerank + composite + collapse | 0.95 | 0.55 | 0.05 | 4.7 | 24/24 |
+| 5 final `[:max_results]` | 0.90 | 0.55 | 0.05 | 3.85 | **22/24** |
+
+### 🔑 THE ANSWER TO THE ":292 QUESTION" — the hypothesis is REFUTED
+
+The premise was: a seated doc carries a below-floor score, sorts last, and the
+cuts take from the tail, so it "almost always dies at :292".
+
+**The sort prediction is right; the survival conclusion is wrong.** On raw cosine
+ordering **20 of 27 seat-positions (74%) fall outside the top-5** — exactly as
+predicted. But only **4 of 27 fall outside `[:20]`**, and **22/24 seats still
+reach stage 5 with NO protection at all.**
+
+Two reasons, both structural:
+
+1. **`Reranker.rerank` OVERWRITES `relevance_score`** with its own 0–100/100 score
+   (`api/rag/reranker.py:248`) and re-sorts. The seated doc's below-floor cosine is
+   **erased at stage 4**, so `:292` slices the *reranked* order, not the cosine
+   order. "Sorts last by cosine" and "cut at :292" are simply not the same claim.
+2. **The protection already exists in production.** `_cut_exemption` (`:237`) and
+   the filter exemption (`:518-529`) both re-add whitelisted-safety docs that the
+   `[:20]` cut and the LLM filter dropped. A seated doc **is** a whitelisted safety
+   doc by construction, so both levers protect it for free — visible above as
+   stage 2 *growing* the pool (11.1 → 11.3) and stage 3 keeping 24/24 seats while
+   shrinking the pool from 11.3 to 4.7. **S1 is not unshippable; the exemption the
+   baton hypothesized would be needed is already there.**
+
+### Protections at stage 5, and what they displace
+
+| variant | owned | wrong_obj | salt | size | seats | displaced (stage4→5) |
+|---|---|---|---|---|---|---|
+| P0 none | 0.90 | 0.55 | 0.05 | 3.85 | 22/24 | 17: 7 wrong · **6 relevant** · 4 other |
+| P1 cut-exempt | 0.95 | 0.55 | 0.05 | 3.7 | 23/24 | 16: 9 wrong · 2 relevant · 5 other |
+| P2 cut + slot (cap 1) | 0.95 | **0.50** | 0.05 | 3.7 | **24/24** | 18: 10 wrong · 2 relevant · 6 other |
+| P3 floor-normalized | 0.95 | 0.55 | 0.05 | 3.7 | 23/24 | 18: 10 wrong · 2 relevant · 6 other |
+
+**P3's normalization** rewrites the score of **seated docs only** to
+`min(above-floor pool score) − 1e-6·rank`, preserving order among seats. No
+non-seated doc is touched and `min_score`/`local_threshold` are unchanged, so it
+is a sort-position change, not a threshold change. ⚠️ **P3 can only affect stages
+1–2** — the reranker erases its effect at stage 4, which is why P3 and P1 land
+identically.
+
+⚠️ **seat_v1's "zero relevant displaced" does NOT hold after the full pipeline.**
+At pool level, S2 cap=2 displaced 4 wrong_object + 1 salt_sibling and **zero**
+relevant. Through the full pipeline every variant displaces relevant docs — **6
+under P0**, 2 under P1/P2/P3. Protections *reduce* relevant displacement rather
+than causing it.
+
+### Combined with I1, stage 5 only
+
+| variant | owned | wrong_obj | salt | empty | size | seats |
+|---|---|---|---|---|---|---|
+| P0+I1 | 0.95 | 0.00\* | 0.05 | 0.00 | 3.05 | 24/24 |
+| P1+I1 | 0.95 | 0.00\* | 0.05 | 0.00 | 2.95 | 24/24 |
+| P2+I1 | 0.95 | 0.00\* | 0.05 | 0.00 | 2.90 | 24/24 |
+| P3+I1 | 0.95 | 0.00\* | 0.05 | 0.00 | 2.90 | 24/24 |
+
+\* **wrong_object → 0 under I1 is TAUTOLOGICAL at every stage, because I1's rule
+IS the labeler's rule.** Non-tautological: I1 raises seat survival to 24/24 under
+*every* protection (it removes the competitors that were evicting seats) and costs
+~0.8 docs of pool size.
+
+### 🔴 CANARY TENSION — the seat breaks one canary
+
+| canary | resolves? | hits | would seat | breaks? |
+|---|---|---|---|---|
+| `metformin_moa` | **YES** | `METFORMIN` | **4 safety docs** | **🔴 YES** |
+| `statin_moa` | no | — | 0 | no |
+| `glp1_weight` | no | — | 0 | no |
+| `statin_efficacy` | no | — | 0 | no |
+| `sglt2_cv` | no | — | 0 | no |
+| `statin_moa_tracked` | no | — | 0 | no |
+
+`metformin mechanism of action` whole-token-matches the corpus key `METFORMIN`,
+which owns four whitelisted safety sections — Warnings 43685-7 (0.5263), Boxed
+Warning 34066-1 (0.5139), Contraindications 34070-3 (0.4945), Drug Interactions
+34073-7 (0.4711), all below the 0.6 floor and therefore all seatable. **A
+key-based seat fires on OWNERSHIP, not on question intent**, so it would inject
+safety sections into a mechanism-of-action question whose committed gate
+(`tests/probes/canary/`) requires exactly zero. The other five don't resolve —
+`statin`, `SGLT2`, `GLP-1` are class terms with no corpus key, and `statins`
+plural whole-token-matches nothing.
+
+### Self-refutation (Rule 21)
+
+**Seat count ≠ seat position count.** 24 seats produced **27** sort-positions,
+because seats are scored on the **raw** query while the pool comes from
+**rewritten** queries — a doc below the floor on the raw query can be above it on
+a rewrite, appearing in both. So the ":292" rate is **20 of 27 positions**, not
+20 of 24 seats. Consequence worth noting: **the K-union rewrite already lifts some
+would-be-seated docs above the floor**, so the seat's marginal value is smaller
+than the raw-arm measurement suggested.
+
 ## Files
 
 | file | role |
 |---|---|
+| `seat_v2.py` / `seat_v2.json` | the survival measurement — real multi-source retrieval, real stage-3/4 model calls |
 | `build_query_set.py` | deterministic query-set builder + the key-based labeler |
 | `query_set_v1.json`  | seed 20260820 · 100 (drug, template) pairs over 910 eligible drugs |
 | `run_eval.py`        | the runner — writes `result_v1.json` (the evidence) |
