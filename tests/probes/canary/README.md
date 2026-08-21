@@ -50,7 +50,11 @@ deleting either re-creates a divergence that took a full recon to find:
 - **`statin_moa_tracked`** (`What is the mechanism of action of statins?`) is the
   c1 string, and it is **the only canary query that ever reached a tracked file**:
   `docs/human_eye_gate_checklist.md:104` (row 8, the human-eye canary row) and
-  `STATE.md:612` (the 2026-08-10 ownership-form gate, recorded PASS). Its id in
+  `STATE.md`'s **`FIRST OWNERSHIP-FORM GATE`** entry (2026-08-10), where its row
+  reads `What is the mechanism of action of statins? *(canary)*` … **PASS**.
+  ⚠️ **Both are CONTENT ANCHORS — `git grep -F` them, do not trust a line number**;
+  this cited `STATE.md:612` until 2026-08-21, and by then the number had drifted off
+  the entry entirely. Its id in
   its source is `canary_statin_moa`; the founder renamed it `statin_moa_tracked`
   here to make the relationship legible. **The string is unchanged.**
 
