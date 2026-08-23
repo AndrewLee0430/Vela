@@ -35,6 +35,8 @@ Examples from 2026-04-19 to 2026-04-20 sessions:
 
 **Step 0 — Identify the task** (work-source priority):
 
+0. **Fact-check the baton first** — `python tests/probes/baton_check/check_baton.py <baton.md>`. Seconds, no LLM, never blocks. It catches citations, SHAs and ratification claims that have drifted; it does **not** catch a conclusion overturned by later evidence.
+
 1. Read `STATE.md` → top of "Next Up" queue is your task
 2. Find that task in `BACKLOG.md` → read short description + phase + estimated time
 3. If task references PRD §X.Y → read `docs/PRD.md` § section (requirements + acceptance + "not in scope")

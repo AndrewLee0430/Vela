@@ -1,0 +1,20 @@
+{
+  "_meta": {
+    "why": "Known-external or known-artifact paths that C1 would otherwise flag as MISSING. EVERY entry carries a reason. A silent suppression list becomes a place drift hides — if you cannot write the reason, do not add the entry.",
+    "reviewed": "2026-08-24"
+  },
+  "suppressions": [
+    {
+      "pattern": "^recon_(saltgap|buckets|keyspace|queryshapes|coverage|tfda_bridge2?)[.]py$",
+      "reason": "Session-scratchpad recon scripts. The TECH_DEBT four-figures entry cites them CORRECTLY as living outside the worktree — that is the finding, not a broken citation."
+    },
+    {
+      "pattern": "^claude/settings",
+      "reason": "Regex artifact: the ledger writes .claude/settings.local.json and the leading dot is consumed by the path pattern, so it resolves as claude/... The real file exists."
+    },
+    {
+      "pattern": "^integrations/(httpx|logging)[.]py$",
+      "reason": "sentry_sdk vendor paths cited in the credential-logging entry. They live in site-packages, not this repo, and the citation is accurate."
+    }
+  ]
+}

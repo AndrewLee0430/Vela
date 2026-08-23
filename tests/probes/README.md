@@ -51,6 +51,23 @@ label contains the words *"acetylsalicylic acid"*). The report's numbers are re-
 
 ---
 
+## `baton_check/` — verify a handoff document before acting on it (2026-08-24)
+
+Every baton in the 2026-08-19→24 session contained at least one error; two were load-bearing.
+`check_baton.py` resolves citations, anchors, SHAs and ratification claims against the repo.
+**No network, no LLM, seconds, never blocks.** Its precision is a measurement, not a
+preference: the first scanner ran at **10% precision** and was rebuilt to ~85%. See its
+[`README.md`](baton_check/README.md) — especially **§What this does NOT catch**, which is the
+honest two-thirds/none-of-the-expensive-ones limit.
+
+| file | what it is |
+|---|---|
+| `check_baton.py` | the checker — C1/C2/C3/C5 blocking, A6/A7 advisory, C1b suggests anchors for new citations |
+| `suppressions.json` | known-external paths; **every entry carries a reason and the loader enforces it** |
+| `fixtures/baton_20260821_ratification.md` | the negative control — a REAL baton with documented errors. Do not "fix" them |
+
+---
+
 ## `retrieval_attrition/` — where documents die between corpus and answer (2026-08-22/23)
 
 Evidence for the TECH_DEBT entry headed *"[P1 · retrieval measurement / premise integrity …]"*.
