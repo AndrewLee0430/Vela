@@ -1,0 +1,1938 @@
+{
+ "N": 3,
+ "started_at": "2026-08-23 11:51:18",
+ "transport": "in-process retriever.retrieve() (see module docstring for why)",
+ "max_results": 5,
+ "source_weight_active": true,
+ "cases": {
+  "R01": {
+   "query": "What are the side effects of Metformin in patients with renal impairment?",
+   "runs": [
+    {
+     "run": 0,
+     "status": "ok",
+     "latency_s": 19.1,
+     "pool_size": 5,
+     "source_ids": [
+      "DailyMed:1f8833f9-1232-4aa7-a0d4-04a9f87dc2f0#34070-3",
+      "DailyMed:fb832474-88d9-4e29-95cd-fbc446944cc4#43685-7",
+      "PMID:18095950",
+      "PMID:21241070",
+      "PMID:34244196"
+     ],
+     "source_types": [
+      "dailymed",
+      "dailymed",
+      "pubmed",
+      "pubmed",
+      "pubmed"
+     ]
+    },
+    {
+     "run": 1,
+     "status": "ok",
+     "latency_s": 12.9,
+     "pool_size": 5,
+     "source_ids": [
+      "DailyMed:1f8833f9-1232-4aa7-a0d4-04a9f87dc2f0#34070-3",
+      "DailyMed:fb832474-88d9-4e29-95cd-fbc446944cc4#43685-7",
+      "PMID:18095950",
+      "PMID:26773926",
+      "PMID:21241070"
+     ],
+     "source_types": [
+      "dailymed",
+      "dailymed",
+      "pubmed",
+      "pubmed",
+      "pubmed"
+     ]
+    },
+    {
+     "run": 2,
+     "status": "ok",
+     "latency_s": 12.6,
+     "pool_size": 5,
+     "source_ids": [
+      "DailyMed:1f8833f9-1232-4aa7-a0d4-04a9f87dc2f0#34070-3",
+      "DailyMed:fb832474-88d9-4e29-95cd-fbc446944cc4#43685-7",
+      "PMID:18095950",
+      "PMID:26773926",
+      "PMID:21241070"
+     ],
+     "source_types": [
+      "dailymed",
+      "dailymed",
+      "pubmed",
+      "pubmed",
+      "pubmed"
+     ]
+    }
+   ],
+   "usable": 3,
+   "network_excluded": 0,
+   "errored": 0,
+   "pool_sizes": [
+    5,
+    5,
+    5
+   ],
+   "min": 5,
+   "max": 5,
+   "mode": 5,
+   "any_le2": false,
+   "n_le2": 0,
+   "churn": {
+    "union": 6,
+    "intersection": 4,
+    "turnover": 0.333,
+    "mean_pairwise_jaccard": 0.778
+   }
+  },
+  "R02": {
+   "query": "What is the first-line treatment for hypertension in diabetic patients?",
+   "runs": [
+    {
+     "run": 0,
+     "status": "ok",
+     "latency_s": 11.0,
+     "pool_size": 2,
+     "source_ids": [
+      "PMID:37831122",
+      "PMID:27052224"
+     ],
+     "source_types": [
+      "pubmed",
+      "pubmed"
+     ]
+    },
+    {
+     "run": 1,
+     "status": "ok",
+     "latency_s": 11.3,
+     "pool_size": 2,
+     "source_ids": [
+      "PMID:37831122",
+      "PMID:27052224"
+     ],
+     "source_types": [
+      "pubmed",
+      "pubmed"
+     ]
+    },
+    {
+     "run": 2,
+     "status": "ok",
+     "latency_s": 11.6,
+     "pool_size": 2,
+     "source_ids": [
+      "PMID:37831122",
+      "PMID:27052224"
+     ],
+     "source_types": [
+      "pubmed",
+      "pubmed"
+     ]
+    }
+   ],
+   "usable": 3,
+   "network_excluded": 0,
+   "errored": 0,
+   "pool_sizes": [
+    2,
+    2,
+    2
+   ],
+   "min": 2,
+   "max": 2,
+   "mode": 2,
+   "any_le2": true,
+   "n_le2": 3,
+   "churn": {
+    "union": 2,
+    "intersection": 2,
+    "turnover": 0.0,
+    "mean_pairwise_jaccard": 1.0
+   }
+  },
+  "R03": {
+   "query": "What are the indications for prophylactic anticoagulation in atrial fibrillation?",
+   "runs": [
+    {
+     "run": 0,
+     "status": "ok",
+     "latency_s": 12.8,
+     "pool_size": 4,
+     "source_ids": [
+      "PMID:29562325",
+      "PMID:28279251",
+      "PMID:22047781",
+      "PMID:12496498"
+     ],
+     "source_types": [
+      "pubmed",
+      "pubmed",
+      "pubmed",
+      "pubmed"
+     ]
+    },
+    {
+     "run": 1,
+     "status": "ok",
+     "latency_s": 10.9,
+     "pool_size": 2,
+     "source_ids": [
+      "PMID:39716733",
+      "PMID:39622324"
+     ],
+     "source_types": [
+      "pubmed",
+      "pubmed"
+     ]
+    },
+    {
+     "run": 2,
+     "status": "ok",
+     "latency_s": 13.0,
+     "pool_size": 5,
+     "source_ids": [
+      "PMID:29562325",
+      "PMID:28279251",
+      "PMID:24733535",
+      "PMID:22047781",
+      "PMID:12496498"
+     ],
+     "source_types": [
+      "pubmed",
+      "pubmed",
+      "pubmed",
+      "pubmed",
+      "pubmed"
+     ]
+    }
+   ],
+   "usable": 3,
+   "network_excluded": 0,
+   "errored": 0,
+   "pool_sizes": [
+    4,
+    2,
+    5
+   ],
+   "min": 2,
+   "max": 5,
+   "mode": 4,
+   "any_le2": true,
+   "n_le2": 1,
+   "churn": {
+    "union": 7,
+    "intersection": 0,
+    "turnover": 1.0,
+    "mean_pairwise_jaccard": 0.267
+   }
+  },
+  "R04": {
+   "query": "What is the mechanism of action of statins?",
+   "runs": [
+    {
+     "run": 0,
+     "status": "ok",
+     "latency_s": 12.1,
+     "pool_size": 4,
+     "source_ids": [
+      "PMID:12067471",
+      "PMID:24657242",
+      "PMID:28057795",
+      "PMID:15559032"
+     ],
+     "source_types": [
+      "pubmed",
+      "pubmed",
+      "pubmed",
+      "pubmed"
+     ]
+    },
+    {
+     "run": 1,
+     "status": "ok",
+     "latency_s": 12.6,
+     "pool_size": 4,
+     "source_ids": [
+      "PMID:12067471",
+      "PMID:24657242",
+      "PMID:28057795",
+      "PMID:15559032"
+     ],
+     "source_types": [
+      "pubmed",
+      "pubmed",
+      "pubmed",
+      "pubmed"
+     ]
+    },
+    {
+     "run": 2,
+     "status": "ok",
+     "latency_s": 13.2,
+     "pool_size": 4,
+     "source_ids": [
+      "PMID:12067471",
+      "PMID:24657242",
+      "PMID:28057795",
+      "PMID:15559032"
+     ],
+     "source_types": [
+      "pubmed",
+      "pubmed",
+      "pubmed",
+      "pubmed"
+     ]
+    }
+   ],
+   "usable": 3,
+   "network_excluded": 0,
+   "errored": 0,
+   "pool_sizes": [
+    4,
+    4,
+    4
+   ],
+   "min": 4,
+   "max": 4,
+   "mode": 4,
+   "any_le2": false,
+   "n_le2": 0,
+   "churn": {
+    "union": 4,
+    "intersection": 4,
+    "turnover": 0.0,
+    "mean_pairwise_jaccard": 1.0
+   }
+  },
+  "R05": {
+   "query": "What are the signs of serotonin syndrome?",
+   "runs": [
+    {
+     "run": 0,
+     "status": "ok",
+     "latency_s": 12.4,
+     "pool_size": 3,
+     "source_ids": [
+      "PMID:37309284",
+      "PMID:35551099",
+      "PMID:31523132"
+     ],
+     "source_types": [
+      "pubmed",
+      "pubmed",
+      "pubmed"
+     ]
+    },
+    {
+     "run": 1,
+     "status": "ok",
+     "latency_s": 13.1,
+     "pool_size": 4,
+     "source_ids": [
+      "PMID:31523132",
+      "PMID:37309284",
+      "PMID:35551099",
+      "PMID:38926083"
+     ],
+     "source_types": [
+      "pubmed",
+      "pubmed",
+      "pubmed",
+      "pubmed"
+     ]
+    },
+    {
+     "run": 2,
+     "status": "ok",
+     "latency_s": 19.6,
+     "pool_size": 3,
+     "source_ids": [
+      "PMID:37309284",
+      "PMID:35551099",
+      "PMID:31523132"
+     ],
+     "source_types": [
+      "pubmed",
+      "pubmed",
+      "pubmed"
+     ]
+    }
+   ],
+   "usable": 3,
+   "network_excluded": 0,
+   "errored": 0,
+   "pool_sizes": [
+    3,
+    4,
+    3
+   ],
+   "min": 3,
+   "max": 4,
+   "mode": 3,
+   "any_le2": false,
+   "n_le2": 0,
+   "churn": {
+    "union": 4,
+    "intersection": 3,
+    "turnover": 0.25,
+    "mean_pairwise_jaccard": 0.833
+   }
+  },
+  "R06": {
+   "query": "How should heparin-induced thrombocytopenia (HIT) be managed?",
+   "runs": [
+    {
+     "run": 0,
+     "status": "ok",
+     "latency_s": 13.5,
+     "pool_size": 5,
+     "source_ids": [
+      "PMID:30482768",
+      "PMID:22315270",
+      "PMID:33095876",
+      "PMID:32337112",
+      "PMID:38236118"
+     ],
+     "source_types": [
+      "pubmed",
+      "pubmed",
+      "pubmed",
+      "pubmed",
+      "pubmed"
+     ]
+    },
+    {
+     "run": 1,
+     "status": "ok",
+     "latency_s": 12.9,
+     "pool_size": 5,
+     "source_ids": [
+      "PMID:30482768",
+      "PMID:22315270",
+      "PMID:33095876",
+      "DailyMed:32e34077-aff1-4ec7-f9b0-b8e240768fb8#43685-7",
+      "PMID:32337112"
+     ],
+     "source_types": [
+      "pubmed",
+      "pubmed",
+      "pubmed",
+      "dailymed",
+      "pubmed"
+     ]
+    },
+    {
+     "run": 2,
+     "status": "ok",
+     "latency_s": 13.3,
+     "pool_size": 5,
+     "source_ids": [
+      "PMID:30482768",
+      "PMID:22315270",
+      "PMID:33095876",
+      "PMID:32337112",
+      "PMID:38236118"
+     ],
+     "source_types": [
+      "pubmed",
+      "pubmed",
+      "pubmed",
+      "pubmed",
+      "pubmed"
+     ]
+    }
+   ],
+   "usable": 3,
+   "network_excluded": 0,
+   "errored": 0,
+   "pool_sizes": [
+    5,
+    5,
+    5
+   ],
+   "min": 5,
+   "max": 5,
+   "mode": 5,
+   "any_le2": false,
+   "n_le2": 0,
+   "churn": {
+    "union": 6,
+    "intersection": 4,
+    "turnover": 0.333,
+    "mean_pairwise_jaccard": 0.778
+   }
+  },
+  "R07": {
+   "query": "What are the contraindications for using beta-blockers?",
+   "runs": [
+    {
+     "run": 0,
+     "status": "ok",
+     "latency_s": 12.6,
+     "pool_size": 4,
+     "source_ids": [
+      "DailyMed:0283bc9d-6998-493a-824a-d4c85f704111#43685-7",
+      "DailyMed:595cc3d5-1306-4828-aefa-5595219ffd62#43685-7",
+      "DailyMed:8b8ad213-1dc8-454e-a524-075685c0e1a8#43685-7",
+      "DailyMed:746db603-a6e1-4dc3-c2d8-92314419098c#34073-7"
+     ],
+     "source_types": [
+      "dailymed",
+      "dailymed",
+      "dailymed",
+      "dailymed"
+     ]
+    },
+    {
+     "run": 1,
+     "status": "ok",
+     "latency_s": 12.2,
+     "pool_size": 4,
+     "source_ids": [
+      "DailyMed:0283bc9d-6998-493a-824a-d4c85f704111#43685-7",
+      "DailyMed:595cc3d5-1306-4828-aefa-5595219ffd62#43685-7",
+      "DailyMed:8b8ad213-1dc8-454e-a524-075685c0e1a8#43685-7",
+      "DailyMed:746db603-a6e1-4dc3-c2d8-92314419098c#34073-7"
+     ],
+     "source_types": [
+      "dailymed",
+      "dailymed",
+      "dailymed",
+      "dailymed"
+     ]
+    },
+    {
+     "run": 2,
+     "status": "ok",
+     "latency_s": 12.2,
+     "pool_size": 5,
+     "source_ids": [
+      "DailyMed:0283bc9d-6998-493a-824a-d4c85f704111#43685-7",
+      "DailyMed:595cc3d5-1306-4828-aefa-5595219ffd62#43685-7",
+      "DailyMed:8b8ad213-1dc8-454e-a524-075685c0e1a8#43685-7",
+      "DailyMed:fb2fe258-fe2e-47f6-8adf-ca75bf6f90af#34073-7",
+      "DailyMed:df9bed83-6c82-4294-9442-5e7464c3aab1#34070-3"
+     ],
+     "source_types": [
+      "dailymed",
+      "dailymed",
+      "dailymed",
+      "dailymed",
+      "dailymed"
+     ]
+    }
+   ],
+   "usable": 3,
+   "network_excluded": 0,
+   "errored": 0,
+   "pool_sizes": [
+    4,
+    4,
+    5
+   ],
+   "min": 4,
+   "max": 5,
+   "mode": 4,
+   "any_le2": false,
+   "n_le2": 0,
+   "churn": {
+    "union": 6,
+    "intersection": 3,
+    "turnover": 0.5,
+    "mean_pairwise_jaccard": 0.667
+   }
+  },
+  "R08": {
+   "query": "What is the recommended dose of aspirin for cardiovascular prevention?",
+   "runs": [
+    {
+     "run": 0,
+     "status": "ok",
+     "latency_s": 12.2,
+     "pool_size": 4,
+     "source_ids": [
+      "PMID:19482214",
+      "PMID:23677803",
+      "PMID:35253137",
+      "PMID:20008209"
+     ],
+     "source_types": [
+      "pubmed",
+      "pubmed",
+      "pubmed",
+      "pubmed"
+     ]
+    },
+    {
+     "run": 1,
+     "status": "ok",
+     "latency_s": 13.3,
+     "pool_size": 4,
+     "source_ids": [
+      "PMID:19482214",
+      "PMID:23677803",
+      "PMID:35253137",
+      "PMID:20008209"
+     ],
+     "source_types": [
+      "pubmed",
+      "pubmed",
+      "pubmed",
+      "pubmed"
+     ]
+    },
+    {
+     "run": 2,
+     "status": "ok",
+     "latency_s": 13.8,
+     "pool_size": 5,
+     "source_ids": [
+      "PMID:41294093",
+      "PMID:19482214",
+      "PMID:41876873",
+      "PMID:37132104",
+      "PMID:26323750"
+     ],
+     "source_types": [
+      "pubmed",
+      "pubmed",
+      "pubmed",
+      "pubmed",
+      "pubmed"
+     ]
+    }
+   ],
+   "usable": 3,
+   "network_excluded": 0,
+   "errored": 0,
+   "pool_sizes": [
+    4,
+    4,
+    5
+   ],
+   "min": 4,
+   "max": 5,
+   "mode": 4,
+   "any_le2": false,
+   "n_le2": 0,
+   "churn": {
+    "union": 8,
+    "intersection": 1,
+    "turnover": 0.875,
+    "mean_pairwise_jaccard": 0.417
+   }
+  },
+  "R09": {
+   "query": "What monitoring is required for patients on lithium therapy?",
+   "runs": [
+    {
+     "run": 0,
+     "status": "ok",
+     "latency_s": 12.8,
+     "pool_size": 4,
+     "source_ids": [
+      "DailyMed:16ebe1f9-501d-468b-a37d-f6a46f8f32d1#43685-7",
+      "DailyMed:16ebe1f9-501d-468b-a37d-f6a46f8f32d1#34066-1",
+      "PMID:3308295",
+      "PMID:28953792"
+     ],
+     "source_types": [
+      "dailymed",
+      "dailymed",
+      "pubmed",
+      "pubmed"
+     ]
+    },
+    {
+     "run": 1,
+     "status": "ok",
+     "latency_s": 12.7,
+     "pool_size": 5,
+     "source_ids": [
+      "DailyMed:16ebe1f9-501d-468b-a37d-f6a46f8f32d1#43685-7",
+      "DailyMed:16ebe1f9-501d-468b-a37d-f6a46f8f32d1#34066-1",
+      "DailyMed:16ebe1f9-501d-468b-a37d-f6a46f8f32d1#34073-7",
+      "PMID:3308295",
+      "PMID:28953792"
+     ],
+     "source_types": [
+      "dailymed",
+      "dailymed",
+      "dailymed",
+      "pubmed",
+      "pubmed"
+     ]
+    },
+    {
+     "run": 2,
+     "status": "ok",
+     "latency_s": 12.8,
+     "pool_size": 5,
+     "source_ids": [
+      "DailyMed:16ebe1f9-501d-468b-a37d-f6a46f8f32d1#43685-7",
+      "DailyMed:16ebe1f9-501d-468b-a37d-f6a46f8f32d1#34066-1",
+      "PMID:31837914",
+      "PMID:3308295",
+      "PMID:30390660"
+     ],
+     "source_types": [
+      "dailymed",
+      "dailymed",
+      "pubmed",
+      "pubmed",
+      "pubmed"
+     ]
+    }
+   ],
+   "usable": 3,
+   "network_excluded": 0,
+   "errored": 0,
+   "pool_sizes": [
+    4,
+    5,
+    5
+   ],
+   "min": 4,
+   "max": 5,
+   "mode": 5,
+   "any_le2": false,
+   "n_le2": 0,
+   "churn": {
+    "union": 7,
+    "intersection": 3,
+    "turnover": 0.571,
+    "mean_pairwise_jaccard": 0.576
+   }
+  },
+  "R10": {
+   "query": "What are the clinical features of digoxin toxicity?",
+   "runs": [
+    {
+     "run": 0,
+     "status": "ok",
+     "latency_s": 12.7,
+     "pool_size": 5,
+     "source_ids": [
+      "DailyMed:1b7e5c6e-e052-41b0-a4ce-05dfe62faaaf#43685-7",
+      "PMID:3886755",
+      "PMID:2646855",
+      "PMID:2979993",
+      "PMID:39089856"
+     ],
+     "source_types": [
+      "dailymed",
+      "pubmed",
+      "pubmed",
+      "pubmed",
+      "pubmed"
+     ]
+    },
+    {
+     "run": 1,
+     "status": "ok",
+     "latency_s": 12.9,
+     "pool_size": 5,
+     "source_ids": [
+      "DailyMed:1b7e5c6e-e052-41b0-a4ce-05dfe62faaaf#43685-7",
+      "PMID:27731735",
+      "PMID:21262953",
+      "PMID:31951334",
+      "PMID:2979993"
+     ],
+     "source_types": [
+      "dailymed",
+      "pubmed",
+      "pubmed",
+      "pubmed",
+      "pubmed"
+     ]
+    },
+    {
+     "run": 2,
+     "status": "ok",
+     "latency_s": 13.0,
+     "pool_size": 5,
+     "source_ids": [
+      "PMID:39265879",
+      "DailyMed:1b7e5c6e-e052-41b0-a4ce-05dfe62faaaf#43685-7",
+      "PMID:2979993",
+      "PMID:3905880",
+      "PMID:3886755"
+     ],
+     "source_types": [
+      "pubmed",
+      "dailymed",
+      "pubmed",
+      "pubmed",
+      "pubmed"
+     ]
+    }
+   ],
+   "usable": 3,
+   "network_excluded": 0,
+   "errored": 0,
+   "pool_sizes": [
+    5,
+    5,
+    5
+   ],
+   "min": 5,
+   "max": 5,
+   "mode": 5,
+   "any_le2": false,
+   "n_le2": 0,
+   "churn": {
+    "union": 10,
+    "intersection": 2,
+    "turnover": 0.8,
+    "mean_pairwise_jaccard": 0.31
+   }
+  },
+  "R11": {
+   "query": "metformin 腎臟不好的病人可以用嗎",
+   "runs": [
+    {
+     "run": 0,
+     "status": "ok",
+     "latency_s": 17.0,
+     "pool_size": 5,
+     "source_ids": [
+      "PMID:32138474",
+      "PMID:25536258",
+      "DailyMed:fb832474-88d9-4e29-95cd-fbc446944cc4#43685-7",
+      "PMID:32097995",
+      "DailyMed:1f8833f9-1232-4aa7-a0d4-04a9f87dc2f0#34070-3"
+     ],
+     "source_types": [
+      "pubmed",
+      "pubmed",
+      "dailymed",
+      "pubmed",
+      "dailymed"
+     ]
+    },
+    {
+     "run": 1,
+     "status": "ok",
+     "latency_s": 12.8,
+     "pool_size": 5,
+     "source_ids": [
+      "DailyMed:1f8833f9-1232-4aa7-a0d4-04a9f87dc2f0#34070-3",
+      "DailyMed:fb832474-88d9-4e29-95cd-fbc446944cc4#34070-3",
+      "DailyMed:fb832474-88d9-4e29-95cd-fbc446944cc4#43685-7",
+      "DailyMed:1f8833f9-1232-4aa7-a0d4-04a9f87dc2f0#34073-7",
+      "PMID:31187887"
+     ],
+     "source_types": [
+      "dailymed",
+      "dailymed",
+      "dailymed",
+      "dailymed",
+      "pubmed"
+     ]
+    },
+    {
+     "run": 2,
+     "status": "ok",
+     "latency_s": 13.1,
+     "pool_size": 5,
+     "source_ids": [
+      "DailyMed:1f8833f9-1232-4aa7-a0d4-04a9f87dc2f0#34070-3",
+      "DailyMed:fb832474-88d9-4e29-95cd-fbc446944cc4#34070-3",
+      "PMID:41548682",
+      "DailyMed:fb832474-88d9-4e29-95cd-fbc446944cc4#43685-7",
+      "PMID:38837240"
+     ],
+     "source_types": [
+      "dailymed",
+      "dailymed",
+      "pubmed",
+      "dailymed",
+      "pubmed"
+     ]
+    }
+   ],
+   "usable": 3,
+   "network_excluded": 0,
+   "errored": 0,
+   "pool_sizes": [
+    5,
+    5,
+    5
+   ],
+   "min": 5,
+   "max": 5,
+   "mode": 5,
+   "any_le2": false,
+   "n_le2": 0,
+   "churn": {
+    "union": 10,
+    "intersection": 2,
+    "turnover": 0.8,
+    "mean_pairwise_jaccard": 0.31
+   }
+  },
+  "R12": {
+   "query": "is it ok to give both blood thinners at the same time",
+   "runs": [
+    {
+     "run": 0,
+     "status": "ok",
+     "latency_s": 13.1,
+     "pool_size": 5,
+     "source_ids": [
+      "DailyMed:fe0ced75-ccbf-4d2e-bd0d-b57e60ab913f#34073-7",
+      "DailyMed:f1d77dba-9dae-4f30-b3e3-b4898993f865#34073-7",
+      "PMID:32100736",
+      "PMID:33279389",
+      "PMID:15655403"
+     ],
+     "source_types": [
+      "dailymed",
+      "dailymed",
+      "pubmed",
+      "pubmed",
+      "pubmed"
+     ]
+    },
+    {
+     "run": 1,
+     "status": "ok",
+     "latency_s": 12.7,
+     "pool_size": 5,
+     "source_ids": [
+      "DailyMed:fe0ced75-ccbf-4d2e-bd0d-b57e60ab913f#34073-7",
+      "DailyMed:f1d77dba-9dae-4f30-b3e3-b4898993f865#34073-7",
+      "PMID:39133736",
+      "PMID:39918465",
+      "PMID:15655403"
+     ],
+     "source_types": [
+      "dailymed",
+      "dailymed",
+      "pubmed",
+      "pubmed",
+      "pubmed"
+     ]
+    },
+    {
+     "run": 2,
+     "status": "ok",
+     "latency_s": 12.9,
+     "pool_size": 5,
+     "source_ids": [
+      "DailyMed:fe0ced75-ccbf-4d2e-bd0d-b57e60ab913f#34073-7",
+      "DailyMed:f1d77dba-9dae-4f30-b3e3-b4898993f865#34073-7",
+      "DailyMed:a18b2af5-7c4a-4b7f-92c7-8a76e34da373#34068-7",
+      "PMID:30691551",
+      "PMID:19276776"
+     ],
+     "source_types": [
+      "dailymed",
+      "dailymed",
+      "dailymed",
+      "pubmed",
+      "pubmed"
+     ]
+    }
+   ],
+   "usable": 3,
+   "network_excluded": 0,
+   "errored": 0,
+   "pool_sizes": [
+    5,
+    5,
+    5
+   ],
+   "min": 5,
+   "max": 5,
+   "mode": 5,
+   "any_le2": false,
+   "n_le2": 0,
+   "churn": {
+    "union": 10,
+    "intersection": 2,
+    "turnover": 0.8,
+    "mean_pairwise_jaccard": 0.31
+   }
+  },
+  "R13": {
+   "query": "warfarin 和 aspirin 一起用 safe 嗎",
+   "runs": [
+    {
+     "run": 0,
+     "status": "ok",
+     "latency_s": 13.3,
+     "pool_size": 5,
+     "source_ids": [
+      "PMID:22257078",
+      "PMID:27785526",
+      "PMID:21813162",
+      "PMID:37037980",
+      "DailyMed:fe0ced75-ccbf-4d2e-bd0d-b57e60ab913f#34073-7"
+     ],
+     "source_types": [
+      "pubmed",
+      "pubmed",
+      "pubmed",
+      "pubmed",
+      "dailymed"
+     ]
+    },
+    {
+     "run": 1,
+     "status": "ok",
+     "latency_s": 13.0,
+     "pool_size": 5,
+     "source_ids": [
+      "PMID:38263263",
+      "PMID:27785526",
+      "PMID:21813162",
+      "PMID:27595682",
+      "PMID:17267456"
+     ],
+     "source_types": [
+      "pubmed",
+      "pubmed",
+      "pubmed",
+      "pubmed",
+      "pubmed"
+     ]
+    },
+    {
+     "run": 2,
+     "status": "ok",
+     "latency_s": 12.8,
+     "pool_size": 3,
+     "source_ids": [
+      "PMID:27785526",
+      "PMID:17267456",
+      "PMID:21813162"
+     ],
+     "source_types": [
+      "pubmed",
+      "pubmed",
+      "pubmed"
+     ]
+    }
+   ],
+   "usable": 3,
+   "network_excluded": 0,
+   "errored": 0,
+   "pool_sizes": [
+    5,
+    5,
+    3
+   ],
+   "min": 3,
+   "max": 5,
+   "mode": 5,
+   "any_le2": false,
+   "n_le2": 0,
+   "churn": {
+    "union": 8,
+    "intersection": 2,
+    "turnover": 0.75,
+    "mean_pairwise_jaccard": 0.394
+   }
+  },
+  "R14": {
+   "query": "When can beta blockers actually be used in heart failure? I thought they were contraindica",
+   "runs": [
+    {
+     "run": 0,
+     "status": "ok",
+     "latency_s": 14.2,
+     "pool_size": 5,
+     "source_ids": [
+      "PMID:10568667",
+      "PMID:32981932",
+      "PMID:9046949",
+      "PMID:32700759",
+      "PMID:36086982"
+     ],
+     "source_types": [
+      "pubmed",
+      "pubmed",
+      "pubmed",
+      "pubmed",
+      "pubmed"
+     ]
+    },
+    {
+     "run": 1,
+     "status": "ok",
+     "latency_s": 19.7,
+     "pool_size": 5,
+     "source_ids": [
+      "PMID:10568667",
+      "PMID:32700759",
+      "PMID:32981932",
+      "PMID:9046949",
+      "PMID:36086982"
+     ],
+     "source_types": [
+      "pubmed",
+      "pubmed",
+      "pubmed",
+      "pubmed",
+      "pubmed"
+     ]
+    },
+    {
+     "run": 2,
+     "status": "ok",
+     "latency_s": 12.7,
+     "pool_size": 5,
+     "source_ids": [
+      "PMID:10568667",
+      "PMID:32981932",
+      "PMID:32700759",
+      "PMID:36086982",
+      "PMID:9046949"
+     ],
+     "source_types": [
+      "pubmed",
+      "pubmed",
+      "pubmed",
+      "pubmed",
+      "pubmed"
+     ]
+    }
+   ],
+   "usable": 3,
+   "network_excluded": 0,
+   "errored": 0,
+   "pool_sizes": [
+    5,
+    5,
+    5
+   ],
+   "min": 5,
+   "max": 5,
+   "mode": 5,
+   "any_le2": false,
+   "n_le2": 0,
+   "churn": {
+    "union": 5,
+    "intersection": 5,
+    "turnover": 0.0,
+    "mean_pairwise_jaccard": 1.0
+   }
+  },
+  "R15": {
+   "query": "What is the difference between Type 1 and Type 2 heparin-induced thrombocytopenia?",
+   "runs": [
+    {
+     "run": 0,
+     "status": "ok",
+     "latency_s": 14.1,
+     "pool_size": 4,
+     "source_ids": [
+      "PMID:8975463",
+      "PMID:16798180",
+      "PMID:11235727",
+      "PMID:17174213"
+     ],
+     "source_types": [
+      "pubmed",
+      "pubmed",
+      "pubmed",
+      "pubmed"
+     ]
+    },
+    {
+     "run": 1,
+     "status": "ok",
+     "latency_s": 12.2,
+     "pool_size": 1,
+     "source_ids": [
+      "PMID:8975463"
+     ],
+     "source_types": [
+      "pubmed"
+     ]
+    },
+    {
+     "run": 2,
+     "status": "ok",
+     "latency_s": 11.7,
+     "pool_size": 1,
+     "source_ids": [
+      "PMID:8975463"
+     ],
+     "source_types": [
+      "pubmed"
+     ]
+    }
+   ],
+   "usable": 3,
+   "network_excluded": 0,
+   "errored": 0,
+   "pool_sizes": [
+    4,
+    1,
+    1
+   ],
+   "min": 1,
+   "max": 4,
+   "mode": 1,
+   "any_le2": true,
+   "n_le2": 2,
+   "churn": {
+    "union": 4,
+    "intersection": 1,
+    "turnover": 0.75,
+    "mean_pairwise_jaccard": 0.5
+   }
+  },
+  "R16": {
+   "query": "Which NSAIDs are safest for elderly patients with cardiovascular disease?",
+   "runs": [
+    {
+     "run": 0,
+     "status": "ok",
+     "latency_s": 13.5,
+     "pool_size": 5,
+     "source_ids": [
+      "PMID:27959716",
+      "DailyMed:213f0930-4a4a-4894-90b9-70c12daaa093#34066-1",
+      "DailyMed:198a4140-f4c0-4478-9157-ee1d68d0bb96#34066-1",
+      "DailyMed:419c597f-6a6f-4420-b240-7dc4c223387e#34066-1",
+      "DailyMed:7a78bb38-14d8-4a90-b883-482d4cebf716#34066-1"
+     ],
+     "source_types": [
+      "pubmed",
+      "dailymed",
+      "dailymed",
+      "dailymed",
+      "dailymed"
+     ]
+    },
+    {
+     "run": 1,
+     "status": "ok",
+     "latency_s": 13.3,
+     "pool_size": 5,
+     "source_ids": [
+      "PMID:27959716",
+      "DailyMed:213f0930-4a4a-4894-90b9-70c12daaa093#34066-1",
+      "DailyMed:198a4140-f4c0-4478-9157-ee1d68d0bb96#34066-1",
+      "DailyMed:419c597f-6a6f-4420-b240-7dc4c223387e#34066-1",
+      "DailyMed:7a78bb38-14d8-4a90-b883-482d4cebf716#34066-1"
+     ],
+     "source_types": [
+      "pubmed",
+      "dailymed",
+      "dailymed",
+      "dailymed",
+      "dailymed"
+     ]
+    },
+    {
+     "run": 2,
+     "status": "ok",
+     "latency_s": 13.2,
+     "pool_size": 5,
+     "source_ids": [
+      "PMID:27959716",
+      "DailyMed:213f0930-4a4a-4894-90b9-70c12daaa093#34066-1",
+      "DailyMed:198a4140-f4c0-4478-9157-ee1d68d0bb96#34066-1",
+      "DailyMed:419c597f-6a6f-4420-b240-7dc4c223387e#34066-1",
+      "DailyMed:7a78bb38-14d8-4a90-b883-482d4cebf716#34066-1"
+     ],
+     "source_types": [
+      "pubmed",
+      "dailymed",
+      "dailymed",
+      "dailymed",
+      "dailymed"
+     ]
+    }
+   ],
+   "usable": 3,
+   "network_excluded": 0,
+   "errored": 0,
+   "pool_sizes": [
+    5,
+    5,
+    5
+   ],
+   "min": 5,
+   "max": 5,
+   "mode": 5,
+   "any_le2": false,
+   "n_le2": 0,
+   "churn": {
+    "union": 5,
+    "intersection": 5,
+    "turnover": 0.0,
+    "mean_pairwise_jaccard": 1.0
+   }
+  },
+  "R17": {
+   "query": "How long should dual antiplatelet therapy be continued after coronary stent placement?",
+   "runs": [
+    {
+     "run": 0,
+     "status": "ok",
+     "latency_s": 13.6,
+     "pool_size": 5,
+     "source_ids": [
+      "PMID:39382876",
+      "PMID:27116326",
+      "PMID:39226909",
+      "PMID:39038086",
+      "PMID:39344653"
+     ],
+     "source_types": [
+      "pubmed",
+      "pubmed",
+      "pubmed",
+      "pubmed",
+      "pubmed"
+     ]
+    },
+    {
+     "run": 1,
+     "status": "ok",
+     "latency_s": 13.4,
+     "pool_size": 5,
+     "source_ids": [
+      "PMID:32247565",
+      "PMID:38599220",
+      "PMID:39038086",
+      "PMID:30522654",
+      "PMID:18319394"
+     ],
+     "source_types": [
+      "pubmed",
+      "pubmed",
+      "pubmed",
+      "pubmed",
+      "pubmed"
+     ]
+    },
+    {
+     "run": 2,
+     "status": "ok",
+     "latency_s": 13.7,
+     "pool_size": 5,
+     "source_ids": [
+      "PMID:32247565",
+      "PMID:38599220",
+      "PMID:38242567",
+      "PMID:39038086",
+      "PMID:42433786"
+     ],
+     "source_types": [
+      "pubmed",
+      "pubmed",
+      "pubmed",
+      "pubmed",
+      "pubmed"
+     ]
+    }
+   ],
+   "usable": 3,
+   "network_excluded": 0,
+   "errored": 0,
+   "pool_sizes": [
+    5,
+    5,
+    5
+   ],
+   "min": 5,
+   "max": 5,
+   "mode": 5,
+   "any_le2": false,
+   "n_le2": 0,
+   "churn": {
+    "union": 11,
+    "intersection": 1,
+    "turnover": 0.909,
+    "mean_pairwise_jaccard": 0.217
+   }
+  },
+  "R18": {
+   "query": "我的病人在用 statin，最近說肌肉痛，我該怎麼辦",
+   "runs": [
+    {
+     "run": 0,
+     "status": "ok",
+     "latency_s": 13.2,
+     "pool_size": 5,
+     "source_ids": [
+      "DailyMed:d0641def-425e-4357-a6b6-24ce00424549#34073-7",
+      "PMID:25694464",
+      "PMID:33278129",
+      "PMID:24257439",
+      "PMID:22001973"
+     ],
+     "source_types": [
+      "dailymed",
+      "pubmed",
+      "pubmed",
+      "pubmed",
+      "pubmed"
+     ]
+    },
+    {
+     "run": 1,
+     "status": "ok",
+     "latency_s": 14.0,
+     "pool_size": 5,
+     "source_ids": [
+      "PMID:25694464",
+      "PMID:36958647",
+      "PMID:27199064",
+      "PMID:35955495",
+      "PMID:33278129"
+     ],
+     "source_types": [
+      "pubmed",
+      "pubmed",
+      "pubmed",
+      "pubmed",
+      "pubmed"
+     ]
+    },
+    {
+     "run": 2,
+     "status": "ok",
+     "latency_s": 14.2,
+     "pool_size": 5,
+     "source_ids": [
+      "PMID:25694464",
+      "PMID:19217515",
+      "PMID:36958647",
+      "PMID:18367041",
+      "PMID:22560377"
+     ],
+     "source_types": [
+      "pubmed",
+      "pubmed",
+      "pubmed",
+      "pubmed",
+      "pubmed"
+     ]
+    }
+   ],
+   "usable": 3,
+   "network_excluded": 0,
+   "errored": 0,
+   "pool_sizes": [
+    5,
+    5,
+    5
+   ],
+   "min": 5,
+   "max": 5,
+   "mode": 5,
+   "any_le2": false,
+   "n_le2": 0,
+   "churn": {
+    "union": 11,
+    "intersection": 1,
+    "turnover": 0.909,
+    "mean_pairwise_jaccard": 0.204
+   }
+  },
+  "R19": {
+   "query": "What are the renal dosing adjustments required for common antibiotics?",
+   "runs": [
+    {
+     "run": 0,
+     "status": "ok",
+     "latency_s": 12.5,
+     "pool_size": 2,
+     "source_ids": [
+      "PMID:30862698",
+      "PMID:30219824"
+     ],
+     "source_types": [
+      "pubmed",
+      "pubmed"
+     ]
+    },
+    {
+     "run": 1,
+     "status": "ok",
+     "latency_s": 13.2,
+     "pool_size": 3,
+     "source_ids": [
+      "PMID:30219824",
+      "PMID:30862698",
+      "PMID:31109977"
+     ],
+     "source_types": [
+      "pubmed",
+      "pubmed",
+      "pubmed"
+     ]
+    },
+    {
+     "run": 2,
+     "status": "ok",
+     "latency_s": 13.8,
+     "pool_size": 3,
+     "source_ids": [
+      "PMID:25581282",
+      "PMID:30862698",
+      "PMID:18027987"
+     ],
+     "source_types": [
+      "pubmed",
+      "pubmed",
+      "pubmed"
+     ]
+    }
+   ],
+   "usable": 3,
+   "network_excluded": 0,
+   "errored": 0,
+   "pool_sizes": [
+    2,
+    3,
+    3
+   ],
+   "min": 2,
+   "max": 3,
+   "mode": 3,
+   "any_le2": true,
+   "n_le2": 1,
+   "churn": {
+    "union": 5,
+    "intersection": 1,
+    "turnover": 0.8,
+    "mean_pairwise_jaccard": 0.372
+   }
+  },
+  "R20": {
+   "query": "Can I use ACE inhibitors during pregnancy?",
+   "runs": [
+    {
+     "run": 0,
+     "status": "ok",
+     "latency_s": 12.3,
+     "pool_size": 3,
+     "source_ids": [
+      "DailyMed:97a9e8bf-91ed-4256-97d4-f9504bb01373#34066-1",
+      "PMID:25612630",
+      "PMID:21896148"
+     ],
+     "source_types": [
+      "dailymed",
+      "pubmed",
+      "pubmed"
+     ]
+    },
+    {
+     "run": 1,
+     "status": "ok",
+     "latency_s": 12.8,
+     "pool_size": 5,
+     "source_ids": [
+      "DailyMed:97a9e8bf-91ed-4256-97d4-f9504bb01373#34066-1",
+      "PMID:33779043",
+      "PMID:32815286",
+      "PMID:9201818",
+      "PMID:9761159"
+     ],
+     "source_types": [
+      "dailymed",
+      "pubmed",
+      "pubmed",
+      "pubmed",
+      "pubmed"
+     ]
+    },
+    {
+     "run": 2,
+     "status": "ok",
+     "latency_s": 13.2,
+     "pool_size": 5,
+     "source_ids": [
+      "DailyMed:97a9e8bf-91ed-4256-97d4-f9504bb01373#34066-1",
+      "PMID:33779043",
+      "PMID:32815286",
+      "PMID:9201818",
+      "PMID:9761159"
+     ],
+     "source_types": [
+      "dailymed",
+      "pubmed",
+      "pubmed",
+      "pubmed",
+      "pubmed"
+     ]
+    }
+   ],
+   "usable": 3,
+   "network_excluded": 0,
+   "errored": 0,
+   "pool_sizes": [
+    3,
+    5,
+    5
+   ],
+   "min": 3,
+   "max": 5,
+   "mode": 5,
+   "any_le2": false,
+   "n_le2": 0,
+   "churn": {
+    "union": 7,
+    "intersection": 1,
+    "turnover": 0.857,
+    "mean_pairwise_jaccard": 0.429
+   }
+  },
+  "TB01": {
+   "query": "冠脂妥高血脂可以吃嗎",
+   "runs": [
+    {
+     "run": 0,
+     "status": "ok",
+     "latency_s": 14.9,
+     "pool_size": 4,
+     "source_ids": [
+      "DailyMed:303f6c6c-c9ec-4a29-b2c9-2e81cc0e50f0#34068-7",
+      "PMID:15531000",
+      "PMID:37303665",
+      "PMID:12269853"
+     ],
+     "source_types": [
+      "dailymed",
+      "pubmed",
+      "pubmed",
+      "pubmed"
+     ]
+    },
+    {
+     "run": 1,
+     "status": "ok",
+     "latency_s": 14.1,
+     "pool_size": 5,
+     "source_ids": [
+      "DailyMed:303f6c6c-c9ec-4a29-b2c9-2e81cc0e50f0#34068-7",
+      "PMID:37303665",
+      "PMID:15531000",
+      "PMID:12269853",
+      "PMID:41714071"
+     ],
+     "source_types": [
+      "dailymed",
+      "pubmed",
+      "pubmed",
+      "pubmed",
+      "pubmed"
+     ]
+    },
+    {
+     "run": 2,
+     "status": "ok",
+     "latency_s": 13.3,
+     "pool_size": 4,
+     "source_ids": [
+      "DailyMed:303f6c6c-c9ec-4a29-b2c9-2e81cc0e50f0#34068-7",
+      "PMID:15531000",
+      "PMID:37303665",
+      "PMID:12269853"
+     ],
+     "source_types": [
+      "dailymed",
+      "pubmed",
+      "pubmed",
+      "pubmed"
+     ]
+    }
+   ],
+   "usable": 3,
+   "network_excluded": 0,
+   "errored": 0,
+   "pool_sizes": [
+    4,
+    5,
+    4
+   ],
+   "min": 4,
+   "max": 5,
+   "mode": 4,
+   "any_le2": false,
+   "n_le2": 0,
+   "churn": {
+    "union": 5,
+    "intersection": 4,
+    "turnover": 0.2,
+    "mean_pairwise_jaccard": 0.867
+   }
+  },
+  "TB02": {
+   "query": "冠脂妥剝半吃藥效會有影響嗎",
+   "runs": [
+    {
+     "run": 0,
+     "status": "irrelevant",
+     "latency_s": 12.4,
+     "pool_size": 0,
+     "source_ids": [],
+     "source_types": []
+    },
+    {
+     "run": 1,
+     "status": "irrelevant",
+     "latency_s": 12.1,
+     "pool_size": 0,
+     "source_ids": [],
+     "source_types": []
+    },
+    {
+     "run": 2,
+     "status": "ok",
+     "latency_s": 12.9,
+     "pool_size": 1,
+     "source_ids": [
+      "PMID:28741244"
+     ],
+     "source_types": [
+      "pubmed"
+     ]
+    }
+   ],
+   "usable": 3,
+   "network_excluded": 0,
+   "errored": 0,
+   "pool_sizes": [
+    0,
+    0,
+    1
+   ],
+   "min": 0,
+   "max": 1,
+   "mode": 0,
+   "any_le2": true,
+   "n_le2": 3,
+   "churn": null
+  },
+  "TB03": {
+   "query": "太田胃散和warfarin一起吃安全嗎",
+   "runs": [
+    {
+     "run": 0,
+     "status": "ok",
+     "latency_s": 13.2,
+     "pool_size": 4,
+     "source_ids": [
+      "DailyMed:91fa852c-b43d-4a55-983b-74aa6827125d#34073-7",
+      "DailyMed:0bb5fa27-32ed-ed13-e063-6394a90a1577#34073-7",
+      "DailyMed:dd904490-83f3-4cd3-bb6f-68e28509b4b6#34073-7",
+      "DailyMed:0a905e25-42b6-4937-a689-f01a8f22e644#34073-7"
+     ],
+     "source_types": [
+      "dailymed",
+      "dailymed",
+      "dailymed",
+      "dailymed"
+     ]
+    },
+    {
+     "run": 1,
+     "status": "ok",
+     "latency_s": 13.1,
+     "pool_size": 5,
+     "source_ids": [
+      "DailyMed:91fa852c-b43d-4a55-983b-74aa6827125d#34073-7",
+      "PMID:33769581",
+      "DailyMed:0bb5fa27-32ed-ed13-e063-6394a90a1577#34073-7",
+      "DailyMed:dd904490-83f3-4cd3-bb6f-68e28509b4b6#34073-7",
+      "PMID:15911722"
+     ],
+     "source_types": [
+      "dailymed",
+      "pubmed",
+      "dailymed",
+      "dailymed",
+      "pubmed"
+     ]
+    },
+    {
+     "run": 2,
+     "status": "irrelevant",
+     "latency_s": 12.7,
+     "pool_size": 0,
+     "source_ids": [],
+     "source_types": []
+    }
+   ],
+   "usable": 3,
+   "network_excluded": 0,
+   "errored": 0,
+   "pool_sizes": [
+    4,
+    5,
+    0
+   ],
+   "min": 0,
+   "max": 5,
+   "mode": 4,
+   "any_le2": true,
+   "n_le2": 1,
+   "churn": {
+    "union": 6,
+    "intersection": 3,
+    "turnover": 0.5,
+    "mean_pairwise_jaccard": 0.5
+   }
+  },
+  "TB04": {
+   "query": "脂清寧膜衣錠可以降膽固醇嗎",
+   "runs": [
+    {
+     "run": 0,
+     "status": "ok",
+     "latency_s": 12.3,
+     "pool_size": 1,
+     "source_ids": [
+      "DailyMed:5238dc45-a2b7-4208-b1a7-cc695b6cd1f0#34073-7"
+     ],
+     "source_types": [
+      "dailymed"
+     ]
+    },
+    {
+     "run": 1,
+     "status": "ok",
+     "latency_s": 12.8,
+     "pool_size": 1,
+     "source_ids": [
+      "DailyMed:5238dc45-a2b7-4208-b1a7-cc695b6cd1f0#34073-7"
+     ],
+     "source_types": [
+      "dailymed"
+     ]
+    },
+    {
+     "run": 2,
+     "status": "ok",
+     "latency_s": 13.0,
+     "pool_size": 1,
+     "source_ids": [
+      "DailyMed:5238dc45-a2b7-4208-b1a7-cc695b6cd1f0#34073-7"
+     ],
+     "source_types": [
+      "dailymed"
+     ]
+    }
+   ],
+   "usable": 3,
+   "network_excluded": 0,
+   "errored": 0,
+   "pool_sizes": [
+    1,
+    1,
+    1
+   ],
+   "min": 1,
+   "max": 1,
+   "mode": 1,
+   "any_le2": true,
+   "n_le2": 3,
+   "churn": {
+    "union": 1,
+    "intersection": 1,
+    "turnover": 0.0,
+    "mean_pairwise_jaccard": 1.0
+   }
+  },
+  "TB05": {
+   "query": "冠脂妥懷孕可以吃嗎",
+   "runs": [
+    {
+     "run": 0,
+     "status": "ok",
+     "latency_s": 14.0,
+     "pool_size": 5,
+     "source_ids": [
+      "DailyMed:d0641def-425e-4357-a6b6-24ce00424549#34070-3",
+      "PMID:40252709",
+      "PMID:40855563",
+      "DailyMed:7fd9d5c7-8025-4049-8b5b-ae3d22db507f#34070-3",
+      "PMID:33810299"
+     ],
+     "source_types": [
+      "dailymed",
+      "pubmed",
+      "pubmed",
+      "dailymed",
+      "pubmed"
+     ]
+    },
+    {
+     "run": 1,
+     "status": "ok",
+     "latency_s": 13.1,
+     "pool_size": 4,
+     "source_ids": [
+      "DailyMed:d0641def-425e-4357-a6b6-24ce00424549#34070-3",
+      "DailyMed:7fd9d5c7-8025-4049-8b5b-ae3d22db507f#34070-3",
+      "PMID:40252709",
+      "PMID:36975763"
+     ],
+     "source_types": [
+      "dailymed",
+      "dailymed",
+      "pubmed",
+      "pubmed"
+     ]
+    },
+    {
+     "run": 2,
+     "status": "ok",
+     "latency_s": 12.7,
+     "pool_size": 5,
+     "source_ids": [
+      "DailyMed:d0641def-425e-4357-a6b6-24ce00424549#34070-3",
+      "DailyMed:7fd9d5c7-8025-4049-8b5b-ae3d22db507f#34070-3",
+      "PMID:24126785",
+      "PMID:40252709",
+      "PMID:36975763"
+     ],
+     "source_types": [
+      "dailymed",
+      "dailymed",
+      "pubmed",
+      "pubmed",
+      "pubmed"
+     ]
+    }
+   ],
+   "usable": 3,
+   "network_excluded": 0,
+   "errored": 0,
+   "pool_sizes": [
+    5,
+    4,
+    5
+   ],
+   "min": 4,
+   "max": 5,
+   "mode": 5,
+   "any_le2": false,
+   "n_le2": 0,
+   "churn": {
+    "union": 7,
+    "intersection": 3,
+    "turnover": 0.571,
+    "mean_pairwise_jaccard": 0.576
+   }
+  }
+ },
+ "updated_at": "2026-08-23 12:07:52",
+ "complete": true
+}

@@ -1,0 +1,2639 @@
+{
+ "generated_utc": "2026-08-22 01:50:04Z",
+ "corpus_docs": 4608,
+ "distinct_moieties": 1038,
+ "whitelist_loincs": [
+  "34066-1",
+  "34070-3",
+  "34073-7",
+  "43685-7"
+ ],
+ "method_note": "build_key_sets is a CORPUS-LEVEL key-set builder, NOT a free-text resolver: it has no query matcher. To compare expansions fairly, both arms share resolver.py's whole-token matcher; they differ only in how a matched moiety EXPANDS. Consequence, stated not resolved: builder B has NO base->salt fallback, so a query naming only a salt BASE (e.g. 'warfarin' -> WARFARIN SODIUM) resolves EMPTY under B. That is a real asymmetry, not an artifact of this harness.",
+ "Q1a": {
+  "query": "aspirin contraindications",
+  "matched_moieties": [
+   "ASPIRIN"
+  ],
+  "A_resolver": {
+   "keys": [
+    "ASPIRIN"
+   ],
+   "owned": {},
+   "n_safety_docs": 0
+  },
+  "B_build_key_sets": {
+   "keys": [
+    "ACETYLSALICYLIC ACID",
+    "ASPIRIN"
+   ],
+   "owned": {
+    "ACETYLSALICYLIC ACID": [
+     "34070-3",
+     "34073-7",
+     "43685-7"
+    ]
+   },
+   "n_safety_docs": 3
+  }
+ },
+ "Q1bc": {
+  "alias_groups_declared": [
+   [
+    "ACETYLSALICYLIC ACID",
+    "ASPIRIN"
+   ]
+  ],
+  "pairs_joined_by_alias": [
+   [
+    "ACETYLSALICYLIC ACID",
+    "ASPIRIN"
+   ]
+  ],
+  "pairs_joined_by_shared_setid": [],
+  "pairs_joined_by_shared_rxcui": [],
+  "counts": {
+   "alias": 1,
+   "setid": 0,
+   "rxcui": 0
+  },
+  "rxcui_nonempty_docs": 0,
+  "aspirin_shaped_by_alias": [
+   {
+    "zero": "ASPIRIN",
+    "owns": "ACETYLSALICYLIC ACID",
+    "loincs": [
+     "34070-3",
+     "34073-7",
+     "43685-7"
+    ]
+   }
+  ],
+  "aspirin_shaped_by_setid": [],
+  "aspirin_shaped_by_rxcui": []
+ },
+ "Q1d": {
+  "multi_key_sets_B": [
+   [
+    "ACETYLSALICYLIC ACID",
+    "ASPIRIN"
+   ]
+  ],
+  "n_moieties_in_a_multi_set": 2
+ },
+ "Q2ab": {
+  "salt_suffixes": [
+   "ACETATE",
+   "CALCIUM",
+   "CITRATE",
+   "DEXTRAN",
+   "DIHYDRATE",
+   "HCL",
+   "HYDROCHLORIDE",
+   "MALEATE",
+   "MESYLATE",
+   "MONOHYDRATE",
+   "POTASSIUM",
+   "PROPIONATE",
+   "SODIUM",
+   "SULFATE",
+   "SULPHATE",
+   "TARTRATE",
+   "UNDECANOATE"
+  ],
+  "multiword_suffixes": [],
+  "moieties_that_are_a_suffix_word": [
+   "CALCIUM"
+  ],
+  "detail": {
+   "CALCIUM": {
+    "owns_safety": [
+     "34070-3",
+     "34073-7",
+     "43685-7"
+    ],
+    "n_owned": 3,
+    "A_expansion": [
+     "CALCIUM",
+     "CALCIUM ACETATE"
+    ],
+    "A_seats_if_word_appears": 4,
+    "B_expansion": [
+     "CALCIUM"
+    ],
+    "B_seats_if_word_appears": 3
+   }
+  }
+ },
+ "Q2c": {
+  "judgement_call": "Whether a base is 'a common English word rather than a drug name' is a JUDGEMENT, not a measurement. Every base that is NOT itself a corpus moiety is listed below with what it expands to and how many safety docs that would seat; the reader decides. No filtering applied.",
+  "bases_that_are_not_themselves_moieties": [
+   {
+    "base": "ABACAVIR",
+    "expands_to": [
+     "ABACAVIR SULFATE"
+    ],
+    "seats": 4,
+    "single_token": true
+   },
+   {
+    "base": "ABIRATERONE",
+    "expands_to": [
+     "ABIRATERONE ACETATE"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "ACALABRUTINIB",
+    "expands_to": [
+     "ACALABRUTINIB MALEATE"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "ACAMPROSATE",
+    "expands_to": [
+     "ACAMPROSATE CALCIUM"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "ALECTINIB",
+    "expands_to": [
+     "ALECTINIB HCL"
+    ],
+    "seats": 2,
+    "single_token": true
+   },
+   {
+    "base": "ALENDRONATE",
+    "expands_to": [
+     "ALENDRONATE SODIUM"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "ALFENTANIL",
+    "expands_to": [
+     "ALFENTANIL HCL"
+    ],
+    "seats": 2,
+    "single_token": true
+   },
+   {
+    "base": "ALFUZOSIN",
+    "expands_to": [
+     "ALFUZOSIN HYDROCHLORIDE"
+    ],
+    "seats": 1,
+    "single_token": true
+   },
+   {
+    "base": "AMANTADINE",
+    "expands_to": [
+     "AMANTADINE HCL",
+     "AMANTADINE SULFATE"
+    ],
+    "seats": 5,
+    "single_token": true
+   },
+   {
+    "base": "AMILORIDE",
+    "expands_to": [
+     "AMILORIDE HCL"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "AMITRIPTYLINE",
+    "expands_to": [
+     "AMITRIPTYLINE HCL"
+    ],
+    "seats": 2,
+    "single_token": true
+   },
+   {
+    "base": "APOMORPHINE",
+    "expands_to": [
+     "APOMORPHINE HCL"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "ASCIMINIB",
+    "expands_to": [
+     "ASCIMINIB HYDROCHLORIDE"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "ATOMOXETINE",
+    "expands_to": [
+     "ATOMOXETINE HYDROCHLORIDE"
+    ],
+    "seats": 4,
+    "single_token": true
+   },
+   {
+    "base": "ATROPINE",
+    "expands_to": [
+     "ATROPINE SULFATE",
+     "ATROPINE SULFATE MONOHYDRATE"
+    ],
+    "seats": 6,
+    "single_token": true
+   },
+   {
+    "base": "AZELASTINE",
+    "expands_to": [
+     "AZELASTINE HYDROCHLORIDE"
+    ],
+    "seats": 2,
+    "single_token": true
+   },
+   {
+    "base": "BALSALAZIDE DISODIUM",
+    "expands_to": [
+     "BALSALAZIDE DISODIUM DIHYDRATE"
+    ],
+    "seats": 3,
+    "single_token": false
+   },
+   {
+    "base": "BARIUM",
+    "expands_to": [
+     "BARIUM SULFATE"
+    ],
+    "seats": 2,
+    "single_token": true
+   },
+   {
+    "base": "BELUMOSUDIL",
+    "expands_to": [
+     "BELUMOSUDIL MESYLATE"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "BENDAMUSTINE",
+    "expands_to": [
+     "BENDAMUSTINE HYDROCHLORIDE",
+     "BENDAMUSTINE HYDROCHLORIDE MONOHYDRATE"
+    ],
+    "seats": 6,
+    "single_token": true
+   },
+   {
+    "base": "BESIFLOXACIN",
+    "expands_to": [
+     "BESIFLOXACIN HYDROCHLORIDE"
+    ],
+    "seats": 2,
+    "single_token": true
+   },
+   {
+    "base": "BLEOMYCIN",
+    "expands_to": [
+     "BLEOMYCIN HCL",
+     "BLEOMYCIN SULFATE"
+    ],
+    "seats": 5,
+    "single_token": true
+   },
+   {
+    "base": "BOSENTAN",
+    "expands_to": [
+     "BOSENTAN MONOHYDRATE"
+    ],
+    "seats": 4,
+    "single_token": true
+   },
+   {
+    "base": "BOSUTINIB",
+    "expands_to": [
+     "BOSUTINIB MONOHYDRATE"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "BRIMONIDINE",
+    "expands_to": [
+     "BRIMONIDINE TARTRATE"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "BUPIVACAINE",
+    "expands_to": [
+     "BUPIVACAINE HCL",
+     "BUPIVACAINE HCL MONOHYDRATE"
+    ],
+    "seats": 5,
+    "single_token": true
+   },
+   {
+    "base": "BUPRENORPHINE",
+    "expands_to": [
+     "BUPRENORPHINE HYDROCHLORIDE"
+    ],
+    "seats": 4,
+    "single_token": true
+   },
+   {
+    "base": "BUPROPION",
+    "expands_to": [
+     "BUPROPION HYDROCHLORIDE"
+    ],
+    "seats": 4,
+    "single_token": true
+   },
+   {
+    "base": "BUSPIRONE",
+    "expands_to": [
+     "BUSPIRONE HCL"
+    ],
+    "seats": 2,
+    "single_token": true
+   },
+   {
+    "base": "BUTENAFINE",
+    "expands_to": [
+     "BUTENAFINE HYDROCHLORIDE"
+    ],
+    "seats": 0,
+    "single_token": true
+   },
+   {
+    "base": "BUTORPHANOL",
+    "expands_to": [
+     "BUTORPHANOL TARTRATE"
+    ],
+    "seats": 2,
+    "single_token": true
+   },
+   {
+    "base": "CAFFEINE",
+    "expands_to": [
+     "CAFFEINE CITRATE"
+    ],
+    "seats": 1,
+    "single_token": true
+   },
+   {
+    "base": "CALCIUM CHLORIDE",
+    "expands_to": [
+     "CALCIUM CHLORIDE DIHYDRATE"
+    ],
+    "seats": 3,
+    "single_token": false
+   },
+   {
+    "base": "CARBINOXAMINE",
+    "expands_to": [
+     "CARBINOXAMINE MALEATE"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "CARBOXYMETHYLCELLULOSE",
+    "expands_to": [
+     "CARBOXYMETHYLCELLULOSE SODIUM"
+    ],
+    "seats": 0,
+    "single_token": true
+   },
+   {
+    "base": "CARTEOLOL",
+    "expands_to": [
+     "CARTEOLOL HCL"
+    ],
+    "seats": 2,
+    "single_token": true
+   },
+   {
+    "base": "CEFTIZOXIME",
+    "expands_to": [
+     "CEFTIZOXIME SODIUM"
+    ],
+    "seats": 2,
+    "single_token": true
+   },
+   {
+    "base": "CETIRIZINE",
+    "expands_to": [
+     "CETIRIZINE HYDROCHLORIDE"
+    ],
+    "seats": 0,
+    "single_token": true
+   },
+   {
+    "base": "CETRORELIX",
+    "expands_to": [
+     "CETRORELIX ACETATE"
+    ],
+    "seats": 2,
+    "single_token": true
+   },
+   {
+    "base": "CEVIMELINE",
+    "expands_to": [
+     "CEVIMELINE HYDROCHLORIDE"
+    ],
+    "seats": 1,
+    "single_token": true
+   },
+   {
+    "base": "CHLORCYCLIZINE",
+    "expands_to": [
+     "CHLORCYCLIZINE HCL"
+    ],
+    "seats": 0,
+    "single_token": true
+   },
+   {
+    "base": "CHLORPHENIRAMINE",
+    "expands_to": [
+     "CHLORPHENIRAMINE MALEATE"
+    ],
+    "seats": 0,
+    "single_token": true
+   },
+   {
+    "base": "CHLORTETRACYCLINE",
+    "expands_to": [
+     "CHLORTETRACYCLINE HCL"
+    ],
+    "seats": 1,
+    "single_token": true
+   },
+   {
+    "base": "CINACALCET",
+    "expands_to": [
+     "CINACALCET HYDROCHLORIDE"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "CLOBETASOL",
+    "expands_to": [
+     "CLOBETASOL PROPIONATE"
+    ],
+    "seats": 2,
+    "single_token": true
+   },
+   {
+    "base": "CLOMIPHENE",
+    "expands_to": [
+     "CLOMIPHENE CITRATE"
+    ],
+    "seats": 1,
+    "single_token": true
+   },
+   {
+    "base": "CLONIDINE",
+    "expands_to": [
+     "CLONIDINE HCL"
+    ],
+    "seats": 2,
+    "single_token": true
+   },
+   {
+    "base": "CLOPIDOGREL HYDROGEN",
+    "expands_to": [
+     "CLOPIDOGREL HYDROGEN SULFATE"
+    ],
+    "seats": 4,
+    "single_token": false
+   },
+   {
+    "base": "COLESEVELAM",
+    "expands_to": [
+     "COLESEVELAM HYDROCHLORIDE"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "CORTISONE",
+    "expands_to": [
+     "CORTISONE ACETATE"
+    ],
+    "seats": 1,
+    "single_token": true
+   },
+   {
+    "base": "CROMOLYN",
+    "expands_to": [
+     "CROMOLYN SODIUM"
+    ],
+    "seats": 2,
+    "single_token": true
+   },
+   {
+    "base": "CYCLOBENZAPRINE",
+    "expands_to": [
+     "CYCLOBENZAPRINE HYDROCHLORIDE"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "DABRAFENIB",
+    "expands_to": [
+     "DABRAFENIB MESYLATE"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "DACOMITINIB",
+    "expands_to": [
+     "DACOMITINIB MONOHYDRATE"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "DALTEPARIN",
+    "expands_to": [
+     "DALTEPARIN SODIUM"
+    ],
+    "seats": 4,
+    "single_token": true
+   },
+   {
+    "base": "DANTROLENE",
+    "expands_to": [
+     "DANTROLENE SODIUM"
+    ],
+    "seats": 2,
+    "single_token": true
+   },
+   {
+    "base": "DARIDOREXANT",
+    "expands_to": [
+     "DARIDOREXANT HYDROCHLORIDE"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "DAUNORUBICIN",
+    "expands_to": [
+     "DAUNORUBICIN HCL"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "DEHYDROEPIANDROSTERONE",
+    "expands_to": [
+     "DEHYDROEPIANDROSTERONE SODIUM"
+    ],
+    "seats": 0,
+    "single_token": true
+   },
+   {
+    "base": "DEXCHLORPHENIRAMINE",
+    "expands_to": [
+     "DEXCHLORPHENIRAMINE MALEATE"
+    ],
+    "seats": 2,
+    "single_token": true
+   },
+   {
+    "base": "DEXMEDETOMIDINE",
+    "expands_to": [
+     "DEXMEDETOMIDINE HYDROCHLORIDE"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "DICLOFENAC",
+    "expands_to": [
+     "DICLOFENAC POTASSIUM",
+     "DICLOFENAC SODIUM"
+    ],
+    "seats": 4,
+    "single_token": true
+   },
+   {
+    "base": "DICYCLOMINE",
+    "expands_to": [
+     "DICYCLOMINE HCL"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "DIVALPROEX",
+    "expands_to": [
+     "DIVALPROEX SODIUM"
+    ],
+    "seats": 4,
+    "single_token": true
+   },
+   {
+    "base": "DOLUTEGRAVIR",
+    "expands_to": [
+     "DOLUTEGRAVIR SODIUM"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "DONEPEZIL",
+    "expands_to": [
+     "DONEPEZIL HYDROCHLORIDE"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "DOPAMINE",
+    "expands_to": [
+     "DOPAMINE HCL"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "DORZOLAMIDE",
+    "expands_to": [
+     "DORZOLAMIDE HYDROCHLORIDE"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "DOXORUBICIN",
+    "expands_to": [
+     "DOXORUBICIN HCL"
+    ],
+    "seats": 4,
+    "single_token": true
+   },
+   {
+    "base": "DRONEDARONE",
+    "expands_to": [
+     "DRONEDARONE HYDROCHLORIDE"
+    ],
+    "seats": 4,
+    "single_token": true
+   },
+   {
+    "base": "DULOXETINE",
+    "expands_to": [
+     "DULOXETINE HYDROCHLORIDE"
+    ],
+    "seats": 4,
+    "single_token": true
+   },
+   {
+    "base": "ELIGLUSTAT",
+    "expands_to": [
+     "ELIGLUSTAT TARTRATE"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "ENALAPRIL",
+    "expands_to": [
+     "ENALAPRIL MALEATE"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "ENOXAPARIN",
+    "expands_to": [
+     "ENOXAPARIN SODIUM"
+    ],
+    "seats": 4,
+    "single_token": true
+   },
+   {
+    "base": "EPHEDRINE",
+    "expands_to": [
+     "EPHEDRINE HCL",
+     "EPHEDRINE SULFATE"
+    ],
+    "seats": 6,
+    "single_token": true
+   },
+   {
+    "base": "EPIRUBICIN",
+    "expands_to": [
+     "EPIRUBICIN HCL"
+    ],
+    "seats": 4,
+    "single_token": true
+   },
+   {
+    "base": "EPOPROSTENOL",
+    "expands_to": [
+     "EPOPROSTENOL SODIUM"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "ERIBULIN",
+    "expands_to": [
+     "ERIBULIN MESYLATE"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "ERLOTINIB",
+    "expands_to": [
+     "ERLOTINIB HYDROCHLORIDE"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "ERTAPENEM",
+    "expands_to": [
+     "ERTAPENEM SODIUM"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "ESKETAMINE",
+    "expands_to": [
+     "ESKETAMINE HCL"
+    ],
+    "seats": 4,
+    "single_token": true
+   },
+   {
+    "base": "ESMOLOL",
+    "expands_to": [
+     "ESMOLOL HYDROCHLORIDE"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "ESOMEPRAZOLE",
+    "expands_to": [
+     "ESOMEPRAZOLE SODIUM"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "ESOMEPRAZOLE MAGNESIUM",
+    "expands_to": [
+     "ESOMEPRAZOLE MAGNESIUM DIHYDRATE"
+    ],
+    "seats": 0,
+    "single_token": false
+   },
+   {
+    "base": "ETELCALCETIDE",
+    "expands_to": [
+     "ETELCALCETIDE HYDROCHLORIDE"
+    ],
+    "seats": 2,
+    "single_token": true
+   },
+   {
+    "base": "FENFLURAMINE",
+    "expands_to": [
+     "FENFLURAMINE HCL"
+    ],
+    "seats": 4,
+    "single_token": true
+   },
+   {
+    "base": "FERRIC",
+    "expands_to": [
+     "FERRIC CITRATE"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "FEXOFENADINE",
+    "expands_to": [
+     "FEXOFENADINE HYDROCHLORIDE"
+    ],
+    "seats": 0,
+    "single_token": true
+   },
+   {
+    "base": "FINGOLIMOD",
+    "expands_to": [
+     "FINGOLIMOD HCL"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "FITUSIRAN",
+    "expands_to": [
+     "FITUSIRAN SODIUM"
+    ],
+    "seats": 4,
+    "single_token": true
+   },
+   {
+    "base": "FLAVOXATE",
+    "expands_to": [
+     "FLAVOXATE HCL"
+    ],
+    "seats": 1,
+    "single_token": true
+   },
+   {
+    "base": "FLECAINIDE",
+    "expands_to": [
+     "FLECAINIDE ACETATE"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "FLUDROCORTISONE",
+    "expands_to": [
+     "FLUDROCORTISONE ACETATE"
+    ],
+    "seats": 2,
+    "single_token": true
+   },
+   {
+    "base": "FLUTICASONE",
+    "expands_to": [
+     "FLUTICASONE PROPIONATE"
+    ],
+    "seats": 0,
+    "single_token": true
+   },
+   {
+    "base": "FLUVASTATIN",
+    "expands_to": [
+     "FLUVASTATIN SODIUM"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "FLUVOXAMINE",
+    "expands_to": [
+     "FLUVOXAMINE MALEATE"
+    ],
+    "seats": 2,
+    "single_token": true
+   },
+   {
+    "base": "FONDAPARINUX",
+    "expands_to": [
+     "FONDAPARINUX SODIUM"
+    ],
+    "seats": 4,
+    "single_token": true
+   },
+   {
+    "base": "FOSINOPRIL",
+    "expands_to": [
+     "FOSINOPRIL SODIUM"
+    ],
+    "seats": 2,
+    "single_token": true
+   },
+   {
+    "base": "FUSIDATE",
+    "expands_to": [
+     "FUSIDATE SODIUM"
+    ],
+    "seats": 0,
+    "single_token": true
+   },
+   {
+    "base": "GALLIUM",
+    "expands_to": [
+     "GALLIUM CITRATE"
+    ],
+    "seats": 1,
+    "single_token": true
+   },
+   {
+    "base": "GEMCITABINE",
+    "expands_to": [
+     "GEMCITABINE HYDROCHLORIDE"
+    ],
+    "seats": 2,
+    "single_token": true
+   },
+   {
+    "base": "GLATIRAMER",
+    "expands_to": [
+     "GLATIRAMER ACETATE"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "GOSERELIN",
+    "expands_to": [
+     "GOSERELIN ACETATE"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "HEPARIN",
+    "expands_to": [
+     "HEPARIN SODIUM"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "HISTIDINE",
+    "expands_to": [
+     "HISTIDINE HCL"
+    ],
+    "seats": 0,
+    "single_token": true
+   },
+   {
+    "base": "HYDRALAZINE",
+    "expands_to": [
+     "HYDRALAZINE HCL"
+    ],
+    "seats": 1,
+    "single_token": true
+   },
+   {
+    "base": "HYDROXYCHLOROQUINE",
+    "expands_to": [
+     "HYDROXYCHLOROQUINE SULFATE"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "HYDROXYZINE",
+    "expands_to": [
+     "HYDROXYZINE HCL"
+    ],
+    "seats": 1,
+    "single_token": true
+   },
+   {
+    "base": "HYOSCYAMINE",
+    "expands_to": [
+     "HYOSCYAMINE SULFATE"
+    ],
+    "seats": 2,
+    "single_token": true
+   },
+   {
+    "base": "IBANDRONATE",
+    "expands_to": [
+     "IBANDRONATE SODIUM"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "IDARUBICIN",
+    "expands_to": [
+     "IDARUBICIN HCL"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "IMATINIB",
+    "expands_to": [
+     "IMATINIB MESYLATE"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "IMIPRAMINE",
+    "expands_to": [
+     "IMIPRAMINE HCL"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "INCLISIRAN",
+    "expands_to": [
+     "INCLISIRAN SODIUM"
+    ],
+    "seats": 2,
+    "single_token": true
+   },
+   {
+    "base": "IRINOTECAN",
+    "expands_to": [
+     "IRINOTECAN HYDROCHLORIDE"
+    ],
+    "seats": 4,
+    "single_token": true
+   },
+   {
+    "base": "ISAVUCONAZONIUM",
+    "expands_to": [
+     "ISAVUCONAZONIUM SULFATE"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "IVABRADINE",
+    "expands_to": [
+     "IVABRADINE HYDROCHLORIDE"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "IXAZOMIB",
+    "expands_to": [
+     "IXAZOMIB CITRATE"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "LABETALOL",
+    "expands_to": [
+     "LABETALOL HCL"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "LANTHANUM CARBONATE",
+    "expands_to": [
+     "LANTHANUM CARBONATE DIHYDRATE"
+    ],
+    "seats": 3,
+    "single_token": false
+   },
+   {
+    "base": "LAZERTINIB",
+    "expands_to": [
+     "LAZERTINIB MESYLATE MONOHYDRATE"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "LENACAPAVIR",
+    "expands_to": [
+     "LENACAPAVIR SODIUM"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "LEUCOVORIN",
+    "expands_to": [
+     "LEUCOVORIN CALCIUM"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "LEUPROLIDE",
+    "expands_to": [
+     "LEUPROLIDE ACETATE"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "LEVOTHYROXINE",
+    "expands_to": [
+     "LEVOTHYROXINE SODIUM"
+    ],
+    "seats": 4,
+    "single_token": true
+   },
+   {
+    "base": "LOPERAMIDE",
+    "expands_to": [
+     "LOPERAMIDE HCL"
+    ],
+    "seats": 0,
+    "single_token": true
+   },
+   {
+    "base": "LOSARTAN",
+    "expands_to": [
+     "LOSARTAN POTASSIUM"
+    ],
+    "seats": 4,
+    "single_token": true
+   },
+   {
+    "base": "LURASIDONE",
+    "expands_to": [
+     "LURASIDONE HCL"
+    ],
+    "seats": 4,
+    "single_token": true
+   },
+   {
+    "base": "MECLIZINE",
+    "expands_to": [
+     "MECLIZINE HCL"
+    ],
+    "seats": 0,
+    "single_token": true
+   },
+   {
+    "base": "MEDROXYPROGESTERONE",
+    "expands_to": [
+     "MEDROXYPROGESTERONE ACETATE"
+    ],
+    "seats": 4,
+    "single_token": true
+   },
+   {
+    "base": "MEFLOQUINE",
+    "expands_to": [
+     "MEFLOQUINE HYDROCHLORIDE"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "MEGESTROL",
+    "expands_to": [
+     "MEGESTROL ACETATE"
+    ],
+    "seats": 2,
+    "single_token": true
+   },
+   {
+    "base": "MEMANTINE",
+    "expands_to": [
+     "MEMANTINE HYDROCHLORIDE"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "MEPIVACAINE",
+    "expands_to": [
+     "MEPIVACAINE HCL"
+    ],
+    "seats": 1,
+    "single_token": true
+   },
+   {
+    "base": "METHADONE",
+    "expands_to": [
+     "METHADONE HYDROCHLORIDE"
+    ],
+    "seats": 4,
+    "single_token": true
+   },
+   {
+    "base": "METHYLERGONOVINE",
+    "expands_to": [
+     "METHYLERGONOVINE MALEATE"
+    ],
+    "seats": 2,
+    "single_token": true
+   },
+   {
+    "base": "METHYLPHENIDATE",
+    "expands_to": [
+     "METHYLPHENIDATE HCL"
+    ],
+    "seats": 2,
+    "single_token": true
+   },
+   {
+    "base": "METOPROLOL",
+    "expands_to": [
+     "METOPROLOL TARTRATE"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "MEXILETINE",
+    "expands_to": [
+     "MEXILETINE HCL"
+    ],
+    "seats": 2,
+    "single_token": true
+   },
+   {
+    "base": "MICAFUNGIN",
+    "expands_to": [
+     "MICAFUNGIN SODIUM"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "MIDODRINE",
+    "expands_to": [
+     "MIDODRINE HYDROCHLORIDE"
+    ],
+    "seats": 2,
+    "single_token": true
+   },
+   {
+    "base": "MIGALASTAT",
+    "expands_to": [
+     "MIGALASTAT HYDROCHLORIDE"
+    ],
+    "seats": 2,
+    "single_token": true
+   },
+   {
+    "base": "MILNACIPRAN",
+    "expands_to": [
+     "MILNACIPRAN HYDROCHLORIDE"
+    ],
+    "seats": 4,
+    "single_token": true
+   },
+   {
+    "base": "MONTELUKAST",
+    "expands_to": [
+     "MONTELUKAST SODIUM"
+    ],
+    "seats": 4,
+    "single_token": true
+   },
+   {
+    "base": "MORPHINE",
+    "expands_to": [
+     "MORPHINE HCL",
+     "MORPHINE SULFATE"
+    ],
+    "seats": 8,
+    "single_token": true
+   },
+   {
+    "base": "MOXIFLOXACIN",
+    "expands_to": [
+     "MOXIFLOXACIN HYDROCHLORIDE"
+    ],
+    "seats": 4,
+    "single_token": true
+   },
+   {
+    "base": "NAFTIFINE",
+    "expands_to": [
+     "NAFTIFINE HYDROCHLORIDE"
+    ],
+    "seats": 2,
+    "single_token": true
+   },
+   {
+    "base": "NALBUPHINE",
+    "expands_to": [
+     "NALBUPHINE HYDROCHLORIDE"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "NALOXONE",
+    "expands_to": [
+     "NALOXONE HYDROCHLORIDE"
+    ],
+    "seats": 2,
+    "single_token": true
+   },
+   {
+    "base": "NALTREXONE",
+    "expands_to": [
+     "NALTREXONE HYDROCHLORIDE"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "NAPHAZOLINE",
+    "expands_to": [
+     "NAPHAZOLINE HCL"
+    ],
+    "seats": 2,
+    "single_token": true
+   },
+   {
+    "base": "NERATINIB",
+    "expands_to": [
+     "NERATINIB MALEATE"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "NICARDIPINE",
+    "expands_to": [
+     "NICARDIPINE HCL"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "NILOTINIB",
+    "expands_to": [
+     "NILOTINIB HYDROCHLORIDE MONOHYDRATE"
+    ],
+    "seats": 4,
+    "single_token": true
+   },
+   {
+    "base": "NIRAPARIB TOSYLATE",
+    "expands_to": [
+     "NIRAPARIB TOSYLATE MONOHYDRATE"
+    ],
+    "seats": 2,
+    "single_token": false
+   },
+   {
+    "base": "ORPHENADRINE",
+    "expands_to": [
+     "ORPHENADRINE CITRATE"
+    ],
+    "seats": 1,
+    "single_token": true
+   },
+   {
+    "base": "OSIMERTINIB",
+    "expands_to": [
+     "OSIMERTINIB MESYLATE"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "OXYCODONE",
+    "expands_to": [
+     "OXYCODONE HCL"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "OXYMETAZOLINE",
+    "expands_to": [
+     "OXYMETAZOLINE HCL"
+    ],
+    "seats": 0,
+    "single_token": true
+   },
+   {
+    "base": "OZANIMOD",
+    "expands_to": [
+     "OZANIMOD HCL"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "PANTOPRAZOLE",
+    "expands_to": [
+     "PANTOPRAZOLE SODIUM"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "PAPAVERINE",
+    "expands_to": [
+     "PAPAVERINE HCL"
+    ],
+    "seats": 1,
+    "single_token": true
+   },
+   {
+    "base": "PAROXETINE",
+    "expands_to": [
+     "PAROXETINE HYDROCHLORIDE"
+    ],
+    "seats": 4,
+    "single_token": true
+   },
+   {
+    "base": "PATISIRAN",
+    "expands_to": [
+     "PATISIRAN SODIUM"
+    ],
+    "seats": 2,
+    "single_token": true
+   },
+   {
+    "base": "PAZOPANIB",
+    "expands_to": [
+     "PAZOPANIB HYDROCHLORIDE"
+    ],
+    "seats": 4,
+    "single_token": true
+   },
+   {
+    "base": "PENICILLIN G",
+    "expands_to": [
+     "PENICILLIN G POTASSIUM",
+     "PENICILLIN G SODIUM"
+    ],
+    "seats": 4,
+    "single_token": false
+   },
+   {
+    "base": "PENICILLIN V",
+    "expands_to": [
+     "PENICILLIN V POTASSIUM"
+    ],
+    "seats": 1,
+    "single_token": false
+   },
+   {
+    "base": "PHENAZOPYRIDINE",
+    "expands_to": [
+     "PHENAZOPYRIDINE HCL"
+    ],
+    "seats": 2,
+    "single_token": true
+   },
+   {
+    "base": "PHENYLEPHRINE",
+    "expands_to": [
+     "PHENYLEPHRINE HCL",
+     "PHENYLEPHRINE HYDROCHLORIDE"
+    ],
+    "seats": 6,
+    "single_token": true
+   },
+   {
+    "base": "PILOCARPINE",
+    "expands_to": [
+     "PILOCARPINE HCL"
+    ],
+    "seats": 2,
+    "single_token": true
+   },
+   {
+    "base": "PIOGLITAZONE",
+    "expands_to": [
+     "PIOGLITAZONE HYDROCHLORIDE"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "PITAVASTATIN",
+    "expands_to": [
+     "PITAVASTATIN CALCIUM"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "PITOLISANT",
+    "expands_to": [
+     "PITOLISANT HYDROCHLORIDE"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "POLYCARBOPHIL",
+    "expands_to": [
+     "POLYCARBOPHIL CALCIUM"
+    ],
+    "seats": 0,
+    "single_token": true
+   },
+   {
+    "base": "POTASSIUM",
+    "expands_to": [
+     "POTASSIUM ACETATE"
+    ],
+    "seats": 1,
+    "single_token": true
+   },
+   {
+    "base": "PRAMOXINE",
+    "expands_to": [
+     "PRAMOXINE HCL"
+    ],
+    "seats": 0,
+    "single_token": true
+   },
+   {
+    "base": "PRASUGREL",
+    "expands_to": [
+     "PRASUGREL HYDROCHLORIDE"
+    ],
+    "seats": 4,
+    "single_token": true
+   },
+   {
+    "base": "PRAVASTATIN",
+    "expands_to": [
+     "PRAVASTATIN SODIUM"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "PREDNISOLONE PHOSPHATE",
+    "expands_to": [
+     "PREDNISOLONE PHOSPHATE SODIUM"
+    ],
+    "seats": 3,
+    "single_token": false
+   },
+   {
+    "base": "PROMETHAZINE",
+    "expands_to": [
+     "PROMETHAZINE HCL"
+    ],
+    "seats": 1,
+    "single_token": true
+   },
+   {
+    "base": "PROPAFENONE",
+    "expands_to": [
+     "PROPAFENONE HYDROCHLORIDE"
+    ],
+    "seats": 4,
+    "single_token": true
+   },
+   {
+    "base": "PROPARACAINE",
+    "expands_to": [
+     "PROPARACAINE HCL"
+    ],
+    "seats": 1,
+    "single_token": true
+   },
+   {
+    "base": "PROPRANOLOL",
+    "expands_to": [
+     "PROPRANOLOL HCL"
+    ],
+    "seats": 1,
+    "single_token": true
+   },
+   {
+    "base": "PROTAMINE",
+    "expands_to": [
+     "PROTAMINE SULPHATE"
+    ],
+    "seats": 2,
+    "single_token": true
+   },
+   {
+    "base": "PYRIDOXINE",
+    "expands_to": [
+     "PYRIDOXINE HCL"
+    ],
+    "seats": 2,
+    "single_token": true
+   },
+   {
+    "base": "QUINIDINE",
+    "expands_to": [
+     "QUINIDINE SULFATE"
+    ],
+    "seats": 1,
+    "single_token": true
+   },
+   {
+    "base": "QUININE",
+    "expands_to": [
+     "QUININE HCL"
+    ],
+    "seats": 4,
+    "single_token": true
+   },
+   {
+    "base": "RALOXIFENE",
+    "expands_to": [
+     "RALOXIFENE HYDROCHLORIDE"
+    ],
+    "seats": 4,
+    "single_token": true
+   },
+   {
+    "base": "RASAGILINE",
+    "expands_to": [
+     "RASAGILINE MESYLATE"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "RIMEGEPANT",
+    "expands_to": [
+     "RIMEGEPANT SULFATE"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "RISEDRONATE",
+    "expands_to": [
+     "RISEDRONATE SODIUM"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "ROPINIROLE",
+    "expands_to": [
+     "ROPINIROLE HYDROCHLORIDE"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "ROSIGLITAZONE",
+    "expands_to": [
+     "ROSIGLITAZONE MALEATE"
+    ],
+    "seats": 4,
+    "single_token": true
+   },
+   {
+    "base": "ROSUVASTATIN",
+    "expands_to": [
+     "ROSUVASTATIN CALCIUM"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "SECOBARBITAL",
+    "expands_to": [
+     "SECOBARBITAL SODIUM"
+    ],
+    "seats": 2,
+    "single_token": true
+   },
+   {
+    "base": "SELEGILINE",
+    "expands_to": [
+     "SELEGILINE HYDROCHLORIDE"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "SEVELAMER",
+    "expands_to": [
+     "SEVELAMER HYDROCHLORIDE"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "SODIUM",
+    "expands_to": [
+     "SODIUM ACETATE"
+    ],
+    "seats": 1,
+    "single_token": true
+   },
+   {
+    "base": "SUFENTANIL",
+    "expands_to": [
+     "SUFENTANIL CITRATE"
+    ],
+    "seats": 4,
+    "single_token": true
+   },
+   {
+    "base": "TAMSULOSIN",
+    "expands_to": [
+     "TAMSULOSIN HYDROCHLORIDE"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "TERBUTALINE",
+    "expands_to": [
+     "TERBUTALINE SULFATE"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "TERLIPRESSIN",
+    "expands_to": [
+     "TERLIPRESSIN ACETATE"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "TETRACAINE",
+    "expands_to": [
+     "TETRACAINE HCL"
+    ],
+    "seats": 0,
+    "single_token": true
+   },
+   {
+    "base": "TETRAHYDROZOLINE",
+    "expands_to": [
+     "TETRAHYDROZOLINE HCL"
+    ],
+    "seats": 0,
+    "single_token": true
+   },
+   {
+    "base": "THIAMINE",
+    "expands_to": [
+     "THIAMINE HYDROCHLORIDE"
+    ],
+    "seats": 1,
+    "single_token": true
+   },
+   {
+    "base": "THIORIDAZINE",
+    "expands_to": [
+     "THIORIDAZINE HCL"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "TIAGABINE",
+    "expands_to": [
+     "TIAGABINE HYDROCHLORIDE MONOHYDRATE"
+    ],
+    "seats": 1,
+    "single_token": true
+   },
+   {
+    "base": "TICLOPIDINE",
+    "expands_to": [
+     "TICLOPIDINE HCL"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "TIROFIBAN",
+    "expands_to": [
+     "TIROFIBAN HYDROCHLORIDE MONOHYDRATE"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "TOFACITINIB",
+    "expands_to": [
+     "TOFACITINIB CITRATE"
+    ],
+    "seats": 4,
+    "single_token": true
+   },
+   {
+    "base": "TOLMETIN",
+    "expands_to": [
+     "TOLMETIN SODIUM",
+     "TOLMETIN SODIUM DIHYDRATE"
+    ],
+    "seats": 5,
+    "single_token": true
+   },
+   {
+    "base": "TOLTERODINE",
+    "expands_to": [
+     "TOLTERODINE TARTRATE"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "TOPOTECAN",
+    "expands_to": [
+     "TOPOTECAN HYDROCHLORIDE"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "TOREMIFENE",
+    "expands_to": [
+     "TOREMIFENE CITRATE"
+    ],
+    "seats": 4,
+    "single_token": true
+   },
+   {
+    "base": "TRAMADOL",
+    "expands_to": [
+     "TRAMADOL HCL"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "TRAZODONE",
+    "expands_to": [
+     "TRAZODONE HYDROCHLORIDE"
+    ],
+    "seats": 4,
+    "single_token": true
+   },
+   {
+    "base": "TRIENTINE",
+    "expands_to": [
+     "TRIENTINE HYDROCHLORIDE"
+    ],
+    "seats": 2,
+    "single_token": true
+   },
+   {
+    "base": "TRIHEXYPHENIDYL",
+    "expands_to": [
+     "TRIHEXYPHENIDYL HCL"
+    ],
+    "seats": 0,
+    "single_token": true
+   },
+   {
+    "base": "TRIPELENNAMINE",
+    "expands_to": [
+     "TRIPELENNAMINE HCL"
+    ],
+    "seats": 0,
+    "single_token": true
+   },
+   {
+    "base": "ULIPRISTAL",
+    "expands_to": [
+     "ULIPRISTAL ACETATE"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "VALACYCLOVIR",
+    "expands_to": [
+     "VALACYCLOVIR HYDROCHLORIDE MONOHYDRATE"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "VALGANCICLOVIR",
+    "expands_to": [
+     "VALGANCICLOVIR HYDROCHLORIDE"
+    ],
+    "seats": 4,
+    "single_token": true
+   },
+   {
+    "base": "VARENICLINE",
+    "expands_to": [
+     "VARENICLINE TARTRATE"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "VERAPAMIL",
+    "expands_to": [
+     "VERAPAMIL HCL"
+    ],
+    "seats": 1,
+    "single_token": true
+   },
+   {
+    "base": "VINBLASTINE",
+    "expands_to": [
+     "VINBLASTINE SULFATE"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "VINCRISTINE",
+    "expands_to": [
+     "VINCRISTINE SULFATE"
+    ],
+    "seats": 3,
+    "single_token": true
+   },
+   {
+    "base": "VINORELBINE",
+    "expands_to": [
+     "VINORELBINE TARTRATE"
+    ],
+    "seats": 4,
+    "single_token": true
+   },
+   {
+    "base": "VUTRISIRAN",
+    "expands_to": [
+     "VUTRISIRAN SODIUM"
+    ],
+    "seats": 2,
+    "single_token": true
+   },
+   {
+    "base": "WARFARIN",
+    "expands_to": [
+     "WARFARIN SODIUM"
+    ],
+    "seats": 4,
+    "single_token": true
+   },
+   {
+    "base": "XYLOMETAZOLINE",
+    "expands_to": [
+     "XYLOMETAZOLINE HCL"
+    ],
+    "seats": 0,
+    "single_token": true
+   },
+   {
+    "base": "ZIPRASIDONE",
+    "expands_to": [
+     "ZIPRASIDONE HYDROCHLORIDE MONOHYDRATE"
+    ],
+    "seats": 4,
+    "single_token": true
+   },
+   {
+    "base": "ZOLPIDEM",
+    "expands_to": [
+     "ZOLPIDEM TARTRATE"
+    ],
+    "seats": 4,
+    "single_token": true
+   }
+  ],
+  "count": 232
+ },
+ "Q2d_rows": [
+  {
+   "id": "R:R01",
+   "query": "What are the side effects of Metformin in patients with renal impairment?",
+   "matched": [
+    "METFORMIN"
+   ],
+   "A_keys": [
+    "METFORMIN",
+    "METFORMIN HCL"
+   ],
+   "A_seats": 6,
+   "A_owned": {
+    "METFORMIN HCL": [
+     "34070-3",
+     "34073-7"
+    ],
+    "METFORMIN": [
+     "34066-1",
+     "34070-3",
+     "34073-7",
+     "43685-7"
+    ]
+   },
+   "B_keys": [
+    "METFORMIN"
+   ],
+   "B_seats": 4,
+   "B_owned": {
+    "METFORMIN": [
+     "34066-1",
+     "34070-3",
+     "34073-7",
+     "43685-7"
+    ]
+   },
+   "A_via": "exact"
+  },
+  {
+   "id": "R:R02",
+   "query": "What is the first-line treatment for hypertension in diabetic patients?",
+   "matched": [],
+   "A_keys": [],
+   "A_seats": 0,
+   "A_owned": {},
+   "B_keys": [],
+   "B_seats": 0,
+   "B_owned": {},
+   "A_via": null
+  },
+  {
+   "id": "R:R03",
+   "query": "What are the indications for prophylactic anticoagulation in atrial fibrillation?",
+   "matched": [],
+   "A_keys": [],
+   "A_seats": 0,
+   "A_owned": {},
+   "B_keys": [],
+   "B_seats": 0,
+   "B_owned": {},
+   "A_via": null
+  },
+  {
+   "id": "R:R04",
+   "query": "What is the mechanism of action of statins?",
+   "matched": [],
+   "A_keys": [],
+   "A_seats": 0,
+   "A_owned": {},
+   "B_keys": [],
+   "B_seats": 0,
+   "B_owned": {},
+   "A_via": null
+  },
+  {
+   "id": "R:R05",
+   "query": "What are the signs of serotonin syndrome?",
+   "matched": [],
+   "A_keys": [],
+   "A_seats": 0,
+   "A_owned": {},
+   "B_keys": [],
+   "B_seats": 0,
+   "B_owned": {},
+   "A_via": null
+  },
+  {
+   "id": "R:R06",
+   "query": "How should heparin-induced thrombocytopenia (HIT) be managed?",
+   "matched": [],
+   "A_keys": [
+    "HEPARIN SODIUM"
+   ],
+   "A_seats": 3,
+   "A_owned": {
+    "HEPARIN SODIUM": [
+     "34070-3",
+     "34073-7",
+     "43685-7"
+    ]
+   },
+   "B_keys": [],
+   "B_seats": 0,
+   "B_owned": {},
+   "A_via": "base"
+  },
+  {
+   "id": "R:R07",
+   "query": "What are the contraindications for using beta-blockers?",
+   "matched": [],
+   "A_keys": [],
+   "A_seats": 0,
+   "A_owned": {},
+   "B_keys": [],
+   "B_seats": 0,
+   "B_owned": {},
+   "A_via": null
+  },
+  {
+   "id": "R:R08",
+   "query": "What is the recommended dose of aspirin for cardiovascular prevention?",
+   "matched": [
+    "ASPIRIN"
+   ],
+   "A_keys": [
+    "ASPIRIN"
+   ],
+   "A_seats": 0,
+   "A_owned": {},
+   "B_keys": [
+    "ACETYLSALICYLIC ACID",
+    "ASPIRIN"
+   ],
+   "B_seats": 3,
+   "B_owned": {
+    "ACETYLSALICYLIC ACID": [
+     "34070-3",
+     "34073-7",
+     "43685-7"
+    ]
+   },
+   "A_via": "exact"
+  },
+  {
+   "id": "R:R09",
+   "query": "What monitoring is required for patients on lithium therapy?",
+   "matched": [],
+   "A_keys": [],
+   "A_seats": 0,
+   "A_owned": {},
+   "B_keys": [],
+   "B_seats": 0,
+   "B_owned": {},
+   "A_via": null
+  },
+  {
+   "id": "R:R10",
+   "query": "What are the clinical features of digoxin toxicity?",
+   "matched": [
+    "DIGOXIN"
+   ],
+   "A_keys": [
+    "DIGOXIN"
+   ],
+   "A_seats": 3,
+   "A_owned": {
+    "DIGOXIN": [
+     "34070-3",
+     "34073-7",
+     "43685-7"
+    ]
+   },
+   "B_keys": [
+    "DIGOXIN"
+   ],
+   "B_seats": 3,
+   "B_owned": {
+    "DIGOXIN": [
+     "34070-3",
+     "34073-7",
+     "43685-7"
+    ]
+   },
+   "A_via": "exact"
+  },
+  {
+   "id": "R:R11",
+   "query": "metformin 腎臟不好的病人可以用嗎",
+   "matched": [
+    "METFORMIN"
+   ],
+   "A_keys": [
+    "METFORMIN",
+    "METFORMIN HCL"
+   ],
+   "A_seats": 6,
+   "A_owned": {
+    "METFORMIN HCL": [
+     "34070-3",
+     "34073-7"
+    ],
+    "METFORMIN": [
+     "34066-1",
+     "34070-3",
+     "34073-7",
+     "43685-7"
+    ]
+   },
+   "B_keys": [
+    "METFORMIN"
+   ],
+   "B_seats": 4,
+   "B_owned": {
+    "METFORMIN": [
+     "34066-1",
+     "34070-3",
+     "34073-7",
+     "43685-7"
+    ]
+   },
+   "A_via": "exact"
+  },
+  {
+   "id": "R:R12",
+   "query": "is it ok to give both blood thinners at the same time",
+   "matched": [],
+   "A_keys": [],
+   "A_seats": 0,
+   "A_owned": {},
+   "B_keys": [],
+   "B_seats": 0,
+   "B_owned": {},
+   "A_via": null
+  },
+  {
+   "id": "R:R13",
+   "query": "warfarin 和 aspirin 一起用 safe 嗎",
+   "matched": [
+    "ASPIRIN"
+   ],
+   "A_keys": [
+    "ASPIRIN"
+   ],
+   "A_seats": 0,
+   "A_owned": {},
+   "B_keys": [
+    "ACETYLSALICYLIC ACID",
+    "ASPIRIN"
+   ],
+   "B_seats": 3,
+   "B_owned": {
+    "ACETYLSALICYLIC ACID": [
+     "34070-3",
+     "34073-7",
+     "43685-7"
+    ]
+   },
+   "A_via": "exact"
+  },
+  {
+   "id": "R:R14",
+   "query": "When can beta blockers actually be used in heart failure? I thought they were contraindicated.",
+   "matched": [],
+   "A_keys": [],
+   "A_seats": 0,
+   "A_owned": {},
+   "B_keys": [],
+   "B_seats": 0,
+   "B_owned": {},
+   "A_via": null
+  },
+  {
+   "id": "R:R15",
+   "query": "What is the difference between Type 1 and Type 2 heparin-induced thrombocytopenia?",
+   "matched": [],
+   "A_keys": [
+    "HEPARIN SODIUM"
+   ],
+   "A_seats": 3,
+   "A_owned": {
+    "HEPARIN SODIUM": [
+     "34070-3",
+     "34073-7",
+     "43685-7"
+    ]
+   },
+   "B_keys": [],
+   "B_seats": 0,
+   "B_owned": {},
+   "A_via": "base"
+  },
+  {
+   "id": "R:R16",
+   "query": "Which NSAIDs are safest for elderly patients with cardiovascular disease?",
+   "matched": [],
+   "A_keys": [],
+   "A_seats": 0,
+   "A_owned": {},
+   "B_keys": [],
+   "B_seats": 0,
+   "B_owned": {},
+   "A_via": null
+  },
+  {
+   "id": "R:R17",
+   "query": "How long should dual antiplatelet therapy be continued after coronary stent placement?",
+   "matched": [],
+   "A_keys": [],
+   "A_seats": 0,
+   "A_owned": {},
+   "B_keys": [],
+   "B_seats": 0,
+   "B_owned": {},
+   "A_via": null
+  },
+  {
+   "id": "R:R18",
+   "query": "我的病人在用 statin，最近說肌肉痛，我該怎麼辦",
+   "matched": [],
+   "A_keys": [],
+   "A_seats": 0,
+   "A_owned": {},
+   "B_keys": [],
+   "B_seats": 0,
+   "B_owned": {},
+   "A_via": null
+  },
+  {
+   "id": "R:R19",
+   "query": "What are the renal dosing adjustments required for common antibiotics?",
+   "matched": [],
+   "A_keys": [],
+   "A_seats": 0,
+   "A_owned": {},
+   "B_keys": [],
+   "B_seats": 0,
+   "B_owned": {},
+   "A_via": null
+  },
+  {
+   "id": "R:R20",
+   "query": "Can I use ACE inhibitors during pregnancy?",
+   "matched": [],
+   "A_keys": [],
+   "A_seats": 0,
+   "A_owned": {},
+   "B_keys": [],
+   "B_seats": 0,
+   "B_owned": {},
+   "A_via": null
+  },
+  {
+   "id": "canary:metformin_moa",
+   "query": "metformin mechanism of action",
+   "matched": [
+    "METFORMIN"
+   ],
+   "A_keys": [
+    "METFORMIN",
+    "METFORMIN HCL"
+   ],
+   "A_seats": 6,
+   "A_owned": {
+    "METFORMIN HCL": [
+     "34070-3",
+     "34073-7"
+    ],
+    "METFORMIN": [
+     "34066-1",
+     "34070-3",
+     "34073-7",
+     "43685-7"
+    ]
+   },
+   "B_keys": [
+    "METFORMIN"
+   ],
+   "B_seats": 4,
+   "B_owned": {
+    "METFORMIN": [
+     "34066-1",
+     "34070-3",
+     "34073-7",
+     "43685-7"
+    ]
+   },
+   "A_via": "exact"
+  },
+  {
+   "id": "canary:statin_moa",
+   "query": "statin mechanism of action pharmacology",
+   "matched": [],
+   "A_keys": [],
+   "A_seats": 0,
+   "A_owned": {},
+   "B_keys": [],
+   "B_seats": 0,
+   "B_owned": {},
+   "A_via": null
+  },
+  {
+   "id": "canary:glp1_weight",
+   "query": "GLP-1 減重機轉",
+   "matched": [],
+   "A_keys": [],
+   "A_seats": 0,
+   "A_owned": {},
+   "B_keys": [],
+   "B_seats": 0,
+   "B_owned": {},
+   "A_via": null
+  },
+  {
+   "id": "canary:statin_efficacy",
+   "query": "statin primary prevention efficacy",
+   "matched": [],
+   "A_keys": [],
+   "A_seats": 0,
+   "A_owned": {},
+   "B_keys": [],
+   "B_seats": 0,
+   "B_owned": {},
+   "A_via": null
+  },
+  {
+   "id": "canary:sglt2_cv",
+   "query": "SGLT2 inhibitor cardiovascular outcomes",
+   "matched": [],
+   "A_keys": [],
+   "A_seats": 0,
+   "A_owned": {},
+   "B_keys": [],
+   "B_seats": 0,
+   "B_owned": {},
+   "A_via": null
+  },
+  {
+   "id": "canary:statin_moa_tracked",
+   "query": "What is the mechanism of action of statins?",
+   "matched": [],
+   "A_keys": [],
+   "A_seats": 0,
+   "A_owned": {},
+   "B_keys": [],
+   "B_seats": 0,
+   "B_owned": {},
+   "A_via": null
+  },
+  {
+   "id": "misfire:calcium_ccb",
+   "query": "calcium channel blocker mechanism",
+   "matched": [
+    "CALCIUM"
+   ],
+   "A_keys": [
+    "CALCIUM",
+    "CALCIUM ACETATE"
+   ],
+   "A_seats": 4,
+   "A_owned": {
+    "CALCIUM ACETATE": [
+     "34070-3"
+    ],
+    "CALCIUM": [
+     "34070-3",
+     "34073-7",
+     "43685-7"
+    ]
+   },
+   "B_keys": [
+    "CALCIUM"
+   ],
+   "B_seats": 3,
+   "B_owned": {
+    "CALCIUM": [
+     "34070-3",
+     "34073-7",
+     "43685-7"
+    ]
+   },
+   "A_via": "exact"
+  },
+  {
+   "id": "misfire:atorva_ca",
+   "query": "atorvastatin calcium side effects",
+   "matched": [
+    "ATORVASTATIN",
+    "CALCIUM"
+   ],
+   "A_keys": [
+    "ATORVASTATIN",
+    "CALCIUM",
+    "CALCIUM ACETATE"
+   ],
+   "A_seats": 7,
+   "A_owned": {
+    "ATORVASTATIN": [
+     "34070-3",
+     "34073-7",
+     "43685-7"
+    ],
+    "CALCIUM ACETATE": [
+     "34070-3"
+    ],
+    "CALCIUM": [
+     "34070-3",
+     "34073-7",
+     "43685-7"
+    ]
+   },
+   "B_keys": [
+    "ATORVASTATIN",
+    "CALCIUM"
+   ],
+   "B_seats": 6,
+   "B_owned": {
+    "ATORVASTATIN": [
+     "34070-3",
+     "34073-7",
+     "43685-7"
+    ],
+    "CALCIUM": [
+     "34070-3",
+     "34073-7",
+     "43685-7"
+    ]
+   },
+   "A_via": "exact"
+  },
+  {
+   "id": "misfire:sodium_diet",
+   "query": "low sodium diet and blood pressure",
+   "matched": [],
+   "A_keys": [
+    "SODIUM ACETATE"
+   ],
+   "A_seats": 1,
+   "A_owned": {
+    "SODIUM ACETATE": [
+     "34070-3"
+    ]
+   },
+   "B_keys": [],
+   "B_seats": 0,
+   "B_owned": {},
+   "A_via": "base"
+  },
+  {
+   "id": "misfire:potassium_ckd",
+   "query": "potassium supplements in CKD",
+   "matched": [],
+   "A_keys": [
+    "POTASSIUM ACETATE"
+   ],
+   "A_seats": 1,
+   "A_owned": {
+    "POTASSIUM ACETATE": [
+     "34070-3"
+    ]
+   },
+   "B_keys": [],
+   "B_seats": 0,
+   "B_owned": {},
+   "A_via": "base"
+  }
+ ],
+ "Q3a": {
+  "n_queries": 30,
+  "A_nonempty_keyset": 12,
+  "A_nonempty_AND_owns_safety": 10,
+  "B_nonempty_keyset": 8,
+  "B_nonempty_AND_owns_safety": 8,
+  "note": "hit rate = nonempty_AND_owns_safety / n_queries; this is the seat's REACH, and says nothing about whether the seated docs are correct."
+ },
+ "Q3b": {
+  "moieties_total": 1038,
+  "zero_safety_as_bare_moiety": 128,
+  "zero_safety_after_A_expansion": 125,
+  "zero_safety_after_B_expansion": 127,
+  "distinct_key_sets_B": 1037,
+  "distinct_key_sets_B_with_zero_safety": 127
+ },
+ "EXTRA_branch_exclusivity": {
+  "finding": "resolver.resolve_key_set returns on the FIRST non-empty exact match (resolver.py:102-108) BEFORE the base->salt branch (:110). exact and base are MUTUALLY EXCLUSIVE, not additive: a query naming one exact-match drug and one base-only drug SILENTLY DROPS the base-only one.",
+  "probe": {
+   "warfarin and aspirin together": {
+    "keys": [
+     "ASPIRIN"
+    ],
+    "matched": [
+     "ASPIRIN"
+    ],
+    "via": "exact"
+   },
+   "warfarin alone": {
+    "keys": [
+     "WARFARIN SODIUM"
+    ],
+    "matched": [
+     "WARFARIN"
+    ],
+    "via": "base"
+   },
+   "aspirin alone": {
+    "keys": [
+     "ASPIRIN"
+    ],
+    "matched": [
+     "ASPIRIN"
+    ],
+    "via": "exact"
+   },
+   "warfarin plus clopidogrel": {
+    "keys": [
+     "WARFARIN SODIUM"
+    ],
+    "matched": [
+     "WARFARIN"
+    ],
+    "via": "base"
+   },
+   "metformin and warfarin": {
+    "keys": [
+     "METFORMIN",
+     "METFORMIN HCL"
+    ],
+    "matched": [
+     "METFORMIN"
+    ],
+    "via": "exact"
+   }
+  }
+ },
+ "EXTRA_calcium_identity": {
+  "moiety_key": "CALCIUM",
+  "setid": "4c635f60-7868-46d5-b932-d5cf8fc84432",
+  "reference_label": "Calcium Gluconate",
+  "note": "the corpus key CALCIUM is calcium gluconate injection; a query containing the ordinary English word calcium seats ITS safety sections under BOTH builders."
+ }
+}

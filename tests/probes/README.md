@@ -51,6 +51,26 @@ label contains the words *"acetylsalicylic acid"*). The report's numbers are re-
 
 ---
 
+## `retrieval_attrition/` — where documents die between corpus and answer (2026-08-22/23)
+
+Evidence for the TECH_DEBT entry headed *"[P1 · retrieval measurement / premise integrity …]"*.
+Six diagnostics + the runner + the **irreplaceable pre-c1 raw harvest**. See its own
+[`README.md`](retrieval_attrition/README.md) — it leads with a **population table**, because two of
+three findings measured on synthetic queries failed to generalise to real Research queries and one
+held, and only the population decided which.
+
+| file | what it is |
+|---|---|
+| `resolver_builder_diag_20260822.json` | both key-set builders side by side; CALCIUM; branch exclusivity; all 232 non-moiety bases unfiltered. Offline |
+| `attrition_ladder_20260823.json` | offline ladder + floor distribution + the hand-mapped 30-query reach ceiling |
+| `poolsize_harvest_20260823_115117.json` | raw post-c1, **75 live `retrieve()` calls** on the golden Research set |
+| `poolsize_postc1_comparison_20260823.json` | pre/post deltas, TB02 diagnosis, ex-TB02 sensitivity |
+| `_filter_attrition_harvest.py` → `filter_attrition_20260823_122149.json` | filter attrition read from **production's own logger** — **zero `api/` change** |
+| `filter_attrition_analysis_20260823.json` | removal-rate distribution, ladder, per-case stability |
+| `poolsize_harvest_20260728_110204.json` | 🔴 **PRE-c1 raw — IRREPLACEABLE.** c1 removed the `local` corpus, so no re-run can reproduce it |
+
+---
+
 ## `wrongdrug/` — the ownership assertion (T1, 2026-08-05)
 
 Report: [`docs/t1_ownership_assertion_20260805.md`](../../docs/t1_ownership_assertion_20260805.md)

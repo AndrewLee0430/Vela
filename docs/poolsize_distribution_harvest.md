@@ -128,7 +128,7 @@ needs either more RAM (so the server survives a full pass) or a harness that run
 ## 5. Artifacts
 
 - `tests/results/_poolsize_harvest.py` — harvest script (throwaway, committed for reproducibility)
-- `tests/results/poolsize_harvest_20260728_110206.json` — raw per-run data (gitignored)
+- ✅ **`tests/probes/retrieval_attrition/poolsize_harvest_20260728_110204.json` — raw per-run data, COMMITTED 2026-08-24.** ⚠️ **Two corrections to this line:** it read ~~`tests/results/poolsize_harvest_20260728_110206.json` — raw per-run data (gitignored)~~ — the **timestamp was wrong by two seconds** (`110204`, not `110206`), and the file is **no longer gitignored**. It is **irreplaceable**: c1 removed the `local` corpus from retrieval (fly 215, 2026-07-29), so no re-run can reproduce this snapshot. Verified against §1's table: **zero disagreements**.
 - `tests/results/_poolsize_run.log` — run log (gitignored)
 
 **No recommendation on what to build.** That is the founder's call after seeing this distribution.

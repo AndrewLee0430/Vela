@@ -1,0 +1,1558 @@
+{
+ "generated_utc": "2026-08-23 04:39:17Z",
+ "run_file": "tests/results/filter_attrition_20260823_122149.json",
+ "run": {
+  "started": "2026-08-23 12:21:50",
+  "updated": "2026-08-23 12:38:58",
+  "complete": true,
+  "N": 3,
+  "logger_captured": "api.rag.retriever"
+ },
+ "arithmetic_note": "retriever.py:529 appends the exemption BEFORE :531 logs, so filter_out ALREADY INCLUDES filter_exempt_n. raw_llm_kept = filter_out - filter_exempt_n.",
+ "mechanism": "ZERO api/ change — a logging.Handler on the existing api.rag.retriever logger",
+ "counts": {
+  "total_runs": 75,
+  "errored": 0,
+  "fail_open_EXCLUDED_from_filter_stats": 0,
+  "filter_never_ran_retrieval_short_circuited": 0,
+  "usable_for_filter_stats": 75
+ },
+ "N1_headline": {
+  "mean_docs_IN": 13.853,
+  "mean_docs_OUT_incl_exemption": 5.32,
+  "mean_raw_LLM_kept_excl_exemption": 4.907,
+  "mean_removed": 8.533,
+  "mean_removal_rate": 0.6068,
+  "median_removal_rate": 0.625,
+  "removal_rate_DISTRIBUTION": {
+   "0% (kept all)": 1,
+   "1-25%": 2,
+   "26-50%": 21,
+   "51-75%": 41,
+   "76-99%": 7,
+   "100% (killed all)": 3
+  },
+  "docs_in_distribution": {
+   "6": 2,
+   "7": 1,
+   "9": 1,
+   "10": 4,
+   "11": 5,
+   "12": 9,
+   "13": 8,
+   "14": 13,
+   "15": 11,
+   "16": 8,
+   "17": 7,
+   "18": 4,
+   "19": 2
+  },
+  "docs_out_distribution": {
+   "0": 3,
+   "1": 3,
+   "2": 2,
+   "3": 7,
+   "4": 14,
+   "5": 12,
+   "6": 14,
+   "7": 8,
+   "8": 1,
+   "9": 6,
+   "10": 3,
+   "11": 1,
+   "12": 1
+  }
+ },
+ "N2_vs_synthetic": {
+  "seat_v2_synthetic_20_queries": {
+   "in": 11.3,
+   "out": 4.7,
+   "removed": 6.6,
+   "rate": 0.584,
+   "population": "synthetic {drug}+{template} pairs"
+  },
+  "REAL_golden_research": {
+   "in": 13.853,
+   "out": 5.32,
+   "removed": 8.533,
+   "rate": 0.6068,
+   "population": "25 golden Research cases x N=3"
+  },
+  "delta_rate": 0.0228,
+  "delta_removed": 1.933
+ },
+ "N3_filter_kills_everything": {
+  "runs_with_filter_out_0": 3,
+  "of_usable": 75,
+  "detail": [
+   {
+    "filter_in": 14,
+    "status": "irrelevant",
+    "pool_size": 0
+   },
+   {
+    "filter_in": 15,
+    "status": "irrelevant",
+    "pool_size": 0
+   },
+   {
+    "filter_in": 15,
+    "status": "irrelevant",
+    "pool_size": 0
+   }
+  ],
+  "runs_where_filter_never_ran": [],
+  "interpretation": "filter_out==0 with filter_in>0 => THE FILTER killed it. filter_in is None => retrieval short-circuited BEFORE the filter (retriever.py:213-215, all sources empty) => retrieval-zero, not filter-zero."
+ },
+ "N4_per_case": [
+  {
+   "case": "TB04",
+   "usable": 3,
+   "in": [
+    14,
+    15,
+    15
+   ],
+   "out": [
+    0,
+    0,
+    0
+   ],
+   "removed": [
+    14,
+    15,
+    15
+   ],
+   "removal_rate": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "mean_removed": 14.67,
+   "mean_rate": 1.0,
+   "rate_spread": 0.0,
+   "exempt_n": [
+    0,
+    0,
+    0
+   ],
+   "pool_size": [
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "case": "R09",
+   "usable": 3,
+   "in": [
+    17,
+    17,
+    17
+   ],
+   "out": [
+    4,
+    5,
+    6
+   ],
+   "removed": [
+    13,
+    12,
+    11
+   ],
+   "removal_rate": [
+    0.765,
+    0.706,
+    0.647
+   ],
+   "mean_removed": 12.0,
+   "mean_rate": 0.706,
+   "rate_spread": 0.118,
+   "exempt_n": [
+    0,
+    0,
+    0
+   ],
+   "pool_size": [
+    4,
+    5,
+    5
+   ]
+  },
+  {
+   "case": "R13",
+   "usable": 3,
+   "in": [
+    16,
+    16,
+    16
+   ],
+   "out": [
+    4,
+    4,
+    4
+   ],
+   "removed": [
+    12,
+    12,
+    12
+   ],
+   "removal_rate": [
+    0.75,
+    0.75,
+    0.75
+   ],
+   "mean_removed": 12.0,
+   "mean_rate": 0.75,
+   "rate_spread": 0.0,
+   "exempt_n": [
+    1,
+    0,
+    1
+   ],
+   "pool_size": [
+    4,
+    4,
+    4
+   ]
+  },
+  {
+   "case": "TB01",
+   "usable": 3,
+   "in": [
+    16,
+    15,
+    16
+   ],
+   "out": [
+    4,
+    3,
+    4
+   ],
+   "removed": [
+    12,
+    12,
+    12
+   ],
+   "removal_rate": [
+    0.75,
+    0.8,
+    0.75
+   ],
+   "mean_removed": 12.0,
+   "mean_rate": 0.767,
+   "rate_spread": 0.05,
+   "exempt_n": [
+    0,
+    0,
+    0
+   ],
+   "pool_size": [
+    4,
+    3,
+    4
+   ]
+  },
+  {
+   "case": "R15",
+   "usable": 3,
+   "in": [
+    15,
+    13,
+    15
+   ],
+   "out": [
+    1,
+    6,
+    1
+   ],
+   "removed": [
+    14,
+    7,
+    14
+   ],
+   "removal_rate": [
+    0.933,
+    0.538,
+    0.933
+   ],
+   "mean_removed": 11.67,
+   "mean_rate": 0.802,
+   "rate_spread": 0.395,
+   "exempt_n": [
+    0,
+    0,
+    0
+   ],
+   "pool_size": [
+    1,
+    5,
+    1
+   ]
+  },
+  {
+   "case": "R02",
+   "usable": 3,
+   "in": [
+    13,
+    13,
+    13
+   ],
+   "out": [
+    2,
+    1,
+    3
+   ],
+   "removed": [
+    11,
+    12,
+    10
+   ],
+   "removal_rate": [
+    0.846,
+    0.923,
+    0.769
+   ],
+   "mean_removed": 11.0,
+   "mean_rate": 0.846,
+   "rate_spread": 0.154,
+   "exempt_n": [
+    0,
+    0,
+    0
+   ],
+   "pool_size": [
+    2,
+    1,
+    3
+   ]
+  },
+  {
+   "case": "TB03",
+   "usable": 3,
+   "in": [
+    16,
+    16,
+    16
+   ],
+   "out": [
+    6,
+    6,
+    4
+   ],
+   "removed": [
+    10,
+    10,
+    12
+   ],
+   "removal_rate": [
+    0.625,
+    0.625,
+    0.75
+   ],
+   "mean_removed": 10.67,
+   "mean_rate": 0.667,
+   "rate_spread": 0.125,
+   "exempt_n": [
+    2,
+    2,
+    4
+   ],
+   "pool_size": [
+    5,
+    5,
+    4
+   ]
+  },
+  {
+   "case": "R12",
+   "usable": 3,
+   "in": [
+    17,
+    17,
+    17
+   ],
+   "out": [
+    6,
+    7,
+    7
+   ],
+   "removed": [
+    11,
+    10,
+    10
+   ],
+   "removal_rate": [
+    0.647,
+    0.588,
+    0.588
+   ],
+   "mean_removed": 10.33,
+   "mean_rate": 0.608,
+   "rate_spread": 0.059,
+   "exempt_n": [
+    1,
+    0,
+    0
+   ],
+   "pool_size": [
+    5,
+    5,
+    5
+   ]
+  },
+  {
+   "case": "R11",
+   "usable": 3,
+   "in": [
+    18,
+    18,
+    19
+   ],
+   "out": [
+    8,
+    7,
+    10
+   ],
+   "removed": [
+    10,
+    11,
+    9
+   ],
+   "removal_rate": [
+    0.556,
+    0.611,
+    0.474
+   ],
+   "mean_removed": 10.0,
+   "mean_rate": 0.547,
+   "rate_spread": 0.137,
+   "exempt_n": [
+    1,
+    1,
+    2
+   ],
+   "pool_size": [
+    5,
+    5,
+    5
+   ]
+  },
+  {
+   "case": "TB02",
+   "usable": 3,
+   "in": [
+    14,
+    14,
+    14
+   ],
+   "out": [
+    5,
+    4,
+    4
+   ],
+   "removed": [
+    9,
+    10,
+    10
+   ],
+   "removal_rate": [
+    0.643,
+    0.714,
+    0.714
+   ],
+   "mean_removed": 9.67,
+   "mean_rate": 0.691,
+   "rate_spread": 0.071,
+   "exempt_n": [
+    0,
+    0,
+    0
+   ],
+   "pool_size": [
+    5,
+    4,
+    4
+   ]
+  },
+  {
+   "case": "R03",
+   "usable": 3,
+   "in": [
+    10,
+    15,
+    15
+   ],
+   "out": [
+    3,
+    5,
+    5
+   ],
+   "removed": [
+    7,
+    10,
+    10
+   ],
+   "removal_rate": [
+    0.7,
+    0.667,
+    0.667
+   ],
+   "mean_removed": 9.0,
+   "mean_rate": 0.678,
+   "rate_spread": 0.033,
+   "exempt_n": [
+    0,
+    0,
+    0
+   ],
+   "pool_size": [
+    3,
+    5,
+    5
+   ]
+  },
+  {
+   "case": "R16",
+   "usable": 3,
+   "in": [
+    18,
+    18,
+    19
+   ],
+   "out": [
+    9,
+    9,
+    10
+   ],
+   "removed": [
+    9,
+    9,
+    9
+   ],
+   "removal_rate": [
+    0.5,
+    0.5,
+    0.474
+   ],
+   "mean_removed": 9.0,
+   "mean_rate": 0.491,
+   "rate_spread": 0.026,
+   "exempt_n": [
+    0,
+    0,
+    0
+   ],
+   "pool_size": [
+    5,
+    5,
+    5
+   ]
+  },
+  {
+   "case": "R19",
+   "usable": 3,
+   "in": [
+    12,
+    14,
+    12
+   ],
+   "out": [
+    3,
+    4,
+    6
+   ],
+   "removed": [
+    9,
+    10,
+    6
+   ],
+   "removal_rate": [
+    0.75,
+    0.714,
+    0.5
+   ],
+   "mean_removed": 8.33,
+   "mean_rate": 0.655,
+   "rate_spread": 0.25,
+   "exempt_n": [
+    0,
+    0,
+    0
+   ],
+   "pool_size": [
+    3,
+    4,
+    5
+   ]
+  },
+  {
+   "case": "R01",
+   "usable": 3,
+   "in": [
+    14,
+    13,
+    14
+   ],
+   "out": [
+    5,
+    7,
+    5
+   ],
+   "removed": [
+    9,
+    6,
+    9
+   ],
+   "removal_rate": [
+    0.643,
+    0.462,
+    0.643
+   ],
+   "mean_removed": 8.0,
+   "mean_rate": 0.582,
+   "rate_spread": 0.181,
+   "exempt_n": [
+    0,
+    0,
+    0
+   ],
+   "pool_size": [
+    5,
+    5,
+    5
+   ]
+  },
+  {
+   "case": "R04",
+   "usable": 3,
+   "in": [
+    12,
+    12,
+    12
+   ],
+   "out": [
+    4,
+    4,
+    4
+   ],
+   "removed": [
+    8,
+    8,
+    8
+   ],
+   "removal_rate": [
+    0.667,
+    0.667,
+    0.667
+   ],
+   "mean_removed": 8.0,
+   "mean_rate": 0.667,
+   "rate_spread": 0.0,
+   "exempt_n": [
+    0,
+    0,
+    0
+   ],
+   "pool_size": [
+    4,
+    4,
+    4
+   ]
+  },
+  {
+   "case": "R05",
+   "usable": 3,
+   "in": [
+    11,
+    11,
+    11
+   ],
+   "out": [
+    3,
+    3,
+    3
+   ],
+   "removed": [
+    8,
+    8,
+    8
+   ],
+   "removal_rate": [
+    0.727,
+    0.727,
+    0.727
+   ],
+   "mean_removed": 8.0,
+   "mean_rate": 0.727,
+   "rate_spread": 0.0,
+   "exempt_n": [
+    0,
+    0,
+    0
+   ],
+   "pool_size": [
+    3,
+    3,
+    3
+   ]
+  },
+  {
+   "case": "R10",
+   "usable": 3,
+   "in": [
+    12,
+    13,
+    15
+   ],
+   "out": [
+    6,
+    6,
+    6
+   ],
+   "removed": [
+    6,
+    7,
+    9
+   ],
+   "removal_rate": [
+    0.5,
+    0.538,
+    0.6
+   ],
+   "mean_removed": 7.33,
+   "mean_rate": 0.546,
+   "rate_spread": 0.1,
+   "exempt_n": [
+    1,
+    1,
+    1
+   ],
+   "pool_size": [
+    5,
+    5,
+    5
+   ]
+  },
+  {
+   "case": "R08",
+   "usable": 3,
+   "in": [
+    15,
+    15,
+    15
+   ],
+   "out": [
+    7,
+    10,
+    7
+   ],
+   "removed": [
+    8,
+    5,
+    8
+   ],
+   "removal_rate": [
+    0.533,
+    0.333,
+    0.533
+   ],
+   "mean_removed": 7.0,
+   "mean_rate": 0.467,
+   "rate_spread": 0.2,
+   "exempt_n": [
+    0,
+    0,
+    0
+   ],
+   "pool_size": [
+    5,
+    5,
+    5
+   ]
+  },
+  {
+   "case": "R07",
+   "usable": 3,
+   "in": [
+    14,
+    10,
+    13
+   ],
+   "out": [
+    6,
+    4,
+    7
+   ],
+   "removed": [
+    8,
+    6,
+    6
+   ],
+   "removal_rate": [
+    0.571,
+    0.6,
+    0.462
+   ],
+   "mean_removed": 6.67,
+   "mean_rate": 0.544,
+   "rate_spread": 0.138,
+   "exempt_n": [
+    3,
+    1,
+    3
+   ],
+   "pool_size": [
+    5,
+    4,
+    5
+   ]
+  },
+  {
+   "case": "R14",
+   "usable": 3,
+   "in": [
+    12,
+    12,
+    12
+   ],
+   "out": [
+    6,
+    6,
+    6
+   ],
+   "removed": [
+    6,
+    6,
+    6
+   ],
+   "removal_rate": [
+    0.5,
+    0.5,
+    0.5
+   ],
+   "mean_removed": 6.0,
+   "mean_rate": 0.5,
+   "rate_spread": 0.0,
+   "exempt_n": [
+    0,
+    0,
+    0
+   ],
+   "pool_size": [
+    5,
+    5,
+    5
+   ]
+  },
+  {
+   "case": "R17",
+   "usable": 3,
+   "in": [
+    11,
+    14,
+    11
+   ],
+   "out": [
+    5,
+    9,
+    5
+   ],
+   "removed": [
+    6,
+    5,
+    6
+   ],
+   "removal_rate": [
+    0.545,
+    0.357,
+    0.545
+   ],
+   "mean_removed": 5.67,
+   "mean_rate": 0.483,
+   "rate_spread": 0.188,
+   "exempt_n": [
+    0,
+    0,
+    0
+   ],
+   "pool_size": [
+    5,
+    5,
+    5
+   ]
+  },
+  {
+   "case": "R06",
+   "usable": 3,
+   "in": [
+    14,
+    14,
+    14
+   ],
+   "out": [
+    9,
+    9,
+    9
+   ],
+   "removed": [
+    5,
+    5,
+    5
+   ],
+   "removal_rate": [
+    0.357,
+    0.357,
+    0.357
+   ],
+   "mean_removed": 5.0,
+   "mean_rate": 0.357,
+   "rate_spread": 0.0,
+   "exempt_n": [
+    1,
+    1,
+    1
+   ],
+   "pool_size": [
+    5,
+    5,
+    5
+   ]
+  },
+  {
+   "case": "R20",
+   "usable": 3,
+   "in": [
+    10,
+    7,
+    10
+   ],
+   "out": [
+    5,
+    2,
+    5
+   ],
+   "removed": [
+    5,
+    5,
+    5
+   ],
+   "removal_rate": [
+    0.5,
+    0.714,
+    0.5
+   ],
+   "mean_removed": 5.0,
+   "mean_rate": 0.571,
+   "rate_spread": 0.214,
+   "exempt_n": [
+    0,
+    0,
+    0
+   ],
+   "pool_size": [
+    5,
+    2,
+    5
+   ]
+  },
+  {
+   "case": "R18",
+   "usable": 3,
+   "in": [
+    13,
+    14,
+    17
+   ],
+   "out": [
+    11,
+    7,
+    12
+   ],
+   "removed": [
+    2,
+    7,
+    5
+   ],
+   "removal_rate": [
+    0.154,
+    0.5,
+    0.294
+   ],
+   "mean_removed": 4.67,
+   "mean_rate": 0.316,
+   "rate_spread": 0.346,
+   "exempt_n": [
+    0,
+    0,
+    0
+   ],
+   "pool_size": [
+    5,
+    5,
+    5
+   ]
+  },
+  {
+   "case": "TB05",
+   "usable": 3,
+   "in": [
+    6,
+    6,
+    9
+   ],
+   "out": [
+    5,
+    6,
+    5
+   ],
+   "removed": [
+    1,
+    0,
+    4
+   ],
+   "removal_rate": [
+    0.167,
+    0.0,
+    0.444
+   ],
+   "mean_removed": 1.67,
+   "mean_rate": 0.204,
+   "rate_spread": 0.444,
+   "exempt_n": [
+    1,
+    1,
+    1
+   ],
+   "pool_size": [
+    5,
+    5,
+    5
+   ]
+  }
+ ],
+ "N4_biggest_losers": [
+  {
+   "case": "TB04",
+   "usable": 3,
+   "in": [
+    14,
+    15,
+    15
+   ],
+   "out": [
+    0,
+    0,
+    0
+   ],
+   "removed": [
+    14,
+    15,
+    15
+   ],
+   "removal_rate": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "mean_removed": 14.67,
+   "mean_rate": 1.0,
+   "rate_spread": 0.0,
+   "exempt_n": [
+    0,
+    0,
+    0
+   ],
+   "pool_size": [
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "case": "R09",
+   "usable": 3,
+   "in": [
+    17,
+    17,
+    17
+   ],
+   "out": [
+    4,
+    5,
+    6
+   ],
+   "removed": [
+    13,
+    12,
+    11
+   ],
+   "removal_rate": [
+    0.765,
+    0.706,
+    0.647
+   ],
+   "mean_removed": 12.0,
+   "mean_rate": 0.706,
+   "rate_spread": 0.118,
+   "exempt_n": [
+    0,
+    0,
+    0
+   ],
+   "pool_size": [
+    4,
+    5,
+    5
+   ]
+  },
+  {
+   "case": "R13",
+   "usable": 3,
+   "in": [
+    16,
+    16,
+    16
+   ],
+   "out": [
+    4,
+    4,
+    4
+   ],
+   "removed": [
+    12,
+    12,
+    12
+   ],
+   "removal_rate": [
+    0.75,
+    0.75,
+    0.75
+   ],
+   "mean_removed": 12.0,
+   "mean_rate": 0.75,
+   "rate_spread": 0.0,
+   "exempt_n": [
+    1,
+    0,
+    1
+   ],
+   "pool_size": [
+    4,
+    4,
+    4
+   ]
+  },
+  {
+   "case": "TB01",
+   "usable": 3,
+   "in": [
+    16,
+    15,
+    16
+   ],
+   "out": [
+    4,
+    3,
+    4
+   ],
+   "removed": [
+    12,
+    12,
+    12
+   ],
+   "removal_rate": [
+    0.75,
+    0.8,
+    0.75
+   ],
+   "mean_removed": 12.0,
+   "mean_rate": 0.767,
+   "rate_spread": 0.05,
+   "exempt_n": [
+    0,
+    0,
+    0
+   ],
+   "pool_size": [
+    4,
+    3,
+    4
+   ]
+  },
+  {
+   "case": "R15",
+   "usable": 3,
+   "in": [
+    15,
+    13,
+    15
+   ],
+   "out": [
+    1,
+    6,
+    1
+   ],
+   "removed": [
+    14,
+    7,
+    14
+   ],
+   "removal_rate": [
+    0.933,
+    0.538,
+    0.933
+   ],
+   "mean_removed": 11.67,
+   "mean_rate": 0.802,
+   "rate_spread": 0.395,
+   "exempt_n": [
+    0,
+    0,
+    0
+   ],
+   "pool_size": [
+    1,
+    5,
+    1
+   ]
+  },
+  {
+   "case": "R02",
+   "usable": 3,
+   "in": [
+    13,
+    13,
+    13
+   ],
+   "out": [
+    2,
+    1,
+    3
+   ],
+   "removed": [
+    11,
+    12,
+    10
+   ],
+   "removal_rate": [
+    0.846,
+    0.923,
+    0.769
+   ],
+   "mean_removed": 11.0,
+   "mean_rate": 0.846,
+   "rate_spread": 0.154,
+   "exempt_n": [
+    0,
+    0,
+    0
+   ],
+   "pool_size": [
+    2,
+    1,
+    3
+   ]
+  }
+ ],
+ "N4_most_unstable": [
+  {
+   "case": "TB05",
+   "usable": 3,
+   "in": [
+    6,
+    6,
+    9
+   ],
+   "out": [
+    5,
+    6,
+    5
+   ],
+   "removed": [
+    1,
+    0,
+    4
+   ],
+   "removal_rate": [
+    0.167,
+    0.0,
+    0.444
+   ],
+   "mean_removed": 1.67,
+   "mean_rate": 0.204,
+   "rate_spread": 0.444,
+   "exempt_n": [
+    1,
+    1,
+    1
+   ],
+   "pool_size": [
+    5,
+    5,
+    5
+   ]
+  },
+  {
+   "case": "R15",
+   "usable": 3,
+   "in": [
+    15,
+    13,
+    15
+   ],
+   "out": [
+    1,
+    6,
+    1
+   ],
+   "removed": [
+    14,
+    7,
+    14
+   ],
+   "removal_rate": [
+    0.933,
+    0.538,
+    0.933
+   ],
+   "mean_removed": 11.67,
+   "mean_rate": 0.802,
+   "rate_spread": 0.395,
+   "exempt_n": [
+    0,
+    0,
+    0
+   ],
+   "pool_size": [
+    1,
+    5,
+    1
+   ]
+  },
+  {
+   "case": "R18",
+   "usable": 3,
+   "in": [
+    13,
+    14,
+    17
+   ],
+   "out": [
+    11,
+    7,
+    12
+   ],
+   "removed": [
+    2,
+    7,
+    5
+   ],
+   "removal_rate": [
+    0.154,
+    0.5,
+    0.294
+   ],
+   "mean_removed": 4.67,
+   "mean_rate": 0.316,
+   "rate_spread": 0.346,
+   "exempt_n": [
+    0,
+    0,
+    0
+   ],
+   "pool_size": [
+    5,
+    5,
+    5
+   ]
+  },
+  {
+   "case": "R19",
+   "usable": 3,
+   "in": [
+    12,
+    14,
+    12
+   ],
+   "out": [
+    3,
+    4,
+    6
+   ],
+   "removed": [
+    9,
+    10,
+    6
+   ],
+   "removal_rate": [
+    0.75,
+    0.714,
+    0.5
+   ],
+   "mean_removed": 8.33,
+   "mean_rate": 0.655,
+   "rate_spread": 0.25,
+   "exempt_n": [
+    0,
+    0,
+    0
+   ],
+   "pool_size": [
+    3,
+    4,
+    5
+   ]
+  },
+  {
+   "case": "R20",
+   "usable": 3,
+   "in": [
+    10,
+    7,
+    10
+   ],
+   "out": [
+    5,
+    2,
+    5
+   ],
+   "removed": [
+    5,
+    5,
+    5
+   ],
+   "removal_rate": [
+    0.5,
+    0.714,
+    0.5
+   ],
+   "mean_removed": 5.0,
+   "mean_rate": 0.571,
+   "rate_spread": 0.214,
+   "exempt_n": [
+    0,
+    0,
+    0
+   ],
+   "pool_size": [
+    5,
+    2,
+    5
+   ]
+  },
+  {
+   "case": "R08",
+   "usable": 3,
+   "in": [
+    15,
+    15,
+    15
+   ],
+   "out": [
+    7,
+    10,
+    7
+   ],
+   "removed": [
+    8,
+    5,
+    8
+   ],
+   "removal_rate": [
+    0.533,
+    0.333,
+    0.533
+   ],
+   "mean_removed": 7.0,
+   "mean_rate": 0.467,
+   "rate_spread": 0.2,
+   "exempt_n": [
+    0,
+    0,
+    0
+   ],
+   "pool_size": [
+    5,
+    5,
+    5
+   ]
+  }
+ ],
+ "N5_exemption": {
+  "filter_exempt_runs": 21,
+  "of_total": 75,
+  "filter_exempt_docs_readded_total": 31,
+  "filter_exempt_ids": [
+   "DailyMed:0a905e25-42b6-4937-a689-f01a8f22e644#34073-7",
+   "DailyMed:0bb5fa27-32ed-ed13-e063-6394a90a1577#34073-7",
+   "DailyMed:1b7e5c6e-e052-41b0-a4ce-05dfe62faaaf#43685-7",
+   "DailyMed:1f8833f9-1232-4aa7-a0d4-04a9f87dc2f0#34073-7",
+   "DailyMed:32e34077-aff1-4ec7-f9b0-b8e240768fb8#43685-7",
+   "DailyMed:746db603-a6e1-4dc3-c2d8-92314419098c#34073-7",
+   "DailyMed:7fd9d5c7-8025-4049-8b5b-ae3d22db507f#34070-3",
+   "DailyMed:8b8ad213-1dc8-454e-a524-075685c0e1a8#43685-7",
+   "DailyMed:91fa852c-b43d-4a55-983b-74aa6827125d#34073-7",
+   "DailyMed:dd904490-83f3-4cd3-bb6f-68e28509b4b6#34073-7",
+   "DailyMed:df9bed83-6c82-4294-9442-5e7464c3aab1#34070-3",
+   "DailyMed:f1d77dba-9dae-4f30-b3e3-b4898993f865#34073-7",
+   "DailyMed:fb2fe258-fe2e-47f6-8adf-ca75bf6f90af#34073-7",
+   "DailyMed:fb832474-88d9-4e29-95cd-fbc446944cc4#43685-7",
+   "DailyMed:fe0ced75-ccbf-4d2e-bd0d-b57e60ab913f#34073-7"
+  ],
+  "cut_exempt_runs": 0,
+  "cut_exempt_docs_readded_total": 0,
+  "note": "these are PRODUCTION already protecting the whitelisted-safety class, today, with no build"
+ },
+ "LADDER_from_production_logs": {
+  "merge_all_documents(:225)": 16.88,
+  "after_dedup(:225)": 13.853,
+  "filter_IN(:531)": 13.853,
+  "filter_OUT_incl_exemption(:531)": 5.32,
+  "final_pre_slice(:291)": 5.542,
+  "final_post_slice(len(docs))": 4.187,
+  "note": "every number here is emitted by production code today; no instrumentation was added"
+ },
+ "cannot_answer": "WHICH documents the filter dropped. :531 logs COUNTS only. Only the FilterExempt re-adds (:527) carry source_ids. Identity of the drop-set would need an api/ change.",
+ "LADDER_consistent_denominator": {
+  "denominator": "72 of 75 runs (the 3 TB04 runs short-circuit at :248 and never reach :291)",
+  "merge_all_documents(:225)": 16.958,
+  "after_dedup(:225)": 13.819,
+  "filter_IN(:531)": 13.819,
+  "filter_OUT(:531)": 5.542,
+  "final_pre_slice(:291)": 5.542,
+  "final_post_slice": 4.361,
+  "deltas": {
+   "dedup": -3.139,
+   "cut+cut_exemption": 0.0,
+   "relevance_filter": -8.277,
+   "rerank+composite+collapse": 0.0,
+   "final_slice(:292)": -1.181
+  }
+ },
+ "CUT_NEVER_BOUND": {
+  "max_dedup_unique": 19,
+  "threshold_max_results_x4": 20,
+  "runs_exceeding": 0,
+  "of": 75,
+  "filter_in_equals_dedup_unique": "75/75",
+  "cut_exempt_runs": 0,
+  "consequence": "the [:max_results*4] cut at :232 NEVER bound in 75 real Research runs, so _cut_exemption at :237 had nothing to re-add. The stage-1 protection that seat_v2 modelled as P1 is free in production AND inert on this population."
+ },
+ "ZERO_CASE_MIGRATES": {
+  "this_run": "TB04 zeroed 3/3 (filter_in 14/15/15 -> 0)",
+  "poolsize_run_40min_earlier": "TB02 zeroed 2/3, TB03 1/3, TB04 was [1,1,1]",
+  "this_run_TB02": [
+   5,
+   4,
+   4
+  ],
+  "this_run_TB03": [
+   5,
+   5,
+   4
+  ],
+  "note": "which query the filter kills entirely is NOT stable between runs 40 minutes apart."
+ },
+ "N6_population_caveat": "25 golden Research cases x N=3 is a curated TEST set, not Research traffic. It was built to exercise known behaviours (oscillators R10/R15/R16/R20, CJK TB cases, edge cases), so it over-represents hard queries by construction. It is the best real-query witness that exists in this repo, and it is still 25 queries. It cannot support a claim about traffic distribution, only about these 25."
+}

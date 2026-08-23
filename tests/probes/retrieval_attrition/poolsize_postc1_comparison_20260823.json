@@ -1,0 +1,876 @@
+{
+ "generated_utc": "2026-08-23 04:08:11Z",
+ "new_run_file": "tests/results/poolsize_harvest_20260823_115117.json",
+ "new_run": {
+  "started": "2026-08-23 11:51:18",
+  "updated": "2026-08-23 12:07:52",
+  "complete": true
+ },
+ "original_source": "poolsize_harvest_20260728_110204.json (RAW, gitignored, survived on this machine)",
+ "original_config": {
+  "N": 3,
+  "max_results": 5,
+  "source_weight_active": true,
+  "started_at": "2026-07-28 11:02:06",
+  "transport": "in-process retriever.retrieve() (see module docstring for why)"
+ },
+ "markdown_vs_raw_json_disagreements": {},
+ "RULE20_NOTE": "the 2026-07-28 RAW json is gitignored and exists on THIS MACHINE ONLY; the committed markdown table is the only portable record. Both were compared and any disagreement is listed above.",
+ "parity": {
+  "query_set": "25 research cases R01-R20 + TB01-TB05 (load_cases unchanged)",
+  "N": 3,
+  "max_results": 5,
+  "source_weight_active": true,
+  "transport": "in-process retriever.retrieve() (see module docstring for why)",
+  "VARIABLE_UNDER_TEST": "enable_local True (pre-c1 bare-ctor default) -> False (post-c1 default, c9d36cf 2026-07-29). The bare HybridRetriever() tracks production in both eras.",
+  "UNAVOIDABLE_CONFOUNDS": [
+   "live PubMed/FDA drift over ~4 weeks",
+   "_rewrite_query nondeterminism (temperature=0, no seed)",
+   "original measured mean turnover 0.423 run-to-run; some delta is churn, not c1. No same-day control is retrospectively possible."
+  ]
+ },
+ "AGGREGATE": {
+  "post_c1_2026_08_23": {
+   "n_runs": 75,
+   "dist": {
+    "0": 3,
+    "1": 6,
+    "2": 5,
+    "3": 6,
+    "4": 15,
+    "5": 40
+   },
+   "share_pct": {
+    "0": 4,
+    "1": 8,
+    "2": 7,
+    "3": 8,
+    "4": 20,
+    "5": 53
+   },
+   "below5": 35,
+   "eq5": 40,
+   "le2": 14,
+   "mean": 3.92
+  },
+  "pre_c1_2026_07_28": {
+   "n_runs": 75,
+   "dist": {
+    "0": 1,
+    "1": 6,
+    "2": 1,
+    "3": 5,
+    "4": 18,
+    "5": 44
+   },
+   "share_pct": {
+    "0": 1,
+    "1": 8,
+    "2": 1,
+    "3": 7,
+    "4": 24,
+    "5": 59
+   },
+   "below5": 31,
+   "eq5": 44,
+   "le2": 8,
+   "mean": 4.2
+  }
+ },
+ "DELTA_per_bucket": {
+  "0": 2,
+  "1": 0,
+  "2": 4,
+  "3": 1,
+  "4": -3,
+  "5": -4
+ },
+ "DELTA_headline": {
+  "below5": 4,
+  "eq5": -4,
+  "le2": 6,
+  "mean": -0.28
+ },
+ "PER_CASE": [
+  {
+   "case": "R01",
+   "pre_c1": [
+    5,
+    5,
+    5
+   ],
+   "post_c1": [
+    5,
+    5,
+    5
+   ],
+   "pre_mean": 5.0,
+   "post_mean": 5.0,
+   "delta_mean": 0.0,
+   "pre_le2": 0,
+   "post_le2": 0
+  },
+  {
+   "case": "R02",
+   "pre_c1": [
+    3,
+    1,
+    2
+   ],
+   "post_c1": [
+    2,
+    2,
+    2
+   ],
+   "pre_mean": 2.0,
+   "post_mean": 2.0,
+   "delta_mean": 0.0,
+   "pre_le2": 2,
+   "post_le2": 3
+  },
+  {
+   "case": "R03",
+   "pre_c1": [
+    4,
+    4,
+    5
+   ],
+   "post_c1": [
+    4,
+    2,
+    5
+   ],
+   "pre_mean": 4.33,
+   "post_mean": 3.67,
+   "delta_mean": -0.66,
+   "pre_le2": 0,
+   "post_le2": 1
+  },
+  {
+   "case": "R04",
+   "pre_c1": [
+    4,
+    4,
+    5
+   ],
+   "post_c1": [
+    4,
+    4,
+    4
+   ],
+   "pre_mean": 4.33,
+   "post_mean": 4.0,
+   "delta_mean": -0.33,
+   "pre_le2": 0,
+   "post_le2": 0
+  },
+  {
+   "case": "R05",
+   "pre_c1": [
+    4,
+    4,
+    4
+   ],
+   "post_c1": [
+    3,
+    4,
+    3
+   ],
+   "pre_mean": 4.0,
+   "post_mean": 3.33,
+   "delta_mean": -0.67,
+   "pre_le2": 0,
+   "post_le2": 0
+  },
+  {
+   "case": "R06",
+   "pre_c1": [
+    5,
+    5,
+    5
+   ],
+   "post_c1": [
+    5,
+    5,
+    5
+   ],
+   "pre_mean": 5.0,
+   "post_mean": 5.0,
+   "delta_mean": 0.0,
+   "pre_le2": 0,
+   "post_le2": 0
+  },
+  {
+   "case": "R07",
+   "pre_c1": [
+    5,
+    4,
+    5
+   ],
+   "post_c1": [
+    4,
+    4,
+    5
+   ],
+   "pre_mean": 4.67,
+   "post_mean": 4.33,
+   "delta_mean": -0.34,
+   "pre_le2": 0,
+   "post_le2": 0
+  },
+  {
+   "case": "R08",
+   "pre_c1": [
+    5,
+    5,
+    5
+   ],
+   "post_c1": [
+    4,
+    4,
+    5
+   ],
+   "pre_mean": 5.0,
+   "post_mean": 4.33,
+   "delta_mean": -0.67,
+   "pre_le2": 0,
+   "post_le2": 0
+  },
+  {
+   "case": "R09",
+   "pre_c1": [
+    3,
+    5,
+    5
+   ],
+   "post_c1": [
+    4,
+    5,
+    5
+   ],
+   "pre_mean": 4.33,
+   "post_mean": 4.67,
+   "delta_mean": 0.34,
+   "pre_le2": 0,
+   "post_le2": 0
+  },
+  {
+   "case": "R10",
+   "pre_c1": [
+    4,
+    5,
+    5
+   ],
+   "post_c1": [
+    5,
+    5,
+    5
+   ],
+   "pre_mean": 4.67,
+   "post_mean": 5.0,
+   "delta_mean": 0.33,
+   "pre_le2": 0,
+   "post_le2": 0
+  },
+  {
+   "case": "R11",
+   "pre_c1": [
+    5,
+    5,
+    5
+   ],
+   "post_c1": [
+    5,
+    5,
+    5
+   ],
+   "pre_mean": 5.0,
+   "post_mean": 5.0,
+   "delta_mean": 0.0,
+   "pre_le2": 0,
+   "post_le2": 0
+  },
+  {
+   "case": "R12",
+   "pre_c1": [
+    5,
+    4,
+    5
+   ],
+   "post_c1": [
+    5,
+    5,
+    5
+   ],
+   "pre_mean": 4.67,
+   "post_mean": 5.0,
+   "delta_mean": 0.33,
+   "pre_le2": 0,
+   "post_le2": 0
+  },
+  {
+   "case": "R13",
+   "pre_c1": [
+    5,
+    5,
+    4
+   ],
+   "post_c1": [
+    5,
+    5,
+    3
+   ],
+   "pre_mean": 4.67,
+   "post_mean": 4.33,
+   "delta_mean": -0.34,
+   "pre_le2": 0,
+   "post_le2": 0
+  },
+  {
+   "case": "R14",
+   "pre_c1": [
+    5,
+    5,
+    5
+   ],
+   "post_c1": [
+    5,
+    5,
+    5
+   ],
+   "pre_mean": 5.0,
+   "post_mean": 5.0,
+   "delta_mean": 0.0,
+   "pre_le2": 0,
+   "post_le2": 0
+  },
+  {
+   "case": "R15",
+   "pre_c1": [
+    1,
+    1,
+    1
+   ],
+   "post_c1": [
+    4,
+    1,
+    1
+   ],
+   "pre_mean": 1.0,
+   "post_mean": 2.0,
+   "delta_mean": 1.0,
+   "pre_le2": 3,
+   "post_le2": 2
+  },
+  {
+   "case": "R16",
+   "pre_c1": [
+    5,
+    5,
+    5
+   ],
+   "post_c1": [
+    5,
+    5,
+    5
+   ],
+   "pre_mean": 5.0,
+   "post_mean": 5.0,
+   "delta_mean": 0.0,
+   "pre_le2": 0,
+   "post_le2": 0
+  },
+  {
+   "case": "R17",
+   "pre_c1": [
+    4,
+    5,
+    4
+   ],
+   "post_c1": [
+    5,
+    5,
+    5
+   ],
+   "pre_mean": 4.33,
+   "post_mean": 5.0,
+   "delta_mean": 0.67,
+   "pre_le2": 0,
+   "post_le2": 0
+  },
+  {
+   "case": "R18",
+   "pre_c1": [
+    5,
+    5,
+    5
+   ],
+   "post_c1": [
+    5,
+    5,
+    5
+   ],
+   "pre_mean": 5.0,
+   "post_mean": 5.0,
+   "delta_mean": 0.0,
+   "pre_le2": 0,
+   "post_le2": 0
+  },
+  {
+   "case": "R19",
+   "pre_c1": [
+    4,
+    3,
+    4
+   ],
+   "post_c1": [
+    2,
+    3,
+    3
+   ],
+   "pre_mean": 3.67,
+   "post_mean": 2.67,
+   "delta_mean": -1.0,
+   "pre_le2": 0,
+   "post_le2": 1
+  },
+  {
+   "case": "R20",
+   "pre_c1": [
+    5,
+    5,
+    5
+   ],
+   "post_c1": [
+    3,
+    5,
+    5
+   ],
+   "pre_mean": 5.0,
+   "post_mean": 4.33,
+   "delta_mean": -0.67,
+   "pre_le2": 0,
+   "post_le2": 0
+  },
+  {
+   "case": "TB01",
+   "pre_c1": [
+    5,
+    5,
+    5
+   ],
+   "post_c1": [
+    4,
+    5,
+    4
+   ],
+   "pre_mean": 5.0,
+   "post_mean": 4.33,
+   "delta_mean": -0.67,
+   "pre_le2": 0,
+   "post_le2": 0
+  },
+  {
+   "case": "TB02",
+   "pre_c1": [
+    4,
+    5,
+    4
+   ],
+   "post_c1": [
+    0,
+    0,
+    1
+   ],
+   "pre_mean": 4.33,
+   "post_mean": 0.33,
+   "delta_mean": -4.0,
+   "pre_le2": 0,
+   "post_le2": 3
+  },
+  {
+   "case": "TB03",
+   "pre_c1": [
+    3,
+    3,
+    4
+   ],
+   "post_c1": [
+    4,
+    5,
+    0
+   ],
+   "pre_mean": 3.33,
+   "post_mean": 3.0,
+   "delta_mean": -0.33,
+   "pre_le2": 0,
+   "post_le2": 1
+  },
+  {
+   "case": "TB04",
+   "pre_c1": [
+    0,
+    1,
+    1
+   ],
+   "post_c1": [
+    1,
+    1,
+    1
+   ],
+   "pre_mean": 0.67,
+   "post_mean": 1.0,
+   "delta_mean": 0.33,
+   "pre_le2": 3,
+   "post_le2": 3
+  },
+  {
+   "case": "TB05",
+   "pre_c1": [
+    5,
+    5,
+    5
+   ],
+   "post_c1": [
+    5,
+    4,
+    5
+   ],
+   "pre_mean": 5.0,
+   "post_mean": 4.67,
+   "delta_mean": -0.33,
+   "pre_le2": 0,
+   "post_le2": 0
+  }
+ ],
+ "biggest_losses": [
+  {
+   "case": "TB02",
+   "pre_c1": [
+    4,
+    5,
+    4
+   ],
+   "post_c1": [
+    0,
+    0,
+    1
+   ],
+   "pre_mean": 4.33,
+   "post_mean": 0.33,
+   "delta_mean": -4.0,
+   "pre_le2": 0,
+   "post_le2": 3
+  },
+  {
+   "case": "R19",
+   "pre_c1": [
+    4,
+    3,
+    4
+   ],
+   "post_c1": [
+    2,
+    3,
+    3
+   ],
+   "pre_mean": 3.67,
+   "post_mean": 2.67,
+   "delta_mean": -1.0,
+   "pre_le2": 0,
+   "post_le2": 1
+  },
+  {
+   "case": "R05",
+   "pre_c1": [
+    4,
+    4,
+    4
+   ],
+   "post_c1": [
+    3,
+    4,
+    3
+   ],
+   "pre_mean": 4.0,
+   "post_mean": 3.33,
+   "delta_mean": -0.67,
+   "pre_le2": 0,
+   "post_le2": 0
+  },
+  {
+   "case": "R08",
+   "pre_c1": [
+    5,
+    5,
+    5
+   ],
+   "post_c1": [
+    4,
+    4,
+    5
+   ],
+   "pre_mean": 5.0,
+   "post_mean": 4.33,
+   "delta_mean": -0.67,
+   "pre_le2": 0,
+   "post_le2": 0
+  },
+  {
+   "case": "R20",
+   "pre_c1": [
+    5,
+    5,
+    5
+   ],
+   "post_c1": [
+    3,
+    5,
+    5
+   ],
+   "pre_mean": 5.0,
+   "post_mean": 4.33,
+   "delta_mean": -0.67,
+   "pre_le2": 0,
+   "post_le2": 0
+  },
+  {
+   "case": "TB01",
+   "pre_c1": [
+    5,
+    5,
+    5
+   ],
+   "post_c1": [
+    4,
+    5,
+    4
+   ],
+   "pre_mean": 5.0,
+   "post_mean": 4.33,
+   "delta_mean": -0.67,
+   "pre_le2": 0,
+   "post_le2": 0
+  }
+ ],
+ "biggest_gains": [
+  {
+   "case": "R15",
+   "pre_c1": [
+    1,
+    1,
+    1
+   ],
+   "post_c1": [
+    4,
+    1,
+    1
+   ],
+   "pre_mean": 1.0,
+   "post_mean": 2.0,
+   "delta_mean": 1.0,
+   "pre_le2": 3,
+   "post_le2": 2
+  },
+  {
+   "case": "R17",
+   "pre_c1": [
+    4,
+    5,
+    4
+   ],
+   "post_c1": [
+    5,
+    5,
+    5
+   ],
+   "pre_mean": 4.33,
+   "post_mean": 5.0,
+   "delta_mean": 0.67,
+   "pre_le2": 0,
+   "post_le2": 0
+  },
+  {
+   "case": "R09",
+   "pre_c1": [
+    3,
+    5,
+    5
+   ],
+   "post_c1": [
+    4,
+    5,
+    5
+   ],
+   "pre_mean": 4.33,
+   "post_mean": 4.67,
+   "delta_mean": 0.34,
+   "pre_le2": 0,
+   "post_le2": 0
+  },
+  {
+   "case": "R10",
+   "pre_c1": [
+    4,
+    5,
+    5
+   ],
+   "post_c1": [
+    5,
+    5,
+    5
+   ],
+   "pre_mean": 4.67,
+   "post_mean": 5.0,
+   "delta_mean": 0.33,
+   "pre_le2": 0,
+   "post_le2": 0
+  }
+ ],
+ "unchanged_cases": [
+  "R01",
+  "R02",
+  "R06",
+  "R11",
+  "R14",
+  "R16",
+  "R18"
+ ],
+ "le2_concentration": {
+  "pre_c1_cases_with_any_le2": [
+   "R02",
+   "R15",
+   "TB04"
+  ],
+  "post_c1_cases_with_any_le2": [
+   "R02",
+   "R03",
+   "R15",
+   "R19",
+   "TB02",
+   "TB03",
+   "TB04"
+  ]
+ },
+ "exclusions_new_run": {},
+ "post_c1_source_composition_of_cited_docs": {
+  "pubmed": 212,
+  "dailymed": 82
+ },
+ "pre_c1_source_composition_of_cited_docs": {
+  "pubmed": 200,
+  "dailymed": 89,
+  "local": 26
+ },
+ "SENSITIVITY_excluding_TB02": {
+  "post_c1": {
+   "n": 72,
+   "dist": {
+    "0": 1,
+    "1": 5,
+    "2": 5,
+    "3": 6,
+    "4": 15,
+    "5": 40
+   },
+   "below5": 32,
+   "eq5": 40,
+   "mean": 4.069
+  },
+  "pre_c1": {
+   "n": 72,
+   "dist": {
+    "0": 1,
+    "1": 6,
+    "2": 1,
+    "3": 5,
+    "4": 16,
+    "5": 43
+   },
+   "below5": 29,
+   "eq5": 43,
+   "mean": 4.194
+  },
+  "why": "TB02 pre-c1 pool was 11 of 13 docs `local` (the 690 empty-stub corpus). Its -4.0 is the removal of a measurement artifact, not a regression."
+ },
+ "TB02_diagnosis": {
+  "query": "冠脂妥剝半吃藥效會有影響嗎",
+  "pre_c1_runs": [
+   [
+    0,
+    "ok",
+    4,
+    [
+     "local",
+     "local",
+     "local",
+     "local"
+    ]
+   ],
+   [
+    1,
+    "ok",
+    5,
+    [
+     "local",
+     "local",
+     "local",
+     "pubmed",
+     "pubmed"
+    ]
+   ],
+   [
+    2,
+    "ok",
+    4,
+    [
+     "local",
+     "local",
+     "local",
+     "local"
+    ]
+   ]
+  ],
+  "post_c1_runs": [
+   [
+    0,
+    "irrelevant",
+    0
+   ],
+   [
+    1,
+    "irrelevant",
+    0
+   ],
+   [
+    2,
+    "ok",
+    1
+   ]
+  ],
+  "note": "two post-c1 runs return status=irrelevant with pool 0 — documents WERE retrieved and the relevance filter dropped all of them. That is a FILTER outcome, not a retrieval failure, and it is not network-excluded under the harness rule."
+ },
+ "status_distribution": {
+  "post_c1": {
+   "ok": 72,
+   "irrelevant": 3
+  },
+  "pre_c1": {
+   "ok": 74,
+   "irrelevant": 1
+  }
+ },
+ "pre_c1_local_footprint": {
+  "runs_containing_a_local_doc": 15,
+  "runs_total": 74,
+  "local_docs": 26,
+  "all_cited_docs": 315,
+  "share_pct": 8
+ },
+ "wall_clock": {
+  "started": "2026-08-23 11:51:18",
+  "finished": "2026-08-23 12:07:52",
+  "retrieve_calls": 75,
+  "note": "25 cases x N=3; zero network exclusions, zero errors"
+ }
+}
