@@ -41,12 +41,31 @@ class _NotPubMed:
 
 NOT_PUBMED = _NotPubMed()
 
-_UNEXTRACTABLE: list[str] = []
+_UNEXTRACTABLE: list[str] = []        # per-section; report_unextractable() drains this
+_SEEN_UNEXTRACTABLE: list[str] = []   # session-cumulative; NEVER drained, for the artifact
 
 
 def record_unextractable(source_id: str) -> None:
     """A PubMed document whose source_id yielded no id. Never silent."""
-    _UNEXTRACTABLE.append(source_id or "<empty source_id>")
+    value = source_id or "<empty source_id>"
+    _UNEXTRACTABLE.append(value)
+    _SEEN_UNEXTRACTABLE.append(value)
+
+
+def unextractable_summary() -> dict:
+    """For the result JSON. **Rule 20: the ARTIFACT must carry the distinction, not only the
+    console.** Without this key a reader of a saved run cannot tell a PMID list that shrank
+    because non-PubMed documents were correctly excluded from one that shrank because
+    extraction FAILED — which is the very distinction `NOT_PUBMED` vs `None` exists to make.
+
+    Why this is a separate accessor rather than the value `report_unextractable()` returns:
+    the drains fire per-section INSIDE the run loops, well before the dump, so by dump time
+    the per-section list is empty and its counts are gone. `_SEEN_UNEXTRACTABLE` is the
+    session-cumulative view the artifact needs. Reading it does not clear it, so a dump is
+    side-effect-free and two dumps in one run agree.
+    """
+    return {"count": len(_SEEN_UNEXTRACTABLE),
+            "source_ids": sorted(set(_SEEN_UNEXTRACTABLE))}
 
 
 def report_unextractable(where: str = "") -> int:

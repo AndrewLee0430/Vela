@@ -38,7 +38,8 @@ import httpx
 from openai import OpenAI
 
 from api.models.schemas import SourceType
-from scripts._pmid_guard import NOT_PUBMED, record_unextractable, report_unextractable
+from scripts._pmid_guard import (NOT_PUBMED, record_unextractable, report_unextractable,
+                                 unextractable_summary)
 
 DEV_SUBSTR = "ep-spring-voice-a127ye10"
 BASE_URL = os.getenv("TEST_BASE_URL", "http://127.0.0.1:8000")
@@ -302,6 +303,7 @@ async def main_run(throttle: float = 0.0):
     out = RESULTS_DIR / f"citation_truth_{ts}.json"
     with open(out, "w", encoding="utf-8") as f:
         json.dump({"timestamp": ts, "sample": len(SAMPLE),
+                   "unextractable": unextractable_summary(),
                    "existence": {"ok": exist_ok, "total": exist_total},
                    "support_distribution": support_dist,
                    "hallucination_answers": halluc_count,
@@ -473,7 +475,7 @@ async def main_adversarial(throttle: float = 0.0, only: set | None = None):
     ts = datetime.now().strftime("%Y%m%d_%H%M%S")
     out = RESULTS_DIR / f"adversarial_contradiction_{ts}.json"
     with open(out, "w", encoding="utf-8") as f:
-        json.dump({"timestamp": ts,
+        json.dump({"timestamp": ts, "unextractable": unextractable_summary(),
                    "famous_reversal": {"reversed": fr, "answers": ft},
                    "cohort_reversal": {"reversed": kr, "answers": kt},
                    "reversed_pairs": all_rev, "no_citation_answers": nocit,
@@ -568,6 +570,7 @@ async def main_recheck(query: str, runs: int = 3, throttle: float = 0.0):
     out = RESULTS_DIR / f"recheck_{ts}.json"
     with open(out, "w", encoding="utf-8") as f:
         json.dump({"timestamp": ts, "query": query, "claim_model": CLAIM_MODEL,
+                   "unextractable": unextractable_summary(),
                    "runs": out_runs}, f, ensure_ascii=False, indent=2)
     print(f"\nSaved → {out}  (full answer prose + per-pair verdicts persisted)")
 
@@ -648,6 +651,7 @@ async def main_eval_set(path: str, tag: str = "", throttle: float = 0.0):
     out = RESULTS_DIR / f"evalrun_{safe_tag}_{ts}.json"
     with open(out, "w", encoding="utf-8") as f:
         json.dump({"timestamp": ts, "tag": tag, "eval_set": path, "backend": BASE_URL,
+                   "unextractable": unextractable_summary(),
                    "claim_model": CLAIM_MODEL, "cases": out_cases}, f, ensure_ascii=False, indent=2)
     print(f"\nSaved → {out}  (full prose + per-pair verdicts; {len(out_cases)} cases)")
 

@@ -22,7 +22,8 @@ load_dotenv()
 
 from api.rag.retriever import HybridRetriever
 from api.models.schemas import SourceType
-from scripts._pmid_guard import NOT_PUBMED, record_unextractable, report_unextractable
+from scripts._pmid_guard import (NOT_PUBMED, record_unextractable, report_unextractable,
+                                 unextractable_summary)
 
 RESULTS_DIR = _REPO / "tests" / "results"
 N = 10
@@ -137,6 +138,7 @@ async def main():
 
     ts = out["timestamp"]
     fp = RESULTS_DIR / f"retrieval_recall_{ts}.json"
+    out["unextractable"] = unextractable_summary()
     with open(fp, "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, indent=2)
     print(f"\nSaved -> {fp}")

@@ -26,7 +26,8 @@ load_dotenv()
 
 from api.rag.retriever import HybridRetriever
 from api.models.schemas import SourceType
-from scripts._pmid_guard import NOT_PUBMED, record_unextractable, report_unextractable
+from scripts._pmid_guard import (NOT_PUBMED, record_unextractable, report_unextractable,
+                                 unextractable_summary)
 from api.providers.factory import get_lightweight_provider
 from api.providers.base import CompletionRequest
 
@@ -150,6 +151,7 @@ async def main():
               f"M2 pool {case['M2_two_sided']['pool']} final {case['M2_two_sided']['final']}\n")
 
     fp = RESULTS_DIR / f"pathb_recall_probe_{out['timestamp']}.json"
+    out["unextractable"] = unextractable_summary()
     json.dump(out, open(fp, "w", encoding="utf-8"), ensure_ascii=False, indent=2)
     print("=" * 66)
     print("PATH B RECALL PROBE — REAL NUMBERS (anchor in POOL / in FINAL, /reps)")
