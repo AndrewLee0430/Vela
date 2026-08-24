@@ -52,13 +52,33 @@ from api.models.schemas import CredibilityLevel, RetrievedDocument, SourceType
 
 ROOT = Path(__file__).resolve().parent.parent
 
-# A "digit-run" pattern: a bare run of N-or-more digits with no surrounding key. This is the
-# mis-resolution mechanism. Key-anchored patterns (e.g. r"DailyMed:([0-9a-f-]+)#") are NOT
-# digit-runs and are NOT flagged — they identify the entity rather than scraping it, which
-# is what CLAUDE.md Rule 21 asks for ("where an exact key exists, use the key, not the text").
-_DIGIT_RUN = re.compile(r"(?:\\d|\[0-9\])\{\d+,\d*\}")
-
-_RE_FUNCS = {"search", "match", "fullmatch", "findall", "finditer"}
+# WHAT THE RULE KEYS ON: the SUBJECT, never the pattern.
+#
+# ⚠️ THIS IS THE 2026-08-24 SECOND-PASS CORRECTION, and the reason is worth keeping. The
+# first version of this rule required the pattern to be a recognisable digit-run literal
+# (or a module-level `re.compile` of one). It fired on the two shapes in the repo and on a
+# module-level compile — and MISSED all of:
+#     · re.compile() INSIDE the function
+#     · the pattern held in a plain str variable:  _P = r"(\d{5,})" ; re.search(_P, sid)
+#     · a compiled pattern IMPORTED from another module
+# The middle two are the most natural refactor anyone would apply to these scripts. A rule
+# that hard-codes the expected SHAPE is the same defect as the grep that hard-coded the
+# guard's shape and produced two wrong reports — just relocated into the rule. Keying on
+# the subject removes pattern provenance from the question entirely.
+#
+# FOUNDER RULING 2026-08-24, recorded as a JUDGMENT a future reader may overturn: a regex
+# over a `source_id` is NOT correct even when key-anchored (e.g. r"DailyMed:([0-9a-f-]+)#"),
+# so firing on it is CORRECT BEHAVIOUR rather than a false positive. CLAUDE.md Rule 21 says
+# use the key, not the text — and every key parse in this repo uses `.split` / `.startswith`
+# and ZERO use regex (verified by running this rule at HEAD: zero flags). If a future reader
+# has a genuine need for a key-anchored regex over a source_id, this is the line to revisit;
+# the reasoning is here rather than in a commit message so the trade-off is visible.
+#
+# `re.split` IS included for the `re.<func>(pattern, subject)` form (it can extract), but
+# `split` is deliberately EXCLUDED from the bound-method form below, because `str.split`
+# collides with it and every key parse in the repo is exactly `sid.split("#", 1)`.
+_RE_FUNCS_BOUND = {"search", "match", "fullmatch", "findall", "finditer"}
+_RE_FUNCS_MODULE = _RE_FUNCS_BOUND | {"split"}
 
 
 def _tracked_py_files() -> list[Path]:
@@ -84,70 +104,62 @@ def _mentions_source_id(node: ast.AST) -> bool:
     return False
 
 
+def _refs_tainted(node: ast.AST, tainted: set[str]) -> bool:
+    return any(isinstance(s, ast.Name) and s.id in tainted for s in ast.walk(node))
+
+
 def _tainted_locals(fn: ast.AST) -> set[str]:
-    """Local names bound from an expression that mentions source_id — ONE level, no more.
+    """Local names carrying a source_id value, to a FIXPOINT.
 
     `sid = getattr(doc, "source_id", "")` then `re.search(pat, sid)` is the shape used by
-    both `_pmid` helpers and by `extract_pmid`. This is deliberately not a dataflow
-    analysis; one level is what the real code needs, and a deeper one would be untestable.
+    all three helpers. The fixpoint loop (rather than the single pass this had until
+    2026-08-24) is what makes `sid2 = sid` — trivial to write, invisible to one level —
+    still count as tainted.
+
+    Still NOT a dataflow analysis: it does not follow taint across function boundaries,
+    through containers, or through attribute assignment. Those are real gaps; they are
+    named here rather than implied to be covered.
     """
     tainted: set[str] = set()
-    for sub in ast.walk(fn):
-        if isinstance(sub, (ast.Assign, ast.AnnAssign, ast.NamedExpr)):
+    changed = True
+    while changed:
+        changed = False
+        for sub in ast.walk(fn):
+            if not isinstance(sub, (ast.Assign, ast.AnnAssign, ast.NamedExpr)):
+                continue
             value = sub.value
+            if value is None:
+                continue
             targets = sub.targets if isinstance(sub, ast.Assign) else [sub.target]
-            if value is not None and _mentions_source_id(value):
+            if _mentions_source_id(value) or _refs_tainted(value, tainted):
                 for t in targets:
-                    if isinstance(t, ast.Name):
+                    if isinstance(t, ast.Name) and t.id not in tainted:
                         tainted.add(t.id)
+                        changed = True
     return tainted
 
 
-def _compiled_digit_run_names(tree: ast.Module) -> set[str]:
-    """Module-level `X = re.compile(<digit-run literal>)` names.
+def _regex_subject(call: ast.Call) -> ast.AST | None:
+    """-> the SUBJECT expression of a regex operation, else None. Pattern provenance is
+    deliberately NOT considered — see the ruling recorded at the top of this file.
 
-    Without this, moving the pattern into a module constant would evade the rule. The
-    in-test injection below exercises this branch so it is not dead code.
+    Two forms:
+      `re.<func>(pattern, subject)`  -> subject is arg 1   (module form; includes `split`)
+      `<anything>.<func>(subject)`   -> subject is arg 0   (bound form; excludes `split`,
+                                        because `str.split` collides and every key parse in
+                                        this repo is exactly `sid.split("#", 1)`)
     """
-    names: set[str] = set()
-    for node in tree.body:
-        if not isinstance(node, ast.Assign) or not isinstance(node.value, ast.Call):
-            continue
-        call = node.value
-        if not (isinstance(call.func, ast.Attribute) and call.func.attr == "compile"):
-            continue
-        if not (call.args and isinstance(call.args[0], ast.Constant)
-                and isinstance(call.args[0].value, str)):
-            continue
-        if _DIGIT_RUN.search(call.args[0].value):
-            for t in node.targets:
-                if isinstance(t, ast.Name):
-                    names.add(t.id)
-    return names
+    if not isinstance(call.func, ast.Attribute):
+        return None
+    func = call.func
 
-
-def _is_digit_run_scrape(call: ast.Call, compiled: set[str]) -> ast.AST | None:
-    """-> the SUBJECT expression if this call scrapes a digit run, else None.
-
-    Two forms: `re.search(r"(\\d{5,})", subject)` and `_RE.search(subject)` where `_RE` is
-    a module-level compiled digit-run pattern.
-    """
-    if not isinstance(call.func, ast.Attribute) or call.func.attr not in _RE_FUNCS:
+    if isinstance(func.value, ast.Name) and func.value.id == "re":
+        if func.attr in _RE_FUNCS_MODULE and len(call.args) >= 2:
+            return call.args[1]
         return None
 
-    # form 1 — re.<func>(<literal>, <subject>)
-    if (isinstance(call.func.value, ast.Name) and call.func.value.id == "re"
-            and len(call.args) >= 2
-            and isinstance(call.args[0], ast.Constant)
-            and isinstance(call.args[0].value, str)
-            and _DIGIT_RUN.search(call.args[0].value)):
-        return call.args[1]
-
-    # form 2 — <COMPILED>.<func>(<subject>)
-    if (isinstance(call.func.value, ast.Name) and call.func.value.id in compiled
-            and len(call.args) >= 1):
+    if func.attr in _RE_FUNCS_BOUND and len(call.args) >= 1:
         return call.args[0]
-
     return None
 
 
@@ -196,9 +208,8 @@ def _is_pubmed(node: ast.AST) -> bool:
 
 
 def _scan_source(text: str, label: str) -> list[str]:
-    """-> ["file:line  <src>", ...] for every UNGUARDED source_id digit scrape."""
+    """-> ["file:line  <src>", ...] for every UNGUARDED regex operation over a source_id."""
     tree = ast.parse(text)
-    compiled = _compiled_digit_run_names(tree)
 
     # innermost enclosing function for every node
     enclosing: dict[int, ast.AST] = {}
@@ -211,14 +222,12 @@ def _scan_source(text: str, label: str) -> list[str]:
     for node in ast.walk(tree):
         if not isinstance(node, ast.Call):
             continue
-        subject = _is_digit_run_scrape(node, compiled)
+        subject = _regex_subject(node)
         if subject is None:
             continue
         fn = enclosing.get(id(node))
         tainted = _tainted_locals(fn) if fn is not None else set()
-        subject_is_source_id = _mentions_source_id(subject) or any(
-            isinstance(s, ast.Name) and s.id in tainted for s in ast.walk(subject))
-        if not subject_is_source_id:
+        if not (_mentions_source_id(subject) or _refs_tainted(subject, tainted)):
             continue
         if fn is None:
             violations.append(f"{label}:{node.lineno}  (module level — no enclosing function)")
@@ -248,12 +257,14 @@ def test_every_source_id_digit_scrape_is_source_type_guarded():
 
     if violations:
         pytest.fail(
-            f"{len(violations)} source_id digit-scrape(s) with no source_type guard in the "
-            f"enclosing function:\n" + "\n".join(f"  {v}" for v in violations) +
-            "\n\nTHE INVARIANT: digits may be scraped from a source_id ONLY when source_type "
-            "is PubMed. A DailyMed source_id yields PMID 84432, a TFDA one yields 057803 — "
+            f"{len(violations)} regex operation(s) over a source_id with no source_type "
+            f"guard in the enclosing function:\n" + "\n".join(f"  {v}" for v in violations) +
+            "\n\nTHE INVARIANT: a source_id may be read by regex ONLY when source_type is "
+            "PubMed. A DailyMed source_id yields PMID 84432, a TFDA one yields 057803 — "
             "both real-looking, both wrong.\nFIX: guard inside the function that scrapes, so "
-            "callers that IMPORT it cannot inherit the defect."
+            "callers that IMPORT it cannot inherit the defect.\nIf you are parsing a KEY out "
+            "of a source_id, use `.split` / `.startswith` (CLAUDE.md Rule 21) — every key "
+            "parse in this repo already does, and none uses regex."
         )
 
 
@@ -329,19 +340,96 @@ def test_the_rule_accepts_the_inline_comprehension_shape():
     assert _scan_source(src, "injected.py") == []
 
 
-def test_the_rule_ignores_key_anchored_extraction():
-    """Rule 21 shape — `source_id.split('#')` and key-anchored regexes are CORRECT.
+def test_the_rule_is_silent_on_split_and_startswith_key_parsing():
+    """Rule 21's shape — `.startswith` + `.split` — is CORRECT and must stay silent.
 
-    Flagging these would be a false positive on the pattern CLAUDE.md Rule 21 asks for.
+    This is the real shape of every key parse in the repo: retriever.py:58-61,
+    dailymed_danger_path_verify.py:130-133, canary_gate.py:293-305, owner_assertion.py,
+    seat_v2.py. Flagging it would make the rule ignorable, which is the zh-TW precedent's
+    stated reason for excluding ambiguous cases.
     """
     src = (
-        "import re\n"
         "def loinc(source_id):\n"
         "    if not source_id.startswith('DailyMed:') or '#' not in source_id:\n"
         "        return None\n"
         "    return source_id.split('#', 1)[1].split('~', 1)[0]\n"
     )
     assert _scan_source(src, "injected.py") == []
+
+
+def test_the_rule_fires_on_a_key_anchored_regex_which_is_a_judgment_not_a_bug():
+    """⚖️ FOUNDER RULING 2026-08-24 — a JUDGMENT a future reader may overturn.
+
+    A key-anchored regex over a source_id — r"DailyMed:([0-9a-f-]+)#" — FIRES, and that is
+    intended. It is not a false positive:
+      · CLAUDE.md Rule 21 says use the KEY, not the text. A regex is the text shape.
+      · EVERY key parse in this repo uses `.split` / `.startswith`; ZERO use regex. Verified
+        by running this rule over all 157 tracked .py files at HEAD: ZERO flags. So this
+        ruling costs nothing today — it is a fence, not a migration.
+      · Keying on the SUBJECT rather than the pattern is what closed the four evasions the
+        pattern-provenance version missed (function-scope compile, pattern-in-a-variable,
+        imported compiled pattern, two-level taint). Re-admitting pattern inspection to
+        exempt key-anchored regexes would reopen all four.
+
+    TO OVERTURN: if a genuine need for a key-anchored regex over a source_id appears, the
+    honest change is to guard THAT function with a source_type check anyway, or to narrow
+    `_regex_subject`. Do not silently special-case a pattern shape — that is precisely the
+    hard-coded-shape defect this rule was rewritten to remove.
+    """
+    src = (
+        "import re\n"
+        "def setid(source_id):\n"
+        "    return re.search(r'DailyMed:([0-9a-f-]+)#', source_id)\n"
+    )
+    found = _scan_source(src, "injected.py")
+    assert len(found) == 1 and "injected.py:3" in found[0], found
+
+
+# --------------------------------------------------------------------------
+# THE FOUR EVASIONS the pattern-provenance version missed (2026-08-24 second pass).
+# Each of these silently passed the first rule. B and C are the most natural refactor
+# anyone would apply to these scripts, which is why the rule stopped inspecting patterns.
+# --------------------------------------------------------------------------
+
+def test_evasion_b_compile_inside_the_function():
+    src = ("import re\n"
+           "def f(d):\n"
+           "    p = re.compile(r'(\\d{5,})')\n"
+           "    return p.search(getattr(d, 'source_id', '') or '')\n")
+    assert len(_scan_source(src, "x.py")) == 1, _scan_source(src, "x.py")
+
+
+def test_evasion_c_pattern_held_in_a_plain_string_variable():
+    src = ("import re\n"
+           "_P = r'(\\d{5,})'\n"
+           "def f(d):\n"
+           "    return re.search(_P, getattr(d, 'source_id', '') or '')\n")
+    assert len(_scan_source(src, "x.py")) == 1, _scan_source(src, "x.py")
+
+
+def test_evasion_d_compiled_pattern_imported_from_another_module():
+    src = ("from othermod import _P\n"
+           "def f(d):\n"
+           "    return _P.search(getattr(d, 'source_id', '') or '')\n")
+    assert len(_scan_source(src, "x.py")) == 1, _scan_source(src, "x.py")
+
+
+def test_evasion_e_two_level_taint():
+    """`sid2 = sid` — trivial to write, invisible to a single-pass taint. Needs the fixpoint."""
+    src = ("import re\n"
+           "def f(d):\n"
+           "    sid = getattr(d, 'source_id', '') or ''\n"
+           "    sid2 = sid\n"
+           "    return re.search(r'(\\d{5,})', sid2)\n")
+    assert len(_scan_source(src, "x.py")) == 1, _scan_source(src, "x.py")
+
+
+def test_re_split_over_a_source_id_also_fires():
+    """`re.split` can extract too; `str.split` (the Rule 21 shape) must not be confused with it."""
+    src = ("import re\n"
+           "def f(d):\n"
+           "    return re.split(r'(\\d{5,})', d.source_id or '')\n")
+    assert len(_scan_source(src, "x.py")) == 1, _scan_source(src, "x.py")
 
 
 # --------------------------------------------------------------------------
