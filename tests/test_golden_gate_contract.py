@@ -92,6 +92,15 @@ def _non_s27(n, status="PASS"):
     return [{"id": f"COL_ZH_{i:02d}", "status": status} for i in range(1, n + 1)]
 
 
+def _with_status(recs, index, status):
+    """Copy `recs` with one record's status overwritten — including to a value
+    `determine_status` never returns, which is the only way to construct rank B's
+    unknown-status condition (see `test_unreadable_status_cannot_be_scored`)."""
+    out = [dict(r) for r in recs]
+    out[index]["status"] = status
+    return out
+
+
 # ─────────────────────── item 2: the case set is bound, not coincidental ───────────────────────
 
 def test_frozen_case_set_matches_the_dataset_derivation():
@@ -225,6 +234,74 @@ def test_error_cases_cannot_be_scored():
     code, reason, verdict = ns["section_27_gate"](_recs(p=19, e=1))
     assert code == 2 and "ERROR" in reason.upper()
     assert verdict["floor_met"] is None
+
+
+# ───────── rank B's two DEFENSIVE sub-legs (founder ruling 2026-08-24: KEEP THEM) ─────────
+# WHY THEY EARN THEIR KEEP, and it is the reason this whole car exists: both failure modes
+# silently UNDER-COUNT the § 2.7 tally, and an under-count BIASES TOWARD A PASS. A duplicate
+# record makes the counts describe 21 cases while claiming to describe 20; an unreadable
+# status is dropped from every bucket, so 18 PASS + 2 unreadable reads as a clean 18/2/0
+# floor. Neither is loud. That is exactly the class of silent-pass defect the executable
+# floor was built to close, so the branches stay — but a branch nobody has watched fail has
+# not been watched, and this file's own subject is that principle.
+#
+# ⚠️ NEITHER BRANCH IS REACHABLE TODAY, stated so the coverage is not mistaken for a live
+# bug. `determine_status` returns only PASS / WARN / FAIL / ERROR, and the 133 dataset ids
+# are unique (verified 2026-08-24). The runner appends one record per case. So these tests
+# CONSTRUCT the condition SYNTHETICALLY — they prove the guard works if the invariant ever
+# breaks, they do not report that it has.
+
+def test_duplicate_section_27_records_cannot_be_scored():
+    """A run of the 20 § 2.7 ids in which one id appears TWICE.
+
+    The set of ids is still exactly the § 2.7 set, so rank A is satisfied and the gate
+    walks straight into a 21-record tally that claims to be 20. Caught by comparing the
+    RECORD count against the CASE-ID count, not by the set comparison.
+    """
+    ns = _load_gate()
+    ids = _ids(ns)
+    dupe = _recs(p=21, ids=ids + ["R01"])
+    code, reason, v = ns["section_27_gate"](dupe)
+    assert code == 2, f"a duplicated § 2.7 record must not be scored; got {code}"
+    assert v["scored"] is False, "the counts do not describe 20 cases, so nothing was scored"
+    assert v["floor_met"] is None, "null, never true — there is no floor verdict here"
+    assert "DUPLICATE" in reason.upper(), reason
+    assert "21 records for 20 case ids" in reason, reason
+    # rank A is genuinely satisfied — the ids ARE the § 2.7 set; this is rank B's catch
+    assert {r["id"] for r in dupe} == set(ns["SECTION_27_CASE_IDS"])
+    assert "NOT SCORED" not in reason.upper(), "this is 'cannot be scored', not 'not a § 2.7 run'"
+    # and duplication is caught BEFORE the verdicts are read: two records for R01 that
+    # DISAGREE (one PASS, one FAIL) still report duplication, not adjudication
+    disagreeing = _recs(p=20, ids=ids) + [{"id": "R01", "status": "FAIL"}]
+    code2, reason2, _ = ns["section_27_gate"](disagreeing)
+    assert code2 == 2 and "DUPLICATE" in reason2.upper(), reason2
+    assert "ADJUDICATION" not in reason2.upper(), \
+        "an unreadable tally must not be reported as an adjudicable FAIL result"
+
+
+def test_unreadable_status_cannot_be_scored():
+    """A run of the 20 in which one record carries a status outside the four.
+
+    An unknown status lands in no bucket, so the tally silently describes 19 cases. With
+    19 PASS the floor would otherwise READ AS MET while one case's verdict was never
+    looked at — the under-count-biases-toward-a-pass failure this branch exists for.
+    """
+    ns = _load_gate()
+    odd = _with_status(_recs(p=20), 7, "SKIPPED")
+    code, reason, v = ns["section_27_gate"](odd)
+    assert code == 2, f"an unreadable status must not be scored; got {code}"
+    assert v["scored"] is False
+    assert v["floor_met"] is None
+    assert "UNREADABLE STATUS" in reason.upper(), reason
+    assert "'SKIPPED'" in reason, f"the reason must name the offending status: {reason}"
+    assert "R08" in reason, f"the reason must name the offending case: {reason}"
+    # rank A is satisfied and the record count is right — only the STATUS is unreadable
+    assert len(odd) == 20 and {r["id"] for r in odd} == set(ns["SECTION_27_CASE_IDS"])
+    # None and "" are unreadable too, not silently treated as a non-pass
+    for bad in (None, "", "pass"):
+        c, r_, vv = ns["section_27_gate"](_with_status(_recs(p=20), 0, bad))
+        assert c == 2 and vv["floor_met"] is None, f"status {bad!r} was not rejected"
+        assert "UNREADABLE" in r_.upper(), r_
 
 
 # ─────────────────────── MUST-NOT-REGRESS (founder-specified, 2026-08-24) ───────────────────────
@@ -459,14 +536,45 @@ def test_mutant_case_set_check_removed_is_caught():
 
 
 def test_mutant_priority_swapped_fail_reports_breach_is_caught():
-    """If ranks C and D were swapped, 15/2/3 would report exit 1 (a scored breach)
-    instead of exit 2 (needs a person). The distinction is the whole point of rank C."""
+    """If a FAIL run were reported as a scored breach, 15/2/3 would exit 1 (a number a
+    machine can act on) instead of 2 (a result that needs a person). That distinction is
+    the whole point of rank C, so it is pinned by a REAL source mutant — rank C's exit
+    code changed 2 -> 1 — not merely by asserting the clean gate's behaviour.
+    """
+    src = RUNNER.read_text(encoding="utf-8")
+    mutated = src.replace(
+        "        return _verdict(2, (f\"{counts['FAIL']} § 2.7 FAIL(s) — FOUNDER ADJUDICATION \"",
+        "        return _verdict(1, (f\"{counts['FAIL']} § 2.7 FAIL(s) — FOUNDER ADJUDICATION \"", 1)
+    assert mutated != src, "rank C's return was refactored — this mutant no longer applies"
+    dirty = _recs(p=15, w=2, f=3)
+    assert _load_gate(source=mutated)["section_27_gate"](dirty)[0] == 1, \
+        "mutant behaves as expected — it downgrades adjudication to a scored breach"
     clean = _load_gate()
-    code, reason, v = clean["section_27_gate"](_recs(p=15, w=2, f=3))
+    code, reason, v = clean["section_27_gate"](dirty)
     assert code == 2, "CAUGHT: FAIL must outrank the floor-breach check"
     assert "FLOOR BREACH" not in reason.upper(), \
         "CAUGHT: a FAIL run must not be reported as a scored breach"
     assert v["floor_met"] is None, "CAUGHT: an unadjudicated run must claim no floor verdict"
+
+
+def test_mutant_error_check_deleted_is_caught():
+    """Rank B's ERROR leg, pinned by a REAL source mutant rather than only by
+    `test_error_cases_cannot_be_scored`'s behavioural assertion.
+
+    With the guard gone, 19 PASS + 1 ERROR clears every threshold (PASS 19 >= 18) and the
+    mutant reports FLOOR MET over a run one of whose cases never produced a verdict.
+    """
+    src = RUNNER.read_text(encoding="utf-8")
+    mutated = src.replace('    if counts["ERROR"]:\n',
+                          "    if False:  # MUTANT: ERROR guard deleted\n", 1)
+    assert mutated != src, "the ERROR guard was refactored — this mutant no longer applies"
+    erroring = _recs(p=19, e=1)
+    m_code, _, m_v = _load_gate(source=mutated)["section_27_gate"](erroring)
+    assert (m_code, m_v["floor_met"]) == (0, True), \
+        "mutant behaves as expected — it scores a run containing an ERROR as a floor PASS"
+    c_code, c_reason, c_v = _load_gate()["section_27_gate"](erroring)
+    assert c_code == 2 and c_v["floor_met"] is None, \
+        f"CAUGHT: an ERROR is neither a pass nor an adjudicable failure — {c_reason}"
 
 
 def test_mutant_counts_read_from_all_results_is_caught():
@@ -489,6 +597,53 @@ def test_mutant_counts_read_from_all_results_is_caught():
     c_code, _, c_v = _load_gate()["section_27_gate"](full)
     assert c_code == 0 and c_v["counts"]["FAIL"] == 0, \
         "CAUGHT: the clean gate derives its counts over the § 2.7 records only"
+
+
+def test_mutant_duplicate_check_deleted_is_caught():
+    """NEW LEG — delete rank B's duplicate guard and watch the under-count become a PASS.
+
+    Caught on the EXIT CODE, not merely the reason: with the guard gone, 21 all-PASS
+    records over 20 ids sail past every threshold (PASS 21 >= 18, WARN 0 <= 2, FAIL 0)
+    and the mutant reports FLOOR MET. The clean gate exits 2. The all-PASS mix is chosen
+    deliberately — a duplicate pair that DISAGREES would exit 2 under the mutant too, via
+    adjudication, and would not discriminate.
+    """
+    src = RUNNER.read_text(encoding="utf-8")
+    mutated = src.replace(
+        "    if len(scored_records) != len(SECTION_27_CASE_IDS):\n",
+        "    if False:  # MUTANT: duplicate guard deleted\n", 1)
+    assert mutated != src, "the duplicate guard was refactored — this mutant no longer applies"
+    ids = _ids(_load_gate())
+    dupe = _recs(p=21, ids=ids + ["R01"])
+    m_code, _, m_v = _load_gate(source=mutated)["section_27_gate"](dupe)
+    assert (m_code, m_v["floor_met"]) == (0, True) and m_v["counts"]["PASS"] == 21, \
+        "mutant behaves as expected — it scores 21 records as a 20-case floor PASS"
+    c_code, c_reason, c_v = _load_gate()["section_27_gate"](dupe)
+    assert c_code == 2 and c_v["floor_met"] is None, \
+        f"CAUGHT: the clean gate refuses a tally that does not describe 20 cases — {c_reason}"
+
+
+def test_mutant_unknown_status_check_deleted_is_caught():
+    """NEW LEG — delete rank B's unknown-status guard and watch two verdicts vanish.
+
+    Caught on the EXIT CODE. 18 PASS + 2 unreadable is the sharp case: the mutant drops
+    both unreadable records from every bucket and reports a clean 18/0/0 FLOOR MET, while
+    two of the twenty cases were never actually read. The clean gate exits 2.
+    """
+    src = RUNNER.read_text(encoding="utf-8")
+    mutated = src.replace(
+        "    if unreadable:\n",
+        "    if False:  # MUTANT: unknown-status guard deleted\n", 1)
+    assert mutated != src, "the unknown-status guard was refactored — this mutant no longer applies"
+    odd = _with_status(_with_status(_recs(p=20), 18, "SKIPPED"), 19, "SKIPPED")
+    m_code, _, m_v = _load_gate(source=mutated)["section_27_gate"](odd)
+    assert (m_code, m_v["floor_met"]) == (0, True), \
+        "mutant behaves as expected — it reports a floor PASS with two verdicts unread"
+    assert sum(m_v["counts"].values()) == 18, \
+        f"mutant behaves as expected — its tally silently describes 18 cases: {m_v['counts']}"
+    c_code, c_reason, c_v = _load_gate()["section_27_gate"](odd)
+    assert c_code == 2 and c_v["floor_met"] is None, \
+        f"CAUGHT: the clean gate refuses a tally with unreadable verdicts — {c_reason}"
 
 
 def test_mutant_not_a_section_27_run_exits_two_is_caught():
