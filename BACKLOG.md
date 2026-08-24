@@ -36,7 +36,15 @@ Same taxonomy as `TECH_DEBT.md`, **additive to** the existing `[P0]`–`[P3]` ra
      rows reproduce EXACTLY under `grep -c "^### \[CLASS\]"`, which is the evidence that `###` is
      the counted unit rather than `##`, `####` or bullets.
      COMMANDS: grep -c '^### ' BACKLOG.md  ·  grep -c '^### \[CLASS\]' BACKLOG.md per class  ·
-     untagged = grep '^### ' | grep -v any-class-tag. -->
+     untagged = grep '^### ' | grep -v any-class-tag.
+     ── RE-VERIFIED 2026-08-24, PART 2 (the TECH_DEBT entry split): this file was NOT edited by
+     that commit, and the table was RECOUNTED anyway rather than assumed stable — every row
+     unchanged, 0 / 0 / 3 / 9 / 19 / 13 = 44, all CONFIRMED. Recorded because "it should not
+     have changed" is exactly the reasoning that lets a table drift. -->
+<!-- Founder ruling 2026-08-24: the Dodo webhook-IP entry KEEPS its `###` shape rather than
+     becoming a `- [ ]` bullet. `- [ ]` is a to-do; `###` is a settled ruling, and the shape
+     difference carries information. A reusable rule must be findable as a heading. This
+     overrules the placement concern raised when the entry was filed; the total stays 44. -->
 
 
 **[LAUNCH]: none.** Applying the strict test (would it stop a first B2B customer — service down, a defect hit in normal use, or an expiring dependency), no BACKLOG entry qualifies; the three that do are all in `TECH_DEBT.md`.
