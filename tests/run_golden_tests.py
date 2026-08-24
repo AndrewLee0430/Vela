@@ -95,88 +95,163 @@ SECTION_27_MAX_WARN = 2
 SECTION_27_MAX_FAIL = 0
 
 
-def section_27_gate(stats: dict, case_ids_run: list[str]) -> tuple[int, str]:
+def section_27_gate(results: list[dict]) -> tuple[int, str, dict]:
     """The § 2.7 gate's exit contract. PURE and side-effect-free.
 
     Purity is the point (CLAUDE.md Rule 17): every exit code must be reachable in a
     test WITHOUT running the suite, which makes real LLM calls and costs credits.
     Mirrors `scripts/dailymed_danger_path_verify.py`'s `gate_exit_code`.
 
+    🔴 IT TAKES THE PER-CASE RECORDS, NEVER A PRE-AGGREGATED `stats`, AND THAT IS THE
+    CORRECTION OF 2026-08-24. `stats` counts EVERY executed case. Scoring "the § 2.7
+    subset of whatever ran" while READING a global `stats` would send three non-§ 2.7
+    FAILs — say, three in COL_* on a full 133-case run — to § 2.7 adjudication. Deriving
+    the counts HERE, from records already restricted to SECTION_27_CASE_IDS, makes the
+    counts and the case set STRUCTURALLY UNABLE TO DISAGREE. There is no argument to
+    pass wrongly, because there is no argument.
+
     PRIORITY, HIGHEST FIRST — the first matching rule wins, and the ordering is
     explicit here rather than incidental:
 
-      1. CANNOT BE SCORED -> 2
-         The executed case-id set is not exactly SECTION_27_CASE_IDS, or ERROR > 0.
-         A floor over the wrong denominator is not a weaker result, it is not a
-         result at all — a one-case run that passes would otherwise read as 100%.
+      A. NOT A § 2.7 RUN -> 0, scored=False
+         The executed cases do not include ALL of SECTION_27_CASE_IDS. Cases outside
+         the set are fine and are simply ignored; MISSING ones mean there is no floor
+         to read. "I did not run the § 2.7 set" IS NOT A FAILURE — it is not a § 2.7
+         run at all. Non-zero exits are reserved for runs that WERE § 2.7 runs and
+         either could not be scored or were scored and failed. Control therefore falls
+         through to the `pass_rate < 70` gate, which stays reachable.
+         ⚠️ FOUNDER RULING 2026-08-24, REPLACING the shape shipped in 838d0e6 where
+         this leg exited 2. That version fired whenever the executed set was not
+         EXACTLY the § 2.7 set, so the documented full-suite invocation
+         `uv run python tests/run_golden_tests.py` and every `--smoke` run exited 2,
+         and `pass_rate < 70` became unreachable on any non-R selection — it killed
+         the only gate that previously worked. Subset scoring keeps both alive.
 
-      2. NEEDS HUMAN ADJUDICATION -> 2
-         FAIL > 0. The ratified floor requires every FAIL to be "named and
-         adjudicated individually", and that is a human judgment a runner cannot
-         make. There is ZERO adjudication scaffolding to lean on: the 133-case
-         dataset carries no `exempt` / `known_fail` / `expected_status` field, and
-         the R10/R20 oscillator handling exists only in ledger prose, never in code.
-         So an unadjudicated FAIL is not a scoreable floor breach; it is a result
-         that needs a person. Same stance as the canary gate's insufficient-evidence
-         leg (`tests/probes/canary/canary_gate.py`, anchor `MIN_USABLE_RUNS`):
+      B. CANNOT BE SCORED -> 2
+         All 20 present, but their statuses cannot be read as a floor: ERROR > 0, a
+         duplicate record for a § 2.7 id, or a status outside PASS/WARN/FAIL/ERROR.
+         An ERROR is neither a pass nor an adjudicable failure. (The duplicate and
+         unknown-status legs are defensive: `determine_status` returns only the four,
+         and the dataset's 133 ids are unique — verified 2026-08-24 — so neither is
+         reachable today. They are here so that if either becomes reachable it fails
+         LOUD instead of quietly under-counting toward a pass.)
+
+      C. NEEDS HUMAN ADJUDICATION -> 2
+         FAIL > 0 among the 20. The ratified floor requires every FAIL to be "named
+         and adjudicated individually", and that is a human judgment a runner cannot
+         make. There is ZERO adjudication scaffolding to lean on: the 133-case dataset
+         carries no `exempt` / `known_fail` / `expected_status` field, and the R10/R20
+         oscillator handling exists only in ledger prose, never in code. So an
+         unadjudicated FAIL is not a scoreable floor breach; it is a result that needs
+         a person. Same stance as the canary gate's insufficient-evidence leg
+         (`tests/probes/canary/canary_gate.py`, anchor `MIN_USABLE_RUNS`):
          "insufficient evidence, not a pass".
 
-      3. FLOOR BREACH -> 1
-         PASS < 18 or WARN > 2. This is a real, scoreable failure.
+      D. FLOOR BREACH -> 1
+         PASS < 18 or WARN > 2 among the 20. A real, scoreable failure.
 
-      4. otherwise -> 0
+      E. otherwise -> 0, floor met.
 
-    ⚠️ 2 OUTRANKS 1 HERE, which is the opposite of the danger-path gate's
-    "a hard violation OUTRANKS a recheck". That is deliberate and not an oversight:
-    there, both legs were scored over the same known set, so the harder signal won.
-    Here rank 1 says the measurement is INVALID and rank 3 says the measurement is
-    VALID AND BAD — an invalid measurement cannot be reported as a floor breach,
-    because we do not know what it was measured over.
+    ⚠️ C OUTRANKS D, which is the opposite of the danger-path gate's "a hard violation
+    OUTRANKS a recheck". Deliberate, not an oversight: there, both legs were scored
+    over the same known set, so the harder signal won. Here C says the result needs a
+    person and D says the result is VALID AND BAD — a result nobody has adjudicated
+    cannot be reported as a scored breach.
 
-    Returns (exit_code, the condition in words) so the caller can print the reason
-    beside the code.
+    Returns (exit_code, reason, verdict) — `verdict` is plain data for the JSON
+    artifact. This function RETURNS it and writes nothing.
+
+    THE TWO VERDICT KEYS A READER MUST NOT CONFUSE, because leg A exits 0:
+      `scored`    — the § 2.7 set ran in full AND its counts are readable (C/D/E).
+      `floor_met` — True at E only; False at D; **None** at A, B and C, i.e. whenever
+                    no floor verdict exists. Read THIS, never `exit_code`, to answer
+                    "did the § 2.7 floor pass".
     """
-    p = int(stats.get("PASS", 0))
-    w = int(stats.get("WARN", 0))
-    f = int(stats.get("FAIL", 0))
-    e = int(stats.get("ERROR", 0))
-    ran = set(case_ids_run)
+    floor = {"min_pass": SECTION_27_MIN_PASS,
+             "max_warn": SECTION_27_MAX_WARN,
+             "max_fail": SECTION_27_MAX_FAIL}
+    scored_records = [r for r in results if r.get("id") in SECTION_27_CASE_IDS]
+    ran = {r.get("id") for r in scored_records}
+    ignored = len(results) - len(scored_records)
 
-    # 1 — CANNOT BE SCORED
+    # A — NOT A § 2.7 RUN. Exit 0, and NOTHING in the verdict may read as a pass.
     if ran != set(SECTION_27_CASE_IDS):
         missing = sorted(set(SECTION_27_CASE_IDS) - ran)
-        extra = sorted(ran - set(SECTION_27_CASE_IDS))
-        return 2, (
-            f"NOT THE § 2.7 CASE SET — cannot be scored. "
-            f"ran {len(ran)} of {len(SECTION_27_CASE_IDS)}"
-            + (f"; missing {missing}" if missing else "")
-            + (f"; unexpected {extra}" if extra else "")
-            + ". The floor is defined over SECTION_27_CASE_IDS only.")
-    if e:
-        return 2, (f"{e} case(s) ERRORed — cannot be scored. An ERROR is neither a "
-                   f"pass nor an adjudicable failure; re-run before reading a floor.")
+        reason = (f"NOT SCORED — this is not a § 2.7 run. "
+                  f"{len(ran)} of {len(SECTION_27_CASE_IDS)} § 2.7 cases executed; "
+                  f"missing {missing}. This is not a failure: the floor is simply not "
+                  f"defined over this selection, so the gate exits 0 and defers.")
+        return 0, reason, {
+            "scored":     False,
+            "floor_met":  None,
+            "exit_code":  0,
+            "reason":     reason,
+            "case_ids_scored": [],
+            "missing":    missing,
+            "counts":     None,
+            "non_section_27_cases_ignored": ignored,
+            "floor":      floor,
+        }
 
-    # 2 — NEEDS HUMAN ADJUDICATION
-    if f > SECTION_27_MAX_FAIL:
-        return 2, (f"{f} FAIL(s) — FOUNDER ADJUDICATION REQUIRED, not a scored breach. "
-                   f"The floor requires every FAIL to be named and adjudicated "
-                   f"individually and no adjudication scaffolding exists in code.")
+    counts = {"PASS": 0, "WARN": 0, "FAIL": 0, "ERROR": 0}
+    unreadable = []
+    for r in scored_records:
+        s = r.get("status")
+        if s in counts:
+            counts[s] += 1
+        else:
+            unreadable.append(f"{r.get('id')}={s!r}")
 
-    # 3 — FLOOR BREACH
-    if p < SECTION_27_MIN_PASS or w > SECTION_27_MAX_WARN:
+    def _verdict(code: int, reason: str, scored: bool, floor_met):
+        return code, reason, {
+            "scored":     scored,
+            "floor_met":  floor_met,
+            "exit_code":  code,
+            "reason":     reason,
+            "case_ids_scored": sorted(ran),
+            "missing":    [],
+            "counts":     counts,
+            "non_section_27_cases_ignored": ignored,
+            "floor":      floor,
+        }
+
+    # B — CANNOT BE SCORED
+    if len(scored_records) != len(SECTION_27_CASE_IDS):
+        return _verdict(2, (f"DUPLICATE § 2.7 RECORDS — cannot be scored: "
+                            f"{len(scored_records)} records for {len(ran)} case ids, "
+                            f"so the counts do not describe 20 cases."), False, None)
+    if unreadable:
+        return _verdict(2, (f"UNREADABLE STATUS on {len(unreadable)} § 2.7 case(s) "
+                            f"({', '.join(unreadable)}) — cannot be scored."), False, None)
+    if counts["ERROR"]:
+        return _verdict(2, (f"{counts['ERROR']} § 2.7 case(s) ERRORed — cannot be "
+                            f"scored. An ERROR is neither a pass nor an adjudicable "
+                            f"failure; re-run before reading a floor."), False, None)
+
+    # C — NEEDS HUMAN ADJUDICATION
+    if counts["FAIL"] > SECTION_27_MAX_FAIL:
+        return _verdict(2, (f"{counts['FAIL']} § 2.7 FAIL(s) — FOUNDER ADJUDICATION "
+                            f"REQUIRED, not a scored breach. The floor requires every "
+                            f"FAIL to be named and adjudicated individually and no "
+                            f"adjudication scaffolding exists in code."), True, None)
+
+    # D — FLOOR BREACH
+    if counts["PASS"] < SECTION_27_MIN_PASS or counts["WARN"] > SECTION_27_MAX_WARN:
         why = []
-        if p < SECTION_27_MIN_PASS:
-            why.append(f"PASS {p} < {SECTION_27_MIN_PASS}")
-        if w > SECTION_27_MAX_WARN:
-            why.append(f"WARN {w} > {SECTION_27_MAX_WARN}")
-        return 1, (f"§ 2.7 FLOOR BREACH — {' and '.join(why)} "
-                   f"(floor is {SECTION_27_MIN_PASS} PASS / {SECTION_27_MAX_WARN} WARN "
-                   f"/ {SECTION_27_MAX_FAIL} FAIL over {len(SECTION_27_CASE_IDS)} cases).")
+        if counts["PASS"] < SECTION_27_MIN_PASS:
+            why.append(f"PASS {counts['PASS']} < {SECTION_27_MIN_PASS}")
+        if counts["WARN"] > SECTION_27_MAX_WARN:
+            why.append(f"WARN {counts['WARN']} > {SECTION_27_MAX_WARN}")
+        return _verdict(1, (f"§ 2.7 FLOOR BREACH — {' and '.join(why)} "
+                            f"(floor is {SECTION_27_MIN_PASS} PASS / "
+                            f"{SECTION_27_MAX_WARN} WARN / {SECTION_27_MAX_FAIL} FAIL "
+                            f"over {len(SECTION_27_CASE_IDS)} cases)."), True, False)
 
-    # 4 — clear
-    return 0, (f"§ 2.7 FLOOR MET — {p} PASS / {w} WARN / {f} FAIL over "
-               f"{len(ran)} cases (floor {SECTION_27_MIN_PASS}/{SECTION_27_MAX_WARN}"
-               f"/{SECTION_27_MAX_FAIL}).")
+    # E — clear
+    return _verdict(0, (f"§ 2.7 FLOOR MET — {counts['PASS']} PASS / {counts['WARN']} "
+                        f"WARN / {counts['FAIL']} FAIL over {len(ran)} § 2.7 cases "
+                        f"(floor {SECTION_27_MIN_PASS}/{SECTION_27_MAX_WARN}"
+                        f"/{SECTION_27_MAX_FAIL})."), True, True)
 
 
 def reset_test_user_credits() -> None:
@@ -1231,10 +1306,12 @@ async def run_tests(smoke_only: bool = False, filter_prefix: str | None = None):
     run_complete = not never_ran
 
     # § 2.7 gate evaluated ONCE, here, so the JSON artifact and the exit code cannot
-    # disagree — they read the same two values. (The function is pure, so calling it
-    # early costs nothing and has no side effect.)
-    _s27_code_for_json, _s27_reason_for_json = section_27_gate(
-        stats, [r["id"] for r in results])
+    # disagree — they read the same three values. (The function is pure, so calling it
+    # early costs nothing and has no side effect.) It is handed `results` — the per-case
+    # records — and NOT `stats`: see its docstring, the whole point is that it derives
+    # its own counts over SECTION_27_CASE_IDS so a COL_* FAIL can never be attributed
+    # to § 2.7.
+    _s27_code, _s27_reason, _s27_verdict = section_27_gate(results)
     if not run_complete:
         print(f"\n{RED}{BOLD}{'!'*60}{RESET}")
         print(f"{RED}{BOLD}  ⛔ INCOMPLETE RUN — THIS IS NOT A VALID GATE RESULT{RESET}")
@@ -1354,17 +1431,14 @@ async def run_tests(smoke_only: bool = False, filter_prefix: str | None = None):
                 "case_ids_run":   sorted(r["id"] for r in results),
                 "case_count_run": len(results),
             },
-            # ── the § 2.7 gate's own verdict, separate from `gate_valid` ──
-            "section_27": {
-                "exit_code":        _s27_code_for_json,
-                "reason":           _s27_reason_for_json,
-                "is_section_27_set": sorted(r["id"] for r in results) == sorted(SECTION_27_CASE_IDS),
-                "floor":            {"min_pass": SECTION_27_MIN_PASS,
-                                     "max_warn": SECTION_27_MAX_WARN,
-                                     "max_fail": SECTION_27_MAX_FAIL},
-                "counts":           {k: stats.get(k, 0)
-                                     for k in ("PASS", "WARN", "FAIL", "ERROR")},
-            },
+            # ── the § 2.7 gate's own verdict, separate from `gate_valid`. Written
+            # VERBATIM from the single evaluation above, so the artifact and the exit
+            # code cannot diverge — there is no second construction of these numbers.
+            # 🔴 READ `floor_met` (true / false / null), NEVER `exit_code`: leg A exits
+            # 0 with NO floor verdict, and `counts` is null there rather than a partial
+            # tally that could be misread as a pass. `counts` is over the § 2.7 cases
+            # ONLY — the whole-run tally is `summary` below.
+            "section_27": _s27_verdict,
             "summary":   stats,
             "pass_rate": pass_rate,
             "evaluator": "LLM Judge (gpt-4.1-mini)",
@@ -1419,10 +1493,11 @@ async def run_tests(smoke_only: bool = False, filter_prefix: str | None = None):
         sys.exit(2)
 
     # ── THE COMPOSED EXIT ORDER — explicit, not incidental ─────────────────────────
-    # Three gates can now fire. Their order is fixed here and is the whole contract:
+    # Three gates can fire. Their order is fixed here and is the whole contract:
     #
     #   rank 1  not run_complete        -> 2   (above; Rule 18, unchanged)
-    #   rank 2  section_27_gate(...)    -> 2 or 1, per its own internal priority
+    #   rank 2  section_27_gate(results)-> 2 or 1, per its own internal priority
+    #                                      (and 0 when the § 2.7 set did not all run)
     #   rank 3  pass_rate < 70          -> 1   (below; unchanged)
     #
     # WHY § 2.7 SITS BETWEEN THEM. It must come AFTER the completeness guard for the
@@ -1434,23 +1509,39 @@ async def run_tests(smoke_only: bool = False, filter_prefix: str | None = None):
     # an R-only run the § 2.7 verdict is the specific one and must not be masked by
     # the coarser rate, which 15/2/3 (= 75%) would silently pass.
     #
-    # 🔴 CONSEQUENCE THE FOUNDER MUST RULE ON — recorded here, not buried in a report.
-    # Implemented exactly as specified: rank 1 fires whenever the executed set is not
-    # EXACTLY SECTION_27_CASE_IDS. So a FULL 133-case run and a --smoke run now exit 2
-    # ("cannot be scored") where they previously reached `pass_rate < 70`. The message
-    # is true — `stats` there counts all 133 cases and no § 2.7 floor can be read from
-    # it — but it does mean the documented `uv run python tests/run_golden_tests.py`
-    # invocation now exits 2, and `pass_rate < 70` becomes unreachable on any non-R
-    # selection.
-    #   ALTERNATIVE, NOT IMPLEMENTED (founder's call): score § 2.7 over the R-subset of
-    #   whatever ran, so a full run yields a real § 2.7 verdict AND keeps the 70% gate
-    #   reachable. That contradicts the literal rank-1 rule as written, so it was not
-    #   silently adopted. Both behaviours fail safe; they differ in what a full run
-    #   reports, not in whether a bad § 2.7 result can pass.
+    # ✅ FOUNDER RULING 2026-08-24 — SUBSET SCORING. This block previously recorded an
+    # open question; it is now decided, and the decision is recorded here rather than
+    # only in a report. As shipped in 838d0e6 the § 2.7 gate exited 2 whenever the
+    # executed set was not EXACTLY SECTION_27_CASE_IDS, which meant the documented
+    # `uv run python tests/run_golden_tests.py` and every `--smoke` run exited 2 and
+    # `pass_rate < 70` became UNREACHABLE — it removed the only gate that previously
+    # worked, a strictly worse state. RULED: score § 2.7 over the § 2.7 subset of
+    # whatever ran; a selection missing any of the 20 is NOT SCORED and exits 0 from
+    # this gate, so control reaches the 70% gate below.
+    #   THE CORRECTION THAT RULING NEEDED, and it is why the signature changed: `stats`
+    #   counts EVERY executed case, so subset scoring off a global `stats` would have
+    #   sent three COL_* FAILs on a full run to § 2.7 adjudication. The gate now derives
+    #   its own counts from `results` restricted to the § 2.7 ids. Counts and case set
+    #   can no longer disagree, because they come from the same records.
+    # END STATE, stated plainly: a full 133-case run yields a REAL § 2.7 verdict over
+    # its 20 R cases AND still reaches `pass_rate < 70`; a `--smoke` or `--filter R08`
+    # run reports NOT SCORED and defers to the 70% gate exactly as it did before this
+    # work; only a run that DID execute all 20 can exit non-zero here.
     # Reuses the SINGLE evaluation made above — the JSON and this exit cannot diverge.
-    print(f"\n{BOLD}  § 2.7 GATE:{RESET} EXIT {_s27_code_for_json} — {_s27_reason_for_json}\n")
-    if _s27_code_for_json:
-        sys.exit(_s27_code_for_json)
+    if _s27_code:
+        print(f"\n{RED}{BOLD}  § 2.7 GATE: EXIT {_s27_code}{RESET} — {_s27_reason}\n")
+        sys.exit(_s27_code)
+    elif _s27_verdict["scored"]:
+        print(f"\n{GREEN}{BOLD}  § 2.7 GATE: EXIT 0{RESET} — {_s27_reason}\n")
+    else:
+        # LOUD on purpose: exit 0 here means "no § 2.7 verdict was produced", and that
+        # must never be skimmed as "the § 2.7 floor passed".
+        print(f"\n{YELLOW}{BOLD}{'-'*60}{RESET}")
+        print(f"{YELLOW}{BOLD}  ⚠️  § 2.7 NOT SCORED — THIS RUN PRODUCED NO § 2.7 VERDICT{RESET}")
+        print(f"{YELLOW}  {_s27_reason}{RESET}")
+        print(f"{YELLOW}  JSON: section_27.scored=false, section_27.floor_met=null.{RESET}")
+        print(f"{YELLOW}  To get a § 2.7 verdict, run all 20: --filter R{RESET}")
+        print(f"{YELLOW}{BOLD}{'-'*60}{RESET}\n")
 
     if pass_rate < 70:
         print(f"{RED}⚠️  Pass rate below 70%.{RESET}\n")
