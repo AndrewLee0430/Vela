@@ -14,10 +14,30 @@ Same taxonomy as `TECH_DEBT.md`, **additive to** the existing `[P0]`–`[P3]` ra
 | **[LAUNCH]** | blocks the B2B-interim route going live to a real customer | **0** |
 | **[COMPLIANCE]** | legal / regulatory / data-protection obligation | **0** |
 | **[HONESTY]** | the product currently tells the user something untrue or misleading | **3** |
-| [DONE] | already shipped / closed / superseded; retained for the record only | 8 |
+| [DONE] | already shipped / closed / superseded; retained for the record only | 9 |
 | [OTHER] | features, quality, hygiene, opportunistic | 19 |
-| *(untagged)* | the 6 entries in **`## Product direction candidates`** — product bets, not defects; that section is self-describing | 6 |
-| | **total `###` entries** | **36** |
+| *(untagged)* | the 13 entries in **`## Product direction candidates`** — product bets, not defects; that section is self-describing | 13 |
+| | **total `###` entries** | **44** |
+
+<!-- 🔴 NAV RECOUNTED FROM THE FILE 2026-08-24 (§2.7 gate closeout car), NOT INCREMENTED — and the
+     recount found a LARGE pre-existing error the +1 would otherwise have carried forward.
+     BEFORE 0 / 0 / 3 / 8 / 19 / 6 = 36.   AFTER 0 / 0 / 3 / 9 / 19 / 13 = 44.
+     · [LAUNCH] 0, [COMPLIANCE] 0, [HONESTY] 3, [OTHER] 19 — all four CONFIRMED, exact, untouched.
+     · [DONE] 8 -> 9: CORRECTED by this car's own +1 (the Dodo webhook-IP ruling). The 8 was exact.
+     · *(untagged)* 6 -> 13: CORRECTED. Pre-existing drift of SEVEN, none of it from this car. The
+       row's SCOPE description was right all along — all 13 untagged `###` headings do sit inside
+       `## Product direction candidates`, verified in BOTH directions (every `###` after that
+       heading is untagged, and every untagged `###` is after it). Only the NUMBER was stale: the
+       consultant-session entries of 2026-08-18/19 (eval harness, reserved seat, EU SmPC probe,
+       sequencing ruling, rejected directions, STUBS) and the three WHO / guideline-ingestion
+       entries landed without the row being re-derived.
+     · total 36 -> 44: CORRECTED (43 in the file before this car's entry, 44 after).
+     UNIT ESTABLISHED, NOT ASSUMED: the total row says "total `###` entries", and the four tagged
+     rows reproduce EXACTLY under `grep -c "^### \[CLASS\]"`, which is the evidence that `###` is
+     the counted unit rather than `##`, `####` or bullets.
+     COMMANDS: grep -c '^### ' BACKLOG.md  ·  grep -c '^### \[CLASS\]' BACKLOG.md per class  ·
+     untagged = grep '^### ' | grep -v any-class-tag. -->
+
 
 **[LAUNCH]: none.** Applying the strict test (would it stop a first B2B customer — service down, a defect hit in normal use, or an expiring dependency), no BACKLOG entry qualifies; the three that do are all in `TECH_DEBT.md`.
 
@@ -1302,6 +1322,15 @@ Captured 2026-05-19 from production deploy + retrospective. See docs/retrospecti
       During PART C.1.6 PostHog Live Events verification on 2026-05-19, `share_revoked` event was not visible in the 30-minute window after revoking a test share. Possible causes: (a) event was truncated outside 30-min window in PostHog default view, (b) revoke action's PostHog capture call has a wiring gap. PRD §4.5 PHASE B lists 6 share events; only 5 were directly verified.
       
       Resolution: Next dogfooding session, revoke a fresh share and immediately check PostHog Live Events panel filtered on user clerk_id. If absent, grep frontend `MySharesTab.tsx` (or wherever revoke action lives) for `posthog.capture('share_revoked'` to confirm wire-up.
+
+### [DONE] ✅ NO ACTION REQUIRED — founder-verified 2026-08-24 — Dodo Payments webhook SOURCE-IP change (`34.14.159.139`), allowlist deadline 2026-08-16
+
+- **THE TRIGGER.** Dodo Payments issued a notice: webhooks would begin arriving from a **new source IP, `34.14.159.139`**, with an **allowlist deadline of 2026-08-16** and a **gradual rollout from 2026-08-17**. The founder checked the Dodo dashboard on **2026-08-24 — after the deadline had already passed.**
+- **✅ THE RULING: NO ACTION.** **Vela does not restrict inbound webhooks by source IP.** The Dodo surface is protected by **Standard-Webhooks SIGNATURE verification** (`DODO_WEBHOOK_SECRET`), not by network origin — so an IP the sender uses is not something this application ever consults. A missed allowlist deadline for an allowlist that does not exist is a non-event.
+- **WHAT THE NOTICE EXPLICITLY DID *NOT* CHANGE, and why that is the load-bearing half:** signing secrets, signature verification, the `webhook-*` headers, and the payload format all stayed the same. Vela's Dodo verification block reads **`webhook-id` / `webhook-timestamp` / `webhook-signature` and nothing else** — verified by reading the handler, not assumed — so **ZERO code change was needed**. Had the notice touched the signing secret or the header spelling, this would have been a code change; it is worth being precise about which half of a provider notice matters here.
+- **🔑 THE REUSABLE RULE — the reason this entry exists at all.** **Any provider's source-IP change notice is a NO-OP for Vela unless a Cloudflare WAF or a Fly-level network restriction is introduced later.** Whoever receives the next one reads this line instead of re-deriving it. If either of those *is* ever introduced, this entry becomes the thing to revisit, and every provider IP notice becomes live again on that day.
+- **⚠️ VERIFICATION BOUNDARY — stated honestly, do NOT record this as machine-verified.** The ruling rests on **the founder's dashboard check** plus **the absence of any IP-filtering code or config**. ⚠️ **A repo-side sweep of `fly.toml` / middleware / DNS was NOT run.** What *was* machine-checked is narrower and only that: the Dodo handler's signature-verification block reads three `webhook-*` headers and consults no network origin. The broader "nothing anywhere filters by IP" claim is founder-asserted, not swept.
+- **Filed:** 2026-08-24, §2.7 gate closeout car.
 
 ---
 
