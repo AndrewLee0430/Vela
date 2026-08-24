@@ -22,6 +22,7 @@ load_dotenv()
 
 from api.rag.retriever import HybridRetriever
 from api.models.schemas import SourceType
+from scripts._pmid_guard import NOT_PUBMED, record_unextractable, report_unextractable
 
 RESULTS_DIR = _REPO / "tests" / "results"
 N = 10
@@ -41,10 +42,20 @@ QUERIES = [
 ]
 
 
-def _pmid(doc) -> str | None:
+def _pmid(doc):
+    """-> pmid | None (PubMed but unextractable = FAILURE) | NOT_PUBMED (out of scope, falsy).
+
+    Guarded per the invariant in `scripts/_pmid_guard.py`. NOT_PUBMED is falsy, so the four
+    call sites below keep their `if p` / walrus shape unchanged.
+    """
+    if getattr(doc, "source_type", None) != SourceType.PUBMED:
+        return NOT_PUBMED
     sid = getattr(doc, "source_id", "") or ""
     m = re.search(r"(\d{5,})", sid)
-    return m.group(1) if m else None
+    if not m:
+        record_unextractable(sid)
+        return None
+    return m.group(1)
 
 
 async def _one_run(r: HybridRetriever, query: str) -> dict:
@@ -82,6 +93,7 @@ async def _one_run(r: HybridRetriever, query: str) -> dict:
         final = relevant
     final = final[:MAXR]
     final_pmids = [p for d in final if (p := _pmid(d))]
+    report_unextractable("retrieval_recall_check")
 
     return {
         "rewritten": rewritten,

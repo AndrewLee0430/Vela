@@ -37,6 +37,9 @@ load_dotenv()
 import httpx
 from openai import OpenAI
 
+from api.models.schemas import SourceType
+from scripts._pmid_guard import NOT_PUBMED, record_unextractable, report_unextractable
+
 DEV_SUBSTR = "ep-spring-voice-a127ye10"
 BASE_URL = os.getenv("TEST_BASE_URL", "http://127.0.0.1:8000")
 TOKEN = os.getenv("TEST_AUTH_TOKEN", "")
@@ -128,9 +131,24 @@ async def gen_answer(client, query):
 
 
 def extract_pmid(citation):
+    """-> pmid | None (PubMed but unextractable = FAILURE) | NOT_PUBMED (out of scope, falsy).
+
+    Guarded per the invariant in `scripts/_pmid_guard.py`. The guard lives HERE, inside the
+    scraper, and not at the call sites: `scripts/direction_shadow_eval.py:37` imports
+    `claim_pairs` from this module, and `claim_pairs` calls this function. That file guards
+    all three of its OWN extractions and would still have inherited an unguarded path.
+
+    `Citation` carries `source_type` (`api/models/schemas.py:70`) and the SSE payload is
+    `c.model_dump()` (`api/server.py:904`), so the dicts reaching here hold it as "pubmed".
+    """
+    if (citation.get("source_type") or "") != SourceType.PUBMED:
+        return NOT_PUBMED
     sid = (citation.get("source_id") or "")
     m = re.search(r"(\d{5,})", sid) or re.search(r"pubmed\.ncbi\.nlm\.nih\.gov/(\d+)", citation.get("url") or "")
-    return m.group(1) if m else None
+    if not m:
+        record_unextractable(sid)
+        return None
+    return m.group(1)
 
 
 def claim_pairs(answer, cit_by_id):
@@ -199,7 +217,10 @@ async def main_run(throttle: float = 0.0):
             t0 = time.time()
             ans, cits = await gen_answer(client, query)
             cit_by_id = {int(c["id"]): c for c in cits if "id" in c}
+            # `if p` excludes BOTH NOT_PUBMED (out of scope, falsy) and None (extraction
+            # failure). The failure case is surfaced by report_unextractable(), not lost.
             pmids = sorted({p for p in (extract_pmid(c) for c in cits) if p})
+            report_unextractable()
             print(f"  [{cid}/{tag}] {len(cits)} citations, {len(pmids)} PMIDs  ({round(time.time()-t0)}s)")
             answers.append({"id": cid, "tag": tag, "query": query, "answer": ans,
                             "citations": cits, "cit_by_id": cit_by_id, "pmids": pmids})
@@ -408,7 +429,10 @@ async def main_adversarial(throttle: float = 0.0, only: set | None = None):
             except Exception as e:
                 ans, cits = f"[ERROR] {type(e).__name__}", []
             cit_by_id = {int(c["id"]): c for c in cits if "id" in c}
+            # `if p` excludes BOTH NOT_PUBMED (out of scope, falsy) and None (extraction
+            # failure). The failure case is surfaced by report_unextractable(), not lost.
             pmids = sorted({p for p in (extract_pmid(c) for c in cits) if p})
+            report_unextractable()
             print(f"  [{cid}/{tag}] {len(cits)} cit, {len(pmids)} PMID ({round(time.time()-t0)}s)")
             rows.append({"id": cid, "tag": tag, "query": query, "note": note,
                          "answer": ans, "citations": cits, "cit_by_id": cit_by_id, "pmids": pmids})
@@ -512,7 +536,10 @@ async def main_recheck(query: str, runs: int = 3, throttle: float = 0.0):
                     await asyncio.sleep(throttle)
                 continue
             cit_by_id = {int(c["id"]): c for c in cits if "id" in c}
+            # `if p` excludes BOTH NOT_PUBMED (out of scope, falsy) and None (extraction
+            # failure). The failure case is surfaced by report_unextractable(), not lost.
             pmids = sorted({p for p in (extract_pmid(c) for c in cits) if p})
+            report_unextractable()
             try:
                 arts = {a.pmid: a for a in await pubmed.fetch_details(pmids)}
             except Exception:
@@ -587,7 +614,10 @@ async def main_eval_set(path: str, tag: str = "", throttle: float = 0.0):
                     await asyncio.sleep(throttle)
                 continue
             cit_by_id = {int(c["id"]): c for c in cits if "id" in c}
+            # `if p` excludes BOTH NOT_PUBMED (out of scope, falsy) and None (extraction
+            # failure). The failure case is surfaced by report_unextractable(), not lost.
             pmids = sorted({p for p in (extract_pmid(c) for c in cits) if p})
+            report_unextractable()
             try:
                 arts = {a.pmid: a for a in await pubmed.fetch_details(pmids)}
             except Exception:

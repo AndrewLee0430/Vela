@@ -26,6 +26,7 @@ load_dotenv()
 
 from api.rag.retriever import HybridRetriever
 from api.models.schemas import SourceType
+from scripts._pmid_guard import NOT_PUBMED, record_unextractable, report_unextractable
 from api.providers.factory import get_lightweight_provider
 from api.providers.base import CompletionRequest
 
@@ -55,8 +56,20 @@ M2_COUNTER = [
 
 
 def _pmid(doc):
-    m = re.search(r"(\d{5,})", getattr(doc, "source_id", "") or "")
-    return m.group(1) if m else None
+    """-> pmid | None (PubMed but unextractable = FAILURE) | NOT_PUBMED (out of scope, falsy).
+
+    Guarded per the invariant in `scripts/_pmid_guard.py`. NOT_PUBMED is falsy, so both call
+    sites below keep their `if p` / walrus shape unchanged. `scripts/pathb_scope_probe.py:48`
+    imports this helper, so the guard has to live here to travel with it.
+    """
+    if getattr(doc, "source_type", None) != SourceType.PUBMED:
+        return NOT_PUBMED
+    sid = getattr(doc, "source_id", "") or ""
+    m = re.search(r"(\d{5,})", sid)
+    if not m:
+        record_unextractable(sid)
+        return None
+    return m.group(1)
 
 
 async def _pipeline(r, scoring_query, rewritten):
@@ -82,7 +95,9 @@ async def _pipeline(r, scoring_query, rewritten):
         final = (await r.reranker.rerank(scoring_query, relevant))[:MAXR]
     except Exception:
         final = relevant[:MAXR]
-    return pool, [p for d in final if (p := _pmid(d))]
+    final_pmids = [p for d in final if (p := _pmid(d))]
+    report_unextractable("pathb_recall_probe")
+    return pool, final_pmids
 
 
 async def gate1():
