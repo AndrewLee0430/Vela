@@ -14,8 +14,17 @@ Classes are **additive and orthogonal** to the existing `[P0]`–`[P3]` ratings 
 | **[COMPLIANCE]** | legal / regulatory / data-protection obligation | **8** |
 | **[HONESTY]** | the product currently tells the user something untrue or misleading | **17** |
 | [DONE] | already fixed / resolved / accepted; retained for the record only | 44 |
-| [OTHER] | quality, hygiene, tooling, opportunistic | 80 |
-| | **total** | **149** |
+| [OTHER] | quality, hygiene, tooling, opportunistic | 81 |
+| | **total** | **150** |
+
+<!-- ➕ ONE NEW ENTRY 2026-08-25 (defect-2 fix car, commit 1 of 3): the PRD §2.7 需求 3 ↔
+     explain_judge drift entry ([OTHER][P2], open, DEFERRED to the next judge re-baseline)
+     — filed per the SUPPLEMENTAL RULING 2026-08-25 recorded inside the defect-2 entry,
+     which resolved Ruling 2(a)'s stop condition (the same-day recon TRIGGERED it):
+     no_fabricated_citations = binding, under FOUNDER-RULING authority (not PRD §2.7);
+     citation_source_types_valid = demoted to report-only alongside EXPLAIN_THRESHOLD.
+     Counts RE-DERIVED (grep -c "^- \[CLASS\]" per class, not incremented):
+     0 + 8 + 17 + 44 + 81 = 150.  [OTHER] 80 -> 81, total 149 -> 150. -->
 
 <!-- 🔴 NAV RECOUNTED FROM THE FILE 2026-08-24 (§2.7 gate closeout, PART 2 — the split),
      NOT INCREMENTED.
@@ -244,6 +253,13 @@ Classes are **additive and orthogonal** to the existing `[P0]`–`[P3]` ratings 
 When entries are resolved, mark with the resolving commit SHA (git log is the record), then remove.
 
 ---
+
+- [OTHER] **[P2 · judge-prompt ↔ spec drift — surfaced by the 2026-08-25 defect-2 recon (Ruling 2(a)'s mapping check), NOT fixed] 🔴 PRD §2.7 需求 3 ↔ `explain_judge` drift: the dimension named for citation-source validity FAILS the sources the spec REQUIRES, and the check the spec actually states is UNIMPLEMENTED**
+  - **(i)** `citation_source_types_valid` (`api/prompts/explain_judge.md:68-77`) whitelists `{LOINC, RxNorm, MedlinePlus, FDA}` and **FAILS PubMed/NICE/Cochrane — the sources 需求 3 (`docs/PRD.md:621-627`) REQUIRES for clinical judgment** (*"臨床判斷類(必須用 PubMed、FDA、NICE、Cochrane、國家指引)"*). The judge's own documented ground is Path-1 pragmatics (*"Explain has no PubMed retrieval; PubMed citations would be fabricated"* — `explain_judge.md:72`), so the divergence is deliberate-at-the-time, not accidental — but it is drift against the spec's letter all the same.
+  - **(ii)** The requirement's actual check — **LOINC-not-primary for clinical judgment** (需求 3, and 驗收標準 `docs/PRD.md:672` *"所有涉及臨床判斷的項目,citation 不只有 LOINC"*) — is **UNIMPLEMENTED: LOINC passes unconditionally in every dimension.**
+  - **Fix path and why it is DEFERRED:** any fix edits `api/prompts/explain_judge.md`, which is a judge-prompt change → **a §2.7 ExplainJudge re-baseline (CLAUDE.md Rule 17)**. Batch with the next judge re-baseline — same disposition as the existing explain_system.md FDA-instruction entry.
+  - **Classed [OTHER]:** it misreports to a developer running the judge, not to a user.
+  - **Surfaced:** 2026-08-25, by the defect-2 recon executing Ruling 2(a)'s mapping condition. The SUPPLEMENTAL RULING 2026-08-25 (recorded in the defect-2 entry) rests partly on this finding: it demoted this dimension to report-only and re-grounded `no_fabricated_citations` on founder-ruling authority instead of PRD §2.7.
 
 - [DONE] **[P2 · instrument integrity / silent mis-resolution — surfaced 2026-08-23, RULE + FIX shipped 2026-08-24] ✅ THE source_id DIGIT-SCRAPE CLASS IS CLOSED BY A RULE, NOT BY A LIST**
   - **THE INVARIANT, now executable:** digits may be scraped out of a `source_id` **only** when that document's `source_type` is PubMed. Non-PubMed source_ids carry 5+ digit runs and mis-resolve to **real-but-unrelated** PMIDs — measured 2026-08-23, a DailyMed source_id yields PMID **`84432`**, a TFDA one yields **`057803`**. PMID 84432 **exists**, so the harness fetched a genuine unrelated abstract, judged a drug-label claim against it, and printed `N/N resolve`. 🔑 **The failure mode was a wrong answer that reported itself as right.**
@@ -512,6 +528,11 @@ When entries are resolved, mark with the resolving commit SHA (git log is the re
     - **RULING 2 — `EXPLAIN_THRESHOLD = 95.0`: neither ratified nor deleted — DEMOTED TO REPORT-ONLY.** It stays computed and printed, and (once defect 2 is fixed) enters the result JSON, **but it never contributes to the exit code.** Basis: the only contemporaneous intent statement (FEATURE_AUDIT, deleted `d79f88b`) called it *"a useful guardrail but secondary, not a spec compliance signal"*; making it return would promote an authorless constant beyond its documented intent, and ratifying it would anchor on an unmeasured incumbent.
       - **(a)** **`HARD_FLOOR_DIMENSIONS` — `citation_source_types_valid` and `no_fabricated_citations` — ARE ratified as the BINDING content of the future Explain floor's exit contract, CONDITIONAL on one to-verify in the defect-2 car:** read PRD §2.7 and confirm both map onto its requirements; **if either does not, stop and return to the founder before wiring.**
       - **(b)** If a binding Explain **RATE** threshold is ever wanted, the path is: **measure a golden Explain baseline first, then ratify a number with evidence** — the same procedure that produced the 2026-08-21 Research floor. **That is a separate FUTURE ruling, not part of this one.**
+  - **✅ SUPPLEMENTAL RULING 2026-08-25 (founder; resolves Ruling 2(a)'s stop condition, which the same-day recon TRIGGERED — the hard-floor ↔ PRD §2.7 mapping FAILED).** The recon found: `no_fabricated_citations` maps onto **no quotable §2.7 requirement line**, and `citation_source_types_valid` addresses 需求 3's subject but **contradicts its letter** (full finding filed this commit as the entry headed *"PRD §2.7 需求 3 ↔ `explain_judge` drift"*). Per 2(a)'s own clause the question returned to the founder before wiring; the ruling:
+    - **(a)** **`no_fabricated_citations` IS binding exit-contract content. Its authority is the FOUNDER RULING 2026-08-25, NOT PRD §2.7** — every label/comment naming it as binding states that authority. Rationale recorded: zero-tolerance on fabricated citations is retrieval-agnostic ("cited URL must appear in retrieved_sources" holds under any future retrieval path) and aligns with the product's citation-mandatory positioning.
+    - **(b)** **`citation_source_types_valid` is DEMOTED to report-only, alongside `EXPLAIN_THRESHOLD`.** Rationale recorded: under Path-1 its whitelist is nearly redundant with `no_fabricated_citations` (retrieved_sources only contains whitelisted sources), and binding it would block the PRD-required behavior if Explain ever gains PubMed retrieval (需求 3's letter).
+    - **(c)** The recon's drift finding is filed as a **NEW `[OTHER][P2]` entry** (this commit, top of the list).
+    - **(d) Dispositions:** `CLAUDE.md:50`'s "§ 2.7 Step 8" reference **IS renamed** (live rules doc, dated inline annotation — precedent: the Rule 12 in-place correction of 2026-08-10). The runner's three ExplainJudge wiring comments (`:31`/`:1061`/`:1239`) **ARE rename targets**.
 
 - [DONE] **[P1 · gate integrity — the section-aware DANGER-PATH criterion had NO ratification record; created 2026-08-21 and the exit code fixed in the same commit]**
   - **What the 2026-08-21 archaeology established (evidence, not inference):** all four sign-off/pending claims were authored in ONE pass on 2026-07-14 — `ccbe477` at **20:48:56** introduced `scripts/dailymed_danger_path_verify.py` carrying **both** "⚠️ CRITERION PENDING FOUNDER SIGN-OFF (Phase-3 STOP)" (:4-5, :203) **and** "elevated per founder sign-off 2026-07-14" (:29), and `a677485` at **20:48:57** added `data/dailymed/BUILD_NOTES.md:10` "(founder-signed-off section-aware criterion)". `git log --follow` returns **exactly ONE commit** for the script; `git log -S` on each claim string returns that same commit; **no commit ever lifted the Phase-3 STOP.** `STATE.md` contains **ZERO** entries dated 2026-07-14 (its entries jump 07-13 → 07-15). `docs/decisions/` has **no ADR**. **No ratification of this file's established shape existed** — the control being the 2026-07-06 source-weight ratification below (dated, naming its evidence, bounding its scope).
