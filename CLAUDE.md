@@ -16,6 +16,12 @@ Examples from 2026-04-19 to 2026-04-20 sessions:
 - verify_system.md zh-TW severity vs dict 衝突 flag
 - api/rag/generator.py dead code discovery before spec-blind edit
 
+*(The two below were added 2026-08-25 and are the only principles in this section that state a CHECK, in the shape of Important Rules 20–23. Both record a SILENT failure — one where the wrong result looks exactly like the right one — which is why prose alone is not enough.)*
+
+- **FIRST LINE OF EVERY TASK: ASSERT THE REPO.** Run `git rev-parse --show-toplevel` and `git rev-parse HEAD` before anything else, and state both. **Two VS Code windows run side by side on this machine — Vela and another product — and a prompt pasted into the wrong one does not error.** `git log`, `git grep -c`, `sed -n`, `pytest` all **succeed** and return complete-looking results about the wrong repository; a count, a SHA and a passing suite are produced, and every one of them is about something else. **CHECK: the first tool call of a task prints the toplevel and HEAD, and the reply states them. A task that reports numbers without having asserted the repo has not established which repo they are from.** 🔑 Wrong-repo output is a **silent failure with no error surface** — unlike a missing file or a bad path, nothing anywhere says "wrong project".
+
+- **NEVER TAKE A COUNT FROM A REPORT, BATON, OR PROMPT AS THE SCOPE OF A FIX — DERIVE IT, THEN COMPARE, THEN REPORT THE DIFFERENCE.** A figure in a document is a claim about the repo at the moment it was written, not a measurement of the repo now; and a figure in a prompt may be inherited from that same document. **CHECK: any fix whose scope is a set of sites names the COMMAND that enumerated them, and the reply states whether the derived count matches the cited one — including when it does. Silence about a difference is indistinguishable from not having looked.** ⚠️ **Also state the UNIT**: "10 regex literals" and "16 extraction points" describe the same defect and imply different fixes. Reference incidents: **fly 222** — a sampled count became the fix scope and was **wrong by 6×**, shipping a partial fix that fly 223 had to finish; and the **2026-08-24 count chain** — **5/5 → 4/6 → 7/3**, three successively published figures, **all three wrong**, each correcting the previous one's arithmetic while inheriting its classification and each looking self-consistent because the total kept reconciling to 10. 🔑 **A sum that reconciles is not a count that is right.**
+
 ### Project Doc Map
 
 | What you need | Where to look |
