@@ -47,7 +47,7 @@ Examples from 2026-04-19 to 2026-04-20 sessions:
 
 6. Build per spec
 7. Verify against PRD acceptance criteria, item by item
-8. **If task is part of an acceptance protocol checkpoint** (e.g., § 2.7 Step 8), execute full protocol checklist — not just "X cases done"
+8. **If task is part of an acceptance protocol checkpoint** (e.g., the PRD § 2.7 Explain acceptance protocol), execute full protocol checklist — not just "X cases done" *(example renamed 2026-08-25 per founder ruling — it previously read "§ 2.7 Step 8"; "Step 8" came from FEATURE_AUDIT.md's decomposition, deleted in `d79f88b` 2026-05-05, and is retired from all live labels)*
 
 **Step 2 — Ship cleanup ritual** (explicit document update sequence):
 

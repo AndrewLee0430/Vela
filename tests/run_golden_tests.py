@@ -28,7 +28,8 @@ for _stream in (sys.stdout, sys.stderr):
         pass
 
 # Make `api` package importable when running from repo root or anywhere else.
-# Required since B2 (§ 2.7 Step 8) added `from api.utils.llm_judge import
+# Required since B2 (PRD § 2.7 ExplainJudge integration; the "Step 8" label was
+# retired from live labels 2026-08-25) added `from api.utils.llm_judge import
 # ExplainJudge` as a lazy import inside the main loop. Without this shim the
 # first explain case fails with ModuleNotFoundError: No module named 'api'.
 _REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -60,12 +61,15 @@ RESULTS_DIR  = Path(__file__).parent / "results"
 RESULTS_DIR.mkdir(exist_ok=True)
 
 # ─────────────────────────────────────────────
-# § 2.7 GOLDEN GATE — the ratified 18/2/0 floor, made executable
+# RESEARCH GOLDEN FLOOR (founder ruling 2026-08-21) — the ratified 18/2/0 floor,
+# made executable. Renamed from "§ 2.7" 2026-08-25 per founder ruling 1(b): PRD
+# § 2.7 is the EXPLAIN section, and this floor's authority is the 2026-08-21
+# ratification, not the PRD — every live label now states that authority.
 # ─────────────────────────────────────────────
 #
 # THE FLOOR IS MEANINGLESS WITHOUT ITS DENOMINATOR. Before this block, `--filter R`
 # selecting exactly 20 cases was a PREFIX COINCIDENCE — nothing in this runner knew
-# that R* is "the § 2.7 set", and `total = len(cases)` took whatever survived
+# that R* is "the Research golden set", and `total = len(cases)` took whatever survived
 # selection (full 133 · --smoke 42 · --filter R 20 · --filter R08 1). A floor
 # asserted against that denominator can be satisfied by a one-case run.
 #
@@ -79,9 +83,9 @@ RESULTS_DIR.mkdir(exist_ok=True)
 # is likewise "exposed as data (not a hand-typed list in a test)" so a guard test
 # can prove the partition is exact.
 #
-# Founder ruling 2026-08-21: the § 2.7 case set IS these 20. The 35-case `research`
-# CATEGORY (which also holds COL*/EDGE*/TB*) is NOT the § 2.7 set.
-SECTION_27_CASE_IDS = frozenset({
+# Founder ruling 2026-08-21: the Research golden case set IS these 20. The 35-case
+# `research` CATEGORY (which also holds COL*/EDGE*/TB*) is NOT the golden set.
+RESEARCH_GOLDEN_CASE_IDS = frozenset({
     "R01", "R02", "R03", "R04", "R05", "R06", "R07", "R08", "R09", "R10",
     "R11", "R12", "R13", "R14", "R15", "R16", "R17", "R18", "R19", "R20",
 })
@@ -90,46 +94,47 @@ SECTION_27_CASE_IDS = frozenset({
 # by sha256 on 2026-08-21; the ratification record is the TECH_DEBT entry headed
 # "[P1 · gate integrity — the section-aware DANGER-PATH criterion…]"'s sibling, the
 # "✅ RATIFIED BY FOUNDER 2026-08-21 … the § 2.7 Research golden floor" bullet.
-SECTION_27_MIN_PASS = 18
-SECTION_27_MAX_WARN = 2
-SECTION_27_MAX_FAIL = 0
+RESEARCH_GOLDEN_MIN_PASS = 18
+RESEARCH_GOLDEN_MAX_WARN = 2
+RESEARCH_GOLDEN_MAX_FAIL = 0
 
 
-def section_27_gate(results: list[dict]) -> tuple[int, str, dict]:
-    """The § 2.7 gate's exit contract. PURE and side-effect-free.
+def research_golden_floor(results: list[dict]) -> tuple[int, str, dict]:
+    """The Research golden floor's exit contract (founder ruling 2026-08-21). PURE
+    and side-effect-free.
 
     Purity is the point (CLAUDE.md Rule 17): every exit code must be reachable in a
     test WITHOUT running the suite, which makes real LLM calls and costs credits.
     Mirrors `scripts/dailymed_danger_path_verify.py`'s `gate_exit_code`.
 
     🔴 IT TAKES THE PER-CASE RECORDS, NEVER A PRE-AGGREGATED `stats`, AND THAT IS THE
-    CORRECTION OF 2026-08-24. `stats` counts EVERY executed case. Scoring "the § 2.7
-    subset of whatever ran" while READING a global `stats` would send three non-§ 2.7
-    FAILs — say, three in COL_* on a full 133-case run — to § 2.7 adjudication. Deriving
-    the counts HERE, from records already restricted to SECTION_27_CASE_IDS, makes the
+    CORRECTION OF 2026-08-24. `stats` counts EVERY executed case. Scoring "the golden
+    subset of whatever ran" while READING a global `stats` would send three non-golden
+    FAILs — say, three in COL_* on a full 133-case run — to golden adjudication. Deriving
+    the counts HERE, from records already restricted to RESEARCH_GOLDEN_CASE_IDS, makes the
     counts and the case set STRUCTURALLY UNABLE TO DISAGREE. There is no argument to
     pass wrongly, because there is no argument.
 
     PRIORITY, HIGHEST FIRST — the first matching rule wins, and the ordering is
     explicit here rather than incidental:
 
-      A. NOT A § 2.7 RUN -> 0, scored=False
-         The executed cases do not include ALL of SECTION_27_CASE_IDS. Cases outside
+      A. NOT A RESEARCH-GOLDEN RUN -> 0, scored=False
+         The executed cases do not include ALL of RESEARCH_GOLDEN_CASE_IDS. Cases outside
          the set are fine and are simply ignored; MISSING ones mean there is no floor
-         to read. "I did not run the § 2.7 set" IS NOT A FAILURE — it is not a § 2.7
-         run at all. Non-zero exits are reserved for runs that WERE § 2.7 runs and
+         to read. "I did not run the golden set" IS NOT A FAILURE — it is not a golden
+         run at all. Non-zero exits are reserved for runs that WERE golden runs and
          either could not be scored or were scored and failed. Control therefore falls
          through to the `pass_rate < 70` gate, which stays reachable.
          ⚠️ FOUNDER RULING 2026-08-24, REPLACING the shape shipped in 838d0e6 where
          this leg exited 2. That version fired whenever the executed set was not
-         EXACTLY the § 2.7 set, so the documented full-suite invocation
+         EXACTLY the golden set, so the documented full-suite invocation
          `uv run python tests/run_golden_tests.py` and every `--smoke` run exited 2,
          and `pass_rate < 70` became unreachable on any non-R selection — it killed
          the only gate that previously worked. Subset scoring keeps both alive.
 
       B. CANNOT BE SCORED -> 2
          All 20 present, but their statuses cannot be read as a floor: ERROR > 0, a
-         duplicate record for a § 2.7 id, or a status outside PASS/WARN/FAIL/ERROR.
+         duplicate record for a golden-set id, or a status outside PASS/WARN/FAIL/ERROR.
          An ERROR is neither a pass nor an adjudicable failure. (The duplicate and
          unknown-status legs are defensive: `determine_status` returns only the four,
          and the dataset's 133 ids are unique — verified 2026-08-24 — so neither is
@@ -162,25 +167,25 @@ def section_27_gate(results: list[dict]) -> tuple[int, str, dict]:
     artifact. This function RETURNS it and writes nothing.
 
     THE TWO VERDICT KEYS A READER MUST NOT CONFUSE, because leg A exits 0:
-      `scored`    — the § 2.7 set ran in full AND its counts are readable (C/D/E).
+      `scored`    — the golden set ran in full AND its counts are readable (C/D/E).
       `floor_met` — True at E only; False at D; **None** at A, B and C, i.e. whenever
                     no floor verdict exists. Read THIS, never `exit_code`, to answer
-                    "did the § 2.7 floor pass".
+                    "did the Research golden floor pass".
     """
-    floor = {"min_pass": SECTION_27_MIN_PASS,
-             "max_warn": SECTION_27_MAX_WARN,
-             "max_fail": SECTION_27_MAX_FAIL}
-    scored_records = [r for r in results if r.get("id") in SECTION_27_CASE_IDS]
+    floor = {"min_pass": RESEARCH_GOLDEN_MIN_PASS,
+             "max_warn": RESEARCH_GOLDEN_MAX_WARN,
+             "max_fail": RESEARCH_GOLDEN_MAX_FAIL}
+    scored_records = [r for r in results if r.get("id") in RESEARCH_GOLDEN_CASE_IDS]
     ran = {r.get("id") for r in scored_records}
     ignored = len(results) - len(scored_records)
 
-    # A — NOT A § 2.7 RUN. Exit 0, and NOTHING in the verdict may read as a pass.
-    if ran != set(SECTION_27_CASE_IDS):
-        missing = sorted(set(SECTION_27_CASE_IDS) - ran)
-        reason = (f"NOT SCORED — this is not a § 2.7 run. "
-                  f"{len(ran)} of {len(SECTION_27_CASE_IDS)} § 2.7 cases executed; "
+    # A — NOT A RESEARCH-GOLDEN RUN. Exit 0, and NOTHING in the verdict may read as a pass.
+    if ran != set(RESEARCH_GOLDEN_CASE_IDS):
+        missing = sorted(set(RESEARCH_GOLDEN_CASE_IDS) - ran)
+        reason = (f"NOT SCORED — this is not a Research-golden-floor run. "
+                  f"{len(ran)} of {len(RESEARCH_GOLDEN_CASE_IDS)} golden cases executed; "
                   f"missing {missing}. This is not a failure: the floor is simply not "
-                  f"defined over this selection, so the gate exits 0 and defers.")
+                  f"defined over this selection, so it exits 0 and defers.")
         return 0, reason, {
             "scored":     False,
             "floor_met":  None,
@@ -189,7 +194,7 @@ def section_27_gate(results: list[dict]) -> tuple[int, str, dict]:
             "case_ids_scored": [],
             "missing":    missing,
             "counts":     None,
-            "non_section_27_cases_ignored": ignored,
+            "non_research_golden_cases_ignored": ignored,
             "floor":      floor,
         }
 
@@ -211,47 +216,170 @@ def section_27_gate(results: list[dict]) -> tuple[int, str, dict]:
             "case_ids_scored": sorted(ran),
             "missing":    [],
             "counts":     counts,
-            "non_section_27_cases_ignored": ignored,
+            "non_research_golden_cases_ignored": ignored,
             "floor":      floor,
         }
 
     # B — CANNOT BE SCORED
-    if len(scored_records) != len(SECTION_27_CASE_IDS):
-        return _verdict(2, (f"DUPLICATE § 2.7 RECORDS — cannot be scored: "
+    if len(scored_records) != len(RESEARCH_GOLDEN_CASE_IDS):
+        return _verdict(2, (f"DUPLICATE RESEARCH-GOLDEN RECORDS — cannot be scored: "
                             f"{len(scored_records)} records for {len(ran)} case ids, "
                             f"so the counts do not describe 20 cases."), False, None)
     if unreadable:
-        return _verdict(2, (f"UNREADABLE STATUS on {len(unreadable)} § 2.7 case(s) "
+        return _verdict(2, (f"UNREADABLE STATUS on {len(unreadable)} golden case(s) "
                             f"({', '.join(unreadable)}) — cannot be scored."), False, None)
     if counts["ERROR"]:
-        return _verdict(2, (f"{counts['ERROR']} § 2.7 case(s) ERRORed — cannot be "
+        return _verdict(2, (f"{counts['ERROR']} golden case(s) ERRORed — cannot be "
                             f"scored. An ERROR is neither a pass nor an adjudicable "
                             f"failure; re-run before reading a floor."), False, None)
 
     # C — NEEDS HUMAN ADJUDICATION
-    if counts["FAIL"] > SECTION_27_MAX_FAIL:
-        return _verdict(2, (f"{counts['FAIL']} § 2.7 FAIL(s) — FOUNDER ADJUDICATION "
+    if counts["FAIL"] > RESEARCH_GOLDEN_MAX_FAIL:
+        return _verdict(2, (f"{counts['FAIL']} Research golden FAIL(s) — FOUNDER ADJUDICATION "
                             f"REQUIRED, not a scored breach. The floor requires every "
                             f"FAIL to be named and adjudicated individually and no "
                             f"adjudication scaffolding exists in code."), True, None)
 
     # D — FLOOR BREACH
-    if counts["PASS"] < SECTION_27_MIN_PASS or counts["WARN"] > SECTION_27_MAX_WARN:
+    if counts["PASS"] < RESEARCH_GOLDEN_MIN_PASS or counts["WARN"] > RESEARCH_GOLDEN_MAX_WARN:
         why = []
-        if counts["PASS"] < SECTION_27_MIN_PASS:
-            why.append(f"PASS {counts['PASS']} < {SECTION_27_MIN_PASS}")
-        if counts["WARN"] > SECTION_27_MAX_WARN:
-            why.append(f"WARN {counts['WARN']} > {SECTION_27_MAX_WARN}")
-        return _verdict(1, (f"§ 2.7 FLOOR BREACH — {' and '.join(why)} "
-                            f"(floor is {SECTION_27_MIN_PASS} PASS / "
-                            f"{SECTION_27_MAX_WARN} WARN / {SECTION_27_MAX_FAIL} FAIL "
-                            f"over {len(SECTION_27_CASE_IDS)} cases)."), True, False)
+        if counts["PASS"] < RESEARCH_GOLDEN_MIN_PASS:
+            why.append(f"PASS {counts['PASS']} < {RESEARCH_GOLDEN_MIN_PASS}")
+        if counts["WARN"] > RESEARCH_GOLDEN_MAX_WARN:
+            why.append(f"WARN {counts['WARN']} > {RESEARCH_GOLDEN_MAX_WARN}")
+        return _verdict(1, (f"RESEARCH GOLDEN FLOOR BREACH (founder ruling 2026-08-21) — "
+                            f"{' and '.join(why)} "
+                            f"(floor is {RESEARCH_GOLDEN_MIN_PASS} PASS / "
+                            f"{RESEARCH_GOLDEN_MAX_WARN} WARN / {RESEARCH_GOLDEN_MAX_FAIL} FAIL "
+                            f"over {len(RESEARCH_GOLDEN_CASE_IDS)} cases)."), True, False)
 
     # E — clear
-    return _verdict(0, (f"§ 2.7 FLOOR MET — {counts['PASS']} PASS / {counts['WARN']} "
-                        f"WARN / {counts['FAIL']} FAIL over {len(ran)} § 2.7 cases "
-                        f"(floor {SECTION_27_MIN_PASS}/{SECTION_27_MAX_WARN}"
-                        f"/{SECTION_27_MAX_FAIL})."), True, True)
+    return _verdict(0, (f"RESEARCH GOLDEN FLOOR MET (founder ruling 2026-08-21) — "
+                        f"{counts['PASS']} PASS / {counts['WARN']} "
+                        f"WARN / {counts['FAIL']} FAIL over {len(ran)} golden cases "
+                        f"(floor {RESEARCH_GOLDEN_MIN_PASS}/{RESEARCH_GOLDEN_MAX_WARN}"
+                        f"/{RESEARCH_GOLDEN_MAX_FAIL})."), True, True)
+
+
+# ─────────────────────────────────────────────
+# EXPLAIN ACCEPTANCE FLOOR (PRD § 2.7)
+# ─────────────────────────────────────────────
+# Extracted 2026-08-25 from the inline "§ 2.7 Step 8 Acceptance Gate" block whose
+# `acceptance_pass` verdict was computed, printed, and DISCARDED (the defect-2
+# TECH_DEBT entry — the fourth `computed → printed → never returned` occurrence in
+# this repo's gates, and the last). "Step 8" is retired from live labels (its
+# source, FEATURE_AUDIT.md's decomposition, was deleted in d79f88b); "Gate" is
+# retired until the word is earned — this floor gates on exactly ONE dimension.
+#
+# Authority, per the 2026-08-25 founder rulings (TECH_DEBT defect-2 entry):
+#   BINDING      no_fabricated_citations — authority: FOUNDER RULING 2026-08-25,
+#                NOT PRD § 2.7 (the recon found no § 2.7 requirement line for
+#                fabrication; ruled binding as retrieval-agnostic zero-tolerance).
+#   REPORT-ONLY  explain_rate vs EXPLAIN_THRESHOLD — demoted, founder ruling
+#                2026-08-25 (the 95.0 constant was never ratified).
+#   REPORT-ONLY  citation_source_types_valid — demoted, supplemental ruling
+#                2026-08-25 (its Path-1 whitelist contradicts 需求 3's letter;
+#                see the "§2.7 需求 3 ↔ explain_judge drift" TECH_DEBT entry).
+# The floor scores r["category"] == "explain" — a case set DISJOINT from the
+# Research golden floor's 20 R* cases (measured 2026-08-24).
+EXPLAIN_THRESHOLD = 95.0                                     # REPORT-ONLY
+BINDING_EXPLAIN_DIMENSIONS = ["no_fabricated_citations"]     # founder ruling 2026-08-25
+REPORT_ONLY_EXPLAIN_DIMENSIONS = ["citation_source_types_valid"]
+
+
+def explain_floor(results: list[dict]) -> tuple[int, str, dict]:
+    """The Explain acceptance floor's exit contract (PRD § 2.7). PURE, no I/O.
+
+    Same discipline as `research_golden_floor`: every exit code reachable in a test
+    without running the suite (CLAUDE.md Rule 17), and the verdict dict is RETURNED
+    so the caller writes it verbatim into the result JSON — artifact and exit code
+    cannot diverge.
+
+    Returns (exit_code, reason, verdict):
+      exit_code — 1 on any BINDING breach (a judged explain case where
+                  no_fabricated_citations != "pass"); 0 otherwise. Report-only
+                  values NEVER contribute here.
+      verdict   — `scored` False (floor_met None) when the run has no explain
+                  cases; otherwise floor_met True/False on the binding dimension
+                  alone. Cases whose judge was skipped or absent are excluded from
+                  dimension checks (unchanged from the inline block's behavior);
+                  `judged_cases` records how many actually carried judge output.
+    """
+    explain_records = [r for r in results if r.get("category") == "explain"]
+    floor = {"binding_dimensions": list(BINDING_EXPLAIN_DIMENSIONS),
+             "report_only_dimensions": list(REPORT_ONLY_EXPLAIN_DIMENSIONS),
+             "report_only_threshold": EXPLAIN_THRESHOLD,
+             "authority": "founder ruling 2026-08-25"}
+    if not explain_records:
+        reason = ("NOT SCORED — no explain-category cases in this run. The Explain "
+                  "acceptance floor (PRD § 2.7) is not defined over this selection, "
+                  "so it exits 0 and defers.")
+        return 0, reason, {
+            "scored":        False,
+            "floor_met":     None,
+            "exit_code":     0,
+            "reason":        reason,
+            "explain_pass":  0,
+            "explain_total": 0,
+            "explain_rate":  None,
+            "threshold":     EXPLAIN_THRESHOLD,
+            "threshold_met": None,
+            "judged_cases":  0,
+            "binding_breaches": [],
+            "report_only_failures": [],
+            "floor":         floor,
+        }
+
+    explain_pass  = sum(1 for r in explain_records if r.get("status") == "PASS")
+    explain_total = len(explain_records)
+    explain_rate  = round(explain_pass / explain_total * 100, 1)
+
+    binding_breaches = []
+    report_only_failures = []
+    judged = 0
+    for r in explain_records:
+        ev = r.get("eval", {}) or {}
+        judge_dims = ev.get("explain_judge_dimensions", {}) or {}
+        if not judge_dims or ev.get("explain_judge_skipped"):
+            continue
+        judged += 1
+        for dim in BINDING_EXPLAIN_DIMENSIONS:
+            actual = judge_dims.get(dim, "missing")
+            if actual != "pass":
+                binding_breaches.append(
+                    {"case_id": r.get("id"), "dimension": dim, "result": actual})
+        for dim in REPORT_ONLY_EXPLAIN_DIMENSIONS:
+            actual = judge_dims.get(dim, "missing")
+            if actual != "pass":
+                report_only_failures.append(
+                    {"case_id": r.get("id"), "dimension": dim, "result": actual})
+
+    code = 1 if binding_breaches else 0
+    if binding_breaches:
+        dims = sorted({b["dimension"] for b in binding_breaches})
+        ids  = sorted({b["case_id"] for b in binding_breaches})
+        reason = (f"EXPLAIN ACCEPTANCE FLOOR (PRD § 2.7) BREACHED — binding "
+                  f"dimension {', '.join(dims)} failed on case(s) {', '.join(ids)} "
+                  f"(binding authority: founder ruling 2026-08-25).")
+    else:
+        reason = (f"Explain acceptance floor (PRD § 2.7) met — binding dimension "
+                  f"{', '.join(BINDING_EXPLAIN_DIMENSIONS)} passed on {judged} "
+                  f"judged case(s). Rate and source-type values are report-only.")
+    return code, reason, {
+        "scored":        True,
+        "floor_met":     not binding_breaches,
+        "exit_code":     code,
+        "reason":        reason,
+        "explain_pass":  explain_pass,
+        "explain_total": explain_total,
+        "explain_rate":  explain_rate,
+        "threshold":     EXPLAIN_THRESHOLD,
+        "threshold_met": explain_rate >= EXPLAIN_THRESHOLD,
+        "judged_cases":  judged,
+        "binding_breaches": binding_breaches,
+        "report_only_failures": report_only_failures,
+        "floor":         floor,
+    }
 
 
 def reset_test_user_credits() -> None:
@@ -1058,7 +1186,7 @@ async def run_tests(smoke_only: bool = False, filter_prefix: str | None = None):
                 response_lang = case.get("response_language", "en")
                 answer = await call_explain(client, case["report_text"], response_language=response_lang)
 
-                # § 2.7 Step 8 — ExplainJudge integration
+                # PRD § 2.7 — ExplainJudge integration
                 explain_judge_result = None
                 if case.get("use_explain_judge"):
                     from api.utils.llm_judge import ExplainJudge
@@ -1236,7 +1364,7 @@ async def run_tests(smoke_only: bool = False, filter_prefix: str | None = None):
                 expected_error_code=case.get("expected_error_code"),
             )
 
-            # § 2.7 Step 8 — ExplainJudge override and result enrichment
+            # PRD § 2.7 — ExplainJudge override and result enrichment
             explain_judge_result = case.pop("_explain_judge_result", None) if cat == "explain" else None
             if explain_judge_result is not None:
                 eval_result["explain_judge_dimensions"] = explain_judge_result.get("dimensions", {})
@@ -1296,7 +1424,7 @@ async def run_tests(smoke_only: bool = False, filter_prefix: str | None = None):
     pass_rate     = round(stats["PASS"] / total * 100, 1)
 
     # ── COMPLETENESS GUARD (CLAUDE.md Rule 18 — fail loud) ────────────────────────
-    # WHY: §2.7 is the mechanism that authorizes 🔴 ships. An interrupted run must never
+    # WHY: the Research golden floor is the mechanism that authorizes 🔴 ships. An interrupted run must never
     # be readable as a completed gate. A case that ERRORed is a RESULT; a case that never
     # ran is an ABSENCE — and absence is the dangerous one, because a truncated run shows
     # fewer rows and an unwary reader sees "no failures". These are now distinguished
@@ -1305,13 +1433,14 @@ async def run_tests(smoke_only: bool = False, filter_prefix: str | None = None):
     never_ran   = [c["id"] for c in cases if c["id"] not in ran_ids]
     run_complete = not never_ran
 
-    # § 2.7 gate evaluated ONCE, here, so the JSON artifact and the exit code cannot
-    # disagree — they read the same three values. (The function is pure, so calling it
-    # early costs nothing and has no side effect.) It is handed `results` — the per-case
-    # records — and NOT `stats`: see its docstring, the whole point is that it derives
-    # its own counts over SECTION_27_CASE_IDS so a COL_* FAIL can never be attributed
-    # to § 2.7.
-    _s27_code, _s27_reason, _s27_verdict = section_27_gate(results)
+    # Both floors evaluated ONCE, here, so the JSON artifact and the exit code cannot
+    # disagree — they read the same values. (The functions are pure, so calling them
+    # early costs nothing and has no side effect.) Each is handed `results` — the
+    # per-case records — and NOT `stats`: see the research floor's docstring, the
+    # whole point is that it derives its own counts over RESEARCH_GOLDEN_CASE_IDS so
+    # a COL_* FAIL can never be attributed to the golden floor.
+    _rgf_code, _rgf_reason, _rgf_verdict = research_golden_floor(results)
+    _ef_code, _ef_reason, _ef_verdict = explain_floor(results)
     if not run_complete:
         print(f"\n{RED}{BOLD}{'!'*60}{RESET}")
         print(f"{RED}{BOLD}  ⛔ INCOMPLETE RUN — THIS IS NOT A VALID GATE RESULT{RESET}")
@@ -1341,46 +1470,30 @@ async def run_tests(smoke_only: bool = False, filter_prefix: str | None = None):
         cat_rate  = round(cat_pass / cat_total * 100, 1) if cat_total else 0
         print(f"  {cat.capitalize():12s} {cat_pass}/{cat_total} ({cat_rate}%)")
 
-    # § 2.7 Step 8 — Acceptance Gate
-    EXPLAIN_THRESHOLD = 95.0
-    HARD_FLOOR_DIMENSIONS = ["citation_source_types_valid", "no_fabricated_citations"]
-
-    explain_results_summary = [r for r in results if r["category"] == "explain"]
-    if explain_results_summary:
-        explain_pass_count = sum(1 for r in explain_results_summary if r["status"] == "PASS")
-        explain_total_count = len(explain_results_summary)
-        explain_rate = round(explain_pass_count / explain_total_count * 100, 1) if explain_total_count else 0
-
-        # Hard floor: dim 2 + dim 3 must be "pass" on every judge run that wasn't skipped.
-        hard_floor_failures = []
-        for r in explain_results_summary:
-            ev = r.get("eval", {}) or {}
-            judge_dims = ev.get("explain_judge_dimensions", {}) or {}
-            if not judge_dims or ev.get("explain_judge_skipped"):
-                continue
-            for hard_dim in HARD_FLOOR_DIMENSIONS:
-                actual = judge_dims.get(hard_dim, "missing")
-                if actual != "pass":
-                    hard_floor_failures.append({
-                        "case_id": r["id"],
-                        "dimension": hard_dim,
-                        "result": actual,
-                    })
-
-        print(f"\n{BOLD}  § 2.7 Step 8 Acceptance Gate:{RESET}")
-        print(f"  Explain pass rate: {explain_pass_count}/{explain_total_count} ({explain_rate}% — threshold {EXPLAIN_THRESHOLD}%)")
-
-        acceptance_pass = True
-        if explain_rate < EXPLAIN_THRESHOLD:
-            print(f"  {RED}❌ Explain category below threshold{RESET}")
-            acceptance_pass = False
-        if hard_floor_failures:
-            print(f"  {RED}❌ Path 1 hard floor violations:{RESET}")
-            for f in hard_floor_failures:
-                print(f"    {f['case_id']}: {f['dimension']} = {f['result']}")
-            acceptance_pass = False
-        if acceptance_pass:
-            print(f"  {GREEN}✅ § 2.7 Step 8 acceptance gate cleared{RESET}")
+    # Explain acceptance floor (PRD § 2.7) — console rendering ONLY. The verdict was
+    # evaluated ONCE above, next to the Research golden floor; this block renders it
+    # and computes NOTHING. (Replaces the inline "§ 2.7 Step 8 Acceptance Gate" block
+    # whose `acceptance_pass` verdict was computed, printed, and discarded — the
+    # defect-2 TECH_DEBT entry, fixed 2026-08-25. `acceptance_pass` no longer exists.)
+    if _ef_verdict["scored"]:
+        print(f"\n{BOLD}  Explain acceptance floor (PRD § 2.7):{RESET}")
+        print(f"  Explain pass rate: {_ef_verdict['explain_pass']}/{_ef_verdict['explain_total']} "
+              f"({_ef_verdict['explain_rate']}%) vs report-only threshold {EXPLAIN_THRESHOLD}% "
+              f"(demoted, founder ruling 2026-08-25 — never gates)")
+        if not _ef_verdict["threshold_met"]:
+            print(f"  {YELLOW}⚠️ report-only: Explain rate below threshold — recorded in the "
+                  f"JSON, does not gate{RESET}")
+        for ro in _ef_verdict["report_only_failures"]:
+            print(f"  {YELLOW}⚠️ report-only: {ro['case_id']}: {ro['dimension']} = "
+                  f"{ro['result']} — recorded in the JSON, does not gate{RESET}")
+        if _ef_verdict["binding_breaches"]:
+            print(f"  {RED}❌ BINDING breach — authority: founder ruling 2026-08-25:{RESET}")
+            for bb in _ef_verdict["binding_breaches"]:
+                print(f"    {bb['case_id']}: {bb['dimension']} = {bb['result']}")
+        else:
+            print(f"  {GREEN}binding dimension {', '.join(BINDING_EXPLAIN_DIMENSIONS)}: pass on "
+                  f"{_ef_verdict['judged_cases']} judged case(s) — the only thing this floor "
+                  f"gates on{RESET}")
 
     # Identify sub-group summary (when identify tests are present)
     identify_results = [r for r in results if r["category"] == "identify"]
@@ -1419,7 +1532,8 @@ async def run_tests(smoke_only: bool = False, filter_prefix: str | None = None):
             # ⚠️ NAME IS MISLEADING, VALUE DELIBERATELY UNCHANGED (founder to rule).
             # `gate_valid` is literally `run_complete`: it means THE RUN FINISHED, not
             # THE GATE PASSED. A 15 PASS / 2 WARN / 3 FAIL run reports gate_valid=true.
-            # The honest § 2.7 verdict is in `section_27` below; read that, not this.
+            # The honest floor verdicts are in `research_golden_floor` and
+            # `explain_floor` below; read those, not this.
             "gate_valid":      run_complete,
             "gate_invalid_reason": (None if run_complete else
                                     f"{len(never_ran)} case(s) never ran: {never_ran}"),
@@ -1431,14 +1545,23 @@ async def run_tests(smoke_only: bool = False, filter_prefix: str | None = None):
                 "case_ids_run":   sorted(r["id"] for r in results),
                 "case_count_run": len(results),
             },
-            # ── the § 2.7 gate's own verdict, separate from `gate_valid`. Written
-            # VERBATIM from the single evaluation above, so the artifact and the exit
-            # code cannot diverge — there is no second construction of these numbers.
-            # 🔴 READ `floor_met` (true / false / null), NEVER `exit_code`: leg A exits
-            # 0 with NO floor verdict, and `counts` is null there rather than a partial
-            # tally that could be misread as a pass. `counts` is over the § 2.7 cases
-            # ONLY — the whole-run tally is `summary` below.
-            "section_27": _s27_verdict,
+            # ── the Research golden floor's own verdict (founder ruling 2026-08-21),
+            # separate from `gate_valid`. Written VERBATIM from the single evaluation
+            # above, so the artifact and the exit code cannot diverge — there is no
+            # second construction of these numbers. 🔴 READ `floor_met` (true / false /
+            # null), NEVER `exit_code`: leg A exits 0 with NO floor verdict, and
+            # `counts` is null there rather than a partial tally that could be misread
+            # as a pass. `counts` is over the 20 golden R cases ONLY — the whole-run
+            # tally is `summary` below. (Key renamed from "section_27" on 2026-08-25
+            # per founder ruling 1(b); the old key's consumer set was derived FIRST:
+            # zero code readers across all three golden_results parsers.)
+            "research_golden_floor": _rgf_verdict,
+            # ── the Explain acceptance floor's verdict (PRD § 2.7) — same discipline:
+            # written verbatim from the single evaluation, so artifact and exit cannot
+            # diverge. BINDING content: no_fabricated_citations (founder ruling
+            # 2026-08-25). explain_rate-vs-threshold and citation_source_types_valid
+            # are REPORT-ONLY — present here, never in the exit code.
+            "explain_floor": _ef_verdict,
             "summary":   stats,
             "pass_rate": pass_rate,
             "evaluator": "LLM Judge (gpt-4.1-mini)",
@@ -1493,55 +1616,79 @@ async def run_tests(smoke_only: bool = False, filter_prefix: str | None = None):
         sys.exit(2)
 
     # ── THE COMPOSED EXIT ORDER — explicit, not incidental ─────────────────────────
-    # Three gates can fire. Their order is fixed here and is the whole contract:
+    # Four gates can fire. Their order is fixed here and is the whole contract:
     #
     #   rank 1  not run_complete        -> 2   (above; Rule 18, unchanged)
-    #   rank 2  section_27_gate(results)-> 2 or 1, per its own internal priority
-    #                                      (and 0 when the § 2.7 set did not all run)
-    #   rank 3  pass_rate < 70          -> 1   (below; unchanged)
+    #   rank 2  research_golden_floor(results) -> 2 or 1, per its own internal
+    #                                      priority (and 0 when the 20-case golden
+    #                                      set did not all run)
+    #   rank 3  explain_floor(results)  -> 1 on a BINDING no_fabricated_citations
+    #                                      breach (founder ruling 2026-08-25);
+    #                                      0 otherwise — report-only values never
+    #                                      reach this path
+    #   rank 4  pass_rate < 70          -> 1   (below; unchanged)
     #
-    # WHY § 2.7 SITS BETWEEN THEM. It must come AFTER the completeness guard for the
-    # same reason that guard came first: on a truncated run every count is computed
-    # over cases that never ran, so no floor can be read from it. It must come BEFORE
-    # the 70% rate gate because the two answer different questions over different
-    # denominators — 70% is a coarse whole-suite smoke check that fires on ANY
-    # selection, while § 2.7 is a precise floor over exactly SECTION_27_CASE_IDS. On
-    # an R-only run the § 2.7 verdict is the specific one and must not be masked by
-    # the coarser rate, which 15/2/3 (= 75%) would silently pass.
+    # WHY THE RESEARCH GOLDEN FLOOR SITS AFTER THE COMPLETENESS GUARD AND BEFORE THE
+    # 70% RATE: it must come AFTER the guard for the same reason that guard came
+    # first — on a truncated run every count is computed over cases that never ran,
+    # so no floor can be read from it. It must come BEFORE the 70% rate gate because
+    # the two answer different questions over different denominators — 70% is a
+    # coarse whole-suite smoke check that fires on ANY selection, while the golden
+    # floor is a precise floor over exactly RESEARCH_GOLDEN_CASE_IDS. On an R-only
+    # run the golden verdict is the specific one and must not be masked by the
+    # coarser rate, which 15/2/3 (= 75%) would silently pass.
+    # WHY THE EXPLAIN FLOOR SITS THIRD (2026-08-25): its case set is DISJOINT from
+    # the golden 20, so on a full run both floors hold real verdicts and only which
+    # nonzero code WINS is composed — the Research floor authorizes 🔴 ships and
+    # keeps precedence. Nothing is masked: both verdicts are already in the JSON
+    # from the single evaluation above, whichever exit fires. An explain-floor
+    # breach ALONE (research floor clean or not scored) exits 1 here.
     #
     # ✅ FOUNDER RULING 2026-08-24 — SUBSET SCORING. This block previously recorded an
     # open question; it is now decided, and the decision is recorded here rather than
-    # only in a report. As shipped in 838d0e6 the § 2.7 gate exited 2 whenever the
-    # executed set was not EXACTLY SECTION_27_CASE_IDS, which meant the documented
+    # only in a report. As shipped in 838d0e6 the golden floor (then labelled
+    # "§ 2.7") exited 2 whenever the executed set was not EXACTLY
+    # RESEARCH_GOLDEN_CASE_IDS, which meant the documented
     # `uv run python tests/run_golden_tests.py` and every `--smoke` run exited 2 and
     # `pass_rate < 70` became UNREACHABLE — it removed the only gate that previously
-    # worked, a strictly worse state. RULED: score § 2.7 over the § 2.7 subset of
-    # whatever ran; a selection missing any of the 20 is NOT SCORED and exits 0 from
-    # this gate, so control reaches the 70% gate below.
+    # worked, a strictly worse state. RULED: score the floor over the golden subset
+    # of whatever ran; a selection missing any of the 20 is NOT SCORED and exits 0
+    # from this floor, so control reaches the 70% gate below.
     #   THE CORRECTION THAT RULING NEEDED, and it is why the signature changed: `stats`
     #   counts EVERY executed case, so subset scoring off a global `stats` would have
-    #   sent three COL_* FAILs on a full run to § 2.7 adjudication. The gate now derives
-    #   its own counts from `results` restricted to the § 2.7 ids. Counts and case set
-    #   can no longer disagree, because they come from the same records.
-    # END STATE, stated plainly: a full 133-case run yields a REAL § 2.7 verdict over
+    #   sent three COL_* FAILs on a full run to golden adjudication. The floor derives
+    #   its own counts from `results` restricted to the golden ids. Counts and case
+    #   set can no longer disagree, because they come from the same records.
+    # END STATE, stated plainly: a full 133-case run yields a REAL golden verdict over
     # its 20 R cases AND still reaches `pass_rate < 70`; a `--smoke` or `--filter R08`
     # run reports NOT SCORED and defers to the 70% gate exactly as it did before this
-    # work; only a run that DID execute all 20 can exit non-zero here.
+    # work; only a run that DID execute all 20 can exit non-zero at rank 2.
     # Reuses the SINGLE evaluation made above — the JSON and this exit cannot diverge.
-    if _s27_code:
-        print(f"\n{RED}{BOLD}  § 2.7 GATE: EXIT {_s27_code}{RESET} — {_s27_reason}\n")
-        sys.exit(_s27_code)
-    elif _s27_verdict["scored"]:
-        print(f"\n{GREEN}{BOLD}  § 2.7 GATE: EXIT 0{RESET} — {_s27_reason}\n")
+    if _rgf_code:
+        print(f"\n{RED}{BOLD}  RESEARCH GOLDEN FLOOR (founder ruling 2026-08-21): "
+              f"EXIT {_rgf_code}{RESET} — {_rgf_reason}\n")
+        sys.exit(_rgf_code)
+    elif _rgf_verdict["scored"]:
+        print(f"\n{GREEN}{BOLD}  RESEARCH GOLDEN FLOOR (founder ruling 2026-08-21): "
+              f"EXIT 0{RESET} — {_rgf_reason}\n")
     else:
-        # LOUD on purpose: exit 0 here means "no § 2.7 verdict was produced", and that
-        # must never be skimmed as "the § 2.7 floor passed".
+        # LOUD on purpose: exit 0 here means "no golden-floor verdict was produced",
+        # and that must never be skimmed as "the Research golden floor passed".
         print(f"\n{YELLOW}{BOLD}{'-'*60}{RESET}")
-        print(f"{YELLOW}{BOLD}  ⚠️  § 2.7 NOT SCORED — THIS RUN PRODUCED NO § 2.7 VERDICT{RESET}")
-        print(f"{YELLOW}  {_s27_reason}{RESET}")
-        print(f"{YELLOW}  JSON: section_27.scored=false, section_27.floor_met=null.{RESET}")
-        print(f"{YELLOW}  To get a § 2.7 verdict, run all 20: --filter R{RESET}")
+        print(f"{YELLOW}{BOLD}  ⚠️  RESEARCH GOLDEN FLOOR NOT SCORED — THIS RUN PRODUCED "
+              f"NO GOLDEN-FLOOR VERDICT{RESET}")
+        print(f"{YELLOW}  {_rgf_reason}{RESET}")
+        print(f"{YELLOW}  JSON: research_golden_floor.scored=false, "
+              f"research_golden_floor.floor_met=null.{RESET}")
+        print(f"{YELLOW}  To get a Research golden floor verdict, run all 20: --filter R{RESET}")
         print(f"{YELLOW}{BOLD}{'-'*60}{RESET}\n")
+
+    # Rank 3 — Explain acceptance floor (PRD § 2.7). A BINDING breach alone must
+    # produce a nonzero exit; the report-only values live in the JSON and console only.
+    if _ef_code:
+        print(f"\n{RED}{BOLD}  EXPLAIN ACCEPTANCE FLOOR (PRD § 2.7): "
+              f"EXIT {_ef_code}{RESET} — {_ef_reason}\n")
+        sys.exit(_ef_code)
 
     if pass_rate < 70:
         print(f"{RED}⚠️  Pass rate below 70%.{RESET}\n")
