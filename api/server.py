@@ -2080,9 +2080,15 @@ async def dodo_webhook(request: Request, db: Session = Depends(get_db)):
     import json as _json
     payload = _json.loads(body_bytes)
     event_type = payload.get("type", "")
-    event_id = payload.get("data", {}).get("id") or payload.get("id", "")
-    if not event_id:
-        event_id = f"dodo_{uuid.uuid4().hex[:16]}"
+    # Idempotency key := the Standard Webhooks message id (webhook-id header).
+    # Replays resend it byte-identical, and it is signature-bound: missing
+    # headers 401 above, and the HMAC covers "{id}.{ts}.{body}". Real Dodo
+    # payloads carry NEITHER data.id NOR a top-level id, so the previous
+    # payload-derived key fell through to a locally-generated value (epoch-ms
+    # in 32a82a4, uuid4 after 4443855) and every replay got a fresh key —
+    # already_processed could never fire. Same scheme the Clerk handler
+    # relies on via svix-id (replay-verified against a live delivery).
+    event_id = webhook_id
 
     # Idempotency check
     from api.models.sql_models import WebhookEvent, UserUsage
