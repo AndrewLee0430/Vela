@@ -24,7 +24,7 @@ Examples from 2026-04-19 to 2026-04-20 sessions:
 | Current focus + next-up + active acceptance protocols | STATE.md |
 | Pre-gate human-eye checklist (blank FORM — fill per gate, incl. per-row EXPECTED OWNER) | docs/human_eye_gate_checklist.md |
 | Pre-gate RENDER checklist (blank FORM — what a rendered public page CLAIMS; sibling of the above) | docs/render_gate_checklist.md |
-| Open future tasks | BACKLOG.md |
+| Decision archive of ratified strategy input + candidate work — NOT an execution queue (STATE.md "Next Up" is the sole execution order); entries are discharged at car closeout by write-back from STATE *(re-labeled from "Open future tasks" — founder ruling A 2026-08-26, docs/batons/positioning_audit_20260823.md §3)* | BACKLOG.md |
 | Completed/shipped work log (chronological) | `git log` (recent window in STATE "Recently Shipped") |
 | Tech debt entries (active gaps) | TECH_DEBT.md |
 | System architecture (request flow / pipelines / payments / DB / env / frontend / deploy) | docs/architecture.md |
@@ -38,7 +38,7 @@ Examples from 2026-04-19 to 2026-04-20 sessions:
 0. **Fact-check the baton first** — `python tests/probes/baton_check/check_baton.py <baton.md>`. Seconds, no LLM, never blocks. It catches citations, SHAs and ratification claims that have drifted; it does **not** catch a conclusion overturned by later evidence.
 
 1. Read `STATE.md` → top of "Next Up" queue is your task
-2. Find that task in `BACKLOG.md` → read short description + phase + estimated time
+2. Find that task in `BACKLOG.md` → read short description + phase (+ estimated time where an entry carries one — OPTIONAL, not a per-entry promise, per founder ruling A 2026-08-26)
 3. If task references PRD §X.Y → read `docs/PRD.md` § section (requirements + acceptance + "not in scope")
 4. If task references ADR(s) → read `docs/decisions/00X-*.md` for decision context
 5. Grep codebase to verify partial implementation — `git grep "<feature_keyword>"` + `ls pages/<feature>` etc. Don't re-implement existing code.

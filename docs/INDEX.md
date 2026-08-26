@@ -43,7 +43,7 @@ If you need to know:
 - **What's the system architecture?** → architecture.md
 - **Why was decision X made?** → decisions/ (ADR XXX)
 - **What's the next task to ship?** → ../STATE.md "Next Up" (top of queue)
-- **What's the open backlog?** → ../BACKLOG.md
+- **What strategy decisions / candidate work are on record?** → ../BACKLOG.md — a decision archive, not an execution queue; entries are discharged at car closeout by write-back from STATE *(re-worded from "What's the open backlog?" — founder ruling A 2026-08-26, batons/positioning_audit_20260823.md §3)*
 - **What's the tech debt?** → ../TECH_DEBT.md
 - **What's already shipped?** → `git log` (recent window in ../STATE.md Recently Shipped)
 - **What's the actual codebase state?** → grep / ls / `git log` (no static snapshot file)

@@ -19,6 +19,17 @@ Same taxonomy as `TECH_DEBT.md`, **additive to** the existing `[P0]`–`[P3]` ra
 | *(untagged)* | the 13 entries in **`## Product direction candidates`** — product bets, not defects; that section is self-describing | 13 |
 | | **total `###` entries** | **44** |
 
+<!-- RE-VERIFIED 2026-08-26 (positioning-ruling car): the 主線 A #1 reserved-seat entry gained a
+     ⏸️ PARKED heading marker + a dated Ruling-B blockquote (annotation only — the existing `###`
+     heading was extended, not added to). Counts RE-DERIVED, not assumed:
+     grep -c "^### " = 44; per class 0 / 0 / 3 / 9 / 19 / untagged 13 = 44 — ALL UNCHANGED.
+     Founder rulings A/B/C of 2026-08-26 live in docs/batons/positioning_audit_20260823.md;
+     Ruling A re-labels the DOC-MAP description of this file (CLAUDE.md doc map + docs/INDEX.md):
+     BACKLOG is ratified a DECISION ARCHIVE, not an execution queue — discharge = write-back from
+     STATE at car closeout. This file's own text is deliberately untouched by Ruling A apart from
+     nothing at all (the H1's "Open Future Work" wording is FLAGGED in the baton doc, founder's
+     call — the doc map is the ruling's stated scope). -->
+
 <!-- 🔴 NAV RECOUNTED FROM THE FILE 2026-08-24 (§2.7 gate closeout car), NOT INCREMENTED — and the
      recount found a LARGE pre-existing error the +1 would otherwise have carried forward.
      BEFORE 0 / 0 / 3 / 8 / 19 / 6 = 36.   AFTER 0 / 0 / 3 / 9 / 19 / 13 = 44.
@@ -1899,7 +1910,9 @@ trustworthiness signal to output whose provenance is still being repaired.
 - **Cross-references (dedup checked 2026-08-18 — no existing entry covers a retrieval eval harness; "MRR"/"nDCG" appear nowhere else in BACKLOG/TECH_DEBT):** reuse, don't duplicate — **T1's ownership-assertion instrument** (`tests/probes/wrongdrug/owner_assertion.py`, six non-collapsing outcomes) is the per-case adjudicator this harness generalizes; the **Rule 17 metric-qualification lesson** on the K-union CITED-recovery number (any-whitelisted-LOINC ≠ question-answering — see the fly-211 entry's 2026-07-27 qualification) is the failure mode the key-derived qrels exist to prevent; and a new harness is a **10th constructor site** for TECH_DEBT open item #8 (`build_production_retriever()`) — build it against the shared constructor if #8 lands first, and note the coupling either way.
 - **Not scheduled. Founder sequences.**
 
-### [P2 · candidate — 主線 A #1, founder-ratified 2026-08-19] Reserved-seat mechanism for owned documents (threshold layer) — OFFLINE MEASUREMENT FIRST, build second
+### [P2 · candidate — 主線 A #1, founder-ratified 2026-08-19] Reserved-seat mechanism for owned documents (threshold layer) — OFFLINE MEASUREMENT FIRST, build second — ⏸️ **PARKED (founder Ruling B, 2026-08-26)**
+
+> ⏸️ **2026-08-26 — PARKED, PREMISE-REFUTED (founder Ruling B — `docs/batons/positioning_audit_20260823.md` §3).** The re-sequencing the 2026-08-23 note below deferred to the founder has now happened: this line is parked under its own *"the founder re-sequences"* clause. **The successor line is the relevance-filter question — *which 60% does the LLM relevance filter drop*** (the TECH_DEBT `_filter_by_relevance` [P2] entry, promoted to schedulable by the same ruling; the content question is committed as the limitation row of `tests/probes/retrieval_attrition/README.md`). Mark-never-delete: nothing below is rewritten or removed — the entry remains the record of the ratified direction and of the evidence that refuted its premise.
 
 > 🔴 **2026-08-23 — THE OFFLINE MEASUREMENT THIS ENTRY REQUIRED HAS NOW RUN, AND IT CONTRADICTS THE PREMISE. RULING UNCHANGED; EVIDENCE APPENDED (mark-never-delete).** The entry's own sequencing — *"OFFLINE MEASUREMENT FIRST, build second"* — is what produced this, so the entry worked as designed. Recorded, not decided: **(a)** 17 of 20 queries already enter the pipeline with ≥5 docs; **(b)** the `[:max_results*4]` cut the seat's P1 protection guards **fired 0 times in 75 real runs**, so P1 would protect against nothing on this population; **(c)** production's `[FilterExempt]` already re-adds whitelisted safety sections on **28% of runs**, at the stage where the loss actually happens; **(d)** the reach ceiling with a perfect resolver and unbounded `k` is **10/30 = 33%**, and neither resolver builder is seat-ready. Full evidence: the TECH_DEBT entry headed *"[P1 · retrieval measurement / premise integrity …]"*. **This entry is NOT re-scoped and NOT withdrawn — the founder re-sequences.**
 
