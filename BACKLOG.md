@@ -1,4 +1,4 @@
-# BACKLOG.md — Vela Open Future Work
+# BACKLOG.md — Vela Decision Archive (NOT an execution queue — STATE.md "Next Up" is the sole execution order) *(re-labeled from "Vela Open Future Work" — founder Ruling A(a) EXTENDED to this self-label 2026-08-26; docs/batons/positioning_audit_20260823.md §3)*
 
 Open tasks not actively in progress. New items captured here, moved to STATE.md when in focus, removed when shipped (git log records it).
 
