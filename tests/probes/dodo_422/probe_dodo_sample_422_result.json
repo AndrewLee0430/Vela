@@ -1,0 +1,178 @@
+{
+  "probe": "dodo_sample_422",
+  "run_context": "local TestClient harness, prod-shaped Clerk fake; see module docstring",
+  "scenarios": [
+    {
+      "name": "sample_signed",
+      "note": "Testing-tab sample verbatim, valid signature (prod repro)",
+      "expected": {
+        "status": 422,
+        "detail": "Clerk user not found"
+      },
+      "got": {
+        "status": 422,
+        "body": {
+          "detail": "Clerk user not found"
+        }
+      },
+      "matched": true
+    },
+    {
+      "name": "sample_unsigned",
+      "note": "Same sample, no signature headers — proves 401 fires before any 422",
+      "expected": {
+        "status": 401,
+        "detail": "Missing signature headers"
+      },
+      "got": {
+        "status": 401,
+        "body": {
+          "detail": "Missing signature headers"
+        }
+      },
+      "matched": true
+    },
+    {
+      "name": "real_shape_active",
+      "note": "Prod-observed shape (metadata.clerk_user_id present, payer email known to Clerk)",
+      "expected": {
+        "status": 200,
+        "detail": null
+      },
+      "got": {
+        "status": 200,
+        "body": {
+          "status": "ok",
+          "event": "subscription.active"
+        }
+      },
+      "matched": true
+    },
+    {
+      "name": "real_shape_cancelled",
+      "note": "Prod-observed shape (metadata.clerk_user_id present, payer email known to Clerk)",
+      "expected": {
+        "status": 200,
+        "detail": null
+      },
+      "got": {
+        "status": 200,
+        "body": {
+          "status": "ok",
+          "event": "subscription.cancelled"
+        }
+      },
+      "matched": true
+    },
+    {
+      "name": "real_shape_expired",
+      "note": "Prod-observed shape (metadata.clerk_user_id present, payer email known to Clerk)",
+      "expected": {
+        "status": 200,
+        "detail": null
+      },
+      "got": {
+        "status": 200,
+        "body": {
+          "status": "ok",
+          "event": "subscription.expired"
+        }
+      },
+      "matched": true
+    },
+    {
+      "name": "real_shape_failed",
+      "note": "Prod-observed shape (metadata.clerk_user_id present, payer email known to Clerk)",
+      "expected": {
+        "status": 200,
+        "detail": null
+      },
+      "got": {
+        "status": 200,
+        "body": {
+          "status": "ok",
+          "event": "subscription.failed"
+        }
+      },
+      "matched": true
+    },
+    {
+      "name": "mut_metadata_emptied",
+      "note": "metadata {} like the sample — handler never reads metadata, so no effect",
+      "expected": {
+        "status": 200,
+        "detail": null
+      },
+      "got": {
+        "status": 200,
+        "body": {
+          "status": "ok",
+          "event": "subscription.cancelled"
+        }
+      },
+      "matched": true
+    },
+    {
+      "name": "mut_payment_method_null",
+      "note": "payment_method_id null like the sample — never read, no effect",
+      "expected": {
+        "status": 200,
+        "detail": null
+      },
+      "got": {
+        "status": 200,
+        "body": {
+          "status": "ok",
+          "event": "subscription.cancelled"
+        }
+      },
+      "matched": true
+    },
+    {
+      "name": "mut_email_unknown_to_clerk",
+      "note": "customer.email -> test@acme.com (no Clerk account) — THE flip field",
+      "expected": {
+        "status": 422,
+        "detail": "Clerk user not found"
+      },
+      "got": {
+        "status": 422,
+        "body": {
+          "detail": "Clerk user not found"
+        }
+      },
+      "matched": true
+    },
+    {
+      "name": "mut_email_missing",
+      "note": "customer.email removed — the OTHER 422 site (server.py:2128); sample does NOT hit this one",
+      "expected": {
+        "status": 422,
+        "detail": "No customer email"
+      },
+      "got": {
+        "status": 422,
+        "body": {
+          "detail": "No customer email"
+        }
+      },
+      "matched": true
+    },
+    {
+      "name": "real_shape_clerk_outage",
+      "note": "Real-shape cancelled, payer email VALID, Clerk API raises — lookup exception swallowed (server.py:2145-2146) -> 422; recovered only by Dodo's auto-retry (prod evidence: Dodo does retry 422s)",
+      "expected": {
+        "status": 422,
+        "detail": "Clerk user not found"
+      },
+      "got": {
+        "status": 422,
+        "body": {
+          "detail": "Clerk user not found"
+        }
+      },
+      "matched": true
+    }
+  ],
+  "all_matched": true
+}
