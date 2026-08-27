@@ -60,6 +60,12 @@ session state — and it catches the citation before the commit that freezes it.
 `retriever.py:518-529` for an exemption's *extent* is genuinely useful. The suggestion is
 *"carry an anchor phrase alongside"*, not *"remove the number"*.
 
+**C2 archive scope (2026-08-27, ledger slimming):** ledger text relocated **verbatim** to
+`docs/archive/*.md` (rules C1-30d / C3) is consulted as a **fallback only** — a phrase that
+matches zero ledger lines but exactly one archive line verifies as unique. Ledger-hit
+semantics are unchanged, so the tombstone + archive duplication of a relocated heading
+cannot produce a new multi-match flag.
+
 ## 🔴 What this does NOT catch
 
 **It checks whether a number matches a file. It does NOT check whether a conclusion still

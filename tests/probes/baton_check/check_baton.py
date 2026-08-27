@@ -41,6 +41,14 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[2]
 LEDGER = ["STATE.md", "TECH_DEBT.md", "BACKLOG.md", "CLAUDE.md"]
 
+
+def archive_files() -> list[str]:
+    """docs/archive/ holds ledger text relocated VERBATIM (C1-30d / C3, founder ruling
+    2026-08-27). Anchor phrases quoted from relocated entry BODIES resolve only there,
+    so C2 greps the archives as a fallback — see c2_anchors for the exact semantics."""
+    d = ROOT / "docs" / "archive"
+    return sorted("docs/archive/" + p.name for p in d.glob("*.md")) if d.exists() else []
+
 CITE = re.compile(r'\b([A-Za-z0-9_][A-Za-z0-9_/.\-]*\.(?:md|py|tsx|ts|json|mjs))[:`]*:(\d+)(?:-(\d+))?\b')
 ANCHOR = re.compile(r'`([^`\n]{12,120})`')
 SHA = re.compile(r'\b([0-9a-f]{7,40})\b')
@@ -187,6 +195,11 @@ def c2_anchors(text: str, repo: Repo, self_file: str | None = None) -> tuple[lis
     """
     out, ok = [], 0
     targets = [f for f in LEDGER if f != self_file]
+    # ARCHIVE FALLBACK (2026-08-27, ledger slimming): relocated entry BODIES live only in
+    # docs/archive/*.md. Ledger hits keep their exact pre-slimming semantics — archives are
+    # consulted ONLY when a phrase matches ZERO ledger lines, so the tombstone+archive
+    # duplication of a relocated HEADING can never create a new multi-match false positive.
+    arch = [f for f in archive_files() if f != self_file]
     seen = set()
     for m in ANCHOR.finditer(text):
         phrase = m.group(1).strip()
@@ -201,6 +214,14 @@ def c2_anchors(text: str, repo: Repo, self_file: str | None = None) -> tuple[lis
         elif hits > 1:
             out.append(Finding("DRIFT", "C2", f"`{phrase[:48]}`",
                                f"matches {hits} ledger lines — not a unique anchor"))
+        else:
+            ahits = sum(1 for f in arch for ln in (repo.lines(f) or []) if phrase in ln)
+            if ahits == 1:
+                ok += 1
+            elif ahits > 1:
+                out.append(Finding("DRIFT", "C2", f"`{phrase[:48]}`",
+                                   f"matches {ahits} archive lines — not a unique anchor"))
+            # ahits == 0: prose, stay silent — unchanged behaviour
     return out, ok
 
 
