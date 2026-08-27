@@ -64,6 +64,8 @@ Examples from 2026-04-19 to 2026-04-20 sessions:
 
 **Solo-founder STATE discipline**: At minimum, at the end of each task segment, update STATE.md (Next Up + Recently Shipped) even if other docs (PRD marker, BACKLOG removal) are intentionally skipped. STATE.md is the single entry point for "where am I next session"; a stale STATE is the highest-cost drift because it misleads the next work session about what's done vs pending. PRD-marker / BACKLOG updates may be batched or skipped at the founder's discretion, but STATE should never silently lag reality.
 
+**Ship-entry terseness (founder ruling 2026-08-27)**: STATE "Recently Shipped" entries stay terse — facts, readbacks, and pointers only; narrative detail lives in the car's baton under `docs/batons/`. Entries older than 30 days relocate VERBATIM to `docs/archive/state_shipped_2026.md` and closed TECH_DEBT bodies to `docs/archive/tech_debt_done.md`, each leaving a heading-verbatim tombstone (mark-never-delete: summaries may point, only full text may carry).
+
 **Source-of-truth priority**:
 
 - `STATE.md` is the authoritative "what to do now" — not PRD, not BACKLOG
