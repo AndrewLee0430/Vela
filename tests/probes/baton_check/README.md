@@ -88,6 +88,16 @@ It asserts both known errors fire and that ≥2 blocking findings are produced.
 **A gate that has never failed has not been shown to work** — the canary gate's lesson,
 applied here. **Do not "fix" the fixture's errors; they are the point.**
 
+**2026-08-27 repair (the tool's own drift class ate its own negative control):** the
+fixture's second must-fire, `TECH_DEBT.md:784`, was pinned while that line was blank; the
+ledger grew past the pin and the line is now a non-blank entry heading, so the check
+correctly stopped firing and `--self-test` reported itself broken (found by the ledger-
+slimming recon, `docs/batons/recon_20260827_ledger_slimming.md` §B.5). The fixture is
+untouched. The self-test now asserts the fixture's **path-based** error only (time-stable),
+plus **dynamic pins located at run time** against the live ledger: an out-of-range citation
+(line count + 1000) and the first blank line found that run. No expectation line-pins a
+live file anymore, so the self-test survives ledger growth and relocation by construction.
+
 ## `suppressions.json`
 
 Known-external paths C1 would otherwise flag. **Every entry carries a `reason`, and the

@@ -351,23 +351,54 @@ def check_text(text: str, label: str) -> tuple[str, int]:
 
 def self_test() -> int:
     """NEGATIVE CONTROL (the canary gate's lesson): a checker with no proof it can fail
-    is not a checker. Runs against the committed 2026-08-21 baton fixture, whose errors
-    are documented and independently verified."""
+    is not a checker. Two layers since 2026-08-27:
+
+    1. The committed 2026-08-21 baton fixture — content untouched, per README ("do not
+       fix the fixture's errors"). Only its PATH-based error is asserted here:
+       `tests/test_webhook_cancel.py` was renamed away and cannot resolve. Its original
+       second error — `TECH_DEBT.md:784`, a blank line when pinned — ROTTED non-blank as
+       the ledger grew past the pin (found by the 2026-08-27 slimming recon): the tool's
+       own drift class ate its own negative control. No expectation may line-pin a LIVE
+       file again.
+
+    2. DYNAMIC pins located against the live ledger at run time: an out-of-range
+       citation (line count + 1000 — out of range however the file grows, shrinks, or
+       is relocated) and the first blank line found at run time (fires BLANK LINE
+       wherever a blank happens to be today). Survive growth and relocation by
+       construction; nothing here encodes today's line numbers.
+    """
     fx = HERE / "fixtures" / "baton_20260821_ratification.md"
     if not fx.exists():
         print("BROKEN: fixture missing"); return 1
     report, blocking = check_text(fx.read_text(encoding="utf-8"), "SELF-TEST fixture")
     print(report)
     print()
-    must_fire = ["TECH_DEBT.md:784", "test_webhook_cancel.py"]
-    missed = [m for m in must_fire if m not in report]
+    if "test_webhook_cancel.py" not in report:
+        print("❌ SELF-TEST BROKEN — fixture's path-based known error did NOT fire: test_webhook_cancel.py")
+        return 1
+
+    td_lines = (ROOT / "TECH_DEBT.md").read_text(encoding="utf-8", errors="replace").split("\n")
+    oor = len(td_lines) + 1000
+    blank = next((i + 1 for i, ln in enumerate(td_lines) if not ln.strip()), None)
+    dyn = [f"dynamic control: TECH_DEBT.md:{oor} must fire WRONG (out of range)"]
+    if blank is not None:
+        dyn.append(f"dynamic control: TECH_DEBT.md:{blank} must fire DRIFT (blank line)")
+    dyn_report, dyn_blocking = check_text("\n".join(dyn), "SELF-TEST dynamic pins")
+    print(dyn_report)
+    print()
+    missed = []
+    if f"TECH_DEBT.md:{oor}" not in dyn_report or "out of range" not in dyn_report:
+        missed.append(f"TECH_DEBT.md:{oor} (expected: out of range)")
+    if blank is not None and "BLANK LINE" not in dyn_report:
+        missed.append(f"TECH_DEBT.md:{blank} (expected: blank line)")
     if missed:
-        print(f"❌ SELF-TEST BROKEN — these known errors did NOT fire: {missed}")
+        print(f"❌ SELF-TEST BROKEN — dynamic pins did NOT fire: {missed}")
         return 1
-    if blocking < 2:
-        print(f"❌ SELF-TEST BROKEN — expected ≥2 blocking findings, got {blocking}")
+    total = blocking + dyn_blocking
+    if total < 2:
+        print(f"❌ SELF-TEST BROKEN — expected ≥2 blocking findings across both layers, got {total}")
         return 1
-    print(f"✅ SELF-TEST PASS — {blocking} blocking findings; both known errors fired.")
+    print(f"✅ SELF-TEST PASS — {total} blocking findings; fixture path error + dynamic pins all fired.")
     return 0
 
 
