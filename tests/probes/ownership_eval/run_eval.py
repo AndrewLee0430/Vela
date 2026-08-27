@@ -311,7 +311,10 @@ async def main() -> int:
     #   · ACECLOFENAC — Contraindications is the corpus TOP-1 overall for the query,
     #     BELOW the floor (0.5787) — the doc the rewrite arm lifts into the pool 12/12;
     #   · the owned DURLAZA — Contraindications (34070-3) sits at ≈0.4031 / rank 500
-    #     (TECH_DEBT:935) — the shortfall the reserved-seat measurement needs.
+    #     (TECH_DEBT.md, the [OTHER] "adjudication method / corpus dual-key" entry's "On the
+    #     deterministic RAW arm" bullet — grep the heading, not a line number: the old :935 pin
+    #     rotted, and [DONE] bodies now live in docs/archive/tech_debt_done.md)
+    #     — the shortfall the reserved-seat measurement needs.
     # Diagnostic verified before this encoding: all three reproduced to 4 decimals.
     wd01 = next(r for r in smoke_records if r["qid"] == "SMK-WD01")
     top1 = wd01["corpus_top1"]

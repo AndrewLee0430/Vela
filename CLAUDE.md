@@ -27,6 +27,7 @@ Examples from 2026-04-19 to 2026-04-20 sessions:
 | Decision archive of ratified strategy input + candidate work — NOT an execution queue (STATE.md "Next Up" is the sole execution order); entries are discharged at car closeout by write-back from STATE *(re-labeled from "Open future tasks" — founder ruling A 2026-08-26, docs/batons/positioning_audit_20260823.md §3)* | BACKLOG.md |
 | Completed/shipped work log (chronological) | `git log` (recent window in STATE "Recently Shipped") |
 | Tech debt entries (active gaps) | TECH_DEBT.md |
+| Relocated ledger full text, VERBATIM (STATE shipped >30d · TECH_DEBT [DONE] bodies) — the ledgers' tombstones point here; never session-read (ledger slimming, founder ruling 2026-08-27) | docs/archive/ |
 | System architecture (request flow / pipelines / payments / DB / env / frontend / deploy) | docs/architecture.md |
 | Master spec | docs/PRD.md (v1.5) |
 | Decision records (ADRs) | docs/decisions/ |

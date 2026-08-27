@@ -46,6 +46,7 @@ If you need to know:
 - **What strategy decisions / candidate work are on record?** → ../BACKLOG.md — a decision archive, not an execution queue; entries are discharged at car closeout by write-back from STATE *(re-worded from "What's the open backlog?" — founder ruling A 2026-08-26, batons/positioning_audit_20260823.md §3)*
 - **What's the tech debt?** → ../TECH_DEBT.md
 - **What's already shipped?** → `git log` (recent window in ../STATE.md Recently Shipped)
+- **Where did an archived ledger entry go?** → archive/ (`state_shipped_2026.md` · `tech_debt_done.md`) — full text VERBATIM; the tombstones in ../STATE.md and ../TECH_DEBT.md point here (ledger slimming, founder ruling 2026-08-27)
 - **What's the actual codebase state?** → grep / ls / `git log` (no static snapshot file)
 
 For active rules + workflow, see [../CLAUDE.md](../CLAUDE.md).
