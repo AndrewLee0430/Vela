@@ -1,0 +1,69 @@
+{
+  "probe": "landing_hero_overflow",
+  "date": "2026-08-27T05:45:57.233Z",
+  "url": "https://vela.an-tho.com/",
+  "prod_revision": "ac5b2a2d9c503ddcfb635792be60d28c80be2329",
+  "method": "playwright@1.62.1 channel=chrome headless; mobile UA + hasTouch; overflow = scrollingElement.scrollWidth - clientWidth; rect enumeration ignores ancestor clipping (see header)",
+  "widths": [
+    {
+      "viewport_width": 360,
+      "innerWidth": 360,
+      "clientWidth": 360,
+      "scrollWidth": 360,
+      "hOverflow": 0,
+      "hero": {
+        "left": -131.6,
+        "right": 491.6,
+        "width": 623.2
+      },
+      "rects_beyond_right_edge": [
+        {
+          "selector": "div.hero-spotlight.absolute.-z-10",
+          "right": 491.6,
+          "width": 623.2
+        }
+      ],
+      "rects_beyond_right_edge_total": 1
+    },
+    {
+      "viewport_width": 375,
+      "innerWidth": 375,
+      "clientWidth": 375,
+      "scrollWidth": 375,
+      "hOverflow": 0,
+      "hero": {
+        "left": -138.3,
+        "right": 513.3,
+        "width": 651.7
+      },
+      "rects_beyond_right_edge": [
+        {
+          "selector": "div.hero-spotlight.absolute.-z-10",
+          "right": 513.3,
+          "width": 651.7
+        }
+      ],
+      "rects_beyond_right_edge_total": 1
+    },
+    {
+      "viewport_width": 390,
+      "innerWidth": 390,
+      "clientWidth": 390,
+      "scrollWidth": 390,
+      "hOverflow": 0,
+      "hero": {
+        "left": -145.1,
+        "right": 535.1,
+        "width": 680.2
+      },
+      "rects_beyond_right_edge": [
+        {
+          "selector": "div.hero-spotlight.absolute.-z-10",
+          "right": 535.1,
+          "width": 680.2
+        }
+      ],
+      "rects_beyond_right_edge_total": 1
+    }
+  ]
+}
