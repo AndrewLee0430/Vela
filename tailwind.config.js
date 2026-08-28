@@ -22,6 +22,9 @@ module.exports = {
           // 2026-08-28 landing build car (ruling C): the Verify showcase band —
           // warm-gray step below paper; value + derivation in globals.css.
           'paper-band': 'rgb(var(--color-paper-band) / <alpha-value>)',
+          // Iteration 2: the Explain band — one step whiter; value + derivation
+          // in globals.css.
+          'paper-band-2': 'rgb(var(--color-paper-band-2) / <alpha-value>)',
           'hairline': 'rgb(var(--color-hairline) / <alpha-value>)',
           // B4.3 — the landing panel block. Its own token, NOT `text`: the
           // panel used to borrow the body-text colour, which is why it was

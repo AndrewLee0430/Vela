@@ -101,6 +101,7 @@ body {
      logged-out landing is LIGHT-ONLY (D-B4-1) so this is completeness for the
      token system, not a rendered surface today. */
   --color-paper-band: 15 32 64;
+  --color-paper-band-2: 12 26 48;
   /* B4.3: the landing is light-only (D-B4-1), so this value never paints on
      the landing. It exists so `bg-panel` compiles in both themes and so any
      future non-landing use has a sane dark mapping — the deepest dark bg. */
@@ -162,6 +163,11 @@ body {
      family (hairline L87.6% / card-border L83.7%), so borders still read on
      it. STARTING VALUE for the founder's localhost eyeball, per ruling C. */
   --color-paper-band: 245 240 237;
+  /* Iteration 2 (2026-08-28) — the Explain band. Same in-hue derivation, ONE
+     STEP WHITER than paper-band and still distinct from the page paper:
+     #FAF5F2 = H22.5° S45% L96.5%, sitting between paper #FFF9F5 (L98.0%) and
+     paper-band #F5F0ED (L94.5%). STARTING VALUE, founder eyeballs. */
+  --color-paper-band-2: 250 245 242;
   /* B4.3 — the panel block. Was `bg-text` (23 23 23, L=9%), which put an
      89-POINT lightness cliff between the paper page and the panel; that gap,
      not the page colour, is what read as 格格不入. This is a deep warm

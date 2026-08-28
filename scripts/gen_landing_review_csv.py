@@ -10,7 +10,9 @@ exists at car end. This generator derives that set fresh from utils/i18n.ts:
                (the only two byte-identical to fly 232, which STATE's fly-233
                entry records as carrying no new review debt)
 
-At this car's HEAD that is 10 keys x 15 non-en locales = 150 rows. zh-TW IS a
+At the build-car close that was 10 keys x 15 = 150 rows; iteration 2 (the
+Explain band) grows it to 15 keys x 15 = 225 rows (+4 new explain* keys,
++tryExplain restored byte-identical from caaa4be). zh-TW IS a
 reviewer locale here (unlike the legal FINAL CSV, whose zh-TW was
 hand-authored): every non-en landing cell in this set is machine-baseline,
 written by the fly-227-convention MT pass of B4.1d or of this car.
@@ -44,10 +46,11 @@ OUT = os.path.join(REPO, "deliverables", "vela_landing_i18n_review_20260828.csv"
 # else in landingContent is in the dispatch set BY DERIVATION, not by list.
 NOT_ELIGIBLE = {"subtitle", "scrollHint"}
 
-# Page order (hero -> panel -> band), used within each locale block.
+# Page order (hero -> panel -> verify band -> explain band), per locale block.
 PAGE_ORDER = ["tagline", "panelHeadline", "panelSub", "panelDemoAlt",
               "tryResearch", "tryVerify", "tryVela", "verifyHeadline",
-              "verifySub", "verifyDemoAlt"]
+              "verifySub", "verifyDemoAlt", "tryExplain", "explainHeadline",
+              "explainSub", "explainDemoAlt1", "explainDemoAlt2"]
 
 SURFACES = {
     "tagline": "landing-hero",
@@ -56,6 +59,11 @@ SURFACES = {
     "tryVerify": "landing-verify-band", "tryVela": "landing-nav",
     "verifyHeadline": "landing-verify-band", "verifySub": "landing-verify-band",
     "verifyDemoAlt": "landing-verify-band",
+    "tryExplain": "landing-explain-band",
+    "explainHeadline": "landing-explain-band",
+    "explainSub": "landing-explain-band",
+    "explainDemoAlt1": "landing-explain-band",
+    "explainDemoAlt2": "landing-explain-band",
 }
 
 OFFICIAL_SCOPED_PROMPT = (
@@ -73,12 +81,19 @@ VERIFYHEADLINE_PROMPT = (
     '[Check: must read as "checked against the label" (method), never as a '
     'safety verdict ("safe to combine").]')
 TRYVELA_PROMPT = '[Check: "Vela" must stay in English in every locale.]'
+EXPLAINSUB_PROMPT = (
+    '[Required: confirm BOTH access claims survive translation as two distinct '
+    'facts - (1) a free account is required, (2) PDF/image upload comes with '
+    'Pro. They must not merge into "Explain requires Pro". Also confirm '
+    '"standard reference ranges" and "code-lookup sources" keep their meaning; '
+    'LOINC / RxNorm stay in English.]')
 
 NOTES = {
     "panelSub": OFFICIAL_SCOPED_PROMPT,
     "verifySub": VERIFYSUB_PROMPT,
     "verifyHeadline": VERIFYHEADLINE_PROMPT,
     "tryVela": TRYVELA_PROMPT,
+    "explainSub": EXPLAINSUB_PROMPT,
 }
 
 

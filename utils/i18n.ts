@@ -131,6 +131,14 @@ export interface LandingContent {
   verifyHeadline: string;
   verifySub: string;
   verifyDemoAlt: string;
+  // Iteration 2 (2026-08-28): Explain band. tryExplain RESTORED byte-identical
+  // from caaa4be (retired earlier this car); the 4 explain* keys are new —
+  // EN founder-ratified, 15 MT baseline each.
+  tryExplain: string;
+  explainHeadline: string;
+  explainSub: string;
+  explainDemoAlt1: string;
+  explainDemoAlt2: string;
 }
 
 const landingEn: LandingContent = {
@@ -146,6 +154,11 @@ const landingEn: LandingContent = {
   verifyHeadline: 'Interactions, checked against the label.',
   verifySub: 'Enter the drugs you want to check. Verify finds interactions documented in FDA drug labeling and shows the source for each finding — including when an assessment is Vela’s, not the label’s.',
   verifyDemoAlt: 'Screenshot of a Verify interaction check with severity and source attribution.',
+  tryExplain: 'Try Explain',
+  explainHeadline: 'Your report, explained item by item.',
+  explainSub: 'Paste lab values or report text. Explain walks through each item against standard reference ranges, with code-lookup sources like LOINC and RxNorm. A free account is required; PDF and image upload comes with Pro.',
+  explainDemoAlt1: 'Screenshot of the Explain input page with pasted lab values.',
+  explainDemoAlt2: 'Screenshot of an Explain result: per-item explanations with severity badges and verified code-lookup sources.',
 };
 
 const landingZhTW: LandingContent = {
@@ -161,6 +174,11 @@ const landingZhTW: LandingContent = {
   verifyHeadline: '交互作用，對照藥物標示查核。',
   verifySub: '輸入你想檢查的藥物。驗證功能會在 FDA 藥物標示中尋找有記載的交互作用，並為每項結果顯示來源——若某項評估出自 Vela 而非標示本身，也會如實標註。',
   verifyDemoAlt: '驗證交互作用查核畫面截圖，含嚴重程度與來源標註。',
+  tryExplain: '試用解讀',
+  explainHeadline: '你的報告，逐項解讀。',
+  explainSub: '貼上檢驗數值或報告文字。解讀功能會將每個項目對照標準參考區間逐一說明，並附上 LOINC、RxNorm 等代碼查詢來源。需要免費帳號；PDF 與圖片上傳為 Pro 功能。',
+  explainDemoAlt1: '解讀輸入頁面截圖，已貼上檢驗數值。',
+  explainDemoAlt2: '解讀結果截圖：逐項說明，含嚴重程度標記與經驗證的代碼查詢來源。',
 };
 
 const landingZhCN: LandingContent = {
@@ -176,6 +194,11 @@ const landingZhCN: LandingContent = {
   verifyHeadline: '相互作用，对照药物标签核查。',
   verifySub: '输入你想检查的药物。验证功能会在 FDA 药物标签中寻找有记载的相互作用，并为每项结果显示来源——若某项评估出自 Vela 而非标签本身，也会如实标注。',
   verifyDemoAlt: '验证相互作用核查界面截图，含严重程度与来源标注。',
+  tryExplain: '试用解读',
+  explainHeadline: '你的报告，逐项解读。',
+  explainSub: '粘贴检验数值或报告文字。解读功能会将每个项目对照标准参考区间逐一说明，并附上 LOINC、RxNorm 等代码查询来源。需要免费账号；PDF 与图片上传为 Pro 功能。',
+  explainDemoAlt1: '解读输入页面截图，已粘贴检验数值。',
+  explainDemoAlt2: '解读结果截图：逐项说明，含严重程度标记与经验证的代码查询来源。',
 };
 
 const landingJa: LandingContent = {
@@ -191,6 +214,11 @@ const landingJa: LandingContent = {
   verifyHeadline: '相互作用を、ラベルと照合。',
   verifySub: '確認したい薬を入力してください。検証は FDA 医薬品ラベルに記載された相互作用を探し、各結果の出典を表示します。評価がラベルの記載ではなく Vela によるものである場合も、その旨を明示します。',
   verifyDemoAlt: '重症度と出典表示付きの検証による相互作用チェックのスクリーンショット。',
+  tryExplain: '解説を試す',
+  explainHeadline: 'あなたのレポートを、項目ごとに解説。',
+  explainSub: '検査値やレポートの文字を貼り付けてください。解説は各項目を標準基準範囲と照らして順に説明し、LOINC や RxNorm などのコード照会ソースを添えます。無料アカウントが必要です。PDF・画像アップロードは Pro 機能です。',
+  explainDemoAlt1: '検査値を貼り付けた解説の入力画面のスクリーンショット。',
+  explainDemoAlt2: '解説の結果画面のスクリーンショット：重症度バッジと検証済みコード照会ソース付きの項目別説明。',
 };
 
 const landingKo: LandingContent = {
@@ -206,6 +234,11 @@ const landingKo: LandingContent = {
   verifyHeadline: '상호작용을 라벨과 대조해 확인합니다.',
   verifySub: '확인할 약물을 입력하세요. 검증은 FDA 의약품 라벨에 기재된 상호작용을 찾아 각 결과의 출처를 보여줍니다. 평가가 라벨 기재가 아니라 Vela의 판단인 경우에도 이를 명시합니다.',
   verifyDemoAlt: '중증도와 출처 표시가 포함된 검증 상호작용 확인 화면의 스크린샷.',
+  tryExplain: '해설 사용해 보기',
+  explainHeadline: '당신의 리포트를 항목별로 해설합니다.',
+  explainSub: '검사 수치나 리포트 텍스트를 붙여넣으세요. 해설은 각 항목을 표준 참고 범위와 대조해 하나씩 설명하고, LOINC·RxNorm 같은 코드 조회 출처를 함께 제시합니다. 무료 계정이 필요하며, PDF·이미지 업로드는 Pro 기능입니다.',
+  explainDemoAlt1: '검사 수치를 붙여넣은 해설 입력 화면의 스크린샷.',
+  explainDemoAlt2: '해설 결과 화면의 스크린샷: 중증도 배지와 검증된 코드 조회 출처가 포함된 항목별 설명.',
 };
 
 const landingEs: LandingContent = {
@@ -221,6 +254,11 @@ const landingEs: LandingContent = {
   verifyHeadline: 'Interacciones, cotejadas con el etiquetado.',
   verifySub: 'Introduzca los fármacos que quiere comprobar. Verificar encuentra interacciones documentadas en el etiquetado de la FDA y muestra la fuente de cada hallazgo, incluso cuando una valoración es de Vela y no del etiquetado.',
   verifyDemoAlt: 'Captura de pantalla de una comprobación de interacciones de Verificar con gravedad y atribución de fuentes.',
+  tryExplain: 'Probar Explicar',
+  explainHeadline: 'Su informe, explicado punto por punto.',
+  explainSub: 'Pegue valores de laboratorio o el texto del informe. Explicar repasa cada punto frente a rangos de referencia estándar, con fuentes de consulta de códigos como LOINC y RxNorm. Se requiere una cuenta gratuita; la carga de PDF e imágenes viene con Pro.',
+  explainDemoAlt1: 'Captura de pantalla de la página de entrada de Explicar con valores de laboratorio pegados.',
+  explainDemoAlt2: 'Captura de pantalla de un resultado de Explicar: explicaciones punto por punto con distintivos de gravedad y fuentes de consulta de códigos verificadas.',
 };
 
 const landingFr: LandingContent = {
@@ -236,6 +274,11 @@ const landingFr: LandingContent = {
   verifyHeadline: 'Les interactions, confrontées à l’étiquetage.',
   verifySub: 'Saisissez les médicaments à vérifier. Vérifier trouve les interactions documentées dans l’étiquetage FDA et montre la source de chaque résultat — y compris lorsqu’une évaluation vient de Vela et non de l’étiquetage.',
   verifyDemoAlt: 'Capture d’écran d’une vérification d’interactions de Vérifier avec gravité et attribution des sources.',
+  tryExplain: 'Essayer Expliquer',
+  explainHeadline: 'Votre compte rendu, expliqué point par point.',
+  explainSub: 'Collez vos valeurs de laboratoire ou le texte du compte rendu. Expliquer passe chaque point en revue par rapport aux intervalles de référence standards, avec des sources de consultation de codes comme LOINC et RxNorm. Un compte gratuit est requis ; l’envoi de PDF et d’images est réservé à Pro.',
+  explainDemoAlt1: 'Capture d’écran de la page de saisie d’Expliquer avec des valeurs de laboratoire collées.',
+  explainDemoAlt2: 'Capture d’écran d’un résultat d’Expliquer : explications point par point avec badges de gravité et sources de consultation de codes vérifiées.',
 };
 
 const landingDe: LandingContent = {
@@ -251,6 +294,11 @@ const landingDe: LandingContent = {
   verifyHeadline: 'Wechselwirkungen, geprüft an der Kennzeichnung.',
   verifySub: 'Geben Sie die zu prüfenden Arzneimittel ein. Prüfen findet dokumentierte Wechselwirkungen in der FDA-Arzneimittelkennzeichnung und zeigt die Quelle für jeden Befund — auch dann, wenn eine Einschätzung von Vela stammt und nicht aus der Kennzeichnung.',
   verifyDemoAlt: 'Screenshot einer Wechselwirkungsprüfung von Prüfen mit Schweregrad und Quellenangabe.',
+  tryExplain: 'Erklären testen',
+  explainHeadline: 'Ihr Befund, Punkt für Punkt erklärt.',
+  explainSub: 'Fügen Sie Laborwerte oder Befundtext ein. Erklären geht jeden Punkt anhand von Standard-Referenzbereichen durch, mit Code-Nachschlagequellen wie LOINC und RxNorm. Ein kostenloses Konto ist erforderlich; PDF- und Bild-Upload gibt es mit Pro.',
+  explainDemoAlt1: 'Screenshot der Eingabeseite von Erklären mit eingefügten Laborwerten.',
+  explainDemoAlt2: 'Screenshot eines Erklären-Ergebnisses: Punkt-für-Punkt-Erklärungen mit Schweregrad-Badges und verifizierten Code-Nachschlagequellen.',
 };
 
 const landingIt: LandingContent = {
@@ -266,6 +314,11 @@ const landingIt: LandingContent = {
   verifyHeadline: 'Interazioni, riscontrate sull’etichettatura.',
   verifySub: 'Inserisci i farmaci da controllare. Verifica trova le interazioni documentate nell’etichettatura FDA e mostra la fonte di ogni risultato — anche quando una valutazione è di Vela e non dell’etichettatura.',
   verifyDemoAlt: 'Screenshot di un controllo interazioni di Verifica con gravità e attribuzione delle fonti.',
+  tryExplain: 'Prova Spiega',
+  explainHeadline: 'Il tuo referto, spiegato voce per voce.',
+  explainSub: 'Incolla i valori di laboratorio o il testo del referto. Spiega ripercorre ogni voce rispetto a intervalli di riferimento standard, con fonti di consultazione dei codici come LOINC e RxNorm. È richiesto un account gratuito; il caricamento di PDF e immagini arriva con Pro.',
+  explainDemoAlt1: 'Screenshot della pagina di inserimento di Spiega con valori di laboratorio incollati.',
+  explainDemoAlt2: 'Screenshot di un risultato di Spiega: spiegazioni voce per voce con badge di gravità e fonti di consultazione dei codici verificate.',
 };
 
 const landingPt: LandingContent = {
@@ -281,6 +334,11 @@ const landingPt: LandingContent = {
   verifyHeadline: 'Interações, conferidas na rotulagem.',
   verifySub: 'Insira os medicamentos que deseja verificar. Verificar encontra interações documentadas na rotulagem da FDA e mostra a fonte de cada achado — inclusive quando uma avaliação é do Vela, e não da rotulagem.',
   verifyDemoAlt: 'Captura de tela de uma checagem de interações do Verificar com gravidade e atribuição de fontes.',
+  tryExplain: 'Experimentar Explicar',
+  explainHeadline: 'Seu laudo, explicado item por item.',
+  explainSub: 'Cole valores de exames ou o texto do laudo. Explicar percorre cada item em relação a intervalos de referência padrão, com fontes de consulta de códigos como LOINC e RxNorm. É necessária uma conta gratuita; o envio de PDF e imagens vem com o Pro.',
+  explainDemoAlt1: 'Captura de tela da página de entrada do Explicar com valores de exames colados.',
+  explainDemoAlt2: 'Captura de tela de um resultado do Explicar: explicações item por item com selos de gravidade e fontes de consulta de códigos verificadas.',
 };
 
 const landingTh: LandingContent = {
@@ -296,6 +354,11 @@ const landingTh: LandingContent = {
   verifyHeadline: 'ปฏิกิริยาระหว่างยา ตรวจเทียบกับฉลากยา',
   verifySub: 'ป้อนยาที่ต้องการตรวจสอบ ตรวจสอบจะค้นหาปฏิกิริยาที่มีบันทึกไว้ในฉลากยา FDA และแสดงแหล่งที่มาของแต่ละรายการ รวมถึงระบุให้ชัดเมื่อการประเมินมาจาก Vela ไม่ใช่จากฉลากยา',
   verifyDemoAlt: 'ภาพหน้าจอการตรวจปฏิกิริยาระหว่างยาของตรวจสอบ พร้อมระดับความรุนแรงและการระบุแหล่งที่มา',
+  tryExplain: 'ลองใช้อธิบาย',
+  explainHeadline: 'รายงานของคุณ อธิบายทีละรายการ',
+  explainSub: 'วางค่าผลแล็บหรือข้อความรายงาน อธิบายจะไล่อธิบายแต่ละรายการเทียบกับช่วงอ้างอิงมาตรฐาน พร้อมแหล่งค้นหารหัสอย่าง LOINC และ RxNorm ต้องมีบัญชีฟรี ส่วนการอัปโหลด PDF และรูปภาพมาพร้อม Pro',
+  explainDemoAlt1: 'ภาพหน้าจอหน้ากรอกข้อมูลของอธิบาย พร้อมค่าผลแล็บที่วางไว้',
+  explainDemoAlt2: 'ภาพหน้าจอผลลัพธ์ของอธิบาย: คำอธิบายทีละรายการ พร้อมป้ายระดับความรุนแรงและแหล่งค้นหารหัสที่ผ่านการตรวจสอบ',
 };
 
 const landingAr: LandingContent = {
@@ -311,6 +374,11 @@ const landingAr: LandingContent = {
   verifyHeadline: 'التفاعلات الدوائية، مُطابَقة مع الوسم.',
   verifySub: 'أدخل الأدوية التي تريد فحصها. يعثر «التحقق» على التفاعلات الموثقة في وسم أدوية FDA ويعرض مصدر كل نتيجة — بما في ذلك حين يكون التقييم من Vela لا من الوسم نفسه.',
   verifyDemoAlt: 'لقطة شاشة لفحص تفاعلات في «التحقق» مع درجة الخطورة وإسناد المصادر.',
+  tryExplain: 'جرّب الشرح',
+  explainHeadline: 'تقريرك، مشروحًا بندًا ببند.',
+  explainSub: 'الصق قيم المختبر أو نص التقرير. يستعرض «الشرح» كل بند مقارنةً بالنطاقات المرجعية القياسية، مع مصادر بحث بالرموز مثل LOINC و RxNorm. يلزم حساب مجاني؛ ورفع PDF والصور يأتي مع Pro.',
+  explainDemoAlt1: 'لقطة شاشة لصفحة الإدخال في «الشرح» مع قيم مختبر ملصقة.',
+  explainDemoAlt2: 'لقطة شاشة لنتيجة «الشرح»: شروح بندًا ببند مع شارات الخطورة ومصادر بحث بالرموز موثّقة.',
 };
 
 const landingHi: LandingContent = {
@@ -326,6 +394,11 @@ const landingHi: LandingContent = {
   verifyHeadline: 'इंटरैक्शन, लेबल से मिलाकर जाँचे गए।',
   verifySub: 'जिन दवाओं की जाँच करनी है उन्हें दर्ज करें। सत्यापन FDA दवा लेबलिंग में दर्ज इंटरैक्शन खोजता है और हर नतीजे का स्रोत दिखाता है — यह भी स्पष्ट करते हुए कि कोई आकलन लेबल का नहीं बल्कि Vela का है।',
   verifyDemoAlt: 'गंभीरता और स्रोत-निर्देश सहित सत्यापन इंटरैक्शन जाँच का स्क्रीनशॉट।',
+  tryExplain: 'व्याख्या आज़माएँ',
+  explainHeadline: 'आपकी रिपोर्ट, मद-दर-मद समझाई गई।',
+  explainSub: 'लैब मान या रिपोर्ट का पाठ चिपकाएँ। व्याख्या हर मद को मानक संदर्भ रेंज के मुकाबले समझाती है, LOINC और RxNorm जैसे कोड-लुकअप स्रोतों के साथ। मुफ़्त खाता आवश्यक है; PDF और छवि अपलोड Pro के साथ आता है।',
+  explainDemoAlt1: 'चिपकाए गए लैब मानों के साथ व्याख्या के इनपुट पृष्ठ का स्क्रीनशॉट।',
+  explainDemoAlt2: 'व्याख्या के परिणाम का स्क्रीनशॉट: गंभीरता बैज और सत्यापित कोड-लुकअप स्रोतों सहित मद-दर-मद स्पष्टीकरण।',
 };
 
 const landingBn: LandingContent = {
@@ -341,6 +414,11 @@ const landingBn: LandingContent = {
   verifyHeadline: 'ইন্টারঅ্যাকশন, লেবেলের সাথে মিলিয়ে যাচাই।',
   verifySub: 'যে ওষুধগুলি যাচাই করতে চান তা লিখুন। যাচাই FDA ওষুধের লেবেলে নথিভুক্ত ইন্টারঅ্যাকশন খোঁজে এবং প্রতিটি ফলাফলের উৎস দেখায় — কোনো মূল্যায়ন লেবেলের নয় বরং Vela-র হলে সেটিও স্পষ্ট করে।',
   verifyDemoAlt: 'তীব্রতা ও উৎস-নির্দেশসহ যাচাই ইন্টারঅ্যাকশন পরীক্ষার স্ক্রিনশট।',
+  tryExplain: 'ব্যাখ্যা ব্যবহার করে দেখুন',
+  explainHeadline: 'আপনার রিপোর্ট, আইটেম ধরে ধরে ব্যাখ্যা।',
+  explainSub: 'ল্যাব মান বা রিপোর্টের লেখা পেস্ট করুন। ব্যাখ্যা প্রতিটি আইটেম স্ট্যান্ডার্ড রেফারেন্স রেঞ্জের সাথে তুলনা করে বুঝিয়ে দেয়, LOINC ও RxNorm-এর মতো কোড-লুকআপ সূত্রসহ। একটি বিনামূল্যের অ্যাকাউন্ট প্রয়োজন; PDF ও ছবি আপলোড Pro-এর সাথে আসে।',
+  explainDemoAlt1: 'পেস্ট করা ল্যাব মানসহ ব্যাখ্যার ইনপুট পৃষ্ঠার স্ক্রিনশট।',
+  explainDemoAlt2: 'ব্যাখ্যার ফলাফলের স্ক্রিনশট: তীব্রতা ব্যাজ ও যাচাইকৃত কোড-লুকআপ সূত্রসহ আইটেম-ধরে ব্যাখ্যা।',
 };
 
 const landingHe: LandingContent = {
@@ -356,6 +434,11 @@ const landingHe: LandingContent = {
   verifyHeadline: 'אינטראקציות, נבדקות מול התיווי.',
   verifySub: 'הזינו את התרופות שברצונכם לבדוק. אימות מוצא אינטראקציות מתועדות בתיווי התרופות של FDA ומציג את המקור לכל ממצא — כולל כאשר הערכה היא של Vela ולא של התיווי עצמו.',
   verifyDemoAlt: 'צילום מסך של בדיקת אינטראקציות באימות עם חומרה וייחוס מקורות.',
+  tryExplain: 'נסו את הסבר',
+  explainHeadline: 'הדוח שלכם, מוסבר סעיף אחר סעיף.',
+  explainSub: 'הדביקו ערכי מעבדה או את טקסט הדוח. הסבר עובר על כל סעיף מול טווחי ייחוס סטנדרטיים, עם מקורות איתור קודים כמו LOINC ו-RxNorm. נדרש חשבון חינמי; העלאת PDF ותמונות מגיעה עם Pro.',
+  explainDemoAlt1: 'צילום מסך של עמוד הקלט של הסבר עם ערכי מעבדה מודבקים.',
+  explainDemoAlt2: 'צילום מסך של תוצאת הסבר: הסברים סעיף אחר סעיף עם תגי חומרה ומקורות איתור קודים מאומתים.',
 };
 
 const landingVi: LandingContent = {
@@ -371,6 +454,11 @@ const landingVi: LandingContent = {
   verifyHeadline: 'Tương tác thuốc, đối chiếu với nhãn thuốc.',
   verifySub: 'Nhập các thuốc bạn muốn kiểm tra. Xác minh tìm các tương tác đã được ghi nhận trong nhãn thuốc FDA và cho bạn xem nguồn của từng kết quả — kể cả khi một đánh giá là của Vela chứ không phải từ nhãn thuốc.',
   verifyDemoAlt: 'Ảnh chụp màn hình một lần kiểm tra tương tác của Xác minh, kèm mức độ nghiêm trọng và ghi nguồn.',
+  tryExplain: 'Dùng thử Giải thích',
+  explainHeadline: 'Báo cáo của bạn, được giải thích theo từng mục.',
+  explainSub: 'Dán chỉ số xét nghiệm hoặc nội dung báo cáo. Giải thích sẽ lần lượt giải thích từng mục so với khoảng tham chiếu chuẩn, kèm các nguồn tra cứu mã như LOINC và RxNorm. Cần tài khoản miễn phí; tải lên PDF và hình ảnh có trong gói Pro.',
+  explainDemoAlt1: 'Ảnh chụp màn hình trang nhập liệu của Giải thích với chỉ số xét nghiệm đã dán.',
+  explainDemoAlt2: 'Ảnh chụp màn hình một kết quả của Giải thích: giải thích theo từng mục kèm nhãn mức độ nghiêm trọng và nguồn tra cứu mã đã xác minh.',
 };
 
 export const landingContent: Record<LangCode, LandingContent> = {

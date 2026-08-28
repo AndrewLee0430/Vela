@@ -538,6 +538,47 @@ export default function LandingSections({ lc, t }: Props) {
           />
         </div>
       </section>
+
+      {/* §3 — EXPLAIN SHOWCASE (iteration 2, 2026-08-28). Same container
+          geometry as the Verify band; background = paper-band-2 (one step
+          whiter, derivation in globals.css — founder eyeballs). Composition is
+          a founder-chosen STAGGER, not 50/50: the INPUT capture (~56% wide,
+          inline-start, on top of the flow) and the RESULT capture (~78% wide,
+          inline-end, pulled up to overlap and LAYERED ABOVE via z-10) — the
+          read is "paste this → get this". Logical margins (me-/ms-auto) so ar
+          RTL mirrors the stagger. Below md: vertical stack, input above
+          result, both full width, no overlap (the negative margin is md:-only).
+          Each image keeps its OWN encode-derived dims (1294x954 / 1173x1204,
+          re-derived this iteration — never carried, never a shared box). */}
+      <section className="px-4 md:px-10 pb-16 md:pb-20">
+        <div className="w-full max-w-[min(80rem,94vw)] mx-auto rounded-3xl bg-paper-band-2 px-6 py-10 md:py-14 flex flex-col items-center text-center gap-5">
+          <h2 className="font-serif font-bold text-3xl sm:text-4xl leading-tight max-w-3xl text-text">
+            {lc.explainHeadline}
+          </h2>
+          <p className="text-base md:text-lg max-w-2xl" style={{ color: 'rgb(var(--color-text) / 0.7)' }}>
+            {lc.explainSub}
+          </p>
+          <Pill href="/explain" label={lc.tryExplain} />
+          <div className="w-full max-w-4xl">
+            <Image
+              src="/media/Explain_Landing_Demo_1.webp"
+              alt={lc.explainDemoAlt1}
+              width={1294}
+              height={954}
+              loading="lazy"
+              className="block rounded-xl border border-card-border w-full h-auto md:w-[56%] md:me-auto"
+            />
+            <Image
+              src="/media/Explain_Landing_Demo_2.webp"
+              alt={lc.explainDemoAlt2}
+              width={1173}
+              height={1204}
+              loading="lazy"
+              className="relative z-10 block rounded-xl border border-card-border shadow-card w-full h-auto md:w-[78%] md:ms-auto mt-4 md:-mt-[10%]"
+            />
+          </div>
+        </div>
+      </section>
     </>
   );
 }
