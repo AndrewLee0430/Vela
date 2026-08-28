@@ -382,6 +382,19 @@ function usePanelVideo(videoRef: React.RefObject<HTMLVideoElement | null>) {
   }, [videoRef]);
 }
 
+// ── 2f (redesign ruling E, 2026-08-28): the demo poster is DELETED (the jpg
+// removal ships this car) and the poster attribute is gone from the <video>.
+// TWO pre-play treatments behind this ONE-LINE toggle for the localhost
+// review — the founder picks one at review, then the pick ships and the
+// toggle + losing branch are deleted:
+//   'none'     — preload="none": zero media bytes until a real play; the
+//                pre-play frame is a BLANK bordered box (visible <md and
+//                under reduced-motion, where autoplay never runs).
+//   'metadata' — preload="metadata": browsers paint the first frame, BUT the
+//                server ships no byte-range support ([OTHER][P2] TECH_DEBT),
+//                so a browser may fetch the ENTIRE 2.3 MB to get that frame.
+const VIDEO_PRELOAD: 'none' | 'metadata' = 'metadata';
+
 interface Props {
   lc: LandingContent;
   t: Translations;
@@ -471,13 +484,12 @@ export default function LandingSections({ lc, t }: Props) {
             <video
               ref={demoVideoRef}
               src="/media/research-demo.mp4"
-              poster="/media/research-demo-poster.jpg"
               width={1440}
               height={828}
               muted
               loop
               playsInline
-              preload="none"
+              preload={VIDEO_PRELOAD}
               aria-label={lc.panelDemoAlt}
               style={{ aspectRatio: '1440 / 828' }}
               className="rounded-xl border border-paper/15 object-contain w-full h-auto md:w-auto md:h-full md:max-w-full"
