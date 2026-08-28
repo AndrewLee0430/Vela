@@ -424,7 +424,10 @@ _PARSE_EXPECTATIONS = {
     "utils/i18n-share.ts": (16, ("publicDisclaimer", "publicShortDisclaimer")),
     "api/i18n/explore_strings.py": (16, ("publicDisclaimer", "publicShortDisclaimer")),
     "api/services/share_renderer.py": (2, ("publicDisclaimer", "publicShortDisclaimer")),
-    "utils/i18n.ts": (16, ("landingContent.panelSub", "landingContent.cardDescResearch")),
+    # canary swapped cardDescResearch -> tagline 2026-08-28: the landing build car
+    # retires the features-card section and deletes cardDesc* from all 16 locales;
+    # tagline is a surviving landingContent key (>20 chars in en and zh-TW).
+    "utils/i18n.ts": (16, ("landingContent.panelSub", "landingContent.tagline")),
 }
 
 
