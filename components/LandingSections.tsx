@@ -542,25 +542,26 @@ export default function LandingSections({ lc, t }: Props) {
       {/* §3 — EXPLAIN SHOWCASE (iteration 2, 2026-08-28). Same container
           geometry as the Verify band; background = paper-band-2 (one step
           whiter, derivation in globals.css — founder eyeballs). Composition is
-          a founder-chosen STAGGER, not 50/50: the INPUT capture (~56% wide,
-          inline-start, on top of the flow) and the RESULT capture (~70% wide,
-          inline-end, pulled up to overlap and LAYERED ABOVE via z-10) — the
-          read is "paste this → get this". Logical margins (me-/ms-auto) so ar
-          RTL mirrors the stagger. Below md: vertical stack, input above
-          result, both full width, no overlap (the negative margin is md:-only).
-          Iteration 3 — the overlap target is HALF of the input capture's
-          rendered height (its top lands on the input's vertical midpoint; it
-          was at ~3/4). A percentage margin resolves against the containing
-          block's WIDTH, not height, so the value is derived, not eyeballed:
-          the container is 896px and the input renders 370px tall, so half is
-          185px = 20.7% ≈ `-mt-[21%]`. Because BOTH terms scale with the
-          container width, that ratio holds at every viewport — no per-width
-          tuning. The result capture also drops 78%→70%, which cuts its
-          rendered height and lifts its effective pixel ratio (see the
-          sharpness note in the iteration-3 commit: still under 2x — that is a
-          re-capture question, not a CSS one).
-          Each image keeps its OWN encode-derived dims (1294x954 / 1173x1204,
-          re-derived this iteration — never carried, never a shared box). */}
+          a founder-chosen SIDE-BY-SIDE row (iteration 4, replacing iterations
+          2–3's overlapping stagger): INPUT capture inline-start, RESULT
+          capture inline-end, TOPS ALIGNED, no overlap, no layering. The result
+          is the taller image and simply extends further down — nothing is
+          cropped, stretched, or forced to equal height, and each keeps its own
+          encode-derived width/height attributes (1294x954 / 1173x1204).
+          GRID, not flex, and `fr` columns rather than percentage widths: with
+          a gap, `w-[48%] + w-[52%]` sums past 100% and the two would silently
+          shrink by unequal amounts, so the stated split would not be the
+          rendered one. `grid-cols-[48fr_52fr]` subtracts the gap first and
+          splits what remains exactly 48:52 — the number in the class is the
+          number on screen.
+          RTL is structural here: grid column placement follows the writing
+          direction, so the input starts from the right in ar with no ms-/me-
+          overrides (verified by measurement, not assumed).
+          Below md the row collapses to `grid-cols-1` — vertical stack, input
+          above result, full width, no overlap, unchanged from iteration 2.
+          Both images carry the Verify band's image treatment (rounded-xl +
+          card-border, NO shadow); the stagger's z-10 and shadow-card are gone
+          with the composition that needed them. */}
       <section className="px-4 md:px-10 pb-16 md:pb-20">
         <div className="w-full max-w-[min(80rem,94vw)] mx-auto rounded-3xl bg-paper-band-2 px-6 py-10 md:py-14 flex flex-col items-center text-center gap-5">
           <h2 className="font-serif font-bold text-3xl sm:text-4xl leading-tight max-w-3xl text-text">
@@ -570,14 +571,14 @@ export default function LandingSections({ lc, t }: Props) {
             {lc.explainSub}
           </p>
           <Pill href="/explain" label={lc.tryExplain} />
-          <div className="w-full max-w-4xl">
+          <div className="w-full max-w-4xl grid grid-cols-1 gap-4 md:grid-cols-[48fr_52fr] md:gap-6 md:items-start">
             <Image
               src="/media/Explain_Landing_Demo_1.webp"
               alt={lc.explainDemoAlt1}
               width={1294}
               height={954}
               loading="lazy"
-              className="block rounded-xl border border-card-border w-full h-auto md:w-[56%] md:me-auto"
+              className="block rounded-xl border border-card-border w-full h-auto"
             />
             <Image
               src="/media/Explain_Landing_Demo_2.webp"
@@ -585,7 +586,7 @@ export default function LandingSections({ lc, t }: Props) {
               width={1173}
               height={1204}
               loading="lazy"
-              className="relative z-10 block rounded-xl border border-card-border shadow-card w-full h-auto md:w-[70%] md:ms-auto mt-4 md:-mt-[21%]"
+              className="block rounded-xl border border-card-border w-full h-auto"
             />
           </div>
         </div>
