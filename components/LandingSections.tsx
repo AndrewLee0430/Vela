@@ -393,7 +393,7 @@ export default function LandingSections({ lc, t }: Props) {
   const demoVideoRef = useRef<HTMLVideoElement | null>(null);
   useFadeIn(cardsRef);
   usePanelVideo(demoVideoRef);
-  usePanelScroll(panelSectionRef, panelRef, `${lc.panelHeadline} ${lc.panelSub}`);
+  usePanelScroll(panelSectionRef, panelRef, `${lc.panelHeadline} ${lc.panelSub}`);
 
   return (
     <>
