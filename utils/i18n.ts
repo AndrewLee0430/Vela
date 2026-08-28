@@ -132,14 +132,20 @@ export interface LandingContent {
   cardDescVerify: string;
   cardDescExplain: string;
   featuresHeading: string;
+  // Landing build car 2026-08-28 (Rulings A-H + baton #4/#5/#6/#8): Verify
+  // showcase band + Try Vela nav CTA. EN founder-ratified; 15 MT baseline each.
+  tryVela: string;
+  verifyHeadline: string;
+  verifySub: string;
+  verifyDemoAlt: string;
 }
 
 const landingEn: LandingContent = {
-  tagline: 'Ask in your language. Verified by official sources. Answered in yours.',
+  tagline: 'Ask in any language. Answered in yours — with sources you can check.',
   subtitle: 'The AI medical search for healthcare professionals who work beyond English.',
   scrollHint: 'Scroll to learn more',
-  panelHeadline: 'Ask in your language. Decisions grounded in evidence.',
-  panelSub: 'Access authoritative medical evidence in the language you know best, backed by sources you can verify.',
+  panelHeadline: 'Ask in your language. Answers grounded in evidence.',
+  panelSub: 'Your question doesn’t have to be in English. Vela searches peer-reviewed literature and official drug labels, answers in the language you asked in, with sources you can verify — and flags where local guidance may differ.',
   panelDemoAlt: 'Screenshot of a Research answer with citations.',
   tryResearch: 'Try Research',
   tryVerify: 'Try Verify',
@@ -148,14 +154,18 @@ const landingEn: LandingContent = {
   cardDescVerify: 'Enter the drugs you want to check. Verify looks for documented interactions in FDA drug labeling and shows you the source for each finding.',
   cardDescExplain: 'Paste lab values and Explain walks through them against standard reference ranges, with sources. A free account is required; PDF and image upload comes with Pro.',
   featuresHeading: 'What Vela does',
+  tryVela: 'Try Vela',
+  verifyHeadline: 'Interactions, checked against the label.',
+  verifySub: 'Enter the drugs you want to check. Verify finds interactions documented in FDA drug labeling and shows the source for each finding — including when an assessment is Vela’s, not the label’s.',
+  verifyDemoAlt: 'Screenshot of a Verify interaction check with severity and source attribution.',
 };
 
 const landingZhTW: LandingContent = {
-  tagline: '用你的語言提問。以官方來源驗證。用你的語言回答。',
+  tagline: '用任何語言提問。以你的語言回答——附上可查證的來源。',
   subtitle: '為跨語言工作的醫療專業人員打造的 AI 醫學搜尋。',
   scrollHint: '向下捲動了解更多',
-  panelHeadline: '用你的語言提問。讓決策以實證為本。',
-  panelSub: '以你最熟悉的語言取得權威醫學實證，並以你可以查證的來源為依據。',
+  panelHeadline: '用你的語言提問。答案以實證為本。',
+  panelSub: '你的問題不必是英文。Vela 會搜尋同儕審查文獻與官方藥物標示，以你提問的語言回答，並附上可查證的來源——也會提示在地規範可能不同之處。',
   panelDemoAlt: '研究回答與引用來源的畫面截圖。',
   tryResearch: '試用研究',
   tryVerify: '試用驗證',
@@ -164,14 +174,18 @@ const landingZhTW: LandingContent = {
   cardDescVerify: '輸入你想檢查的藥物。驗證功能會在 FDA 藥物標示中尋找有記載的交互作用，並為每項結果顯示來源。',
   cardDescExplain: '貼上檢驗數值，解讀功能會對照標準參考區間逐項說明，並附來源。需要免費帳號；PDF 與圖片上傳為 Pro 功能。',
   featuresHeading: 'Vela 能做什麼',
+  tryVela: '試用 Vela',
+  verifyHeadline: '交互作用，對照藥物標示查核。',
+  verifySub: '輸入你想檢查的藥物。驗證功能會在 FDA 藥物標示中尋找有記載的交互作用，並為每項結果顯示來源——若某項評估出自 Vela 而非標示本身，也會如實標註。',
+  verifyDemoAlt: '驗證交互作用查核畫面截圖，含嚴重程度與來源標註。',
 };
 
 const landingZhCN: LandingContent = {
-  tagline: '用你的语言提问。由官方来源验证。以你的语言回答。',
+  tagline: '用任何语言提问。以你的语言回答——附上可查证的来源。',
   subtitle: '为跨语言工作的医疗专业人员打造的 AI 医学搜索。',
   scrollHint: '向下滚动了解更多',
-  panelHeadline: '用你的语言提问。让决策以循证为本。',
-  panelSub: '以你最熟悉的语言获取权威医学证据，并以你可以查证的来源为依据。',
+  panelHeadline: '用你的语言提问。答案以循证为本。',
+  panelSub: '你的问题不必是英文。Vela 会搜索同行评审文献与官方药物标签，以你提问的语言回答，并附上可查证的来源——也会提示当地规范可能不同之处。',
   panelDemoAlt: '研究回答与引用来源的屏幕截图。',
   tryResearch: '试用研究',
   tryVerify: '试用验证',
@@ -180,14 +194,18 @@ const landingZhCN: LandingContent = {
   cardDescVerify: '输入你想检查的药物。验证功能会在 FDA 药物标签中寻找有记载的相互作用，并为每项结果显示来源。',
   cardDescExplain: '粘贴检验数值，解读功能会对照标准参考区间逐项说明，并附来源。需要免费账号；PDF 与图片上传为 Pro 功能。',
   featuresHeading: 'Vela 能做什么',
+  tryVela: '试用 Vela',
+  verifyHeadline: '相互作用，对照药物标签核查。',
+  verifySub: '输入你想检查的药物。验证功能会在 FDA 药物标签中寻找有记载的相互作用，并为每项结果显示来源——若某项评估出自 Vela 而非标签本身，也会如实标注。',
+  verifyDemoAlt: '验证相互作用核查界面截图，含严重程度与来源标注。',
 };
 
 const landingJa: LandingContent = {
-  tagline: 'あなたの言語で質問。公式ソースで検証。あなたの言語で回答。',
+  tagline: 'どの言語でも質問。あなたの言語で回答。確認できる出典付き。',
   subtitle: '英語以外でも働く医療従事者のための AI 医学検索。',
   scrollHint: 'スクロールして詳細を見る',
-  panelHeadline: 'あなたの言語で質問。エビデンスに基づく判断を。',
-  panelSub: 'ご自身で検証できる出典に裏付けられた権威ある医学的エビデンスに、最も使い慣れた言語でアクセスできます。',
+  panelHeadline: 'あなたの言語で質問。エビデンスに根ざした回答を。',
+  panelSub: '質問は英語でなくて構いません。Vela は査読済み文献と公式の医薬品ラベルを検索し、あなたが質問した言語で、検証できる出典付きで回答します。さらに、現地の指針が異なり得る箇所もお知らせします。',
   panelDemoAlt: '引用付きのリサーチ回答のスクリーンショット。',
   tryResearch: 'リサーチを試す',
   tryVerify: '検証を試す',
@@ -196,14 +214,18 @@ const landingJa: LandingContent = {
   cardDescVerify: '確認したい薬を入力してください。検証は FDA 医薬品ラベルに記載された相互作用を探し、各結果の出典を表示します。',
   cardDescExplain: '検査値を貼り付けると、解説が標準基準範囲と照らして順に説明します。出典付き。無料アカウントが必要です。PDF・画像アップロードは Pro 機能です。',
   featuresHeading: 'Vela ができること',
+  tryVela: 'Vela を試す',
+  verifyHeadline: '相互作用を、ラベルと照合。',
+  verifySub: '確認したい薬を入力してください。検証は FDA 医薬品ラベルに記載された相互作用を探し、各結果の出典を表示します。評価がラベルの記載ではなく Vela によるものである場合も、その旨を明示します。',
+  verifyDemoAlt: '重症度と出典表示付きの検証による相互作用チェックのスクリーンショット。',
 };
 
 const landingKo: LandingContent = {
-  tagline: '당신의 언어로 질문. 공식 출처로 검증. 당신의 언어로 답변.',
+  tagline: '어떤 언어로든 질문하세요. 답변은 당신의 언어로, 확인할 수 있는 출처와 함께.',
   subtitle: '영어권 밖에서 일하는 의료 전문가를 위한 AI 의학 검색.',
   scrollHint: '스크롤하여 더 보기',
-  panelHeadline: '당신의 언어로 질문하세요. 근거에 기반한 판단을.',
-  panelSub: '직접 확인할 수 있는 출처로 뒷받침되는 권위 있는 의학 근거를 가장 익숙한 언어로 이용하세요.',
+  panelHeadline: '당신의 언어로 질문하세요. 근거에 기반한 답변을.',
+  panelSub: '질문이 영어일 필요는 없습니다. Vela는 동료 심사 문헌과 공식 의약품 라벨을 검색하고, 질문한 언어로 답변하며, 직접 확인할 수 있는 출처를 제시합니다. 또한 현지 지침이 다를 수 있는 부분도 알려줍니다.',
   panelDemoAlt: '인용이 포함된 리서치 답변의 스크린샷.',
   tryResearch: '리서치 사용해 보기',
   tryVerify: '검증 사용해 보기',
@@ -212,14 +234,18 @@ const landingKo: LandingContent = {
   cardDescVerify: '확인할 약물을 입력하세요. 검증은 FDA 의약품 라벨에 기재된 상호작용을 찾아 각 결과의 출처를 보여줍니다.',
   cardDescExplain: '검사 수치를 붙여넣으면 설명 기능이 표준 참고 범위와 대조해 하나씩 설명합니다. 출처 포함. 무료 계정이 필요하며, PDF·이미지 업로드는 Pro 기능입니다.',
   featuresHeading: 'Vela가 하는 일',
+  tryVela: 'Vela 사용해 보기',
+  verifyHeadline: '상호작용을 라벨과 대조해 확인합니다.',
+  verifySub: '확인할 약물을 입력하세요. 검증은 FDA 의약품 라벨에 기재된 상호작용을 찾아 각 결과의 출처를 보여줍니다. 평가가 라벨 기재가 아니라 Vela의 판단인 경우에도 이를 명시합니다.',
+  verifyDemoAlt: '중증도와 출처 표시가 포함된 검증 상호작용 확인 화면의 스크린샷.',
 };
 
 const landingEs: LandingContent = {
-  tagline: 'Pregunta en tu idioma. Verificado por fuentes oficiales. Respondido en el tuyo.',
+  tagline: 'Pregunta en cualquier idioma. Respondido en el tuyo, con fuentes que puedes comprobar.',
   subtitle: 'La búsqueda médica con IA para profesionales sanitarios que trabajan más allá del inglés.',
   scrollHint: 'Desplácese para saber más',
-  panelHeadline: 'Pregunte en su idioma. Decisiones fundamentadas en la evidencia.',
-  panelSub: 'Acceda a evidencia médica autorizada en el idioma que mejor conoce, respaldada por fuentes que usted puede verificar.',
+  panelHeadline: 'Pregunte en su idioma. Respuestas fundamentadas en la evidencia.',
+  panelSub: 'Su pregunta no tiene que estar en inglés. Vela busca en la literatura revisada por pares y en el etiquetado oficial de los medicamentos, responde en el idioma en que usted preguntó, con fuentes que puede verificar, y señala dónde las pautas locales pueden diferir.',
   panelDemoAlt: 'Captura de pantalla de una respuesta de Investigar con citas.',
   tryResearch: 'Probar Investigar',
   tryVerify: 'Probar Verificar',
@@ -228,14 +254,18 @@ const landingEs: LandingContent = {
   cardDescVerify: 'Introduzca los fármacos que quiere comprobar. Verificar busca interacciones documentadas en el etiquetado de la FDA y le muestra la fuente de cada hallazgo.',
   cardDescExplain: 'Pegue valores de laboratorio y Explicar los repasa frente a rangos de referencia estándar, con fuentes. Se requiere una cuenta gratuita; la carga de PDF e imágenes viene con Pro.',
   featuresHeading: 'Qué hace Vela',
+  tryVela: 'Probar Vela',
+  verifyHeadline: 'Interacciones, cotejadas con el etiquetado.',
+  verifySub: 'Introduzca los fármacos que quiere comprobar. Verificar encuentra interacciones documentadas en el etiquetado de la FDA y muestra la fuente de cada hallazgo, incluso cuando una valoración es de Vela y no del etiquetado.',
+  verifyDemoAlt: 'Captura de pantalla de una comprobación de interacciones de Verificar con gravedad y atribución de fuentes.',
 };
 
 const landingFr: LandingContent = {
-  tagline: 'Posez la question dans votre langue. Vérifié par des sources officielles. Réponse dans la vôtre.',
+  tagline: 'Posez la question dans n’importe quelle langue. Réponse dans la vôtre — avec des sources que vous pouvez vérifier.',
   subtitle: 'La recherche médicale par IA pour les professionnels de santé qui travaillent au-delà de l\'anglais.',
   scrollHint: 'Faites défiler pour en savoir plus',
-  panelHeadline: 'Posez votre question dans votre langue. Des décisions fondées sur les preuves.',
-  panelSub: 'Accédez à des données médicales probantes faisant autorité dans la langue que vous maîtrisez le mieux, étayées par des sources que vous pouvez vérifier.',
+  panelHeadline: 'Posez votre question dans votre langue. Des réponses fondées sur les preuves.',
+  panelSub: 'Votre question n’a pas besoin d’être en anglais. Vela interroge la littérature évaluée par les pairs et l’étiquetage officiel des médicaments, répond dans la langue de votre question, avec des sources que vous pouvez vérifier — et signale les points où les recommandations locales peuvent différer.',
   panelDemoAlt: 'Capture d\'écran d\'une réponse de Rechercher avec citations.',
   tryResearch: 'Essayer Rechercher',
   tryVerify: 'Essayer Vérifier',
@@ -244,14 +274,18 @@ const landingFr: LandingContent = {
   cardDescVerify: 'Saisissez les médicaments à vérifier. Vérifier recherche les interactions documentées dans l\u2019étiquetage FDA et vous montre la source de chaque résultat.',
   cardDescExplain: 'Collez vos valeurs de laboratoire et Expliquer les passe en revue par rapport aux intervalles de référence standards, avec les sources. Un compte gratuit est requis ; l\u2019envoi de PDF et d\u2019images est réservé à Pro.',
   featuresHeading: 'Ce que fait Vela',
+  tryVela: 'Essayer Vela',
+  verifyHeadline: 'Les interactions, confrontées à l’étiquetage.',
+  verifySub: 'Saisissez les médicaments à vérifier. Vérifier trouve les interactions documentées dans l’étiquetage FDA et montre la source de chaque résultat — y compris lorsqu’une évaluation vient de Vela et non de l’étiquetage.',
+  verifyDemoAlt: 'Capture d’écran d’une vérification d’interactions de Vérifier avec gravité et attribution des sources.',
 };
 
 const landingDe: LandingContent = {
-  tagline: 'Fragen Sie in Ihrer Sprache. Geprüft von offiziellen Quellen. Antwort in Ihrer Sprache.',
+  tagline: 'Fragen Sie in jeder Sprache. Antwort in Ihrer — mit Quellen, die Sie prüfen können.',
   subtitle: 'Die KI-Medizinsuche für medizinische Fachkräfte, die jenseits von Englisch arbeiten.',
   scrollHint: 'Scrollen Sie für mehr',
-  panelHeadline: 'Fragen Sie in Ihrer Sprache. Entscheidungen auf Evidenzbasis.',
-  panelSub: 'Greifen Sie in der Sprache, die Sie am besten beherrschen, auf maßgebliche medizinische Evidenz zu, gestützt auf Quellen, die Sie überprüfen können.',
+  panelHeadline: 'Fragen Sie in Ihrer Sprache. Antworten auf Evidenzbasis.',
+  panelSub: 'Ihre Frage muss nicht auf Englisch sein. Vela durchsucht begutachtete Fachliteratur und offizielle Arzneimittelkennzeichnungen, antwortet in der Sprache Ihrer Frage, mit Quellen, die Sie überprüfen können — und weist darauf hin, wo lokale Vorgaben abweichen können.',
   panelDemoAlt: 'Screenshot einer Recherche-Antwort mit Quellenangaben.',
   tryResearch: 'Recherche testen',
   tryVerify: 'Prüfen testen',
@@ -260,14 +294,18 @@ const landingDe: LandingContent = {
   cardDescVerify: 'Geben Sie die zu prüfenden Arzneimittel ein. Prüfung sucht dokumentierte Wechselwirkungen in der FDA-Arzneimittelkennzeichnung und zeigt Ihnen die Quelle für jeden Befund.',
   cardDescExplain: 'Fügen Sie Laborwerte ein, und Erklärung geht sie anhand von Standard-Referenzbereichen durch, mit Quellen. Ein kostenloses Konto ist erforderlich; PDF- und Bild-Upload gibt es mit Pro.',
   featuresHeading: 'Was Vela kann',
+  tryVela: 'Vela testen',
+  verifyHeadline: 'Wechselwirkungen, geprüft an der Kennzeichnung.',
+  verifySub: 'Geben Sie die zu prüfenden Arzneimittel ein. Prüfen findet dokumentierte Wechselwirkungen in der FDA-Arzneimittelkennzeichnung und zeigt die Quelle für jeden Befund — auch dann, wenn eine Einschätzung von Vela stammt und nicht aus der Kennzeichnung.',
+  verifyDemoAlt: 'Screenshot einer Wechselwirkungsprüfung von Prüfen mit Schweregrad und Quellenangabe.',
 };
 
 const landingIt: LandingContent = {
-  tagline: 'Chiedi nella tua lingua. Verificato da fonti ufficiali. Risposta nella tua.',
+  tagline: 'Chiedi in qualsiasi lingua. Risposta nella tua — con fonti che puoi controllare.',
   subtitle: 'La ricerca medica con IA per i professionisti sanitari che lavorano oltre l\'inglese.',
   scrollHint: 'Scorri per saperne di più',
-  panelHeadline: 'Chiedi nella tua lingua. Decisioni fondate sulle evidenze.',
-  panelSub: 'Accedi a evidenze mediche autorevoli nella lingua che conosci meglio, con il supporto di fonti che puoi verificare.',
+  panelHeadline: 'Chiedi nella tua lingua. Risposte fondate sulle evidenze.',
+  panelSub: 'La tua domanda non deve essere in inglese. Vela cerca nella letteratura sottoposta a revisione paritaria e nell’etichettatura ufficiale dei farmaci, risponde nella lingua in cui hai chiesto, con fonti che puoi verificare — e segnala dove le indicazioni locali possono differire.',
   panelDemoAlt: 'Screenshot di una risposta di Ricerca con citazioni.',
   tryResearch: 'Prova Ricerca',
   tryVerify: 'Prova Verifica',
@@ -276,14 +314,18 @@ const landingIt: LandingContent = {
   cardDescVerify: 'Inserisci i farmaci da controllare. Verifica cerca le interazioni documentate nell\u2019etichettatura FDA e ti mostra la fonte di ogni risultato.',
   cardDescExplain: 'Incolla i valori di laboratorio e Spiega li ripercorre rispetto a intervalli di riferimento standard, con le fonti. È richiesto un account gratuito; il caricamento di PDF e immagini arriva con Pro.',
   featuresHeading: 'Cosa fa Vela',
+  tryVela: 'Prova Vela',
+  verifyHeadline: 'Interazioni, riscontrate sull’etichettatura.',
+  verifySub: 'Inserisci i farmaci da controllare. Verifica trova le interazioni documentate nell’etichettatura FDA e mostra la fonte di ogni risultato — anche quando una valutazione è di Vela e non dell’etichettatura.',
+  verifyDemoAlt: 'Screenshot di un controllo interazioni di Verifica con gravità e attribuzione delle fonti.',
 };
 
 const landingPt: LandingContent = {
-  tagline: 'Pergunte no seu idioma. Verificado por fontes oficiais. Respondido no seu.',
+  tagline: 'Pergunte em qualquer idioma. Respondido no seu — com fontes que você pode conferir.',
   subtitle: 'A pesquisa médica com IA para profissionais de saúde que trabalham além do inglês.',
   scrollHint: 'Role para saber mais',
-  panelHeadline: 'Pergunte no seu idioma. Decisões fundamentadas em evidências.',
-  panelSub: 'Acesse evidências médicas de referência no idioma que você domina, com o respaldo de fontes que você pode verificar.',
+  panelHeadline: 'Pergunte no seu idioma. Respostas fundamentadas em evidências.',
+  panelSub: 'Sua pergunta não precisa estar em inglês. O Vela busca na literatura revisada por pares e na rotulagem oficial dos medicamentos, responde no idioma em que você perguntou, com fontes que você pode verificar — e sinaliza onde as orientações locais podem diferir.',
   panelDemoAlt: 'Captura de tela de uma resposta do Pesquisar com citações.',
   tryResearch: 'Experimentar Pesquisar',
   tryVerify: 'Experimentar Verificar',
@@ -292,14 +334,18 @@ const landingPt: LandingContent = {
   cardDescVerify: 'Insira os medicamentos que deseja verificar. Verificar procura interações documentadas na rotulagem da FDA e mostra a fonte de cada achado.',
   cardDescExplain: 'Cole valores de exames e Explicar os percorre em relação a intervalos de referência padrão, com fontes. É necessária uma conta gratuita; o envio de PDF e imagens vem com o Pro.',
   featuresHeading: 'O que o Vela faz',
+  tryVela: 'Experimentar Vela',
+  verifyHeadline: 'Interações, conferidas na rotulagem.',
+  verifySub: 'Insira os medicamentos que deseja verificar. Verificar encontra interações documentadas na rotulagem da FDA e mostra a fonte de cada achado — inclusive quando uma avaliação é do Vela, e não da rotulagem.',
+  verifyDemoAlt: 'Captura de tela de uma checagem de interações do Verificar com gravidade e atribuição de fontes.',
 };
 
 const landingTh: LandingContent = {
-  tagline: 'ถามในภาษาของคุณ ตรวจสอบโดยแหล่งข้อมูลทางการ ตอบในภาษาของคุณ',
+  tagline: 'ถามได้ทุกภาษา ตอบในภาษาของคุณ พร้อมแหล่งที่มาที่คุณตรวจสอบได้',
   subtitle: 'การค้นหาทางการแพทย์ด้วย AI สำหรับบุคลากรทางการแพทย์ที่ทำงานนอกเหนือภาษาอังกฤษ',
   scrollHint: 'เลื่อนลงเพื่อดูเพิ่มเติม',
-  panelHeadline: 'ถามในภาษาของคุณ การตัดสินใจบนพื้นฐานของหลักฐาน',
-  panelSub: 'เข้าถึงหลักฐานทางการแพทย์ที่เชื่อถือได้ในภาษาที่คุณถนัดที่สุด โดยมีแหล่งอ้างอิงที่คุณตรวจสอบได้รองรับ',
+  panelHeadline: 'ถามในภาษาของคุณ คำตอบบนพื้นฐานของหลักฐาน',
+  panelSub: 'คำถามของคุณไม่จำเป็นต้องเป็นภาษาอังกฤษ Vela จะค้นหาวรรณกรรมที่ผ่านการทบทวนโดยผู้เชี่ยวชาญและฉลากยาทางการ ตอบในภาษาที่คุณถาม พร้อมแหล่งที่มาที่ตรวจสอบได้ และชี้จุดที่แนวปฏิบัติในท้องถิ่นอาจแตกต่างกัน',
   panelDemoAlt: 'ภาพหน้าจอของคำตอบค้นคว้าพร้อมการอ้างอิง',
   tryResearch: 'ลองใช้ค้นคว้า',
   tryVerify: 'ลองใช้ตรวจสอบ',
@@ -308,14 +354,18 @@ const landingTh: LandingContent = {
   cardDescVerify: 'ป้อนยาที่ต้องการตรวจสอบ ตรวจสอบจะค้นหาปฏิกิริยาที่มีบันทึกไว้ในฉลากยา FDA และแสดงแหล่งที่มาของแต่ละรายการ',
   cardDescExplain: 'วางค่าผลแล็บ แล้วอธิบายจะไล่อธิบายเทียบกับช่วงอ้างอิงมาตรฐาน พร้อมแหล่งที่มา ต้องมีบัญชีฟรี ส่วนการอัปโหลด PDF และรูปภาพมาพร้อม Pro',
   featuresHeading: 'Vela ทำอะไรได้บ้าง',
+  tryVela: 'ลองใช้ Vela',
+  verifyHeadline: 'ปฏิกิริยาระหว่างยา ตรวจเทียบกับฉลากยา',
+  verifySub: 'ป้อนยาที่ต้องการตรวจสอบ ตรวจสอบจะค้นหาปฏิกิริยาที่มีบันทึกไว้ในฉลากยา FDA และแสดงแหล่งที่มาของแต่ละรายการ รวมถึงระบุให้ชัดเมื่อการประเมินมาจาก Vela ไม่ใช่จากฉลากยา',
+  verifyDemoAlt: 'ภาพหน้าจอการตรวจปฏิกิริยาระหว่างยาของตรวจสอบ พร้อมระดับความรุนแรงและการระบุแหล่งที่มา',
 };
 
 const landingAr: LandingContent = {
-  tagline: 'اسأل بلغتك. متحقق من مصادر رسمية. الإجابة بلغتك.',
+  tagline: 'اسأل بأي لغة. الإجابة بلغتك — مع مصادر يمكنك التحقق منها.',
   subtitle: 'البحث الطبي بالذكاء الاصطناعي لمهنيي الرعاية الصحية الذين يعملون خارج اللغة الإنجليزية.',
   scrollHint: 'مرر للأسفل لمعرفة المزيد',
-  panelHeadline: 'اسأل بلغتك. قرارات مبنية على الأدلة.',
-  panelSub: 'اطّلع على أدلة طبية موثوقة باللغة التي تتقنها، مدعومة بمصادر يمكنك التحقق منها.',
+  panelHeadline: 'اسأل بلغتك. إجابات مبنية على الأدلة.',
+  panelSub: 'لا يُشترط أن يكون سؤالك بالإنجليزية. يبحث Vela في الأدبيات المحكّمة ووسم الأدوية الرسمي، ويجيب باللغة التي سألت بها، مع مصادر يمكنك التحقق منها — كما ينبّه إلى المواضع التي قد تختلف فيها الإرشادات المحلية.',
   panelDemoAlt: 'لقطة شاشة لإجابة البحث مع الاقتباسات.',
   tryResearch: 'جرّب البحث',
   tryVerify: 'جرّب التحقق',
@@ -324,14 +374,18 @@ const landingAr: LandingContent = {
   cardDescVerify: 'أدخل الأدوية التي تريد فحصها. يبحث «التحقق» عن التفاعلات الموثقة في وسم أدوية FDA ويعرض لك مصدر كل نتيجة.',
   cardDescExplain: 'الصق قيم المختبر و«الشرح» يستعرضها مقارنةً بالنطاقات المرجعية القياسية، مع المصادر. يلزم حساب مجاني؛ ورفع PDF والصور يأتي مع Pro.',
   featuresHeading: 'ماذا يفعل Vela',
+  tryVela: 'جرّب Vela',
+  verifyHeadline: 'التفاعلات الدوائية، مُطابَقة مع الوسم.',
+  verifySub: 'أدخل الأدوية التي تريد فحصها. يعثر «التحقق» على التفاعلات الموثقة في وسم أدوية FDA ويعرض مصدر كل نتيجة — بما في ذلك حين يكون التقييم من Vela لا من الوسم نفسه.',
+  verifyDemoAlt: 'لقطة شاشة لفحص تفاعلات في «التحقق» مع درجة الخطورة وإسناد المصادر.',
 };
 
 const landingHi: LandingContent = {
-  tagline: 'अपनी भाषा में पूछें। आधिकारिक स्रोतों से सत्यापित। आपकी भाषा में उत्तर।',
+  tagline: 'किसी भी भाषा में पूछें। उत्तर आपकी भाषा में — ऐसे स्रोतों के साथ जिन्हें आप जाँच सकते हैं।',
   subtitle: 'अंग्रेज़ी से परे काम करने वाले स्वास्थ्य पेशेवरों के लिए AI चिकित्सा खोज।',
   scrollHint: 'और जानने के लिए स्क्रॉल करें',
-  panelHeadline: 'अपनी भाषा में पूछें। साक्ष्य पर आधारित निर्णय।',
-  panelSub: 'जो भाषा आप सबसे अच्छी जानते हैं उसी में प्रामाणिक चिकित्सा साक्ष्य पाएँ, जिनका आधार ऐसे स्रोत हैं जिन्हें आप जाँच सकते हैं।',
+  panelHeadline: 'अपनी भाषा में पूछें। साक्ष्य पर आधारित उत्तर।',
+  panelSub: 'आपका प्रश्न अंग्रेज़ी में होना ज़रूरी नहीं। Vela सहकर्मी-समीक्षित साहित्य और आधिकारिक दवा लेबलिंग में खोज करता है, उसी भाषा में उत्तर देता है जिसमें आपने पूछा, ऐसे स्रोतों के साथ जिन्हें आप जाँच सकते हैं — और यह भी बताता है कि स्थानीय दिशानिर्देश कहाँ भिन्न हो सकते हैं।',
   panelDemoAlt: 'उद्धरणों सहित अनुसंधान उत्तर का स्क्रीनशॉट।',
   tryResearch: 'अनुसंधान आज़माएँ',
   tryVerify: 'सत्यापन आज़माएँ',
@@ -340,14 +394,18 @@ const landingHi: LandingContent = {
   cardDescVerify: 'जिन दवाओं की जाँच करनी है उन्हें दर्ज करें। सत्यापन FDA दवा लेबलिंग में दर्ज इंटरैक्शन खोजता है और हर नतीजे का स्रोत दिखाता है।',
   cardDescExplain: 'लैब मान चिपकाएँ और व्याख्या उन्हें मानक संदर्भ रेंज के मुकाबले समझाती है, स्रोतों के साथ। मुफ़्त खाता आवश्यक है; PDF और छवि अपलोड Pro के साथ आता है।',
   featuresHeading: 'Vela क्या करता है',
+  tryVela: 'Vela आज़माएँ',
+  verifyHeadline: 'इंटरैक्शन, लेबल से मिलाकर जाँचे गए।',
+  verifySub: 'जिन दवाओं की जाँच करनी है उन्हें दर्ज करें। सत्यापन FDA दवा लेबलिंग में दर्ज इंटरैक्शन खोजता है और हर नतीजे का स्रोत दिखाता है — यह भी स्पष्ट करते हुए कि कोई आकलन लेबल का नहीं बल्कि Vela का है।',
+  verifyDemoAlt: 'गंभीरता और स्रोत-निर्देश सहित सत्यापन इंटरैक्शन जाँच का स्क्रीनशॉट।',
 };
 
 const landingBn: LandingContent = {
-  tagline: 'আপনার ভাষায় জিজ্ঞাসা করুন। অফিসিয়াল সূত্র দ্বারা যাচাইকৃত। আপনার ভাষায় উত্তর।',
+  tagline: 'যেকোনো ভাষায় জিজ্ঞাসা করুন। উত্তর আপনার ভাষায় — এমন সূত্রসহ যা আপনি যাচাই করতে পারেন।',
   subtitle: 'ইংরেজির বাইরে কাজ করা স্বাস্থ্য পেশাদারদের জন্য AI চিকিৎসা অনুসন্ধান।',
   scrollHint: 'আরও জানতে স্ক্রল করুন',
-  panelHeadline: 'আপনার ভাষায় জিজ্ঞাসা করুন। প্রমাণের ভিত্তিতে সিদ্ধান্ত।',
-  panelSub: 'যে ভাষা আপনি সবচেয়ে ভালো জানেন সেই ভাষায় প্রামাণিক মেডিকেল প্রমাণ পান, যার ভিত্তি এমন সূত্র যা আপনি যাচাই করতে পারেন।',
+  panelHeadline: 'আপনার ভাষায় জিজ্ঞাসা করুন। প্রমাণের ভিত্তিতে উত্তর।',
+  panelSub: 'আপনার প্রশ্ন ইংরেজিতে হওয়া জরুরি নয়। Vela পিয়ার-রিভিউড সাহিত্য ও অফিসিয়াল ওষুধের লেবেলে অনুসন্ধান করে, যে ভাষায় প্রশ্ন করেছেন সেই ভাষায় উত্তর দেয়, এমন সূত্রসহ যা আপনি যাচাই করতে পারেন — এবং স্থানীয় নির্দেশনা কোথায় ভিন্ন হতে পারে তা-ও জানায়।',
   panelDemoAlt: 'উদ্ধৃতিসহ গবেষণা উত্তরের স্ক্রিনশট।',
   tryResearch: 'গবেষণা ব্যবহার করে দেখুন',
   tryVerify: 'যাচাই ব্যবহার করে দেখুন',
@@ -356,14 +414,18 @@ const landingBn: LandingContent = {
   cardDescVerify: 'যে ওষুধগুলি যাচাই করতে চান তা লিখুন। যাচাই FDA ওষুধের লেবেলে নথিভুক্ত ইন্টারঅ্যাকশন খোঁজে এবং প্রতিটি ফলাফলের উৎস দেখায়।',
   cardDescExplain: 'ল্যাব মান পেস্ট করুন, ব্যাখ্যা সেগুলি স্ট্যান্ডার্ড রেফারেন্স রেঞ্জের সাথে তুলনা করে ধাপে ধাপে ব্যাখ্যা করে, উৎসসহ। একটি বিনামূল্যের অ্যাকাউন্ট প্রয়োজন; PDF ও ছবি আপলোড Pro-এর সাথে আসে।',
   featuresHeading: 'Vela কী করে',
+  tryVela: 'Vela ব্যবহার করে দেখুন',
+  verifyHeadline: 'ইন্টারঅ্যাকশন, লেবেলের সাথে মিলিয়ে যাচাই।',
+  verifySub: 'যে ওষুধগুলি যাচাই করতে চান তা লিখুন। যাচাই FDA ওষুধের লেবেলে নথিভুক্ত ইন্টারঅ্যাকশন খোঁজে এবং প্রতিটি ফলাফলের উৎস দেখায় — কোনো মূল্যায়ন লেবেলের নয় বরং Vela-র হলে সেটিও স্পষ্ট করে।',
+  verifyDemoAlt: 'তীব্রতা ও উৎস-নির্দেশসহ যাচাই ইন্টারঅ্যাকশন পরীক্ষার স্ক্রিনশট।',
 };
 
 const landingHe: LandingContent = {
-  tagline: 'שאלו בשפה שלכם. מאומת ממקורות רשמיים. תשובה בשפתכם.',
+  tagline: 'שאלו בכל שפה. תשובה בשפתכם — עם מקורות שתוכלו לבדוק.',
   subtitle: 'חיפוש רפואי מבוסס AI לאנשי מקצוע רפואיים שעובדים מחוץ לאנגלית.',
   scrollHint: 'גללו למטה למידע נוסף',
-  panelHeadline: 'שאלו בשפה שלכם. החלטות מבוססות ראיות.',
-  panelSub: 'גשו לראיות רפואיות סמכותיות בשפה שאתם יודעים הכי טוב, מגובות במקורות שתוכלו לבדוק.',
+  panelHeadline: 'שאלו בשפה שלכם. תשובות מבוססות ראיות.',
+  panelSub: 'השאלה שלכם לא חייבת להיות באנגלית. Vela מחפש בספרות שעברה ביקורת עמיתים ובתיווי התרופות הרשמי, עונה בשפה שבה שאלתם, עם מקורות שתוכלו לבדוק — ומסמן היכן ההנחיות המקומיות עשויות להיות שונות.',
   panelDemoAlt: 'צילום מסך של תשובת מחקר עם ציטוטים.',
   tryResearch: 'נסו את מחקר',
   tryVerify: 'נסו את אימות',
@@ -372,14 +434,18 @@ const landingHe: LandingContent = {
   cardDescVerify: 'הזינו את התרופות שברצונכם לבדוק. אימות מחפש אינטראקציות מתועדות בתיווי התרופות של FDA ומציג את המקור לכל ממצא.',
   cardDescExplain: 'הדביקו ערכי מעבדה והסבר עובר עליהם מול טווחי ייחוס סטנדרטיים, עם מקורות. נדרש חשבון חינמי; העלאת PDF ותמונות מגיעה עם Pro.',
   featuresHeading: 'מה Vela עושה',
+  tryVela: 'נסו את Vela',
+  verifyHeadline: 'אינטראקציות, נבדקות מול התיווי.',
+  verifySub: 'הזינו את התרופות שברצונכם לבדוק. אימות מוצא אינטראקציות מתועדות בתיווי התרופות של FDA ומציג את המקור לכל ממצא — כולל כאשר הערכה היא של Vela ולא של התיווי עצמו.',
+  verifyDemoAlt: 'צילום מסך של בדיקת אינטראקציות באימות עם חומרה וייחוס מקורות.',
 };
 
 const landingVi: LandingContent = {
-  tagline: 'Hỏi bằng ngôn ngữ của bạn. Được kiểm chứng từ nguồn chính thức. Trả lời bằng ngôn ngữ của bạn.',
+  tagline: 'Hỏi bằng bất kỳ ngôn ngữ nào. Trả lời bằng ngôn ngữ của bạn — kèm nguồn bạn có thể kiểm chứng.',
   subtitle: 'Công cụ tìm kiếm y khoa AI dành cho nhân viên y tế làm việc ngoài tiếng Anh.',
   scrollHint: 'Cuộn xuống để tìm hiểu thêm',
-  panelHeadline: 'Hỏi bằng ngôn ngữ của bạn. Quyết định dựa trên bằng chứng.',
-  panelSub: 'Tiếp cận bằng chứng y khoa uy tín bằng ngôn ngữ bạn thành thạo nhất, dựa trên các nguồn bạn có thể kiểm chứng.',
+  panelHeadline: 'Hỏi bằng ngôn ngữ của bạn. Câu trả lời dựa trên bằng chứng.',
+  panelSub: 'Câu hỏi của bạn không cần phải bằng tiếng Anh. Vela tìm kiếm trong tài liệu được bình duyệt và nhãn thuốc chính thức, trả lời bằng ngôn ngữ bạn đã hỏi, kèm nguồn bạn có thể kiểm chứng — và chỉ ra những điểm hướng dẫn tại địa phương có thể khác biệt.',
   panelDemoAlt: 'Ảnh chụp màn hình câu trả lời Nghiên cứu kèm trích dẫn.',
   tryResearch: 'Dùng thử Nghiên cứu',
   tryVerify: 'Dùng thử Xác minh',
@@ -388,6 +454,10 @@ const landingVi: LandingContent = {
   cardDescVerify: 'Nhập các thuốc bạn muốn kiểm tra. Xác minh tìm các tương tác đã được ghi nhận trong nhãn thuốc FDA và cho bạn xem nguồn của từng kết quả.',
   cardDescExplain: 'Dán chỉ số xét nghiệm, Giải thích sẽ lần lượt giải thích chúng so với khoảng tham chiếu chuẩn, kèm nguồn. Cần tài khoản miễn phí; tải lên PDF và hình ảnh có trong gói Pro.',
   featuresHeading: 'Vela làm được gì',
+  tryVela: 'Dùng thử Vela',
+  verifyHeadline: 'Tương tác thuốc, đối chiếu với nhãn thuốc.',
+  verifySub: 'Nhập các thuốc bạn muốn kiểm tra. Xác minh tìm các tương tác đã được ghi nhận trong nhãn thuốc FDA và cho bạn xem nguồn của từng kết quả — kể cả khi một đánh giá là của Vela chứ không phải từ nhãn thuốc.',
+  verifyDemoAlt: 'Ảnh chụp màn hình một lần kiểm tra tương tác của Xác minh, kèm mức độ nghiêm trọng và ghi nguồn.',
 };
 
 export const landingContent: Record<LangCode, LandingContent> = {

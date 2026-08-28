@@ -156,7 +156,7 @@ function LandingPage() {
         <meta
           key="description"
           name="description"
-          content="AI medical search for healthcare professionals who work beyond English. Ask in your language, verified by PubMed, FDA, and local authorities, answered in yours. 16 languages, no identity verification required."
+          content="AI medical search for healthcare professionals who work beyond English. Ask in any language — answers in yours, grounded in peer-reviewed literature and official drug labels, with sources you can check. 16 languages, no identity verification required."
         />
         <meta name="robots" content="index, follow" />
         <link key="canonical" rel="canonical" href="https://vela.an-tho.com/" />
@@ -173,7 +173,7 @@ function LandingPage() {
         <meta
           key="og:description"
           property="og:description"
-          content="Ask in your language. Verified by official sources. Answered in yours. For healthcare professionals who work beyond English."
+          content="Ask in any language. Answered in yours — with sources you can check. For healthcare professionals who work beyond English."
         />
         <meta key="og:image" property="og:image" content="https://vela.an-tho.com/og-image.png" />
         <meta key="og:image:width" property="og:image:width" content="1200" />
@@ -189,7 +189,7 @@ function LandingPage() {
         <meta
           key="twitter:description"
           name="twitter:description"
-          content="Ask in your language. Verified by official sources. Answered in yours."
+          content="Ask in any language. Answered in yours — with sources you can check."
         />
         <meta key="twitter:image" name="twitter:image" content="https://vela.an-tho.com/og-image.png" />
 
