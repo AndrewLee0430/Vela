@@ -487,6 +487,51 @@ Any "note PRESENT" assertion reads the **NEW** `localeHintNote` text quoted in t
 
 ---
 
+## Gate 8 — Landing build car: nav + Verify band + ruled copy (2026-08-28)
+
+**Change under test:** the 2026-08-28 landing build car — product commits `537e3ab` (NUL byte
+fix) · `6bcc1bb` (ruled copy ×16 + meta/OG) · `caaa4be` (desktop nav links + Try Vela CTA) ·
+`05ef6cf` (Verify band + 6 keys retired + `paper-band` token + WebP asset) · `9d563a4` (poster
+deletion + `VIDEO_PRELOAD` toggle), plus test/docs commits `d1bfc10` · `24eb7eb` · `45d65fe`.
+The car's **final SHA is its STATE closeout commit** — before running, confirm `git rev-parse
+HEAD` matches the SHA in STATE's landing-build-car ship entry. Local serve per the Gate 6
+method: `npm run build`, then `python -m http.server 4321 --directory out`, open
+`http://127.0.0.1:4321/`.
+
+**ALL ROWS ARE LIGHT** (D-B4-1: the logged-out landing is light-only — no dark rows by design).
+
+**What changed vs fly 240:** hero H1 reads the NEW tagline (only hero change); nav gains five
+desktop-only links + the Try Vela CTA (the hardcoded "Upgrade" is gone from the landing); the
+three-card "What Vela does" section and the footer `#features` link are REMOVED; a warm-gray
+Verify showcase band (`paper-band`, NEW token — founder eyeballs the value at this gate) sits
+directly after the panel with new copy + the WebP demo screenshot; panel headline/sub rewritten
+(rulings #5/#6); the demo video lost its poster and runs one of two pre-play treatments behind
+the one-line `VIDEO_PRELOAD` toggle (ruling E — the pick is row 5 of this gate); meta/OG follow
+the new tagline (ruling H).
+
+| # | URL | context | check | what PASS looks like | observed | VERDICT | NOTES |
+|---|---|---|---|---|---|---|---|
+| 1 | `http://127.0.0.1:4321/` | desktop · light · en | **hero unchanged** | spotlight behind the composer only, typewriter + chips + privacy line exactly as fly 240; the ONLY difference is the H1 now reading *"Ask in any language. Answered in yours — with sources you can check."*; **no horizontal scrollbar at any width** | | | |
+| 2 | `http://127.0.0.1:4321/` | desktop · en | **nav links + CTA** | Research / Verify / Explain / Pricing / FAQ each visible and **each routes to its page**; the **Try Vela** pill routes to `/research` (anonymous — no sign-in wall before the page); the gear dropdown still opens **aligned under the single-row bar** (its `top-[72px]` anchor — no overlap, no gap jump) | | | |
+| 3 | `http://127.0.0.1:4321/` | **mobile ≤ 390px** · en | **mobile minimal row** | the five links are **ABSENT**; the row is logo · gear · Try Vela · Sign In on **one line, nothing wrapped**, no hamburger | | | |
+| 4 | `http://127.0.0.1:4321/` | desktop · en | **panel with new copy** | near-black panel; headline **solid bold paper serif** reading *"Ask in your language. Answers grounded in evidence."* (no "Decisions"); sub reads the new panelSub (the not-in-English opening + the *"flags where local guidance may differ"* tail); Try Research pill present; **word reveal still plays forward AND reverse** | | | |
+| 5 | `http://127.0.0.1:4321/` | desktop + mobile · en | **2f pre-play pick (FOUNDER DECISION ROW)** | flip `VIDEO_PRELOAD` in `components/LandingSections.tsx` between `'metadata'` (first frame paints pre-play; may fetch the whole 2.3 MB — no byte ranges, `[OTHER][P2]`) and `'none'` (blank bordered box until play); **pick one**; the pick ships and the toggle + losing branch are deleted before deploy | | | |
+| 6 | `http://127.0.0.1:4321/` | desktop · light · en | **Verify band** | band reads as a **warm gray in the paper family** — visibly distinct from the page, never a cool Apple gray (this row ratifies or adjusts the `paper-band` value, ruling C); headline *"Interactions, checked against the label."*; sub ends with the *"…Vela’s, not the label’s"* clause; **Try Verify** ink pill routes `/verify`; the screenshot is **sharp, not squashed** (its own 1656×1087 proportions) | | | |
+| 7 | `http://127.0.0.1:4321/` | desktop · **zh-TW** | **zh-TW page** | gear → 繁體中文: hero reads 「用任何語言提問。以你的語言回答——附上可查證的來源。」, band headline 「交互作用，對照藥物標示查核。」; **no raw key names, no leftover English** apart from proper nouns (Vela · FDA) | | | |
+| 8 | `http://127.0.0.1:4321/` | desktop · **ar** | **ar RTL** | layout mirrors (pill arrows flip, text right-aligned), the band composition stays sane, no overlapping glyphs, **no horizontal scroll** | | | |
+| 9 | `http://127.0.0.1:4321/` | **mobile ≤ 390px** | **mobile full scroll** | hero → panel → Verify band → footer scrolls with **no sideways scroll at any point**; the band image fits the width; the footer has **no dead "What Vela does" link** | | | |
+| 10 | rendered page | desktop · en | **copy sign-off** | the founder re-reads tagline · panelHeadline · panelSub · verifyHeadline · verifySub **on the rendered page** and signs them as the shipped ratification of the Phase-1 table | | | |
+| 11 | rendered page | **zh-TW** | **fly-225-class provenance row (new MT cells)** | in zh-TW the panelSub 「官方」 scopes to 藥物標示 (labels) only — no government-endorsement reading; nothing in the band reads as a safety **verdict**; the other 14 locales carry the same claim structure — their native check is the reviewer round (`deliverables/vela_landing_i18n_review_20260828.csv`, 150 rows, **NOT sent**) | | | |
+
+### Prepared (NOT run): post-deploy prod pass
+
+After the founder authorizes push + deploy, re-run rows **1, 2, 6, 7, 9** against
+`https://vela.an-tho.com/` (confirm `/health` `revision` = the pushed HEAD first), **plus** one
+instance of the ownership form — [`docs/human_eye_gate_checklist.md`](human_eye_gate_checklist.md)
+seeded 8 rows, EXPECTED OWNER filled **at run time** per that file's Rule-23 procedure (plural by
+construction). This car touches no retrieval code, so the ownership instance is the standing
+post-deploy spot-check, not a new-risk gate.
+
 ## Adding a gate to this file
 
 1. Name the **change under test** by commit SHA.
