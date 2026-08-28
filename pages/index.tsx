@@ -307,21 +307,26 @@ function LandingPage() {
           <div className="relative min-h-[90vh] flex flex-col overflow-x-clip">
           {/* Top bar */}
           <nav className="flex-shrink-0 flex justify-between items-center gap-2 px-4 md:px-10 py-4">
-            <Link href="/" className="flex items-center gap-2">
-              <Image src="/coral_logo.png" alt="Vela" width={28} height={28} style={{ objectFit: 'contain' }} priority />
-              <span className="font-semibold text-text text-lg tracking-tight">Vela</span>
-            </Link>
-            {/* 2026-08-28 redesign ruling A: feature/pricing/FAQ links, DESKTOP
-                ONLY (hidden <md — no hamburger this car; mobile keeps the
-                minimal row). Single-row nav height preserved:
-                LandingSettingsDropdown anchors fixed at top-[72px]. "FAQ" is a
-                deliberate literal (matches the footer convention). */}
-            <div className="hidden md:flex items-center gap-6 text-sm font-medium">
-              <Link href="/research" className="text-text/70 hover:text-text transition-colors duration-200">{t.research}</Link>
-              <Link href="/verify" className="text-text/70 hover:text-text transition-colors duration-200">{t.verify}</Link>
-              <Link href="/explain" className="text-text/70 hover:text-text transition-colors duration-200">{t.explain}</Link>
-              <Link href="/pricing" className="text-text/70 hover:text-text transition-colors duration-200">{ui.pricingTitle}</Link>
-              <Link href="/faq" className="text-text/70 hover:text-text transition-colors duration-200">FAQ</Link>
+            {/* Iteration 1 (2026-08-28): links moved from the justify-between
+                CENTER slot to the LEFT, grouped with the logo (ml-8 gap; house
+                gap-6 between links). One flex row, items-center — the links
+                ride the logo's optical centerline with no per-item transforms.
+                Ruling-A constraints unchanged: DESKTOP ONLY (hidden <md, no
+                hamburger), single row, nav height untouched — the
+                LandingSettingsDropdown still anchors fixed at top-[72px].
+                "FAQ" is a deliberate literal (matches the footer convention). */}
+            <div className="flex items-center">
+              <Link href="/" className="flex items-center gap-2">
+                <Image src="/coral_logo.png" alt="Vela" width={28} height={28} style={{ objectFit: 'contain' }} priority />
+                <span className="font-semibold text-text text-lg tracking-tight">Vela</span>
+              </Link>
+              <div className="hidden md:flex items-center gap-6 text-sm font-medium ml-8">
+                <Link href="/research" className="text-text/70 hover:text-text transition-colors duration-200">{t.research}</Link>
+                <Link href="/verify" className="text-text/70 hover:text-text transition-colors duration-200">{t.verify}</Link>
+                <Link href="/explain" className="text-text/70 hover:text-text transition-colors duration-200">{t.explain}</Link>
+                <Link href="/pricing" className="text-text/70 hover:text-text transition-colors duration-200">{ui.pricingTitle}</Link>
+                <Link href="/faq" className="text-text/70 hover:text-text transition-colors duration-200">FAQ</Link>
+              </div>
             </div>
             <div className="flex items-center gap-2">
               <LandingSettingsDropdown />
