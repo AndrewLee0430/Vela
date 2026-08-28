@@ -543,11 +543,22 @@ export default function LandingSections({ lc, t }: Props) {
           geometry as the Verify band; background = paper-band-2 (one step
           whiter, derivation in globals.css — founder eyeballs). Composition is
           a founder-chosen STAGGER, not 50/50: the INPUT capture (~56% wide,
-          inline-start, on top of the flow) and the RESULT capture (~78% wide,
+          inline-start, on top of the flow) and the RESULT capture (~70% wide,
           inline-end, pulled up to overlap and LAYERED ABOVE via z-10) — the
           read is "paste this → get this". Logical margins (me-/ms-auto) so ar
           RTL mirrors the stagger. Below md: vertical stack, input above
           result, both full width, no overlap (the negative margin is md:-only).
+          Iteration 3 — the overlap target is HALF of the input capture's
+          rendered height (its top lands on the input's vertical midpoint; it
+          was at ~3/4). A percentage margin resolves against the containing
+          block's WIDTH, not height, so the value is derived, not eyeballed:
+          the container is 896px and the input renders 370px tall, so half is
+          185px = 20.7% ≈ `-mt-[21%]`. Because BOTH terms scale with the
+          container width, that ratio holds at every viewport — no per-width
+          tuning. The result capture also drops 78%→70%, which cuts its
+          rendered height and lifts its effective pixel ratio (see the
+          sharpness note in the iteration-3 commit: still under 2x — that is a
+          re-capture question, not a CSS one).
           Each image keeps its OWN encode-derived dims (1294x954 / 1173x1204,
           re-derived this iteration — never carried, never a shared box). */}
       <section className="px-4 md:px-10 pb-16 md:pb-20">
@@ -574,7 +585,7 @@ export default function LandingSections({ lc, t }: Props) {
               width={1173}
               height={1204}
               loading="lazy"
-              className="relative z-10 block rounded-xl border border-card-border shadow-card w-full h-auto md:w-[78%] md:ms-auto mt-4 md:-mt-[10%]"
+              className="relative z-10 block rounded-xl border border-card-border shadow-card w-full h-auto md:w-[70%] md:ms-auto mt-4 md:-mt-[21%]"
             />
           </div>
         </div>
