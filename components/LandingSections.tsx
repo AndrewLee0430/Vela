@@ -506,11 +506,21 @@ export default function LandingSections({ lc, t }: Props) {
           Research panel, same container geometry as the panel (px-4 md:px-10 /
           max-w-5xl / rounded-3xl); the panel section's bottom padding is the
           gap between the two bands. CTA reuses tryVerify (card-pill DNA, ink
-          tone); the demo image is the 2e WebP with its encode-derived
-          1656x1087 as the CLS reservation (house rule: dims re-derived per
-          encode, never carried over). Fade-in reuses the cards' useFadeIn. */}
+          tone); the demo image is the 2e WebP with its encode-derived dims as
+          the CLS reservation (house rule: dims re-derived per encode, never
+          carried over — iteration 1 re-derived 2020x1225 from the founder's
+          new wider capture). Fade-in reuses the cards' useFadeIn. */}
       <section ref={bandRef} className="px-4 md:px-10 pb-16 md:pb-20">
-        <div className="w-full max-w-5xl mx-auto rounded-3xl bg-paper-band px-6 py-10 md:py-14 flex flex-col items-center text-center gap-5">
+        {/* Iteration 1: the band matches the panel's WIDENED width, not its
+            resting 64rem — usePanelScroll interpolates the panel's max-width
+            to `Math.min(1280, window.innerWidth * 0.94)`, and p is clamped at
+            1 (fully widened) by the time the band is on screen, so the CSS
+            mirror of that final state is `min(80rem, 94vw)`. Static here — no
+            script. Known edge, accepted: under prefers-reduced-motion or <md
+            the panel handler never runs and the panel rests at 64rem, so the
+            two edges only match in the normal-motion desktop flow the founder
+            reviews. */}
+        <div className="w-full max-w-[min(80rem,94vw)] mx-auto rounded-3xl bg-paper-band px-6 py-10 md:py-14 flex flex-col items-center text-center gap-5">
           <h2 className="font-serif font-bold text-3xl sm:text-4xl leading-tight max-w-3xl text-text">
             {lc.verifyHeadline}
           </h2>
@@ -521,8 +531,8 @@ export default function LandingSections({ lc, t }: Props) {
           <Image
             src="/media/Verify_Landing_Demo.webp"
             alt={lc.verifyDemoAlt}
-            width={1656}
-            height={1087}
+            width={2020}
+            height={1225}
             loading="lazy"
             className="rounded-xl border border-card-border w-full h-auto max-w-4xl"
           />
