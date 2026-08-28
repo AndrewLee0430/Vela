@@ -78,7 +78,6 @@ function TypewriterPrompt() {
 // ─── Landing Page (unauthenticated) ──────────────────────────────────────────
 function LandingPage() {
   const router = useRouter();
-  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [query, setQuery] = useState<string>('');
   const [isFocused, setIsFocused] = useState<boolean>(false);
   const [mode, setMode] = useState<ComposerMode>('research');
@@ -268,8 +267,10 @@ function LandingPage() {
         style={{ colorScheme: 'light' }}
         dir={isRtl ? 'rtl' : undefined}
       >
-        <UpgradeModal isOpen={showUpgradeModal} onClose={() => setShowUpgradeModal(false)} />
-
+        {/* B1 (2026-08-28): LandingPage no longer hosts an UpgradeModal — the
+            nav CTA routes to /research instead of opening upgrade flows. The
+            signed-in Dashboard keeps its own modal (incl. the ?upgrade=true
+            redirect chain, which lands on Dashboard, never here). */}
         {/* B4: one continuous PAPER page — the full-page hero radial
             (.landing-bg) is gone; the hero warmth is now the spotlight behind
             the composer only (see the form below). History of this zone:
@@ -310,9 +311,21 @@ function LandingPage() {
               <Image src="/coral_logo.png" alt="Vela" width={28} height={28} style={{ objectFit: 'contain' }} priority />
               <span className="font-semibold text-text text-lg tracking-tight">Vela</span>
             </Link>
+            {/* 2026-08-28 redesign ruling A: feature/pricing/FAQ links, DESKTOP
+                ONLY (hidden <md — no hamburger this car; mobile keeps the
+                minimal row). Single-row nav height preserved:
+                LandingSettingsDropdown anchors fixed at top-[72px]. "FAQ" is a
+                deliberate literal (matches the footer convention). */}
+            <div className="hidden md:flex items-center gap-6 text-sm font-medium">
+              <Link href="/research" className="text-text/70 hover:text-text transition-colors duration-200">{t.research}</Link>
+              <Link href="/verify" className="text-text/70 hover:text-text transition-colors duration-200">{t.verify}</Link>
+              <Link href="/explain" className="text-text/70 hover:text-text transition-colors duration-200">{t.explain}</Link>
+              <Link href="/pricing" className="text-text/70 hover:text-text transition-colors duration-200">{ui.pricingTitle}</Link>
+              <Link href="/faq" className="text-text/70 hover:text-text transition-colors duration-200">FAQ</Link>
+            </div>
             <div className="flex items-center gap-2">
               <LandingSettingsDropdown />
-              <PlanBadge onUpgrade={() => setShowUpgradeModal(true)} />
+              <PlanBadge />
               <SignedIn><UserButton /></SignedIn>
               <SignedOut>
                 <Link href="/sign-in">

@@ -2,11 +2,10 @@
 "use client"
 
 import { useEffect, useState } from 'react';
-import { useAuth, useUser, SignInButton } from '@clerk/nextjs';
-
-interface PlanBadgeProps {
-    onUpgrade?: () => void;
-}
+import Link from 'next/link';
+import { useAuth, useUser } from '@clerk/nextjs';
+import { useLang } from '../utils/LangContext';
+import { landingContent } from '../utils/i18n';
 
 const CACHE_KEY = 'vela_plan_cache';
 const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
@@ -30,15 +29,23 @@ export function clearPlanCache() {
     try { localStorage.removeItem('vela_status_cache'); } catch {}
 }
 
-const upgradeStyle = {
+const ctaStyle = {
     background: 'rgba(255,107,74,0.15)',
     border: '1px solid rgba(255,107,74,0.4)',
     color: 'rgb(var(--color-brand))',
 } as const;
 
-export default function PlanBadge({ onUpgrade }: PlanBadgeProps) {
+// 2026-08-28 redesign ruling B1: the landing nav CTA is "Try Vela" -> /research
+// for BOTH signed-out and signed-in-free (was a hardcoded-EN "Upgrade" opening
+// the Clerk modal / UpgradeModal - the /?upgrade=true funnel still exists for
+// the signed-in Dashboard, which owns its own Upgrade entry points). The PRO
+// badge branch is unchanged. Label is i18n (landingContent.tryVela, 16 locales)
+// - this component renders only in the landing nav (pages/index.tsx).
+export default function PlanBadge() {
     const { getToken } = useAuth();
     const { isSignedIn, isLoaded } = useUser();
+    const { lang } = useLang();
+    const lc = landingContent[lang];
     // Synchronously read cache to avoid flash on navigation
     const [plan, setPlan] = useState<'free' | 'pro' | null>(() => {
         if (typeof window === 'undefined') return null;
@@ -68,21 +75,17 @@ export default function PlanBadge({ onUpgrade }: PlanBadgeProps) {
         })();
     }, [getToken, isLoaded, isSignedIn]);
 
+    const tryVelaCta = (
+        <Link href="/research">
+            <button className="text-base font-semibold px-3 py-1 rounded-lg transition-all mr-2" style={ctaStyle}>
+                {lc.tryVela}
+            </button>
+        </Link>
+    );
+
     if (!isLoaded) return null;
 
-    // Not signed in → Upgrade button opens sign-in flow, then redirects with ?upgrade=true
-    if (!isSignedIn) {
-        return (
-            // Intentional: Upgrade CTA uses modal + forceRedirectUrl for conversion funnel UX
-            // (modal-then-auto-open-UpgradeModal). Plain /sign-in link would drop the
-            // ?upgrade=true redirect chain and require a second click post-signin.
-            <SignInButton mode="modal" forceRedirectUrl="/?upgrade=true">
-                <button className="text-base font-semibold px-3 py-1 rounded-lg transition-all mr-2" style={upgradeStyle}>
-                    Upgrade
-                </button>
-            </SignInButton>
-        );
-    }
+    if (!isSignedIn) return tryVelaCta;
 
     // Still loading plan (no cache) — hide to prevent flash
     if (plan === null) return null;
@@ -98,13 +101,5 @@ export default function PlanBadge({ onUpgrade }: PlanBadgeProps) {
         );
     }
 
-    return (
-        <button
-            onClick={onUpgrade}
-            className="text-base font-semibold px-3 py-1 rounded-lg transition-all mr-2"
-            style={upgradeStyle}
-        >
-            Upgrade
-        </button>
-    );
+    return tryVelaCta;
 }
