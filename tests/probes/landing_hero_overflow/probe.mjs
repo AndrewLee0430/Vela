@@ -40,7 +40,13 @@ try {
   ({ chromium } = createRequire(join(dir, "noop.js"))("playwright"));
 }
 
-const URL_ = "https://vela.an-tho.com/";
+// 2026-08-28 (landing build car, Phase 3b): PROBE_URL overrides the target so
+// the same method runs against a local static-export serve (Gate 6 style,
+// :4321). A local run skips the /health readback (static serve has none) and
+// writes result_local.json — the committed result.json stays the fly-240
+// PROD evidence and is never overwritten by a local run.
+const URL_ = process.env.PROBE_URL || "https://vela.an-tho.com/";
+const IS_LOCAL = Boolean(process.env.PROBE_URL);
 const WIDTHS = [360, 375, 390];
 const UA =
   "Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1";
@@ -57,10 +63,15 @@ const result = {
 };
 
 // prod revision recorded INSIDE the run, not inherited from an earlier readback
-const ctx0 = await browser.newContext();
-const health = await (await ctx0.request.get("https://vela.an-tho.com/health")).json();
-result.prod_revision = health.revision;
-await ctx0.close();
+if (!IS_LOCAL) {
+  const ctx0 = await browser.newContext();
+  const health = await (await ctx0.request.get("https://vela.an-tho.com/health")).json();
+  result.prod_revision = health.revision;
+  await ctx0.close();
+} else {
+  result.prod_revision = null;
+  result.local_head = process.env.PROBE_HEAD || null;
+}
 
 for (const width of WIDTHS) {
   const ctx = await browser.newContext({
@@ -107,6 +118,6 @@ for (const width of WIDTHS) {
 }
 await browser.close();
 
-const out = new URL("./result.json", import.meta.url);
+const out = new URL(IS_LOCAL ? "./result_local.json" : "./result.json", import.meta.url);
 writeFileSync(out, JSON.stringify(result, null, 2) + "\n");
 console.log(JSON.stringify(result, null, 2));
