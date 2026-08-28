@@ -433,8 +433,10 @@ function LandingPage() {
             <div>{t.footerDisclaimer}</div>
             {/* B1: section anchors + Pricing (ui.pricingTitle, reused verbatim) */}
             <div className="flex flex-wrap justify-center gap-4 text-xs">
-              {/* B4: #who and #privacy anchors removed with their sections. */}
-              <a href="#features" className="hover:underline transition duration-200">{lc.featuresHeading}</a>
+              {/* B4: #who and #privacy anchors removed with their sections.
+                  2026-08-28 ruling G: the #features anchor removed with the
+                  cards section (featuresHeading retired); the nav now carries
+                  the feature links. */}
               <Link href="/pricing" className="hover:underline transition duration-200">{ui.pricingTitle}</Link>
               <Link href="/faq" className="hover:underline transition duration-200">FAQ</Link>
             </div>

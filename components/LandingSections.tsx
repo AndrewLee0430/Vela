@@ -36,6 +36,7 @@
 
 import { Fragment, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { ChevronDown, ArrowRight } from 'lucide-react';
 import type { LandingContent, Translations } from '../utils/i18n';
 
@@ -389,9 +390,9 @@ interface Props {
 export default function LandingSections({ lc, t }: Props) {
   const panelSectionRef = useRef<HTMLElement | null>(null);
   const panelRef = useRef<HTMLDivElement | null>(null);
-  const cardsRef = useRef<HTMLElement | null>(null);
+  const bandRef = useRef<HTMLElement | null>(null);
   const demoVideoRef = useRef<HTMLVideoElement | null>(null);
-  useFadeIn(cardsRef);
+  useFadeIn(bandRef);
   usePanelVideo(demoVideoRef);
   usePanelScroll(panelSectionRef, panelRef, `${lc.panelHeadline} ${lc.panelSub}`);
 
@@ -485,31 +486,34 @@ export default function LandingSections({ lc, t }: Props) {
         </div>
       </section>
 
-      {/* §2 — CARDS ("What Vela does"): white sheets, card-border, shadow;
-          pills relabeled to the try* keys. Container narrowed to 64rem. */}
-      <section id="features" ref={cardsRef} className="px-4 md:px-10 py-32 md:py-40">
-        <div className="max-w-5xl mx-auto">
-          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-text mb-12">
-            {lc.featuresHeading}
+      {/* §2 — VERIFY SHOWCASE (2026-08-28 landing build car). Replaces the
+          three-card "What Vela does" section (rulings F/G: cards removed;
+          cardDesc x3, tryExplain, featuresHeading retired; footer #features
+          link deleted). A warm-gray BAND (bg-paper-band — NEW token, ruling C,
+          founder eyeballs the value on localhost) directly after the black
+          Research panel, same container geometry as the panel (px-4 md:px-10 /
+          max-w-5xl / rounded-3xl); the panel section's bottom padding is the
+          gap between the two bands. CTA reuses tryVerify (card-pill DNA, ink
+          tone); the demo image is the 2e WebP with its encode-derived
+          1656x1087 as the CLS reservation (house rule: dims re-derived per
+          encode, never carried over). Fade-in reuses the cards' useFadeIn. */}
+      <section ref={bandRef} className="px-4 md:px-10 pb-16 md:pb-20">
+        <div className="w-full max-w-5xl mx-auto rounded-3xl bg-paper-band px-6 py-10 md:py-14 flex flex-col items-center text-center gap-5">
+          <h2 className="font-serif font-bold text-3xl sm:text-4xl leading-tight max-w-3xl text-text">
+            {lc.verifyHeadline}
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
-            {[
-              { key: 'research', title: t.research, desc: lc.cardDescResearch, href: '/research', pill: lc.tryResearch },
-              { key: 'verify', title: t.verify, desc: lc.cardDescVerify, href: '/verify', pill: lc.tryVerify },
-              { key: 'explain', title: t.explain, desc: lc.cardDescExplain, href: '/explain', pill: lc.tryExplain },
-            ].map(({ key, title, desc, href, pill }) => (
-              <div key={key} className="rounded-2xl p-8 bg-paper-2 border border-card-border shadow-card flex flex-col">
-                <h3 className="text-lg font-bold text-text mb-3">{title}</h3>
-                <p className="font-serif text-lg leading-relaxed" style={{ color: 'rgb(var(--color-text) / 0.7)' }}>
-                  {desc}
-                </p>
-                <div className="flex-grow" aria-hidden="true" />
-                <div className="mt-8">
-                  <Pill href={href} label={pill} />
-                </div>
-              </div>
-            ))}
-          </div>
+          <p className="text-base md:text-lg max-w-2xl" style={{ color: 'rgb(var(--color-text) / 0.7)' }}>
+            {lc.verifySub}
+          </p>
+          <Pill href="/verify" label={lc.tryVerify} />
+          <Image
+            src="/media/Verify_Landing_Demo.webp"
+            alt={lc.verifyDemoAlt}
+            width={1656}
+            height={1087}
+            loading="lazy"
+            className="rounded-xl border border-card-border w-full h-auto max-w-4xl"
+          />
         </div>
       </section>
     </>

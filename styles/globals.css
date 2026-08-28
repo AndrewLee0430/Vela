@@ -97,6 +97,10 @@ body {
   --color-paper-2: 10 22 40;
   --color-hairline: 47 57 72;
   --color-card-border: 47 57 72;
+  /* paper-band dark value = bg-2 family (one step off the dark paper). The
+     logged-out landing is LIGHT-ONLY (D-B4-1) so this is completeness for the
+     token system, not a rendered surface today. */
+  --color-paper-band: 15 32 64;
   /* B4.3: the landing is light-only (D-B4-1), so this value never paints on
      the landing. It exists so `bg-panel` compiles in both themes and so any
      future non-landing use has a sane dark mapping — the deepest dark bg. */
@@ -149,6 +153,15 @@ body {
   --color-paper-2: 255 255 255;
   --color-hairline: 229 226 218;
   --color-card-border: 221 216 206;
+  /* 2026-08-28 (landing build car, redesign ruling C) — the Verify showcase
+     BAND. Derived with the B4.3 in-hue method above, not picked by feel: stay
+     in the paper/hero hue band (H20-25°) and step DOWN in lightness from the
+     page, so the band reads as a warm gray field, never Apple's cool #F5F5F7
+     (H240° — the named anti-pattern). #F5F0ED = H22.5° S29% L94.5%, one
+     legible step below paper #FFF9F5 (L98.0%) and well above the border
+     family (hairline L87.6% / card-border L83.7%), so borders still read on
+     it. STARTING VALUE for the founder's localhost eyeball, per ruling C. */
+  --color-paper-band: 245 240 237;
   /* B4.3 — the panel block. Was `bg-text` (23 23 23, L=9%), which put an
      89-POINT lightness cliff between the paper page and the panel; that gap,
      not the page colour, is what read as 格格不入. This is a deep warm
