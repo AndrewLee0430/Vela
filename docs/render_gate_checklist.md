@@ -539,10 +539,32 @@ the new tagline (ruling H).
 | 10 | rendered page | desktop · en | **copy sign-off** | the founder re-reads tagline · panelHeadline · panelSub · verifyHeadline · verifySub **on the rendered page** and signs them as the shipped ratification of the Phase-1 table | | | |
 | 11 | rendered page | **zh-TW** | **fly-225-class provenance row (new MT cells)** | in zh-TW the panelSub 「官方」 scopes to 藥物標示 (labels) only — no government-endorsement reading; nothing in the band reads as a safety **verdict**; the other 14 locales carry the same claim structure — their native check is the reviewer round (`deliverables/vela_landing_i18n_review_20260828.csv` — **15 keys × 15 locales = 225 rows**, **NOT sent**; the *150* written here at the form's creation was the build-car set and went stale when iteration 2 added the Explain band, corrected 2026-08-28) | | | |
 
+### ⚠️ Carried by this deploy but NOT a landing row: the /explain colour change (added 2026-08-29)
+
+**Every row above is LIGHT**, because the logged-out landing is light-only (D-B4-1). The same car
+also changed a **THEMED PRODUCT SURFACE**: `/explain`'s result view — source chips neutralised to
+Research's token pair, risk-tier accent bars removed, the Clinical Correlations panel and its term
+chips neutralised (`9014b8d` + the 2026-08-29 follow-up). `/explain` follows the user's theme, so
+**it needs a LIGHT *and* DARK eye check that no row in this gate performs.** It is recorded here so
+the check cannot be lost between the landing gate and the deploy; **this is a note, not a new gate.**
+
+- **Local evidence already in hand** (does not replace the prod eye): rendered in both themes and
+  computed styles read back per theme — chip/card tokens flip `rgba(23,23,23,…)` ↔
+  `rgba(255,255,255,…)`, card `border-left` 3px coloured → 1px neutral, correlation surface ==
+  item-card surface, and **zero `#b794f4`/`rgba(183,148,244,…)` literals remain in the DOM**.
+- **What the prod pass must confirm, in BOTH schemes:** the VERIFIED SOURCES chips are legible
+  (they were previously dark-tuned pastels applied inline, so **light is the scheme that was
+  actually broken**); the badges are the only colour left on the surface; the correlation panel
+  reads as a card, not as a smudge.
+- **Precedent for the shape of this check:** the **5-page light-scheme theme eye row** the founder
+  ran post-deploy-car-3 (fly 239), recorded in Gate 7's closure block above and in the STATE
+  closeout entry. Same idea, different surface.
+
 ### Prepared (NOT run): post-deploy prod pass
 
 After the founder authorizes push + deploy, re-run rows **1, 2, 6, 7, 9** against
-`https://vela.an-tho.com/` (confirm `/health` `revision` = the pushed HEAD first), **plus** one
+`https://vela.an-tho.com/` (confirm `/health` `revision` = the pushed HEAD first), **plus the
+/explain light+dark eye check noted directly above**, **plus** one
 instance of the ownership form — [`docs/human_eye_gate_checklist.md`](human_eye_gate_checklist.md)
 seeded 8 rows, EXPECTED OWNER filled **at run time** per that file's Rule-23 procedure (plural by
 construction). This car touches no retrieval code, so the ownership instance is the standing
