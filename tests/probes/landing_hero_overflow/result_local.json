@@ -1,6 +1,6 @@
 {
   "probe": "landing_hero_overflow",
-  "date": "2026-08-28T03:08:59.127Z",
+  "date": "2026-08-28T15:41:00.638Z",
   "url": "http://localhost:4321/",
   "prod_revision": null,
   "method": "playwright@1.62.1 channel=chrome headless; mobile UA + hasTouch; overflow = scrollingElement.scrollWidth - clientWidth; rect enumeration ignores ancestor clipping (see header)",
@@ -66,5 +66,5 @@
       "rects_beyond_right_edge_total": 1
     }
   ],
-  "local_head": "45d65fe43a827614d17b10819d6275d72b0b5ada"
+  "local_head": "f132c3a7957c32a3c3d257ba3b9633b1f0c1e2aa"
 }
