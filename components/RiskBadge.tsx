@@ -17,11 +17,11 @@ const RISK_EMOJI: Record<RiskTier, string> = {
     red: '\u{1F534}',
 };
 
-export const RISK_BORDER_COLOR: Record<RiskTier, string> = {
-    green: RISK_COLORS.green.solid,
-    yellow: RISK_COLORS.yellow.solid,
-    red: RISK_COLORS.red.solid,
-};
+// RISK_BORDER_COLOR (the cards' coloured left accent bar) was DELETED
+// 2026-08-29 with the bars it existed for. Its only two consumers were
+// ExplainItemCard and ClinicalCorrelationCard, both of which now render a
+// neutral surface — verified by census, not assumed. `solid` survives in
+// RISK_COLORS above because the badge's own text colour reads from it.
 
 interface RiskBadgeProps {
     tier: RiskTier;

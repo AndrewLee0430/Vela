@@ -1,7 +1,7 @@
 "use client"
 
 import { ReactNode } from 'react';
-import RiskBadge, { RiskTier, RISK_BORDER_COLOR } from './RiskBadge';
+import RiskBadge, { RiskTier } from './RiskBadge';
 
 export interface ExplainSource {
     source_type: string;
@@ -24,13 +24,18 @@ interface ExplainItemCardProps {
     children?: ReactNode;
 }
 
+// 2026-08-29 — the risk-tier COLOURED LEFT ACCENT BAR is removed (founder
+// direction: the Explain result surface carried too many colours). No
+// information channel is lost: the bar was a pure DUPLICATE of RiskBadge,
+// which renders the same `risk_tier` as a TEXT LABEL ("General Information" /
+// "Needs Attention" / "Consult Immediately") plus colour — text being the
+// stronger channel of the two, and the only one a colour-blind reader could
+// ever use. The enum itself is untouched and still drives the badge, the
+// PostHog `risk_tier_distribution`, and the backend's yellow/red
+// citation-limitation note (`api/services/explain_service.py`).
 export default function ExplainItemCard({ item, children }: ExplainItemCardProps) {
-    const borderColor = RISK_BORDER_COLOR[item.risk_tier];
     return (
-        <div
-            className="rounded-xl p-5 mb-4 bg-text/6 border border-text/10"
-            style={{ borderLeft: `3px solid ${borderColor}` }}
-        >
+        <div className="rounded-xl p-5 mb-4 bg-text/6 border border-text/10">
             <div className="flex items-start justify-between gap-3 mb-3">
                 <div className="min-w-0">
                     <p className="text-base font-semibold leading-tight text-text">

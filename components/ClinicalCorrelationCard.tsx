@@ -1,7 +1,7 @@
 "use client"
 
 import { ReactNode } from 'react';
-import RiskBadge, { RiskTier, RISK_BORDER_COLOR } from './RiskBadge';
+import RiskBadge, { RiskTier } from './RiskBadge';
 import { ExplainSource } from './ExplainItemCard';
 
 export interface ClinicalCorrelation {
@@ -17,17 +17,19 @@ interface ClinicalCorrelationCardProps {
     children?: ReactNode;
 }
 
+// 2026-08-29 — the panel's light-PURPLE surface becomes the SAME neutral
+// surface as ExplainItemCard (`bg-text/6 border border-text/10`), and the
+// risk-tier left accent bar goes with it, consistent with that card. The
+// purple was raw literals (`rgba(139,92,246,…)`) — theme-blind by
+// construction, the fly-219/220 class.
+// ⚠️ FLAGGED, NOT CHANGED (founder's call, one round-trip): the term chips
+// below and the 🔗 glyph are still purple raw literals (#b794f4 family). They
+// carry NO semantic meaning — they name the correlated items (e.g. "eGFR") —
+// so neutralising them would delete no channel, but the founder's direction
+// named the panel BACKGROUND, so scope stops here.
 export default function ClinicalCorrelationCard({ correlation, children }: ClinicalCorrelationCardProps) {
-    const borderColor = RISK_BORDER_COLOR[correlation.risk_tier];
     return (
-        <div
-            className="rounded-xl p-5 mb-4"
-            style={{
-                background: 'rgba(139,92,246,0.06)',
-                border: '1px solid rgba(139,92,246,0.2)',
-                borderLeft: `3px solid ${borderColor}`,
-            }}
-        >
+        <div className="rounded-xl p-5 mb-4 bg-text/6 border border-text/10">
             <div className="flex items-start justify-between gap-3 mb-3">
                 <div className="min-w-0 flex flex-wrap items-center gap-1.5">
                     <span

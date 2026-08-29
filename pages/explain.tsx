@@ -42,12 +42,24 @@ interface ExplainResponse {
     disclaimer: string;
 }
 
-const SOURCE_STYLES: Record<string, { bg: string; text: string; border: string }> = {
-    LOINC:       { bg: 'rgba(99,179,237,0.12)',   text: '#63b3ed', border: 'rgba(99,179,237,0.3)'   },
-    MedlinePlus: { bg: 'rgba(104,211,145,0.12)', text: '#68d391', border: 'rgba(104,211,145,0.3)' },
-    FDA:         { bg: 'rgba(252,129,129,0.12)', text: '#fc8181', border: 'rgba(252,129,129,0.3)' },
-    RxNorm:      { bg: 'rgba(183,148,244,0.12)', text: '#b794f4', border: 'rgba(183,148,244,0.3)' },
-};
+// 2026-08-29 — the VERIFIED SOURCES chips converge on RESEARCH'S NEUTRAL
+// REGISTER: the SAME token pair Research's source chips use
+// (`components/CitationPanel.tsx` "DailyMed 3 / PubMed 2" → `bg-text/8
+// text-text/65`), not a lookalike, and no per-source colour at all.
+//
+// This finishes a convergence `utils/sourceLabels.ts` already states as the
+// rule for citations — *"no source wears a semantic/quality color (the old
+// PubMed success-green was misleading)"* — which Explain had never been
+// brought in line with.
+//
+// It also removes a LATENT LIGHT-SCHEME DEFECT of exactly the fly-219/220
+// class. The four entries this replaces were RAW HEX LITERALS tuned for the
+// dark navy theme (LOINC #63b3ed, MedlinePlus #68d391, FDA #fc8181, RxNorm
+// #b794f4 — all pastels), set as inline `style` and therefore IDENTICAL in
+// light, where they sat on white at far lower contrast. Token classes flip
+// per theme by construction, so the chip is now correct in both.
+const SOURCE_CHIP_CLASS =
+    'px-2 py-0.5 rounded-full text-xs font-medium bg-text/8 text-text/65';
 
 // Generic error UX (2026-04-29): SSE pipeline error_code → i18n key.
 // `error` state holds either an error_code from this map (resolved by
@@ -90,7 +102,6 @@ function useLoincTooltip(label: string): string {
 }
 
 function LoincBadge({ source, index = 0 }: { source: ExplainSource; index?: number }) {
-    const s = SOURCE_STYLES['LOINC'];
     const [show, setShow] = useState(false);
     const wrapperRef = useRef<HTMLSpanElement>(null);
     const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -110,8 +121,7 @@ function LoincBadge({ source, index = 0 }: { source: ExplainSource; index?: numb
     return (
         <span
             ref={wrapperRef}
-            className="relative inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium cursor-default"
-            style={{ background: s.bg, color: s.text, border: `1px solid ${s.border}` }}
+            className={`relative inline-flex items-center cursor-default ${SOURCE_CHIP_CLASS}`}
             onMouseEnter={() => {
                 if (timerRef.current) clearTimeout(timerRef.current);
                 timerRef.current = setTimeout(() => setShow(true), 200);
@@ -165,7 +175,6 @@ function LoincBadge({ source, index = 0 }: { source: ExplainSource; index?: numb
 }
 
 function SourceBadge({ source, index = 0 }: { source: ExplainSource; index?: number }) {
-    const s = SOURCE_STYLES[source.source_type] ?? SOURCE_STYLES['MedlinePlus'];
     const url = getSourceUrl(source);
     const { lang } = useLang();
 
@@ -187,8 +196,7 @@ function SourceBadge({ source, index = 0 }: { source: ExplainSource; index?: num
                 target="_blank"
                 rel="noopener noreferrer"
                 title={tooltip}
-                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium transition-opacity hover:opacity-80"
-                style={{ background: s.bg, color: s.text, border: `1px solid ${s.border}` }}
+                className={`inline-flex items-center gap-1 transition-opacity hover:opacity-80 ${SOURCE_CHIP_CLASS}`}
             >
                 {source.label}
                 <span className="text-[10px] opacity-60">↗</span>
@@ -199,8 +207,7 @@ function SourceBadge({ source, index = 0 }: { source: ExplainSource; index?: num
     return (
         <span
             title={tooltip}
-            className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium"
-            style={{ background: s.bg, color: s.text, border: `1px solid ${s.border}` }}
+            className={`inline-flex items-center ${SOURCE_CHIP_CLASS}`}
         >
             {source.label}
         </span>
