@@ -594,27 +594,40 @@ export default function LandingSections({ lc, t }: Props) {
             {lc.explainSub}
           </p>
           <Pill href="/explain" label={lc.tryExplain} />
-          {/* Iteration 5 C2: tops-aligned -> items-center. The two captures
-              have different heights by design (the result is taller), so
-              centring balances the row's optical weight instead of leaving
-              the shorter input capture hanging from the top edge. Column
-              split stays 48/52: C1 found the source captures UNCHANGED
-              (1294x954 / 1173x1204, byte-identical to the last encode), so
-              there are no new aspect ratios to re-derive a split from. */}
-          <div className="w-full max-w-4xl grid grid-cols-1 gap-4 md:grid-cols-[48fr_52fr] md:gap-6 md:items-center">
+          {/* Iteration 5 C2: tops-aligned -> items-center, so the two captures
+              balance optically instead of leaving the shorter one hanging
+              from the top edge.
+              Iteration 6: the founder re-captured both images from the
+              NEUTRAL-COLOUR /explain UI, CROPPED to their key regions, so the
+              landing no longer advertises a screen the product does not have
+              (verified by reading the captures, not assumed). Dims re-derived
+              per encode, never carried: 1174x685 and 1188x841.
+              Container raised max-w-4xl (0.778) -> 0.85 of the band's inner
+              width, matching the Verify image's iteration-5 fraction so the
+              two bands share one media rhythm.
+              SPLIT STAYS 48/52, re-derived rather than inherited: the old
+              48/52 existed to restrain a PORTRAIT result capture (0.974)
+              beside a landscape input (1.356). Both are landscape now (1.714
+              / 1.413), so that reason is gone — but the founder's standing
+              emphasis (the result is the payoff, "paste this -> get this")
+              still wants the result larger, and 48/52 delivers it on both
+              axes: 458.5x267.5 vs 496.7x351.5. The equal-HEIGHT split the new
+              ratios permit is 55/45, which would make the INPUT the bigger
+              image and invert that emphasis — derived, then rejected. */}
+          <div className="w-full grid grid-cols-1 gap-4 md:max-w-[85%] md:grid-cols-[48fr_52fr] md:gap-6 md:items-center">
             <Image
               src="/media/Explain_Landing_Demo_1.webp"
               alt={lc.explainDemoAlt1}
-              width={1294}
-              height={954}
+              width={1174}
+              height={685}
               loading="lazy"
               className="block rounded-xl border border-card-border w-full h-auto"
             />
             <Image
               src="/media/Explain_Landing_Demo_2.webp"
               alt={lc.explainDemoAlt2}
-              width={1173}
-              height={1204}
+              width={1188}
+              height={841}
               loading="lazy"
               className="block rounded-xl border border-card-border w-full h-auto"
             />
