@@ -431,7 +431,7 @@ export default function LandingSections({ lc, t }: Props) {
             width-driven, per the stacked mobile treatment. */}
         <div
           ref={panelRef}
-          className="w-full max-w-5xl mx-auto rounded-3xl bg-panel text-paper px-6 py-10 md:py-14 md:h-[92vh] md:max-h-[92vh] flex flex-col items-center justify-center text-center gap-5"
+          className="w-full max-w-5xl mx-auto rounded-3xl bg-panel text-paper px-6 py-10 md:h-[92vh] md:max-h-[92vh] flex flex-col items-center justify-center text-center gap-4"
         >
           {/* B4.5 C — SOLID paper, BOLD. The gradient is gone (globals.css
               tombstone explains what went with it). No color class here on
@@ -481,18 +481,35 @@ export default function LandingSections({ lc, t }: Props) {
             data-reveal-media
             className="w-full md:flex-1 md:min-h-0 flex items-center justify-center"
           >
+            {/* Iteration 5 A1/A4 (2026-08-31).
+                A4 — the CLS pair is the DERIVED decode size, 1441x828, read
+                from the stream itself (HTMLVideoElement.videoWidth) rather
+                than the 1440 that had been carried in these attributes and
+                the aspectRatio. One pixel, but the house rule is that these
+                three numbers are re-derived per encode, never carried.
+                A1 — the width is CAPPED at 62.5% of the panel's inner width,
+                which is the video's 2x-exhaustion point (1441 native / 2 =
+                720.5px, and the panel's inner width is 1152px at 1280). The
+                cap is a MAXIMUM, not a fixed width: `h-auto` + `max-h-full`
+                keeps the old height-adaptive behaviour, so a short window
+                still shrinks the video instead of overflowing the fixed-
+                height panel (Gate 6 row 4). The cap also fixes BY
+                CONSTRUCTION the locale-dependent softness measured in
+                iteration 5 Part 1: Arabic's shorter text used to give the
+                video 0.634 of the container and 1.973x, i.e. under 2x purely
+                because of how tall the translated copy happened to be. */}
             <video
               ref={demoVideoRef}
               src="/media/research-demo.mp4"
-              width={1440}
+              width={1441}
               height={828}
               muted
               loop
               playsInline
               preload={VIDEO_PRELOAD}
               aria-label={lc.panelDemoAlt}
-              style={{ aspectRatio: '1440 / 828' }}
-              className="rounded-xl border border-paper/15 object-contain w-full h-auto md:w-auto md:h-full md:max-w-full"
+              style={{ aspectRatio: '1441 / 828' }}
+              className="rounded-xl border border-paper/15 object-contain w-full h-auto md:w-auto md:h-auto md:max-h-full md:max-w-[62.5%]"
             />
           </div>
         </div>
@@ -528,13 +545,19 @@ export default function LandingSections({ lc, t }: Props) {
             {lc.verifySub}
           </p>
           <Pill href="/verify" label={lc.tryVerify} />
+          {/* Iteration 5 A2: 0.778 -> 0.85 of the band's inner width (was
+              max-w-4xl = 896px against a 1152px container). Ceiling derived,
+              not chosen by feel: 2020 natural / (0.85 * 1152 = 979.2) =
+              2.06x, so it still clears 2x at DPR 2, with little to spare —
+              0.877 is where this capture goes soft. `md:` only; mobile keeps
+              full width. */}
           <Image
             src="/media/Verify_Landing_Demo.webp"
             alt={lc.verifyDemoAlt}
             width={2020}
             height={1225}
             loading="lazy"
-            className="rounded-xl border border-card-border w-full h-auto max-w-4xl"
+            className="rounded-xl border border-card-border w-full h-auto md:max-w-[85%]"
           />
         </div>
       </section>
@@ -571,7 +594,14 @@ export default function LandingSections({ lc, t }: Props) {
             {lc.explainSub}
           </p>
           <Pill href="/explain" label={lc.tryExplain} />
-          <div className="w-full max-w-4xl grid grid-cols-1 gap-4 md:grid-cols-[48fr_52fr] md:gap-6 md:items-start">
+          {/* Iteration 5 C2: tops-aligned -> items-center. The two captures
+              have different heights by design (the result is taller), so
+              centring balances the row's optical weight instead of leaving
+              the shorter input capture hanging from the top edge. Column
+              split stays 48/52: C1 found the source captures UNCHANGED
+              (1294x954 / 1173x1204, byte-identical to the last encode), so
+              there are no new aspect ratios to re-derive a split from. */}
+          <div className="w-full max-w-4xl grid grid-cols-1 gap-4 md:grid-cols-[48fr_52fr] md:gap-6 md:items-center">
             <Image
               src="/media/Explain_Landing_Demo_1.webp"
               alt={lc.explainDemoAlt1}
