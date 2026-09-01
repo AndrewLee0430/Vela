@@ -30,6 +30,7 @@ import { setQueryId, getAnonFingerprint, track } from '../utils/analytics';
 import { useLang } from '../utils/LangContext';
 import { getUI } from '../utils/i18n-ui';
 import { getExtra } from '../utils/i18n-extra';
+import { parseResearchSections, stripLlmDisclaimer } from '../utils/researchSections';
 
 const DISCLAIMERS: Record<string, string> = {
     'en': '\u26A0\uFE0F For informational purposes only. Always verify with clinical guidelines and consult a qualified professional.',
@@ -50,50 +51,8 @@ const DISCLAIMERS: Record<string, string> = {
     'vi': '\u26A0\uFE0F Thông tin này chỉ mang tính chất tham khảo. Vui lòng kiểm tra theo hướng dẫn lâm sàng và tham khảo ý kiến chuyên gia có trình độ.',
 };
 
-const DISCLAIMER_STRIP_RE = /⚠️\s*(This information|For informational purposes|For reference only|本資訊|本信息|本情報|본 정보|Solo con fines|À titre|Nur zu|Solo a scopo|Apenas para|ข้อมูลนี้|هذه المعلومات|यह जानकारी|এই তথ্য|מידע זה|Thông tin này|Please consult|僅供參考|仅供参考).*$/gm;
-
-function stripLlmDisclaimer(text: string): string {
-    return text.replace(DISCLAIMER_STRIP_RE, '').trim();
-}
-
-interface ParsedSection {
-    title: string;
-    content: string;
-}
-
-// Language-agnostic header parsing. Matches any "## <header>" line and sanitizes
-// the title — works whether the LLM emits the clean English form (## Summary —
-// English) or the bracketed non-English form (## [臨床注意事項] / ## [臨床注意事項 — 繁體中文]).
-// (Evidence-emoji extraction was removed with the indicator redesign; sanitizeTitle
-// keeps a defensive emoji-strip in case a model still emits one.)
-function parseResearchSections(text: string): ParsedSection[] | null {
-    const headerRegex = /^##\s+(.+?)\s*$/gm;
-    const matches = [...text.matchAll(headerRegex)];
-    if (matches.length === 0) return null;
-
-    const sanitizeTitle = (raw: string): string =>
-        raw
-            .replace(/[🟢🟡🔴]/gu, '')            // strip evidence emoji (any position)
-            .replace(/\s+[—–]\s*.+$/u, '')        // strip " — Lang" suffix (spaced em/en-dash only)
-            .replace(/^[\[【［\s]+/u, '')          // strip leading brackets [ 【 ［
-            .replace(/[\]】］\s]+$/u, '')          // strip trailing brackets ] 】 ］
-            .trim();
-
-    const sections: ParsedSection[] = [];
-    for (let i = 0; i < matches.length; i++) {
-        const match = matches[i];
-        const header = match[1];
-        const title = sanitizeTitle(header);
-        const start = match.index! + match[0].length;
-        const end = i + 1 < matches.length ? matches[i + 1].index! : text.length;
-        // Remove leading --- separator
-        const content = text.slice(start, end).replace(/^\s*---\s*/g, '').trim();
-        if (content) {
-            sections.push({ title, content });
-        }
-    }
-    return sections.length > 0 ? sections : null;
-}
+// Section parsing + LLM-disclaimer strip moved to utils/researchSections.ts
+// (HISTORY car segment 1) — shared with the /history renderer. Behavior unchanged.
 
 // Fixed multilingual sample queries — showcases "Ask in any language" feature.
 // Intentionally NOT translated: the mix of languages itself is the message.

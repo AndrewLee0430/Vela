@@ -4,15 +4,23 @@ import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { useAuth } from '@clerk/nextjs';
 import Link from 'next/link';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import remarkBreaks from 'remark-breaks';
+import rehypeRaw from 'rehype-raw';
 import UpgradeModal from '../components/UpgradeModal';
 import ProFeatureOverlay from '../components/ProFeatureOverlay';
 import PageShell from '../components/PageShell';
 import ShareButton, { type ShareFeature } from '../components/ShareButton';
 import ExplainItemCard, { type ExplainItem } from '../components/ExplainItemCard';
 import ClinicalCorrelationCard, { type ClinicalCorrelation } from '../components/ClinicalCorrelationCard';
+import ResearchSection from '../components/ResearchSection';
+import VerifyInteractionCard, { type DrugInteraction, getRiskBadgeClass, getInteractionSummaryDisplay } from '../components/VerifyInteractionCard';
 import { useLang } from '../utils/LangContext';
 import { getUI } from '../utils/i18n-ui';
 import { getExtra } from '../utils/i18n-extra';
+import { getRiskLevelLabel } from '../utils/i18n-verify';
+import { parseResearchSections, stripLlmDisclaimer } from '../utils/researchSections';
 
 // ─── Design System ────────────────────────────────────────────────────────────
 // C3: feature accents collapsed — features distinguished by label only, not color.
@@ -24,6 +32,39 @@ const FEATURE_LABELS: Record<string, string> = {
 
 function getFeatureLabel(type: string): string {
     return FEATURE_LABELS[type] ?? (type.charAt(0).toUpperCase() + type.slice(1));
+}
+
+// Same prose token set the live /research page uses, so stored answers render
+// identically here (HISTORY car segment 1, Research half A).
+const researchProseStyle = {
+    color: "rgb(var(--color-text) / 0.85)",
+    '--tw-prose-headings': 'rgb(var(--color-text))',
+    '--tw-prose-bold': 'rgb(var(--color-text))',
+    '--tw-prose-links': 'rgb(var(--color-brand))',
+    '--tw-prose-bullets': 'rgb(var(--color-text) / 0.5)',
+    '--tw-prose-counters': 'rgb(var(--color-text) / 0.5)',
+    '--tw-prose-code': 'rgb(var(--color-brand))',
+    '--tw-prose-hr': 'rgb(var(--color-text) / 0.15)',
+} as React.CSSProperties;
+
+// Verify rows: VerifyResponse-shaped JSON (HISTORY car segment 1) — same
+// safe-parse-with-fallback pattern as Explain. Returns null for legacy
+// summary-only rows and malformed JSON.
+interface VerifyHistoryPayload {
+    interactions: DrugInteraction[];
+    summary?: string;
+    risk_level?: string;
+    tfda_groundings?: { query: string; ingredients: string[]; is_combo?: boolean }[] | null;
+    disclaimer?: string;
+    verification_status?: string | null;
+}
+
+function parseVerifyAnswer(answer: string): VerifyHistoryPayload | null {
+    try {
+        const p = JSON.parse(answer);
+        if (p && Array.isArray(p.interactions)) return p as VerifyHistoryPayload;
+    } catch {}
+    return null;
 }
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -158,6 +199,7 @@ function HistoryList() {
 
             {filteredHistory.map(item => {
                 const isExpanded = expandedId === item.id;
+                const verifyParsed = item.session_type === 'verify' ? parseVerifyAnswer(item.answer) : null;
 
                 return (
                     <div
@@ -200,22 +242,41 @@ function HistoryList() {
                         {isExpanded && (
                             <div className="px-6 py-5 border-t" style={{ borderColor: "rgb(var(--color-text) / 0.08)" }}>
 
-                                {/* Research */}
-                                {item.session_type === 'research' && (
-                                    <div 
-                                        className="prose max-w-none prose-sm prose-headings:font-semibold"
-                                        style={{
-                                            color: "rgb(var(--color-text) / 0.8)",
-                                            '--tw-prose-headings': 'rgb(var(--color-text))',
-                                            '--tw-prose-bold': 'rgb(var(--color-text))',
-                                            '--tw-prose-bullets': 'rgb(var(--color-text) / 0.5)',
-                                        } as React.CSSProperties}
-                                    >
-                                        <p className="whitespace-pre-wrap text-sm leading-relaxed" style={{ color: "rgb(var(--color-text) / 0.75)" }}>
-                                            {item.answer}
-                                        </p>
-                                    </div>
-                                )}
+                                {/* Research — Rule 12 section format via the shared parser the live
+                                    /research page uses. Bare [N] markers stay plain text exactly as on
+                                    /research (no citations stored — half B deferred; no fake links).
+                                    Non-conforming/legacy rows fall back to the pre-wrap rendering. */}
+                                {item.session_type === 'research' && (() => {
+                                    const sections = item.answer ? parseResearchSections(stripLlmDisclaimer(item.answer)) : null;
+                                    if (sections) {
+                                        return (
+                                            <div>
+                                                {sections.map((sec, i) => (
+                                                    <ResearchSection key={i} title={sec.title}>
+                                                        <div className="prose max-w-none prose-sm prose-headings:font-semibold prose-h2:text-base" style={researchProseStyle}>
+                                                            <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]} rehypePlugins={[rehypeRaw]}>{sec.content}</ReactMarkdown>
+                                                        </div>
+                                                    </ResearchSection>
+                                                ))}
+                                            </div>
+                                        );
+                                    }
+                                    return (
+                                        <div
+                                            className="prose max-w-none prose-sm prose-headings:font-semibold"
+                                            style={{
+                                                color: "rgb(var(--color-text) / 0.8)",
+                                                '--tw-prose-headings': 'rgb(var(--color-text))',
+                                                '--tw-prose-bold': 'rgb(var(--color-text))',
+                                                '--tw-prose-bullets': 'rgb(var(--color-text) / 0.5)',
+                                            } as React.CSSProperties}
+                                        >
+                                            <p className="whitespace-pre-wrap text-sm leading-relaxed" style={{ color: "rgb(var(--color-text) / 0.75)" }}>
+                                                {item.answer}
+                                            </p>
+                                        </div>
+                                    );
+                                })()}
 
                                 {/* Explain — §2.7 structured JSON: {items, clinical_correlations, disclaimer}.
                                     Safe-parse + fallback to plain text for legacy pre-§2.7 records. */}
@@ -275,20 +336,78 @@ function HistoryList() {
                                             feature={item.session_type as ShareFeature}
                                             queryId={String(item.id)}
                                             queryText={item.question}
-                                            answerText={item.answer}
+                                            // New-format Verify rows store JSON — the SHARE text is the
+                                            // summary line inside it (the exact string legacy rows stored
+                                            // whole); never publish the raw payload.
+                                            answerText={verifyParsed?.summary ?? item.answer}
                                             citations={[]}
                                             source="history"
                                         />
                                     </div>
                                 )}
 
-                                {item.session_type === 'verify' && (
-                                    <div className="space-y-4">
-                                        <div className="rounded-lg p-4" style={{ background: "rgb(var(--color-text) / 0.05)" }}>
-                                            <p className="text-sm" style={{ color: "rgb(var(--color-text) / 0.75)" }}>{item.answer}</p>
+                                {/* Verify — VerifyResponse-shaped JSON rows (HISTORY car segment 1)
+                                    safe-parse into the SAME cards the live /verify page renders
+                                    (shared VerifyInteractionCard: enum-keyed labels, AI-severity
+                                    marker, attribution_kind captions). Legacy summary-only rows
+                                    fall back to the plain box unchanged — no backfill possible. */}
+                                {item.session_type === 'verify' && (() => {
+                                    const parsed = verifyParsed;
+                                    if (parsed) {
+                                        const isFailed = parsed.verification_status === 'failed_no_data';
+                                        const summaryDisplay = getInteractionSummaryDisplay(lang, parsed.interactions);
+                                        return (
+                                            <div className="space-y-4">
+                                                <div className="flex justify-between items-start gap-3">
+                                                    {isFailed ? (
+                                                        <div className="rounded-lg border border-warning/30 bg-warning/10 p-3 text-sm flex-1">
+                                                            <p className="font-medium text-warning mb-1">⚠️ {ui.verifyFailedMsg}</p>
+                                                            <p className="text-text/70">{ui.verifyFailedAdvice}</p>
+                                                        </div>
+                                                    ) : (
+                                                        <p className="text-sm font-medium" style={{ color: summaryDisplay.color }}>
+                                                            {summaryDisplay.text}
+                                                        </p>
+                                                    )}
+                                                    <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium border flex-shrink-0 ${isFailed ? 'bg-warning/10 text-warning border-warning/30' : getRiskBadgeClass(parsed.risk_level ?? '')}`}>
+                                                        {isFailed ? ui.verifyDeferredBadge : getRiskLevelLabel(lang, parsed.risk_level ?? 'Unknown')}
+                                                    </span>
+                                                </div>
+                                                {(parsed.tfda_groundings?.length ?? 0) > 0 && (
+                                                    <div className="space-y-0.5">
+                                                        {parsed.tfda_groundings!.map((g, i) => (
+                                                            <p key={i} className="text-xs text-text/50">
+                                                                {(g.is_combo ? ui.verifyTfdaGroundingComboNote : ui.verifyTfdaGroundingNote)
+                                                                    .replace('{query}', g.query)
+                                                                    .replace('{ingredients}', g.ingredients.join(' + '))}
+                                                            </p>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                                {parsed.interactions.length > 0 && (
+                                                    <div className="space-y-3">
+                                                        {parsed.interactions.map((interaction, idx) => (
+                                                            <VerifyInteractionCard key={idx} interaction={interaction} lang={lang} />
+                                                        ))}
+                                                    </div>
+                                                )}
+                                                {parsed.disclaimer && (
+                                                    <p className="text-xs text-text/40 pt-2 border-t border-text/10">
+                                                        ⚠️ {parsed.disclaimer}
+                                                    </p>
+                                                )}
+                                            </div>
+                                        );
+                                    }
+                                    // Fallback: legacy pre-segment-1 summary rows — render unchanged.
+                                    return (
+                                        <div className="space-y-4">
+                                            <div className="rounded-lg p-4" style={{ background: "rgb(var(--color-text) / 0.05)" }}>
+                                                <p className="text-sm" style={{ color: "rgb(var(--color-text) / 0.75)" }}>{item.answer}</p>
+                                            </div>
                                         </div>
-                                    </div>
-                                )}
+                                    );
+                                })()}
                             </div>
                         )}
                     </div>

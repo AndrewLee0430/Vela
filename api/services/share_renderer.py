@@ -138,8 +138,9 @@ _HEADER_RE = re.compile(
 def parse_research_sections(answer_text: str) -> list[dict[str, Any]]:
     """Split an answer into its `## ` sections.
 
-    Mirrors the JS implementation in pages/research.tsx so the public
-    page renders the same card UI a logged-in user sees on /research.
+    Mirrors the JS implementation in utils/researchSections.ts (moved from
+    pages/research.tsx, HISTORY car segment 1) so the public page renders
+    the same card UI a logged-in user sees on /research.
     """
     if not answer_text or not answer_text.strip():
         return [{"title": None, "content": ""}]
