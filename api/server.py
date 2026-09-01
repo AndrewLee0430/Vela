@@ -1048,6 +1048,39 @@ def _resolve_interaction_source(interaction_drugs: list, provenance: list) -> tu
             ATTR_OPENFDA_ANALYSIS)
 
 
+def _verify_history_payload(
+    *,
+    drugs_analyzed: list,
+    interactions: list,
+    summary: str,
+    risk_level: str,
+    risk_level_label: Optional[str] = None,
+    response_language: Optional[str] = None,
+    disclaimer: str = "",
+    tfda_groundings: Optional[list] = None,
+    verification_status: Optional[str] = None,
+) -> str:
+    """ONE VerifyResponse-shaped JSON for ChatHistory.answer — all three Verify write
+    sites serialize through here (HISTORY car segment 1, founder ruling on
+    recon_20260901 §6#7), mirroring the Explain write pattern (answer=json.dumps).
+    The summary line stays INSIDE the JSON so nothing stored before this change is
+    lost; /history safe-parses and falls back to plain text for legacy summary rows
+    (no backfill possible — the detail was never written). Deliberately EXCLUDES
+    query_id: a stored audit correlation would pre-empt the undecided per-entry-delete
+    scope ruling (BACKLOG deletion-scoping options (d))."""
+    return json.dumps({
+        "drugs_analyzed": list(drugs_analyzed),
+        "interactions": [i.model_dump() for i in interactions],
+        "summary": summary,
+        "risk_level": risk_level,
+        "risk_level_label": risk_level_label,
+        "response_language": response_language,
+        "disclaimer": disclaimer,
+        "tfda_groundings": [g.model_dump() for g in tfda_groundings] if tfda_groundings else None,
+        "verification_status": verification_status,
+    }, ensure_ascii=False)
+
+
 @app.post("/api/verify")
 async def verify_drug_interaction(
     body: VerifyRequest,
@@ -1322,7 +1355,16 @@ async def verify_drug_interaction(
                 fb_summary = "TFDA grounding — " + "; ".join(tfda_notes) + ". " + fb_summary
             if not is_anonymous:
                 _safe_db_write(db, ChatHistory(user_id=user_id, session_type="verify",
-                        question=f"Drugs: {', '.join(body.drugs)}", answer=fb_summary), label="Verify History")
+                        question=f"Drugs: {', '.join(body.drugs)}",
+                        answer=_verify_history_payload(
+                            drugs_analyzed=body.drugs, interactions=fb_interactions,
+                            summary=fb_summary,
+                            risk_level=fb_data.get("risk_level", "Unknown"),
+                            risk_level_label=fb_data.get("risk_level_label") or None,
+                            response_language=response_language,
+                            disclaimer=get_verify_disclaimer(response_language),
+                            tfda_groundings=tfda_groundings,
+                            verification_status="ok")), label="Verify History")
             # Credit / cost accounting for fallback path
             if is_anonymous:
                 await deduct_anonymous_credits(db, anon_id, "verify")
@@ -1364,7 +1406,16 @@ async def verify_drug_interaction(
             fallback_summary = "No FDA label data found. Please use specific drug names."
             if not is_anonymous:
                 _safe_db_write(db, ChatHistory(user_id=user_id, session_type="verify",
-                        question=f"Drugs: {', '.join(body.drugs)}", answer=fallback_summary), label="Verify History")
+                        question=f"Drugs: {', '.join(body.drugs)}",
+                        answer=_verify_history_payload(
+                            drugs_analyzed=body.drugs, interactions=[],
+                            summary=fallback_summary, risk_level="Unknown",
+                            response_language=response_language,
+                            disclaimer=get_verify_disclaimer(response_language),
+                            tfda_groundings=tfda_groundings,
+                            # Mirrors this path's VerifyResponse: a total failure must
+                            # never read as a clean result on /history either.
+                            verification_status="failed_no_data")), label="Verify History")
             return VerifyResponse(
                 drugs_analyzed=body.drugs, interactions=[],
                 summary=fallback_summary,
@@ -1471,7 +1522,15 @@ async def verify_drug_interaction(
             AuditLog(id=audit_id, user_id=user_id,
                 action="verify", query_content=f"Checked: {body.drugs}", ip_address="0.0.0.0"),
             ChatHistory(user_id=user_id, session_type="verify",
-                question=f"Drugs: {', '.join(body.drugs)}", answer=summary),
+                question=f"Drugs: {', '.join(body.drugs)}",
+                answer=_verify_history_payload(
+                    drugs_analyzed=body.drugs, interactions=interactions,
+                    summary=summary, risk_level=risk_level,
+                    risk_level_label=risk_level_label,
+                    response_language=response_language,
+                    disclaimer=get_verify_disclaimer(response_language),
+                    tfda_groundings=tfda_groundings,
+                    verification_status="ok")),
             label="Verify")
 
     # 成功後扣減 credits + log cost

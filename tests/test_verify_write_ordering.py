@@ -13,6 +13,13 @@ strangers read. If the write drifts back above the mutations, that defect
 returns and NOTHING ELSE catches it: the live response path uses the local
 variable and stays correct either way, so every response-level test passes.
 
+2026-09-01 (HISTORY car segment 1): the persisted answer became a JSON payload
+(`answer=_verify_history_payload(... summary=summary ...)`) — the summary line
+now lives INSIDE the stored JSON, so the ordering rule is unchanged: the main-
+site write must still run AFTER both mutations. The handler has THREE payload
+writes (LLM-fallback, fallback-failure, main); the MAIN site is the last one in
+source order, so rindex() still anchors the assertion to it.
+
 Source-level assertion, DB-free, in the tests/test_deletion_coverage.py style:
 comments are STRIPPED before matching, because this repo has been bitten four
 times by prose in comments/docstrings satisfying a substring check — and the
@@ -24,7 +31,8 @@ from pathlib import Path
 SERVER = Path(__file__).resolve().parent.parent / "api" / "server.py"
 
 # Markers, all matched against COMMENT-STRIPPED source:
-WRITE_MARKER = "answer=summary"                    # the persisting write
+WRITE_MARKER = "answer=_verify_history_payload"    # the persisting write (rindex → MAIN site)
+MAIN_SITE_KWARG = "summary=summary"                # proves the MAIN write embeds the mutated var
 MUT_SPELLING = 'summary = "Note: "'                # mutation 1
 MUT_TFDA = 'summary = "TFDA grounding'             # mutation 2
 # A string that exists ONLY inside the fix's explanatory comment — proves the
@@ -49,7 +57,12 @@ def _handler_source(stripped: bool = True) -> str:
 
 def test_persisted_answer_write_is_after_both_mutations():
     src = _handler_source()
-    write_pos = src.rindex(WRITE_MARKER)           # the ChatHistory kwarg
+    write_pos = src.rindex(WRITE_MARKER)           # last payload write = the MAIN site
+    assert MAIN_SITE_KWARG in src[write_pos:write_pos + 400], (
+        "REGRESSION: the MAIN-site payload call no longer embeds the mutated "
+        "`summary` variable — the ordering assertion below would be anchored "
+        "to the wrong write site."
+    )
     assert write_pos > src.index(MUT_SPELLING), (
         "REGRESSION: the answer=summary write appears BEFORE the spelling-"
         "correction mutation — chat_history would store the un-corrected text."
@@ -66,6 +79,7 @@ def test_positive_controls_markers_exist():
     fails here instead of silently passing the ordering test."""
     src = _handler_source()
     assert WRITE_MARKER in src, "persisting write not found — update the guard"
+    assert MAIN_SITE_KWARG in src, "main-site summary kwarg not found — update the guard"
     assert MUT_SPELLING in src, "spelling mutation not found — update the guard"
     assert MUT_TFDA in src, "TFDA mutation not found — update the guard"
 
