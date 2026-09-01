@@ -14,8 +14,19 @@ Classes are **additive and orthogonal** to the existing `[P0]`–`[P3]` ratings 
 | **[COMPLIANCE]** | legal / regulatory / data-protection obligation | **8** |
 | **[HONESTY]** | the product currently tells the user something untrue or misleading | **17** |
 | [DONE] | already fixed / resolved / accepted; retained for the record only | 47 |
-| [OTHER] | quality, hygiene, tooling, opportunistic | 80 |
-| | **total** | **152** |
+| [OTHER] | quality, hygiene, tooling, opportunistic | 82 |
+| | **total** | **154** |
+
+<!-- 🔴 NAV RECOUNTED 2026-09-01 (history probe, docs-only commit).
+     WHAT CHANGED: TWO NEW [OTHER] entries from the founder's fly-241 prod pass —
+     (1) /history has NO per-entry delete (adjudicated (a) NEVER BUILT: zero commits via
+     git log --all -S, no endpoint, BACKLOG's own 2026-08-18 NOT-BUILT scoping; the
+     recollection = memory-blend of fly-236's 105-line re-run removal + deletion-design-E
+     + the retention cron); (2) /history render fidelity is three shapes — Explain full
+     (target), Research text-stored/renderer-missing (+ citations never stored, NO
+     backfill), Verify summary-only (detail never stored, NO backfill).
+     Counts RE-DERIVED (grep -c "^- \[CLASS\]" per class, not incremented):
+     0 + 8 + 17 + 47 + 82 = 154. Cross-checked: grep -c "^- \[" = 154 = the sum. -->
 
 <!-- 🔴 NAV RECOUNTED 2026-08-26 (positioning-ruling car, docs commit 2 of 2).
      WHAT CHANGED: TWO entries ANNOTATED in place, ZERO added/removed/re-classed —
@@ -307,6 +318,19 @@ Classes are **additive and orthogonal** to the existing `[P0]`–`[P3]` ratings 
 When entries are resolved, mark with the resolving commit SHA (git log is the record), then remove.
 
 ---
+
+- [OTHER] **[P2 · /history data management — surfaced by the founder's fly-241 prod pass 2026-09-01; ADJUDICATED, not fixed] History entries have NO per-entry delete — verdict (a) NEVER BUILT; the founder's "it was added" recollection is a memory-blend of three real but different events**
+  - **Observed on prod (fly 241):** an expanded history entry exposes exactly ONE action — Share. Collapsed: expand-toggle only. Derived from code, not just the screen: `pages/history.tsx` renders the toggle (`:168`) and `ShareButton` (`:274`, expanded only) and nothing else; `api/` has only `GET /api/history` (`server.py:1818`) — no per-entry DELETE endpoint exists anywhere.
+  - **Adjudication (a)/(b)/(c), each tested:** **(b) built-then-removed REFUTED** — `git log --all -S "delete" -- pages/history.tsx` = 0 commits and `-S "handleDelete" -- pages/ api/` = 0, across ALL branches. **(c) gated/broken REFUTED** — there is no code to gate. **(a) NEVER BUILT CONFIRMED by the ledger itself:** BACKLOG's deletion-feature entry already records *"❌ History-only option (per-entry delete) — NOT BUILT. FULL SCOPING RECORDED 2026-08-18"*.
+  - **The recollection's likely sources, all real:** (1) **fly 236 `726bf5b` deleted 105 lines from `pages/history.tsx`** — the Verify live re-run that used to fire on expand, i.e. expanded entries genuinely DID once do more; (2) the **deletion-feature design-E work** (`api/services/deletion_service.py` hard-deletes `chat_history` rows — on ACCOUNT deletion, not per entry); (3) the **6-month retention cron** (`server.py:184-196`) which deletes history rows on age. None is a per-entry control.
+  - **Fix shape:** NOT a one-liner — the 2026-08-18 BACKLOG scoping is the authority and stands: `ChatHistory` has an Integer autoincrement PK that is **never sent to the client** (`GET /api/history` would need to expose it), there are **zero ForeignKeys repo-wide**, and anonymous rows are unreachable by any per-entry delete keyed on `chat_history`. Build = expose row id in the GET + add an authenticated `DELETE /api/history/{id}` (owner-checked) + the frontend control. Belongs with deletion-feature C, not as a drive-by.
+
+- [OTHER] **[P2 · /history render fidelity — surfaced by the founder's fly-241 prod pass 2026-09-01; DERIVED per mode, not fixed] History fidelity is three different shapes: Explain FULL (the target), Research raw-markdown (text stored, renderer missing), Verify summary-only (detail NEVER stored — unbackfillable)**
+  - **Founder direction for the eventual fix, recorded:** Explain's history fidelity is the TARGET EXPERIENCE for all three modes.
+  - **Explain = shape (i), fully realized — this is why it looks right:** the write path stores the FULL structured result as JSON serialized into the Text column (`server.py:1576-1593`, `answer=json.dumps(event content)`), and `pages/history.tsx:219-268` safe-parses it and renders the real `ExplainItemCard` + `ClinicalCorrelationCard` with a legacy plain-text fallback. That renderer was itself a deliberate fix (`fbad02c` *"render Explain records as cards, not raw JSON"*) — the other two modes never received their equivalent.
+  - **Research = shape (iii), two halves with different costs:** the write path stores the COMPLETE answer markdown (`full_answer` accumulates every SSE answer chunk, `server.py:899`, stored at `:932`) — but `history.tsx:203-217` renders it as a plain `<p whitespace-pre-wrap>` inside a `prose` wrapper, so `## Summary`, `---` and `[4]` display as raw text. **(half A, frontend-only):** markdown rendering of sections/lists — the section format's established consumers already exist (CLAUDE.md Rule 12: `api/rag/generator.py:358-375` is source of truth; `share_renderer.parse_research_sections` + `pages/research.tsx` parse it), so history can reuse the research page's own rendering. **(half B, write-path + NO backfill):** the CITATION LIST is never stored — `citations_data` streams as a separate SSE event (`server.py:~905`) into `CitationLog`, not into `ChatHistory`; and per the 2026-08-18 scoping there is **no correlation key between `chat_history` and anything else** (zero FKs, no request id), so old rows' bare `[N]` markers can be styled but can never resolve to their references. Full Explain-parity for Research needs the write path to persist citations alongside the answer; **existing rows cannot be backfilled.**
+  - **Verify = shape (ii), flatly:** all three INSERT sites store ONLY the summary line — `answer=summary` (`server.py:1473`), `fb_summary` (`:1324`), `fallback_summary` (`:1366`). The per-interaction detail (drug pairs, severities, per-finding source attribution) is NEVER persisted, which is why prod shows only *"Found 1 interaction(s): 1 Major"*. Fix = write-path change (persist the `VerifyResponse` structure the way Explain persists its result) + a history renderer reusing the verify page's cards; **old rows cannot be backfilled — the detail was never written and no correlation key exists to recover it from any other table.**
+  - ⚠️ **Adjacent, pre-existing, NOT this entry:** the `[COMPLIANCE][P2]` *"`ChatHistory.answer` stored unsanitized"* entry — any write-path change here (storing MORE per mode) should be designed with that entry in view, not in ignorance of it.
 
 - [OTHER] **[P2 · judge-prompt ↔ spec drift — surfaced by the 2026-08-25 defect-2 recon (Ruling 2(a)'s mapping check), NOT fixed] 🔴 PRD §2.7 需求 3 ↔ `explain_judge` drift: the dimension named for citation-source validity FAILS the sources the spec REQUIRES, and the check the spec actually states is UNIMPLEMENTED**
   - **(i)** `citation_source_types_valid` (`api/prompts/explain_judge.md:68-77`) whitelists `{LOINC, RxNorm, MedlinePlus, FDA}` and **FAILS PubMed/NICE/Cochrane — the sources 需求 3 (`docs/PRD.md:621-627`) REQUIRES for clinical judgment** (*"臨床判斷類(必須用 PubMed、FDA、NICE、Cochrane、國家指引)"*). The judge's own documented ground is Path-1 pragmatics (*"Explain has no PubMed retrieval; PubMed citations would be fabricated"* — `explain_judge.md:72`), so the divergence is deliberate-at-the-time, not accidental — but it is drift against the spec's letter all the same.
