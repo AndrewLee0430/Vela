@@ -382,18 +382,23 @@ function usePanelVideo(videoRef: React.RefObject<HTMLVideoElement | null>) {
   }, [videoRef]);
 }
 
-// ── 2f (redesign ruling E, 2026-08-28): the demo poster is DELETED (the jpg
-// removal ships this car) and the poster attribute is gone from the <video>.
-// TWO pre-play treatments behind this ONE-LINE toggle for the localhost
-// review — the founder picks one at review, then the pick ships and the
-// toggle + losing branch are deleted:
-//   'none'     — preload="none": zero media bytes until a real play; the
-//                pre-play frame is a BLANK bordered box (visible <md and
-//                under reduced-motion, where autoplay never runs).
-//   'metadata' — preload="metadata": browsers paint the first frame, BUT the
-//                server ships no byte-range support ([OTHER][P2] TECH_DEBT),
-//                so a browser may fetch the ENTIRE 2.3 MB to get that frame.
-const VIDEO_PRELOAD: 'none' | 'metadata' = 'metadata';
+// ── 2f (redesign ruling E, 2026-08-28) + Gate 8 row 5 (founder ruling,
+// 2026-09-01): the demo poster is DELETED and the poster attribute is gone
+// from the <video>; the pre-play treatment is `preload="metadata"`, now
+// HARDCODED — the review toggle and the losing 'none' branch are deleted.
+//
+// WHY 'metadata' and not 'none': with the poster gone, 'none' would leave
+// mobile a BLANK bordered box until a tap — the opposite of the poster-first
+// UX that Gate 6 row 8 validated on a real iPhone, and below md the video
+// never autoplays by design, so the blank box would be the whole experience
+// for most traffic. 'metadata' has browsers paint the first frame instead.
+// Its cost is bounded and known, not unknown: the server ships no HTTP
+// byte-range support ([OTHER][P2] TECH_DEBT, fix path filed — fastapi
+// 0.115.2 minimum), so a browser MAY fetch the whole 2.3 MB to obtain that
+// frame. The ACTUAL transfer is deliberately left to be measured at the prod
+// re-check, where a real host serves the file; the local static server is
+// not evidence about production behaviour.
+const VIDEO_PRELOAD = 'metadata' as const;
 
 interface Props {
   lc: LandingContent;
