@@ -785,6 +785,11 @@ async def research_query(
 
     async def event_stream():
         full_answer = ""
+        # Bound here, not only in the CITATIONS branch: the generator's exception
+        # path emits ERROR → DONE with NO CITATIONS event, and the DONE write
+        # embeds this list (segment 3 half B) — an unbound local there would turn
+        # the history write into a NameError swallowed as an error event.
+        citations_data: list = []
         audit_id = f"res_{uuid.uuid4().hex[:16]}"
         try:
             # Emit query_id first so the client can tag subsequent analytics events
@@ -925,11 +930,14 @@ async def research_query(
                             u = usage_out[0]
                             await log_api_cost(db, None, "research", u["model"], u["prompt_tokens"], u["completion_tokens"])
                     else:
+                        # Half B (segment 3): markdown + the streamed citation list in ONE
+                        # JSON; the judge/direction tasks below keep receiving the raw
+                        # `full_answer` markdown, never the payload.
                         _safe_db_write(db, ChatHistory(
                                 user_id=user_id,
                                 session_type="research",
                                 question=PHIDetector.sanitize_for_log(body.question),
-                                answer=full_answer
+                                answer=_research_history_payload(full_answer, citations_data)
                             ), label="History Save")
                         # 成功後扣減 credits
                         await deduct_credits(db, user_id, "research")
@@ -1046,6 +1054,26 @@ def _resolve_interaction_source(interaction_drugs: list, provenance: list) -> tu
     return (OPENFDA_ANALYSIS_SOURCE,
             f"https://dailymed.nlm.nih.gov/dailymed/search.cfm?labeltype=all&query={first.replace(' ', '+')}",
             ATTR_OPENFDA_ANALYSIS)
+
+
+def _research_history_payload(full_answer: str, citations: list) -> str:
+    """ONE research_v1-shaped JSON for ChatHistory.answer — the single Research
+    write site serializes through here (HISTORY car segment 3, founder ruling
+    2026-09-02: embed citations in the answer JSON, recon_20260901 §4 option (i)),
+    mirroring the Explain write pattern (answer=json.dumps) and
+    _verify_history_payload. `citations` is the SAME list of Citation.model_dump()
+    dicts the SSE 'citations' event streams — stored unshaped, no lossy subset, so
+    /history renders it through the same CitationPanel the live /research page
+    uses. `kind` is the explicit schema marker /history branches on; pre-segment-3
+    rows are plain markdown, never carry it, and stay on the half-A render path —
+    NO backfill is possible (no correlation key exists; the AuditLog copy holds bare
+    source_ids only — recon §7-D2). Deliberately EXCLUDES audit_id / any request id:
+    the correlation-key route was ruled out, and this payload pre-empts nothing."""
+    return json.dumps({
+        "kind": "research_v1",
+        "answer": full_answer,
+        "citations": list(citations),
+    }, ensure_ascii=False)
 
 
 def _verify_history_payload(
