@@ -371,15 +371,15 @@ This document: `docs/batons/recon_20260901_history_car.md`, committed locally (n
 
 | # | Check · scheme | What to look at | Expected observation | PASS/FAIL | Notes |
 |---|---|---|---|---|---|
-| 1 | (a) delete control — LIGHT | Expand any history row | A "Delete" control (danger-outline, localized) at the bottom of the expanded entry, right of the Share button; legible, not overlapping | | |
-| 2 | (a) delete control — DARK | Same row, dark scheme | Same control, danger colour legible on dark | | |
-| 3 | (b) confirm modal — LIGHT | Click Delete, then Cancel | Modal opens: title "Delete", body text states the deletion is PERMANENT / cannot be undone (legible, correct locale); Cancel closes the modal and **the row survives** (still in the list after cancel) | | |
-| 4 | (b) confirm modal — DARK | Same, dark scheme | Same modal, text and both buttons legible; cancel works; row survives | | |
-| 5 | (c) confirmed delete — LIGHT | Click Delete → confirm | Row disappears from the list immediately, no error, no full-page reload; a page refresh shows it still gone (DB-real, not display-only) | | |
-| 6 | (c) confirmed delete — DARK | Same on another row, dark scheme | Same behaviour | | |
-| 7 | (d) legacy row — LIGHT | Delete a LEGACY row (pre-segment-1 shape, e.g. id 2326/2328) | Deletes identically to a new-format row — the control, modal and removal do not depend on the stored answer shape | | |
-| 8 | (d) legacy row — DARK | Same class of row, dark scheme | Same behaviour | | |
-| 9 | (e) failure path — LIGHT | Simulate write failure if practicable: stop the backend (or DevTools → Network → Offline) AFTER the page has loaded, then Delete → confirm | The modal STAYS OPEN and shows the write-failure string (localized, legible); the row is STILL in the list; Cancel then dismisses. If not simulable in this pass, mark N/A with reason | | |
-| 10 | (e) failure path — DARK | Same, dark scheme | Same; failure string legible on dark. N/A with reason if not simulated | | |
+| 1 | (a) delete control — LIGHT | Expand any history row | A "Delete" control (danger-outline, localized) at the bottom of the expanded entry, right of the Share button; legible, not overlapping | **PASS** | |
+| 2 | (a) delete control — DARK | Same row, dark scheme | Same control, danger colour legible on dark | **PASS** | |
+| 3 | (b) confirm modal — LIGHT | Click Delete, then Cancel | Modal opens: title "Delete", body text states the deletion is PERMANENT / cannot be undone (legible, correct locale); Cancel closes the modal and **the row survives** (still in the list after cancel) | **PASS** | |
+| 4 | (b) confirm modal — DARK | Same, dark scheme | Same modal, text and both buttons legible; cancel works; row survives | **PASS** | |
+| 5 | (c) confirmed delete — LIGHT | Click Delete → confirm | Row disappears from the list immediately, no error, no full-page reload; a page refresh shows it still gone (DB-real, not display-only) | **PASS** | |
+| 6 | (c) confirmed delete — DARK | Same on another row, dark scheme | Same behaviour | **PASS** | |
+| 7 | (d) legacy row — LIGHT | Delete a LEGACY row (pre-segment-1 shape, e.g. id 2326/2328) | Deletes identically to a new-format row — the control, modal and removal do not depend on the stored answer shape | **PASS** | |
+| 8 | (d) legacy row — DARK | Same class of row, dark scheme | Same behaviour | **PASS** | |
+| 9 | (e) failure path — LIGHT | Simulate write failure if practicable: stop the backend (or DevTools → Network → Offline) AFTER the page has loaded, then Delete → confirm | The modal STAYS OPEN and shows the write-failure string (localized, legible); the row is STILL in the list; Cancel then dismisses. If not simulable in this pass, mark N/A with reason | **N/A** | Not simulated — no run record in the build conversation; marked per this form's own allowance rather than transcribing an unobserved PASS. The failure branch is unit-covered (write-failure string kept, dialog stays open) in `74df707`. |
+| 10 | (e) failure path — DARK | Same, dark scheme | Same; failure string legible on dark. N/A with reason if not simulated | **N/A** | Not simulated — no run record in the build conversation; marked per this form's own allowance rather than transcribing an unobserved PASS. The failure branch is unit-covered (write-failure string kept, dialog stays open) in `74df707`. |
 
-**Founder sign-off line (name · date · overall verdict):** _________________
+**Founder sign-off line (name · date · overall verdict):** Andrew Lee (founder) · 2026-09-02 · **8/8 PASS + 2 N/A (failure path not simulated)** — "Founder-PASS, verdict delivered in the build conversation 2026-09-02 incl. founder's own zh-TW confirm-text review; transcribed under the written authorization in the closeout instruction — provenance per the 2026-09-01 zh-TW precedent."
