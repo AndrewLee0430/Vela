@@ -383,3 +383,30 @@ This document: `docs/batons/recon_20260901_history_car.md`, committed locally (n
 | 10 | (e) failure path — DARK | Same, dark scheme | Same; failure string legible on dark. N/A with reason if not simulated | **N/A** | Not simulated — no run record in the build conversation; marked per this form's own allowance rather than transcribing an unobserved PASS. The failure branch is unit-covered (write-failure string kept, dialog stays open) in `74df707`. |
 
 **Founder sign-off line (name · date · overall verdict):** Andrew Lee (founder) · 2026-09-02 · **8/8 PASS + 2 N/A (failure path not simulated)** — "Founder-PASS, verdict delivered in the build conversation 2026-09-02 incl. founder's own zh-TW confirm-text review; transcribed under the written authorization in the closeout instruction — provenance per the 2026-09-01 zh-TW precedent."
+
+---
+
+## §10 — Segment 3 eye gate: Research half B, citation persistence (BLANK — founder fills)
+
+> **Theme-eye style gate (§8/§9 precedent); authorized by founder ruling 2026-09-02 (segment-3 build instruction: *"Research half B = embed citations in the answer JSON"* — §4 option (i); §6#8 posed the three options without a ruling, the ruling is recorded in the TECH_DEBT fidelity entry as the entry of record); results to be entered by the founder only.**
+> Prepared 2026-09-02 at local commits `62682f5` (backend: `_research_history_payload` → `{"kind":"research_v1","answer":<markdown>,"citations":[…]}` at the single Research write site `api/server.py` DONE branch) + `3f3da85` (frontend: `parseResearchAnswer` → half-A sections fed the MARKDOWN + the shared `CitationPanel`). **NOT pushed, NOT deployed — prod still fly 243.** Stack: the founder's own dev stack (backend `:8000` TEST_MODE + frontend `http://localhost:3000/history` — per the segment-1 environment rule, no dev server was started by the build session; `PYTHONUTF8=1` before uvicorn, cp950 P3).
+> **Rows to have on hand (all `test_user`, dev Neon branch `ep-spring-voice-a127ye10` if still in use):**
+> **(n)** ONE NEW research row — run any Research query on `http://localhost:3000/research` AFTER checking out `3f3da85` and restarting the backend; the DONE write now stores research_v1 JSON automatically (pick a query that returns ≥1 reference, e.g. *metformin renal dosing*).
+> **(o)** a PRE-segment-3 research row — the §8 seed **id 2327** (conforming sections, plain markdown) and **id 2328** (legacy free text) if still present; otherwise any research row created before this build.
+> **(m)** a MALFORMED-JSON research row — must be hand-seeded, e.g. `INSERT INTO chat_history (user_id, session_type, question, answer, created_at) VALUES ('test_user', 'research', 'GATE row (m) — malformed JSON', '{"kind": "research_v1", "answer": ', NOW());` (the truncated payload is the shape the `.mjs` guard covers as *"truncated JSON → null"*).
+> ⚠️ **Read before row 7:** history's ShareButton passes `citations={[]}` — a pre-existing adjacency recorded in §4 (*"research shares created from /history already lose citations"*), deliberately NOT changed this segment (it would change what a PUBLIC share page shows — a scope call, not a build call). Row 7 checks that the share page shows the MARKDOWN and not JSON; the absence of a references block on that share page is EXPECTED and is not a segment-3 defect.
+> ⚠️ No AI observation is a gate result. All PASS/FAIL and notes cells below are blank by construction.
+
+| # | Row · scheme | What to look at | Expected observation | PASS/FAIL | Notes |
+|---|---|---|---|---|---|
+| 1 | (n) new research row — LIGHT | Expand the row created after this build | TWO section cards "Summary" / "Clinical Notes" exactly as the §8 row (c) rendered, THEN a references block beneath them in the same card style as the /research right column: "References (N)" title, source-count chips, one card per citation with `[N]` + source name, title, authors/journal/year, abstract with Show more, "View source" link where the URL is absolute. `[N]` markers inside the prose stay PLAIN TEXT (no links) — as on /research | | |
+| 2 | (n) new research row — DARK | Same row, dark scheme | Same content; card backgrounds, chip pills and link colour legible on dark; no white-on-white | | |
+| 3 | (o) pre-segment-3 row — LIGHT | Expand id 2327 (or any pre-build research row) | EXACTLY the segment-1 half-A rendering: section cards (or the pre-wrap paragraph for 2328), literal non-resolving `[N]`, and NO references block — nothing new appears for old rows | | |
+| 4 | (o) pre-segment-3 row — DARK | Same row, dark scheme | Same, legible | | |
+| 5 | (m) malformed-JSON row — LIGHT | Expand "GATE row (m) — malformed JSON" | The pre-wrap paragraph showing the raw stored text `{"kind": "research_v1", "answer": ` — NOT blank, NO crash, no references block | | |
+| 6 | (m) malformed-JSON row — DARK | Same row, dark scheme | Same, legible | | |
+| 7 | share page of (n) | From the expanded (n) row click Share → create → open the `/q/<id>` page (LIGHT is enough) | The public page shows the answer MARKDOWN (sections/bullets rendered) — NOT a JSON blob, NOT a string beginning with `{"kind"`. (No references block on this share page is expected — see the ⚠️ above) | | |
+| 8 | /research live page — parity | Run one Research query on `http://localhost:3000/research`, LIGHT then DARK | IDENTICAL to pre-segment-3 /research: answer sections + provenance line on the left, the references column on the right — this build touched neither `pages/research.tsx` nor `components/CitationPanel.tsx` (diff-empty), so any difference here is a defect | | |
+| 9 | zh-TW strings | Switch the UI language to 繁體中文, expand row (n) | The references block shows the existing zh-TW strings only: the English-references caption above the panel (the same `citationLanguageNote` text /research shows), the 參考文獻 title, chips, 查看來源 / 顯示更多. No English leak, no raw key names, no NEW string anywhere (0 i18n keys were added) | | |
+
+**Founder sign-off line (name · date · overall verdict):** _________________________
