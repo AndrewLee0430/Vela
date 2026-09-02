@@ -524,7 +524,9 @@ function VerifyForm() {
 
                             {result.disclaimer && (
                                 <p className="text-xs text-text/40 pt-2 border-t border-text/10">
-                                    ⚠️ {result.disclaimer}
+                                    {/* The localized disclaimer string carries its own ⚠️ in all
+                                        16 locales — do not prepend a second marker here. */}
+                                    {result.disclaimer}
                                 </p>
                             )}
                             {showThirdQueryCta && !isSignedIn && (

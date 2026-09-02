@@ -329,23 +329,6 @@ function HistoryList() {
                                     );
                                 })()}
 
-                                {/* Verify */}
-                                {(item.session_type === 'verify' || item.session_type === 'research' || item.session_type === 'explain') && (
-                                    <div className="mt-3">
-                                        <ShareButton
-                                            feature={item.session_type as ShareFeature}
-                                            queryId={String(item.id)}
-                                            queryText={item.question}
-                                            // New-format Verify rows store JSON — the SHARE text is the
-                                            // summary line inside it (the exact string legacy rows stored
-                                            // whole); never publish the raw payload.
-                                            answerText={verifyParsed?.summary ?? item.answer}
-                                            citations={[]}
-                                            source="history"
-                                        />
-                                    </div>
-                                )}
-
                                 {/* Verify — VerifyResponse-shaped JSON rows (HISTORY car segment 1)
                                     safe-parse into the SAME cards the live /verify page renders
                                     (shared VerifyInteractionCard: enum-keyed labels, AI-severity
@@ -393,7 +376,9 @@ function HistoryList() {
                                                 )}
                                                 {parsed.disclaimer && (
                                                     <p className="text-xs text-text/40 pt-2 border-t border-text/10">
-                                                        ⚠️ {parsed.disclaimer}
+                                                        {/* The localized disclaimer string carries its own ⚠️ in all
+                                                            16 locales — do not prepend a second marker here. */}
+                                                        {parsed.disclaimer}
                                                     </p>
                                                 )}
                                             </div>
@@ -408,6 +393,23 @@ function HistoryList() {
                                         </div>
                                     );
                                 })()}
+
+                                {/* Verify */}
+                                {(item.session_type === 'verify' || item.session_type === 'research' || item.session_type === 'explain') && (
+                                    <div className="mt-3">
+                                        <ShareButton
+                                            feature={item.session_type as ShareFeature}
+                                            queryId={String(item.id)}
+                                            queryText={item.question}
+                                            // New-format Verify rows store JSON — the SHARE text is the
+                                            // summary line inside it (the exact string legacy rows stored
+                                            // whole); never publish the raw payload.
+                                            answerText={verifyParsed?.summary ?? item.answer}
+                                            citations={[]}
+                                            source="history"
+                                        />
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>
