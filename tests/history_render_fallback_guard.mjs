@@ -6,12 +6,17 @@
 // plain-text fallback branch, never render blank, and never crash the page.
 // And new-format verify JSON must parse to the cards path with the fields the
 // renderer keys on (canonical severity, attribution_kind, summary).
+// Segment 3 (Research half B): research_v1 JSON rows must parse to the
+// markdown + citations path (the section parser is fed the MARKDOWN, never the
+// JSON); pre-segment-3 plain-markdown rows, malformed JSON and foreign-kind
+// JSON must all return null → the half-A path on the raw stored text.
 //
 // No test runner → transpile the REAL sources standalone:
 //   * utils/researchSections.ts has zero imports — transpiled whole.
-//   * parseVerifyAnswer is extracted VERBATIM from pages/history.tsx at run
-//     time, so this guard cannot silently drift from the page — if the function
-//     is renamed or moved, this fails loudly instead of testing a stale copy.
+//   * parseVerifyAnswer / parseResearchAnswer are extracted VERBATIM from
+//     pages/history.tsx at run time, so this guard cannot silently drift from
+//     the page — if a function is renamed or moved, this fails loudly instead
+//     of testing a stale copy.
 // Run: node tests/history_render_fallback_guard.mjs   (also run by
 // tests/test_history_render_fallback.py inside the pytest count)
 import { readFileSync } from 'node:fs';
@@ -89,6 +94,64 @@ if (parseVerifyAnswer) {
     'attribution_kind enum reaches the renderer');
   eq(parsed?.summary, 'Found 1 interaction(s): 1 Major',
     'summary present — the ShareButton text source for new-format rows');
+}
+
+// ── 3. Research half B: research_v1 safe-parse extracted verbatim ───────────
+const rsFnMatch = pageSrc.match(/function parseResearchAnswer[\s\S]*?\n\}/);
+check(!!rsFnMatch, 'parseResearchAnswer not found in pages/history.tsx — update this guard');
+let parseResearchAnswer = null;
+if (rsFnMatch) {
+  const prJs = ts.transpileModule('export ' + rsFnMatch[0], OPTS).outputText;
+  ({ parseResearchAnswer } = await import('data:text/javascript,' + encodeURIComponent(prJs)));
+}
+
+if (parseResearchAnswer) {
+  // Legacy rows — every research row written before segment 3 is plain markdown
+  // (conforming or not) and must take the half-A path on the raw text.
+  check(parseResearchAnswer(conforming) === null,
+    'pre-segment-3 conforming markdown → null (half-A sections on the raw text)');
+  check(parseResearchAnswer('plain prose answer with no headers') === null,
+    'pre-segment-3 free text → null (pre-wrap on the raw text)');
+  check(parseResearchAnswer('') === null, 'empty answer → null (fallback), not a crash');
+  // Malformed / foreign-kind JSON → null, never a throw, never a blank card.
+  check(parseResearchAnswer('{"kind": "research_v1", "answer": ') === null,
+    'truncated JSON → null (pre-wrap on the raw text, never blank)');
+  check(parseResearchAnswer('null') === null, 'JSON null → null (fallback)');
+  check(parseResearchAnswer('{"interactions": [], "summary": "x"}') === null,
+    'foreign-kind JSON (a verify payload) → null');
+  check(parseResearchAnswer('{"kind": "research_v1", "answer": 42, "citations": []}') === null,
+    'research_v1 with a non-string answer → null (never render a number as markdown)');
+  check(parseResearchAnswer('{"kind": "research_v2", "answer": "x", "citations": []}') === null,
+    'unknown kind → null (a future schema must not be half-rendered by this branch)');
+
+  // New-format payload → markdown + citations, with the section parser fed the MARKDOWN.
+  const citations = [
+    { id: 1, source_type: 'pubmed', source_id: 'PMID:1', title: 'T1', snippet: 's1',
+      url: 'https://pubmed.ncbi.nlm.nih.gov/1/', credibility: 'peer-reviewed', year: '2021' },
+    { id: 2, source_type: 'dailymed', source_id: 'setid:abc', title: 'T2', snippet: 's2',
+      url: 'https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=abc', credibility: 'official' },
+  ];
+  const payload = JSON.stringify({ kind: 'research_v1', answer: conforming, citations });
+  const parsed = parseResearchAnswer(payload);
+  check(parsed !== null, 'research_v1 payload → cards path');
+  eq(parsed?.answer, conforming, 'markdown round-trips byte-identically out of the JSON');
+  eq(parsed?.citations?.map(c => c.id), [1, 2], 'citation ids reach the CitationPanel');
+  eq(parsed?.citations?.[0]?.source_type, 'pubmed', 'citation objects reach the panel unshaped');
+  const viaJson = parseResearchSections(stripLlmDisclaimer(parsed?.answer ?? ''));
+  check(viaJson !== null && viaJson.length === 2,
+    'JSON row → the section parser sees the MARKDOWN and yields 2 sections');
+  check(!!viaJson?.[0]?.content.includes('[1]'),
+    '[N] markers stay literal text on the JSON path too (resolution is the adjacent panel, as on /research)');
+  // Citations key missing → [] (older writer / hand-seeded row), never a crash on .length.
+  const noCit = parseResearchAnswer(JSON.stringify({ kind: 'research_v1', answer: conforming }));
+  eq(noCit?.citations, [], 'missing citations key → empty list');
+  // JSON row whose markdown is NON-conforming → parsed (citations kept) but the
+  // section parser returns null → the pre-wrap path must show the MARKDOWN, not the JSON.
+  const nonConforming = parseResearchAnswer(JSON.stringify({ kind: 'research_v1', answer: 'plain prose', citations }));
+  check(nonConforming !== null && parseResearchSections(nonConforming.answer) === null,
+    'non-conforming markdown inside JSON → pre-wrap path');
+  check(nonConforming?.answer === 'plain prose' && !nonConforming.answer.startsWith('{'),
+    'the pre-wrap text is the markdown, never the raw JSON');
 }
 
 // ── Report ──────────────────────────────────────────────────────────────────

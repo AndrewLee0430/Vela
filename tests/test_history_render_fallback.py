@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
-"""/history render fidelity — fallback wiring + behavioral guard (segment 1).
+"""/history render fidelity — fallback wiring + behavioral guard (segments 1 + 3).
 
 THE BUSINESS RULE (CLAUDE.md Rule 17 — what breaks if this fails):
-Old history rows CANNOT be backfilled (the verify detail was never written), so
-the page carries two renderers per mode: structured cards for new-format rows,
-and the pre-segment-1 plain-text rendering for legacy rows. If the fallback
-branches disappear, every pre-2026-09-01 verify/research row renders blank or
-crashes; if the ShareButton reads the raw stored JSON, a share created from a
-new-format verify row publishes the payload verbatim to a PUBLIC page.
+Old history rows CANNOT be backfilled (the verify detail was never written; the
+research citations were never written), so the page carries two renderers per
+mode: structured cards for new-format rows, and the pre-segment plain-text
+rendering for legacy rows. If the fallback branches disappear, every
+pre-2026-09-01 verify row and every pre-segment-3 research row renders blank
+or crashes; if the ShareButton reads the raw stored JSON, a share created from
+a new-format verify OR research row publishes the payload verbatim to a PUBLIC
+page (segment 3: a research_v1 row must share its MARKDOWN, never the JSON).
 
 Source assertions here pin the wiring in pages/history.tsx; the behavioral half
 (the parsers executed against legacy and new-format fixtures) lives in
@@ -32,22 +34,31 @@ def _page_source() -> str:
     return _strip_comments(_PAGE.read_text(encoding="utf-8"))
 
 
-def test_share_text_never_the_raw_verify_json():
-    """The ShareButton must read the summary out of a new-format verify row —
-    publishing item.answer verbatim would put the JSON payload on a public
-    share page."""
+SHARE_TEXT_RE = (
+    r"answerText=\{verifyParsed\?\.summary\s*\?\?\s*"
+    r"researchParsed\?\.answer\s*\?\?\s*item\.answer\}"
+)
+
+
+def test_share_text_never_the_raw_json():
+    """The ShareButton must read the summary out of a new-format verify row
+    and the MARKDOWN out of a new-format research row — publishing item.answer
+    verbatim would put either JSON payload on a public share page."""
     code = _page_source()
-    assert re.search(r"answerText=\{verifyParsed\?\.summary\s*\?\?\s*item\.answer\}", code), (
-        "ShareButton no longer prefers verifyParsed.summary — a share from a "
-        "new-format verify row would publish the raw stored JSON"
+    assert re.search(SHARE_TEXT_RE, code), (
+        "ShareButton no longer prefers verifyParsed.summary ?? researchParsed.answer "
+        "— a share from a new-format verify or research row would publish the raw "
+        "stored JSON"
     )
 
 
-def test_both_fallback_branches_are_wired():
+def test_all_fallback_branches_are_wired():
     """Each mode keeps its legacy rendering reachable: verify's plain box and
-    research's pre-wrap paragraph must still exist alongside the cards path."""
+    research's pre-wrap paragraph must still exist alongside the cards path;
+    research_v1 rows must reach the shared CitationPanel."""
     code = _page_source()
     assert "parseVerifyAnswer" in code, "verify safe-parse helper missing"
+    assert "parseResearchAnswer" in code, "research_v1 safe-parse helper missing"
     assert "parseResearchSections" in code, "research section parser not used"
     # The legacy verify plain box (pre-segment-1 markup) is still present.
     assert code.count("whitespace-pre-wrap") >= 1, (
@@ -55,6 +66,9 @@ def test_both_fallback_branches_are_wired():
     )
     assert re.search(r"VerifyInteractionCard", code), (
         "the shared verify card is no longer rendered on /history"
+    )
+    assert re.search(r"<CitationPanel\s+citations=\{researchParsed\.citations\}", code), (
+        "research_v1 citations no longer render through the shared CitationPanel"
     )
 
 
@@ -81,8 +95,8 @@ def test_the_guards_actually_fire():
     """Negative controls: the patterns above reject plausible wrong versions."""
     # Comment stripping removes prose naming the identifiers.
     assert "parseVerifyAnswer" not in _strip_comments("// parseVerifyAnswer in prose\n")
-    # The share pattern is NOT satisfied by the pre-change raw form.
-    assert not re.search(
-        r"answerText=\{verifyParsed\?\.summary\s*\?\?\s*item\.answer\}",
-        "answerText={item.answer}",
-    )
+    assert "parseResearchAnswer" not in _strip_comments("/* parseResearchAnswer */\n")
+    # The share pattern is NOT satisfied by the pre-segment-1 raw form, nor by
+    # the segment-1 form (which would publish a research_v1 row's raw JSON).
+    assert not re.search(SHARE_TEXT_RE, "answerText={item.answer}")
+    assert not re.search(SHARE_TEXT_RE, "answerText={verifyParsed?.summary ?? item.answer}")

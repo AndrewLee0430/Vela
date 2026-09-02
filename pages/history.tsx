@@ -15,6 +15,7 @@ import ShareButton, { type ShareFeature } from '../components/ShareButton';
 import ExplainItemCard, { type ExplainItem } from '../components/ExplainItemCard';
 import ClinicalCorrelationCard, { type ClinicalCorrelation } from '../components/ClinicalCorrelationCard';
 import ResearchSection from '../components/ResearchSection';
+import CitationPanel, { type Citation } from '../components/CitationPanel';
 import VerifyInteractionCard, { type DrugInteraction, getRiskBadgeClass, getInteractionSummaryDisplay } from '../components/VerifyInteractionCard';
 import { useLang } from '../utils/LangContext';
 import { getUI } from '../utils/i18n-ui';
@@ -64,6 +65,34 @@ function parseVerifyAnswer(answer: string): VerifyHistoryPayload | null {
     try {
         const p = JSON.parse(answer);
         if (p && Array.isArray(p.interactions)) return p as VerifyHistoryPayload;
+    } catch {}
+    return null;
+}
+
+// Research rows: research_v1 JSON (HISTORY car segment 3, half B) — the answer
+// MARKDOWN plus the SAME citation list the live /research page streamed
+// (api/server.py _research_history_payload). Same safe-parse-with-fallback
+// pattern as Verify/Explain: null for pre-segment-3 plain-markdown rows,
+// malformed JSON and foreign/unknown kinds — those render the raw stored text
+// through the half-A path. NO backfill exists for old rows (citations were
+// never written and no correlation key exists), so their [N] markers stay
+// literal forever.
+interface ResearchHistoryPayload {
+    kind: 'research_v1';
+    answer: string;
+    citations: Citation[];
+}
+
+function parseResearchAnswer(answer: string): ResearchHistoryPayload | null {
+    try {
+        const p = JSON.parse(answer);
+        if (p && p.kind === 'research_v1' && typeof p.answer === 'string') {
+            return {
+                kind: 'research_v1',
+                answer: p.answer,
+                citations: Array.isArray(p.citations) ? p.citations : [],
+            };
+        }
     } catch {}
     return null;
 }
@@ -230,6 +259,7 @@ function HistoryList() {
             {filteredHistory.map(item => {
                 const isExpanded = expandedId === item.id;
                 const verifyParsed = item.session_type === 'verify' ? parseVerifyAnswer(item.answer) : null;
+                const researchParsed = item.session_type === 'research' ? parseResearchAnswer(item.answer) : null;
 
                 return (
                     <div
@@ -273,11 +303,30 @@ function HistoryList() {
                             <div className="px-6 py-5 border-t" style={{ borderColor: "rgb(var(--color-text) / 0.08)" }}>
 
                                 {/* Research — Rule 12 section format via the shared parser the live
-                                    /research page uses. Bare [N] markers stay plain text exactly as on
-                                    /research (no citations stored — half B deferred; no fake links).
-                                    Non-conforming/legacy rows fall back to the pre-wrap rendering. */}
+                                    /research page uses. research_v1 rows (segment 3, half B) carry the
+                                    markdown under `answer` and the streamed citation list, rendered
+                                    through the SAME CitationPanel as /research; the section parser is
+                                    always fed the MARKDOWN, never the JSON. Bare [N] markers stay plain
+                                    text exactly as on /research (no marker→link mapping exists there
+                                    either — resolution is the adjacent panel). Pre-segment-3 rows are
+                                    plain markdown with no citations (unbackfillable); non-conforming /
+                                    legacy / malformed rows fall back to the pre-wrap rendering. */}
                                 {item.session_type === 'research' && (() => {
-                                    const sections = item.answer ? parseResearchSections(stripLlmDisclaimer(item.answer)) : null;
+                                    const markdown = researchParsed?.answer ?? item.answer;
+                                    const sections = markdown ? parseResearchSections(stripLlmDisclaimer(markdown)) : null;
+                                    // Same container + English-references caption as the /research right
+                                    // column (Rule 19 carry-across); renders only when the row carries ≥1
+                                    // citation — legacy rows have none to show and must not claim otherwise.
+                                    const citationBlock = researchParsed && researchParsed.citations.length > 0 ? (
+                                        <div className="mt-5 rounded-xl p-6" style={{ background: "rgb(var(--color-text) / 0.06)", border: "1px solid rgb(var(--color-text) / 0.1)" }}>
+                                            {lang !== 'en' && (
+                                                <p className="text-xs mb-3 text-text/40">
+                                                    {ui.citationLanguageNote}
+                                                </p>
+                                            )}
+                                            <CitationPanel citations={researchParsed.citations} />
+                                        </div>
+                                    ) : null;
                                     if (sections) {
                                         return (
                                             <div>
@@ -288,22 +337,26 @@ function HistoryList() {
                                                         </div>
                                                     </ResearchSection>
                                                 ))}
+                                                {citationBlock}
                                             </div>
                                         );
                                     }
                                     return (
-                                        <div
-                                            className="prose max-w-none prose-sm prose-headings:font-semibold"
-                                            style={{
-                                                color: "rgb(var(--color-text) / 0.8)",
-                                                '--tw-prose-headings': 'rgb(var(--color-text))',
-                                                '--tw-prose-bold': 'rgb(var(--color-text))',
-                                                '--tw-prose-bullets': 'rgb(var(--color-text) / 0.5)',
-                                            } as React.CSSProperties}
-                                        >
-                                            <p className="whitespace-pre-wrap text-sm leading-relaxed" style={{ color: "rgb(var(--color-text) / 0.75)" }}>
-                                                {item.answer}
-                                            </p>
+                                        <div>
+                                            <div
+                                                className="prose max-w-none prose-sm prose-headings:font-semibold"
+                                                style={{
+                                                    color: "rgb(var(--color-text) / 0.8)",
+                                                    '--tw-prose-headings': 'rgb(var(--color-text))',
+                                                    '--tw-prose-bold': 'rgb(var(--color-text))',
+                                                    '--tw-prose-bullets': 'rgb(var(--color-text) / 0.5)',
+                                                } as React.CSSProperties}
+                                            >
+                                                <p className="whitespace-pre-wrap text-sm leading-relaxed" style={{ color: "rgb(var(--color-text) / 0.75)" }}>
+                                                    {markdown}
+                                                </p>
+                                            </div>
+                                            {citationBlock}
                                         </div>
                                     );
                                 })()}
@@ -435,8 +488,9 @@ function HistoryList() {
                                             queryText={item.question}
                                             // New-format Verify rows store JSON — the SHARE text is the
                                             // summary line inside it (the exact string legacy rows stored
-                                            // whole); never publish the raw payload.
-                                            answerText={verifyParsed?.summary ?? item.answer}
+                                            // whole); new-format Research rows share their MARKDOWN.
+                                            // Never publish a raw payload to a public page.
+                                            answerText={verifyParsed?.summary ?? researchParsed?.answer ?? item.answer}
                                             citations={[]}
                                             source="history"
                                         />
