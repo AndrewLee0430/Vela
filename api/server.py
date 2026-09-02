@@ -307,7 +307,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
-    allow_methods=["GET", "POST"],
+    allow_methods=["GET", "POST", "DELETE"],
     allow_headers=["Authorization", "Content-Type", "X-Anon-Fingerprint"],
 )
 
@@ -1874,7 +1874,27 @@ async def create_bug_report(
 # ============================================================
 # 功能 6：History
 # ============================================================
-@app.get("/api/history")
+from datetime import datetime as _history_dt
+
+
+# GET /api/history response shape — exactly the fields pages/history.tsx
+# consumes. Explicit so the raw ORM row's user_id is never serialized to the
+# client (recon 2026-09-01 §7-D1: with no response_model FastAPI emitted all
+# 6 columns, user_id included). String/date fields stay Optional to mirror the
+# nullable columns — a NULL cell must not 500 the whole listing.
+# Deliberately NO docstring: component-schema descriptions publish verbatim to
+# /openapi.json (see the TECH_DEBT CitationIn entry).
+class ChatHistoryEntry(BaseModel):
+    model_config = {"from_attributes": True}
+
+    id: int
+    session_type: Optional[str] = None
+    question: Optional[str] = None
+    answer: Optional[str] = None
+    created_at: Optional[_history_dt] = None
+
+
+@app.get("/api/history", response_model=list[ChatHistoryEntry])
 async def get_user_history(
     creds: Optional[HTTPAuthorizationCredentials] = Depends(require_auth),
     db: Session = Depends(get_db)
@@ -1900,6 +1920,40 @@ async def get_user_history(
         query = query.filter(ChatHistory.created_at >= cutoff)
 
     return query.order_by(desc(ChatHistory.created_at)).limit(200).all()
+
+
+# Per-entry history delete — HISTORY car, founder ruling (d)(iii) 2026-09-01:
+# deletes the chat_history row ONLY. audit_logs is ruled out of per-entry scope
+# (no correlation key exists anyway), and user_feedback's full-copy problem
+# stays open in TECH_DEBT. Coexistence: the age-based retention cron
+# (_cleanup_old_records) and the account-level deletion_service each delete
+# over this table independently; this endpoint touches neither path.
+# No docstring: operation descriptions publish verbatim to /openapi.json.
+@app.delete("/api/history/{entry_id}")
+async def delete_history_entry(
+    entry_id: int,
+    creds: Optional[HTTPAuthorizationCredentials] = Depends(require_auth),
+    db: Session = Depends(get_db)
+):
+    user_id = get_user_id(creds)
+
+    # Rule 7 class (a): a targeted DELETE is DML _safe_db_write cannot express
+    # (the helper is add+commit only). The direct commit also carries (b)
+    # semantics: a failed delete must propagate as a 500, never be swallowed
+    # into a response the client would read as success (Rule 18).
+    deleted = db.query(ChatHistory).filter(
+        ChatHistory.id == entry_id,
+        ChatHistory.user_id == user_id,
+    ).delete()
+    if not deleted:
+        db.rollback()
+        # Absent id and non-owned id return the SAME 404 body — deliberately
+        # indistinguishable, so the endpoint leaks no row existence across
+        # users (founder ruling #4).
+        from fastapi import HTTPException
+        raise HTTPException(status_code=404, detail="Not found")
+    db.commit()
+    return {"status": "deleted", "id": entry_id}
 
 
 # ============================================================
