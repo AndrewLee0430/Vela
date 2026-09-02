@@ -19,6 +19,7 @@ import VerifyInteractionCard, { type DrugInteraction, getRiskBadgeClass, getInte
 import { useLang } from '../utils/LangContext';
 import { getUI } from '../utils/i18n-ui';
 import { getExtra } from '../utils/i18n-extra';
+import { getShare } from '../utils/i18n-share';
 import { getRiskLevelLabel } from '../utils/i18n-verify';
 import { parseResearchSections, stripLlmDisclaimer } from '../utils/researchSections';
 
@@ -68,9 +69,10 @@ function parseVerifyAnswer(answer: string): VerifyHistoryPayload | null {
 }
 // ─────────────────────────────────────────────────────────────────────────────
 
+// Mirrors ChatHistoryEntry (api/server.py) — the GET /api/history response
+// model no longer serializes user_id (delete segment, recon §7-D1).
 interface HistoryItem {
     id: number;
-    user_id: string;
     session_type: string;
     question: string;
     answer: string;
@@ -90,9 +92,13 @@ function HistoryList() {
     const { lang } = useLang();
     const ui = getUI(lang);
     const extra = getExtra(lang);
+    const share = getShare(lang);
     const [history, setHistory] = useState<HistoryItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [expandedId, setExpandedId] = useState<number | null>(null);
+    const [deleteTarget, setDeleteTarget] = useState<HistoryItem | null>(null);
+    const [deletingId, setDeletingId] = useState<number | null>(null);
+    const [deleteError, setDeleteError] = useState(false);
     const [plan, setPlan] = useState<'free' | 'pro'>(() => {
         if (typeof window === 'undefined') return 'free';
         try {
@@ -144,6 +150,29 @@ function HistoryList() {
         }
     }
 
+    async function handleConfirmDelete() {
+        if (!deleteTarget) return;
+        setDeletingId(deleteTarget.id);
+        setDeleteError(false);
+        try {
+            const token = await getToken({ skipCache: true });
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/history/${deleteTarget.id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` },
+            });
+            if (!res.ok) throw new Error('delete failed');
+            setHistory(prev => prev.filter(i => i.id !== deleteTarget.id));
+            if (expandedId === deleteTarget.id) setExpandedId(null);
+            setDeleteTarget(null);
+        } catch {
+            // Keep the dialog open with the write-failure string — the user
+            // can retry or cancel; the row is still in the list.
+            setDeleteError(true);
+        } finally {
+            setDeletingId(null);
+        }
+    }
+
     if (loading) {
         return (
             <div className="text-center py-16">
@@ -169,6 +198,7 @@ function HistoryList() {
         : history;
 
     return (
+        <>
         <div className="space-y-3">
             {/* Free plan banner */}
             {plan === 'free' && (
@@ -394,9 +424,11 @@ function HistoryList() {
                                     );
                                 })()}
 
-                                {/* Verify */}
-                                {(item.session_type === 'verify' || item.session_type === 'research' || item.session_type === 'explain') && (
-                                    <div className="mt-3">
+                                {/* Footer: share + per-entry delete. The delete control renders for
+                                    EVERY session type (legacy/unknown rows included — any id works);
+                                    Share stays gated to the three shareable features. */}
+                                <div className="mt-3 flex items-center justify-between gap-3">
+                                    {(item.session_type === 'verify' || item.session_type === 'research' || item.session_type === 'explain') ? (
                                         <ShareButton
                                             feature={item.session_type as ShareFeature}
                                             queryId={String(item.id)}
@@ -408,14 +440,78 @@ function HistoryList() {
                                             citations={[]}
                                             source="history"
                                         />
-                                    </div>
-                                )}
+                                    ) : <span />}
+                                    <button
+                                        type="button"
+                                        onClick={() => { setDeleteError(false); setDeleteTarget(item); }}
+                                        className="px-3 py-1.5 text-xs font-medium rounded-lg transition-colors cursor-pointer flex-shrink-0"
+                                        style={{
+                                            background: 'transparent',
+                                            border: '1px solid rgb(var(--color-danger) / 0.4)',
+                                            color: 'rgb(var(--color-danger))',
+                                        }}
+                                    >
+                                        {ui.historyDeleteBtn}
+                                    </button>
+                                </div>
                             </div>
                         )}
                     </div>
                 );
             })}
         </div>
+
+        {/* Per-entry delete confirm dialog — third inline confirm modal in the
+            codebase (after MySharesTab + Navbar); shared-modal extraction is
+            filed as debt (founder ruling #6). Confirm text states
+            irreversibility by construction — do NOT swap in the revoke string
+            (revoke is reversible; this is not). */}
+        {deleteTarget && (
+            <div
+                className="fixed inset-0 z-50 flex items-center justify-center p-4"
+                style={{ background: 'rgba(0,0,0,0.7)' }}
+                onClick={() => { if (deletingId === null) setDeleteTarget(null); }}
+            >
+                <div
+                    role="dialog"
+                    aria-modal="true"
+                    className="w-full max-w-md rounded-2xl p-6 bg-bg-2 border border-text/12"
+                    onClick={e => e.stopPropagation()}
+                >
+                    <h2 className="text-base font-semibold mb-3 text-text">
+                        {ui.historyDeleteBtn}
+                    </h2>
+                    <p className="text-sm mb-5 text-text/70">
+                        {ui.historyDeleteConfirm}
+                    </p>
+                    {deleteError && (
+                        <p className="text-sm mb-4" style={{ color: 'rgb(var(--color-danger))' }}>
+                            {ui.historyDeleteError}
+                        </p>
+                    )}
+                    <div className="flex justify-end gap-2">
+                        <button
+                            type="button"
+                            onClick={() => setDeleteTarget(null)}
+                            disabled={deletingId !== null}
+                            className="px-4 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer border border-text/20 text-text/85 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            {share.modalCancel}
+                        </button>
+                        <button
+                            type="button"
+                            onClick={handleConfirmDelete}
+                            disabled={deletingId !== null}
+                            className="px-4 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                            style={{ background: 'rgb(var(--color-danger) / 0.15)', border: '1px solid rgb(var(--color-danger) / 0.4)', color: 'rgb(var(--color-danger))' }}
+                        >
+                            {deletingId !== null ? ui.historyDeleting : ui.historyDeleteBtn}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        )}
+        </>
     );
 }
 

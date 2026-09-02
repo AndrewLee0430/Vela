@@ -1,7 +1,33 @@
-// History page READ-ONLY guard — asserts that viewing history cannot write.
+// History page WRITE-SCOPE guard — asserts the ONLY mutation originating in
+// pages/history.tsx is the per-entry DELETE to /api/history/{id}.
 //
 // Rule 20: this is committed evidence (script), not scratch.
 // Usage: node tests/probes/history_readonly_smoke.mjs      (reads SOURCE, no build needed)
+//
+// ─────────────────────────────────────────────────────────────────────────────
+// NARROWED 2026-09-02 (HISTORY car, delete segment — founder ruling #10)
+// ─────────────────────────────────────────────────────────────────────────────
+// Until this segment, this probe asserted "reads, and only reads": NO mutating
+// HTTP verb anywhere in the page. That property is now FALSE BY DESIGN — the
+// per-entry delete (founder-ratified option (d)(iii), 2026-09-01/02) puts one
+// deliberate DELETE fetch in this page. The probe's own header made removal
+// the decision point: "whoever builds it must DELETE THIS PROBE DELIBERATELY,
+// in the same commit, with the reasoning written down."
+//
+// The reasoning: NARROWED, not retired. The business rule this probe exists
+// for is NOT "the page never mutates" — it is "READING history cannot write"
+// (the 2026-02→08 regression: expanding a Verify entry POSTed to /api/verify,
+// deducted a credit, and wrote fresh AuditLog+ChatHistory rows — invisible in
+// review for six months). A user-confirmed delete is not a read-path write; a
+// re-run POST still is. So the guard keeps everything that pins the original
+// regression and carves out exactly the one sanctioned mutation:
+//   * NO POST / PUT / PATCH anywhere in the page (unchanged);
+//   * EXACTLY ONE DELETE, and it targets /api/history/ (the sanctioned call);
+//   * the re-run helper stays pinned gone by name (unchanged);
+//   * positive controls: still a live read surface (unchanged).
+// The filename keeps "readonly" for continuity of the ledger references that
+// point here (TECH_DEBT / BACKLOG / recon baton); the property it now pins is
+// the narrowed one stated in line 1.
 //
 // ─────────────────────────────────────────────────────────────────────────────
 // THE BUSINESS RULE (CLAUDE.md Rule 17)
@@ -10,81 +36,25 @@
 //
 // From the initial commit (631b6e5, 2026-02-13) until 2026-08-17, expanding a
 // Verify entry on /history POSTed to /api/verify to re-fetch the interaction
-// list, because only a count roll-up was ever stored. Over the four systems that
-// grew around it afterwards, that one fetch came to:
-//   * run a DIFFERENT query than the original — patient_context was dropped and
-//     response_language never sent, so the "details" could be clinically
-//     different from what the user saw, and could come back in English;
-//   * render those interactions with NO Option-C attribution, making the history
-//     surface less honest than the live Verify page;
-//   * deduct a credit and write a fresh AuditLog + ChatHistory row — so the
-//     history table recorded reads as if they were queries;
-//   * fail silently to an empty Interactions block once quota ran out.
-//
-// None of that is visible in review. A `fetch` with `method: 'POST'` inside a
-// display helper reads like data loading. It survived six months of review.
-//
-// 🔴 THIS GUARD IS NOT HERE TO FORBID A FUTURE MUTATION. If history genuinely
-// needs to write, whoever builds it must DELETE THIS PROBE DELIBERATELY, in the
-// same commit, with the reasoning written down. Removing it IS the decision
-// point. That is its entire job.
-//
-// The concrete case is scoped and written down: BACKLOG.md → "Deletion-feature
-// C" → the "History-only option (per-entry delete)" sub-bullet, which carries
-// the full scoping as of 2026-08-18 — why chat_history and audit_logs cannot be
-// correlated, the three sized options, and the i18n/modal surface a delete UI
-// would need. This clause used to say only "a per-entry delete is already
-// scoped", which was true but pointed nowhere; it now names the entry, so the
-// builder can read the constraints instead of rediscovering them.
-// (Same pattern as the Clerk non-destructive guard, tests/test_deletion_coverage.py.)
+// list, because only a count roll-up was ever stored. Over the four systems
+// that grew around it afterwards, that one fetch came to run a DIFFERENT query
+// than the original, render with NO Option-C attribution, deduct a credit and
+// write a fresh AuditLog + ChatHistory row, and fail silently once quota ran
+// out. None of that is visible in review — a `fetch` with `method: 'POST'`
+// inside a display helper reads like data loading. It survived six months.
 //
 // ─────────────────────────────────────────────────────────────────────────────
-// ⚠️ SCOPE OF WHAT THIS PROBE PROVES  (added 2026-08-17)
+// ⚠️ SCOPE OF WHAT THIS PROBE PROVES  (2026-08-17, wording corrected 08-18)
 // ─────────────────────────────────────────────────────────────────────────────
-// This probe reads THE SOURCE TEXT OF pages/history.tsx AND NOTHING ELSE.
-// It does not read that file's imported components, and it does not walk the
-// transitive mount tree. Green here means:
-//
-//     "no write ORIGINATES in this page's own source"
-//
-// It does NOT mean "this page cannot write", and the difference is not
-// hypothetical. pages/history.tsx renders ShareButton, and clicking Share does
-// issue a write. Mounting this page transitively reaches four distinct write
-// endpoints:
-//
-//   /api/share/create        components/ShareModal.tsx:107
-//                            ^ NOT ShareButton.tsx — that file has no fetch at
-//                              all; it only renders the modal (:159). Anyone
-//                              re-deriving this scope note will look in the
-//                              wrong file first, as the first draft of it did.
-//   /api/checkout/dodo       components/UpgradeModal.tsx:32
-//                            ^ CORRECTED 2026-08-18: this file DOES import
-//                              UpgradeModal (line 7), but never renders it —
-//                              zero `<UpgradeModal` in the JSX, a dead import
-//                              already recorded in STATE. So at RENDER time the
-//                              endpoint is reachable ONLY via
-//                              ProFeatureOverlay.tsx:156 and Navbar.tsx:362.
-//                              The earlier wording, "reachable from this page's
-//                              OWN direct import", confused an import with a
-//                              mount and contradicted STATE's own dead-import
-//                              finding.
-//   /api/subscription/cancel components/Navbar.tsx:138      (via PageShell)
-//   /api/bug-report          components/BugReportButton.tsx:84 (via PageShell)
-//
-// Three of the four arrive through PageShell / ProFeatureOverlay. CORRECTED
-// 2026-08-18: the earlier wording said "chrome this page never names", which is
-// wrong — this page names AND renders both PageShell (:9, :305) and
-// ProFeatureOverlay (:8, :142). What it never names are the components that
-// actually CONTAIN the fetches: Navbar, BugReportButton and ShareModal.
-//
-// (Why 3-of-4 and not 4-of-4: /api/share/create arrives via <ShareButton> at
-// :274-281, which this page does name. It would ALSO arrive through
-// PageShell -> Navbar.tsx:201, except that slot is gated `{shareData && (`,
-// shareData starts null, and this page never touches ShareContext — so the
-// Navbar share pill is not rendered on /history.)
-//
-// That is all fine: a user clicking Share or Upgrade is not a read-path write,
-// and the read-path write is the whole subject of this probe.
+// This probe reads THE SOURCE TEXT OF pages/history.tsx AND NOTHING ELSE. It
+// does not walk the transitive mount tree. Green here means "the only mutation
+// ORIGINATING in this page's own source is the sanctioned per-entry delete".
+// It does NOT mean "this page cannot otherwise write": mounting it still
+// reaches /api/share/create (ShareModal via ShareButton), /api/checkout/dodo
+// (ProFeatureOverlay / Navbar), /api/subscription/cancel (Navbar via
+// PageShell) and /api/bug-report (BugReportButton via PageShell). All are
+// user-initiated actions in components this page composes — not read-path
+// writes, and not this probe's subject.
 //
 // 🔴 DO NOT WIDEN THIS PROBE TO THE MOUNT TREE. It would then fail on ordinary
 // chrome, and a probe that fails on ordinary chrome gets deleted inside a
@@ -97,41 +67,48 @@ const SRC_PATH = new URL("../../pages/history.tsx", import.meta.url);
 const raw = readFileSync(SRC_PATH, "utf8");
 
 // Strip comments and JSX comment blocks BEFORE matching. This repo has been
-// bitten three times by prose satisfying a substring check — most recently the
-// Clerk handler's own docstring, which says it does NOT call the deletion
-// helper and thereby matched a search for that helper. The paragraph above this
-// line contains the word POST several times; without stripping, this probe
+// bitten three times by prose satisfying a substring check; the paragraphs
+// above contain POST and DELETE several times — without stripping, this probe
 // would fail on its own explanation.
 const code = raw
   .replace(/\/\*[\s\S]*?\*\//g, " ")   // /* … */ and JSX {/* … */} bodies
   .replace(/^\s*\/\/.*$/gm, " ");      // // line comments
 
-const MUTATING = ["POST", "PUT", "PATCH", "DELETE"];
+const FORBIDDEN = ["POST", "PUT", "PATCH"];   // DELETE is sanctioned — see below
 
 const checks = [];
 const add = (name, ok, observed) => checks.push([name, ok, observed]);
 
-// ── The property: no mutating HTTP verb anywhere in the page ────────────────
-for (const verb of MUTATING) {
-  // `method: 'POST'` in any quoting style, and the bare fetch-options shorthand.
+// ── Property 1: no read-path mutating verb in the page ──────────────────────
+for (const verb of FORBIDDEN) {
+  // `method: 'POST'` in any quoting style.
   const re = new RegExp(`method\\s*:\\s*['"\`]${verb}['"\`]`, "i");
   const hit = re.exec(code);
   add(`no ${verb} request in pages/history.tsx`, hit === null,
     hit ? code.slice(Math.max(0, hit.index - 60), hit.index + 40).replace(/\s+/g, " ") : "—");
 }
 
-// Belt and braces: some codebases pass the verb via a variable or a helper.
-add("no mutating verb string anywhere in the page's code",
-  !MUTATING.some((v) => new RegExp(`['"\`]${v}['"\`]`).test(code)),
-  MUTATING.filter((v) => new RegExp(`['"\`]${v}['"\`]`).test(code)).join(", ") || "—");
+// Belt and braces: no forbidden verb passed via a variable or helper either.
+add("no forbidden verb string anywhere in the page's code",
+  !FORBIDDEN.some((v) => new RegExp(`['"\`]${v}['"\`]`).test(code)),
+  FORBIDDEN.filter((v) => new RegExp(`['"\`]${v}['"\`]`).test(code)).join(", ") || "—");
 
-// The specific regression, pinned by name so it cannot come back quietly.
+// ── Property 2: exactly ONE DELETE, and it is the sanctioned endpoint ───────
+const deleteVerbs = code.match(/['"`]DELETE['"`]/g) || [];
+add("exactly one DELETE verb string (the sanctioned per-entry delete)",
+  deleteVerbs.length === 1, `${deleteVerbs.length} occurrence(s)`);
+// The one DELETE must sit in a fetch whose URL is /api/history/{id} — a
+// DELETE aimed anywhere else is NOT sanctioned and must fail here.
+add("the DELETE fetch targets /api/history/{id}",
+  /fetch\s*\(\s*`[^`]*\/api\/history\/\$\{[^`]*`\s*,\s*\{\s*method:\s*'DELETE'/.test(code), "—");
+
+// ── The specific regression, pinned by name so it cannot come back quietly ──
 add("the live re-run helper is gone", !/fetchVerifyDetails/.test(code), "—");
 add("no verifyDetails state", !/verifyDetails/.test(code), "—");
 
 // ── POSITIVE CONTROLS ───────────────────────────────────────────────────────
 // Without these, every assertion above is satisfied by an empty or deleted
-// file. "No POST" must mean "reads, and only reads" — not "does nothing".
+// file. The page must still be a live read surface.
 const fetches = code.match(/fetch\s*\(/g) || [];
 add("the page still fetches (it is a read surface, not an empty one)",
   fetches.length >= 2, `${fetches.length} fetch call(s)`);
@@ -142,9 +119,9 @@ add("it still renders the stored answer", /item\.answer/.test(code), "—");
 // removed. Verified against a marker that exists in the source ONLY inside a
 // comment, so if stripping ever silently stops working this fails rather than
 // quietly widening what the checks above see.
-const commentOnlyMarker = "/* Verify */";
+const commentOnlyMarker = "Footer: share + per-entry delete";
 add("comment stripping is actually working",
-  raw.includes(commentOnlyMarker) && !code.includes("Verify */"),
+  raw.includes(commentOnlyMarker) && !code.includes(commentOnlyMarker),
   raw.includes(commentOnlyMarker) ? "marker present in raw, stripped from code" : "marker not in source — update this control");
 
 let failed = 0;
