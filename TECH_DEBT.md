@@ -14,8 +14,8 @@ Classes are **additive and orthogonal** to the existing `[P0]`–`[P3]` ratings 
 | **[COMPLIANCE]** | legal / regulatory / data-protection obligation | **8** |
 | **[HONESTY]** | the product currently tells the user something untrue or misleading | **17** |
 | [DONE] | already fixed / resolved / accepted; retained for the record only | 47 |
-| [OTHER] | quality, hygiene, tooling, opportunistic | 82 |
-| | **total** | **154** |
+| [OTHER] | quality, hygiene, tooling, opportunistic | 84 |
+| | **total** | **156** |
 
 <!-- 🔴 NAV RECOUNTED 2026-09-01 (history probe, docs-only commit).
      WHAT CHANGED: TWO NEW [OTHER] entries from the founder's fly-241 prod pass —
@@ -27,6 +27,17 @@ Classes are **additive and orthogonal** to the existing `[P0]`–`[P3]` ratings 
      backfill), Verify summary-only (detail never stored, NO backfill).
      Counts RE-DERIVED (grep -c "^- \[CLASS\]" per class, not incremented):
      0 + 8 + 17 + 47 + 82 = 154. Cross-checked: grep -c "^- \[" = 154 = the sum. -->
+
+<!-- 🔴 NAV RECOUNTED 2026-09-02 (delete-segment docs commit).
+     DISCREPANCY FOUND FIRST (Rule 25): the table cited [OTHER] 82 / total 154, but the
+     pre-change derived count was 83 / 155 — commit e632d6a (segment-1 closeout) added the
+     TFDACorpusStore print()/cp950 [OTHER] entry WITHOUT recounting the nav. Recorded here,
+     not silently absorbed.
+     WHAT CHANGED TODAY: ONE new [OTHER] entry — three hand-rolled inline confirm dialogs
+     (MySharesTab revoke + Navbar cancel + history per-entry delete); shared confirm-modal
+     extraction filed per founder ruling #6.
+     Counts RE-DERIVED (grep -c "^- \[CLASS\]" per class, not incremented):
+     0 + 8 + 17 + 47 + 84 = 156. Cross-checked: grep -c "^- \[" = 156 = the sum. -->
 
 <!-- 🔴 NAV RECOUNTED 2026-08-26 (positioning-ruling car, docs commit 2 of 2).
      WHAT CHANGED: TWO entries ANNOTATED in place, ZERO added/removed/re-classed —
@@ -275,7 +286,7 @@ Classes are **additive and orthogonal** to the existing `[P0]`–`[P3]` ratings 
 - `[P2 → Phase 1A §3.1]` Clerk user.deleted webhook → user_usage cleanup not wired — discovered 2026-05-19
 - `[P2 → Phase 2 candidate]` chat-history privacy model — docs were stale + behavior is "honest but not maximal"
 - `[P2 · R5 privacy]` `ChatHistory.answer` stored unsanitized (all features)
-- `[P2 · legal-page promise vs shipped capability — surfaced 2026-08-18]` `/privacy` §4 tells users they can delete their chat history; `@app.delete` appears **zero** times in `api/` and there are 20 GET + 18 POST routes and nothing else
+- `[P2 · legal-page promise vs shipped capability — surfaced 2026-08-18]` `/privacy` §4 tells users they can delete their chat history; `@app.delete` appears **zero** times in `api/` and there are 20 GET + 18 POST routes and nothing else *(✍️ 2026-09-02: per-entry `DELETE /api/history/{id}` BUILT local, pending deploy — see the entry body; the zero-routes census above describes prod until it ships)*
 - `[P2 · retention automation — surfaced 2026-08-17]` `_cleanup_old_records` may never have run (sleeps 24h BEFORE its first run + `auto_stop_machines`) while `/privacy` §4 and the 16-locale FAQ both promise automatic deletion — **UNDECIDABLE until the 2026-09-15 recheck written into the entry**
 - ⚠️ *(the 7th `[COMPLIANCE]` title is the fly-224 duplicated-source entry, listed as the orphan bullet ABOVE the `#### [COMPLIANCE]` header — this block holds 6 of 7; see the 2026-08-17 recount comment)*
 
@@ -325,7 +336,12 @@ When entries are resolved, mark with the resolving commit SHA (git log is the re
   - **The recollection's likely sources, all real:** (1) **fly 236 `726bf5b` deleted 105 lines from `pages/history.tsx`** — the Verify live re-run that used to fire on expand, i.e. expanded entries genuinely DID once do more; (2) the **deletion-feature design-E work** (`api/services/deletion_service.py` hard-deletes `chat_history` rows — on ACCOUNT deletion, not per entry); (3) the **6-month retention cron** (`server.py:184-196`) which deletes history rows on age. None is a per-entry control.
   - **Fix shape:** NOT a one-liner — the 2026-08-18 BACKLOG scoping is the authority and stands: `ChatHistory` has an Integer autoincrement PK that is **never sent to the client** (`GET /api/history` would need to expose it), there are **zero ForeignKeys repo-wide**, and anonymous rows are unreachable by any per-entry delete keyed on `chat_history`. Build = expose row id in the GET + add an authenticated `DELETE /api/history/{id}` (owner-checked) + the frontend control. Belongs with deletion-feature C, not as a drive-by.
   - ⚠️ **CORRECTED 2026-09-01 (recon D1, `docs/batons/recon_20260901_history_car.md` §7) — "never sent to the client" is FALSE, and was false when written:** `GET /api/history` returns raw ORM rows with no response_model, so FastAPI serializes **all 6 columns including `id`** (empirically reproduced), and `pages/history.tsx` has typed and consumed `item.id` **since the initial commit `631b6e5` (2026-02-13)** — `git log --all -S "item.id" -- pages/history.tsx` bottoms out at repo birth; the share flow has stored `String(item.id)` since `f04068d` (2026-05-06). **Reconciliation: the code never changed — the 2026-08-18 scoping's (a) sentence was wrong at write time**, and its own bullet (b) (which records `history.tsx` storing `String(item.id)`) was the correct half. **Effect: the GET half of the build above is already done; only the DELETE endpoint + frontend control + i18n remain.**
-  - **STATUS 2026-09-01:** per-entry delete **awaiting counsel** (founder ruling on recon §6 items 1–6/10 pending) — NOT built in the HISTORY car's segment 1.
+  - ❌ ~~**STATUS 2026-09-01:** per-entry delete **awaiting counsel** (founder ruling on recon §6 items 1–6/10 pending) — NOT built in the HISTORY car's segment 1.~~
+  - **STATUS 2026-09-02: BUILT this segment (delete segment), option (d)(iii) — pending deploy + eye gate.** Founder rulings recorded 2026-09-01/02: **#1 (d)(iii) RATIFIED** (audit_logs out of scope, single-table delete, no migration) · **#4** non-owned/absent id → byte-identical 404 (no existence leak) · **#5** true DELETE verb + CORS `allow_methods` +DELETE + explicit GET response_model (user_id no longer serialized) · **#6** third inline confirm dialog, shared-modal extraction filed as debt · **#10** read-only probe NARROWED in the ship commit (reasoning in its header). **#3: counsel had NOT yet replied — the founder ruled 2026-09-02 to proceed anyway** with the conservative posture (single-table delete, irreversibility-stating confirm text); any counsel-added requirement (audit record of the deletion, 30-day backup notice) rides a follow-up car. **Still OPEN: #2 `user_feedback` full copies (untouched this car — its problem stays open below/in BACKLOG (c)) and counsel questions #2/#3.** Local commits `9a3dd15` (endpoint + tests) + `74df707` (UI + i18n ×16 + probe); suite 407→411 passed.
+
+- [OTHER] **[P3 · frontend duplication — filed 2026-09-02 per founder ruling #6 (delete segment), NOT fixed] THREE hand-rolled inline confirm dialogs now exist; a shared confirm-modal component is the recorded fix**
+  - The three: `components/MySharesTab.tsx` revoke dialog (`{revokeTarget && (`), `components/Navbar.tsx` subscription-cancel dialog (`{showCancelConfirm && (`), and `pages/history.tsx` per-entry-delete dialog (`{deleteTarget && (`, added this segment). All three are the same shape: fixed overlay + `role="dialog"` card + title/body + cancel/danger-action pair; the third was deliberately pattern-matched to the first rather than extracted (founder ruling #6, 2026-09-02 — ship the segment, file the extraction).
+  - Extraction notes for whoever picks it up: the cancel string is shared already (`i18n-share modalCancel`); the danger-action label/body differ per site; the delete dialog additionally renders an in-dialog error line (write-failure string) and an in-flight disabled state — the shared component needs those as optional props, or the extraction regresses it.
 
 - [OTHER] **[P2 · /history render fidelity — surfaced by the founder's fly-241 prod pass 2026-09-01; DERIVED per mode, not fixed] History fidelity is three different shapes: Explain FULL (the target), Research raw-markdown (text stored, renderer missing), Verify summary-only (detail NEVER stored — unbackfillable)**
   - **Founder direction for the eventual fix, recorded:** Explain's history fidelity is the TARGET EXPERIENCE for all three modes.
@@ -386,6 +402,7 @@ When entries are resolved, mark with the resolving commit SHA (git log is the re
   - 🔴 **THE SCENARIO THAT MAKES THIS LIVE RATHER THAN THEORETICAL:** Clerk's `<UserButton>` **is mounted** (`components/Navbar.tsx:343`), and it lets a user delete their Clerk identity from inside the product. **That severs their login while leaving every Vela row intact.** `/privacy:48` papers over exactly this with a `mailto:` asking such users to contact support. So the one deletion affordance a user actually has in the UI is the one that deletes the least.
   - **EXPOSURE IS ONE ENGLISH PAGE, NOT SIXTEEN — checked, because the sibling retention entry found the opposite shape.** `pages/privacy.tsx` imports only `next/link` and `next/image`; there is **no `useTranslation`, no `t(`, no i18n import**, no `[locale]` privacy route, and `next.config.ts` has `output: 'export'` with **no `i18n`/`locales` key at all**. The clause exists in **no** i18n file. ⚠️ **But the LINK to it is translated into all 16 locales** (`utils/i18n-ui.ts` `privacyPolicy` ×16, `utils/i18n.ts` `privacyPolicyLink` ×16) — **users in 16 locales are routed to an English promise.** *(Contrast the retention entry below: "6 months" is English-only on `/privacy` while the FAQ's "180 days" IS keyed across 16 locales. Different shape, same family.)*
   - **NOT FIXED, and the fix is not a wording tweak alone** — either the capability ships (see BACKLOG "Deletion-feature C", where the per-entry scope is now recorded) or the clause is narrowed. **Which one is a founder decision with counsel in the loop; this entry does not choose.**
+  - ✍️ **2026-09-02 (delete segment — dated annotation only, entry stays OPEN):** per-entry chat-history delete **now exists in code** — owner-checked `DELETE /api/history/{id}` + frontend control, local commits `9a3dd15`/`74df707`, **pending deploy** (prod still has zero delete routes until it ships). This partially discharges the §4 chat-history clause once deployed; the account-deletion half, the 24-hour backup-overwrite claim (second bullet above) and the §8 share-severing claim remain unbacked. **Entry closure is the founder's call, not this car's.**
   - **Surfaced**: 2026-08-18, from a read-only scan that had never been written down.
 
 - [OTHER] **[P2 · public API surface — surfaced 2026-08-18, NOT fixed] `/openapi.json` publishes internal engineering prose on FIVE more surfaces after `d3c0d95` fixed the Clerk handler — and the WORST one is a component schema, not an endpoint**

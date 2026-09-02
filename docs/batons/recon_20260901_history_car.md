@@ -360,3 +360,26 @@ This document: `docs/batons/recon_20260901_history_car.md`, committed locally (n
 | 11 | /verify live page — extraction parity | Run one Verify query on `http://localhost:3000/verify` (e.g. aspirin + warfarin), LIGHT then DARK | The live result looks IDENTICAL to pre-segment-1 /verify: summary line + risk badge + interaction cards with severity badge, ⓘ note, attribution link — the card extraction must be invisible here | **PASS** | |
 
 **Founder sign-off line (name · date · overall verdict):** Andrew Lee (founder) · 2026-09-02 · **11/11 PASS** — "All 11 cells founder-PASS, verdict delivered in the build conversation 2026-09-02 (first pass + post-fix re-eye of rows 1-4/11); transcribed by Claude Code under the founder's written authorization embedded in the closeout instruction — provenance per the 2026-09-01 zh-TW transcription precedent."
+
+---
+
+## §9 — Delete segment eye gate (BLANK — founder fills)
+
+> **Theme-eye style gate (§8 precedent); authorized by founder ruling 2026-09-02 (delete-segment build instruction); results to be entered by the founder only.**
+> Prepared 2026-09-02 at local commits `9a3dd15` (endpoint) + `74df707` (UI). Stack: the founder's own dev stack (backend `:8000` TEST_MODE + frontend `http://localhost:3000/history` — per the segment-1 environment rule, no dev server was started by the build session). Any rows work; the §8 seeded set (ids 2324–2328, `test_user` on dev Neon branch `ep-spring-voice-a127ye10`) is available if still present — **row (d) needs a LEGACY row** (e.g. id 2326 verify-summary or 2328 research free-text). Toggle theme with the app's own switch; run each check in BOTH schemes.
+> ⚠️ No AI observation is a gate result. All PASS/FAIL and notes cells below are blank by construction.
+
+| # | Check · scheme | What to look at | Expected observation | PASS/FAIL | Notes |
+|---|---|---|---|---|---|
+| 1 | (a) delete control — LIGHT | Expand any history row | A "Delete" control (danger-outline, localized) at the bottom of the expanded entry, right of the Share button; legible, not overlapping | | |
+| 2 | (a) delete control — DARK | Same row, dark scheme | Same control, danger colour legible on dark | | |
+| 3 | (b) confirm modal — LIGHT | Click Delete, then Cancel | Modal opens: title "Delete", body text states the deletion is PERMANENT / cannot be undone (legible, correct locale); Cancel closes the modal and **the row survives** (still in the list after cancel) | | |
+| 4 | (b) confirm modal — DARK | Same, dark scheme | Same modal, text and both buttons legible; cancel works; row survives | | |
+| 5 | (c) confirmed delete — LIGHT | Click Delete → confirm | Row disappears from the list immediately, no error, no full-page reload; a page refresh shows it still gone (DB-real, not display-only) | | |
+| 6 | (c) confirmed delete — DARK | Same on another row, dark scheme | Same behaviour | | |
+| 7 | (d) legacy row — LIGHT | Delete a LEGACY row (pre-segment-1 shape, e.g. id 2326/2328) | Deletes identically to a new-format row — the control, modal and removal do not depend on the stored answer shape | | |
+| 8 | (d) legacy row — DARK | Same class of row, dark scheme | Same behaviour | | |
+| 9 | (e) failure path — LIGHT | Simulate write failure if practicable: stop the backend (or DevTools → Network → Offline) AFTER the page has loaded, then Delete → confirm | The modal STAYS OPEN and shows the write-failure string (localized, legible); the row is STILL in the list; Cancel then dismisses. If not simulable in this pass, mark N/A with reason | | |
+| 10 | (e) failure path — DARK | Same, dark scheme | Same; failure string legible on dark. N/A with reason if not simulated | | |
+
+**Founder sign-off line (name · date · overall verdict):** _________________
