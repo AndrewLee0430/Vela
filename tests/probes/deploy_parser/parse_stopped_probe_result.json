@@ -1,0 +1,22 @@
+﻿{
+    "probe":  "deploy.ps1 Step-3 stopped-machine parser",
+    "date":  "2026-09-02",
+    "sample_provenance":  "reconstructed from TECH_DEBT 2026-08-26 empirical line (codepoints 32 / 9474, \\bstopped\\b = 1 row); not a byte-capture",
+    "encoding_note":  "probe kept pure ASCII: PS 5.1 read the first UTF-8 (no BOM) draft as ANSI and the mojibake swallowed a code line",
+    "old_regex":  "^\\S+\\s+(\\S+)",
+    "new_regex":  "\\b([0-9a-f]{14})\\b",
+    "old_result":  [
+
+                   ],
+    "old_reproduces_false_negative":  true,
+    "new_result":  [
+                       "2879720c66d478"
+                   ],
+    "new_detects_stopped_machine":  true,
+    "new_result_legacy_format":  [
+                                     "2879720c66d478"
+                                 ],
+    "new_detects_legacy_format":  true,
+    "new_false_positive_on_started":  false,
+    "verdict":  "PASS"
+}

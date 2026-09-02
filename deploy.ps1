@@ -21,9 +21,15 @@ Write-Host "`n=== Step 3: Checking for stopped machines ===" -ForegroundColor Cy
 $status = & $fly status
 $status | ForEach-Object { Write-Host $_ }
 
+# fly status machine rows are indented (leading space, codepoint 32) and
+# box-char-separated (codepoint 9474), so neither ^\S+ nor a second-token
+# capture reaches the machine ID. The ID is the row's only 14-hex-char token:
+# match it directly, independent of table layout (flyctl auto-upgrades; the
+# format may drift). Keep this file pure ASCII: PS 5.1 reads BOM-less files
+# as ANSI and mangles multibyte characters.
 $stopped = $status |
     Where-Object { $_ -match "\bstopped\b" } |
-    ForEach-Object { if ($_ -match "^\S+\s+(\S+)") { $Matches[1] } }
+    ForEach-Object { if ($_ -match "\b([0-9a-f]{14})\b") { $Matches[1] } }
 
 if (-not $stopped) {
     Write-Host "`nAll machines running." -ForegroundColor Green
