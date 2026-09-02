@@ -347,16 +347,16 @@ This document: `docs/batons/recon_20260901_history_car.md`, committed locally (n
 
 | # | Row · scheme | What to look at | Expected observation | PASS/FAIL | Notes |
 |---|---|---|---|---|---|
-| 1 | (a) id 2325 — LIGHT | Expand "Drugs: aspirin, warfarin" | Structured cards, NOT raw JSON and NOT a plain box: localized summary line ("Found 1 interaction(s): 1 Major" register, colour = highest severity) + risk badge (Major, red family) · one interaction card "aspirin ↔ warfarin" with severity badge, ⓘ AI-severity note, description/recommendation, italic attribution line as a working link · disclaimer line under a top border | | |
-| 2 | (a) id 2325 — DARK | Same row, dark scheme | Same content; severity/risk colours legible on dark (danger/warning/info tokens flip); no white-on-white / black-on-black | | |
-| 3 | (b) id 2326 — LIGHT | Expand "Drugs: lisinopril, ibuprofen (GATE row b — legacy)" | EXACTLY the pre-segment-1 rendering: one plain rounded box with the text "Found 1 interaction(s): 1 Major" — no cards, no badge, no crash | | |
-| 4 | (b) id 2326 — DARK | Same row, dark scheme | Same plain box, legible | | |
-| 5 | (c) id 2327 — LIGHT | Expand "metformin renal dosing (GATE row c — conforming sections)" | TWO section cards titled "Summary" and "Clinical Notes" (left-accent card style, same as /research): bold/bullets render as markdown, the `---` separator consumed; `[1]`-style markers appear as PLAIN TEXT (no links, nothing clickable) | | |
-| 6 | (c) id 2327 — DARK | Same row, dark scheme | Same section cards, prose legible, bullet markers visible | | |
-| 7 | (d) id 2328 — LIGHT | Expand "metformin overview (GATE row d — legacy free text)" | The old pre-wrap paragraph rendering (no section cards, no crash, not blank) | | |
-| 8 | (d) id 2328 — DARK | Same row, dark scheme | Same paragraph, legible | | |
-| 9 | (e) id 2324 — LIGHT | Expand the eGFR/HbA1c explain row | ZERO REGRESSION: ExplainItemCards + Clinical Correlations exactly as before segment 1 | | |
-| 10 | (e) id 2324 — DARK | Same row, dark scheme | Same, legible | | |
-| 11 | /verify live page — extraction parity | Run one Verify query on `http://localhost:3000/verify` (e.g. aspirin + warfarin), LIGHT then DARK | The live result looks IDENTICAL to pre-segment-1 /verify: summary line + risk badge + interaction cards with severity badge, ⓘ note, attribution link — the card extraction must be invisible here | | |
+| 1 | (a) id 2325 — LIGHT | Expand "Drugs: aspirin, warfarin" | Structured cards, NOT raw JSON and NOT a plain box: localized summary line ("Found 1 interaction(s): 1 Major" register, colour = highest severity) + risk badge (Major, red family) · one interaction card "aspirin ↔ warfarin" with severity badge, ⓘ AI-severity note, description/recommendation, italic attribution line as a working link · disclaimer line under a top border | **PASS** | |
+| 2 | (a) id 2325 — DARK | Same row, dark scheme | Same content; severity/risk colours legible on dark (danger/warning/info tokens flip); no white-on-white / black-on-black | **PASS** | |
+| 3 | (b) id 2326 — LIGHT | Expand "Drugs: lisinopril, ibuprofen (GATE row b — legacy)" | EXACTLY the pre-segment-1 rendering: one plain rounded box with the text "Found 1 interaction(s): 1 Major" — no cards, no badge, no crash | **PASS** | |
+| 4 | (b) id 2326 — DARK | Same row, dark scheme | Same plain box, legible | **PASS** | |
+| 5 | (c) id 2327 — LIGHT | Expand "metformin renal dosing (GATE row c — conforming sections)" | TWO section cards titled "Summary" and "Clinical Notes" (left-accent card style, same as /research): bold/bullets render as markdown, the `---` separator consumed; `[1]`-style markers appear as PLAIN TEXT (no links, nothing clickable) | **PASS** | |
+| 6 | (c) id 2327 — DARK | Same row, dark scheme | Same section cards, prose legible, bullet markers visible | **PASS** | |
+| 7 | (d) id 2328 — LIGHT | Expand "metformin overview (GATE row d — legacy free text)" | The old pre-wrap paragraph rendering (no section cards, no crash, not blank) | **PASS** | |
+| 8 | (d) id 2328 — DARK | Same row, dark scheme | Same paragraph, legible | **PASS** | |
+| 9 | (e) id 2324 — LIGHT | Expand the eGFR/HbA1c explain row | ZERO REGRESSION: ExplainItemCards + Clinical Correlations exactly as before segment 1 | **PASS** | |
+| 10 | (e) id 2324 — DARK | Same row, dark scheme | Same, legible | **PASS** | |
+| 11 | /verify live page — extraction parity | Run one Verify query on `http://localhost:3000/verify` (e.g. aspirin + warfarin), LIGHT then DARK | The live result looks IDENTICAL to pre-segment-1 /verify: summary line + risk badge + interaction cards with severity badge, ⓘ note, attribution link — the card extraction must be invisible here | **PASS** | |
 
-**Founder sign-off line (name · date · overall verdict):** _______________
+**Founder sign-off line (name · date · overall verdict):** Andrew Lee (founder) · 2026-09-02 · **11/11 PASS** — "All 11 cells founder-PASS, verdict delivered in the build conversation 2026-09-02 (first pass + post-fix re-eye of rows 1-4/11); transcribed by Claude Code under the founder's written authorization embedded in the closeout instruction — provenance per the 2026-09-01 zh-TW transcription precedent."
