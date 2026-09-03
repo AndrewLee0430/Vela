@@ -176,3 +176,119 @@ def test_get_history_excludes_user_id(monkeypatch):
         assert "user_id" not in data[0]
     finally:
         _cleanup(server, engine, get_db)
+
+
+# ---------------------------------------------------------------------------
+# created_at timezone honesty (HISTORY HONESTY car, segment 1, 2026-09-03 —
+# TECH_DEBT [HONESTY][P2] "timestamps shown in the wrong timezone").
+#
+# THE BUSINESS RULE: the time a user sees next to their own record must be the
+# instant the record was written. Storage is naive-UTC (sql_models.py
+# `default=datetime.utcnow`, a `timestamp` column). A naive value serialized as
+# "2026-09-03T03:21:37" carries no offset, and pages/history.tsx
+# `new Date(...)` / MySharesTab.tsx `Date.parse(...)` parse an offset-less
+# date-time string as LOCAL time — every row reads 8 h wrong in Asia/Taipei.
+# The fix is at the response layer (Rule 19: once per field, not per page):
+# the wire value must carry a UTC designator and parse back to the DB instant.
+# ---------------------------------------------------------------------------
+from datetime import datetime, timedelta, timezone  # noqa: E402
+
+
+def _naive_utc_now(**replace):
+    """Naive UTC 'now' — exactly the shape the utcnow column default stores,
+    without the py3.12 utcnow() deprecation warning."""
+    return datetime.now(timezone.utc).replace(tzinfo=None, **replace)
+
+
+def _parse_wire(wire: str) -> datetime:
+    """The wire string must carry an explicit UTC designator; parse strictly."""
+    assert wire.endswith("+00:00") or wire.endswith("Z"), \
+        f"created_at left the API without a UTC offset: {wire!r}"
+    return datetime.fromisoformat(wire.replace("Z", "+00:00"))
+
+
+def test_get_history_created_at_carries_utc_offset(monkeypatch):
+    """GET /api/history emits created_at WITH a UTC designator, and the wire
+    value parses back to the exact instant stored (read back from the DB, which
+    stays naive — the storage contract is untouched). Fails against the plain
+    `datetime` field, which serializes the naive value with no offset."""
+    from api.models.sql_models import ChatHistory
+
+    server, client, engine, TestSession, get_db = _client_and_db(monkeypatch)
+    try:
+        # Recent enough to clear the free-tier 7-day window; microseconds set
+        # so the round-trip proves sub-second fidelity too.
+        stored = _naive_utc_now(microsecond=726010) - timedelta(hours=3)
+        with TestSession() as db:
+            row = ChatHistory(user_id="hist_owner", session_type="verify",
+                              question="Drugs: a, b", answer="summary",
+                              created_at=stored)
+            db.add(row)
+            db.commit()
+            row_id = row.id
+
+        resp = client.get("/api/history")
+        assert resp.status_code == 200, resp.text
+        [item] = resp.json()
+        parsed = _parse_wire(item["created_at"])
+
+        with TestSession() as db:
+            db_value = db.get(ChatHistory, row_id).created_at
+        assert db_value.tzinfo is None, "storage must stay naive-UTC (not this car)"
+        assert parsed == db_value.replace(tzinfo=timezone.utc), \
+            f"wire {item['created_at']!r} is not the stored instant {db_value!r} (UTC)"
+    finally:
+        _cleanup(server, engine, get_db)
+
+
+def test_history_entry_naive_created_at_serializes_as_utc():
+    """Unit twin of the endpoint test, pinning the exact wire string: the
+    BEFORE shape was "2026-09-03T03:21:37" (no offset); AFTER must be
+    "2026-09-03T03:21:37+00:00"."""
+    import api.server as server
+
+    out = server.ChatHistoryEntry(
+        id=1, created_at=datetime(2026, 9, 3, 3, 21, 37)).model_dump(mode="json")
+    assert out["created_at"] == "2026-09-03T03:21:37+00:00"
+
+
+def test_history_entry_aware_created_at_is_not_shifted():
+    """Pass-through guard for the fix's design: an ALREADY-aware value (what a
+    future timestamptz column returns) keeps its own offset and instant. A
+    serializer that stamps UTC unconditionally would relabel 11:21+08:00 as
+    11:21+00:00 — a silent 8 h double-shift. Passes before the fix (pydantic
+    already emits aware offsets) and must keep passing after it."""
+    import api.server as server
+
+    taipei = timezone(timedelta(hours=8))
+    aware = datetime(2026, 9, 3, 11, 21, 37, tzinfo=taipei)
+    out = server.ChatHistoryEntry(id=1, created_at=aware).model_dump(mode="json")
+    assert out["created_at"] == "2026-09-03T11:21:37+08:00"
+    assert datetime.fromisoformat(out["created_at"]) == aware
+
+
+def test_share_list_created_at_carries_utc_offset(monkeypatch):
+    """GET /api/share/list — same defect, second surface: MySharesTab.tsx
+    relativeTime()/daysSince() Date.parse() the string, so a naive value makes
+    a share created a minute ago read as ~8 h old in Taipei. No share/list
+    harness existed; this is the smallest one on this file's pattern."""
+    from api.models.sql_models import SharedQuery
+
+    server, client, engine, TestSession, get_db = _client_and_db(monkeypatch)
+    try:
+        stored = _naive_utc_now(microsecond=0) - timedelta(minutes=1)
+        with TestSession() as db:
+            db.add(SharedQuery(
+                share_id="tzprobe00001", query_text="q", answer_text="a",
+                citations=[], created_by=server._hash_created_by("hist_owner"),
+                created_at=stored))
+            db.commit()
+
+        resp = client.get("/api/share/list")
+        assert resp.status_code == 200, resp.text
+        [share] = resp.json()["shares"]
+        parsed = _parse_wire(share["created_at"])
+        assert parsed == stored.replace(tzinfo=timezone.utc), \
+            f"wire {share['created_at']!r} is not the stored instant {stored!r} (UTC)"
+    finally:
+        _cleanup(server, engine, get_db)

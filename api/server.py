@@ -42,7 +42,7 @@ from fastapi import FastAPI, Depends, Request
 from fastapi.responses import StreamingResponse, FileResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_serializer
 from fastapi_clerk_auth import ClerkConfig, ClerkHTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
@@ -1903,6 +1903,25 @@ async def create_bug_report(
 # 功能 6：History
 # ============================================================
 from datetime import datetime as _history_dt
+from datetime import timezone as _history_tz
+
+
+def _utc_isoformat(v: _history_dt) -> str:
+    """Serialize a stored datetime WITH a UTC designator.
+
+    Every created_at column is naive-UTC (sql_models.py: `DateTime` +
+    `default=datetime.utcnow`). A naive value serializes as
+    "2026-09-03T03:21:37" — no offset — and the browser (`new Date`,
+    `Date.parse`) parses an offset-less date-time as LOCAL time, so every
+    row read 8 h wrong in Asia/Taipei (TECH_DEBT [HONESTY][P2] timezone,
+    2026-09-03). Fixed here, once, at the response layer (Rule 19) rather
+    than per page. Naive → labelled UTC ("…+00:00"); an already-aware value
+    passes through with its own offset — never re-stamped (double shift).
+    Storage stays naive; the timestamptz migration is a separate car.
+    """
+    if v.tzinfo is None:
+        v = v.replace(tzinfo=_history_tz.utc)
+    return v.isoformat()
 
 
 # GET /api/history response shape — exactly the fields pages/history.tsx
@@ -1920,6 +1939,10 @@ class ChatHistoryEntry(BaseModel):
     question: Optional[str] = None
     answer: Optional[str] = None
     created_at: Optional[_history_dt] = None
+
+    @field_serializer("created_at")
+    def _serialize_created_at(self, v: Optional[_history_dt]) -> Optional[str]:
+        return _utc_isoformat(v) if v is not None else None
 
 
 @app.get("/api/history", response_model=list[ChatHistoryEntry])
@@ -3405,7 +3428,7 @@ async def share_list(
         {
             "share_id": r.share_id,
             "query_preview": (r.query_text or "")[:60],
-            "created_at": r.created_at.isoformat() if r.created_at else None,
+            "created_at": _utc_isoformat(r.created_at) if r.created_at else None,
             "is_public": bool(r.is_public),
             "view_count": int(r.view_count or 0),
         }
