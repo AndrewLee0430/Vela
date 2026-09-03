@@ -290,6 +290,9 @@ def test_share_list_created_at_carries_utc_offset(monkeypatch):
         resp = client.get("/api/share/list")
         assert resp.status_code == 200, resp.text
         [share] = resp.json()["shares"]
+        # Pinned to `Z` (fixup 2): both endpoints must carry the SAME UTC
+        # designator; _parse_wire keeps accepting either for the instant check.
+        assert share["created_at"].endswith("Z"), share["created_at"]
         parsed = _parse_wire(share["created_at"])
         assert parsed == stored.replace(tzinfo=timezone.utc), \
             f"wire {share['created_at']!r} is not the stored instant {stored!r} (UTC)"

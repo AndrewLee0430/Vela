@@ -128,4 +128,4 @@ from `pages/history.tsx:285-288` under `TZ=Asia/Taipei`.
 
 **No network, no `api/` import** — fully reproducible: `TZ=Asia/Taipei node tests/probes/history_timezone/repro.mjs`.
 The `result.json` is committed anyway because the finding was derived on a specific Node (`v22.19.0`)
-and ICU; a different ICU can change the `toLocaleString` output shape.
+and ICU; a different ICU can change the `toLocaleString` output shape. **Fixup 2 (same day):** both endpoints emit `Z`; `+00:00` remains accepted by the parse test.

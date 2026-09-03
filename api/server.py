@@ -1915,12 +1915,15 @@ def _utc_isoformat(v: _history_dt) -> str:
     `Date.parse`) parses an offset-less date-time as LOCAL time, so every
     row read 8 h wrong in Asia/Taipei (TECH_DEBT [HONESTY][P2] timezone,
     2026-09-03). Fixed here, once, at the response layer (Rule 19) rather
-    than per page. Naive → labelled UTC ("…+00:00"); an already-aware value
-    passes through with its own offset — never re-stamped (double shift).
-    Storage stays naive; the timestamptz migration is a separate car.
+    than per page. Naive → labelled UTC and written as "…Z" — the SAME
+    designator Pydantic 2.8 emits for ChatHistoryEntry.created_at on
+    /api/history, so both endpoints carry one form (fixup 2, 2026-09-03);
+    an already-aware value passes through with its own offset — never
+    re-stamped (double shift). Storage stays naive; the timestamptz
+    migration is a separate car.
     """
     if v.tzinfo is None:
-        v = v.replace(tzinfo=_history_tz.utc)
+        return v.replace(tzinfo=_history_tz.utc).isoformat().replace("+00:00", "Z")
     return v.isoformat()
 
 
