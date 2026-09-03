@@ -124,7 +124,7 @@ from `pages/history.tsx:285-288` under `TZ=Asia/Taipei`.
 
 | file | what it is |
 |---|---|
-| `repro.mjs` → `result.json` | 4 wire strings (± microseconds) → rendered strings + parsed epoch; the `Date.parse` skew for `MySharesTab.tsx` (-8 h). Exits 1 if `TZ` is not honoured |
+| `repro.mjs` → `result.json` | 6 wire strings (naive · `+00:00` · `Z`, each ± microseconds) → rendered strings + parsed epoch; the `Date.parse` skew for `MySharesTab.tsx` (-8 h). Exits 1 if `TZ` is not honoured |
 
 **No network, no `api/` import** — fully reproducible: `TZ=Asia/Taipei node tests/probes/history_timezone/repro.mjs`.
 The `result.json` is committed anyway because the finding was derived on a specific Node (`v22.19.0`)

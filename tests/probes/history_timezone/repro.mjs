@@ -11,6 +11,7 @@
 //
 //   BEFORE (fly 244 wire)     "2026-09-03T03:21:37"        -> "Sep 3, 2026, 03:21 AM"   (WRONG: UTC read as local)
 //   AFTER  (segment-1 wire)   "2026-09-03T03:21:37+00:00"  -> "Sep 3, 2026, 11:21 AM"   (the actual Taipei wall clock)
+//   AFTER  (fixup, /history)  "2026-09-03T03:21:37Z"       -> "Sep 3, 2026, 11:21 AM"   (same instant, Z designator)
 //
 // Also records the MySharesTab.tsx skew: Date.parse(naive) - Date.parse(+00:00)
 // for the same instant = -8 h in Taipei, which is why a share made a minute ago
@@ -48,6 +49,11 @@ const CASES = [
   { id: 'after_utc_offset',       wire: '2026-09-03T03:21:37+00:00',        expected: 'Sep 3, 2026, 11:21 AM' },
   { id: 'before_naive_micros',    wire: '2026-09-03T03:21:37.726010',       expected: 'Sep 3, 2026, 03:21 AM' },
   { id: 'after_utc_offset_micros',wire: '2026-09-03T03:21:37.726010+00:00', expected: 'Sep 3, 2026, 11:21 AM' },
+  // Fixup (same day): /api/history now returns an AWARE datetime from the field
+  // serializer and Pydantic 2.8 writes UTC as `Z`; /api/share/list still emits
+  // `+00:00` via _utc_isoformat. Both designators must render identically.
+  { id: 'after_utc_z',            wire: '2026-09-03T03:21:37Z',              expected: 'Sep 3, 2026, 11:21 AM' },
+  { id: 'after_utc_z_micros',     wire: '2026-09-03T03:21:37.726010Z',       expected: 'Sep 3, 2026, 11:21 AM' },
 ];
 
 const rows = CASES.map((c) => {

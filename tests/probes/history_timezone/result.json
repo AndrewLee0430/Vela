@@ -42,6 +42,24 @@
       "parsed_utc": "2026-09-03T03:21:37.726Z",
       "rendered_in_taipei": "Sep 3, 2026, 11:21 AM",
       "pass": true
+    },
+    {
+      "id": "after_utc_z",
+      "wire": "2026-09-03T03:21:37Z",
+      "expected": "Sep 3, 2026, 11:21 AM",
+      "parsed_epoch_ms": 1788405697000,
+      "parsed_utc": "2026-09-03T03:21:37.000Z",
+      "rendered_in_taipei": "Sep 3, 2026, 11:21 AM",
+      "pass": true
+    },
+    {
+      "id": "after_utc_z_micros",
+      "wire": "2026-09-03T03:21:37.726010Z",
+      "expected": "Sep 3, 2026, 11:21 AM",
+      "parsed_epoch_ms": 1788405697726,
+      "parsed_utc": "2026-09-03T03:21:37.726Z",
+      "rendered_in_taipei": "Sep 3, 2026, 11:21 AM",
+      "pass": true
     }
   ],
   "myshares_skew": {
