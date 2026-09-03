@@ -110,3 +110,22 @@ contradiction: on the ACECLOFENAC document the recorded flag says `own_drug: tru
 join says `wrong_owner_cited`. If that check ever flips, the module has regressed to mention-based
 logic. It also deliberately does **not** reuse `tests/results/_pairaware_m1_content_audit.py`, whose
 `ON-TARGET-COUNTERPART` bucket is mention-based.
+
+---
+
+## `history_timezone/` — created_at rendered in the wrong timezone (2026-09-03)
+
+Entry: `TECH_DEBT.md` → `[HONESTY][P2] timestamps shown in the wrong timezone` · car baton:
+[`docs/batons/history_honesty_car_20260903.md`](../../docs/batons/history_honesty_car_20260903.md)
+
+The evidence behind the entry's **"03:21 AM vs 11:21 AM"** derivation. The same instant, serialized
+naive (fly-244 wire) and with `+00:00` (segment-1 wire), pushed through the formatter copied verbatim
+from `pages/history.tsx:285-288` under `TZ=Asia/Taipei`.
+
+| file | what it is |
+|---|---|
+| `repro.mjs` → `result.json` | 4 wire strings (± microseconds) → rendered strings + parsed epoch; the `Date.parse` skew for `MySharesTab.tsx` (-8 h). Exits 1 if `TZ` is not honoured |
+
+**No network, no `api/` import** — fully reproducible: `TZ=Asia/Taipei node tests/probes/history_timezone/repro.mjs`.
+The `result.json` is committed anyway because the finding was derived on a specific Node (`v22.19.0`)
+and ICU; a different ICU can change the `toLocaleString` output shape.

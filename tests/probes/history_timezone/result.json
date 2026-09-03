@@ -1,0 +1,55 @@
+{
+  "probe": "tests/probes/history_timezone/repro.mjs",
+  "purpose": "Same instant, naive vs +00:00 wire string, rendered through pages/history.tsx formatter under Asia/Taipei",
+  "node": "v22.19.0",
+  "tz_env": "Asia/Taipei",
+  "tz_resolved": "Asia/Taipei",
+  "getTimezoneOffset_min": -480,
+  "formatter": "new Date(wire).toLocaleString('en-US', {year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'})",
+  "cases": [
+    {
+      "id": "before_naive",
+      "wire": "2026-09-03T03:21:37",
+      "expected": "Sep 3, 2026, 03:21 AM",
+      "parsed_epoch_ms": 1788376897000,
+      "parsed_utc": "2026-09-02T19:21:37.000Z",
+      "rendered_in_taipei": "Sep 3, 2026, 03:21 AM",
+      "pass": true
+    },
+    {
+      "id": "after_utc_offset",
+      "wire": "2026-09-03T03:21:37+00:00",
+      "expected": "Sep 3, 2026, 11:21 AM",
+      "parsed_epoch_ms": 1788405697000,
+      "parsed_utc": "2026-09-03T03:21:37.000Z",
+      "rendered_in_taipei": "Sep 3, 2026, 11:21 AM",
+      "pass": true
+    },
+    {
+      "id": "before_naive_micros",
+      "wire": "2026-09-03T03:21:37.726010",
+      "expected": "Sep 3, 2026, 03:21 AM",
+      "parsed_epoch_ms": 1788376897726,
+      "parsed_utc": "2026-09-02T19:21:37.726Z",
+      "rendered_in_taipei": "Sep 3, 2026, 03:21 AM",
+      "pass": true
+    },
+    {
+      "id": "after_utc_offset_micros",
+      "wire": "2026-09-03T03:21:37.726010+00:00",
+      "expected": "Sep 3, 2026, 11:21 AM",
+      "parsed_epoch_ms": 1788405697726,
+      "parsed_utc": "2026-09-03T03:21:37.726Z",
+      "rendered_in_taipei": "Sep 3, 2026, 11:21 AM",
+      "pass": true
+    }
+  ],
+  "myshares_skew": {
+    "note": "components/MySharesTab.tsx relativeTime()/daysSince() use Date.parse(iso); naive minus +00:00 for the SAME instant",
+    "naive_minus_utc_ms": -28800000,
+    "naive_minus_utc_hours": -8,
+    "expected_hours": -8,
+    "pass": true
+  },
+  "all_pass": true
+}

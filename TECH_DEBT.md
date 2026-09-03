@@ -17,6 +17,15 @@ Classes are **additive and orthogonal** to the existing `[P0]`–`[P3]` ratings 
 | [OTHER] | quality, hygiene, tooling, opportunistic | 88 |
 | | **total** | **165** |
 
+<!-- 🔴 NAV RECOUNTED 2026-09-03 (HISTORY HONESTY car OPENED — segment 1 timezone BUILT LOCAL, docs commit).
+     PRE-CHANGE CHECK (Rule 25): derived 0 + 8 + 20 + 49 + 88 = 165 = the table. No discrepancy.
+     WHAT CHANGED: zero entries added / removed / re-classed. ANNOTATED in place, no count change:
+     the timezone [HONESTY][P2] entry gets a STATUS bullet — BUILT, LOCAL, NOT pushed (code commit
+     88ddde5; prod still fly 244). It stays OPEN until the founder's §1 gate passes and it ships.
+     Counts RE-DERIVED (grep -c "^- \[CLASS\]" per class, not incremented):
+     0 + 8 + 20 + 49 + 88 = 165. Delta 0.
+     Cross-checked: grep -c "^- \[" = 165 = the sum. -->
+
 <!-- 🔴 NAV RECOUNTED 2026-09-03 (HISTORY car CLOSED — final docs commit: fly-244 prod eye + timezone finding).
      PRE-CHANGE CHECK (Rule 25): derived 0 + 8 + 19 + 49 + 88 = 164 = the table. No discrepancy.
      WHAT CHANGED: ONE NEW [HONESTY][P2] entry — /history (and the shares list) show created_at as
@@ -483,6 +492,7 @@ When entries are resolved, mark with the resolving commit SHA (git log is the re
   - **Class — [HONESTY], reasoned:** the row is the user's own record and the page states a time for it that is factually wrong by hours; that is the product telling the user something untrue, on a live page, for 100 % of rows and every non-UTC user. **Rejected [OTHER]:** this is not formatting polish — the displayed value is a different instant. **P2:** breadth (every row, both surfaces) against low fix cost and no medical content involved.
   - **Fix path (server-side, both endpoints — Rule 19: fix the field once at the response layer, not per page):** emit an aware value — in `ChatHistoryEntry` a `@field_serializer('created_at')` returning `v.replace(tzinfo=timezone.utc).isoformat()` (→ `…+00:00`), and the same `replace(tzinfo=timezone.utc)` before `.isoformat()` at `:3408`; the page code then needs NO change (`new Date` honours the offset, `toLocaleString` renders the viewer's local time). Longer-term: `DateTime(timezone=True)` + `datetime.now(timezone.utc)` defaults — a `timestamp → timestamptz` migration on Postgres, NOT this car. **Do not** patch client-side by appending `'Z'` — it silently double-shifts the moment the server starts emitting an offset. Test: an endpoint-level assertion that the serialized `created_at` ends with `+00:00`/`Z`, in the `tests/test_history_delete.py` harness.
   - **Surfaced:** 2026-09-03 (§10 gate screenshot); **derived + filed** 2026-09-03 at the car close.
+  - **STATUS 2026-09-03 — BUILT, LOCAL, NOT pushed — prod still fly 244.** HISTORY HONESTY car, segment 1; code commit `88ddde5` (`_utc_isoformat` + `@field_serializer("created_at")` on `ChatHistoryEntry`; the same helper at the `/api/share/list` site; no frontend change, no column change). AFTER wire: `"2026-09-03T03:21:37+00:00"`. Tests +4 in `tests/test_history_delete.py` (suite 414 → 418 passed / 28 skipped); Rule 20 evidence `tests/probes/history_timezone/repro.mjs` → `result.json` (03:21 AM vs 11:21 AM under Asia/Taipei). Three date-only third surfaces found and NOT fixed (founder's call) — `docs/batons/history_honesty_car_20260903.md` §2a. **Gate §1 BLANK, founder fills**; entry stays OPEN until it ships.
 
 - [OTHER] **[P3 · Rule 4 print() + cp950 console crash — surfaced 2026-09-02 by the Segment-1 gate prep, NOT fixed] `TFDACorpusStore._load_compact` fallback `print()` with emoji CRASHES the server at import under a cp950 console**
   - **What happened:** starting the documented dev flow (`uvicorn api.server:app`) in a Windows cp950 terminal crashed at import — the TFDA indication-corpus load raised, and the fail-soft handler itself died: `UnicodeEncodeError: 'cp950' codec can't encode character '⚠'` at `api/database/vector_store.py:182`, the line `print(f"⚠️ TFDA indication corpus load failed ({e}) — TFDA source disabled")` inside `TFDACorpusStore._load_compact`. A fail-soft path that crashes is fail-loud in the wrong direction: it also **masks the underlying load error** (`{e}` never printed).
