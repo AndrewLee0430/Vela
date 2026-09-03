@@ -30,18 +30,20 @@
 
 ---
 
-## §1 Segment 1 — eye gate (BLANK FORM — founder fills)
+## §1 Segment 1 — eye gate (TRANSCRIBED 2026-09-03 — founder 6/6 PASS)
 
-**Environment:** local dev server (`uvicorn api.server:app` at `ed181ed` or later, with `PYTHONUTF8=1` on a cp950 console) + `npm run dev`; browser in **Asia/Taipei (UTC+8)**. Row 1's Expected column states the DB value and the expected wall-clock; the founder fills Observed. **PASS/FAIL and Notes are empty by design.**
+**Environment:** local dev server (`uvicorn api.server:app` at `ed181ed` or later, with `PYTHONUTF8=1` on a cp950 console) + `npm run dev`; browser in **Asia/Taipei (UTC+8)**. Row 1's Expected column states the DB value and the expected wall-clock. **Observed / PASS-FAIL / Notes transcribed from the founder's closeout statements (see sign-off).**
 
 | # | Surface / step | Expected | Observed | PASS / FAIL | Notes |
 |---|---|---|---|---|---|
-| 1 | `/history`, any row, Asia/Taipei | Displayed time = the DB `created_at` **+ 8 h**. Known row: dev id **2334**, DB `created_at` = `2026-09-03 03:21:37.726010` → **"Sep 3, 2026, 11:21 AM"** (fly 244 showed "03:21 AM"). Any other row: `SELECT id, created_at FROM chat_history ORDER BY id DESC LIMIT 3;` → each displayed time = that value + 8 h | | | |
-| 2 | Same row after a full page refresh | Unchanged — identical string to row 1 | | | |
-| 3 | `/history` row order | Still newest-first (top row = the latest `created_at`) | | | |
-| 4 | Settings → **My Shares**: a share created moments ago | Reads **"just now" / "N minutes ago"**, not "~8 hours ago"; `days_since_created` in the PostHog event for a fresh share = 0 | | | |
-| 5 | `/verify` and `/explain` live pages | **No timestamp appears; nothing changed** (parity — these pages never rendered `created_at`) | | | |
-| 6 | Delete flow on ONE disposable `/history` row | Confirm → row gone, survives refresh (regression on the shared `tests/test_history_delete.py` harness) | | | |
+| 1 | `/history`, any row, Asia/Taipei | Displayed time = the DB `created_at` **+ 8 h**. Known row: dev id **2334**, DB `created_at` = `2026-09-03 03:21:37.726010` → **"Sep 3, 2026, 11:21 AM"** (fly 244 showed "03:21 AM"). Any other row: `SELECT id, created_at FROM chat_history ORDER BY id DESC LIMIT 3;` → each displayed time = that value + 8 h | wire `/api/history` `created_at` = `2026-09-03T03:43:33.406144Z` (id 2337) → rendered **"Sep 3, 2026, 11:43 AM"**; ids 2336 / 2335 / 2334 = `03:40:16Z` / `03:23:01Z` / `03:21:37Z` → 11:40 / 11:23 / 11:21 AM | **PASS** | Cross-check: id 2334 read "03:21 AM" in the §10 screenshot (recon_20260901) and "11:21 AM" now — the same row, +8 h |
+| 2 | Same row after a full page refresh | Unchanged — identical string to row 1 | refresh: unchanged | **PASS** | — |
+| 3 | `/history` row order | Still newest-first (top row = the latest `created_at`) | 2337 → 2334 → 2332, newest-first | **PASS** | — |
+| 4 | Settings → **My Shares**: a share created moments ago | Reads **"just now" / "N minutes ago"**, not "~8 hours ago"; `days_since_created` in the PostHog event for a fresh share = 0 | a just-created share shows as recent, not ~8 h old | **PASS** | founder statement; display string not transcribed |
+| 5 | `/verify` and `/explain` live pages | **No timestamp appears; nothing changed** (parity — these pages never rendered `created_at`) | /verify (warfarin + aspirin) and /explain rendered with no timestamp, unchanged | **PASS** | — |
+| 6 | Delete flow on ONE disposable `/history` row | Confirm → row gone, survives refresh (regression on the shared `tests/test_history_delete.py` harness) | one disposable row deleted, gone after refresh | **PASS** | founder statement; suggested row was id 2336 — id per founder |
+
+**Founder sign-off line (name · date · overall verdict):** Andrew Lee (founder) · 2026-09-03 · **6/6 PASS** — provenance: founder statements + screenshots in the closeout conversation, transcribed by Claude Code under the closeout authorization, per the 2026-09-01 zh-TW transcription precedent. Observed on localhost at HEAD `b1c42b5` (backend :8000 TEST_MODE, dev DB `ep-spring-voice-a127ye10`, viewer tz Asia/Taipei).
 
 ---
 
