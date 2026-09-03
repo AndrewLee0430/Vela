@@ -243,13 +243,16 @@ def test_get_history_created_at_carries_utc_offset(monkeypatch):
 
 def test_history_entry_naive_created_at_serializes_as_utc():
     """Unit twin of the endpoint test, pinning the exact wire string: the
-    BEFORE shape was "2026-09-03T03:21:37" (no offset); AFTER must be
-    "2026-09-03T03:21:37+00:00"."""
+    BEFORE shape was "2026-09-03T03:21:37" (no offset); AFTER is
+    "2026-09-03T03:21:37Z" — the serializer returns an AWARE datetime and
+    Pydantic 2.8 writes UTC as `Z` (88ddde5 emitted "+00:00" from a str
+    serializer; the fixup restored `format: date-time` and the designator
+    changed with it — both are RFC 3339 UTC)."""
     import api.server as server
 
     out = server.ChatHistoryEntry(
         id=1, created_at=datetime(2026, 9, 3, 3, 21, 37)).model_dump(mode="json")
-    assert out["created_at"] == "2026-09-03T03:21:37+00:00"
+    assert out["created_at"] == "2026-09-03T03:21:37Z"
 
 
 def test_history_entry_aware_created_at_is_not_shifted():
@@ -292,3 +295,19 @@ def test_share_list_created_at_carries_utc_offset(monkeypatch):
             f"wire {share['created_at']!r} is not the stored instant {stored!r} (UTC)"
     finally:
         _cleanup(server, engine, get_db)
+
+
+def test_openapi_keeps_date_time_format_on_created_at():
+    """The public /openapi.json must keep typing created_at as an RFC 3339
+    date-time (`type: string, format: date-time`), not a bare string. The
+    timezone serializer changes the VALUE (it gains a UTC offset), not the
+    contract — a serializer that returns `str` silently downgrades the
+    published schema to `{"type": "string"}` (seen at 88ddde5)."""
+    import api.server as server
+    from fastapi.testclient import TestClient
+
+    resp = TestClient(server.app).get("/openapi.json")
+    assert resp.status_code == 200, resp.text
+    prop = resp.json()["components"]["schemas"]["ChatHistoryEntry"]["properties"]["created_at"]
+    assert {"type": "string", "format": "date-time"} in prop["anyOf"], prop
+    assert {"type": "null"} in prop["anyOf"], prop

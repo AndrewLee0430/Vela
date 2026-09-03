@@ -1941,8 +1941,15 @@ class ChatHistoryEntry(BaseModel):
     created_at: Optional[_history_dt] = None
 
     @field_serializer("created_at")
-    def _serialize_created_at(self, v: Optional[_history_dt]) -> Optional[str]:
-        return _utc_isoformat(v) if v is not None else None
+    def _serialize_created_at(self, v: Optional[_history_dt]) -> Optional[_history_dt]:
+        # Return an AWARE datetime and let Pydantic serialize it, so the
+        # published OpenAPI schema keeps `type: string, format: date-time`.
+        # Returning a `str` here downgraded /openapi.json to a bare string
+        # (88ddde5, fixed the same day). Same rule as _utc_isoformat: naive →
+        # labelled UTC, aware → untouched (no double shift).
+        if v is None or v.tzinfo is not None:
+            return v
+        return v.replace(tzinfo=_history_tz.utc)
 
 
 @app.get("/api/history", response_model=list[ChatHistoryEntry])
