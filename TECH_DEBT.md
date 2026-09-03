@@ -12,10 +12,24 @@ Classes are **additive and orthogonal** to the existing `[P0]`–`[P3]` ratings 
 |---|---|---|
 | **[LAUNCH]** | blocks the B2B-interim route going live to a real customer | **0 — EMPTY** |
 | **[COMPLIANCE]** | legal / regulatory / data-protection obligation | **8** |
-| **[HONESTY]** | the product currently tells the user something untrue or misleading | **18** |
+| **[HONESTY]** | the product currently tells the user something untrue or misleading | **19** |
 | [DONE] | already fixed / resolved / accepted; retained for the record only | 47 |
-| [OTHER] | quality, hygiene, tooling, opportunistic | 85 |
-| | **total** | **158** |
+| [OTHER] | quality, hygiene, tooling, opportunistic | 86 |
+| | **total** | **160** |
+
+<!-- 🔴 NAV RECOUNTED 2026-09-03 (HISTORY car segment 3 — §10 error-path row + DONE-on-error entry, docs-only).
+     PRE-CHANGE CHECK (Rule 25): derived 0 + 8 + 18 + 47 + 85 = 158 = the table. No discrepancy.
+     WHAT CHANGED: TWO NEW entries —
+     (1) [HONESTY][P2] Research DONE-branch on error: the generator's ERROR→DONE paths still
+     write a ChatHistory row (now in the research_v1 shell, empty answer) AND deduct 3 credits;
+     the retrieval_status=="error" leg is dead code at HEAD (all five retriever wrappers swallow).
+     Classed HONESTY (charge for nothing + a session that never happened), OTHER and COMPLIANCE
+     rejected — reasoning in the entry.
+     (2) [OTHER][P3] deletion_service.py:88 comment cites a test file that never existed
+     (recon §7-D5 side-flag, wrong from birth in 9439699).
+     Counts RE-DERIVED (grep -c "^- \[CLASS\]" per class, not incremented):
+     0 + 8 + 19 + 47 + 86 = 160. Delta +2 (HONESTY 18→19, OTHER 85→86, total 158→160).
+     Cross-checked: grep -c "^- \[" = 160 = the sum. -->
 
 <!-- 🔴 NAV RECOUNTED 2026-09-02 (HISTORY car segment 3 FOLLOW-UP — docs-only fixup commit).
      PRE-CHANGE CHECK (Rule 25): derived 0 + 8 + 17 + 47 + 84 = 156 = the table. No discrepancy.
@@ -388,6 +402,19 @@ When entries are resolved, mark with the resolving commit SHA (git log is the re
   - **Why not fixed in segment 3:** it changes what a PUBLIC page shows (a share created from history would gain a references block) — a scope call, ruled by the founder 2026-09-02 as a follow-up. The recon §10 gate row 7 states the absence is EXPECTED so it is not misread as a segment-3 defect.
   - **Fix path:** pass `researchParsed?.citations ?? []`; before shipping, Rule 19 — list what the /research-origin share does around its citations (the `/api/share/create` PHI gate on `answer_text`, `CitationIn` validation, `share_renderer._augment_citations`) and confirm each is carried or declined for history-origin shares. Old rows: `[]` forever (no citations stored).
   - **Surfaced:** 2026-09-02, segment 3.
+
+- [HONESTY] **[P2 · Research DONE-branch on error — surfaced 2026-09-02 by the segment-3 follow-up (flagged in its build report as pre-existing), filed 2026-09-03, NOT fixed] When the answer generator FAILS, `/api/research` still WRITES a history row and CHARGES 3 credits — the DONE branch never learns that an ERROR preceded it**
+  - **Mechanism, derived at HEAD `e5e5688`:** `api/rag/generator.py` emits `ERROR` then `DONE` on three paths — `retrieval_status == "error"` (`:162-165`), the main-path exception (`:206-211`, any provider/model failure) and the fallback-path exception (`:315-318`). `api/server.py` handles `StreamEventType.DONE` (`:923`) without checking for a preceding ERROR, so on every one of those paths it (1) writes `ChatHistory` (`:936-941`, label "History Save") with `answer = _research_history_payload(full_answer, citations_data)` — `full_answer` is `""` or whatever partial text streamed before the exception, citations `[]`; (2) runs `deduct_credits(db, user_id, "research")` (`:943`, 3 credits per `CREDIT_COSTS`, unconditional in TEST_MODE too) — the anon branch likewise runs `deduct_anonymous_credits` (`:927`); (3) skips cost logging (no usage) and the judge (`if audit_id and full_answer`) unless a partial answer streamed. Only a RAISED exception (retrieval raising, a guard throwing) takes the outer `except` (log line *"Research stream error"*), which emits its own error+done WITHOUT the write or the charge — the defect is specific to the generator's own ERROR→DONE convention.
+  - **Reachability at HEAD:** the main-path and fallback-path exceptions are LIVE (bad model name, provider 5xx, timeout after retries). The `retrieval_status == "error"` leg is DEAD CODE today — `has_api_error` (`api/rag/retriever.py:211`) is set only when a gathered source task raises, and all five `_search_*` wrappers catch `Exception` and return `[]` (`:600-602`, `:616-618`, `:633-635`, `:663-665`, `:687-689`). Recorded so nobody tries to exercise it without a code change (recon_20260901 §10 row 11).
+  - **Two user-facing facets, both untruths:** **(a) billing** — the Navbar meter (`components/Navbar.tsx:281`, "today credits X / limit", fed by `/api/user/status` → `user_usage.credits_used_today`) tells the user they consumed a Research call they never received; on the free plan that is 3 of 10 daily credits per failure. **(b) history** — the row lists the question under the Research tag exactly like a completed session; since segment 3 it is stored in the `research_v1` shell and renders as an EMPTY expanded body (pre-wrap of `""`) with no references block — indistinguishable in the list from a real answer; older error rows (plain `""`) look the same. Neither /research's error banner nor any marker is persisted.
+  - **Class — [HONESTY], reasoned against this file's definition:** both facets are the product telling the user something untrue on live pages — a charge for nothing, and a "session" that never produced an answer. **Rejected [OTHER]:** it would file this as billing hygiene and lose facet (b). **Rejected [COMPLIANCE]:** `pages/refund.tsx` has zero mentions of credits (checked), so no legal-page promise is contradicted — the refund policy is subscription-level. **P2:** a real charge and a false record, but bounded to error events and touching no medical output.
+  - **Fix path:** set an `errored` flag in `event_stream()`'s `StreamEventType.ERROR` branch and, in the DONE branch, skip BOTH the history write and the deduction when it is set (or write the row with an explicit error marker and never charge); mirror in the anon branch. Rule 19 before shipping: check whether Explain (its `"done"` after an error event) and Verify share the convention — not audited here. Old error rows: unrecoverable and unidentifiable (an empty `answer` is their only trace).
+  - **How to observe locally, no code change:** restart the backend with `$env:GENERATOR_MODEL='gpt-does-not-exist'` (only the Research main path and Explain Stage 3 build on that binding — `generator.py:143`, `api/services/explain_service.py:357`; guards/retrieval/reranker/verify/embedder use their own `*_MODEL` env names), run a literature-hitting Research query, read `user_usage.credits_used_today` for `test_user` before/after, open /history. Recipe + gate rows: recon_20260901 §10 rows 10–11.
+  - **Surfaced:** 2026-09-02, segment-3 follow-up; **filed** 2026-09-03.
+
+- [OTHER] **[P3 · comment drift — surfaced 2026-09-01 by recon_20260901 §7-D5, filed 2026-09-03, NOT fixed] `api/services/deletion_service.py:88` cites its coverage guard as `tests/test_deletion_table_coverage.py`; the file on disk is `tests/test_deletion_coverage.py`**
+  - Wrong from birth: `9439699` (2026-08-17) introduced the comment AND added the real file under the other name; no ref ever contained the cited name (`git log --all --diff-filter=A -- tests/test_deletion_table_coverage.py` → empty). The baton checker flags the recon's verbatim quote of the wrong name as "NOT IN REPO" on every run — expected: that quote IS the finding, not a citation to resolve.
+  - **Fix:** one-word comment edit (drop `table_`), no test change; take it in any car that touches `deletion_service.py`. Not done here (this car is docs-only).
 
 - [OTHER] **[P3 · Rule 4 print() + cp950 console crash — surfaced 2026-09-02 by the Segment-1 gate prep, NOT fixed] `TFDACorpusStore._load_compact` fallback `print()` with emoji CRASHES the server at import under a cp950 console**
   - **What happened:** starting the documented dev flow (`uvicorn api.server:app`) in a Windows cp950 terminal crashed at import — the TFDA indication-corpus load raised, and the fail-soft handler itself died: `UnicodeEncodeError: 'cp950' codec can't encode character '⚠'` at `api/database/vector_store.py:182`, the line `print(f"⚠️ TFDA indication corpus load failed ({e}) — TFDA source disabled")` inside `TFDACorpusStore._load_compact`. A fail-soft path that crashes is fail-loud in the wrong direction: it also **masks the underlying load error** (`{e}` never printed).
