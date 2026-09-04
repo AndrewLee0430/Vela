@@ -359,21 +359,23 @@ body {
   font-weight: 600;
   margin: 0 0 16px;
 }
+/* 2026-09-04 (UI polish, founder ruling): FLAT — the same button as the
+   /research Search button (pages/research.tsx: bg rgb(var(--color-brand))
+   = #ff8e6e in BOTH schemes, text-white, font-medium, rounded-lg, no
+   gradient, no shadow, no hover colour change). --vela-coral IS that token
+   in both scheme blocks above, so dark needs no separate override. */
 .vela-cta-button {
   display: inline-block;
   padding: 10px 24px;
-  background: linear-gradient(135deg, var(--vela-coral-dark), var(--vela-coral));
+  background: var(--vela-coral);
   color: #ffffff;
   font-size: 0.9rem;
-  font-weight: 600;
-  border-radius: 12px;
+  font-weight: 500;
+  border-radius: 8px;
   text-decoration: none;
-  box-shadow: 0 0 28px rgba(255,107,107,0.4);
-  transition: transform 0.2s, box-shadow 0.2s;
 }
 .vela-cta-button:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 36px rgba(255,107,107,0.55);
+  background: var(--vela-coral);   /* same hex on hover — Search has no hover change; no scale, no glow */
 }
 
 /* ─── Notice (revoked / flagged) ─────────────────────── */
