@@ -172,7 +172,7 @@ function LandingPage() {
         <meta
           key="og:description"
           property="og:description"
-          content="Ask in any language. Answered in yours — with sources you can check. For healthcare professionals who work beyond English."
+          content="Ask in any language. Answered in yours with sources you can check. For healthcare professionals who work beyond English."
         />
         <meta key="og:image" property="og:image" content="https://vela.an-tho.com/og-image.png" />
         <meta key="og:image:width" property="og:image:width" content="1200" />
@@ -188,7 +188,7 @@ function LandingPage() {
         <meta
           key="twitter:description"
           name="twitter:description"
-          content="Ask in any language. Answered in yours — with sources you can check."
+          content="Ask in any language. Answered in yours with sources you can check."
         />
         <meta key="twitter:image" name="twitter:image" content="https://vela.an-tho.com/og-image.png" />
 

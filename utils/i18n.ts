@@ -142,7 +142,7 @@ export interface LandingContent {
 }
 
 const landingEn: LandingContent = {
-  tagline: 'Ask in any language. Answered in yours — with sources you can check.',
+  tagline: 'Ask in any language. Answered in yours with sources you can check.',
   subtitle: 'The AI medical search for healthcare professionals who work beyond English.',
   scrollHint: 'Scroll to learn more',
   panelHeadline: 'Ask in your language. Answers grounded in evidence.',
