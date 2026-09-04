@@ -202,10 +202,14 @@ export default function OnboardingOverlay() {
               {ui.onboardingSkip}
             </button>
           )}
+          {/* 2026-09-04 (UI polish fixup, founder ruling): white text like the
+              /research Search button — same alignment as the wizard fix
+              (45bb590). The inline color '#0a1628' (navy) was the black text.
+              Colour only; classes otherwise unchanged. */}
           <button
             onClick={next}
-            className="text-sm font-semibold px-6 py-2 rounded-lg transition-all"
-            style={{ background: 'rgb(var(--color-brand))', color: '#0a1628' }}
+            className="text-white text-sm font-semibold px-6 py-2 rounded-lg transition-all"
+            style={{ background: 'rgb(var(--color-brand))' }}
           >
             {isLast ? ui.onboardingDone : ui.onboardingNext}
           </button>
