@@ -145,6 +145,23 @@ if (parseResearchAnswer) {
   // Citations key missing → [] (older writer / hand-seeded row), never a crash on .length.
   const noCit = parseResearchAnswer(JSON.stringify({ kind: 'research_v1', answer: conforming }));
   eq(noCit?.citations, [], 'missing citations key → empty list');
+
+  // ── Segment 2 (HISTORY HONESTY car, founder ruling D2 (i) 2026-09-04): the writer
+  // adds an OPTIONAL `fallback` boolean to research_v1. The parser must KEEP it
+  // (rendering is segment 3) and must treat absence as UNKNOWN — never as false —
+  // because every row written before segment 2 lacks the key and was never
+  // observed either way.
+  const fbTrue = parseResearchAnswer(JSON.stringify({ kind: 'research_v1', answer: conforming, citations: [], fallback: true }));
+  check(fbTrue !== null && fbTrue.fallback === true,
+    'segment 2: fallback:true survives the parse (a no-literature answer stays marked)');
+  const fbFalse = parseResearchAnswer(JSON.stringify({ kind: 'research_v1', answer: conforming, citations, fallback: false }));
+  check(fbFalse !== null && fbFalse.fallback === false,
+    'segment 2: fallback:false survives the parse (a grounded answer is marked as observed-grounded)');
+  check(noCit !== null && noCit.fallback === undefined,
+    'pre-segment-2 v1 row (no fallback key) → fallback undefined = UNKNOWN, never false');
+  const fbJunk = parseResearchAnswer(JSON.stringify({ kind: 'research_v1', answer: conforming, citations: [], fallback: 'yes' }));
+  check(fbJunk !== null && fbJunk.fallback === undefined,
+    'non-boolean fallback value → undefined (UNKNOWN), never a truthy string rendered as a caveat');
   // JSON row whose markdown is NON-conforming → parsed (citations kept) but the
   // section parser returns null → the pre-wrap path must show the MARKDOWN, not the JSON.
   const nonConforming = parseResearchAnswer(JSON.stringify({ kind: 'research_v1', answer: 'plain prose', citations }));

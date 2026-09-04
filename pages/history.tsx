@@ -81,6 +81,12 @@ interface ResearchHistoryPayload {
     kind: 'research_v1';
     answer: string;
     citations: Citation[];
+    // HISTORY HONESTY car segment 2 (founder ruling D2 (i) 2026-09-04): OPTIONAL —
+    // true iff the live stream fell back to LLM knowledge (no literature retrieved).
+    // Rows written before segment 2 have no key → undefined = UNKNOWN, never false.
+    // NOT rendered here yet — the FallbackBanner / ProvenanceLine carry-across is
+    // segment 3; this parser only keeps the flag so that segment can read it.
+    fallback?: boolean;
 }
 
 function parseResearchAnswer(answer: string): ResearchHistoryPayload | null {
@@ -91,6 +97,7 @@ function parseResearchAnswer(answer: string): ResearchHistoryPayload | null {
                 kind: 'research_v1',
                 answer: p.answer,
                 citations: Array.isArray(p.citations) ? p.citations : [],
+                fallback: typeof p.fallback === 'boolean' ? p.fallback : undefined,
             };
         }
     } catch {}
