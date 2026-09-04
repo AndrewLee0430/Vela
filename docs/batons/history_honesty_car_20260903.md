@@ -1,4 +1,4 @@
-# HISTORY HONESTY car — opened 2026-09-03 (Segment 1 BUILT, LOCAL ONLY)
+# HISTORY HONESTY car — opened 2026-09-03 (Segment 1 ✅ SHIPPED fly 245 · Segment 2 🔧 BUILT LOCAL 2026-09-04, §4 gate BLANK · Segment 2b FILED)
 
 > **STATUS — Segment 1 (created_at timezone): ✅ SHIPPED as fly 245 (2026-09-03).** Readbacks: push `6f98db6..8a57dc9` → `git ls-remote origin main` = `8a57dc9665480ec1d7b923e77f44b2fe035ccf3f`, exact 40-char match to local HEAD → `.\deploy.ps1` → **fly v245**, image `deployment-01M1KBCA3Q37CJKARC9EFDC1DN`, `/health` = `{"status":"healthy","version":"2.2.0","revision":"8a57dc9665480ec1d7b923e77f44b2fe035ccf3f"}` **full-string, FIRST poll**; `fly status` both machines **245 `started`** (`2879720c66d478` 10:03:04Z · `683d447c2e5428` 10:02:26Z); deploy.ps1 parser Step 3 detected `2879720c66d478` `stopped` → Step 4 started it, no manual start (transcript `tests/probes/deploy_parser/fly245_deploy_transcript.txt`); unauth `GET /api/history` → 403 `{"detail":"Missing token"}` (unchanged). §1 gate founder-PASS 6/6. **✅ PROD EYE 2026-09-04 — 2/2 founder-PASS (prod, own account):** (1) /history row reads wall-clock time · (2) My Shares "shared … ago" sane. Provenance: founder statements 「1. 通過 2. 通過」 in the 2026-09-04 conversation, transcribed under the segment-2 probe authorization. **SEGMENT 1 CLOSED.** Segment 2: recon in §3 (2026-09-04, read-only); build gated on founder rulings D1–D3 (§3-D).
 > *(build-time status, kept as the record)* ~~**STATUS — Segment 1 (created_at timezone): BUILT, LOCAL, NOT pushed, NOT deployed. Prod is still fly 244 = `b718a3d616a8ecee3b8e47aa00ecdc89b683f8d3`.**~~ Code commits `88ddde592dbf309356bd9ef69cbc92b7e9d68edf` + fixup `ed181eded26653e9601d950288237a9981c9091e` (OpenAPI keeps `format: date-time`; the /history wire designator is `Z`) + fixup 2 (`_utc_isoformat` emits `Z`, so share/list matches) on `main`, ahead of origin. **Gate §1 is BLANK — the founder fills it; no AI observation is a gate result.** Push and deploy are founder-only.
@@ -14,7 +14,8 @@
 | # | segment | scope in one line | status |
 |---|---|---|---|
 | 1 | **created_at timezone** | serialize `created_at` WITH a UTC offset on `GET /api/history` (`ChatHistoryEntry` field serializer) and `GET /api/share/list`; no frontend change; storage untouched | **✅ SHIPPED as fly 245** (`8a57dc9`; gate §1 6/6 founder-PASS) |
-| 2 | **event_stream flags** | the fallback flag → `research_v1` optional field or `research_v2`, so /history can know a fallback happened (`[HONESTY][P2]` fallback-flag entry) | **recon DONE 2026-09-04 (§3)** — build gated on founder rulings D1–D3 (§3-D) |
+| 2 | **event_stream flags** | the fallback flag → `research_v1` optional field or `research_v2`, so /history can know a fallback happened (`[HONESTY][P2]` fallback-flag entry) | **🔧 BUILT LOCAL 2026-09-04** — `84df9e0` (server: `errored` / `is_fallback` top-bound, ERROR→DONE = no write / no charge + ONE INFO line, `research_v1` + optional `fallback`) · `d647199` (parser keeps the key, absence = UNKNOWN, not rendered); rulings D1 (i) · D2 (i) · D3 Research-only; **§4 gate BLANK**; NOT pushed, prod still fly 246 |
+| 2b | **Verify site 3 (false `ok` + charge on LLM double-failure)** | a third `verification_status` value at `server.py:1548-1568`, no deduct, rendered on /verify + /history (`TECH_DEBT` `[HONESTY][P2]` filed 2026-09-04 — §3.2 Probe B, founder ruling D3) | filed, not started |
 | 3 | **frontend banner carry-across (+ badge i18n)** | `FallbackBanner` / `ProvenanceLine` carried into /history (Rule 19); the English Research/Verify/Explain badge under zh-TW on /history (nav keys exist, unused) | not started |
 | 4 | **prose narrow fix / deferred** | `@tailwindcss/typography` registration for the `prose` no-op on /research + /history, WITH a two-page, two-scheme eye gate — or deferred by founder ruling | not started |
 
@@ -221,6 +222,10 @@ i18n confirmation (derived): the keys live in **`utils/i18n-ui.ts`** (0 hits in 
 
 ### §3-D Founder decisions — options + facts. **NO recommendation is made here; NO decision is taken.**
 
+> **✅ RULED 2026-09-04 (founder, from this section's options):** **D1 = (i)** no write / no charge · **D2 = (i)** optional `fallback` on `research_v1` (absence = UNKNOWN) · **D3 = Research-only**; Verify site 3 **FILED** as `TECH_DEBT` `[HONESTY][P2]` and sequenced as **segment 2b**, not fixed. Build record: §4 (gate, BLANK) and the STATE Next Up line. The option tables below are kept verbatim as the decision record.
+>
+> **Rule 25 at build time (2026-09-04):** every §3 `server.py` line number was re-derived at HEAD `b1ca296` before editing and MATCHED (`:792 :906 :921 :923 :927 :940-941 :943 :1059 :1073`); two drifts recorded — `parseResearchAnswer` spans `pages/history.tsx:86-97` (§3 wrote :81-97, which included the interface at :80-84), and the TECH_DEBT NAV was already 167, not §3's 166 (the fly-246 closeout had added one `[OTHER]`). **After `84df9e0` the §3 numbers are a dated record, not live pointers:** the flags sit at `server.py:798-799`, the DONE branch at `:932` with the `if errored:` skip at `:934`, `_research_history_payload` at `:1080` and its `"fallback"` key at `:1104` — the baton fact-checker will report `server.py:1059` as a blank line from here on; that is the shift, not an error in §3.
+
 **D1 — the Research error path (generator ERROR → DONE).**
 
 | option | precedent in this repo (Probe B) | what the user sees on /history | what the audit trail loses / keeps |
@@ -260,6 +265,8 @@ Facts that apply to both: the flag's source can be the :906 FALLBACK branch capt
 6. `deduct_credits` does not call `reset_daily_if_needed` (only `check_credits` does) — untouched, noted for the credits car.
 7. This baton's title line still reads *"(Segment 1 BUILT, LOCAL ONLY)"* — stale since fly 245; left for the founder (a header edit, not a probe result).
 
+**Status of this list after the segment-2 build (2026-09-04):** item 2 → **FILED** (`TECH_DEBT` `[HONESTY][P2]`, segment 2b, founder ruling D3) · item 3 → **still open, declined this segment** — the brief asked to skip `research_completed` on the error path, but the call site derives to `pages/research.tsx:459` (client-side, fired on the SSE `done` the server still forwards) and that file was required diff-empty; the smallest fix is a client-local `errored` flag set on the `error` event, two lines, for segment 3 or a fixup on ruling · item 7 → **fixed** (title) · items 1, 4, 5, 6 → untouched.
+
 ### §3.7 Expected segment-2 gate rows (blank FORM comes at build time — this is the row LIST only)
 
 1. **Error row, user tier, main path** — backend restarted with `GENERATOR_MODEL='gpt-does-not-exist'`, a literature-hitting query: /research shows the error banner; /history shows [no row under D1 (i) | a marked row under D1 (ii)]; `credits_used_today` read before/after is **unchanged**.
@@ -273,3 +280,20 @@ Facts that apply to both: the flag's source can be the :906 FALLBACK branch capt
 9. **Under D3 three-mode only**: Verify LLM double-failure → the new status marker on /verify and /history; `credits_used_today` unchanged.
 10. **Delete flow** on one disposable row (regression on `tests/test_history_delete.py`'s surface).
 11. **Prod eye after deploy**: one errored Research on prod, own account — meter before/after unchanged; /history per the D1 ruling.
+
+---
+
+## §4 Segment 2 — eye gate (BLANK — founder fills; **no AI observation is a gate result**)
+
+**Environment:** local dev server at the segment-2 HEAD (see the segments table for the two code SHAs) — `PYTHONUTF8=1` then `uvicorn api.server:app --reload --port 8000` with `TEST_MODE=true`, plus `npm run dev`; browser in Asia/Taipei. **Prod is still fly 246 — nothing here is a prod observation.** Credit readings are DB reads on the dev DB: authed → `SELECT credits_used_today FROM user_usage WHERE clerk_user_id = 'test_user';` · anonymous → `SELECT anon_id, credits_used_today, last_active_at FROM anonymous_usage ORDER BY last_active_at DESC LIMIT 3;` (the anon id is derived from IP + the browser fingerprint, so the row to watch is the most recently active one; note its `anon_id` prefix BEFORE the error run). The stored flag is read with `SELECT id, answer FROM chat_history WHERE session_type = 'research' ORDER BY id DESC LIMIT 1;` — look for `"fallback": true|false` at the end of the JSON.
+
+| # | Surface / step | Expected | Observed | PASS / FAIL | Notes |
+|---|---|---|---|---|---|
+| 1 | `/research`, a normal literature-hitting query (e.g. *metformin renal dosing*) → `/history` | The new row renders exactly as under fly 246 (section cards + references block); the DB `answer` JSON ends with `"fallback": false` | | | parity row — the flag is stored, NOT rendered (segment 3) |
+| 2 | `/research`, a no-literature query (a nonsense drug name, e.g. *zorblaxitide 40 mg dosing*) → `/history` | FallbackBanner on `/research` as today; the new `/history` row renders exactly as under fly 246 (no banner yet, no references block); the DB `answer` JSON ends with `"fallback": true` | | | |
+| 3 | Error path, authed — recon_20260901 §10 row 10 recipe: stop uvicorn, `$env:GENERATOR_MODEL='gpt-does-not-exist'`, restart; read `credits_used_today` BEFORE; run a literature-hitting query | `/research` shows the error banner and leaves its loading state; AFTER = BEFORE (**+0**, was +3 under fly 246); `/history` has **NO new row**; the backend log shows ONE line `[Research] generator ERROR before DONE — no history write, no charge (audit_id=res_…, anon=False, fallback=False)` | | | restore: remove the env var, restart uvicorn |
+| 4 | Same recipe, anonymous (logged out, same browser) | error banner; the watched `anonymous_usage` row's `credits_used_today` unchanged (was +3); no history row (as always for L0); the log line reads `anon=True` | | | |
+| 5 | `/verify` (warfarin + aspirin) and `/explain` (any short report), one query each | Unchanged vs fly 246 — rows written and rendered as before (ruling D3: Research-only) | | | |
+| 6 | Pre-segment-2 rows: any fly-244-era `research_v1` row (e.g. dev id 2337) and any plain-markdown row | Render unchanged; browser console shows no error (the absent `fallback` key is tolerated as UNKNOWN) | | | |
+
+**Founder sign-off line (name · date · overall verdict):** ______ · ______ · ___/6
