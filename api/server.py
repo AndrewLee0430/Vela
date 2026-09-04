@@ -790,6 +790,13 @@ async def research_query(
         # embeds this list (segment 3 half B) — an unbound local there would turn
         # the history write into a NameError swallowed as an error event.
         citations_data: list = []
+        # HISTORY HONESTY car segment 2 — both flags are bound here, top-level,
+        # for the same reason as citations_data: the generator's ERROR→DONE
+        # paths (retrieval-error, main-path exception, fallback-path exception)
+        # reach the DONE branch without the FALLBACK / CITATIONS branches having
+        # fired (recon_20260901 §4 addendum; history_honesty_car §3.1).
+        errored: bool = False      # a generator ERROR preceded DONE → no write, no charge (D1 (i))
+        is_fallback: bool = False  # the generator's FALLBACK event fired → persisted on the row (D2 (i))
         audit_id = f"res_{uuid.uuid4().hex[:16]}"
         try:
             # Emit query_id first so the client can tag subsequent analytics events
@@ -904,6 +911,7 @@ async def research_query(
                     full_answer += content
                     yield f"data: {json.dumps({'type': 'answer', 'content': content}, ensure_ascii=False)}\n\n"
                 elif event.type == StreamEventType.FALLBACK:
+                    is_fallback = True
                     yield f"data: {json.dumps({'type': 'fallback', 'content': event.content}, ensure_ascii=False)}\n\n"
                 elif event.type == StreamEventType.CITATIONS:
                     citations_data = [c.model_dump() for c in event.content]
@@ -919,10 +927,23 @@ async def research_query(
                             ), label="Audit Log")
                     yield f"data: {json.dumps({'type': 'citations', 'content': citations_data}, ensure_ascii=False)}\n\n"
                 elif event.type == StreamEventType.ERROR:
+                    errored = True
                     yield f"data: {json.dumps({'type': 'error', 'content': event.content}, ensure_ascii=False)}\n\n"
                 elif event.type == StreamEventType.DONE:
                     elapsed_ms = int((time.time() - start_time) * 1000)
-                    if is_anonymous:
+                    if errored:
+                        # Founder ruling D1 (i), 2026-09-04: a generator ERROR before DONE
+                        # means no answer was delivered — NO history row, NO charge, on
+                        # both tiers. `errored` wins over `is_fallback` (the fallback-path
+                        # exception yields FALLBACK then ERROR). The SSE `done` below is
+                        # still forwarded so the client leaves its loading state. This is
+                        # the ONE line prod logs can be checked against (baton §3.4 D2).
+                        logger.info(
+                            "[Research] generator ERROR before DONE — no history write, no charge "
+                            "(audit_id=%s, anon=%s, fallback=%s)",
+                            audit_id, is_anonymous, is_fallback,
+                        )
+                    elif is_anonymous:
                         # L0: deduct anon quota + log cost with user_id=None marker (v0.4 A10)
                         await deduct_anonymous_credits(db, anon_id, "research")
                         if usage_out:
@@ -937,7 +958,7 @@ async def research_query(
                                 user_id=user_id,
                                 session_type="research",
                                 question=PHIDetector.sanitize_for_log(body.question),
-                                answer=_research_history_payload(full_answer, citations_data)
+                                answer=_research_history_payload(full_answer, citations_data, is_fallback)
                             ), label="History Save")
                         # 成功後扣減 credits
                         await deduct_credits(db, user_id, "research")
@@ -1056,7 +1077,7 @@ def _resolve_interaction_source(interaction_drugs: list, provenance: list) -> tu
             ATTR_OPENFDA_ANALYSIS)
 
 
-def _research_history_payload(full_answer: str, citations: list) -> str:
+def _research_history_payload(full_answer: str, citations: list, fallback: bool) -> str:
     """ONE research_v1-shaped JSON for ChatHistory.answer — the single Research
     write site serializes through here (HISTORY car segment 3, founder ruling
     2026-09-02: embed citations in the answer JSON, recon_20260901 §4 option (i)),
@@ -1068,11 +1089,19 @@ def _research_history_payload(full_answer: str, citations: list) -> str:
     rows are plain markdown, never carry it, and stay on the half-A render path —
     NO backfill is possible (no correlation key exists; the AuditLog copy holds bare
     source_ids only — recon §7-D2). Deliberately EXCLUDES audit_id / any request id:
-    the correlation-key route was ruled out, and this payload pre-empts nothing."""
+    the correlation-key route was ruled out, and this payload pre-empts nothing.
+
+    `fallback` (HISTORY HONESTY car segment 2, founder ruling D2 (i) 2026-09-04):
+    True iff the generator's FALLBACK event fired for this stream — no literature
+    was retrieved and the answer is LLM knowledge only — so /history can show the
+    same clinical caveat /research shows (rendered in segment 3). Written as an
+    OPTIONAL key on the unchanged `research_v1` kind: rows written before segment 2
+    lack it, and the reader treats absence as UNKNOWN, never as False."""
     return json.dumps({
         "kind": "research_v1",
         "answer": full_answer,
         "citations": list(citations),
+        "fallback": bool(fallback),
     }, ensure_ascii=False)
 
 

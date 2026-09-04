@@ -27,6 +27,19 @@ NOT modified) and assert the STORED answer:
     `citations_data` local is bound only inside the CITATIONS branch, so the
     write must not assume it fired.
 
+HISTORY HONESTY car segment 2 (founder rulings 2026-09-04, D1 (i) + D2 (i)):
+  * a generator ERROR before DONE means no answer was delivered → NO
+    ChatHistory row and NO credit deduction, authed AND anonymous (the
+    DONE branch used to write an empty research_v1 shell and charge 3 —
+    TECH_DEBT `[HONESTY][P2] Research DONE-branch on error`); the control
+    tests prove the same harness DOES charge on a clean stream, so a
+    "not charged" assertion cannot pass vacuously (CLAUDE.md Rule 17);
+  * the stored JSON carries `fallback: <bool>` — True iff the generator's
+    FALLBACK event fired (no literature, LLM knowledge only), so /history
+    can later show the same clinical caveat /research shows (TECH_DEBT
+    `[HONESTY][P2] /history fallback indication`; RENDER is segment 3);
+  * on the fallback-path exception (FALLBACK then ERROR) `errored` wins.
+
 Run: python -m pytest tests/test_research_history_payload.py -q
 """
 import json
@@ -119,12 +132,34 @@ def _sse_events(body_text):
     return out
 
 
-def _post_research(monkeypatch, events):
+# TEST_MODE resolves a request with no Authorization header to this user
+# (api/server.py require_auth_or_anonymous); an X-Anon-Fingerprint header
+# makes the SAME handler take the L0 anonymous branch instead.
+USER_ID = os.getenv("TEST_USER_ID", "test_user")
+ANON_FP = "seg2-anon-fingerprint-0001"  # 16-128 chars, URL-safe base64 alphabet
+SEED_USER_CREDITS = 5
+SEED_ANON_CREDITS = 2
+
+
+def _anon_id():
+    """The anon_id the handler derives for TestClient (client host 'testclient',
+    no X-Forwarded-For) — computed with the production helper so a seeded
+    AnonymousUsage row is the one the handler touches."""
+    from api.services.anonymous_identity import derive_anon_id
+    return derive_anon_id("testclient", ANON_FP)
+
+
+def _post_research_full(monkeypatch, events, *, anonymous=False):
     """Drive POST /api/research through the real SSE handler with stubbed
-    edges; return (parsed SSE events, stored research ChatHistory rows)."""
+    edges. Seeds a usage row with a NON-ZERO credit count first (authed:
+    UserUsage for USER_ID; anonymous: AnonymousUsage for the derived anon_id)
+    so "unchanged" is a real reading, not a default. Returns
+    (parsed SSE events, stored research ChatHistory rows, usage) where
+    usage = {"user": credits_used_today or None, "anon": [credits per row]}."""
     import api.middleware.guards as guards
     import api.server as server
-    from api.models.sql_models import ChatHistory
+    from api.models.sql_models import AnonymousUsage, ChatHistory, UserUsage
+    from api.services.anonymous_identity import today_utc
     from fastapi.testclient import TestClient
 
     async def _always_ok(text):
@@ -144,28 +179,62 @@ def _post_research(monkeypatch, events):
 
     engine, TestSession, get_db = _fresh_db(server)
     try:
+        with TestSession() as db:
+            if anonymous:
+                db.add(AnonymousUsage(anon_id=_anon_id(),
+                                      credits_used_today=SEED_ANON_CREDITS,
+                                      last_reset_date=today_utc()))
+            else:
+                db.add(UserUsage(clerk_user_id=USER_ID, plan_type="free",
+                                 credits_used_today=SEED_USER_CREDITS))
+            db.commit()
+
+        headers = {"X-Anon-Fingerprint": ANON_FP} if anonymous else {}
         client = TestClient(server.app)  # no context manager → no lifespan side effects
         resp = client.post("/api/research", json={
             "question": QUESTION,
             "response_language": "en",
-        })
+        }, headers=headers)
         assert resp.status_code == 200, resp.text
         with TestSession() as db:
             rows = db.query(ChatHistory).filter(
                 ChatHistory.session_type == "research").all()
             stored = [(r.user_id, r.question, r.answer) for r in rows]
-        return _sse_events(resp.text), stored
+            user_row = db.query(UserUsage).filter(
+                UserUsage.clerk_user_id == USER_ID).first()
+            anon_rows = db.query(AnonymousUsage).all()
+            usage = {
+                "user": user_row.credits_used_today if user_row else None,
+                "anon": [r.credits_used_today for r in anon_rows],
+            }
+        return _sse_events(resp.text), stored, usage
     finally:
         server.app.dependency_overrides.pop(get_db, None)
         engine.dispose()
 
 
-def _script(chunks, citations_event=True, citations=None):
+def _post_research(monkeypatch, events):
+    """Authed variant returning (SSE events, stored rows) — the original seam."""
+    sse, stored, _usage = _post_research_full(monkeypatch, events)
+    return sse, stored
+
+
+def _script(chunks, citations_event=True, citations=None,
+            fallback_event=False, error_event=False):
+    """Scripted generator stream. `fallback_event` prepends FALLBACK (the real
+    no-literature path, api/rag/generator.py _generate_fallback_stream, yields
+    it BEFORE the first ANSWER chunk); `error_event` appends ERROR before DONE
+    (the generator's exception convention: ERROR → DONE, no CITATIONS)."""
     from api.models.schemas import StreamEvent, StreamEventType
-    events = [StreamEvent(type=StreamEventType.ANSWER, content=c) for c in chunks]
+    events = []
+    if fallback_event:
+        events.append(StreamEvent(type=StreamEventType.FALLBACK, content="no_literature"))
+    events += [StreamEvent(type=StreamEventType.ANSWER, content=c) for c in chunks]
     if citations_event:
         events.append(StreamEvent(type=StreamEventType.CITATIONS,
                                   content=citations if citations is not None else []))
+    if error_event:
+        events.append(StreamEvent(type=StreamEventType.ERROR, content="An error occurred"))
     events.append(StreamEvent(type=StreamEventType.DONE))
     return events
 
@@ -199,20 +268,28 @@ def test_stored_row_carries_marker_markdown_and_streamed_citations(monkeypatch):
     assert parsed["citations"][0]["source_type"] == "pubmed"
     assert parsed["citations"][0]["credibility"] == "peer-reviewed"
     assert parsed["citations"][1]["url"].startswith("https://dailymed.nlm.nih.gov/")
-    assert set(parsed) == {"kind", "answer", "citations"}, \
-        "no audit/request id in the payload — no correlation-key route"
+    assert set(parsed) == {"kind", "answer", "citations", "fallback"}, \
+        "no audit/request id in the payload — no correlation-key route; " \
+        "segment 2 adds ONLY the fallback flag"
+    assert parsed["fallback"] is False, \
+        "a literature-grounded stream (no FALLBACK event) must persist fallback=False, never absent"
 
 
-def test_fallback_shape_stores_empty_citations(monkeypatch):
-    """Generator fallback path (api/rag/generator.py emits CITATIONS with
-    content=[]) → stored JSON still carries the marker + markdown, citations []."""
-    sse, stored = _post_research(monkeypatch, _script(ANSWER_CHUNKS, citations=[]))
+def test_fallback_shape_stores_empty_citations_and_fallback_true(monkeypatch):
+    """Generator fallback path (api/rag/generator.py _generate_fallback_stream
+    yields FALLBACK, then the answer, then CITATIONS with content=[]) → stored
+    JSON carries the marker + markdown, citations [], and fallback=True — the
+    flag /history needs to show the clinical caveat /research shows."""
+    sse, stored = _post_research(monkeypatch,
+                                 _script(ANSWER_CHUNKS, citations=[], fallback_event=True))
+    assert [e for e in sse if e.get("type") == "fallback"], "harness: the fallback event streamed"
     assert [e for e in sse if e.get("type") == "citations"][0]["content"] == []
     assert len(stored) == 1
     parsed = json.loads(stored[0][2])
     assert parsed["kind"] == "research_v1"
     assert parsed["answer"] == "".join(ANSWER_CHUNKS)
     assert parsed["citations"] == []
+    assert parsed["fallback"] is True, "the FALLBACK event must be persisted as fallback=True"
 
 
 def test_no_citations_event_still_writes_row_with_empty_citations(monkeypatch):
@@ -230,3 +307,75 @@ def test_no_citations_event_still_writes_row_with_empty_citations(monkeypatch):
     assert parsed["kind"] == "research_v1"
     assert parsed["answer"] == ANSWER_CHUNKS[0]
     assert parsed["citations"] == []
+
+
+# ── Segment 2: generator ERROR → no row, no charge (D1 ruling (i)) ──────────
+
+def _skip_lines(caplog, audit_id):
+    return [r for r in caplog.records
+            if r.levelname == "INFO" and "no history write" in r.getMessage()
+            and audit_id in r.getMessage()]
+
+
+def test_clean_stream_charges_credits_control(monkeypatch):
+    """CONTROL (Rule 17): the seeded authed user IS charged 3 credits on a
+    clean stream, so the no-charge assertions below cannot pass because the
+    harness never reached the deduct."""
+    _sse, stored, usage = _post_research_full(monkeypatch, _script(ANSWER_CHUNKS, citations=_citations()))
+    assert len(stored) == 1
+    assert usage["user"] == SEED_USER_CREDITS + 3, "research costs 3 credits (CREDIT_COSTS)"
+
+
+def test_generator_error_writes_no_row_and_charges_nothing(monkeypatch, caplog):
+    """Generator exception convention: ERROR → DONE (api/rag/generator.py main
+    path :206-211). Founder ruling D1 (i): no answer was delivered, so NO
+    ChatHistory row and NO deduction — the user must not see a phantom
+    Research session on /history nor pay 3 credits for it. The SSE error and
+    done events still reach the client unchanged, and ONE INFO line names the
+    skipped write/charge with the audit id so prod logs can verify it."""
+    import logging
+    caplog.set_level(logging.INFO, logger="vela")
+    sse, stored, usage = _post_research_full(
+        monkeypatch, _script(ANSWER_CHUNKS[:1], citations_event=False, error_event=True))
+    assert [e for e in sse if e.get("type") == "error"], "harness: the error event streamed"
+    assert [e for e in sse if e.get("type") == "done"], "the done event must still be forwarded"
+    assert stored == [], "an errored stream must not leave a research row"
+    assert usage["user"] == SEED_USER_CREDITS, "an errored stream must not be charged"
+    audit_id = [e for e in sse if e.get("type") == "query_id"][0]["query_id"]
+    assert len(_skip_lines(caplog, audit_id)) == 1, \
+        "exactly one INFO skip line carrying the audit id (prod verification hook)"
+
+
+def test_fallback_then_error_writes_no_row_and_charges_nothing(monkeypatch):
+    """Fallback-path exception (api/rag/generator.py :315-318): FALLBACK has
+    already been yielded when the ERROR arrives. `errored` wins — no row (so
+    no fallback flag is persisted either), no charge."""
+    sse, stored, usage = _post_research_full(
+        monkeypatch, _script(ANSWER_CHUNKS[:1], citations_event=False,
+                             fallback_event=True, error_event=True))
+    assert [e for e in sse if e.get("type") == "fallback"], "harness: fallback streamed first"
+    assert [e for e in sse if e.get("type") == "error"], "harness: then the error"
+    assert stored == []
+    assert usage["user"] == SEED_USER_CREDITS
+
+
+def test_anon_clean_stream_charges_credits_control(monkeypatch):
+    """CONTROL (Rule 17) for the L0 branch: the seeded AnonymousUsage row IS
+    charged 3 on a clean stream and, as always, no history row is written."""
+    _sse, stored, usage = _post_research_full(
+        monkeypatch, _script(ANSWER_CHUNKS, citations=[]), anonymous=True)
+    assert stored == [], "anonymous sessions never write history"
+    assert usage["user"] is None, "harness: the authed row must not exist on the anon path"
+    assert usage["anon"] == [SEED_ANON_CREDITS + 3], \
+        "exactly the seeded anon row, charged 3 (if a second row appears the derived anon_id drifted)"
+
+
+def test_anon_generator_error_charges_nothing(monkeypatch):
+    """Same D1 (i) rule on the anon DONE branch (api/server.py :925-931): a
+    generator ERROR must not consume 3 of the 8 daily anonymous credits."""
+    sse, stored, usage = _post_research_full(
+        monkeypatch, _script(ANSWER_CHUNKS[:1], citations_event=False, error_event=True),
+        anonymous=True)
+    assert [e for e in sse if e.get("type") == "error"], "harness: the error event streamed"
+    assert stored == []
+    assert usage["anon"] == [SEED_ANON_CREDITS], "the seeded anon row must be unchanged"
