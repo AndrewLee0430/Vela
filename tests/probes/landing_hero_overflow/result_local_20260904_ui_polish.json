@@ -1,0 +1,70 @@
+{
+  "probe": "landing_hero_overflow",
+  "date": "2026-09-04T00:47:33.416Z",
+  "url": "http://127.0.0.1:4321/",
+  "prod_revision": null,
+  "method": "playwright@1.62.1 channel=chrome headless; mobile UA + hasTouch; overflow = scrollingElement.scrollWidth - clientWidth; rect enumeration ignores ancestor clipping (see header)",
+  "widths": [
+    {
+      "viewport_width": 360,
+      "innerWidth": 360,
+      "clientWidth": 360,
+      "scrollWidth": 360,
+      "hOverflow": 0,
+      "hero": {
+        "left": -131.6,
+        "right": 491.6,
+        "width": 623.2
+      },
+      "rects_beyond_right_edge": [
+        {
+          "selector": "div.hero-spotlight.absolute.-z-10",
+          "right": 491.6,
+          "width": 623.2
+        }
+      ],
+      "rects_beyond_right_edge_total": 1
+    },
+    {
+      "viewport_width": 375,
+      "innerWidth": 375,
+      "clientWidth": 375,
+      "scrollWidth": 375,
+      "hOverflow": 0,
+      "hero": {
+        "left": -138.3,
+        "right": 513.3,
+        "width": 651.7
+      },
+      "rects_beyond_right_edge": [
+        {
+          "selector": "div.hero-spotlight.absolute.-z-10",
+          "right": 513.3,
+          "width": 651.7
+        }
+      ],
+      "rects_beyond_right_edge_total": 1
+    },
+    {
+      "viewport_width": 390,
+      "innerWidth": 390,
+      "clientWidth": 390,
+      "scrollWidth": 390,
+      "hOverflow": 0,
+      "hero": {
+        "left": -145.1,
+        "right": 535.1,
+        "width": 680.2
+      },
+      "rects_beyond_right_edge": [
+        {
+          "selector": "div.hero-spotlight.absolute.-z-10",
+          "right": 535.1,
+          "width": 680.2
+        }
+      ],
+      "rects_beyond_right_edge_total": 1
+    }
+  ],
+  "local_head": "45bb5907d31e93f3f72c7d55c6fe1c613df1b270"
+}
