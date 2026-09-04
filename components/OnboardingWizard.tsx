@@ -110,11 +110,15 @@ export default function OnboardingWizard({ onClose }: { onClose: () => void }) {
       {ui.onboardingBack}
     </button>
   );
+  // 2026-09-04 (UI polish, founder ruling): white text like the /research
+  // Search button (text-white on rgb(var(--color-brand))). The inline
+  // color '#0a1628' (navy) was the black text. No shared primary-button
+  // class exists in the repo; classes aligned here, none added.
   const primaryBtn = (label: string, onClick: () => void) => (
     <button
       onClick={onClick}
-      className="text-sm font-semibold px-6 py-2 rounded-lg transition-all"
-      style={{ background: 'rgb(var(--color-brand))', color: '#0a1628' }}
+      className="text-white text-sm font-semibold px-6 py-2 rounded-lg transition-all"
+      style={{ background: 'rgb(var(--color-brand))' }}
     >
       {label}
     </button>
