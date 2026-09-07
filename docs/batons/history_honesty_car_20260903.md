@@ -1,5 +1,6 @@
-# HISTORY HONESTY car — opened 2026-09-03 (Segment 1 ✅ SHIPPED fly 245 · Segment 2 ✅ SHIPPED fly 247 · Segment 2b FILED · Segment 3 next)
+# HISTORY HONESTY car — opened 2026-09-03 (Segment 1 ✅ SHIPPED fly 245 · Segment 2 ✅ SHIPPED fly 247 · Segment 2b FILED · Segment 3 BUILT LOCAL, NOT pushed)
 
+> **STATUS — Segment 3 (frontend carry-across: `FallbackBanner` + `ProvenanceLine` into /history from the persisted flag · badge i18n · Verify ⓘ icon + tooltip · `research_completed` not on error): 🔧 BUILT LOCAL, NOT pushed, NOT deployed (2026-09-07). Prod is still fly 247 = `28826d0510ab2d44ffe206486b720d38192ea987`.** Code `6670011` (extract the two components to `components/ResearchTrustSignal.tsx`, tooltip theme tokens) · `ec9047a` (/history renders the trust signal from `research_v1.fallback`; badge via the existing nav keys) · `8b12722` (Verify ⓘ icon + hover/focus/tap tooltip on the shared card) · `ea67b28` (`errored` flag guards `research_completed`). Tests 424/28 → 433/28 (+9, all RED first) · `.mjs` guard 41 → 60 checks · `tsc` 0 · lint 22 (7e/15w) unchanged · `npm run build` exit 0 (Compiled, Exporting 15/15) · i18n +0 keys (254 UI + 27 extra, unchanged). **Gate §6 is BLANK — the founder fills it; no AI observation is a gate result.** Push and deploy are founder-only. Build record §5.
 > **STATUS — Segment 2 (event_stream flags: no write / no charge on generator error · fallback flag persisted): ✅ SHIPPED as fly 247 (2026-09-04).** Readbacks: push `bc04301..28826d0` → `git ls-remote origin main` = `28826d0510ab2d44ffe206486b720d38192ea987`, exact 40-char match to local HEAD → `.\deploy.ps1` → **fly v247**, image `deployment-01M1NFJ9THDYBG7AR79KR5Q10B`, `/health` = `{"status":"healthy","version":"2.2.0","revision":"28826d0510ab2d44ffe206486b720d38192ea987"}` **full-string, FIRST poll**; `fly status` both machines **247 `started`** (`2879720c66d478` 05:54:42Z · `683d447c2e5428` 05:54:08Z); deploy.ps1 parser Step 3 detected `2879720c66d478` `stopped` → Step 4 started it ("has been started"), Step 6 "All machines running.", no manual start — 4th consecutive clean run (transcript `tests/probes/deploy_parser/fly247_deploy_transcript.txt`, ANSI stripped); unauth `GET /api/history` → 403 `{"detail":"Missing token"}` (unchanged). **§4 gate founder-PASS 6/6 + probe 25/25** (transcribed this closeout). Founder rulings D1 (i) · D2 (i) · D3 Research-only (§3-D). **✅ PROD EYE 2026-09-04 — 2/2 founder-PASS (prod, own account):** (1) normal Research → /history row as before · (2) nonsense-drug Research → fallback banner on /research, /history row renders (no banner until segment 3). Provenance: founder statement 「都通過」 in the closeout conversation, transcribed under the final-docs authorization. **SEGMENT 2 CLOSED.** Next: segment 3 (frontend carry-across), then 2b (Verify site 3), then the prose narrow fix / defer.
 > **STATUS — Segment 1 (created_at timezone): ✅ SHIPPED as fly 245 (2026-09-03).** Readbacks: push `6f98db6..8a57dc9` → `git ls-remote origin main` = `8a57dc9665480ec1d7b923e77f44b2fe035ccf3f`, exact 40-char match to local HEAD → `.\deploy.ps1` → **fly v245**, image `deployment-01M1KBCA3Q37CJKARC9EFDC1DN`, `/health` = `{"status":"healthy","version":"2.2.0","revision":"8a57dc9665480ec1d7b923e77f44b2fe035ccf3f"}` **full-string, FIRST poll**; `fly status` both machines **245 `started`** (`2879720c66d478` 10:03:04Z · `683d447c2e5428` 10:02:26Z); deploy.ps1 parser Step 3 detected `2879720c66d478` `stopped` → Step 4 started it, no manual start (transcript `tests/probes/deploy_parser/fly245_deploy_transcript.txt`); unauth `GET /api/history` → 403 `{"detail":"Missing token"}` (unchanged). §1 gate founder-PASS 6/6. **✅ PROD EYE 2026-09-04 — 2/2 founder-PASS (prod, own account):** (1) /history row reads wall-clock time · (2) My Shares "shared … ago" sane. Provenance: founder statements 「1. 通過 2. 通過」 in the 2026-09-04 conversation, transcribed under the segment-2 probe authorization. **SEGMENT 1 CLOSED.** Segment 2: recon in §3 (2026-09-04, read-only); build gated on founder rulings D1–D3 (§3-D).
 > *(build-time status, kept as the record)* ~~**STATUS — Segment 1 (created_at timezone): BUILT, LOCAL, NOT pushed, NOT deployed. Prod is still fly 244 = `b718a3d616a8ecee3b8e47aa00ecdc89b683f8d3`.**~~ Code commits `88ddde592dbf309356bd9ef69cbc92b7e9d68edf` + fixup `ed181eded26653e9601d950288237a9981c9091e` (OpenAPI keeps `format: date-time`; the /history wire designator is `Z`) + fixup 2 (`_utc_isoformat` emits `Z`, so share/list matches) on `main`, ahead of origin. **Gate §1 is BLANK — the founder fills it; no AI observation is a gate result.** Push and deploy are founder-only.
@@ -17,7 +18,7 @@
 | 1 | **created_at timezone** | serialize `created_at` WITH a UTC offset on `GET /api/history` (`ChatHistoryEntry` field serializer) and `GET /api/share/list`; no frontend change; storage untouched | **✅ SHIPPED as fly 245** (`8a57dc9`; gate §1 6/6 founder-PASS) |
 | 2 | **event_stream flags** | the fallback flag → `research_v1` optional field or `research_v2`, so /history can know a fallback happened (`[HONESTY][P2]` fallback-flag entry) | **✅ SHIPPED as fly 247** (`84df9e0` server + `d647199` parser + probe `c9d02d5`; gate §4 6/6 founder-PASS + probe 25/25; rulings D1 (i) · D2 (i) · D3 Research-only) |
 | 2b | **Verify site 3 (false `ok` + charge on LLM double-failure)** | a third `verification_status` value at `server.py:1548-1568`, no deduct, rendered on /verify + /history (`TECH_DEBT` `[HONESTY][P2]` filed 2026-09-04 — §3.2 Probe B, founder ruling D3) | filed, not started |
-| 3 | **frontend banner carry-across (+ badge i18n)** | `FallbackBanner` / `ProvenanceLine` carried into /history (Rule 19); the English Research/Verify/Explain badge under zh-TW on /history (nav keys exist, unused) | not started |
+| 3 | **frontend banner carry-across (+ badge i18n)** | `FallbackBanner` / `ProvenanceLine` carried into /history (Rule 19); the English Research/Verify/Explain badge under zh-TW on /history (nav keys exist, unused) | **🔧 BUILT LOCAL, NOT pushed** (`6670011` extract · `ec9047a` /history + badge · `8b12722` Verify ⓘ · `ea67b28` telemetry; gate §6 BLANK; build record §5) |
 | 4 | **prose narrow fix / deferred** | `@tailwindcss/typography` registration for the `prose` no-op on /research + /history, WITH a two-page, two-scheme eye gate — or deferred by founder ruling | not started |
 
 ---
@@ -268,6 +269,8 @@ Facts that apply to both: the flag's source can be the :906 FALLBACK branch capt
 
 **Status of this list after the segment-2 build (2026-09-04):** item 2 → **FILED** (`TECH_DEBT` `[HONESTY][P2]`, segment 2b, founder ruling D3) · item 3 → **still open, declined this segment** — the brief asked to skip `research_completed` on the error path, but the call site derives to `pages/research.tsx:459` (client-side, fired on the SSE `done` the server still forwards) and that file was required diff-empty; the smallest fix is a client-local `errored` flag set on the `error` event, two lines, for segment 3 or a fixup on ruling · item 7 → **fixed** (title) · items 1, 4, 5, 6 → untouched.
 
+**Status after the segment-3 build (2026-09-07):** item 3 → **fixed in segment 3** (client-local `errored` flag set in the SSE `error` handler; `research_completed` skipped on that `done` — `ea67b28`; note §5f-4 on its breadth) · item 4 → **fixed in segment 3** (`TOOLTIP_STYLE` theme tokens in the extracted `components/ResearchTrustSignal.tsx`, shared with the Verify ⓘ tooltip — `6670011`; §5d) · items 1, 5, 6 → untouched · NEW in passing: `components/CitationPanel.tsx` carries the same light-only tooltip at three sites (§5f-1).
+
 ### §3.7 Expected segment-2 gate rows (blank FORM comes at build time — this is the row LIST only)
 
 1. **Error row, user tier, main path** — backend restarted with `GENERATOR_MODEL='gpt-does-not-exist'`, a literature-hitting query: /research shows the error banner; /history shows [no row under D1 (i) | a marked row under D1 (ii)]; `credits_used_today` read before/after is **unchanged**.
@@ -300,3 +303,96 @@ Facts that apply to both: the flag's source can be the :906 FALLBACK branch capt
 | 6 | Pre-segment-2 rows: any fly-244-era `research_v1` row (e.g. dev id 2337) and any plain-markdown row | Render unchanged; browser console shows no error (the absent `fallback` key is tolerated as UNKNOWN) | id 2334 renders, console clean | **PASS** | — |
 
 **Founder sign-off line (name · date · overall verdict):** Andrew Lee (founder) · 2026-09-04 · **6/6 PASS** — provenance: founder statement 「驗證完都通過」 + screenshot in the closeout conversation for the visual rows, probe `tests/probes/research_error_path/result.json` (run 2, 25/25) for the machine facts; transcribed by Claude Code under the closeout authorization, per the 2026-09-01 zh-TW transcription precedent. Observed on localhost at HEAD `8638c50` (backend :8000 TEST_MODE, dev DB `ep-spring-voice-a127ye10`, viewer tz Asia/Taipei).
+
+---
+
+## §5 Segment 3 build record (AI-written, facts and pointers only) — 2026-09-07
+
+**Repo assertion (Rule 24):** toplevel `C:/Users/andre/projects/Vela`, HEAD `e62a92ae31a695a8fbcf8d7589602f36ddd73aef` at task start (= the segment-2 closeout docs commit; prod = fly 247 = `28826d0…`), status clean except the 4 founder-held untracked entries. Workflow Step 0: `PYTHONUTF8=1 python tests/probes/baton_check/check_baton.py docs/batons/history_honesty_car_20260903.md` → **100 claims · ⚠️ DRIFTED 5 · ADVISORY 6 · ✅ VERIFIED 105** — the 5 drifts are pre-existing (two `server.py:1059` cites now land on a blank line; three non-unique anchors that legitimately repeat across ledgers), flagged in §5e, not fixed.
+
+**Scope shipped (local):** A — the two components extracted into ONE file `components/ResearchTrustSignal.tsx` (named exports `ProvenanceLine`, `FallbackBanner`, plus `TOOLTIP_STYLE`), consumed by `pages/research.tsx` and `pages/history.tsx`; B — the /history mode badge through the existing nav keys; C — the Verify ⓘ icon + tooltip on the shared `VerifyInteractionCard`; D — `research_completed` guarded by a client-local `errored` flag. Commits: `6670011` (A) · `ec9047a` (A-history + B) · `8b12722` (C) · `ea67b28` (D).
+
+### 5a. Rule 25 — cited vs derived (unit: **render sites / call sites / i18n key rows**)
+
+Commands: `git grep -n "FallbackBanner\|ProvenanceLine\|isFallback" -- pages/ components/` · `grep -cE "^\s*<key>:" utils/i18n-ui.ts` (the brief's two-space form `grep -c "  <key>:"` returns **2**, not 17 — the interface rows are indented 2, the 16 locale rows 4; the count is 17 with the indent-agnostic form) · `git grep -n "parseResearchAnswer\|fallback" -- pages/history.tsx` · `git grep -n "getAiSeverityNote\|AI-assessed\|label-stated" -- pages/ components/ utils/` · `git grep -n "Research\|Verify\|Explain" pages/history.tsx` + `grep -nE "^\s*nav[A-Za-z]*:" utils/i18n-ui.ts utils/i18n-extra.ts` · `git grep -n "research_completed\|research_failed\|'error'\|errored" -- pages/research.tsx`.
+
+| item | cited (brief) | derived at `e62a92a` | verdict |
+|---|---|---|---|
+| a. `FallbackBanner` definition | `pages/research.tsx:102-117` | `:102-117`, 1 definition | MATCH |
+| a. `ProvenanceLine` definition | `:77-100` | `:77-100`, 1 definition | MATCH |
+| a. render sites | `:616-618` | **1** render site (`:616-618`) across `pages/` + `components/`; `pages/history.tsx` **0** (comment at `:87` only) | MATCH |
+| a. `isFallback` | state `:134`, set `:430` | state `:134`, set `:430`; **3 further reads** `:158/:165/:178` (the LocaleHintPanel suppression memo) — not cited, untouched | MATCH (+3 reads noted) |
+| b. i18n rows — `noLiteratureFound` · `fallbackBasis` · `provenanceSourced` · `sourceCountTip` · `tfdaSourceLabel` | 17 each | **17 each** (1 interface + 16 locales) | MATCH (grep form corrected, above) |
+| c. `parseResearchAnswer` | `pages/history.tsx:81-97` | interface `:80-90`, function `:92-104`, the `true / false / undefined` mapping at `:100` | **DRIFT +11 lines** (segment-2 comment block) — content matches |
+| d. Verify ⓘ marker | "lives in `components/VerifyInteractionCard.tsx`, consumed by /verify AND /history" | string: `utils/i18n-verify.ts:272` (`getAiSeverityNote`, 1 definition) · render: `components/VerifyInteractionCard.tsx:108-111` (**1** render site) · consumers: `pages/verify.tsx:519` + `pages/history.tsx:463` (**2**) | MATCH — 1 render site, 2 consumers |
+| e. badge render site | `pages/history.tsx` | `TypeTag` `:118-124` → `getFeatureLabel` `:35-37` → `FEATURE_LABELS` `:29-33` (English literal map); **1** render site `:281` | derived |
+| e. nav keys | "existing nav keys in `utils/i18n-ui.ts` … render through `getUI(lang)`" | `navResearch` / `navVerify` / `navExplain` live in **`utils/i18n-extra.ts`** (`:8-10`), **17 rows each** (16/16 locales), accessor **`getExtra(lang)`** — already imported in `pages/history.tsx:22` and the same keys `Navbar.tsx:56-58` / `MobileNav.tsx:57-59` read; `utils/i18n-ui.ts` has **no** nav keys (`onboardingResearch` / `onboardingVerify` are different strings) | **DRIFT — file + accessor**; locale coverage MATCH (16/16) → built with `getExtra`, 0 new keys |
+| f. `research_completed` | `:459`, block `:452-467`; `error` handler `:436-450` | `:459` · `:452-467` · `:436-450`; `research_failed` **1** call site `:446` | MATCH |
+
+### 5b. Rule 19 — what /research does AROUND the two components, carried or declined
+
+| /research behaviour | on /history | status |
+|---|---|---|
+| `!loading` gate at the render site (`:616`) | a stored row is never mid-stream; there is no per-row loading state | **N/A — declared, not dropped** |
+| mutual exclusivity `isFallback ? Banner : citations.length > 0 ? Provenance : null` | `researchTrustSignal(parsed)` → `'fallback' \| 'provenance' \| 'none'`: fallback wins, provenance only with ≥1 citation | carried |
+| flag source = the live SSE `fallback` event | the persisted `research_v1.fallback` (segment 2, fly 247), strict boolean | carried |
+| — (the live page always knows) | **UNKNOWN rows** (`undefined`: pre-segment-2, no key / non-boolean) → **NEITHER**, even with citations | **new rule — founder-overridable at the gate (§5c)** |
+| position: the signal renders ABOVE the answer (section cards or raw prose), inside the answer container | `{trustBlock}` is the first child of BOTH return branches (sections / pre-wrap) | carried |
+| banner theme tokens (`--color-warning` family) | component moved verbatim | carried |
+| ProvenanceLine tooltip `bg-white … text-gray-600` (light-only, §3.6 item 4) | `TOOLTIP_STYLE` tokens — fixed for BOTH pages | **fixed while extracting** |
+| `fallbackBasis` body line under the banner title | inside the component; the render guard asserts it | carried |
+| `citationLanguageNote` caption (non-en + ≥1 citation) above the CitationPanel | already carried by HISTORY car segment 3 (`pages/history.tsx` references block) — unchanged; sits inside the references block BELOW the answer, where /research has it in the right column | already carried |
+| `useLang()` inside each component | replaced by a `lang: LangCode` prop (VerifyInteractionCard precedent); both consumers pass `lang` | carried (shape change, same strings) |
+| LocaleHintPanel suppression on `isFallback` (`:165`) | /history has no LocaleHintPanel | **declined — nothing to suppress** |
+| `(answer \|\| loading)` wrapper | a row always has an answer | N/A |
+| the `DISCLAIMERS[detectedLang]` line under the sections | /history's research branch has never rendered it (pre-existing, HISTORY car) | **untouched — not this segment, flagged §5e** |
+| FeedbackBar · export button · AnonymousUpgradeCTA | live-page controls | N/A |
+
+Verify ⓘ (Scope C) is a change INSIDE the shared card, so /verify and /history change identically; neither render site (`pages/verify.tsx:519`, `pages/history.tsx:463`) was touched.
+
+### 5c. The UNKNOWN-rows choice (founder-overridable)
+
+`fallback === undefined` (every `research_v1` row written before fly 247, and any non-boolean value) renders **neither** the banner nor the provenance line — even when the row carries citations, so old rows such as dev id 2334 / 2337 keep their references block and get **no** provenance line. Rationale: the flag was never observed for those rows (segment-2 ruling: absence = UNKNOWN, never `false`), and a provenance line is the page's *grounded* signal — printing it from citations alone would let an unobserved row claim what the live page only claims from the stream. The alternative (**provenance from citations when the flag is absent**) is one line in `researchTrustSignal()` and is the founder's call at the §6 gate (row 5).
+
+### 5d. The tooltip token change (exact)
+
+`components/ResearchTrustSignal.tsx` — was (`pages/research.tsx:93`): `className="absolute left-0 top-full mt-2 w-56 bg-white rounded-lg shadow-lg px-3 py-2 z-50 hidden group-hover:block text-xs leading-relaxed text-gray-600"` → now: `className="absolute left-0 top-full mt-2 w-56 rounded-lg shadow-lg px-3 py-2 z-50 hidden group-hover:block text-xs leading-relaxed" style={TOOLTIP_STYLE}` with `TOOLTIP_STYLE = { background: 'rgb(var(--color-paper-2))', border: '1px solid rgb(var(--color-card-border))', color: 'rgb(var(--color-text) / 0.75)' }` — both tokens defined in both schemes (`styles/globals.css` `:97/:99` dark · `:154/:156` light). The Verify ⓘ tooltip imports the same constant. Apart from this tooltip, /research's DOM is unchanged: the diff to `pages/research.tsx` is the import swap, `lang={lang}` at the one render site, and the three `errored` lines.
+
+### 5e. Tests (TDD — RED watched first: 10 failures for "feature missing", then GREEN)
+
+- `tests/history_render_fallback_guard.mjs` §4 — **41 → 60** checks (`grep -cE '^\s*(check|eq)\('`): (a) `researchTrustSignal` extracted VERBATIM and executed — true → `'fallback'` (with or without citations), false + citations → `'provenance'`, false + 0 → `'none'`, no key + citations → `'none'`, no key + 0 (the old noCit case) → `'none'`, non-boolean → `'none'`, legacy null → `'none'`; (b) the shared components RENDERED through `react-dom/server` (transpiled into gitignored `tests/results/_history_trust_signal/`): `noLiteratureFound` + `fallbackBasis` present (en), zh-TW follows the `lang` prop, the provenance sentence carries the REAL count, no `bg-white` / `text-gray-*`, both tokens present.
+- `tests/test_history_render_fallback.py` — +2 asserts (`<FallbackBanner` / `<ProvenanceLine` reachable on /history); the never-blank / never-raw-JSON pins unchanged.
+- `tests/test_history_honesty_segment3.py` (new, 9 tests) — extraction (no page-local definitions; both pages import the module; `lang` prop, no hook); /research render rule unchanged in shape; tooltip tokens; /history keyed on `=== true` / `=== false`; badge through `.navResearch/.navVerify/.navExplain`, no English literal map; `research_completed` guarded by `if (!errored)` with `errored = true` inside the `error` handler; the AI-severity note as `aria-label` + `title` + tooltip text with `group-hover` + `group-focus-within` + click state, on the card both pages render; negative controls.
+- No pre-existing test asserted the note as visible text (`tests/verify_attribution_guard.mjs` checks the STRING per locale, not the render) — nothing deleted.
+
+**Numbers:** pytest 424/28 → 433/28 (+9, all RED first) · `npx tsc --noEmit` exit 0 · `npm run lint` 22 problems (7 errors / 15 warnings) = baseline (a transient 23rd came from the transpiled scratch file's `"use client"` and was removed at the emitter, not by an ignore rule) · `npm run build` exit 0 (Compiled, Exporting 15/15) · i18n +0 keys (`UITranslations` 254, `ExtraTranslations` 27, unchanged) · parity guard = the `Record<LangCode, …>` type check under tsc (0) + `tests/test_theme_tokens.py`'s i18n rows (green).
+
+### 5f. Flagged in passing, NOT fixed (collaboration principle #4)
+
+1. `components/CitationPanel.tsx:119 / :245 / :256` — three more `bg-white … text-gray-600` light-only tooltips (the same §3.6-item-4 class), on the panel both pages render. Not touched: the brief scoped the fix to ProvenanceLine.
+2. `check_baton.py` at HEAD: two `server.py:1059` citations in this baton now resolve to a BLANK line (the segment-2 server edit shifted it) — the cites are in §3 (recon prose); left as the record.
+3. `pages/history.tsx` research branch renders no `DISCLAIMERS[detectedLang]` line under the sections (pre-existing since HISTORY car segment 3; /research renders one) — noted in the Rule 19 table, not this segment.
+4. Scope D sets `errored` at the top of the `error` handler, i.e. for `limit_reached` / `daily_cap_reached` too (those never fire `research_failed`, and the server may still send `done`): `research_completed` is now suppressed for every error code. Founder may narrow it to the `research_failed` branch (one line move).
+5. The brief's Scope B wording ("`getUI(lang)` … nav keys in `utils/i18n-ui.ts`") — the keys live in `i18n-extra` / `getExtra`; built as derived (5a row e).
+
+---
+
+## §6 Segment 3 — eye gate (BLANK — the founder fills Observed / PASS-FAIL; no AI observation is a gate result)
+
+**Environment:** localhost at the segment-3 HEAD (see §5 commits) — `PYTHONUTF8=1`, `TEST_MODE=true uvicorn api.server:app --reload --port 8000`, `npm run dev`; dev DB `ep-spring-voice-a127ye10`; browser in Asia/Taipei. **Prod is still fly 247 — nothing here is a prod observation.** Row 10 needs the backend restarted with BOTH `$env:GENERATOR_MODEL='gpt-does-not-exist'; $env:GENERATOR_FALLBACK_MODEL='gpt-does-not-exist'` (segment-2 recipe correction) and PostHog debug (`?__posthog_debug=true` or the browser console's `[PostHog]` lines) open; **restore both variables afterwards**.
+
+| # | Surface / step | Expected | Observed | PASS / FAIL | Notes |
+|---|---|---|---|---|---|
+| 1 | `/research`, a grounded query (e.g. *metformin renal dosing*), light AND dark | Parity with fly 247: ProvenanceLine under the header, section cards, references; hovering a source chip shows the tooltip LEGIBLE in both schemes (token surface, no white box in dark) | | | the only intended visual change on /research is the tooltip surface |
+| 2 | `/research`, a fallback query (nonsense drug, e.g. *zorblaxin 500mg dosing*), light AND dark | FallbackBanner (title + basis line) as under fly 247; no provenance line | | | parity row |
+| 3 | `/history` → dev id **2343** (`fallback: true`, 0 citations) | **FallbackBanner** above the section cards; no provenance line; no references block | | | the entry-of-record honesty gap closes here |
+| 4 | `/history` → dev id **2342** (`fallback: false`, 5 citations) | **ProvenanceLine** above the cards ("Sourced from 5 …" + chips, tooltip legible both schemes) + the references block | | | |
+| 5 | `/history` → old rows **2334 / 2337** (pre-segment-2, no key) | **No banner, no provenance line**; references block exactly as before | | | §5c choice — founder may rule "provenance from citations when the flag is absent" instead |
+| 6 | `/history` → malformed row **2333** | pre-wrap raw text, no crash, console clean; no banner / provenance | | | |
+| 7 | `/history` under **zh-TW** (and one more locale) | the row badges read the nav strings (研究 / 查證 / 解讀 — whatever `navResearch/navVerify/navExplain` say in that locale), not English; unknown types unaffected | | | 0 new keys |
+| 8 | `/verify` (warfarin + aspirin): the severity badge's **ⓘ** — (i) hover, (ii) Tab to it, (iii) tap on a narrow viewport (DevTools device mode or a phone); light AND dark | each of the three reveals "Vela AI-assessed (not label-stated)" in the locale; the caption text is no longer printed inline; tooltip surface legible in both schemes; Esc / tap-away closes it | | | founder ruling (a) 2026-09-03; the v199 relabel is the BACKLOG [P1] close condition — it must remain reachable on a phone |
+| 9 | `/history` → a new-format verify row (same three interactions) | same ⓘ behaviour as row 8 (shared card) | | | |
+| 10 | Telemetry: bad-model recipe (BOTH env vars), one Research query, PostHog debug / console open | `research_failed` appears; **no** `research_completed` for that query; a normal query afterwards fires `research_completed` again. Restore both variables. | | | §3.6 item 3 |
+| 11 | Delete one disposable row (regression on `tests/test_history_delete.py`'s surface) | confirm modal → row gone → survives reload | | | |
+
+**Founder sign-off line (name · date · overall verdict):** ______ · ______ · ____/11
