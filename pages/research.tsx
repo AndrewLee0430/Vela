@@ -11,7 +11,7 @@ import Head from 'next/head';
 import { fetchEventSource } from '@microsoft/fetch-event-source';
 import { FatalError, makeOnOpen, sseOnError } from '../utils/sse';
 import CitationPanel, { Citation } from '../components/CitationPanel';
-import { detectSourceType, sourceLabelFor, resolvedSourceLabel, sourceCountTooltip } from '../utils/sourceLabels';
+import { detectSourceType } from '../utils/sourceLabels';
 import FeedbackBar from '../components/FeedbackBar';
 import { useShareContext } from '../contexts/ShareContext';
 import UpgradeModal from '../components/UpgradeModal';
@@ -20,6 +20,7 @@ import PHIWarning from '../components/PHIWarning';
 import PageShell from '../components/PageShell';
 import ProFeatureOverlay from '../components/ProFeatureOverlay';
 import ResearchSection from '../components/ResearchSection';
+import { FallbackBanner, ProvenanceLine } from '../components/ResearchTrustSignal';
 import LocaleHintPanel from '../components/LocaleHintPanel';
 import { detectLocaleCategories } from '../utils/localeHint';
 import { resolveCountry, type CountryCode, type LocaleSetting, type ResolutionLevel } from '../utils/country';
@@ -69,53 +70,9 @@ const defaultSuggestions = [
     "심부전에서 베타차단제는 언제 사용하나요?",
 ];
 
-// Per-answer trust signal (design X): provenance derived from REAL retrieved-source
-// counts, not a model self-label. Renders only when there are citations; the
-// no-literature floor is the FallbackBanner (mutually exclusive — see render).
-// Source names come from the shared sourceLabels map so the line, the reference
-// cards, and the panel sub-header never drift (local + fda merge into one "FDA").
-function ProvenanceLine({ citations }: { citations: Citation[] }) {
-    const { lang } = useLang();
-    const ui = getUI(lang);
-    const counts = new Map<string, number>();
-    for (const c of citations) {
-        const label = resolvedSourceLabel(sourceLabelFor(c), ui);
-        counts.set(label, (counts.get(label) || 0) + 1);
-    }
-    return (
-        <div className="mb-4 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs" style={{ color: 'rgb(var(--color-text) / 0.45)' }}>
-            <span>{ui.provenanceSourced.replace('{count}', String(citations.length))}</span>
-            {[...counts.entries()].map(([label, n]) => (
-                <span key={label} className="relative group">
-                    <span className="px-2 py-0.5 rounded-full cursor-help inline-block" style={{ background: 'rgb(var(--color-text) / 0.08)' }}>
-                        {label} {n}
-                    </span>
-                    <span className="absolute left-0 top-full mt-2 w-56 bg-white rounded-lg shadow-lg px-3 py-2 z-50 hidden group-hover:block text-xs leading-relaxed text-gray-600">
-                        {sourceCountTooltip(ui.sourceCountTip, label, n)}
-                    </span>
-                </span>
-            ))}
-        </div>
-    );
-}
-
-function FallbackBanner() {
-    const { lang } = useLang();
-    const ui = getUI(lang);
-    return (
-        <div className="mb-4 flex items-start gap-3 p-4 rounded-lg" style={{ background: "rgb(var(--color-warning) / 0.12)", border: "1px solid rgb(var(--color-warning) / 0.3)" }}>
-            <span className="text-sm mt-0.5 font-bold" style={{ color: "rgb(var(--color-warning))" }}>⚠</span>
-            <div>
-                <p className="text-sm font-semibold" style={{ color: "rgb(var(--color-warning))" }}>
-                    {ui.noLiteratureFound}
-                </p>
-                <p className="text-sm mt-0.5" style={{ color: "rgb(var(--color-warning) / 0.8)" }}>
-                    {ui.fallbackBasis}
-                </p>
-            </div>
-        </div>
-    );
-}
+// ProvenanceLine + FallbackBanner moved to components/ResearchTrustSignal.tsx
+// (HISTORY HONESTY car segment 3) — shared with the /history renderer, which reads
+// the persisted `fallback` flag. Render rule below is unchanged (mutually exclusive).
 
 function ResearchForm() {
     const router = useRouter();
@@ -614,8 +571,8 @@ function ResearchForm() {
                                 <div>
                                     {/* Single trust signal, mutually exclusive: 0 sources → FallbackBanner floor (keeps the clinical caveat); ≥1 source → ProvenanceLine. */}
                                     {!loading && (isFallback
-                                        ? <FallbackBanner />
-                                        : citations.length > 0 ? <ProvenanceLine citations={citations} /> : null)}
+                                        ? <FallbackBanner lang={lang} />
+                                        : citations.length > 0 ? <ProvenanceLine citations={citations} lang={lang} /> : null)}
                                     {(() => {
                                         const cleanAnswer = !loading ? stripLlmDisclaimer(answer) : answer;
                                         const sections = !loading ? parseResearchSections(cleanAnswer) : null;
