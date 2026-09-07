@@ -70,6 +70,15 @@ def test_all_fallback_branches_are_wired():
     assert re.search(r"<CitationPanel\s+citations=\{researchParsed\.citations\}", code), (
         "research_v1 citations no longer render through the shared CitationPanel"
     )
+    # HISTORY HONESTY car segment 3: the caveat and the provenance line are the
+    # SHARED components /research renders (Rule 19 carry-across), reachable here.
+    assert re.search(r"<FallbackBanner\b", code), (
+        "the FallbackBanner is no longer reachable on /history — a fallback row "
+        "would render as a grounded answer again"
+    )
+    assert re.search(r"<ProvenanceLine\b", code), (
+        "the ProvenanceLine is no longer reachable on /history"
+    )
 
 
 def test_behavioral_guard_passes():

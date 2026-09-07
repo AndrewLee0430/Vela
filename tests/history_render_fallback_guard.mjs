@@ -17,10 +17,15 @@
 //     pages/history.tsx at run time, so this guard cannot silently drift from
 //     the page — if a function is renamed or moved, this fails loudly instead
 //     of testing a stale copy.
+// HISTORY HONESTY car segment 3: the trust-signal DECISION (researchTrustSignal,
+// extracted verbatim) and the shared FallbackBanner / ProvenanceLine components
+// RENDERED through react-dom/server (transpiled into tests/results/, gitignored).
 // Run: node tests/history_render_fallback_guard.mjs   (also run by
 // tests/test_history_render_fallback.py inside the pytest count)
-import { readFileSync } from 'node:fs';
+import { readFileSync, mkdirSync, writeFileSync } from 'node:fs';
 import ts from 'typescript';
+import React from 'react';
+import ReactDOMServer from 'react-dom/server';
 
 const failures = [];
 function check(cond, msg) { if (!cond) failures.push(msg); }
@@ -169,6 +174,94 @@ if (parseResearchAnswer) {
     'non-conforming markdown inside JSON → pre-wrap path');
   check(nonConforming?.answer === 'plain prose' && !nonConforming.answer.startsWith('{'),
     'the pre-wrap text is the markdown, never the raw JSON');
+}
+
+// ── 4. HISTORY HONESTY car segment 3: the trust signal on /history ──────────
+// (a) The DECISION — researchTrustSignal(parsed), extracted verbatim from
+//     pages/history.tsx. fallback:true → the FallbackBanner (no provenance line,
+//     even with citations — mutually exclusive, fallback wins as on /research);
+//     fallback:false + ≥1 citation → the ProvenanceLine; UNKNOWN (no key,
+//     non-boolean, legacy row) → NEITHER. Absence is never rendered as grounded.
+const tsFnMatch = pageSrc.match(/function researchTrustSignal[\s\S]*?\n\}/);
+check(!!tsFnMatch, 'researchTrustSignal not found in pages/history.tsx — update this guard');
+let researchTrustSignal = null;
+if (tsFnMatch) {
+  const tsJs = ts.transpileModule('export ' + tsFnMatch[0], OPTS).outputText;
+  ({ researchTrustSignal } = await import('data:text/javascript,' + encodeURIComponent(tsJs)));
+}
+const sigCits = [
+  { id: 1, source_type: 'pubmed', source_id: 'PMID:1', title: 'T1', snippet: 's1', url: 'https://pubmed.ncbi.nlm.nih.gov/1/' },
+  { id: 2, source_type: 'pubmed', source_id: 'PMID:2', title: 'T2', snippet: 's2', url: 'https://pubmed.ncbi.nlm.nih.gov/2/' },
+];
+if (researchTrustSignal && parseResearchAnswer) {
+  const row = (extra) => parseResearchAnswer(JSON.stringify({ kind: 'research_v1', answer: conforming, ...extra }));
+  eq(researchTrustSignal(row({ citations: [], fallback: true })), 'fallback',
+    'fallback:true, 0 citations → the FallbackBanner');
+  eq(researchTrustSignal(row({ citations: sigCits, fallback: true })), 'fallback',
+    'fallback:true WITH citations → still the banner, never the provenance line (mutual exclusivity as on /research)');
+  eq(researchTrustSignal(row({ citations: sigCits, fallback: false })), 'provenance',
+    'fallback:false + ≥1 citation → the ProvenanceLine');
+  eq(researchTrustSignal(row({ citations: [], fallback: false })), 'none',
+    'fallback:false + 0 citations → nothing (no count to show; /research renders null here too)');
+  eq(researchTrustSignal(row({ citations: sigCits })), 'none',
+    'pre-segment-2 v1 row (no fallback key) WITH citations → NEITHER: UNKNOWN is never rendered as grounded');
+  eq(researchTrustSignal(row({ citations: [] })), 'none',
+    'pre-segment-2 v1 row, no citations → neither (the old noCit case is unchanged)');
+  eq(researchTrustSignal(row({ citations: sigCits, fallback: 'yes' })), 'none',
+    'non-boolean fallback → neither (never a truthy string read as a caveat)');
+  eq(researchTrustSignal(null), 'none', 'legacy plain-markdown row (parser null) → neither');
+}
+
+// (b) The MARKERS — the shared components render the i18n strings the user
+//     actually reads. Real render via react-dom/server: the component, the UI
+//     strings and the source-label map are transpiled into tests/results/
+//     (gitignored) so relative imports resolve; classic JSX runtime so no
+//     jsx-runtime named-export interop is needed.
+const esc = (t) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;');
+const TSX_OPTS = { compilerOptions: { module: 'ESNext', target: 'ES2020', jsx: 'react' } };
+const outDir = new URL('./results/_history_trust_signal/', import.meta.url);
+let trust = null, uiMod = null;
+try {
+  mkdirSync(outDir, { recursive: true });
+  const emit = (srcRel, outName, rewrite = (x) => x) => {
+    const src = readFileSync(new URL(srcRel, import.meta.url), 'utf8');
+    writeFileSync(new URL(outName, outDir), rewrite(ts.transpileModule(src, TSX_OPTS).outputText));
+  };
+  emit('../utils/i18n-ui.ts', 'i18n-ui.mjs');
+  emit('../utils/sourceLabels.ts', 'sourceLabels.mjs');
+  emit('../components/ResearchTrustSignal.tsx', 'ResearchTrustSignal.mjs', (js) =>
+    "import React from 'react';\n" + js
+      .replace(/^\s*"use client";?\s*$/m, '')   // a Next directive; an unused expression under node/eslint
+      .replace(/from ['"]\.\.\/utils\/i18n-ui['"]/g, "from './i18n-ui.mjs'")
+      .replace(/from ['"]\.\.\/utils\/sourceLabels['"]/g, "from './sourceLabels.mjs'"));
+  trust = await import(new URL('ResearchTrustSignal.mjs', outDir).href);
+  uiMod = await import(new URL('i18n-ui.mjs', outDir).href);
+} catch (e) {
+  check(false, `shared trust-signal components not renderable (components/ResearchTrustSignal.tsx): ${e.message}`);
+}
+if (trust && uiMod) {
+  const render = (Comp, props) => ReactDOMServer.renderToStaticMarkup(React.createElement(Comp, props));
+  const en = uiMod.getUI('en'), zh = uiMod.getUI('zh-TW');
+  check(typeof trust.FallbackBanner === 'function' && typeof trust.ProvenanceLine === 'function',
+    'FallbackBanner + ProvenanceLine are named exports of components/ResearchTrustSignal');
+  const bannerEn = render(trust.FallbackBanner, { lang: 'en' });
+  check(bannerEn.includes(esc(en.noLiteratureFound)), 'FallbackBanner (en) renders noLiteratureFound — the caveat the user reads');
+  check(bannerEn.includes(esc(en.fallbackBasis)), 'FallbackBanner (en) renders the fallbackBasis body line (Rule 19: carried, not just the title)');
+  const bannerZh = render(trust.FallbackBanner, { lang: 'zh-TW' });
+  check(bannerZh.includes(esc(zh.noLiteratureFound)) && !bannerZh.includes(esc(en.noLiteratureFound)),
+    'FallbackBanner follows the lang PROP (zh-TW strings, not English) — no hook inside the shared component');
+  const prov = render(trust.ProvenanceLine, { lang: 'en', citations: sigCits });
+  check(prov.includes(esc(en.provenanceSourced.replace('{count}', '2'))),
+    'ProvenanceLine renders the sourced-count sentence with the REAL citation count (2), not a self-label');
+  check(!/bg-white|text-gray-/.test(prov),
+    'ProvenanceLine tooltip carries no light-only classes (§3.6 item 4: bg-white / text-gray-600 was illegible in dark)');
+  check(prov.includes('--color-paper-2') && prov.includes('--color-card-border'),
+    'ProvenanceLine tooltip surface + border come from theme tokens (legible in both schemes)');
+  const provZh = render(trust.ProvenanceLine, { lang: 'zh-TW', citations: sigCits });
+  check(provZh.includes(esc(zh.provenanceSourced.replace('{count}', '2'))),
+    'ProvenanceLine follows the lang PROP (zh-TW)');
+  const provEmpty = render(trust.ProvenanceLine, { lang: 'en', citations: [] });
+  check(typeof provEmpty === 'string', 'ProvenanceLine with 0 citations does not throw (the render rule, not the component, gates it)');
 }
 
 // ── Report ──────────────────────────────────────────────────────────────────

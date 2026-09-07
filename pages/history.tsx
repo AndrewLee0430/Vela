@@ -15,8 +15,10 @@ import ShareButton, { type ShareFeature } from '../components/ShareButton';
 import ExplainItemCard, { type ExplainItem } from '../components/ExplainItemCard';
 import ClinicalCorrelationCard, { type ClinicalCorrelation } from '../components/ClinicalCorrelationCard';
 import ResearchSection from '../components/ResearchSection';
+import { FallbackBanner, ProvenanceLine } from '../components/ResearchTrustSignal';
 import CitationPanel, { type Citation } from '../components/CitationPanel';
 import VerifyInteractionCard, { type DrugInteraction, getRiskBadgeClass, getInteractionSummaryDisplay } from '../components/VerifyInteractionCard';
+import type { LangCode } from '../utils/i18n';
 import { useLang } from '../utils/LangContext';
 import { getUI } from '../utils/i18n-ui';
 import { getExtra } from '../utils/i18n-extra';
@@ -26,14 +28,19 @@ import { parseResearchSections, stripLlmDisclaimer } from '../utils/researchSect
 
 // ─── Design System ────────────────────────────────────────────────────────────
 // C3: feature accents collapsed — features distinguished by label only, not color.
-const FEATURE_LABELS: Record<string, string> = {
-    research: 'Research',
-    verify:   'Verify',
-    explain:  'Explain',
-};
-
-function getFeatureLabel(type: string): string {
-    return FEATURE_LABELS[type] ?? (type.charAt(0).toUpperCase() + type.slice(1));
+// HISTORY HONESTY car segment 3: the badge text comes from the EXISTING nav keys
+// (utils/i18n-extra navResearch / navVerify / navExplain, 16 locales — the same
+// strings Navbar + MobileNav show), not an English literal map that read
+// "Research" under every UI language. Unknown session types keep the
+// capitalized raw type — never blank.
+function getFeatureLabel(type: string, lang: LangCode): string {
+    const extra = getExtra(lang);
+    const labels: Record<string, string> = {
+        research: extra.navResearch,
+        verify:   extra.navVerify,
+        explain:  extra.navExplain,
+    };
+    return labels[type] ?? (type.charAt(0).toUpperCase() + type.slice(1));
 }
 
 // Same prose token set the live /research page uses, so stored answers render
@@ -84,8 +91,8 @@ interface ResearchHistoryPayload {
     // HISTORY HONESTY car segment 2 (founder ruling D2 (i) 2026-09-04): OPTIONAL —
     // true iff the live stream fell back to LLM knowledge (no literature retrieved).
     // Rows written before segment 2 have no key → undefined = UNKNOWN, never false.
-    // NOT rendered here yet — the FallbackBanner / ProvenanceLine carry-across is
-    // segment 3; this parser only keeps the flag so that segment can read it.
+    // Rendered by researchTrustSignal() below (segment 3): true → FallbackBanner,
+    // false + citations → ProvenanceLine, UNKNOWN → neither.
     fallback?: boolean;
 }
 
@@ -103,6 +110,21 @@ function parseResearchAnswer(answer: string): ResearchHistoryPayload | null {
     } catch {}
     return null;
 }
+
+// HISTORY HONESTY car segment 3 — the trust-signal decision for a STORED row,
+// mirroring the /research render rule (fallback wins; provenance only with ≥1
+// citation) with ONE addition the live page never faces: rows whose flag is
+// UNKNOWN (pre-segment-2 — no key, or a non-boolean) get NEITHER, even when
+// citations are present. An absent flag is never rendered as grounded
+// (founder-overridable at the gate — baton §5). Pure and hook-free so the
+// .mjs guard can extract and execute it verbatim; /research's `!loading` gate
+// has no counterpart here — a stored row is never mid-stream.
+function researchTrustSignal(parsed: ResearchHistoryPayload | null): 'fallback' | 'provenance' | 'none' {
+    if (!parsed) return 'none';
+    if (parsed.fallback === true) return 'fallback';
+    if (parsed.fallback === false && parsed.citations.length > 0) return 'provenance';
+    return 'none';
+}
 // ─────────────────────────────────────────────────────────────────────────────
 
 // Mirrors ChatHistoryEntry (api/server.py) — the GET /api/history response
@@ -115,10 +137,10 @@ interface HistoryItem {
     created_at: string;
 }
 
-function TypeTag({ type }: { type: string }) {
+function TypeTag({ type, lang }: { type: string; lang: LangCode }) {
     return (
         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold tracking-wide bg-text/8 text-text/85 border border-text/15">
-            {getFeatureLabel(type)}
+            {getFeatureLabel(type, lang)}
         </span>
     );
 }
@@ -281,7 +303,7 @@ function HistoryList() {
                             onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = "transparent"}
                         >
                             <div className="flex items-center gap-3 min-w-0">
-                                <TypeTag type={item.session_type} />
+                                <TypeTag type={item.session_type} lang={lang} />
                                 <div className="min-w-0">
                                     <p className="font-medium truncate text-sm history-question" style={{ color: "rgb(var(--color-text) / 0.85)" }}>
                                         {item.question.length > 80
@@ -317,10 +339,22 @@ function HistoryList() {
                                     text exactly as on /research (no marker→link mapping exists there
                                     either — resolution is the adjacent panel). Pre-segment-3 rows are
                                     plain markdown with no citations (unbackfillable); non-conforming /
-                                    legacy / malformed rows fall back to the pre-wrap rendering. */}
+                                    legacy / malformed rows fall back to the pre-wrap rendering.
+                                    HISTORY HONESTY car segment 3: the FallbackBanner / ProvenanceLine
+                                    trust signal renders above the answer from the persisted `fallback`
+                                    flag (segment 2, fly 247); pre-segment-2 rows (UNKNOWN) get neither. */}
                                 {item.session_type === 'research' && (() => {
                                     const markdown = researchParsed?.answer ?? item.answer;
                                     const sections = markdown ? parseResearchSections(stripLlmDisclaimer(markdown)) : null;
+                                    // Single trust signal, mutually exclusive, ABOVE the answer as on
+                                    // /research (Rule 19 carry-across of the shared components): the
+                                    // persisted flag decides — see researchTrustSignal().
+                                    const trustSignal = researchTrustSignal(researchParsed);
+                                    const trustBlock = trustSignal === 'fallback'
+                                        ? <FallbackBanner lang={lang} />
+                                        : trustSignal === 'provenance' && researchParsed
+                                            ? <ProvenanceLine citations={researchParsed.citations} lang={lang} />
+                                            : null;
                                     // Same container + English-references caption as the /research right
                                     // column (Rule 19 carry-across); renders only when the row carries ≥1
                                     // citation — legacy rows have none to show and must not claim otherwise.
@@ -337,6 +371,7 @@ function HistoryList() {
                                     if (sections) {
                                         return (
                                             <div>
+                                                {trustBlock}
                                                 {sections.map((sec, i) => (
                                                     <ResearchSection key={i} title={sec.title}>
                                                         <div className="prose max-w-none prose-sm prose-headings:font-semibold prose-h2:text-base" style={researchProseStyle}>
@@ -350,6 +385,7 @@ function HistoryList() {
                                     }
                                     return (
                                         <div>
+                                            {trustBlock}
                                             <div
                                                 className="prose max-w-none prose-sm prose-headings:font-semibold"
                                                 style={{
