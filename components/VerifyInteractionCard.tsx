@@ -1,9 +1,11 @@
 "use client"
 
+import { useState } from 'react';
 import type { LangCode } from '../utils/i18n';
 import { formatInteractionSummary, getSeverityLabel, getAiSeverityNote,
          getSourceCaptionByKind, getSourcePrefix } from '../utils/i18n-verify';
 import { getUI } from '../utils/i18n-ui';
+import { TOOLTIP_STYLE } from './ResearchTrustSignal';
 
 // Shared Verify result-card rendering — extracted VERBATIM from pages/verify.tsx
 // (HISTORY car segment 1) so /history inherits the same mitigations the live page
@@ -93,6 +95,17 @@ export const getInteractionSummaryDisplay = (lang: LangCode, interactions: DrugI
 };
 
 export default function VerifyInteractionCard({ interaction, lang }: { interaction: DrugInteraction; lang: LangCode }) {
+    // Founder ruling (a) 2026-09-03 (HISTORY HONESTY car segment 3): the v199
+    // honest-relabel — "Vela AI-assessed (not label-stated)" — STAYS; it moves
+    // from a visible caption to an ⓘ icon whose tooltip AND accessible name
+    // (aria-label + title) carry the note. Removing it would re-open the
+    // BACKLOG [P1] fake-authority close condition ("severity honestly labeled
+    // Vela-AI"). The tip opens on hover (group-hover), keyboard focus
+    // (group-focus-within) AND tap (`noteOpen`, toggled by click — phones have
+    // no hover, so a hover-only tip would make the marker vanish there).
+    // Same theme-token surface as the ProvenanceLine tooltip (TOOLTIP_STYLE).
+    const note = getAiSeverityNote(lang);
+    const [noteOpen, setNoteOpen] = useState(false);
     return (
         <div className={`border-l-4 rounded-lg p-4 ${getSeverityStyle(interaction.severity)}`}>
             <div className="flex justify-between items-start mb-2">
@@ -101,13 +114,30 @@ export default function VerifyInteractionCard({ interaction, lang }: { interacti
                 </p>
                 {/* Severity badge + Option-C AI-severity marker in the SAME eyeline:
                     the severity is Vela's AI judgment, NOT the label's grading. */}
-                <div className="flex flex-col items-end ml-2 flex-shrink-0">
+                <div className="flex items-center gap-1 ml-2 flex-shrink-0">
                     <span className={`px-2 py-0.5 rounded text-xs font-medium ${getSeverityBadge(interaction.severity)}`}>
                         {getSeverityLabel(lang, interaction.severity)}
                     </span>
-                    <span className="text-[10px] leading-tight text-text/50 mt-0.5 text-right max-w-[9rem]"
-                          title={getAiSeverityNote(lang)}>
-                        ⓘ {getAiSeverityNote(lang)}
+                    <span className="relative group">
+                        <button
+                            type="button"
+                            aria-label={note}
+                            title={note}
+                            aria-expanded={noteOpen}
+                            onClick={() => setNoteOpen(o => !o)}
+                            onBlur={() => setNoteOpen(false)}
+                            onKeyDown={e => { if (e.key === 'Escape') setNoteOpen(false); }}
+                            className="text-sm leading-none text-text/50 hover:text-text/80 cursor-help rounded-full px-0.5 focus:outline-none focus-visible:ring-1 focus-visible:ring-brand/60"
+                        >
+                            ⓘ
+                        </button>
+                        <span
+                            role="tooltip"
+                            className={`absolute right-0 top-full mt-1 w-56 rounded-lg shadow-lg px-3 py-2 z-50 text-[11px] leading-relaxed text-left font-normal ${noteOpen ? 'block' : 'hidden group-hover:block group-focus-within:block'}`}
+                            style={TOOLTIP_STYLE}
+                        >
+                            {note}
+                        </span>
                     </span>
                 </div>
             </div>
