@@ -290,6 +290,10 @@ function ResearchForm() {
         let localCitations: Citation[] = [];
         let localIsFallback = false;
         let localDetectedLang: string | null = null;
+        // HISTORY HONESTY car segment 3 (§3.6 item 3): an SSE `error` is followed by the
+        // server's `done`; `research_failed` fires on the error, so `research_completed`
+        // must NOT also fire on that `done`. Client-local, same lifecycle as the locals above.
+        let errored = false;
         // Telemetry now reflects REAL provenance, not the removed emoji self-label:
         // section_count (layout) + per-source_type counts from the citations array.
         const computeResearchTelemetry = (markdown: string, cites: Citation[]) => {
@@ -391,6 +395,7 @@ function ResearchForm() {
                             setCitations(safeCitations);
                         }
                         else if (data.type === 'error') {
+                            errored = true;
                             // Note: Research uses .error-first; Explain (§ 2.7 Step 2C) uses .code-first.
                             // Phase 1A polish will harmonize backend error response shape.
                             const code = data.error ?? data.code;
@@ -413,7 +418,7 @@ function ResearchForm() {
                             if (!isSignedIn) maybeTriggerThirdQueryCta();
                             const stripped = stripLlmDisclaimer(localAnswer);
                             const { sections_count, source_distribution } = computeResearchTelemetry(stripped, localCitations);
-                            track('research_completed', {
+                            if (!errored) track('research_completed', {
                                 citation_count: localCitations.length,
                                 section_count: sections_count,
                                 source_distribution,
