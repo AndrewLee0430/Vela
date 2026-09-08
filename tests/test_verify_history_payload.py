@@ -23,9 +23,20 @@ Also pinned: the STORED summary equals the RESPONSE summary — the JSON payload
 must embed the post-mutation summary (the 2026-08-19 write-ordering rule,
 carried into the payload era; see tests/test_verify_write_ordering.py).
 
+Site numbering (aligned 2026-09-08 with the car baton §3.2 / TECH_DEBT — the
+docs numbering wins; earlier revisions of this file numbered the sites 1/2/3 in
+SOURCE order): site 1 = no-label fallback SUCCESS · site 2 = no-label fallback
+FAILURE · site 3 = MAIN path (labels found).
+
+HISTORY HONESTY car segment 2b (founder rulings R1–R6, 2026-09-07): site 3 with
+BOTH LLM attempts failing stores `failed_analysis` (summary "", no interactions),
+answers HTTP 200 with the same status, keeps its AuditLog row, and charges
+NOTHING on either tier — the two `_double_failure_` tests below were RED first.
+
 Run: python -m pytest tests/test_verify_history_payload.py -q
 """
 import json
+import logging
 import os
 import sys
 
@@ -99,12 +110,39 @@ def _fresh_db(server_module):
     return engine, TestSession, get_db
 
 
-def _post_verify(monkeypatch, *, dailymed_hits, llm_content, llm_raises=False):
-    """Drive POST /api/verify through a real handler run with stubbed edges;
-    return (response, stored ChatHistory rows)."""
+# TEST_MODE resolves a request with no Authorization header to this user
+# (api/server.py require_auth_or_anonymous); an X-Anon-Fingerprint header makes
+# the SAME handler take the L0 anonymous branch instead (segment-2 precedent:
+# tests/test_research_history_payload.py).
+USER_ID = os.getenv("TEST_USER_ID", "test_user")
+ANON_FP = "seg2b-anon-fingerprint-0001"  # 16-128 chars, URL-safe base64 alphabet
+SEED_USER_CREDITS = 5
+SEED_ANON_CREDITS = 2
+
+
+def _anon_id():
+    """The anon_id the handler derives for TestClient (client host 'testclient',
+    no X-Forwarded-For) — computed with the production helper so the seeded
+    AnonymousUsage row is the one the handler touches."""
+    from api.services.anonymous_identity import derive_anon_id
+    return derive_anon_id("testclient", ANON_FP)
+
+
+def _run_verify(monkeypatch, *, dailymed_hits, llm_content, llm_raises=False,
+                anonymous=False, seed_credits=None):
+    """Drive POST /api/verify through a real handler run with stubbed edges.
+    Optionally seeds a usage row with a NON-ZERO credit count first (authed:
+    UserUsage for USER_ID; anonymous: AnonymousUsage for the derived anon_id) so
+    "unchanged" is a real reading, not a default. Returns a dict:
+      resp           — the HTTP response
+      stored         — [(user_id, question, answer)] verify ChatHistory rows
+      audit_actions  — [AuditLog.action] rows written by the request
+      credits        — credits_used_today of the seeded row after the request
+                       (None when nothing was seeded / no row exists)."""
     import api.middleware.guards as guards
     import api.server as server
-    from api.models.sql_models import ChatHistory
+    from api.models.sql_models import AnonymousUsage, AuditLog, ChatHistory, UserUsage
+    from api.services.anonymous_identity import today_utc
     from fastapi.testclient import TestClient
 
     async def _always_medical(text):
@@ -126,25 +164,55 @@ def _post_verify(monkeypatch, *, dailymed_hits, llm_content, llm_raises=False):
 
     engine, TestSession, get_db = _fresh_db(server)
     try:
+        if seed_credits is not None:
+            with TestSession() as db:
+                if anonymous:
+                    db.add(AnonymousUsage(anon_id=_anon_id(),
+                                          credits_used_today=seed_credits,
+                                          last_reset_date=today_utc()))
+                else:
+                    db.add(UserUsage(clerk_user_id=USER_ID, plan_type="free",
+                                     credits_used_today=seed_credits))
+                db.commit()
+
+        headers = {"X-Anon-Fingerprint": ANON_FP} if anonymous else {}
         client = TestClient(server.app)  # no context manager → no lifespan side effects
         resp = client.post("/api/verify", json={
             "drugs": ["aspirin", "warfarin"],
             "patient_context": None,
             "response_language": "en",
-        })
+        }, headers=headers)
         with TestSession() as db:
             rows = db.query(ChatHistory).filter(
                 ChatHistory.session_type == "verify").all()
             # Detach the values we assert on before the session closes.
             stored = [(r.user_id, r.question, r.answer) for r in rows]
-        return resp, stored
+            audit_actions = [a.action for a in db.query(AuditLog).all()]
+            if anonymous:
+                urow = db.query(AnonymousUsage).filter(
+                    AnonymousUsage.anon_id == _anon_id()).first()
+            else:
+                urow = db.query(UserUsage).filter(
+                    UserUsage.clerk_user_id == USER_ID).first()
+            credits = urow.credits_used_today if urow is not None else None
+        return {"resp": resp, "stored": stored, "audit_actions": audit_actions,
+                "credits": credits}
     finally:
         server.app.dependency_overrides.pop(get_db, None)
         engine.dispose()
 
 
+def _post_verify(monkeypatch, *, dailymed_hits, llm_content, llm_raises=False):
+    """Drive POST /api/verify through a real handler run with stubbed edges;
+    return (response, stored ChatHistory rows). Thin wrapper kept for the three
+    segment-1 tests below."""
+    r = _run_verify(monkeypatch, dailymed_hits=dailymed_hits,
+                    llm_content=llm_content, llm_raises=llm_raises)
+    return r["resp"], r["stored"]
+
+
 def test_main_site_stores_full_structure(monkeypatch):
-    """(site 1, `answer=_verify_history_payload(... summary=summary ...)`):
+    """(site 3 = MAIN path, `answer=_verify_history_payload(... summary=summary ...)`):
     DailyMed-grounded analysis → stored JSON carries interactions with canonical
     severity + attribution_kind, the post-mutation summary, and status ok."""
     main_analysis = json.dumps({
@@ -182,7 +250,7 @@ def test_main_site_stores_full_structure(monkeypatch):
 
 
 def test_llm_fallback_site_stores_full_structure(monkeypatch):
-    """(site 2, `summary=fb_summary`): no labels anywhere → LLM-knowledge
+    """(site 1 = no-label fallback SUCCESS, `summary=fb_summary`): no labels anywhere → LLM-knowledge
     fallback → stored JSON carries no_label-attributed interactions and the
     ⚠️-prefixed fallback summary."""
     fb_analysis = json.dumps({
@@ -211,7 +279,7 @@ def test_llm_fallback_site_stores_full_structure(monkeypatch):
 
 
 def test_fallback_failure_site_stores_failed_status(monkeypatch):
-    """(site 3, `summary=fallback_summary`): no labels AND the fallback LLM
+    """(site 2 = no-label fallback FAILURE, `summary=fallback_summary`): no labels AND the fallback LLM
     fails → stored JSON must say failed_no_data with zero interactions, so
     /history can never render a total failure as a clean result."""
     resp, stored = _post_verify(monkeypatch, dailymed_hits=False,
@@ -224,3 +292,89 @@ def test_fallback_failure_site_stores_failed_status(monkeypatch):
     assert parsed["risk_level"] == "Unknown"
     assert parsed["summary"] == "No FDA label data found. Please use specific drug names."
     assert resp.json()["verification_status"] == "failed_no_data"
+
+
+# ── HISTORY HONESTY car segment 2b — site 3 (MAIN path), BOTH LLM attempts fail ──
+# Founder rulings 2026-09-07: R1 value `failed_analysis` · R2 the row IS written
+# (AuditLog + ChatHistory, one _safe_db_write, honest status) · R3 NO deduct on
+# either tier · R5 stored summary "" (no prefix-only residue) · R6 HTTP 200.
+# Business rule (Rule 17): a run that produced NO analysis may never read as a
+# clean "ok" on /verify or /history, and may never cost a credit. Before this
+# segment the path wrote `ok` with summary "" AND charged 1 (TECH_DEBT
+# [HONESTY][P2], surfaced by the segment-2 recon Probe B).
+
+_MAIN_ANALYSIS_OK = json.dumps({
+    "interactions": [{
+        "drugs": ["aspirin", "warfarin"],
+        "severity": "Major",
+        "description": "Increased bleeding risk.",
+        "recommendation": "Avoid combination; monitor INR.",
+    }],
+    "risk_level": "Major",
+})
+
+
+def test_main_site_llm_double_failure_stores_failed_analysis_and_no_charge(monkeypatch, caplog):
+    """Site 3, authed: labels FOUND, both LLM attempts raise → response AND stored
+    row say `failed_analysis`, summary "", interactions [], risk Unknown; the
+    AuditLog row stays (an attempted verify IS an auditable event, R2); the
+    seeded credit count is UNCHANGED (R3); the prod-verification INFO line is
+    emitted (segment-2 precedent — the §8 gate row 7 greps for it)."""
+    caplog.set_level(logging.INFO, logger="vela")
+    r = _run_verify(monkeypatch, dailymed_hits=True, llm_content=None,
+                    llm_raises=True, seed_credits=SEED_USER_CREDITS)
+    resp = r["resp"]
+    assert resp.status_code == 200, resp.text          # R6
+    body = resp.json()
+    assert body["verification_status"] == "failed_analysis"   # R1
+    assert body["interactions"] == []
+    assert body["summary"] == ""                        # R5 (response side)
+    assert len(r["stored"]) == 1, "R2: the row IS written, with the honest status"
+    parsed = json.loads(r["stored"][0][2])
+    assert parsed["verification_status"] == "failed_analysis"
+    assert parsed["summary"] == "", "R5: no prefix-only residue may be persisted"
+    assert parsed["interactions"] == []
+    assert parsed["risk_level"] == "Unknown"
+    assert r["audit_actions"] == ["verify"], "R2: AuditLog(action='verify') stays"
+    assert r["credits"] == SEED_USER_CREDITS, "R3: no charge for a run that produced nothing"
+    assert any("failed_analysis row, no charge (anon=False)" in rec.getMessage()
+               for rec in caplog.records), "the INFO verification hook must be emitted"
+
+
+def test_main_site_llm_double_failure_anon_no_row_no_charge(monkeypatch):
+    """Rule 19 — the anon (L0) branch of site 3: the same double failure with an
+    X-Anon-Fingerprint → `failed_analysis` response, NO ChatHistory row and NO
+    AuditLog (anon never persists), and AnonymousUsage.credits_used_today
+    UNCHANGED (R3 carried across to the second tier)."""
+    r = _run_verify(monkeypatch, dailymed_hits=True, llm_content=None,
+                    llm_raises=True, anonymous=True, seed_credits=SEED_ANON_CREDITS)
+    assert r["resp"].status_code == 200, r["resp"].text
+    assert r["resp"].json()["verification_status"] == "failed_analysis"
+    assert r["stored"] == [], "anon tier never writes ChatHistory"
+    assert r["audit_actions"] == [], "anon tier never writes AuditLog"
+    assert r["credits"] == SEED_ANON_CREDITS, "R3 on the anon tier: no charge"
+
+
+def test_control_main_site_llm_success_stores_ok_and_charges_one(monkeypatch):
+    """Rule-17 POSITIVE CONTROL for the two tests above (passes before AND
+    after segment 2b — it proves the harness OBSERVES charging, so an
+    "unchanged" reading is real): same seeded row, LLM succeeds → `ok`,
+    exactly +1 credit, AuditLog(action='verify')."""
+    r = _run_verify(monkeypatch, dailymed_hits=True, llm_content=_MAIN_ANALYSIS_OK,
+                    seed_credits=SEED_USER_CREDITS)
+    assert r["resp"].status_code == 200, r["resp"].text
+    assert r["resp"].json()["verification_status"] == "ok"
+    assert json.loads(r["stored"][0][2])["verification_status"] == "ok"
+    assert r["audit_actions"] == ["verify"]
+    assert r["credits"] == SEED_USER_CREDITS + 1, "the ok path charges exactly 1"
+
+
+def test_control_anon_llm_success_charges_one_no_row(monkeypatch):
+    """Rule-17 POSITIVE CONTROL, anon tier: LLM succeeds → `ok`, exactly +1 on
+    AnonymousUsage, still no ChatHistory / AuditLog (anon never persists)."""
+    r = _run_verify(monkeypatch, dailymed_hits=True, llm_content=_MAIN_ANALYSIS_OK,
+                    anonymous=True, seed_credits=SEED_ANON_CREDITS)
+    assert r["resp"].status_code == 200, r["resp"].text
+    assert r["resp"].json()["verification_status"] == "ok"
+    assert r["stored"] == [] and r["audit_actions"] == []
+    assert r["credits"] == SEED_ANON_CREDITS + 1, "the anon ok path charges exactly 1"

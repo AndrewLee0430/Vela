@@ -111,8 +111,8 @@ def test_ambiguous_brand_defers_with_structured_status_via_endpoint():
 # Pins the third verification_status value. Path: no FDA labels found AND the
 # fallback LLM call fails. The LLM is stubbed to RAISE (never produces medical
 # output); fda_client is stubbed to return no labels; deduct_credits is stubbed
-# no-op only because the test DB has no tables (the fail path never deducts,
-# the ok path does).
+# no-op only because the test DB has no tables (the fail paths — sites 2 and 3,
+# the latter since HISTORY HONESTY segment 2b — never deduct; the ok path does).
 
 
 class _StubProvider:

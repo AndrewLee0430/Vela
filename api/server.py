@@ -1563,10 +1563,26 @@ async def verify_drug_interaction(
 
     elapsed_ms = int((time.time()-start_time)*1000)
 
-    if spelling_corrections:
-        summary = "Note: " + "; ".join(spelling_corrections) + ". Please verify. " + summary
-    if tfda_notes:
-        summary = "TFDA grounding — " + "; ".join(tfda_notes) + ". " + summary
+    # HISTORY HONESTY car segment 2b (founder rulings R1 / R3 / R5, 2026-09-07):
+    # when BOTH attempts failed there is no analysis to prefix — persist summary ""
+    # (no prefix-only residue), label the run failed_analysis, and charge nothing.
+    # The prefix mutations run ONLY on success. The write below stays the SINGLE
+    # site (R2), so tests/test_verify_write_ordering.py's rindex anchor is unmoved.
+    if analysis_success:
+        status = "ok"
+        if spelling_corrections:
+            summary = "Note: " + "; ".join(spelling_corrections) + ". Please verify. " + summary
+        if tfda_notes:
+            summary = "TFDA grounding — " + "; ".join(tfda_notes) + ". " + summary
+    else:
+        status = "failed_analysis"
+        summary = ""
+        risk_level = "Unknown"
+        interactions = []
+        logger.info(
+            "[Verify] analysis failed after 2 attempts — failed_analysis row, no charge (anon=%s)",
+            is_anonymous,
+        )
 
     # Write ordering (fixed 2026-08-19): this write MUST stay AFTER both summary
     # mutations above — it used to run before them, so chat_history.answer stored
@@ -1587,14 +1603,16 @@ async def verify_drug_interaction(
                     response_language=response_language,
                     disclaimer=get_verify_disclaimer(response_language),
                     tfda_groundings=tfda_groundings,
-                    verification_status="ok")),
+                    verification_status=status)),
             label="Verify")
 
-    # 成功後扣減 credits + log cost
-    if is_anonymous:
-        await deduct_anonymous_credits(db, anon_id, "verify")
-    else:
-        await deduct_credits(db, user_id, "verify")
+    # 成功後扣減 credits + log cost — segment 2b R3: NO deduct on either tier when
+    # both attempts failed (mirrors the no-label fallback FAILURE path, site 2).
+    if analysis_success:
+        if is_anonymous:
+            await deduct_anonymous_credits(db, anon_id, "verify")
+        else:
+            await deduct_credits(db, user_id, "verify")
 
     # Cost logging (§2.1 PHASE D: model from verify_binding; v0.4 A10: anon → user_id=None)
     try:
@@ -1620,7 +1638,7 @@ async def verify_drug_interaction(
         query_time_ms=elapsed_ms,
         query_id=audit_id,
         tfda_groundings=tfda_groundings,
-        verification_status="ok",
+        verification_status=status,
     )
 
 
