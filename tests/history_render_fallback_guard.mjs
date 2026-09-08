@@ -99,6 +99,29 @@ if (parseVerifyAnswer) {
     'attribution_kind enum reaches the renderer');
   eq(parsed?.summary, 'Found 1 interaction(s): 1 Major',
     'summary present — the ShareButton text source for new-format rows');
+
+  // HISTORY HONESTY car segment 2b (founder rulings R1/R5, 2026-09-07): a
+  // failed_analysis row (labels FOUND, both LLM attempts failed) is a NEW-FORMAT
+  // payload with an EMPTY summary and no interactions. It must take the cards
+  // path with the status intact — the renderer keys on it for the warning
+  // banner — and must never fall to the legacy plain box or read as clean.
+  const failedAnalysis = JSON.stringify({
+    drugs_analyzed: ['warfarin', 'aspirin'], interactions: [], summary: '',
+    risk_level: 'Unknown', risk_level_label: null, response_language: 'en',
+    disclaimer: 'x', tfda_groundings: null, verification_status: 'failed_analysis',
+  });
+  const fa = parseVerifyAnswer(failedAnalysis);
+  check(fa !== null && fa.interactions.length === 0,
+    'failed_analysis payload → cards path (not the legacy fallback), 0 interactions');
+  eq(fa?.verification_status, 'failed_analysis',
+    'failed_analysis status reaches the renderer');
+  // Source-pattern guard (the seam itself is JSX, not extractable): BOTH
+  // renderers must branch on the value — /history (this page) and /verify.
+  check(/verification_status === 'failed_analysis'/.test(pageSrc),
+    "pages/history.tsx must branch on verification_status === 'failed_analysis' (segment 2b seam)");
+  const verifyPageSrc = readFileSync(new URL('../pages/verify.tsx', import.meta.url), 'utf8');
+  check(/verification_status === 'failed_analysis'/.test(verifyPageSrc),
+    "pages/verify.tsx must branch on verification_status === 'failed_analysis' (segment 2b seam)");
 }
 
 // ── 3. Research half B: research_v1 safe-parse extracted verbatim ───────────

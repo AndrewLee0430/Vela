@@ -66,6 +66,7 @@ export interface UITranslations {
   verifyTfdaGroundingComboNote: string;  // "{query}" "{ingredients}" — combination-product provenance note
   verifyFailedMsg: string;               // failed_no_data: check could not be completed (no label data)
   verifyFailedAdvice: string;            // failed_no_data: retry / consult a professional
+  verifyFailedAnalysisMsg: string;       // failed_analysis (segment 2b): labels FOUND, both LLM attempts failed; badge + advice reuse verifyDeferredBadge / verifyFailedAdvice
   tfdaSourceLabel: string;               // a1-ii: TFDA citation-chip label ("TFDA" stays as-is, Rule 16)
 
   // ── Explain page ──
@@ -368,6 +369,7 @@ const en: UITranslations = {
   verifyTfdaGroundingNote: "'{query}' = {ingredients} (per TFDA drug license)",
   verifyTfdaGroundingComboNote: "'{query}' is a TFDA-registered combination product: {ingredients}",
   verifyFailedMsg: 'The check could not be completed — no drug label data was available for this request.',
+  verifyFailedAnalysisMsg: 'The check could not be completed — the labels were found but the analysis failed.',
   verifyFailedAdvice: 'Please try again later, or consult a pharmacist or physician.',
   tfdaSourceLabel: 'TFDA Approved Indication',
 
@@ -636,6 +638,7 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     verifyTfdaGroundingNote: '「{query}」= {ingredients}（依 TFDA 藥品許可證）',
     verifyTfdaGroundingComboNote: '「{query}」為 TFDA 許可之複方產品：{ingredients}',
     verifyFailedMsg: '無法完成檢查——本次查詢沒有可用的藥物仿單資料。',
+    verifyFailedAnalysisMsg: '無法完成檢查——已找到藥物仿單，但分析失敗。', // MACHINE-TRANSLATED 2026-09-07 — reviewer round pending
     verifyFailedAdvice: '請稍後再試，或諮詢藥師或醫師。',
     tfdaSourceLabel: 'TFDA 核准適應症',
     explainTitle: '解讀您的醫療報告',
@@ -894,6 +897,7 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     verifyTfdaGroundingNote: '“{query}”= {ingredients}（依据 TFDA 药品许可证）',
     verifyTfdaGroundingComboNote: '“{query}”为 TFDA 许可的复方产品：{ingredients}',
     verifyFailedMsg: '无法完成检查——本次查询没有可用的药物说明书数据。',
+    verifyFailedAnalysisMsg: '无法完成检查——已找到药物说明书，但分析失败。', // MACHINE-TRANSLATED 2026-09-07 — reviewer round pending
     verifyFailedAdvice: '请稍后再试，或咨询药师或医生。',
     tfdaSourceLabel: 'TFDA 批准适应症',
     explainTitle: '解读您的医疗报告',
@@ -1153,6 +1157,7 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     verifyTfdaGroundingNote: '「{query}」= {ingredients}（TFDA医薬品許可証より）',
     verifyTfdaGroundingComboNote: '「{query}」はTFDA承認の配合剤です：{ingredients}',
     verifyFailedMsg: 'チェックを完了できませんでした——今回の照会に利用できる添付文書データがありませんでした。',
+    verifyFailedAnalysisMsg: 'チェックを完了できませんでした——添付文書は見つかりましたが、分析に失敗しました。', // MACHINE-TRANSLATED 2026-09-07 — reviewer round pending
     verifyFailedAdvice: '時間をおいて再試行するか、薬剤師または医師にご相談ください。',
     tfdaSourceLabel: 'TFDA承認適応症',
     explainTitle: '医療レポートを理解する',
@@ -1410,6 +1415,7 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     verifyTfdaGroundingNote: "'{query}' = {ingredients} (TFDA 의약품 허가증 기준)",
     verifyTfdaGroundingComboNote: "'{query}'은(는) TFDA 허가 복합제입니다: {ingredients}",
     verifyFailedMsg: '검사를 완료할 수 없습니다 — 이번 요청에 사용할 수 있는 의약품 라벨 데이터가 없습니다.',
+    verifyFailedAnalysisMsg: '검사를 완료할 수 없습니다 — 의약품 라벨은 찾았지만 분석에 실패했습니다.', // MACHINE-TRANSLATED 2026-09-07 — reviewer round pending
     verifyFailedAdvice: '나중에 다시 시도하시거나 약사 또는 의사와 상담하세요.',
     tfdaSourceLabel: 'TFDA 승인 적응증',
     explainTitle: '의료 보고서 이해하기',
@@ -1667,6 +1673,7 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     verifyTfdaGroundingNote: '«{query}» = {ingredients} (según la licencia de medicamento de la TFDA)',
     verifyTfdaGroundingComboNote: '«{query}» es un producto combinado registrado en la TFDA: {ingredients}',
     verifyFailedMsg: 'No se pudo completar la comprobación: no había datos de etiquetado del medicamento disponibles para esta consulta.',
+    verifyFailedAnalysisMsg: 'No se pudo completar la comprobación: se encontraron las etiquetas del medicamento, pero el análisis falló.', // MACHINE-TRANSLATED 2026-09-07 — reviewer round pending
     verifyFailedAdvice: 'Inténtelo de nuevo más tarde o consulte a un farmacéutico o médico.',
     tfdaSourceLabel: 'Indicación aprobada por la TFDA',
     explainTitle: 'Entienda su Informe Médico',
@@ -1926,6 +1933,7 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     verifyTfdaGroundingNote: '« {query} » = {ingredients} (selon la licence de médicament TFDA)',
     verifyTfdaGroundingComboNote: '« {query} » est un produit combiné enregistré auprès de la TFDA : {ingredients}',
     verifyFailedMsg: "La vérification n'a pas pu être effectuée : aucune donnée de notice du médicament n'était disponible pour cette demande.",
+    verifyFailedAnalysisMsg: "La vérification n'a pas pu être effectuée : les notices ont été trouvées, mais l'analyse a échoué.", // MACHINE-TRANSLATED 2026-09-07 — reviewer round pending
     verifyFailedAdvice: 'Veuillez réessayer plus tard ou consulter un pharmacien ou un médecin.',
     tfdaSourceLabel: 'Indication approuvée par la TFDA',
     explainTitle: 'Comprenez Votre Rapport Médical',
@@ -2185,6 +2193,7 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     verifyTfdaGroundingNote: '„{query}“ = {ingredients} (laut TFDA-Arzneimittelzulassung)',
     verifyTfdaGroundingComboNote: '„{query}“ ist ein von der TFDA zugelassenes Kombinationspräparat: {ingredients}',
     verifyFailedMsg: 'Die Prüfung konnte nicht abgeschlossen werden – für diese Anfrage waren keine Arzneimittel-Etikettdaten verfügbar.',
+    verifyFailedAnalysisMsg: 'Die Prüfung konnte nicht abgeschlossen werden – die Arzneimittel-Etiketten wurden gefunden, aber die Analyse ist fehlgeschlagen.', // MACHINE-TRANSLATED 2026-09-07 — reviewer round pending
     verifyFailedAdvice: 'Bitte versuchen Sie es später erneut oder wenden Sie sich an eine Apotheke oder einen Arzt.',
     tfdaSourceLabel: 'Von der TFDA zugelassene Indikation',
     explainTitle: 'Ihren Arztbericht verstehen',
@@ -2444,6 +2453,7 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     verifyTfdaGroundingNote: "'{query}' = {ingredients} (secondo la licenza del farmaco TFDA)",
     verifyTfdaGroundingComboNote: "'{query}' è un prodotto combinato registrato presso la TFDA: {ingredients}",
     verifyFailedMsg: 'Impossibile completare il controllo: nessun dato di etichettatura del farmaco era disponibile per questa richiesta.',
+    verifyFailedAnalysisMsg: "Impossibile completare il controllo: le etichette del farmaco sono state trovate, ma l'analisi non è riuscita.", // MACHINE-TRANSLATED 2026-09-07 — reviewer round pending
     verifyFailedAdvice: 'Riprova più tardi o consulta un farmacista o un medico.',
     tfdaSourceLabel: 'Indicazione approvata dalla TFDA',
     explainTitle: 'Comprendi il Tuo Referto Medico',
@@ -2703,6 +2713,7 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     verifyTfdaGroundingNote: "'{query}' = {ingredients} (conforme a licença de medicamento da TFDA)",
     verifyTfdaGroundingComboNote: "'{query}' é um produto de combinação registado na TFDA: {ingredients}",
     verifyFailedMsg: 'Não foi possível concluir a verificação: não havia dados de rotulagem do medicamento disponíveis para este pedido.',
+    verifyFailedAnalysisMsg: 'Não foi possível concluir a verificação: os rótulos do medicamento foram encontrados, mas a análise falhou.', // MACHINE-TRANSLATED 2026-09-07 — reviewer round pending
     verifyFailedAdvice: 'Tente novamente mais tarde ou consulte um farmacêutico ou médico.',
     tfdaSourceLabel: 'Indicação aprovada pela TFDA',
     explainTitle: 'Entenda Seu Relatório Médico',
@@ -2962,6 +2973,7 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     verifyTfdaGroundingNote: "'{query}' = {ingredients} (ตามใบอนุญาตยาของ TFDA)",
     verifyTfdaGroundingComboNote: "'{query}' เป็นยาสูตรผสมที่ขึ้นทะเบียนกับ TFDA: {ingredients}",
     verifyFailedMsg: 'ไม่สามารถตรวจสอบให้เสร็จสิ้นได้ — ไม่มีข้อมูลฉลากยาสำหรับคำขอนี้',
+    verifyFailedAnalysisMsg: 'ไม่สามารถตรวจสอบให้เสร็จสิ้นได้ — พบข้อมูลฉลากยาแล้ว แต่การวิเคราะห์ล้มเหลว', // MACHINE-TRANSLATED 2026-09-07 — reviewer round pending
     verifyFailedAdvice: 'โปรดลองอีกครั้งในภายหลัง หรือปรึกษาเภสัชกรหรือแพทย์',
     tfdaSourceLabel: 'ข้อบ่งใช้ที่ TFDA อนุมัติ',
     explainTitle: 'ทำความเข้าใจรายงานทางการแพทย์',
@@ -3221,6 +3233,7 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     verifyTfdaGroundingNote: "'{query}' = {ingredients} (وفقًا لترخيص الدواء من TFDA)",
     verifyTfdaGroundingComboNote: "'{query}' منتج مركّب مسجّل لدى TFDA: {ingredients}",
     verifyFailedMsg: 'تعذر إكمال الفحص — لم تتوفر بيانات ملصق الدواء لهذا الطلب.',
+    verifyFailedAnalysisMsg: 'تعذر إكمال الفحص — تم العثور على ملصقات الدواء، لكن التحليل فشل.', // MACHINE-TRANSLATED 2026-09-07 — reviewer round pending
     verifyFailedAdvice: 'يرجى المحاولة مرة أخرى لاحقًا، أو استشارة الصيدلي أو الطبيب.',
     tfdaSourceLabel: 'دواعي الاستعمال المعتمدة من TFDA',
     explainTitle: 'افهم تقريرك الطبي',
@@ -3480,6 +3493,7 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     verifyTfdaGroundingNote: "'{query}' = {ingredients} (TFDA औषधि लाइसेंस के अनुसार)",
     verifyTfdaGroundingComboNote: "'{query}' एक TFDA-पंजीकृत संयोजन उत्पाद है: {ingredients}",
     verifyFailedMsg: 'जांच पूरी नहीं हो सकी — इस अनुरोध के लिए कोई दवा लेबल डेटा उपलब्ध नहीं था।',
+    verifyFailedAnalysisMsg: 'जांच पूरी नहीं हो सकी — दवा के लेबल मिल गए, लेकिन विश्लेषण विफल रहा।', // MACHINE-TRANSLATED 2026-09-07 — reviewer round pending
     verifyFailedAdvice: 'कृपया बाद में पुनः प्रयास करें, या फार्मासिस्ट अथवा चिकित्सक से परामर्श करें।',
     tfdaSourceLabel: 'TFDA-अनुमोदित संकेत',
     explainTitle: 'अपनी चिकित्सा रिपोर्ट समझें',
@@ -3739,6 +3753,7 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     verifyTfdaGroundingNote: "'{query}' = {ingredients} (TFDA ওষুধ লাইসেন্স অনুযায়ী)",
     verifyTfdaGroundingComboNote: "'{query}' একটি TFDA-নিবন্ধিত সংমিশ্রণ পণ্য: {ingredients}",
     verifyFailedMsg: 'পরীক্ষাটি সম্পন্ন করা যায়নি — এই অনুরোধের জন্য কোনো ওষুধের লেবেল ডেটা পাওয়া যায়নি।',
+    verifyFailedAnalysisMsg: 'পরীক্ষাটি সম্পন্ন করা যায়নি — ওষুধের লেবেল পাওয়া গেছে, কিন্তু বিশ্লেষণ ব্যর্থ হয়েছে।', // MACHINE-TRANSLATED 2026-09-07 — reviewer round pending
     verifyFailedAdvice: 'অনুগ্রহ করে পরে আবার চেষ্টা করুন, অথবা ফার্মাসিস্ট বা চিকিৎসকের পরামর্শ নিন।',
     tfdaSourceLabel: 'TFDA-অনুমোদিত নির্দেশনা',
     explainTitle: 'আপনার মেডিকেল রিপোর্ট বুঝুন',
@@ -3998,6 +4013,7 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     verifyTfdaGroundingNote: "'{query}' = {ingredients} (לפי רישיון התרופה של TFDA)",
     verifyTfdaGroundingComboNote: "'{query}' הוא מוצר משולב הרשום ב-TFDA: {ingredients}",
     verifyFailedMsg: 'לא ניתן היה להשלים את הבדיקה — לא היו זמינים נתוני תווית תרופה לבקשה זו.',
+    verifyFailedAnalysisMsg: 'לא ניתן היה להשלים את הבדיקה — תוויות התרופה נמצאו, אך הניתוח נכשל.', // MACHINE-TRANSLATED 2026-09-07 — reviewer round pending
     verifyFailedAdvice: 'אנא נסו שוב מאוחר יותר, או התייעצו עם רוקח או רופא.',
     tfdaSourceLabel: 'התוויה מאושרת על ידי TFDA',
     explainTitle: 'הבינו את הדוח הרפואי שלכם',
@@ -4257,6 +4273,7 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     verifyTfdaGroundingNote: "'{query}' = {ingredients} (theo giấy phép thuốc của TFDA)",
     verifyTfdaGroundingComboNote: "'{query}' là sản phẩm phối hợp đã đăng ký với TFDA: {ingredients}",
     verifyFailedMsg: 'Không thể hoàn tất kiểm tra — không có dữ liệu nhãn thuốc khả dụng cho yêu cầu này.',
+    verifyFailedAnalysisMsg: 'Không thể hoàn tất kiểm tra — đã tìm thấy nhãn thuốc nhưng phân tích thất bại.', // MACHINE-TRANSLATED 2026-09-07 — reviewer round pending
     verifyFailedAdvice: 'Vui lòng thử lại sau, hoặc tham khảo ý kiến dược sĩ hoặc bác sĩ.',
     tfdaSourceLabel: 'Chỉ định được TFDA phê duyệt',
     explainTitle: 'Hiểu Báo cáo Y tế của Bạn',

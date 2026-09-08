@@ -65,6 +65,7 @@ interface VerifyHistoryPayload {
     risk_level?: string;
     tfda_groundings?: { query: string; ingredients: string[]; is_combo?: boolean }[] | null;
     disclaimer?: string;
+    // "ok" | "failed_no_data" | "failed_analysis" — deferred_ambiguous_brand never persists (defer path writes no row)
     verification_status?: string | null;
 }
 
@@ -463,14 +464,18 @@ function HistoryList() {
                                 {item.session_type === 'verify' && (() => {
                                     const parsed = verifyParsed;
                                     if (parsed) {
-                                        const isFailed = parsed.verification_status === 'failed_no_data';
+                                        const isFailedNoData = parsed.verification_status === 'failed_no_data';
+                                        // HISTORY HONESTY car segment 2b (Rule 19 carry-across from /verify):
+                                        // labels FOUND, both LLM attempts failed — same banner, its own headline.
+                                        const isFailedAnalysis = parsed.verification_status === 'failed_analysis';
+                                        const isFailed = isFailedNoData || isFailedAnalysis;
                                         const summaryDisplay = getInteractionSummaryDisplay(lang, parsed.interactions);
                                         return (
                                             <div className="space-y-4">
                                                 <div className="flex justify-between items-start gap-3">
                                                     {isFailed ? (
                                                         <div className="rounded-lg border border-warning/30 bg-warning/10 p-3 text-sm flex-1">
-                                                            <p className="font-medium text-warning mb-1">⚠️ {ui.verifyFailedMsg}</p>
+                                                            <p className="font-medium text-warning mb-1">⚠️ {isFailedAnalysis ? ui.verifyFailedAnalysisMsg : ui.verifyFailedMsg}</p>
                                                             <p className="text-text/70">{ui.verifyFailedAdvice}</p>
                                                         </div>
                                                     ) : (
@@ -493,7 +498,7 @@ function HistoryList() {
                                                         ))}
                                                     </div>
                                                 )}
-                                                {parsed.interactions.length > 0 && (
+                                                {!isFailed && parsed.interactions.length > 0 && (
                                                     <div className="space-y-3">
                                                         {parsed.interactions.map((interaction, idx) => (
                                                             <VerifyInteractionCard key={idx} interaction={interaction} lang={lang} />

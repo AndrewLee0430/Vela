@@ -47,7 +47,7 @@ interface VerifyResponse {
     query_id?: string | null;
     // ADR 007 T2a structured transparency (additive — absent on old/cached responses)
     tfda_groundings?: TfdaGrounding[] | null;
-    verification_status?: string | null;   // "ok" | "deferred_ambiguous_brand"
+    verification_status?: string | null;   // "ok" | "deferred_ambiguous_brand" | "failed_no_data" | "failed_analysis"
     deferred_brands?: string[] | null;
 }
 
@@ -452,12 +452,15 @@ function VerifyForm() {
                             {/* Summary */}
                             <div>
                                 {/* ADR 007 T2a: an ambiguous-brand DEFER is a REFUSED verification, and a
-                                    failed_no_data run is an INCOMPLETE one — neither may present as a clean
-                                    "no interactions found" result. */}
+                                    failed_no_data / failed_analysis run is an INCOMPLETE one — none may present
+                                    as a clean "no interactions found" result. */}
                                 {(() => {
                                     const isDeferred = result.verification_status === 'deferred_ambiguous_brand';
                                     const isFailed = result.verification_status === 'failed_no_data';
-                                    const notClean = isDeferred || isFailed;
+                                    // HISTORY HONESTY car segment 2b: labels FOUND, both LLM attempts failed —
+                                    // the headline names that cause; badge + advice reuse the failed strings.
+                                    const isFailedAnalysis = result.verification_status === 'failed_analysis';
+                                    const notClean = isDeferred || isFailed || isFailedAnalysis;
                                     return (
                                         <>
                                             <div className="flex justify-between items-start mb-3">
@@ -473,7 +476,7 @@ function VerifyForm() {
                                                     <p className="font-medium text-warning mb-1">
                                                         ⚠️ {isDeferred
                                                             ? ui.verifyDeferredMsg.replace('{brands}', (result.deferred_brands ?? []).join(', '))
-                                                            : ui.verifyFailedMsg}
+                                                            : isFailedAnalysis ? ui.verifyFailedAnalysisMsg : ui.verifyFailedMsg}
                                                     </p>
                                                     <p className="text-text/70">{isDeferred ? ui.verifyDeferredAdvice : ui.verifyFailedAdvice}</p>
                                                 </div>
