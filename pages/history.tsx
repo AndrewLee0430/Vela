@@ -25,6 +25,7 @@ import { getExtra } from '../utils/i18n-extra';
 import { getShare } from '../utils/i18n-share';
 import { getRiskLevelLabel } from '../utils/i18n-verify';
 import { parseResearchSections, stripLlmDisclaimer } from '../utils/researchSections';
+import { getResearchDisclaimer } from '../utils/researchDisclaimer';
 
 // ─── Design System ────────────────────────────────────────────────────────────
 // C3: feature accents collapsed — features distinguished by label only, not color.
@@ -343,7 +344,11 @@ function HistoryList() {
                                     legacy / malformed rows fall back to the pre-wrap rendering.
                                     HISTORY HONESTY car segment 3: the FallbackBanner / ProvenanceLine
                                     trust signal renders above the answer from the persisted `fallback`
-                                    flag (segment 2, fly 247); pre-segment-2 rows (UNKNOWN) get neither. */}
+                                    flag (segment 2, fly 247); pre-segment-2 rows (UNKNOWN) get neither.
+                                    HISTORY HONESTY car segment 4a: the SAME disclaimer line /research renders
+                                    (shared utils/researchDisclaimer.ts, same tokens) now closes the answer body
+                                    on BOTH paths, keyed by the UI `lang` — research_v1 stores no language, and
+                                    /research's key is the UI-resolved response language anyway. */}
                                 {item.session_type === 'research' && (() => {
                                     const markdown = researchParsed?.answer ?? item.answer;
                                     const sections = markdown ? parseResearchSections(stripLlmDisclaimer(markdown)) : null;
@@ -380,6 +385,9 @@ function HistoryList() {
                                                         </div>
                                                     </ResearchSection>
                                                 ))}
+                                                <p className="text-xs mt-3 mb-1" style={{ color: 'rgb(var(--color-text) / 0.35)' }}>
+                                                    {getResearchDisclaimer(lang)}
+                                                </p>
                                                 {citationBlock}
                                             </div>
                                         );
@@ -400,6 +408,9 @@ function HistoryList() {
                                                     {markdown}
                                                 </p>
                                             </div>
+                                            <p className="text-xs mt-3" style={{ color: 'rgb(var(--color-text) / 0.35)' }}>
+                                                {getResearchDisclaimer(lang)}
+                                            </p>
                                             {citationBlock}
                                         </div>
                                     );

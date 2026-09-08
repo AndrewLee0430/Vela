@@ -32,28 +32,14 @@ import { useLang } from '../utils/LangContext';
 import { getUI } from '../utils/i18n-ui';
 import { getExtra } from '../utils/i18n-extra';
 import { parseResearchSections, stripLlmDisclaimer } from '../utils/researchSections';
-
-const DISCLAIMERS: Record<string, string> = {
-    'en': '\u26A0\uFE0F For informational purposes only. Always verify with clinical guidelines and consult a qualified professional.',
-    'zh-TW': '\u26A0\uFE0F 本資訊僅供參考，請依據臨床指引並諮詢合格醫療專業人員。',
-    'zh-CN': '\u26A0\uFE0F 本信息仅供参考，请依据临床指南并咨询合格医疗专业人员。',
-    'ja': '\u26A0\uFE0F 本情報は参考用です。臨床ガイドラインを確認し、資格のある医療専門家にご相談ください。',
-    'ko': '\u26A0\uFE0F 본 정보는 참고용입니다. 임상 지침을 확인하고 자격을 갖춘 의료 전문가와 상담하십시오.',
-    'es': '\u26A0\uFE0F Solo con fines informativos. Verifique con las gu\u00EDas cl\u00EDnicas y consulte a un profesional cualificado.',
-    'fr': '\u26A0\uFE0F \u00C0 titre informatif uniquement. V\u00E9rifiez avec les directives cliniques et consultez un professionnel qualifi\u00E9.',
-    'de': '\u26A0\uFE0F Nur zu Informationszwecken. \u00DCberpr\u00FCfen Sie die klinischen Leitlinien und konsultieren Sie einen qualifizierten Fachmann.',
-    'it': '\u26A0\uFE0F Solo a scopo informativo. Verificare con le linee guida cliniche e consultare un professionista qualificato.',
-    'pt': '\u26A0\uFE0F Apenas para fins informativos. Verifique com as diretrizes cl\u00EDnicas e consulte um profissional qualificado.',
-    'th': '\u26A0\uFE0F ข้อมูลนี้ใช้เพื่อการอ้างอิงเท่านั้น กรุณาตรวจสอบตามแนวทางปฏิบัติทางคลินิกและปรึกษาผู้เชี่ยวชาญที่มีคุณสมบัติ',
-    'ar': '\u26A0\uFE0F هذه المعلومات للأغراض المرجعية فقط. يرجى التحقق من الإرشادات السريرية واستشارة متخصص مؤهل.',
-    'hi': '\u26A0\uFE0F यह जानकारी केवल संदर्भ उद्देश्यों के लिए है। कृपया नैदानिक दिशानिर्देशों से सत्यापित करें और किसी योग्य पेशेवर से परामर्श करें।',
-    'bn': '\u26A0\uFE0F এই তথ্য শুধুমাত্র তথ্যসূত্র উদ্দেশ্যে। অনুগ্রহ করে ক্লিনিক্যাল নির্দেশিকা যাচাই করুন এবং একজন যোগ্য পেশাদারের সাথে পরামর্শ করুন।',
-    'he': '\u26A0\uFE0F מידע זה מיועד לצורכי עיון בלבד. אנא אמתו מול הנחיות קליניות והתייעצו עם איש מקצוע מוסמך.',
-    'vi': '\u26A0\uFE0F Thông tin này chỉ mang tính chất tham khảo. Vui lòng kiểm tra theo hướng dẫn lâm sàng và tham khảo ý kiến chuyên gia có trình độ.',
-};
+import { getResearchDisclaimer } from '../utils/researchDisclaimer';
 
 // Section parsing + LLM-disclaimer strip moved to utils/researchSections.ts
 // (HISTORY car segment 1) — shared with the /history renderer. Behavior unchanged.
+// The 16-language disclaimer map moved to utils/researchDisclaimer.ts (HISTORY
+// HONESTY car segment 4a) — same reason, same consumer: /history now renders the
+// identical line under every research row. Values byte-identical; keyed here by
+// detectedLang = the SSE `language` event (the UI-resolved response language).
 
 // Fixed multilingual sample queries — showcases "Ask in any language" feature.
 // Intentionally NOT translated: the mix of languages itself is the message.
@@ -603,7 +589,7 @@ function ResearchForm() {
                                                         </ResearchSection>
                                                     ))}
                                                     <p className="text-xs mt-3 mb-1" style={{ color: 'rgb(var(--color-text) / 0.35)' }}>
-                                                        {DISCLAIMERS[detectedLang] || DISCLAIMERS['en']}
+                                                        {getResearchDisclaimer(detectedLang)}
                                                     </p>
                                                 </>
                                             );
@@ -616,7 +602,7 @@ function ResearchForm() {
                                                 </div>
                                                 {!loading && (
                                                     <p className="text-xs mt-3" style={{ color: 'rgb(var(--color-text) / 0.35)' }}>
-                                                        {DISCLAIMERS[detectedLang] || DISCLAIMERS['en']}
+                                                        {getResearchDisclaimer(detectedLang)}
                                                     </p>
                                                 )}
                                             </>
@@ -713,7 +699,7 @@ function ResearchForm() {
 
             {answer && (
             <p className="text-xs mt-4 text-center" style={{ color: "rgb(var(--color-text) / 0.35)" }}>
-                {DISCLAIMERS[detectedLang] || DISCLAIMERS['en']}
+                {getResearchDisclaimer(detectedLang)}
             </p>
             )}
 
