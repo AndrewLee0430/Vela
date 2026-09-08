@@ -23,8 +23,9 @@
 | 1 | **created_at timezone** | serialize `created_at` WITH a UTC offset on `GET /api/history` (`ChatHistoryEntry` field serializer) and `GET /api/share/list`; no frontend change; storage untouched | **✅ SHIPPED as fly 245** (`8a57dc9`; gate §1 6/6 founder-PASS) |
 | 2 | **event_stream flags** | the fallback flag → `research_v1` optional field or `research_v2`, so /history can know a fallback happened (`[HONESTY][P2]` fallback-flag entry) | **✅ SHIPPED as fly 247** (`84df9e0` server + `d647199` parser + probe `c9d02d5`; gate §4 6/6 founder-PASS + probe 25/25; rulings D1 (i) · D2 (i) · D3 Research-only) |
 | 2b | **Verify site 3 (false `ok` + charge on LLM double-failure)** — **✅ SHIPPED as fly 249 (2026-09-08)** | a third `verification_status` value at `server.py:1548-1568`, no deduct, rendered on /verify + /history (`TECH_DEBT` `[HONESTY][P2]` filed 2026-09-04 — §3.2 Probe B, founder ruling D3) | **✅ SHIPPED as fly 249** (`d13040e` · `128d03e`; gate §8 8/8 founder-PASS `2bff2f0`; prod eye 2/2 founder-PASS 2026-09-08 — **CLOSED**) |
+| 4a | **httpx INFO suppression (d) + /history research disclaimer (b)** — founder ruling 2026-09-08: S4 = 4a now | `logging.getLogger("httpx").setLevel(logging.WARNING)` beside `basicConfig` (the openFDA/NCBI `api_key` + `email` query params stop landing in the log; key rotated by founder 2026-09-08) · the Research disclaimer line rendered under every /history research row on BOTH paths from a shared `utils/researchDisclaimer.ts` (`[HONESTY][P2]`) | **🔧 BUILT LOCAL 2026-09-09** (`8662090` (d) · `2404f13` (b); gate §10 BLANK; build record §9) |
 | 3 | **frontend banner carry-across (+ badge i18n)** | `FallbackBanner` / `ProvenanceLine` carried into /history (Rule 19); the English Research/Verify/Explain badge under zh-TW on /history (nav keys exist, unused) | **✅ SHIPPED as fly 248** (`6670011` · `ec9047a` · `8b12722` · `ea67b28`; gate §6 11/11 founder-PASS `3d3610a`; build record §5) |
-| 4 | **prose narrow fix / deferred** | `@tailwindcss/typography` registration for the `prose` no-op on /research + /history, WITH a two-page, two-scheme eye gate — or deferred by founder ruling | not started |
+| 4b | **prose narrow fix** | `@tailwindcss/typography` registration for the `prose` no-op on /research + /history, WITH a two-page, two-scheme eye gate | not started — **its own segment after a probe** (founder ruling 2026-09-08); **(c)** fallback-prompt Rule-12 format `[OTHER][P3]` **deferred to the next car that touches generator prompts** (same ruling) |
 
 ---
 
@@ -550,3 +551,99 @@ Credits read (rows 2 / 3): `SELECT credits_used_today FROM user_usage WHERE cler
 | 8 | delete one disposable row (regression on `tests/test_history_delete.py`'s surface) | confirm modal → row gone → survives reload | one disposable row deleted: confirm modal → row gone → survives reload (founder statement) | **PASS** | row id not recorded |
 
 **Founder sign-off line (name · date · overall verdict):** Andrew Lee (founder) · 2026-09-08 · **8/8 PASS** (row 6 `failed_no_data` half N/A — no row) — provenance as above; transcribed by Claude Code under the 2026-09-08 closeout authorization (zh-TW transcription precedent).
+
+## §9 Segment 4a build record (AI-written, facts and pointers only) — 2026-09-09 (brief + founder facts dated 2026-09-08)
+
+**Repo assertion (Rule 24):** toplevel `C:/Users/andre/projects/Vela`, HEAD `abe9c6f2311513df72a08ad5f06b0732e43cc5b7` at task start (= the segment-2b closeout docs commit; prod = fly 249 = `2bff2f033efb38e4d7d661eeda38f5676220f5b7`), status clean except the 4 founder-held untracked entries (`.superpowers/` + 3 PNGs). Baton check at start: **182 VERIFIED · 17 DRIFTED · 6 ADVISORY** — the 17 drifts are 16 non-unique ledger anchors + `research.tsx:102` (a blank line at HEAD; pre-existing, cited in earlier sections). `check_baton.py` crashes under cp950 stdout (`UnicodeEncodeError` at `:438`) — run it with `PYTHONIOENCODING=utf-8`; the cp950 TECH_DEBT entry already names that line.
+
+**Founder facts (2026-09-08, from the brief — recorded, not verified):** openFDA key ROTATED (env var name `<FOUNDER_FILLS>`; new key set in `.env` and via `fly secrets set`; NOT verified by Claude Code — config-resolved, invisible to the repo). Ruling: S4 = 4a (d) + (b) now; 4b prose fix as its own segment after a probe; (c) fallback-prompt format deferred to the next car that touches generator prompts.
+
+**Scope shipped (local — NOT pushed, NOT deployed; prod stays fly 249):** `8662090` (d) — `logging.getLogger("httpx").setLevel(logging.WARNING)` at `api/server.py:18` (comment `:12-17`) beside `basicConfig` (`:11`) + `tests/test_httpx_log_level.py` (3 tests, 1 RED first). `2404f13` (b) — `utils/researchDisclaimer.ts` (NEW: `RESEARCH_DISCLAIMERS` `:17-34`, 16 values byte-identical to the removed page-local map, + `getResearchDisclaimer(lang)` `:37-39`); `pages/research.tsx` (map removed, import `:35`, 3 sites → `getResearchDisclaimer(detectedLang)` at `:592 :605 :702`); `pages/history.tsx` (import `:28`; the line under the research body on BOTH paths, `getResearchDisclaimer(lang)` at `:388-390` sections · `:411-413` pre-wrap); `tests/history_research_disclaimer_guard.mjs` (7 RED checks first) + `tests/test_history_research_disclaimer.py` (wrapper, in the pytest count).
+
+### 9a. Rule 25 — cited (brief) vs derived at `abe9c6f` BEFORE editing (unit stated per row)
+
+| item | cited | derived at `abe9c6f` (pre-edit) | after `8662090` / `2404f13` | verdict |
+|---|---|---|---|---|
+| `logging.basicConfig` (unit: sites under `api/`) | `api/server.py:11` | `git grep -n basicConfig -- api/` → **1** site, `api/server.py:11` | `:11`; setLevel at `:18` | MATCH |
+| `httpx` / `httpcore` logger configuration under `api/` (unit: sites) | expect 0 | `git grep -n "getLogger([\"']\(httpx\|httpcore\)" -- api/` → **0** | 1 (`server.py:18`) | MATCH |
+| does `httpcore` log at INFO? | "and httpcore if it logs at INFO" | installed `httpx 0.27.0` — `_client.py` calls `logger.info` only, logger name `httpx`; `httpcore 1.0.9` — `_trace.py` calls `logger.debug` only | no `httpcore` override (stated in the code comment) | derived: httpcore is NOT at INFO |
+| retriever `_search_*` warning lines (unit: logger lines in `api/rag/retriever.py`) | "confirm none echoes a URL" | 18 logger lines in the file; the 5 `_search_*` warnings (`:601 :617 :634 :664 :688`) format `%s` of `e`; every client they call (`fda.search_drug_labels` · `pubmed.search` / `fetch_details` · `dailymed._resolve_setids` / `_fetch_spl_xml`) catches `Exception` internally and returns `[]` / `None`, so no httpx exception can reach these lines | unchanged | CONFIRMED — no URL echo |
+| outbound URL logging in `api/rag` + `api/services` (unit: logger lines) | `git grep -n "logger\.\(info\|warning\|error\)" -- api/rag api/services \| grep -i "url\|http"` | **0**. The brief's grep did not cover `api/data_sources/` — extended there: **3** lines, all `pubmed.py` (`:146 :202` log `e.response.status_code` only · `:209` a `ValueError`) — none formats a URL | unchanged | MATCH (0) + the extension stated |
+| a SECOND URL path the brief did not name: `str(httpx.HTTPStatusError)` (unit: bare `except Exception` blocks downstream of `raise_for_status()` that format `e`) | — | verified on httpx 0.27.0: `str(HTTPStatusError)` = `Client error '403 Forbidden' for url 'https://api.fda.gov/…label.json?search=x&api_key=SECRET…'`; `ConnectTimeout` / `ReadError` carry NO URL. **7 blocks** echo it: `fda.py:262-263` (`search_adverse_events`, `logger.error` — URL carries `api_key=`; **0 callers** under `api/` + `scripts/`), `dailymed.py:148-150` + `:177-179`, `loinc_client.py:86-87`, `rxnorm_client.py:46-47` + `:63-64`, `medlineplus_client.py:71-72` (those 6 URLs carry query terms / a setid only — the 4 clients pass no credential). NOT in the set: `fda.py:154-158` and `pubmed.py:145-150` / `:201-212` — an `except httpx.HTTPStatusError` handler precedes the bare one and logs `status_code` only | unchanged — flagged §9g-1, filed `[OTHER][P3]` | NEW FINDING, not fixed |
+| `server.py`'s own httpx calls (unit: sites) | — | 5 (`:356 :2119 :2154 :2361 :2622` post-`8662090`; import `:345`; Clerk / Dodo) — all authenticate by `Authorization` header; the URL carries no credential | unchanged | n/a |
+| `DISCLAIMERS` map (unit: lines) | `pages/research.tsx:36-52` | `:36-53` (`const` at 36, 16 values 37-52, `};` at 53) | removed; `utils/researchDisclaimer.ts:17-34` | MATCH (the cited range omits the closing brace) |
+| /research render sites (unit: JSX sites) | `:606 :619 :716` | `:606` (sections, `text-xs mt-3 mb-1`) · `:619` (no-section, `text-xs mt-3`, gated `!loading`) · `:716` (page bottom, `text-xs mt-4 text-center`, gated `answer`) — each `DISCLAIMERS[detectedLang] \|\| DISCLAIMERS['en']` | `:592 :605 :702`, `getResearchDisclaimer(detectedLang)` (−14 lines above: map −18, its blank line −1, import +1, comment +4) | MATCH (3) |
+| /history research branch — disclaimer renders today (unit: render sites) | "confirm no disclaimer today" | `pages/history.tsx:347-406` → **0**; the page's only disclaimer renders were Explain `:420-422` and Verify `:508-512`, both a STORED `parsed.disclaimer` | **2** (`:388-390` sections · `:411-413` pre-wrap); Explain now `:431-433`, Verify `:519-523` (shifted, untouched) | CONFIRMED (0) → 2 |
+| how /history knows the answer language | "derive" | `research_v1` payload = `kind / answer / citations / fallback` (`server.py:1107-1112` (post-`8662090`; `:1100-1105` at `abe9c6f`)) — **no language field**. /research's key `detectedLang` is set from the SSE `language` event (`research.tsx:383`), which the server emits from `_resolve_response_language(body.response_language, request)` (`server.py:885-889` (`:878-882` at `abe9c6f`)) — i.e. the **UI-resolved response language, NOT a detected one** | /history keys by the UI `lang` (§9c) | choice recorded; a ledger drift corrected (§9g-4) |
+| Verify / Explain rows | "leave untouched" / "derive whether Explain shows one" | Verify: stored `disclaimer` (`_verify_history_payload`, `server.py:1141` (`:1134` at `abe9c6f`)) rendered `:508-512`. Explain: stored `disclaimer` (`_explain_history_payload` ← `explain_service.get_disclaimer(locale)`, `explain_service.py:451`) rendered `:420-422` for JSON rows; the Explain pre-wrap fallback (`:452`, legacy / malformed rows) renders none | both untouched — the guard asserts `getResearchDisclaimer` is called ONLY inside the research branch | CONFIRMED; the Explain legacy-path gap flagged §9g-2 |
+| i18n keys | "0 new keys expected" | the map is page-local, never an `i18n-ui` key | **+0**; `UITranslations` 257 unchanged | MATCH |
+| `print()` in the openFDA client (Rule 4) | — | `api/data_sources/fda.py` **19** `print(` calls incl. both `search_drug_labels` error handlers (`:155 :158`); 8 files / 60 calls under `api/` | unchanged | flagged §9g-3, not filed |
+
+### 9b. Rule 19 — (d): what stays visible after the httpx INFO line is gone
+
+| behaviour | after `8662090` | status |
+|---|---|---|
+| `[Verify]` / `[Research]` INFO lines (`vela` logger, 7 sites) | untouched — control `test_vela_info_line_still_passes_control` | CARRIED |
+| httpx WARNING and above | pass — control `test_httpx_warning_still_passes_control` | CARRIED |
+| 4xx / 5xx from openFDA / NCBI / DailyMed surface in the log | via the clients' OWN handlers, unchanged: `pubmed.py:146 :202` (`status_code`), `fda.py:155` (`status_code` — via `print()`, Rule 4), `dailymed.py:150 :179` (`type + str(e)` → URL, no credential). They never surfaced via the suppressed INFO line, which logged the status of every SUCCESS too | CARRIED (pre-existing paths) |
+| `httpcore` | DEBUG-only in 1.0.9 — nothing to carry; stated in the comment | n/a |
+| Sentry `LoggingIntegration` breadcrumbs (the 2026-08-21 TECH_DEBT analysis) | a record dropped at the logger level never becomes a breadcrumb — the same line closes that path; no receiving project observed (unchanged) | CARRIED by construction |
+| the OpenAI key | header-borne, never in the URL (unchanged) | n/a |
+
+### 9c. (b) — the language choice + its honesty implication (founder-overridable)
+
+/history renders `getResearchDisclaimer(lang)` with the UI `lang`. Basis: `research_v1` stores no language; and /research's own key is not "detected" — the SSE `language` event carries `_resolve_response_language(...)`, the UI-resolved response language (`server.py:885-889` (`:878-882` at `abe9c6f`); the event name predates the v179 change that made answer language UI-driven). So the UI `lang` is the SAME key /research used at answer time, unless the user switched UI language since — then the caption language differs from the stored answer's. **Honesty implication: a disclaimer in the UI language is still the disclaimer** — the row no longer omits the informational-use line; a language mismatch is a presentation nit, not a false statement. NOT done: persisting `response_language` on `research_v1` (segment-2 optional-field precedent) — it would cover only rows written after the deploy; founder may sequence it.
+
+### 9d. Rule 19 — (b): what /research does AROUND the line, carried to /history or declined
+
+| /research (surface #1) | /history (surface #2) | status |
+|---|---|---|
+| line under the section cards — `text-xs mt-3 mb-1`, `rgb(var(--color-text) / 0.35)` | same tokens, directly under the last card, ABOVE the citation block | CARRIED |
+| line under the no-section prose — `text-xs mt-3`, gated `!loading` | same tokens under the pre-wrap paragraph; a stored row has no loading state → ungated | CARRIED (gate n/a) |
+| a THIRD render at page bottom (`mt-4 text-center`, gated `answer`) | NOT carried — one line per row; the third copy is a page-level footer and /history is a list | DECLINED by design |
+| the ⚠️ glyph is part of each value; no site prepends another | same — the guard asserts every value starts with `⚠️ ` (the 2026-09-02 Verify double-⚠️ precedent) | CARRIED |
+| `stripLlmDisclaimer` before parsing, so an LLM-emitted caption never doubles the rendered one | already on /history since segment 1 | CARRIED (pre-existing) |
+| language key = `detectedLang` (SSE event = UI-resolved) | UI `lang` (§9c) | CARRIED with the stated substitution |
+| Verify / Explain render their STORED disclaimer | untouched (guard) | n/a |
+
+### 9e. Tests (TDD — RED watched first, then GREEN)
+
+- **RED (d), before `8662090`:** `python -m pytest tests/test_httpx_log_level.py -q` → **1 failed / 2 passed** — `test_httpx_request_line_with_api_key_is_not_logged`: `AssertionError: httpx INFO request line reached the log handlers: HTTP Request: GET https://api.fda.gov/…label.json?search=aspirin&api_key=ROTATED-KEY-MUST-NOT-APPEAR "HTTP/1.1 200 OK"` — the record came from the installed httpx package's `_client.py`, line 1026, produced by a REAL `httpx.Client` over `MockTransport` (the library's own log call; no network). The two controls (vela INFO passes · httpx WARNING passes) passed before AND after, as controls must.
+- **GREEN (d):** 3 passed.
+- **RED (b), before `2404f13`:** `node tests/history_research_disclaimer_guard.mjs` → **7 failure(s)**: shared module missing · research.tsx no import · page-local map still present · literal still present · 3-site count · history.tsx no import · research branch renders the line **0** times (need 2). Failures, not errors — the missing module is reported through `existsSync`, not a throw.
+- **GREEN (b):** `all checks passed`; the pre-existing `tests/history_render_fallback_guard.mjs` still `all checks passed`.
+- **Numbers:** bare `python -m pytest -q` **441 passed / 28 skipped** (exit 0) = 437 + 4 (3 (d) + 1 (b) wrapper) — derivation §9f · `npx tsc --noEmit` exit 0 · `npm run lint` **22 problems (7 errors / 15 warnings)** before AND after — captured to scratch BEFORE the first edit and diffed by file + rule: **identical problem set** · `npm run build` exit 0 (Compiled successfully in 56s, Exporting 15/15) · i18n **+0** keys · the 16 values **BYTE-IDENTICAL** to `HEAD:pages/research.tsx:37-52` (Python line compare) · guards 2/2 `all checks passed`.
+
+### 9f. Rule 25 — the pytest "before" count, derived not inherited
+
+The pre-edit baseline run finished exit 0 but its summary line was cut by the author's own `| tail -3` (Sentry's shutdown lines followed it) — stated, not papered over. Derived instead on the edited tree with the two new files excluded (`--ignore=tests/test_httpx_log_level.py --ignore=tests/test_history_research_disclaimer.py`): **437 passed / 28 skipped** (exit 0) — vs the cited 437/28 (S2b §7e): **MATCH**. Full run 441/28; 441 − 437 = 4 = the new tests.
+
+### 9g. Flagged in passing, NOT fixed (collaboration principle #4 — founder chooses)
+
+1. **`str(HTTPStatusError)` echoes the full request URL on 4xx/5xx in 7 bare-except blocks across 5 `api/data_sources/` clients; ONE carries a credential** — `fda.py:262-263` (`search_adverse_events`, `api_key=`; 0 callers = dead today). → **filed `[OTHER][P3]`** (a credential path belongs in the ledger).
+2. **Explain LEGACY rows (the pre-wrap fallback, HEAD `history.tsx:452`, now `:463`) render no disclaimer** — JSON rows render the stored one. Whether any legacy Explain row exists on prod is one SELECT away → gate §10 derive step; **not filed** (may be an empty set).
+3. **`api/data_sources/fda.py` uses `print()` 19×** (Rule 4), incl. both `search_drug_labels` error handlers — 8 files / 60 calls under `api/`; a pre-existing class (the TFDACorpusStore cp950 entry is the precedent) → **not filed**, noted here.
+4. **TECH_DEBT ledger drift, corrected in place:** the disclaimer entry said /research keys by "the DETECTED answer language from the SSE `language` event" — the event carries the UI-resolved response language (§9c). Corrected in that entry's STATUS bullet.
+5. **Two TECH_DEBT entries describe the same httpx fix** — 2026-08-21 `[OTHER][P3]` credential-hygiene and 2026-09-04 `[OTHER][P2]` httpx URL-logging; both got the same STATUS bullet; merging is the founder's call.
+6. (no entry) `check_baton.py` cp950 crash at `:438` — already named in the cp950 entry.
+7. (no entry) line-number shift: every `pages/research.tsx` citation above `:56` in §3 / §5 / §7 / the ledgers is now **−14**, and every `api/server.py` citation above `:11` is **+7** (`8662090`'s comment + one line) — the baton check's `research.tsx:459` and `server.py:1100` BLANK-LINE drifts are these two shifts hitting §3.6 / §5h citations; historical baton sections are left as written (facts at their time); the live TECH_DEBT entries are updated. The two LOCAL-ONLY SHA drifts (`8662090` · `2404f13`) clear at push.
+8. (no entry) the patch scripts left LF in the working copies of the touched files; git normalised on commit (S2b §7g-6 precedent).
+
+## §10 Segment 4a — eye gate (BLANK FORM — founder fills on localhost; prod stays fly 249 until push + deploy)
+
+**Environment (founder to record):** localhost at the segment-4a docs commit; backend `TEST_MODE=true uvicorn api.server:app --reload --port 8000` (`PYTHONUTF8=1`); `npm run dev`; dev DB = the Dev branch `ep-spring-voice-a127ye10` — **check `DATABASE_URL` in `.env` first** (S2b process fact (a)); browser Asia/Taipei; rows 1, 2, 4 in light AND dark.
+
+**Row 5 recipe:** run ONE `/verify` (warfarin + aspirin) and ONE `/research` (any question) against the local backend, then in the uvicorn console: lines containing `httpx INFO` → expect **0** · `[Verify]` and `[Research]` INFO lines → present · `api_key=` occurrences → **0**. Save the console to a file and `Select-String -Pattern 'httpx INFO','api_key=','\[Verify\]','\[Research\]'` if eyeballing is unreliable. Optional control (not required to pass): a forced 4xx (temporarily bad `FDA_API_KEY`) still shows the client's own error line.
+
+**Derive step for row 4 (Claude Code at gate time, SELECT-only, Dev branch):** `SELECT COUNT(*) FROM chat_history WHERE session_type = 'explain' AND answer NOT LIKE '{%'` → is there a legacy Explain row to observe (§9g-2)? Record the count either way.
+
+| # | Surface / step | Expected | Observed | PASS / FAIL | Notes |
+|---|---|---|---|---|---|
+| 1 | `/history` → a research_v1 row rendering SECTION CARDS (e.g. dev row 2347), light AND dark | the ⚠️ disclaimer line, in the UI language, directly under the last section card and ABOVE the citation panel; same size / colour as /research's line under its cards | | | ONE ⚠️, not two; switch UI language once → the line follows the UI language |
+| 2 | `/history` → a research row on the PRE-WRAP path (e.g. dev row 2345, a legacy / non-conforming row), light AND dark | the same line directly under the paragraph (above the citation panel, if any) | | | |
+| 3 | `/research` — run one question | UNCHANGED: the line under the cards / prose AND the centered footer line, exactly as before (3 sites) | | | regression on the extraction |
+| 4 | `/history` → one Verify row AND one Explain (JSON) row | UNCHANGED: each renders its STORED disclaimer exactly as before; NO second line appears | | | a legacy Explain row (if the derive step finds one) renders none — expected today, §9g-2 |
+| 5 | local backend log during row 3 + one `/verify` (recipe above) | **zero** `httpx INFO` lines · `[Verify]` and `[Research]` INFO lines present · `api_key=` count **0** | | | the (d) prod-verification hook; the pre-fix log showed 49–51 `httpx INFO` lines per Research run |
+| 6 | delete one disposable row (regression on `tests/test_history_delete.py`'s surface) | confirm modal → row gone → survives reload | | | |
+
+**Founder sign-off line (name · date · overall verdict):** ______ · ______ · __/6
