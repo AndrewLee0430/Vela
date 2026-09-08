@@ -9,6 +9,13 @@ import os
 load_dotenv()
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(levelname)s %(message)s")
+# httpx logs every outbound request at INFO as `HTTP Request: GET <full URL>` -- and the
+# openFDA / NCBI clients carry their api_key (+ the NCBI email) as QUERY PARAMS, so behind
+# basicConfig(INFO) those keys landed in the dev console and the Fly log on every request
+# (TECH_DEBT httpx URL-logging entry; key rotated by the founder 2026-09-08). WARNING+ from
+# httpx still surfaces; httpcore (1.0.9) logs only at DEBUG and needs no override.
+# Pinned by tests/test_httpx_log_level.py.
+logging.getLogger("httpx").setLevel(logging.WARNING)
 
 import sentry_sdk
 from sentry_sdk.integrations.fastapi import FastApiIntegration
