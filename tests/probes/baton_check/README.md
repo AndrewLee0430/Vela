@@ -10,6 +10,14 @@ python tests/probes/baton_check/check_baton.py STATE.md       # or any ledger fi
 
 No network, no LLM, no cost. Seconds. **It never blocks** — exit code is always 0.
 
+**Windows, cp950 console (the zh-TW default code page):** the report contains `⚠️` / `✅`, and the script crashes at its final `print(report)` with `UnicodeEncodeError: 'cp950' codec can't encode character '⚠'` (`check_baton.py:438`) — every check has already run; only the print fails. Run it as
+
+```powershell
+$env:PYTHONUTF8 = "1"; $env:PYTHONIOENCODING = "utf-8"; python tests/probes/baton_check/check_baton.py <baton.md>
+```
+
+(or `PYTHONUTF8=1 PYTHONIOENCODING=utf-8 python …` in Git Bash). Docs-only note (2026-09-09) — the checker itself is unchanged; the cp950 class is tracked in TECH_DEBT (the TFDACorpusStore `print()`/cp950 entry names `check_baton.py:438`).
+
 ---
 
 ## Why it exists

@@ -8,7 +8,7 @@ and two clients pass credentials as QUERY PARAMS (openFDA `api_key`, NCBI
 `api_key` + `email`). Behind `logging.basicConfig(level=logging.INFO)` those
 lines — key included — landed in the dev console and the Fly log on every
 Research request (measured 2026-09-04: 18 keyed lines per probe run; seen in
-plain text in a pasted local log 2026-09-08 → key rotated by the founder).
+plain text in a pasted local log 2026-09-08 → key rotated by the founder 2026-09-09).
 If the `httpx` logger falls back to the root level again, the rotated key
 starts leaking on the next request.
 
