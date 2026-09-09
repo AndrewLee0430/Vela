@@ -380,7 +380,7 @@ function HistoryList() {
                                                 {trustBlock}
                                                 {sections.map((sec, i) => (
                                                     <ResearchSection key={i} title={sec.title}>
-                                                        <div className="prose max-w-none prose-sm prose-headings:font-semibold prose-h2:text-base" style={researchProseStyle}>
+                                                        <div className="prose max-w-none prose-sm prose-headings:font-semibold prose-h2:text-base vela-md-list" style={researchProseStyle}>
                                                             <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]} rehypePlugins={[rehypeRaw]}>{sec.content}</ReactMarkdown>
                                                         </div>
                                                     </ResearchSection>

@@ -583,7 +583,7 @@ function ResearchForm() {
                                                 <>
                                                     {sections.map((sec, i) => (
                                                         <ResearchSection key={i} title={sec.title}>
-                                                            <div className="prose max-w-none prose-sm prose-headings:font-semibold prose-h2:text-base" style={proseStyle}>
+                                                            <div className="prose max-w-none prose-sm prose-headings:font-semibold prose-h2:text-base vela-md-list" style={proseStyle}>
                                                                 <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]} rehypePlugins={[rehypeRaw]}>{sec.content}</ReactMarkdown>
                                                             </div>
                                                         </ResearchSection>
@@ -597,7 +597,7 @@ function ResearchForm() {
 
                                         return (
                                             <>
-                                                <div className="prose max-w-none prose-sm prose-headings:font-semibold prose-h2:text-base" style={proseStyle}>
+                                                <div className="prose max-w-none prose-sm prose-headings:font-semibold prose-h2:text-base vela-md-list" style={proseStyle}>
                                                     <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]} rehypePlugins={[rehypeRaw]}>{cleanAnswer}</ReactMarkdown>
                                                 </div>
                                                 {!loading && (
