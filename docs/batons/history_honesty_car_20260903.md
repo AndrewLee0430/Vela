@@ -25,7 +25,7 @@
 | 2b | **Verify site 3 (false `ok` + charge on LLM double-failure)** — **✅ SHIPPED as fly 249 (2026-09-08)** | a third `verification_status` value at `server.py:1548-1568`, no deduct, rendered on /verify + /history (`TECH_DEBT` `[HONESTY][P2]` filed 2026-09-04 — §3.2 Probe B, founder ruling D3) | **✅ SHIPPED as fly 249** (`d13040e` · `128d03e`; gate §8 8/8 founder-PASS `2bff2f0`; prod eye 2/2 founder-PASS 2026-09-08 — **CLOSED**) |
 | 4a | **httpx INFO suppression (d) + /history research disclaimer (b)** — founder ruling 2026-09-08: S4 = 4a now | `logging.getLogger("httpx").setLevel(logging.WARNING)` beside `basicConfig` (the openFDA/NCBI `api_key` + `email` query params stop landing in the log; key rotated 2026-09-09 (`FDA_API_KEY`, `.env` + `fly secrets set` → rolling update; prod `/verify` normal afterwards, founder-observed; first recorded as 2026-09-08, corrected at the gate closeout)) · the Research disclaimer line rendered under every /history research row on BOTH paths from a shared `utils/researchDisclaimer.ts` (`[HONESTY][P2]`) | **✅ SHIPPED as fly 251 (2026-09-09)** — NOT "fly 250": v250 was the founder's `fly secrets set FDA_API_KEY` rolling release (~01:33Z), v251 is this deploy (`8662090` · `2404f13` · `283ad4a`; gate §10 6/6 founder-PASS; readbacks §11; prod eye **3/3 founder-PASS** 2026-09-09, hard-refresh first — **SEGMENT 4a CLOSED**) |
 | 3 | **frontend banner carry-across (+ badge i18n)** | `FallbackBanner` / `ProvenanceLine` carried into /history (Rule 19); the English Research/Verify/Explain badge under zh-TW on /history (nav keys exist, unused) | **✅ SHIPPED as fly 248** (`6670011` · `ec9047a` · `8b12722` · `ea67b28`; gate §6 11/11 founder-PASS `3d3610a`; build record §5) |
-| 4b | **prose narrow fix** | `@tailwindcss/typography` registration for the `prose` no-op on /research + /history, WITH a two-page, two-scheme eye gate | not started — **its own segment after a probe** (founder ruling 2026-09-08); **(c)** fallback-prompt Rule-12 format `[OTHER][P3]` **deferred to the next car that touches generator prompts** (same ruling) |
+| 4b | **prose narrow fix** — ~~`@tailwindcss/typography` registration~~ → **Option B (founder ruling 2026-09-09 「B 然後換key」)**: a NEW narrow class `.vela-md-list` (ul / ol / li / li::marker ONLY) on the THREE live ReactMarkdown wrappers; the plugin stays UNREGISTERED; `.markdown-content` NOT reused | the `prose` no-op on /research + /history (markdown lists render flat; TECH_DEBT `[OTHER][P3]` 2026-09-03), WITH a two-page, two-scheme eye gate. The 2026-09-09 read-only probe (same HEAD) found **6** prose sites not 3, `.markdown-content` = 13 tree-shaken rules, typography 0.5.19 adds literal backticks to inline code | **🔧 BUILT LOCAL 2026-09-09** (`6157591` css + 3 className + guard; build record §12; blank gate §13, 8 rows) — NOT pushed, NOT deployed; prod = fly 251 = `283ad4a` unless the founder's second-rotation `fly secrets set` release moved the number (read from `fly releases` at gate). **(c)** fallback-prompt Rule-12 format `[OTHER][P3]` **deferred to the next car that touches generator prompts** (ruling 2026-09-08, unchanged) |
 
 ---
 
@@ -676,3 +676,119 @@ The pre-edit baseline run finished exit 0 but its summary line was cut by the au
 **✅ PROD EYE 2026-09-09 — 3/3 founder-PASS (prod = fly 251, own account, HARD-REFRESH FIRST):** (1) prod `/history` → a research row with SECTION CARDS → the ⚠️ disclaimer line under the cards, above the citation panel — **PASS** · (2) prod `/history` → a research row on the PRE-WRAP path → the same line under the paragraph — **PASS** · (3) one prod `/verify` (02:36:23Z) + one prod `/research` (02:34:34Z) with `fly logs` open → **0 `httpx` lines, 0 `api_key=`**, the `[Verify]` / `[Research]` INFO lines present — **PASS** (the founder's pasted log window is the evidence; contrast the 01:36Z v250 backfill above: 25 `httpx` / 8 `api_key=`). **Process note (recorded as a convention in STATE):** rows 1–2 first appeared to FAIL on a normal page load — the OLD bundle rendered no line — and PASSED after a hard refresh (Ctrl+Shift+R): a stale client bundle served from the browser cache, not a code miss; **prod-eye convention from now on: hard-refresh first before judging any frontend row.** Provenance: founder statements + screenshots in the 2026-09-09 conversation, transcribed by Claude Code under the final-docs authorization (zh-TW transcription precedent). **SEGMENT 4a CLOSED.**
 
 **Ledgers at this closeout:** TECH_DEBT httpx `[OTHER][P2]` → `[DONE]` · its merged 2026-08-21 stub `[OTHER]` → `[DONE]` (follows its canonical) · /history disclaimer `[HONESTY][P2]` → `[DONE]` (title tombstoned out of the `#### [HONESTY]` list); NAV re-derived **0 + 8 + 17 + 56 + 99 = 180** — the brief expected "HONESTY 18→17, DONE 53→55": HONESTY matches; DONE is **56** and OTHER **99** because the merged duplicate stub closed with its canonical (+1 DONE / −1 OTHER the brief did not count). Final-docs commit (prod eye 3/3): NEW `[HONESTY][P3]` Explain legacy pre-wrap rows without a disclaimer (291 / 852 on Dev, gate §10 row 4 / §9g-2) — NAV **0 + 8 + 18 + 56 + 99 = 181**. **Segment 4a CLOSED 2026-09-09.**
+
+---
+
+## §12 Segment 4b build record (AI-written, facts and pointers only) — 2026-09-09
+
+**Repo assertion (Rule 24):** `C:/Users/andre/projects/Vela`, HEAD `2a775c31e82dff512475466767ef905efcedc2d8` at build start (= prod fly 251 `283ad4a` + the two docs-only closeout commits `fa97e67` / `2a775c3`; the first build brief expected `283ad4a` — a founder-side transcription slip, corrected in the second brief; Claude Code STOPPED on the mismatch as instructed). `git status --short` = the 4 known untracked entries only.
+
+### 12a. Founder ruling 2026-09-09 — VERBATIM
+
+「**B 然後換key**」 (= Option B, then rotate the key). Read as: **Option B** — narrow list rules on the three live ReactMarkdown wrappers; `@tailwindcss/typography` stays UNREGISTERED; the existing `.markdown-content` class is NOT reused. The second openFDA rotation is the founder's own action in parallel (secrets untouched by Claude Code) — gate §13 row 8 is its prod check. Basis: the 2026-09-09 read-only probe at the same HEAD (6 prose sites, not 3; `.markdown-content` = 13 rules, tree-shaken; typography 0.5.19 wraps inline code in literal backticks, `node_modules/@tailwindcss/typography/src/styles.js:1546-1550`).
+
+### 12b. Rule 25 — cited (TECH_DEBT entry, derived at `67db733` 2026-09-03) vs derived at `2a775c3` BEFORE editing (unit: one cited fact)
+
+| cited | at `67db733` | at `2a775c3` (this build) | verdict |
+|---|---|---|---|
+| `research.tsx` line 639 prose class *(the entry's form; written without the file:line form here — §9g-7 precedent)* | `:639` was the `<ReactMarkdown>` CHILD; the wrapper was `:638` | wrapper `:586`, child `:587` | off by one at origin, then −52 |
+| `research.tsx` line 653 prose class | child; wrapper `:652` | wrapper `:600`, child `:601` | off by one at origin, then −52 |
+| `history.tsx` line 335 | correct (the sections wrapper) | `:383` | +48 |
+| (unnamed) `history.tsx:347` / `:400` pre-wrap wrappers | existed | `:399` / `:455` | **2 sites missing from the entry** — static `<p whitespace-pre-wrap>`, no markdown, NOT touched |
+| (unnamed) `components/MarkdownRenderer.tsx:29` | existed, 0 importers | unchanged, 0 importers | **1 dead site missing** — NOT touched, filed (§12f-1) |
+| "every prose class" = 3 sites | **6** className sites (1 dead · 2 static-JSX · 3 ReactMarkdown) | 6 | entry named 3 of 6 → corrected in the entry (STATUS table) |
+| `globals.css:52-66` = `.markdown-content` ul/ol | ul `:56-60`, ol `:61-65`; `:52` = h6's `}`, `:66` opens `li` | identical | no drift; range off by one at both ends |
+| `globals.css:1` preflight | `:1` | `:1-3` (`base` / `components` / `utilities`) | ok |
+| `q_base.jinja2:233-238` | correct | identical (`padding-left: 1.5rem; margin: 8px 0` · `li 4px 0` · `li::marker`) | no drift — the 1.5rem is what the new class copies |
+| `package.json:16` `^0.5.19` | correct | identical; `npm ls` → 0.5.19 | no drift |
+| `plugins: []` · `631b6e5` only | correct | `tailwind.config.js:76`; `git log -S typography` → `631b6e5` only | ok |
+| "reuse `.markdown-content` — zero blast radius beyond lists" | — | the class is **13 rules** (h1–h6 / p / ul / ol / li / strong / em / hr, light-only `hr` colour `#e5e7eb` at `:77`) inside `@layer base`, **0 users since `cae7b31` 2026-03-06**, so **tree-shaken — 0 occurrences in the compiled bundle**; adding the class anywhere resurrects all 13 | claim FALSE as written → a NEW class was written; entry corrected |
+| /explore "unaffected via q_base" | — | `q_explore` extends `explore_base`, which DUPLICATES the `.vela-prose` block (`:214-257`); whitespace-stripped diff vs `q_base:212-268` = IDENTICAL today | ok — duplicate, not inheritance (fly-246 precedent holds) |
+
+**Scope item 3 (the pipeline emits list ELEMENTS — checked before styling anything):** both live `<ReactMarkdown>` calls (`research.tsx:587` / `:601`, `history.tsx:384`) use `remarkPlugins={[remarkGfm, remarkBreaks]} rehypePlugins={[rehypeRaw]}` (react-markdown 10.1.0 · remark-gfm 4.0.1 · remark-breaks 4.0.0 · rehype-raw 7.0.0 · react-dom 19.1.0). Executed through `renderToStaticMarkup` with that exact set, 8 shapes — `- ` with and WITHOUT a blank line before it (the LLM shape), `1. ` with and without, `* `, nested, `## Summary — …` then a list — **all emit `<ul>`/`<ol>` + `<li>`**; a soft break emits `<br>` (remark-breaks is active and does NOT flatten lists). Pinned as guard check (f). No STOP condition met.
+
+### 12c. The change (exact)
+
+`styles/globals.css:245-286` — appended after the file's last rule (the orphan `.markdown-content` block `:22-80` is untouched, so no pre-existing line moved):
+
+```css
+@layer components {
+  .vela-md-list ul {
+    list-style-type: disc;
+    padding-left: 1.5rem;
+    margin: 0.5rem 0;
+  }
+  .vela-md-list ol {
+    list-style-type: decimal;
+    padding-left: 1.5rem;
+    margin: 0.5rem 0;
+  }
+  .vela-md-list li {
+    margin: 0.25rem 0;
+  }
+  .vela-md-list ul > li::marker {
+    color: var(--tw-prose-bullets, currentColor);
+  }
+  .vela-md-list ol > li::marker {
+    color: var(--tw-prose-counters, currentColor);
+  }
+}
+```
+
+Wrappers (the class APPENDED; the inert `prose …` classes left in place, unchanged): `pages/history.tsx:383` (Research sections) · `pages/research.tsx:586` (sections) · `pages/research.tsx:600` (streaming + no-section). Derived: `git diff -U0 -- pages` = 3 hunks `@@ -383 @@` / `@@ -586 @@` / `@@ -600 @@`, 3 added `vela-md-list` occurrences. NOT touched: `history.tsx:399` / `:455` (pre-wrap), `components/MarkdownRenderer.tsx`, every share/explore template, `tailwind.config.js`, `package.json`. Code commit `6157591`.
+
+**Why it wins against preflight (derived, then read back from the bundle):** preflight `ol,ul{list-style:none;margin:0;padding:0}` is specificity (0,0,1) at the `@tailwind base` position; `.vela-md-list ul` is (0,1,1) — specificity decides regardless of source order; `@layer components` additionally emits the rules at the `@tailwind components` position, after base. Compiled bundle `out/_next/static/css/466e58439a1a5bbd.css`: preflight at byte 17387, first `.vela-md-list` rule at byte 18140. Tree-shaking: Tailwind 3 emits `@layer` custom rules only when the class appears in a content-glob file — it does (3 wrappers under `pages/`), and guard check (e) pins the COMPILED output so a future silent drop (what happened to `.markdown-content`) fails loud. Emitted (cssnano merged the shared declarations): `.vela-md-list ul{list-style-type:disc}` · `.vela-md-list ol,.vela-md-list ul{padding-left:1.5rem;margin:.5rem 0}` · `.vela-md-list ol{list-style-type:decimal}` · `.vela-md-list li{margin:.25rem 0}` · `.vela-md-list ul>li::marker{color:var(--tw-prose-bullets,currentColor)}` · `.vela-md-list ol>li::marker{color:var(--tw-prose-counters,currentColor)}`.
+
+### 12d. Rule 19 — what each page renders AROUND the list, carried or declined
+
+| around the list | /research | /history | carried? |
+|---|---|---|---|
+| the wrapper's token object | `proseStyle` (`:570-579`, 7 tokens incl. `--tw-prose-bullets` + `--tw-prose-counters`) | `researchProseStyle` (`:49-58`, the same 7, same values) | already on both — the marker colour reads them; guard (a) pins both tokens on both pages |
+| disclaimer strip + section parse before render | `stripLlmDisclaimer` + `parseResearchSections` ONLY when `!loading` (`:568-569`); during streaming the RAW answer renders through `:600` | `stripLlmDisclaimer` then `parseResearchSections`, always (`:353-354`); no streaming | not list-specific — a list mid-stream on /research may be partially parsed for a moment, then re-renders; /history has no such state (gate row 3 looks at the streaming render) |
+| section card wrapper | shared `components/ResearchSection.tsx` | same | already shared |
+| no-section fallback | `<ReactMarkdown>` (`:600`) → gets the class | `<p whitespace-pre-wrap>` (`:407`) → no markdown, no list, NOT touched | the asymmetry is the SIBLING entry (TECH_DEBT "markdown never rendered on one path"); if its fix path (route through ReactMarkdown) ships, Option B's wrapper count becomes 4 and guard (a)/(b) must be updated together |
+| list-specific mitigation (a `components={{ul…}}` override, list preprocessing, `list-disc` utilities) | **none** (grep: no `components=`, no `list-disc` / `list-decimal`, no `<ul` / `<ol` in either page) | **none** | **none to carry** — stated explicitly |
+
+### 12e. Tests (TDD — RED watched first, then GREEN)
+
+- **RED, before any product edit:** `node tests/research_list_render_guard.mjs` → **19 failure(s)**, all "feature missing", no errors: 3 wrappers lack the class · class appears 0× across pages/ components/ utils/ · no `.vela-md-list` rule at all + 7 rule-shape checks (ul disc · ul 1.5rem · ol decimal · ol 1.5rem · li margin · ul marker token · ol marker token) · not inside `@layer components` · precedes `@tailwind base` (both position checks fail on "no rule") · compiled bundle lacks the 4 rules · 0 `var(--tw-prose-…)` reads (need 2). `python -m pytest -q tests/test_research_list_render.py` → **1 failed**. Pinned invariants that PASSED before the change, by design (not RED): (b) the pre-wrap wrappers + `MarkdownRenderer.tsx` carry nothing · (d) `plugins: []` · (e) bundle has 0 `.prose` selectors, 0 `--tw-prose-*` declarations, preflight present · (f) the pipeline emits `<ul>` / `<ol>` / `<li>` and `<br>`.
+- **Guard fix during RED (test-only):** failure lines printed `research.tsx:578` for the file's `:586` — comment stripping collapsed lines; the stripper now BLANKS comments (newlines kept) so a failure cites the real line (Rule 25).
+- **GREEN, source only (before `npm run build`):** 5 failures left — exactly the compiled-bundle checks (the bundle on disk was the 2026-09-08 build). After `npm run build`: **`all checks passed`**, exit 0; the pytest wrapper 1 passed. The pre-existing `tests/history_research_disclaimer_guard.mjs` and `tests/history_render_fallback_guard.mjs` are inside the full run below.
+- **Numbers:** bare `python -m pytest -q` **441 passed / 28 skipped** before (derived 2026-09-09, 269 s, exit 0 — matches the last record 441/28, no discrepancy) → **442 passed / 28 skipped** after (+1 = the wrapper) · `npx tsc --noEmit` exit 0 before and after · `npm run lint` **22 problems (7 errors / 15 warnings)** before AND after — the problem set diffed by file + line + rule: **IDENTICAL** · `npm run build` exit 0 (Compiled successfully in 69s, Exporting 15/15) · i18n **+0** keys (no `i18n` / `locale` file in `git diff --name-only`) · line endings: `git ls-files --eol` = `i/lf w/lf` on every touched file, CR count 0 (the autocrlf "LF will be replaced" warning is the same cosmetic one every frontend file prints).
+- **Compiled-CSS grep counts (unit: substring occurrences in `out/_next/static/css/*.css`):**
+
+| pattern | before (`e717bca87706c39d.css`, built 2026-09-08) | after (`466e58439a1a5bbd.css`) | reading |
+|---|---|---|---|
+| `.vela-md-list` | 0 | **7** | 6 rules; cssnano merged the ul + ol shared declarations into one 2-selector rule |
+| `.prose` | 0 | **0** | plugin still unregistered |
+| `--tw-prose` | 0 | **2** | ⚠️ the brief expected 0: both are `var(--tw-prose-bullets\|counters, currentColor)` **READS** inside the two `::marker` rules — the tokens the pages already set inline are now consumed; `--tw-prose-*` **DECLARATIONS** (what the plugin would emit) remain **0** — guard (e) distinguishes the two |
+| `markdown-content` | 0 | **0** | orphan still tree-shaken, untouched |
+| `list-style` | 3 | **5** | +disc +decimal |
+
+### 12f. Flagged in passing, NOT fixed (collaboration principle #4 — founder chooses)
+
+1. **`components/MarkdownRenderer.tsx` is dead** — 0 importers (`git grep MarkdownRenderer` → only its 5 self-references), yet it sits inside the Tailwind content glob (`tailwind.config.js:5-6`) and carries the FULLEST prose variant set (`prose-h2:pb-1`, `prose-p:leading-relaxed`, `prose-li:leading-relaxed`, 9 tokens). Deletion = founder's call → TECH_DEBT `[OTHER][P3]` filed.
+2. **`.markdown-content` (`globals.css:22-80`) is an orphan** — 13 rules; the last carrier was removed by `cae7b31` (2026-03-06; the line was `<div className="markdown-content prose prose-blue dark:prose-invert max-w-none">` — the original Explain page relied on it UNDER a never-active `prose`); tree-shaken (0 in the bundle). Left as-is per the ruling → TECH_DEBT `[OTHER][P3]` filed.
+3. **/history no-section research rows still bypass markdown** (`history.tsx:399-410`, pre-wrap) — the sibling entry's fix path; not this segment (gate row 7 is the CONTROL that it stayed as it was).
+4. **The share page never sets `list-style-type` itself** (`q_base.jinja2:233-238` sets padding / margin / marker colour only) — it shows bullets because NO preflight runs on the Jinja pages. Not a defect; recorded so the next reader does not "carry" a rule that does not exist.
+
+---
+
+## §13 Segment 4b — eye gate (BLANK — founder fills; 8 rows; localhost, BOTH schemes)
+
+**Recipe:** backend `TEST_MODE=true uvicorn api.server:app --reload --port 8000` · frontend `npm run dev` (:3000) · **hard-refresh first (Ctrl+Shift+R)** before judging any row (the fly-251 prod-eye convention) · for rows 1–6 take a BEFORE screenshot of the SAME row at `2a775c3` (e.g. `git stash` the three product files, reload, screenshot, `git stash pop`) — "nothing else moved" is judged against it, not from memory.
+
+**Expected on every list row:** bullets / numbers VISIBLE · indent (1.5rem, the share page's) · marker colour = the page's bullet token (`--tw-prose-bullets` = the text colour at 50 %, both schemes; numbers read `--tw-prose-counters`, same value) · **NOTHING ELSE moved** — headings, paragraph spacing, links, inline code (no backticks), strong, hr identical to the BEFORE screenshot.
+
+| # | Surface / step | Expected | Observed | PASS / FAIL | Notes |
+|---|---|---|---|---|---|
+| 1 | `/research` — a question whose answer carries `- ` and/or `1. ` lists, SECTION CARDS path — **light** | as above, inside each `## Summary` / `## Clinical Notes` card | | | |
+| 2 | the same row — **dark** | as above; marker colour follows the dark text token | | | |
+| 3 | `/research` — a fallback / no-literature query (e.g. the zorblaxin recipe) = the NO-SECTION path (`research.tsx:600`), visible DURING streaming too — **light** | lists styled in the streaming render AND after; nothing else moved | | | |
+| 4 | the same — **dark** | as above | | | |
+| 5 | `/history` — a Research row rendering SECTION CARDS (e.g. dev row 2347) — **light** | as above; identical to row 1's rendering of the same markdown | | | |
+| 6 | the same row — **dark** | as above | | | |
+| 7 | **CONTROL** — `/history` Research row on the PRE-WRAP path (e.g. dev row 2345), light + dark | **UNCHANGED** vs BEFORE: plain paragraph, no bullets, no indent (the class is not on this wrapper by design) | | | |
+| 8 | **openFDA SECOND ROTATION — prod check** (the founder rotates the key in parallel; secrets untouched by Claude Code) | `<FOUNDER_FILLS: release vN · time · prod /verify OK · fly logs 0 httpx / 0 api_key=>` | | | prod version read from `fly releases`, not assumed |
+
+**Founder sign-off line (name · date · overall verdict):** ______ · ______ · __ / 8
