@@ -709,7 +709,7 @@ The pre-edit baseline run finished exit 0 but its summary line was cut by the au
 
 ### 12c. The change (exact)
 
-`styles/globals.css:245-286` — appended after the file's last rule (the orphan `.markdown-content` block `:22-80` is untouched, so no pre-existing line moved):
+`styles/globals.css:246-286` — appended after the file's last rule (`:245` is the blank separator; the comment runs `:246-265`, the `@layer components` rule block `:266-286`) *(corrected 2026-09-10 at the closeout — the build record first wrote `:245-286`, which counted the blank line)* (the orphan `.markdown-content` block `:22-80` is untouched, so no pre-existing line moved):
 
 ```css
 @layer components {
@@ -774,21 +774,27 @@ Wrappers (the class APPENDED; the inert `prose …` classes left in place, uncha
 
 ---
 
-## §13 Segment 4b — eye gate (BLANK — founder fills; 8 rows; localhost, BOTH schemes)
+## §13 Segment 4b — eye gate (TRANSCRIBED 2026-09-10 — founder 7/7 PASS; row 8 openFDA second rotation NOT DONE, no post-v251 release)
 
 **Recipe:** backend `TEST_MODE=true uvicorn api.server:app --reload --port 8000` · frontend `npm run dev` (:3000) · **hard-refresh first (Ctrl+Shift+R)** before judging any row (the fly-251 prod-eye convention) · for rows 1–6 take a BEFORE screenshot of the SAME row at `2a775c3` (e.g. `git stash` the three product files, reload, screenshot, `git stash pop`) — "nothing else moved" is judged against it, not from memory.
 
 **Expected on every list row:** bullets / numbers VISIBLE · indent (1.5rem, the share page's) · marker colour = the page's bullet token (`--tw-prose-bullets` = the text colour at 50 %, both schemes; numbers read `--tw-prose-counters`, same value) · **NOTHING ELSE moved** — headings, paragraph spacing, links, inline code (no backticks), strong, hr identical to the BEFORE screenshot.
 
+**Environment:** the recipe above on localhost at `f60c967` (the segment-4b docs commit = HEAD at gate time; code `6157591`); dev DB = the **Dev branch `ep-spring-voice-a127ye10`** (host re-confirmed from `.env` by Claude Code at transcription: `ep-spring-voice-a127ye10-pooler.ap-southeast-1…`). Per-row environment details (scheme toggling order, which dev rows were opened, whether BEFORE screenshots were taken) were not stated by the founder and are not asserted here.
+
+**Provenance:** founder statement 「驗證後沒問題」 (verified, no problems) in the 2026-09-10 conversation, transcribed by Claude Code under the 2026-09-10 closeout authorization (zh-TW transcription precedent). The statement is a BLANKET pass over rows 1–7 — no per-row screenshots are retained here, and the row-by-row "nothing else moved" comparison against a BEFORE screenshot is covered by the blanket statement, not separately attested.
+
+**Row 8 read by Claude Code (2026-09-10 02:42Z):** `fly releases` top line = **v251** (`Sep 9 2026 01:49`, this car's segment-4a deploy) · v250 `01:33` (the founder's first-rotation `fly secrets set`) · v249 `Sep 8 03:42`. **No release after v251 exists** → no second-rotation `fly secrets set` has been run → row 8 **NOT DONE**; the openFDA-second-rotation item stays OPEN in STATE Next Up. (Descriptions all read `Release`, so the version gap, not the description, is the evidence.)
+
 | # | Surface / step | Expected | Observed | PASS / FAIL | Notes |
 |---|---|---|---|---|---|
-| 1 | `/research` — a question whose answer carries `- ` and/or `1. ` lists, SECTION CARDS path — **light** | as above, inside each `## Summary` / `## Clinical Notes` card | | | |
-| 2 | the same row — **dark** | as above; marker colour follows the dark text token | | | |
-| 3 | `/research` — a fallback / no-literature query (e.g. the zorblaxin recipe) = the NO-SECTION path (`research.tsx:600`), visible DURING streaming too — **light** | lists styled in the streaming render AND after; nothing else moved | | | |
-| 4 | the same — **dark** | as above | | | |
-| 5 | `/history` — a Research row rendering SECTION CARDS (e.g. dev row 2347) — **light** | as above; identical to row 1's rendering of the same markdown | | | |
-| 6 | the same row — **dark** | as above | | | |
-| 7 | **CONTROL** — `/history` Research row on the PRE-WRAP path (e.g. dev row 2345), light + dark | **UNCHANGED** vs BEFORE: plain paragraph, no bullets, no indent (the class is not on this wrapper by design) | | | |
-| 8 | **openFDA SECOND ROTATION — prod check** (the founder rotates the key in parallel; secrets untouched by Claude Code) | `<FOUNDER_FILLS: release vN · time · prod /verify OK · fly logs 0 httpx / 0 api_key=>` | | | prod version read from `fly releases`, not assumed |
+| 1 | `/research` — a question whose answer carries `- ` and/or `1. ` lists, SECTION CARDS path — **light** | as above, inside each `## Summary` / `## Clinical Notes` card | as expected — founder blanket statement 「驗證後沒問題」 | **PASS** | no per-row screenshot retained |
+| 2 | the same row — **dark** | as above; marker colour follows the dark text token | as expected — founder blanket statement 「驗證後沒問題」 | **PASS** | no per-row screenshot retained |
+| 3 | `/research` — a fallback / no-literature query (e.g. the zorblaxin recipe) = the NO-SECTION path (`research.tsx:600`), visible DURING streaming too — **light** | lists styled in the streaming render AND after; nothing else moved | as expected — founder blanket statement 「驗證後沒問題」 | **PASS** | no per-row screenshot retained |
+| 4 | the same — **dark** | as above | as expected — founder blanket statement 「驗證後沒問題」 | **PASS** | no per-row screenshot retained |
+| 5 | `/history` — a Research row rendering SECTION CARDS (e.g. dev row 2347) — **light** | as above; identical to row 1's rendering of the same markdown | as expected — founder blanket statement 「驗證後沒問題」 | **PASS** | no per-row screenshot retained |
+| 6 | the same row — **dark** | as above | as expected — founder blanket statement 「驗證後沒問題」 | **PASS** | no per-row screenshot retained |
+| 7 | **CONTROL** — `/history` Research row on the PRE-WRAP path (e.g. dev row 2345), light + dark | **UNCHANGED** vs BEFORE: plain paragraph, no bullets, no indent (the class is not on this wrapper by design) | as expected — founder blanket statement 「驗證後沒問題」 (control row: paragraph unchanged, no bullets) | **PASS** | the class is not on `history.tsx:399` / `:455` — guard (b) |
+| 8 | **openFDA SECOND ROTATION — prod check** (the founder rotates the key in parallel; secrets untouched by Claude Code) | `<FOUNDER_FILLS: release vN · time · prod /verify OK · fly logs 0 httpx / 0 api_key=>` | **NOT DONE** — `fly releases` read by Claude Code 2026-09-10 02:42Z: top line v251 (Sep 9 2026 01:49); no release after v251 → no second `fly secrets set` yet | **N/A — OPEN** | prod version read from `fly releases`, not assumed — stays OPEN in STATE Next Up; when the founder rotates, that `fly secrets set` becomes the next vN (a secrets change is a release — the v250 precedent); prod `/verify` + the zero-`httpx` log check are then founder-observed, not captured here |
 
-**Founder sign-off line (name · date · overall verdict):** ______ · ______ · __ / 8
+**Founder sign-off line (name · date · overall verdict):** Andrew Lee (founder) · 2026-09-10 · **7/7 PASS** (row 8 N/A — not done, item stays OPEN) — provenance as above (blanket statement 「驗證後沒問題」); transcribed by Claude Code under the 2026-09-10 closeout authorization (zh-TW transcription precedent).
