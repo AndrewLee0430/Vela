@@ -1,6 +1,8 @@
-# HISTORY RENDER LEFTOVERS car — opened 2026-09-11 (Segment 1 = items A + C 🔧 BUILT LOCAL · Segment 2 = item B, PENDING a founder transport ruling)
+# HISTORY RENDER LEFTOVERS car — opened 2026-09-11 (Segment 1 = items A + C 📋 GATE 9/9 founder-PASS — PUSHING · Segment 2 = item B, TRANSPORT RULED (ii), not started)
 
-> **STATUS — Segment 1 (item A: reroute /history's no-section research path through `<ReactMarkdown>` · item C: delete the dead `components/MarkdownRenderer.tsx` and the orphan `.markdown-content` block): 🔧 BUILT LOCAL, NOT pushed, NOT deployed (2026-09-11).** Prod is still **fly 252** = `07e704dbb625898f79f3fa899edfdf46aeb879dd` at machine version **253** (a secrets roll, not a rebuild). Code commits on `main`, ahead of `origin`. **Gate §2 is BLANK — the founder fills it; no AI observation is a gate result.** Push and deploy are founder-only.
+> **STATUS — Segment 1: 📋 GATE §2 PASSED 9/9 founder-PASS (2026-09-11) — PUSHING.** Rows 1–9 PASS; row 10 is the machine row, already filled (CSS hash `466e58439a1a5bbd`). **Provenance:** founder blanket statement 「Gate 沒問題」 in the 2026-09-11 conversation, transcribed under the closeout authorization (zh-TW transcription precedent, as at §6 / §8 / §10 / §13 of the history-honesty baton); **no per-row screenshots were retained** — stated so the record does not imply evidence it does not have. **ROW 5 RULING (founder, 2026-09-11): the paragraph-spacing inversion is ACCEPTED as parity with /research.** Markdown paragraphs sit flush because preflight sets `p{margin:0}` and nothing re-adds it; the 4b narrow ruling STANDS and `.vela-md-list` is **NOT** widened with a `p` rule. **SEGMENT 2 TRANSPORT RULED — (ii)**, see §3. This commit is the pre-push docs commit; prod is still fly 252 until the ship entry below is written.
+
+> *(build-time status, kept as the record)* ~~**STATUS — Segment 1 (item A: reroute /history's no-section research path through `<ReactMarkdown>` · item C: delete the dead `components/MarkdownRenderer.tsx` and the orphan `.markdown-content` block): 🔧 BUILT LOCAL, NOT pushed, NOT deployed (2026-09-11).**~~ *(the rest of that line, also historical: prod still fly 252 = `07e704dbb625898f79f3fa899edfdf46aeb879dd` at machine version 253; code commits on `main` ahead of `origin`; "Gate §2 is BLANK — the founder fills it"; push and deploy founder-only. The gate is now filled — see §2.)*
 
 **Authority:** `TECH_DEBT.md` → `[OTHER][P3] markdown not rendered on /history's no-section path` (filed 2026-09-07) · `[OTHER][P3] dead component — components/MarkdownRenderer.tsx` and `[OTHER][P3] orphan CSS — .markdown-content` (both filed 2026-09-09) · the **2026-09-11 read-only probe** (this session, HEAD `430ef01`) · founder ruling 2026-09-11. CLAUDE.md Rules 12 / 17 / 18 / 19 / 20 / 24 / 25 apply.
 
@@ -12,15 +14,15 @@
 
 | # | segment | scope in one line | status |
 |---|---|---|---|
-| 1 | **A + C — render leftovers** | **A**: /history's research no-section path renders through the SAME `<ReactMarkdown>` + `.vela-md-list` wrapper the sections path uses, fed the STRIPPED markdown (Rule 19 parity with /research). **C**: delete `components/MarkdownRenderer.tsx` (0 importers since the commit that created it) and the `.markdown-content` `@layer base` block (0 users since `cae7b31`, 0 bytes in the bundle) | **🔧 BUILT LOCAL 2026-09-11** — gate §2 BLANK |
-| 2 | **B — Explain legacy disclaimer** | 291 of 852 Dev-branch Explain rows take the pre-wrap fallback and render NO disclaimer, while JSON rows render their stored one (`[HONESTY][P3]`, filed 2026-09-09) | **DEFERRED — pending a founder TRANSPORT ruling**, see §1h |
+| 1 | **A + C — render leftovers** | **A**: /history's research no-section path renders through the SAME `<ReactMarkdown>` + `.vela-md-list` wrapper the sections path uses, fed the STRIPPED markdown (Rule 19 parity with /research). **C**: delete `components/MarkdownRenderer.tsx` (0 importers since the commit that created it) and the `.markdown-content` `@layer base` block (0 users since `cae7b31`, 0 bytes in the bundle) | **📋 GATE §2 9/9 founder-PASS 2026-09-11 — PUSHING** (build record §1; gate §2 transcribed; readbacks §4 after the deploy) |
+| 2 | **B — Explain legacy disclaimer** | 291 of 852 Dev-branch Explain rows take the pre-wrap fallback and render NO disclaimer, while JSON rows render their stored one (`[HONESTY][P3]`, filed 2026-09-09) | **TRANSPORT RULED — (ii) read-time server field** (founder, 2026-09-11); **NOT started**, see §3 |
 
-**Segment 2 is blocked on one decision, not on effort.** The 16 Explain disclaimer strings live only in Python (`api/i18n/explain_strings.py` → `EXPLAIN_DISCLAIMERS`, 16 keys, re-derived 2026-09-11). There is **no frontend Explain disclaimer source at all** — `git grep -n -i "explain.*disclaimer" -- pages/ components/ utils/` returns only the two `pages/history.tsx` lines that read the STORED string. So the two options are:
+**Segment 2 was blocked on one decision, not on effort — and that decision is now MADE (founder, 2026-09-11): option (ii).** The 16 Explain disclaimer strings live only in Python (`api/i18n/explain_strings.py` → `EXPLAIN_DISCLAIMERS`, 16 keys, re-derived 2026-09-11). There is **no frontend Explain disclaimer source at all** — `git grep -n -i "explain.*disclaimer" -- pages/ components/ utils/` returns only the two `pages/history.tsx` lines that read the STORED string. The two options put to the founder were:
 
-- **(i) frontend copy** — a `utils/` module holding the 16 Explain strings, keyed by the UI `lang`, plus a **parity guard** against the Python map. Cost: a second copy of 16 medical strings; the 2026-05 share/explore disclaimer drift (14 of 16 locales) is the precedent for why a copy without a parity check drifts.
-- **(ii) read-time server field** — `/api/history` fills a `disclaimer` on legacy Explain rows from `get_disclaimer(lang)` at READ time, so the frontend keeps rendering a stored string and there stays exactly ONE source. Cost: a server change on the history read path, and the language key is the request's, not the row's.
+- **(i) frontend copy** — a `utils/` module holding the 16 Explain strings, keyed by the UI `lang`, plus a **parity guard** against the Python map. Cost: a second copy of 16 medical strings; the 2026-05 share/explore disclaimer drift (14 of 16 locales) is the precedent for why a copy without a parity check drifts. **→ DECLINED 2026-09-11.**
+- **(ii) read-time server field** — `/api/history` fills a `disclaimer` on legacy Explain rows from `get_disclaimer(lang)` at READ time, so the frontend keeps rendering a stored string and there stays exactly ONE source. Cost: a server change on the history read path, and the language key is the request's, not the row's. **→ ✅ RULED 2026-09-11.**
 
-Neither is chosen here. The founder chooses; the probe's facts for both are in §1h.
+**Founder ruling 2026-09-11 — (ii).** Rationale, recorded as the founder's, not as an AI recommendation: **one source of truth**, no second copy of the 16 Explain strings, and no parity guard to maintain. **Accepted cost:** a server change on the history read path, and a caption keyed to the REQUEST's language rather than the row's. Scope sketch in **§3** — ruled, **not started**.
 
 ---
 
@@ -231,7 +233,7 @@ The **closed** `history_honesty_car_20260903.md` baton cites several of these an
 
 ---
 
-## §2 Segment 1 — eye gate (BLANK FORM — the founder fills it; no AI observation is a gate result)
+## §2 Segment 1 — eye gate (TRANSCRIBED 2026-09-11 — founder 9/9 PASS; row 10 = machine)
 
 **Recipe.** Two terminals from the repo root:
 
@@ -251,18 +253,58 @@ Open `/history`, **hard-refresh first (Ctrl+Shift+R)** — the CSS bundle name i
 
 | # | what to look at | what PASS means | PASS / FAIL + note |
 |---|---|---|---|
-| 1 | `/history`, **row 2345** (`research_v1`, no-section), **LIGHT** | Markdown RENDERS: `**bold**` is bold (1 site), `- ` lines are bullets with indent (6 items, 2 lists) — no literal asterisks or hyphens. The FallbackBanner is still ABOVE the answer. The disclaimer line is still BELOW it. No citation panel (the row has none) | |
-| 2 | same row, **DARK** | Same as row 1; bullet markers legible against the dark ground (they read `--tw-prose-bullets` from `researchProseStyle`) | |
-| 3 | `/history`, **row 175** (legacy, no-section — the 34-of-54 class that carries markdown markers), **LIGHT** | 12 bullets across 3 lists, 7 bold runs, no literal `**`. No trust signal (legacy = UNKNOWN), no citation panel. Disclaimer line below | |
-| 4 | same row, **DARK** | Same as row 3 | |
-| 5 | **PARAGRAPH SPACING** — row 2345 (or 175) on `/history` vs the same shape on `/research` | The accepted consequence: paragraph gaps are now CLOSED, matching /research. Judge whether "blank lines collapse, matches /research behaviour" is acceptable, or whether the tighter text is worse than the literal markers it replaced. *(A same-text /research comparison cannot be produced by re-running the query — a new answer is a new answer. Compare against the fly-248 §6 screenshot of 2345 if it was kept; otherwise judge the /research look-and-feel on any current answer.)* | |
-| 6 | **CONTROL** — `/history`, **row 2347** (sections path), **LIGHT** | UNCHANGED from fly 252: two section cards, `## ` headings, 19 bullets, disclaimer, citation panel | |
-| 7 | **CONTROL** — row 2347, **DARK** | UNCHANGED | |
-| 8 | **CONTROL** — `/history`, an **Explain legacy row (id 8)**, LIGHT **and** DARK | UNCHANGED — still the plain pre-wrap paragraph, still NO disclaimer. Item B is deferred; this row must look exactly as it did on fly 252 | |
-| 9 | **CONTROL (item C)** — `/research`, run any query whose answer has a list | UNCHANGED from fly 252: bullets / numbers with indent. Deleting the dead component and the orphan CSS must move nothing | |
+| 1 | `/history`, **row 2345** (`research_v1`, no-section), **LIGHT** | Markdown RENDERS: `**bold**` is bold (1 site), `- ` lines are bullets with indent (6 items, 2 lists) — no literal asterisks or hyphens. The FallbackBanner is still ABOVE the answer. The disclaimer line is still BELOW it. No citation panel (the row has none) | **PASS** (founder) |
+| 2 | same row, **DARK** | Same as row 1; bullet markers legible against the dark ground (they read `--tw-prose-bullets` from `researchProseStyle`) | **PASS** (founder) |
+| 3 | `/history`, **row 175** (legacy, no-section — the 34-of-54 class that carries markdown markers), **LIGHT** | 12 bullets across 3 lists, 7 bold runs, no literal `**`. No trust signal (legacy = UNKNOWN), no citation panel. Disclaimer line below | **PASS** (founder) |
+| 4 | same row, **DARK** | Same as row 3 | **PASS** (founder) |
+| 5 | **PARAGRAPH SPACING** — row 2345 (or 175) on `/history` vs the same shape on `/research` | The accepted consequence: paragraph gaps are now CLOSED, matching /research. Judge whether "blank lines collapse, matches /research behaviour" is acceptable, or whether the tighter text is worse than the literal markers it replaced. *(A same-text /research comparison cannot be produced by re-running the query — a new answer is a new answer. Compare against the fly-248 §6 screenshot of 2345 if it was kept; otherwise judge the /research look-and-feel on any current answer.)* | **PASS — ACCEPTED as parity with /research** (founder, 2026-09-11). The flush paragraphs are the agreed trade for markdown actually rendering. **The 4b narrow ruling STANDS: `.vela-md-list` is NOT widened with a `p` rule**, so no heading / p / a / code rule enters the set and guard (c)'s ALLOWED_SEL / ALLOWED_PROP stay as they are. |
+| 6 | **CONTROL** — `/history`, **row 2347** (sections path), **LIGHT** | UNCHANGED from fly 252: two section cards, `## ` headings, 19 bullets, disclaimer, citation panel | **PASS** (founder) |
+| 7 | **CONTROL** — row 2347, **DARK** | UNCHANGED | **PASS** (founder) |
+| 8 | **CONTROL** — `/history`, an **Explain legacy row (id 8)**, LIGHT **and** DARK | UNCHANGED — still the plain pre-wrap paragraph, still NO disclaimer. Item B is deferred; this row must look exactly as it did on fly 252 | **PASS** (founder) |
+| 9 | **CONTROL (item C)** — `/research`, run any query whose answer has a list | UNCHANGED from fly 252: bullets / numbers with indent. Deleting the dead component and the orphan CSS must move nothing | **PASS** (founder) |
 | 10 | **MACHINE ROW** — CSS bundle hash | `out/_next/static/css/` = **`466e58439a1a5bbd.css`, 46 861 bytes** — the same hash prod serves at fly 252. **Filled by Claude Code: ✅ CONFIRMED** (build after both changes; `markdown-content` 0 · `prose-h2:pb-1` 0 · `.vela-md-list` 7 · `.prose` selectors 0) | ✅ (machine) |
 
-**Gate result:** ______ / 10 · date ______ · founder ______
+**Gate result: 9 / 9 founder-PASS** (rows 1–9) **+ row 10 machine-CONFIRMED = 10 / 10** · date **2026-09-11** · founder **AndrewLee0430**
+
+**Provenance, stated plainly:** the founder's verdict was a single blanket statement — 「Gate 沒問題」 — not nine separate row calls, and **no screenshots were retained**. It is transcribed here under the closeout authorization using the same zh-TW transcription precedent as the history-honesty gates. Row 10 is the only row with machine evidence behind it (the CSS hash readback). A future reader should not read rows 1–9 as independently evidenced observations.
+
+---
+
+## §3 Segment 2 — RULED, NOT STARTED (founder transport ruling 2026-09-11)
+
+**The ruling: option (ii).** `/api/history` fills a `disclaimer` on legacy Explain rows at READ time from `get_disclaimer(lang)`. Option (i), a frontend copy of the 16 Explain strings plus a parity guard, is **DECLINED**. Rationale, the founder's: **one source of truth**, no second copy of the 16 medical strings, no parity guard to maintain. **Accepted cost:** a server change on the history read path, and a caption keyed to the REQUEST's language rather than the row's.
+
+**This section is a SCOPE SKETCH, not a plan and not a build.** Everything below is derived at `c710450`; nothing is written, nothing is decided beyond the transport itself.
+
+### 3a. The endpoint, as it stands today
+
+`api/server.py:2012` — `@app.get("/api/history", response_model=list[ChatHistoryEntry])`, whose handler signature takes exactly two dependencies: `creds` and `db`. The model is `ChatHistoryEntry` (`api/server.py:1991-2009`), **5 fields**: `id`, `session_type`, `question`, `answer`, `created_at`.
+
+### 3b. ⚠️ The `response_model` implication — a SILENT failure if missed
+
+The explicit `response_model` on this GET is not incidental: it was added by **founder ruling #5 on 2026-09-02** (the delete segment) specifically so `user_id` stopped being serialized. FastAPI therefore **filters the response to the model's declared fields**.
+
+**Consequence for segment 2: setting a `disclaimer` on the row object is not enough — a field absent from `ChatHistoryEntry` is silently DROPPED, with a 200 and a well-formed body.** There is no error surface. So the field must be added to the model (optional, default `None`) in the same change, and a test must assert it survives the round trip through the endpoint rather than only that the handler set it.
+
+This is the same shape as the segment-1 ENOENT hazard: the mechanism that is supposed to protect the change is the thing that hides it.
+
+### 3c. The language key — an OPEN question, not a decided one
+
+`get_disclaimer(lang)` needs a `lang`, and **`/api/history` currently receives no language input at all** — no body (it is a GET), no query parameter, no `Request`. So segment 2 has to choose how `lang` arrives. The existing helper `_resolve_response_language(body_value, request)` (`api/server.py:126-134`) resolves `body.response_language` → first `Accept-Language` tag → `"en"`; on a GET the first link is unavailable, so it would degrade to the header chain unless a query parameter is added.
+
+**Not decided here.** What is already settled by the ruling is the honesty consequence, and it should be stated in the product's own terms: legacy Explain rows store **no** language, so the caption renders in the language the REQUEST resolves to, which can differ from the language the stored explanation is written in. That is the same trade segment 4a accepted for Research (baton §9c). JSON Explain rows keep rendering their STORED string, so on one page a legacy row's caption and a JSON row's caption can be in different languages.
+
+### 3d. Population — derived, and it cannot grow
+
+**291 of 852** Explain rows on the Dev branch take the pre-wrap path (`ep-spring-voice…`, SELECT-only, re-derived 2026-09-11). Both halves that the TECH_DEBT entry hedged on are **empty sets**: 0 JSON rows carry `items[]` without a `disclaimer`, and 0 rows parse as JSON but lack `items[]`. So the pre-wrap population is exactly the non-JSON legacy rows, `answer NOT LIKE '{%'` and a real `JSON.parse` agree, and 291 + 561 = 852 reconciles. The set runs **2026-03-22 → 2026-04-20** and is closed: every Explain row written since carries a stored disclaimer. **The prod count has never been read.**
+
+### 3e. Guard shape
+
+Mirror `tests/history_research_disclaimer_guard.mjs`: one disclaimer render inside the Explain branch's pre-wrap path, zero elsewhere, and the ORDER check segment 1 added (a render path must be FOLLOWED by its caption). Add a server-side test that a legacy row round-trips the field through the endpoint — that is the check that catches §3b. ⚠️ The Explain wording is **not** the Research wording, so `utils/researchDisclaimer.ts` must not be reused; a Research caption under an Explain answer would be the wrong sentence.
+
+### 3f. Not in this segment
+
+The Rule 10 `[OTHER][P3]` filed 2026-09-11 — `_EXPLAIN_PROMPT_FALLBACK` (`api/services/explain_service.py:66-72`) telling the LLM "End with a short disclaimer in the same language." — is adjacent but separate, and stays OPEN in TECH_DEBT.
 
 ---
 
