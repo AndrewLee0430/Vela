@@ -247,6 +247,8 @@ Open `/history`, **hard-refresh first (Ctrl+Shift+R)** — the CSS bundle name i
 
 **BEFORE screenshots (rows 1–4 only), if wanted:** `git stash push pages/history.tsx` → hard-refresh → shoot → `git stash pop`. Stash **only that file**; the guards are committed with the change and a stash of everything would make them RED while stashed.
 
+⚠️ **There is already a stash on this repo** — `stash@{0}: On main: PHASE D partial work before crash`, pre-existing, not created by this segment. `git stash push` pushes the new entry to `stash@{0}` and moves that one to `stash@{1}`, so a plain `git stash pop` still pops the right thing — but check `git stash list` before and after, and do **not** pop twice.
+
 | # | what to look at | what PASS means | PASS / FAIL + note |
 |---|---|---|---|
 | 1 | `/history`, **row 2345** (`research_v1`, no-section), **LIGHT** | Markdown RENDERS: `**bold**` is bold (1 site), `- ` lines are bullets with indent (6 items, 2 lists) — no literal asterisks or hyphens. The FallbackBanner is still ABOVE the answer. The disclaimer line is still BELOW it. No citation panel (the row has none) | |
