@@ -1,6 +1,8 @@
-# HISTORY RENDER LEFTOVERS car — opened 2026-09-11 (Segment 1 = items A + C ✅ SHIPPED fly 254 · Segment 2 = item B, TRANSPORT RULED (ii), not started)
+# HISTORY RENDER LEFTOVERS car — opened 2026-09-11 (Segment 1 = items A + C ✅ SHIPPED fly 254 — **SEGMENT 1 CLOSED 2026-09-11**, prod eye 2/2 founder-PASS · Segment 2 = item B, TRANSPORT RULED (ii), NOT started)
 
-> **STATUS — Segment 1: ✅ SHIPPED as fly 254 (2026-09-11).** Readbacks in **§4**. Prod = `93d704c286c752cb56edcef80cc0131c9720be19` at fly v254, image `deployment-01M2763DDMF08A3S7P8FPZSM46`. **PROD EYE OPEN — 2 items, founder** (§4d). Segment 2 is RULED (ii) and NOT started (§3).
+> **STATUS — Segment 1: ✅ SHIPPED as fly 254 — SEGMENT 1 CLOSED 2026-09-11.** Prod = `93d704c286c752cb56edcef80cc0131c9720be19` at fly v254, image `deployment-01M2763DDMF08A3S7P8FPZSM46`; readbacks **§4**. **✅ PROD EYE 2026-09-11 — 2/2 founder-PASS** (prod, own account, hard-refresh first) — §2. **SEGMENT 2 (item B) is RULED (ii) and NOT started (§3)**; its two build-blocking facts are in §3b and §3c and should be read before any code is written.
+>
+> ⚠️ **Post-deploy docs commits are NOT deployed, by design** — `/health` `revision` reads the CODE SHA `93d704c…`, not the latest docs SHA. A later docs SHA on `origin/main` is not drift.
 
 > *(pre-push status, kept as the record)* **GATE §2 PASSED 9/9 founder-PASS (2026-09-11) — PUSHING.** Rows 1–9 PASS; row 10 is the machine row, already filled (CSS hash `466e58439a1a5bbd`). **Provenance:** founder blanket statement 「Gate 沒問題」 in the 2026-09-11 conversation, transcribed under the closeout authorization (zh-TW transcription precedent, as at §6 / §8 / §10 / §13 of the history-honesty baton); **no per-row screenshots were retained** — stated so the record does not imply evidence it does not have. **ROW 5 RULING (founder, 2026-09-11): the paragraph-spacing inversion is ACCEPTED as parity with /research.** Markdown paragraphs sit flush because preflight sets `p{margin:0}` and nothing re-adds it; the 4b narrow ruling STANDS and `.vela-md-list` is **NOT** widened with a `p` rule. **SEGMENT 2 TRANSPORT RULED — (ii)**, see §3. This commit is the pre-push docs commit; prod is still fly 252 until the ship entry below is written.
 
@@ -16,7 +18,7 @@
 
 | # | segment | scope in one line | status |
 |---|---|---|---|
-| 1 | **A + C — render leftovers** | **A**: /history's research no-section path renders through the SAME `<ReactMarkdown>` + `.vela-md-list` wrapper the sections path uses, fed the STRIPPED markdown (Rule 19 parity with /research). **C**: delete `components/MarkdownRenderer.tsx` (0 importers since the commit that created it) and the `.markdown-content` `@layer base` block (0 users since `cae7b31`, 0 bytes in the bundle) | **✅ SHIPPED as fly 254** (2026-09-11; `53f654a` item A · `d3b7074` item C · gate §2 9/9 founder-PASS; readbacks §4; prod eye 2 items OPEN) |
+| 1 | **A + C — render leftovers** | **A**: /history's research no-section path renders through the SAME `<ReactMarkdown>` + `.vela-md-list` wrapper the sections path uses, fed the STRIPPED markdown (Rule 19 parity with /research). **C**: delete `components/MarkdownRenderer.tsx` (0 importers since the commit that created it) and the `.markdown-content` `@layer base` block (0 users since `cae7b31`, 0 bytes in the bundle) | **✅ SHIPPED as fly 254 — CLOSED 2026-09-11** (`53f654a` item A · `d3b7074` item C; gate §2 9/9 founder-PASS; readbacks §4; **prod eye 2/2 founder-PASS**) |
 | 2 | **B — Explain legacy disclaimer** | 291 of 852 Dev-branch Explain rows take the pre-wrap fallback and render NO disclaimer, while JSON rows render their stored one (`[HONESTY][P3]`, filed 2026-09-09) | **TRANSPORT RULED — (ii) read-time server field** (founder, 2026-09-11); **NOT started**, see §3 |
 
 **Segment 2 was blocked on one decision, not on effort — and that decision is now MADE (founder, 2026-09-11): option (ii).** The 16 Explain disclaimer strings live only in Python (`api/i18n/explain_strings.py` → `EXPLAIN_DISCLAIMERS`, 16 keys, re-derived 2026-09-11). There is **no frontend Explain disclaimer source at all** — `git grep -n -i "explain.*disclaimer" -- pages/ components/ utils/` returns only the two `pages/history.tsx` lines that read the STORED string. The two options put to the founder were:
@@ -270,6 +272,20 @@ Open `/history`, **hard-refresh first (Ctrl+Shift+R)** — the CSS bundle name i
 
 **Provenance, stated plainly:** the founder's verdict was a single blanket statement — 「Gate 沒問題」 — not nine separate row calls, and **no screenshots were retained**. It is transcribed here under the closeout authorization using the same zh-TW transcription precedent as the history-honesty gates. Row 10 is the only row with machine evidence behind it (the CSS hash readback). A future reader should not read rows 1–9 as independently evidenced observations.
 
+
+### §2 PROD EYE — ✅ 2/2 founder-PASS (2026-09-11, prod fly 254, own account, hard-refresh first)
+
+| # | item | result |
+|---|---|---|
+| 1 | prod `/history` → a research row on the **NO-SECTION** path — "zorblaxin 500mg dosing", Sep 7 2026 03:15 PM | **PASS.** FallbackBanner above the answer · **"Recommendations:" renders BOLD** (not a literal `**`) · **both `- ` groups render as indented bullets** · the research disclaimer line below · Share / Delete footer intact |
+| 2 | **CONTROL** — prod `/history` → a research row with **SECTION CARDS** | **PASS.** Unchanged from fly 252 (founder: 「一樣」) |
+
+**Provenance.** Founder observations in the 2026-09-11 conversation, transcribed under the final-docs authorization (the zh-TW transcription precedent used at §6 / §8 / §10 / §13 of the history-honesty baton). Row 1's evidence is a **screenshot held by the founder**; it was described in the authorizing message and is the founder's record — **Claude Code did not view it**, and this line exists so a later reader does not read the row as an AI-verified observation.
+
+**Row 5's accepted consequence, now observed in the wild.** The same row-1 screenshot shows the paragraphs sitting **flush, with no blank-line gaps** — which is exactly the trade the founder ruled ACCEPTED at gate row 5: parity with /research, `.vela-md-list` **NOT** widened with a `p` rule. Recorded as an **observation confirming a ruling already made**, not as a new finding and not as a defect.
+
+**SEGMENT 1 CLOSED.**
+
 ---
 
 ## §3 Segment 2 — RULED, NOT STARTED (founder transport ruling 2026-09-11)
@@ -361,7 +377,7 @@ Item C's entire claim is **"nothing changes"**, which is the kind of claim that 
 
 ⚠️ **Unit, stated so it is not read as drift:** the share page's **38** is a LINE count (`grep -c`); the OCCURRENCE count on the same page is **45**. Same page, two units — the fly-252 note.
 
-### 4d. PROD EYE — founder-only, OPEN (2 items)
+### 4d. PROD EYE — ✅ 2/2 founder-PASS 2026-09-11 (results transcribed in §2)
 
 Not run by Claude Code; no AI observation is a gate result. Own account, **hard-refresh first (Ctrl+Shift+R)** — the CSS bundle name is deliberately unchanged, so a stale cache is indistinguishable from a working change.
 
@@ -370,4 +386,4 @@ Not run by Claude Code; no AI observation is a gate result. Own account, **hard-
 
 ---
 
-**✅ SHIPPED.** Prod = **fly 254** (`93d704c286c752cb56edcef80cc0131c9720be19`), image `deployment-01M2763DDMF08A3S7P8FPZSM46`. Prod eye OPEN (2 items, §4d). Segment 2 RULED (ii), NOT started (§3).
+**✅ SEGMENT 1 CLOSED 2026-09-11.** Prod = **fly 254** (`93d704c286c752cb56edcef80cc0131c9720be19`), image `deployment-01M2763DDMF08A3S7P8FPZSM46`; prod eye **2/2 founder-PASS** (§2). **Segment 2 (item B) — TRANSPORT RULED (ii), NOT started (§3).**
