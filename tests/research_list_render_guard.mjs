@@ -2,7 +2,10 @@
 // numbers, indent, marker colour — on the three live ReactMarkdown wrappers,
 // through ONE narrow CSS rule set (HISTORY HONESTY car segment 4b, founder
 // ruling 2026-09-09 = Option B: narrow list rules; the typography plugin stays
-// unregistered; the orphan `.markdown-content` class is NOT reused).
+// unregistered; the orphan `.markdown-content` class is NOT reused — the HISTORY
+// RENDER LEFTOVERS car segment 1, 2026-09-11, then DELETED that orphan block and the
+// dead components/MarkdownRenderer.tsx, and rerouted /history's no-section research
+// path from a whitespace-pre-wrap <p> to <ReactMarkdown>: see (b), (c) and (g).
 //
 // WHAT BREAKS IF THIS FAILS (CLAUDE.md Rule 17/19): `@tailwindcss/typography`
 // is a dependency that was NEVER registered (`tailwind.config.js` `plugins: []`),
@@ -16,13 +19,12 @@
 // surface silently goes flat again. If the rule set grows a heading / p / a /
 // code rule, the "narrow" ruling is broken (that is Option A's blast radius —
 // typography 0.5.19 would also wrap inline code in literal backticks). If the
-// class lands on the remaining pre-wrap wrapper or the dead MarkdownRenderer, scope
-// drifted. HISTORY RENDER LEFTOVERS car segment 1 (2026-09-11) rerouted /history's
-// no-section research path from a whitespace-pre-wrap <p> to <ReactMarkdown>: see (g).
+// class lands on the remaining pre-wrap wrapper (Explain legacy), scope drifted.
 // If the plugin gets registered, both pages change everywhere `prose` is
 // written. If the COMPILED bundle loses the rules (content-glob / @layer
-// tree-shaking — exactly what happened to `.markdown-content`), the class is a
-// no-op just like `prose` was, and the source-level checks cannot see it.
+// tree-shaking — exactly what happened to `.markdown-content` before it was
+// deleted), the class is a no-op just like `prose` was, and the source-level
+// checks cannot see it.
 //
 // No test runner -> the pages and the stylesheet are checked as SOURCE (comments
 // stripped); the markdown pipeline is EXECUTED with the pages' exact plugin set;
@@ -101,13 +103,21 @@ for (const [name, src, obj] of [['pages/research.tsx', researchSrc, 'proseStyle'
   }
 }
 
-// -- (b) scope: the one remaining pre-wrap wrapper and the dead MarkdownRenderer do
-//        NOT carry it, and the class appears exactly 4 times across the frontend
+// -- (b) scope: the one remaining pre-wrap wrapper does NOT carry it, the deleted
+//        MarkdownRenderer has not come back, and the class appears exactly 4 times
 const hPre = history.filter((w) => w.kind === 'prewrap');
 check(hPre.length === 1, `pages/history.tsx: expected 1 pre-wrap prose wrapper (explain legacy only — the research no-section path was rerouted through <ReactMarkdown> by the HISTORY RENDER LEFTOVERS car segment 1), found ${hPre.length} — update this guard`);
 for (const w of hPre) check(!w.classes.includes(CLASS), `pages/history.tsx:${w.line} pre-wrap wrapper carries "${CLASS}" — scope drift: no list can exist inside a whitespace-pre-wrap <p>`);
 check([...research, ...history].every((w) => w.kind !== 'unknown'), 'a prose wrapper could not be classified (neither <ReactMarkdown> nor whitespace-pre-wrap within 12 lines) — update this guard');
-check(!read('components/MarkdownRenderer.tsx').includes(CLASS), `components/MarkdownRenderer.tsx carries "${CLASS}" — it is a dead component (0 importers); the scope is the three live wrappers only`);
+// components/MarkdownRenderer.tsx was DELETED by the HISTORY RENDER LEFTOVERS car
+// segment 1 (0 importers since the commit that added it, a5b399f 2026-03-12; it sat
+// inside the Tailwind content glob carrying the fullest prose variant set in the repo).
+// This was a `!read(...).includes(CLASS)` scope check — readFileSync on a deleted file
+// throws ENOENT and CRASHES the guard instead of failing a check, so the assertion is
+// now about the file's absence: if the dead component returns, it is a new wrapper that
+// has to be classified and scoped like the live ones, not a silent fourth prose site.
+check(!existsSync(join(ROOT, 'components', 'MarkdownRenderer.tsx')),
+  'components/MarkdownRenderer.tsx is back — it was deleted as dead code (0 importers); a new shared renderer must be scoped and counted like the live wrappers above, not left inside the content glob');
 function walk(dir, acc = []) {
   for (const name of readdirSync(dir)) {
     const p = join(dir, name);
@@ -124,7 +134,7 @@ const total = hits.reduce((s, h) => s + Number(h.split(':').pop()), 0);
 check(total === 4, `"${CLASS}" appears ${total} time(s) across pages/ components/ utils/ (${hits.join(', ') || 'nowhere'}) — expected exactly 4 (the live ReactMarkdown wrappers: /research sections + no-section, /history sections + no-section)`);
 
 // -- (c) styles/globals.css: the rule set exists, is list-only, sits where it
-//        beats preflight, and the orphan .markdown-content block is untouched
+//        beats preflight, and the orphan .markdown-content block stays deleted
 const css = stripComments(read('styles/globals.css'));
 const rules = [];
 const ruleRe = /([^{}]+)\{([^{}]*)\}/g;
@@ -161,7 +171,14 @@ const layerIdx = css.indexOf('@layer components');
 const firstIdx = css.indexOf('.' + CLASS);
 check(layerIdx > -1 && firstIdx > layerIdx, `styles/globals.css: the .${CLASS} rules must sit inside an @layer components block (after preflight in the emitted order)`);
 check(firstIdx > css.indexOf('@tailwind base'), `styles/globals.css: the .${CLASS} rules precede @tailwind base`);
-check(/\.markdown-content ul \{[^}]*list-style-type: disc;[^}]*padding-left: 2em;/.test(css), 'the orphan .markdown-content block (globals.css:22-80) was altered — the ruling leaves it as-is, flagged not touched');
+// The orphan `.markdown-content` block (was globals.css:22-80, 13 rules in @layer base,
+// no user since cae7b31 2026-03-06, 0 occurrences in the compiled bundle) was DELETED by
+// the HISTORY RENDER LEFTOVERS car segment 1. Segment 4b had asserted it was UNALTERED
+// while it existed; the assertion is now that it is GONE. If it comes back it is a second,
+// wider markdown rule set competing with this one — 13 rules including h1–h6 sizes and a
+// light-only hr colour (#e5e7eb), which is why 4b wrote a narrow class instead of reusing it.
+check(!css.includes('.markdown-content'),
+  'styles/globals.css defines .markdown-content again — it was deleted as an orphan (0 users, 0 bytes in the bundle); a second markdown rule set competing with .vela-md-list needs its own ruling');
 
 // -- (d) the typography plugin stays UNREGISTERED (Option A ruled out 2026-09-09)
 const tw = stripComments(read('tailwind.config.js'));
@@ -170,7 +187,7 @@ check(!/require\(['"]@tailwindcss\/typography/.test(tw), 'tailwind.config.js reg
 
 // -- (e) the COMPILED bundle (out/_next/static/css) carries the rules and still
 //        has no typography output — the class must survive the content glob and
-//        @layer tree-shaking (what silently emptied .markdown-content)
+//        @layer tree-shaking (what silently emptied .markdown-content, now deleted)
 const cssDir = join(ROOT, 'out', '_next', 'static', 'css');
 const cssFiles = existsSync(cssDir) ? readdirSync(cssDir).filter((f) => f.endsWith('.css')) : [];
 check(cssFiles.length > 0, 'out/_next/static/css/*.css not found — run `npm run build` first; this check pins the COMPILED bundle, not the source (Rule 18: a missing build is a failure, not a skip)');

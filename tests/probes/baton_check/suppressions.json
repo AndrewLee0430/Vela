@@ -1,7 +1,7 @@
 {
   "_meta": {
     "why": "Known-external or known-artifact paths that C1 would otherwise flag as MISSING. EVERY entry carries a reason. A silent suppression list becomes a place drift hides — if you cannot write the reason, do not add the entry.",
-    "reviewed": "2026-08-24"
+    "reviewed": "2026-09-11"
   },
   "suppressions": [
     {
@@ -15,6 +15,10 @@
     {
       "pattern": "^integrations/(httpx|logging)[.]py$",
       "reason": "sentry_sdk vendor paths cited in the credential-logging entry. They live in site-packages, not this repo, and the citation is accurate."
+    },
+    {
+      "pattern": "^components/MarkdownRenderer[.]tsx$",
+      "reason": "DELETED ON PURPOSE, 2026-09-11 (HISTORY RENDER LEFTOVERS car segment 1) — a dead component with 0 importers since the commit that added it. The batons and ledgers that cite it are RECORDING the deletion, so 'NOT IN REPO' is the accurate state, not drift. Without this entry the segment-4b baton (docs/batons/history_honesty_car_20260903.md, 4 mentions) would fail its own fact-check forever for a claim that was true when written. The guard tests/research_list_render_guard.mjs (b) asserts the file stays absent, so a silent return is still caught there — this suppression hides a citation, never the file's reappearance."
     }
   ]
 }

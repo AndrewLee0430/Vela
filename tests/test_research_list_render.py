@@ -12,7 +12,11 @@ on the three live ReactMarkdown wrappers. Lose the class on a wrapper and that
 surface goes flat again; widen the rule set and the "narrow" ruling is broken;
 register the plugin and both pages change everywhere `prose` is written; let
 the compiled bundle drop the rules (content glob / @layer tree-shaking — what
-emptied `.markdown-content`) and the class is a no-op exactly like `prose`.
+emptied `.markdown-content`, since deleted) and the class is a no-op exactly like
+`prose`. HISTORY RENDER LEFTOVERS car segment 1 (2026-09-11) extends the guard: both
+/history research paths now render through <ReactMarkdown> (the no-section path used
+to print stored markdown RAW), and the dead MarkdownRenderer component + the orphan
+`.markdown-content` block are asserted GONE rather than merely unaltered.
 
 The checks live in tests/research_list_render_guard.mjs (source checks with
 comments stripped; the markdown pipeline EXECUTED with the pages' plugin set;
