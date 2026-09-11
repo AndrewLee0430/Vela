@@ -1,0 +1,80 @@
+{
+ "derived_at": "430ef01",
+ "rows": {
+  "175": {
+   "path": "no-section",
+   "chars_stripped": 0,
+   "rendered_elements": {
+    "ul": 3,
+    "ol": 0,
+    "li": 12,
+    "strong": 7,
+    "em": 0,
+    "h1": 0,
+    "h2": 0,
+    "h3": 0,
+    "p": 5,
+    "br": 0,
+    "a": 0
+   },
+   "literal_markers_in_stored_text": {
+    "bold_markers": 14,
+    "bullet_lines": 12,
+    "numbered_lines": 0,
+    "blank_line_breaks": 5
+   },
+   "stored_excerpt": "Statins are a class of lipid-lowering medications primarily used to reduce cholesterol levels and prevent cardiovascular disease. Their mechanism of action is as follows:\n\n**Mechanism of Action:**\n\n- ",
+   "rendered_excerpt": "<p>Statins are a class of lipid-lowering medications primarily used to reduce cholesterol levels and prevent cardiovascular disease. Their mechanism of action is as follows:</p>\n<p><strong>Mechanism of Action:</strong></p>\n<ul>\n<li>Statins competitively inhibit the enzyme <strong>HMG-CoA reductase</"
+  },
+  "2345": {
+   "path": "no-section",
+   "chars_stripped": 0,
+   "rendered_elements": {
+    "ul": 2,
+    "ol": 0,
+    "li": 6,
+    "strong": 1,
+    "em": 0,
+    "h1": 0,
+    "h2": 0,
+    "h3": 0,
+    "p": 4,
+    "br": 0,
+    "a": 0
+   },
+   "literal_markers_in_stored_text": {
+    "bold_markers": 2,
+    "bullet_lines": 6,
+    "numbered_lines": 0,
+    "blank_line_breaks": 5
+   },
+   "stored_excerpt": "As of my current knowledge cutoff in June 2024, there is no widely recognized or approved medication named \"Zorblaxin\" available in standard pharmacological references or clinical guidelines. It is po",
+   "rendered_excerpt": "<p>As of my current knowledge cutoff in June 2024, there is no widely recognized or approved medication named &quot;Zorblaxin&quot; available in standard pharmacological references or clinical guidelines. It is possible that:</p>\n<ul>\n<li>The drug name might be misspelled or a brand name not yet wid"
+  },
+  "2347": {
+   "path": "sections(2)",
+   "chars_stripped": 0,
+   "rendered_elements": {
+    "ul": 6,
+    "ol": 0,
+    "li": 19,
+    "strong": 5,
+    "em": 0,
+    "h1": 0,
+    "h2": 2,
+    "h3": 0,
+    "p": 6,
+    "br": 0,
+    "a": 0
+   },
+   "literal_markers_in_stored_text": {
+    "bold_markers": 10,
+    "bullet_lines": 19,
+    "numbered_lines": 0,
+    "blank_line_breaks": 8
+   },
+   "stored_excerpt": "## Summary\n\nMetformin dosing must be adjusted in patients with renal dysfunction, and it is contraindicated in those with significant renal impairment (serum creatinine ≥1.5 mg/dL in males, ≥1.4 mg/dL",
+   "rendered_excerpt": "<h2>Summary</h2>\n<p>Metformin dosing must be adjusted in patients with renal dysfunction, and it is contraindicated in those with significant renal impairment (serum creatinine ≥1.5 mg/dL in males, ≥1.4 mg/dL in females, or abnormal creatinine clearance) [2]. Recent evidence supports the safe use of"
+  }
+ }
+}

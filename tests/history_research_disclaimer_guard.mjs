@@ -74,8 +74,23 @@ check(rStart > -1 && rEnd > rStart, 'could not locate the /history research bran
 if (rStart > -1 && rEnd > rStart) {
   const branch = historySrc.slice(rStart, rEnd);
   const calls = (branch.match(/getResearchDisclaimer\(lang\)/g) || []).length;
-  check(calls >= 2, `/history research branch renders getResearchDisclaimer(lang) ${calls} time(s); need one per render path (sections + pre-wrap) = 2`);
-  check(branch.includes('whitespace-pre-wrap'), 'the legacy pre-wrap path disappeared from the research branch');
+  check(calls >= 2, `/history research branch renders getResearchDisclaimer(lang) ${calls} time(s); need one per render path (sections + no-section) = 2`);
+  // HISTORY RENDER LEFTOVERS car segment 1 (2026-09-11): the no-section path was
+  // rerouted from a whitespace-pre-wrap <p> to <ReactMarkdown>, so "both paths" is no
+  // longer "sections + pre-wrap" — it is two markdown paths. Counting calls alone cannot
+  // see WHICH path lost its line, so pin the ORDER: every render path must be FOLLOWED by
+  // the disclaimer before the next one starts. A caption above a body, or missing after
+  // the second body, leaves a redisplayed medical answer uncaptioned.
+  const mdIdx = [...branch.matchAll(/<ReactMarkdown /g)].map((m) => m.index);
+  const discIdx = [...branch.matchAll(/getResearchDisclaimer\(lang\)/g)].map((m) => m.index);
+  check(mdIdx.length === 2, `/history research branch has ${mdIdx.length} <ReactMarkdown> render path(s); expected 2 (sections + no-section)`);
+  mdIdx.forEach((start, i) => {
+    const next = i + 1 < mdIdx.length ? mdIdx[i + 1] : Infinity;
+    check(discIdx.some((d) => d > start && d < next),
+      `/history research branch: the <ReactMarkdown> path at offset ${start} is not followed by getResearchDisclaimer(lang) before the next path — that path redisplays a medical answer with no disclaimer`);
+  });
+  check(!branch.includes('whitespace-pre-wrap'),
+    'the /history research branch still carries a whitespace-pre-wrap path — segment 1 rerouted the no-section path through <ReactMarkdown>; if a pre-wrap path is reintroduced it needs its own disclaimer line and this guard must be updated');
   const outside = historySrc.slice(0, rStart) + historySrc.slice(rEnd);
   check(!/getResearchDisclaimer\(/.test(outside), 'getResearchDisclaimer is called outside the research branch - Verify/Explain rows render their STORED disclaimer and must stay untouched');
 }

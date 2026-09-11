@@ -16,7 +16,9 @@
 // surface silently goes flat again. If the rule set grows a heading / p / a /
 // code rule, the "narrow" ruling is broken (that is Option A's blast radius —
 // typography 0.5.19 would also wrap inline code in literal backticks). If the
-// class lands on a pre-wrap wrapper or the dead MarkdownRenderer, scope drifted.
+// class lands on the remaining pre-wrap wrapper or the dead MarkdownRenderer, scope
+// drifted. HISTORY RENDER LEFTOVERS car segment 1 (2026-09-11) rerouted /history's
+// no-section research path from a whitespace-pre-wrap <p> to <ReactMarkdown>: see (g).
 // If the plugin gets registered, both pages change everywhere `prose` is
 // written. If the COMPILED bundle loses the rules (content-glob / @layer
 // tree-shaking — exactly what happened to `.markdown-content`), the class is a
@@ -81,7 +83,7 @@ const history = proseWrappers(historySrc);
 const rMd = research.filter((w) => w.kind === 'markdown');
 const hMd = history.filter((w) => w.kind === 'markdown');
 check(rMd.length === 2, `pages/research.tsx: expected 2 prose wrappers feeding <ReactMarkdown> (sections + streaming/no-section), found ${rMd.length} — update this guard if a render path was added or removed`);
-check(hMd.length === 1, `pages/history.tsx: expected 1 prose wrapper feeding <ReactMarkdown> (research sections), found ${hMd.length} — update this guard if a render path was added or removed`);
+check(hMd.length === 2, `pages/history.tsx: expected 2 prose wrappers feeding <ReactMarkdown> (research sections + research no-section), found ${hMd.length} — update this guard if a render path was added or removed`);
 for (const w of rMd) {
   check(w.classes.includes(CLASS), `pages/research.tsx:${w.line} ReactMarkdown wrapper lacks "${CLASS}" — markdown lists render FLAT on /research`);
   check(w.text.includes('style={proseStyle}'), `pages/research.tsx:${w.line} ReactMarkdown wrapper no longer applies style={proseStyle} — the ::marker colour reads its --tw-prose-bullets / --tw-prose-counters`);
@@ -99,10 +101,10 @@ for (const [name, src, obj] of [['pages/research.tsx', researchSrc, 'proseStyle'
   }
 }
 
-// -- (b) scope: the two pre-wrap wrappers and the dead MarkdownRenderer do NOT
-//        carry it, and the class appears exactly 3 times across the frontend
+// -- (b) scope: the one remaining pre-wrap wrapper and the dead MarkdownRenderer do
+//        NOT carry it, and the class appears exactly 4 times across the frontend
 const hPre = history.filter((w) => w.kind === 'prewrap');
-check(hPre.length === 2, `pages/history.tsx: expected 2 pre-wrap prose wrappers (research no-section + explain legacy), found ${hPre.length} — update this guard`);
+check(hPre.length === 1, `pages/history.tsx: expected 1 pre-wrap prose wrapper (explain legacy only — the research no-section path was rerouted through <ReactMarkdown> by the HISTORY RENDER LEFTOVERS car segment 1), found ${hPre.length} — update this guard`);
 for (const w of hPre) check(!w.classes.includes(CLASS), `pages/history.tsx:${w.line} pre-wrap wrapper carries "${CLASS}" — scope drift: no list can exist inside a whitespace-pre-wrap <p>`);
 check([...research, ...history].every((w) => w.kind !== 'unknown'), 'a prose wrapper could not be classified (neither <ReactMarkdown> nor whitespace-pre-wrap within 12 lines) — update this guard');
 check(!read('components/MarkdownRenderer.tsx').includes(CLASS), `components/MarkdownRenderer.tsx carries "${CLASS}" — it is a dead component (0 importers); the scope is the three live wrappers only`);
@@ -119,7 +121,7 @@ for (const f of ['pages', 'components', 'utils'].flatMap((d) => walk(join(ROOT, 
   if (n) hits.push(`${relative(ROOT, f).replace(/\\/g, '/')}:${n}`);
 }
 const total = hits.reduce((s, h) => s + Number(h.split(':').pop()), 0);
-check(total === 3, `"${CLASS}" appears ${total} time(s) across pages/ components/ utils/ (${hits.join(', ') || 'nowhere'}) — expected exactly 3 (the live ReactMarkdown wrappers)`);
+check(total === 4, `"${CLASS}" appears ${total} time(s) across pages/ components/ utils/ (${hits.join(', ') || 'nowhere'}) — expected exactly 4 (the live ReactMarkdown wrappers: /research sections + no-section, /history sections + no-section)`);
 
 // -- (c) styles/globals.css: the rule set exists, is list-only, sits where it
 //        beats preflight, and the orphan .markdown-content block is untouched
@@ -190,7 +192,7 @@ if (cssFiles.length) {
 // -- (f) the markdown pipeline the pages use EMITS list elements — the rules
 //        above style <ul>/<ol>/<li>; if remark-breaks (or a plugin change) ever
 //        flattened a `- ` list into <p> + <br>, the CSS would have nothing to hit
-for (const [name, src, expected] of [['pages/research.tsx', researchSrc, 2], ['pages/history.tsx', historySrc, 1]]) {
+for (const [name, src, expected] of [['pages/research.tsx', researchSrc, 2], ['pages/history.tsx', historySrc, 2]]) {
   const n = (src.match(PLUGIN_SET_RE) || []).length;
   check(n === expected, `${name}: ${n} <ReactMarkdown> call(s) with the exact plugin set [remarkGfm, remarkBreaks] + [rehypeRaw], expected ${expected} — the pipeline below is executed with that set; update both together`);
 }
@@ -200,6 +202,50 @@ check(/<ul>\s*<li>alpha<\/li>\s*<li>beta<\/li>\s*<\/ul>/.test(bullets), `a "- " 
 const numbers = render('Intro:\n1. one\n2. two');
 check(/<ol>\s*<li>one<\/li>\s*<li>two<\/li>\s*<\/ol>/.test(numbers), `a "1. " list did not reach the DOM as <ol><li> through the pages' plugin set: ${numbers.replace(/\n/g, '\\n')}`);
 check(render('line one\nline two').includes('<br'), "remark-breaks is not active in the executed pipeline (no <br> for a soft break) — the guard is not running the pages' plugin set");
+
+// -- (g) HISTORY RENDER LEFTOVERS car segment 1 (2026-09-11): the /history
+//        RESEARCH branch has NO pre-wrap path left — BOTH its render paths go
+//        through <ReactMarkdown> — and the text both are fed is the STRIPPED
+//        markdown, as on /research (`cleanAnswer`, research.tsx:568). Before
+//        this, a research row whose stored markdown carries no `## ` header
+//        printed RAW on /history (literal `**bold**`, literal `- ` bullets)
+//        while /research rendered the same text as markdown: 54 of 1175 Dev-branch
+//        rows, 34 of them carrying markdown markers (TECH_DEBT [OTHER][P3],
+//        surfaced 2026-09-07 by the segment-3 §6 gate, dev id 2345).
+//        The EXPLAIN legacy pre-wrap path is item B's territory and stays put.
+const R_IIFE = "item.session_type === 'research' && (() => {";
+const E_IIFE = "item.session_type === 'explain' && (() => {";
+const rStart = historySrc.indexOf(R_IIFE);
+const rEnd = historySrc.indexOf(E_IIFE);
+check(rStart > -1 && rEnd > rStart, 'pages/history.tsx: could not locate the research branch (research IIFE before explain IIFE) — update this guard');
+if (rStart > -1 && rEnd > rStart) {
+  const rBranch = historySrc.slice(rStart, rEnd);
+  check(!rBranch.includes('whitespace-pre-wrap'),
+    'pages/history.tsx: the RESEARCH branch still carries a whitespace-pre-wrap path — the no-section path must render through <ReactMarkdown> like /research, not as a raw paragraph');
+  check((rBranch.match(/<ReactMarkdown /g) || []).length === 2,
+    `pages/history.tsx: the research branch makes ${(rBranch.match(/<ReactMarkdown /g) || []).length} <ReactMarkdown> call(s); expected 2 (sections + no-section)`);
+  // Rule 19 carry-across: /research renders stripLlmDisclaimer(answer), so a stored
+  // LLM-emitted disclaimer must not resurface on /history. BOTH paths read one const.
+  // `stripLlmDisclaimer(markdown)` must be the const's OWN value, not nested inside
+  // another call: `const sections = markdown ? parseResearchSections(stripLlmDisclaimer(markdown)) : null`
+  // also contains the substring and would match a loose pattern (it did, in this
+  // guard's own RED run) — so the initializer must END at the strip call, with at
+  // most a ternary else-branch after it.
+  const stripConst = rBranch.match(/const\s+(\w+)\s*=\s*[^;]*?stripLlmDisclaimer\(markdown\)\s*(?::\s*[^;]*?)?;/);
+  check(!!stripConst,
+    'pages/history.tsx: the research branch does not hoist stripLlmDisclaimer(markdown) into a const — /research renders the STRIPPED text (cleanAnswer) and both /history paths must read the same one');
+  if (stripConst) {
+    const v = stripConst[1];
+    check(new RegExp(`<ReactMarkdown [^>]*>\\{${v}\\}`).test(rBranch),
+      `pages/history.tsx: the no-section <ReactMarkdown> is not fed ${v} — a stored LLM disclaimer would resurface on /history while /research strips it`);
+    check(new RegExp(`parseResearchSections\\(${v}\\)`).test(rBranch),
+      `pages/history.tsx: the section parser is not fed ${v} — the branch decision and the rendered text must see the SAME string`);
+    check(!/>\{markdown\}</.test(rBranch),
+      'pages/history.tsx: the research branch still renders the RAW {markdown} somewhere — the stripped const is the render source on both paths');
+  }
+  check(historySrc.slice(rEnd).includes('whitespace-pre-wrap'),
+    'pages/history.tsx: the EXPLAIN legacy pre-wrap path disappeared — segment 1 does not touch it (item B, the legacy-Explain disclaimer, is deferred pending a transport ruling)');
+}
 
 if (failures.length) {
   console.error(`research_list_render_guard: ${failures.length} failure(s)`);

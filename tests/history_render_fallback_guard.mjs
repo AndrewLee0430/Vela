@@ -3,13 +3,18 @@
 // WHAT BREAKS IF THIS FAILS (CLAUDE.md Rule 17/18): legacy rows — every verify
 // row written before segment 1 (summary strings) and every research row whose
 // stored markdown doesn't match the Rule-12 section format — must take the
-// plain-text fallback branch, never render blank, and never crash the page.
+// no-section branch, never render blank, and never crash the page.
 // And new-format verify JSON must parse to the cards path with the fields the
 // renderer keys on (canonical severity, attribution_kind, summary).
 // Segment 3 (Research half B): research_v1 JSON rows must parse to the
 // markdown + citations path (the section parser is fed the MARKDOWN, never the
 // JSON); pre-segment-3 plain-markdown rows, malformed JSON and foreign-kind
 // JSON must all return null → the half-A path on the raw stored text.
+// HISTORY RENDER LEFTOVERS car segment 1 (2026-09-11): this guard's SUBJECT is the
+// PARSERS, and none of its logic changed — only the words. What the branch RENDERS
+// stopped being a whitespace-pre-wrap <p> and became <ReactMarkdown>, so every
+// "pre-wrap" in the messages below now reads "no-section"; the render site itself is
+// pinned by tests/research_list_render_guard.mjs (g), not here.
 //
 // No test runner → transpile the REAL sources standalone:
 //   * utils/researchSections.ts has zero imports — transpiled whole.
@@ -48,7 +53,7 @@ check(!!sections?.[1]?.content.includes('eGFR'), 'section content preserved');
 check(!!sections?.[0]?.content.includes('[1]'),
   '[N] markers stay literal text (non-resolving — half B deferred, no fake links)');
 
-// Legacy / non-conforming / empty rows → null → the pre-wrap fallback branch.
+// Legacy / non-conforming / empty rows → null → the no-section render branch.
 check(parseResearchSections('plain prose answer with no headers') === null,
   'no-header legacy answer → null (fallback branch)');
 check(parseResearchSections('') === null, 'empty answer → null (fallback), not a crash');
@@ -139,11 +144,11 @@ if (parseResearchAnswer) {
   check(parseResearchAnswer(conforming) === null,
     'pre-segment-3 conforming markdown → null (half-A sections on the raw text)');
   check(parseResearchAnswer('plain prose answer with no headers') === null,
-    'pre-segment-3 free text → null (pre-wrap on the raw text)');
+    'pre-segment-3 free text → null (no-section path on the raw text)');
   check(parseResearchAnswer('') === null, 'empty answer → null (fallback), not a crash');
   // Malformed / foreign-kind JSON → null, never a throw, never a blank card.
   check(parseResearchAnswer('{"kind": "research_v1", "answer": ') === null,
-    'truncated JSON → null (pre-wrap on the raw text, never blank)');
+    'truncated JSON → null (no-section path on the raw text, never blank)');
   check(parseResearchAnswer('null') === null, 'JSON null → null (fallback)');
   check(parseResearchAnswer('{"interactions": [], "summary": "x"}') === null,
     'foreign-kind JSON (a verify payload) → null');
@@ -191,12 +196,12 @@ if (parseResearchAnswer) {
   check(fbJunk !== null && fbJunk.fallback === undefined,
     'non-boolean fallback value → undefined (UNKNOWN), never a truthy string rendered as a caveat');
   // JSON row whose markdown is NON-conforming → parsed (citations kept) but the
-  // section parser returns null → the pre-wrap path must show the MARKDOWN, not the JSON.
+  // section parser returns null → the no-section path must show the MARKDOWN, not the JSON.
   const nonConforming = parseResearchAnswer(JSON.stringify({ kind: 'research_v1', answer: 'plain prose', citations }));
   check(nonConforming !== null && parseResearchSections(nonConforming.answer) === null,
-    'non-conforming markdown inside JSON → pre-wrap path');
+    'non-conforming markdown inside JSON → no-section path');
   check(nonConforming?.answer === 'plain prose' && !nonConforming.answer.startsWith('{'),
-    'the pre-wrap text is the markdown, never the raw JSON');
+    'the no-section text is the markdown, never the raw JSON');
 }
 
 // ── 4. HISTORY HONESTY car segment 3: the trust signal on /history ──────────

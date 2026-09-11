@@ -340,18 +340,33 @@ function HistoryList() {
                                     always fed the MARKDOWN, never the JSON. Bare [N] markers stay plain
                                     text exactly as on /research (no marker→link mapping exists there
                                     either — resolution is the adjacent panel). Pre-segment-3 rows are
-                                    plain markdown with no citations (unbackfillable); non-conforming /
-                                    legacy / malformed rows fall back to the pre-wrap rendering.
+                                    plain markdown with no citations (unbackfillable); rows whose stored
+                                    markdown carries no `## ` header take the no-section path below.
                                     HISTORY HONESTY car segment 3: the FallbackBanner / ProvenanceLine
                                     trust signal renders above the answer from the persisted `fallback`
                                     flag (segment 2, fly 247); pre-segment-2 rows (UNKNOWN) get neither.
                                     HISTORY HONESTY car segment 4a: the SAME disclaimer line /research renders
                                     (shared utils/researchDisclaimer.ts, same tokens) now closes the answer body
                                     on BOTH paths, keyed by the UI `lang` — research_v1 stores no language, and
-                                    /research's key is the UI-resolved response language anyway. */}
+                                    /research's key is the UI-resolved response language anyway.
+                                    HISTORY RENDER LEFTOVERS car segment 1 (2026-09-11): the no-section path
+                                    renders through the SAME <ReactMarkdown> + wrapper the sections path uses,
+                                    not a whitespace-pre-wrap <p> — it used to print stored markdown RAW
+                                    (literal `**bold**`, literal `- ` bullets) while /research rendered the same
+                                    text as markdown. The branch is decided by `sections === null` ALONE, never
+                                    by whether the row is legacy: 1113 of the Dev branch's 1175 research rows are
+                                    legacy AND take the sections path. Known, accepted consequence: blank lines
+                                    between paragraphs now collapse here exactly as they do on /research
+                                    (remark-breaks + the markdown container), where pre-wrap preserved them. */}
                                 {item.session_type === 'research' && (() => {
                                     const markdown = researchParsed?.answer ?? item.answer;
-                                    const sections = markdown ? parseResearchSections(stripLlmDisclaimer(markdown)) : null;
+                                    // Rule 19 carry-across (segment 1): /research renders `cleanAnswer` =
+                                    // stripLlmDisclaimer(answer) (research.tsx:568), so a stored LLM-emitted
+                                    // disclaimer never reaches the reader twice. BOTH /history paths read this
+                                    // ONE stripped string — the parser decides the branch on it and the renderer
+                                    // prints it, so the decision and the rendered text can never diverge.
+                                    const cleanMarkdown = markdown ? stripLlmDisclaimer(markdown) : '';
+                                    const sections = cleanMarkdown ? parseResearchSections(cleanMarkdown) : null;
                                     // Single trust signal, mutually exclusive, ABOVE the answer as on
                                     // /research (Rule 19 carry-across of the shared components): the
                                     // persisted flag decides — see researchTrustSignal().
@@ -395,18 +410,8 @@ function HistoryList() {
                                     return (
                                         <div>
                                             {trustBlock}
-                                            <div
-                                                className="prose max-w-none prose-sm prose-headings:font-semibold"
-                                                style={{
-                                                    color: "rgb(var(--color-text) / 0.8)",
-                                                    '--tw-prose-headings': 'rgb(var(--color-text))',
-                                                    '--tw-prose-bold': 'rgb(var(--color-text))',
-                                                    '--tw-prose-bullets': 'rgb(var(--color-text) / 0.5)',
-                                                } as React.CSSProperties}
-                                            >
-                                                <p className="whitespace-pre-wrap text-sm leading-relaxed" style={{ color: "rgb(var(--color-text) / 0.75)" }}>
-                                                    {markdown}
-                                                </p>
+                                            <div className="prose max-w-none prose-sm prose-headings:font-semibold prose-h2:text-base vela-md-list" style={researchProseStyle}>
+                                                <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]} rehypePlugins={[rehypeRaw]}>{cleanMarkdown}</ReactMarkdown>
                                             </div>
                                             <p className="text-xs mt-3" style={{ color: 'rgb(var(--color-text) / 0.35)' }}>
                                                 {getResearchDisclaimer(lang)}
