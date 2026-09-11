@@ -1,6 +1,8 @@
-# HISTORY RENDER LEFTOVERS car — opened 2026-09-11 (Segment 1 = items A + C 📋 GATE 9/9 founder-PASS — PUSHING · Segment 2 = item B, TRANSPORT RULED (ii), not started)
+# HISTORY RENDER LEFTOVERS car — opened 2026-09-11 (Segment 1 = items A + C ✅ SHIPPED fly 254 · Segment 2 = item B, TRANSPORT RULED (ii), not started)
 
-> **STATUS — Segment 1: 📋 GATE §2 PASSED 9/9 founder-PASS (2026-09-11) — PUSHING.** Rows 1–9 PASS; row 10 is the machine row, already filled (CSS hash `466e58439a1a5bbd`). **Provenance:** founder blanket statement 「Gate 沒問題」 in the 2026-09-11 conversation, transcribed under the closeout authorization (zh-TW transcription precedent, as at §6 / §8 / §10 / §13 of the history-honesty baton); **no per-row screenshots were retained** — stated so the record does not imply evidence it does not have. **ROW 5 RULING (founder, 2026-09-11): the paragraph-spacing inversion is ACCEPTED as parity with /research.** Markdown paragraphs sit flush because preflight sets `p{margin:0}` and nothing re-adds it; the 4b narrow ruling STANDS and `.vela-md-list` is **NOT** widened with a `p` rule. **SEGMENT 2 TRANSPORT RULED — (ii)**, see §3. This commit is the pre-push docs commit; prod is still fly 252 until the ship entry below is written.
+> **STATUS — Segment 1: ✅ SHIPPED as fly 254 (2026-09-11).** Readbacks in **§4**. Prod = `93d704c286c752cb56edcef80cc0131c9720be19` at fly v254, image `deployment-01M2763DDMF08A3S7P8FPZSM46`. **PROD EYE OPEN — 2 items, founder** (§4d). Segment 2 is RULED (ii) and NOT started (§3).
+
+> *(pre-push status, kept as the record)* **GATE §2 PASSED 9/9 founder-PASS (2026-09-11) — PUSHING.** Rows 1–9 PASS; row 10 is the machine row, already filled (CSS hash `466e58439a1a5bbd`). **Provenance:** founder blanket statement 「Gate 沒問題」 in the 2026-09-11 conversation, transcribed under the closeout authorization (zh-TW transcription precedent, as at §6 / §8 / §10 / §13 of the history-honesty baton); **no per-row screenshots were retained** — stated so the record does not imply evidence it does not have. **ROW 5 RULING (founder, 2026-09-11): the paragraph-spacing inversion is ACCEPTED as parity with /research.** Markdown paragraphs sit flush because preflight sets `p{margin:0}` and nothing re-adds it; the 4b narrow ruling STANDS and `.vela-md-list` is **NOT** widened with a `p` rule. **SEGMENT 2 TRANSPORT RULED — (ii)**, see §3. This commit is the pre-push docs commit; prod is still fly 252 until the ship entry below is written.
 
 > *(build-time status, kept as the record)* ~~**STATUS — Segment 1 (item A: reroute /history's no-section research path through `<ReactMarkdown>` · item C: delete the dead `components/MarkdownRenderer.tsx` and the orphan `.markdown-content` block): 🔧 BUILT LOCAL, NOT pushed, NOT deployed (2026-09-11).**~~ *(the rest of that line, also historical: prod still fly 252 = `07e704dbb625898f79f3fa899edfdf46aeb879dd` at machine version 253; code commits on `main` ahead of `origin`; "Gate §2 is BLANK — the founder fills it"; push and deploy founder-only. The gate is now filled — see §2.)*
 
@@ -14,7 +16,7 @@
 
 | # | segment | scope in one line | status |
 |---|---|---|---|
-| 1 | **A + C — render leftovers** | **A**: /history's research no-section path renders through the SAME `<ReactMarkdown>` + `.vela-md-list` wrapper the sections path uses, fed the STRIPPED markdown (Rule 19 parity with /research). **C**: delete `components/MarkdownRenderer.tsx` (0 importers since the commit that created it) and the `.markdown-content` `@layer base` block (0 users since `cae7b31`, 0 bytes in the bundle) | **📋 GATE §2 9/9 founder-PASS 2026-09-11 — PUSHING** (build record §1; gate §2 transcribed; readbacks §4 after the deploy) |
+| 1 | **A + C — render leftovers** | **A**: /history's research no-section path renders through the SAME `<ReactMarkdown>` + `.vela-md-list` wrapper the sections path uses, fed the STRIPPED markdown (Rule 19 parity with /research). **C**: delete `components/MarkdownRenderer.tsx` (0 importers since the commit that created it) and the `.markdown-content` `@layer base` block (0 users since `cae7b31`, 0 bytes in the bundle) | **✅ SHIPPED as fly 254** (2026-09-11; `53f654a` item A · `d3b7074` item C · gate §2 9/9 founder-PASS; readbacks §4; prod eye 2 items OPEN) |
 | 2 | **B — Explain legacy disclaimer** | 291 of 852 Dev-branch Explain rows take the pre-wrap fallback and render NO disclaimer, while JSON rows render their stored one (`[HONESTY][P3]`, filed 2026-09-09) | **TRANSPORT RULED — (ii) read-time server field** (founder, 2026-09-11); **NOT started**, see §3 |
 
 **Segment 2 was blocked on one decision, not on effort — and that decision is now MADE (founder, 2026-09-11): option (ii).** The 16 Explain disclaimer strings live only in Python (`api/i18n/explain_strings.py` → `EXPLAIN_DISCLAIMERS`, 16 keys, re-derived 2026-09-11). There is **no frontend Explain disclaimer source at all** — `git grep -n -i "explain.*disclaimer" -- pages/ components/ utils/` returns only the two `pages/history.tsx` lines that read the STORED string. The two options put to the founder were:
@@ -308,4 +310,64 @@ The Rule 10 `[OTHER][P3]` filed 2026-09-11 — `_EXPLAIN_PROMPT_FALLBACK` (`api/
 
 ---
 
-**NOT pushed. NOT deployed.** Prod remains fly 252 (`07e704dbb625898f79f3fa899edfdf46aeb879dd`, machine v253).
+## §4 Segment 1 — deploy readbacks (fly 254, 2026-09-11)
+
+### 4a. Push
+
+| step | value |
+|---|---|
+| range | `430ef01..93d704c` — **5 commits** |
+| commits | `53f654a` item A + guards · `d3b7074` item C + guards · `a3e42d4` build docs · `c710450` gate-recipe note · `93d704c` gate 9/9 + transport ruling |
+| `git ls-remote origin main` | **`93d704c286c752cb56edcef80cc0131c9720be19`** |
+| `git rev-parse HEAD` | `93d704c286c752cb56edcef80cc0131c9720be19` |
+| match | **exact, 40 chars** — asserted from `ls-remote`, NOT from the push output |
+
+**Rule 24 note for this session.** The closeout brief named HEAD `a3e42d4` and also said "4 commits ahead of origin"; those two disagree — at `a3e42d4` the repo is **3** ahead, at `c710450` it is **4**. Actual HEAD was `c710450`, one **docs-only** commit further on (2 lines added to this baton's gate recipe about the pre-existing `stash@{0}`), with **no product-code difference**, so the deployed application is what the brief authorized either way. The mismatch was surfaced and the founder confirmed proceeding from `c710450` before anything was pushed. Recorded because a STOP condition that fires and is then waved through silently is worse than no STOP condition.
+
+### 4b. Deploy
+
+`.\deploy.ps1` — **plain call, no `2>&1`** (a stderr redirect aborts the script before any build; the fly-245 lesson), background-captured, ANSI-stripped to `tests/probes/deploy_parser/fly254_deploy_transcript.txt` (**68 029 bytes**, 12 ANSI sequences + 302 CR removed).
+
+| readback | value |
+|---|---|
+| version | **fly v254** — **READ from `fly releases`**, not assumed: v253 was the founder's secrets release 21h earlier, so N-1 would have been wrong |
+| image | `deployment-01M2763DDMF08A3S7P8FPZSM46` |
+| `GIT_SHA` in transcript | `93d704c286c752cb56edcef80cc0131c9720be19` (line 3) |
+| `/health` | `{"status":"healthy","version":"2.2.0","revision":"93d704c286c752cb56edcef80cc0131c9720be19"}` — **full-string match, FIRST poll** |
+| `fly status` | both machines **254 `started`** — `2879720c66d478` 02:55:29Z · `683d447c2e5428` 02:54:56Z |
+| parser | Step 3 detected `2879720c66d478` `stopped` at v254 (02:54:54Z) → Step 4 started it ("2879720c66d478 has been started") → Step 6 "All machines running.", **exit 0, no manual start** |
+| clean-run count | **9th consecutive** — 9 transcripts present: 244 · 245 · 246 · 247 · 248 · 249 · 251 · 252 · 254 |
+| unauth `GET /api/history` | **403 `{"detail":"Missing token"}`** |
+
+**`fly logs`, 63-s window (02:56:58Z → 02:58:01Z), populations split by timestamp** because `fly logs` prepends a backfill: **100 stamped lines = 44 BACKFILL** (00:44:32Z → 02:53:55Z) **+ 56 post-boundary v254** (02:54:40Z → 02:56:43Z, boundary 02:54:00Z = the v254 machines coming up). **`httpx` 0 and `api_key=` 0 in BOTH populations.** The post-boundary lines are this session's own readback requests (403 on `/api/history`, 200 on `/`, on the CSS file and on the share page).
+
+### 4c. PROD SURFACE — item C's claim, measured on both sides
+
+Item C's entire claim is **"nothing changes"**, which is the kind of claim that is easy to assert and easy to get wrong, so it was measured **before** the deploy (while the image was still building, prod on the fly-252 image at v253) and **after**, and the two readbacks diffed.
+
+| measure | BEFORE (fly 252 image / v253) | AFTER (fly 254) |
+|---|---|---|
+| CSS file referenced by `/` | `466e58439a1a5bbd.css` | **`466e58439a1a5bbd.css`** |
+| bytes | 46 861 | **46 861** |
+| sha256[:16] | `d9e91ad21934cd33` | **`d9e91ad21934cd33`** |
+| `.vela-md-list` | 7 | **7** |
+| `.prose` selectors | 0 | **0** |
+| `markdown-content` | 0 | **0** |
+| `prose-h2:pb-1` | 0 | **0** |
+| `--tw-prose-*` declarations / `var()` reads | 0 / 2 | **0 / 2** |
+| share `/q/80DFqlk4jGQ` | 200, **38** lines matching `vela-prose\|<h2>` | 200, **38** lines |
+
+**The whole readback `diff` is EMPTY — byte-identical.** A CHANGED hash was the declared Rule 18 STOP condition; it did not change, exactly as predicted, because both deleted things were already tree-shaken out of the bundle and item A adds no CSS.
+
+⚠️ **Unit, stated so it is not read as drift:** the share page's **38** is a LINE count (`grep -c`); the OCCURRENCE count on the same page is **45**. Same page, two units — the fly-252 note.
+
+### 4d. PROD EYE — founder-only, OPEN (2 items)
+
+Not run by Claude Code; no AI observation is a gate result. Own account, **hard-refresh first (Ctrl+Shift+R)** — the CSS bundle name is deliberately unchanged, so a stale cache is indistinguishable from a working change.
+
+1. **prod `/history` → a research row on the NO-SECTION path** (one showing the FallbackBanner): bold renders **bold**, `- ` lines render as bullets with indent, the banner is still ABOVE the answer, and the disclaimer + references are still BELOW it.
+2. **CONTROL — prod `/history` → a research row with SECTION CARDS**: unchanged from fly 252.
+
+---
+
+**✅ SHIPPED.** Prod = **fly 254** (`93d704c286c752cb56edcef80cc0131c9720be19`), image `deployment-01M2763DDMF08A3S7P8FPZSM46`. Prod eye OPEN (2 items, §4d). Segment 2 RULED (ii), NOT started (§3).
