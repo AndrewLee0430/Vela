@@ -187,25 +187,67 @@ def _safe_db_write(db: Session, *records, label: str = "DB") -> bool:
 # ============================================================
 # 生命週期管理
 # ============================================================
-async def _cleanup_old_records():
-    """Delete AuditLog and ChatHistory records older than 6 months. Runs daily."""
+def _cleanup_pass():
+    """ONE retention sweep: delete AuditLog + ChatHistory rows older than 180 days.
+
+    Extracted from _cleanup_old_records 2026-09-14 so the sweep is testable on its
+    own (Rule 17 — tests/test_cleanup_retention.py asserts real deletes across the
+    180-day boundary, not the presence of a source line). Sync on purpose: the DB
+    work was already sync inside the async loop, so the extraction changes no
+    threading behaviour.
+
+    The INFO line is UNCONDITIONAL and carries the cutoff it used. It used to be
+    guarded by `if deleted_audit or deleted_chat:`, which made a zero-delete pass
+    completely silent — so "the task never ran" and "the task ran and nothing was
+    old enough yet" were indistinguishable from both the DB and the logs, and the
+    six months to 2026-09-14 are unauditable as a result. The log line is the
+    deliverable: it is what makes "has retention run?" answerable.
+    """
     from datetime import datetime, timedelta
+    cutoff = datetime.utcnow() - timedelta(days=180)
+    db = SessionLocal()
+    try:
+        # Rule 7 case (a): a bulk DELETE over a filtered query is DML that
+        # `_safe_db_write` cannot express — the helper is add()+commit() only and
+        # returns no row count, and the counts are exactly what this pass reports.
+        deleted_audit = db.query(AuditLog).filter(AuditLog.timestamp < cutoff).delete()
+        deleted_chat = db.query(ChatHistory).filter(ChatHistory.created_at < cutoff).delete()
+        db.commit()
+        logger.info(
+            "Data cleanup pass: deleted %d audit logs, %d chat history records "
+            "older than 180 days (cutoff=%s UTC)",
+            deleted_audit, deleted_chat, cutoff.isoformat(),
+        )
+        return deleted_audit, deleted_chat
+    finally:
+        db.close()
+
+
+async def _cleanup_old_records():
+    """Run a retention sweep at process start, then once per day.
+
+    RUN-THEN-SLEEP (2026-09-14). The sleep used to be the FIRST statement in the
+    loop body, so a process had to live a full 24 h before deleting anything —
+    and the timer is per-process and in-memory with no persisted marker, so every
+    restart reset it to zero. No startup grace period is added on purpose: a delay
+    before the first pass is what created this defect.
+
+    The try/except stays INSIDE the loop body: a failed pass is logged and the
+    loop retries the next day. Around the loop, one transient DB error would end
+    retention for the life of the process. asyncio.CancelledError derives from
+    BaseException, so `except Exception` does not swallow it and the lifespan's
+    cleanup_task.cancel() still unwinds at the sleep.
+    """
     while True:
-        await asyncio.sleep(86400)  # Run once per day
         try:
-            cutoff = datetime.utcnow() - timedelta(days=180)
-            db = SessionLocal()
-            try:
-                deleted_audit = db.query(AuditLog).filter(AuditLog.timestamp < cutoff).delete()
-                deleted_chat = db.query(ChatHistory).filter(ChatHistory.created_at < cutoff).delete()
-                db.commit()
-                if deleted_audit or deleted_chat:
-                    logger.info("Data cleanup: deleted %d audit logs, %d chat history records older than 6 months",
-                                deleted_audit, deleted_chat)
-            finally:
-                db.close()
+            _cleanup_pass()
         except Exception as e:
+            # Log-only `%s` on the exception. Rule 5 governs API RESPONSES, not
+            # logs, so this is in-policy — but it is the same shape as the
+            # `[sec][OTHER][P3]` `str(httpx.HTTPStatusError)` URL-echo entry.
+            # Flagged there, deliberately not changed here.
             logger.error("Data cleanup error: %s", e)
+        await asyncio.sleep(86400)  # then once per day
 
 
 @asynccontextmanager
@@ -269,7 +311,12 @@ async def rate_limit_middleware(request: Request, call_next):
 
     # TEST_MODE bypasses rate limiting. Test runner makes 22+ explain
     # requests + 22 ExplainJudge calls = 44+ requests in ~5 min, exceeding
-    # all per-IP limits. Production guard at module init (server.py:305-308)
+    # all per-IP limits. The module-init guard below — the `if TEST_MODE and
+    # os.getenv("FLY_APP_NAME")` RuntimeError, search for "TEST_MODE cannot be
+    # enabled in production" — raises at import, so this branch can't leak to prod.
+    # (Citation repaired 2026-09-14: this comment said server.py:305-308, which
+    # lands on an unrelated statement. Symbol-first and line-free on purpose: the
+    # guard is ~50 lines below and a bare number drifts on every edit above it.)
     # raises RuntimeError if TEST_MODE=true with FLY_APP_NAME set — process
     # won't start, so this branch can't leak to prod.
     if TEST_MODE:
