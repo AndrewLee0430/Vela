@@ -313,12 +313,12 @@ async def rate_limit_middleware(request: Request, call_next):
     # requests + 22 ExplainJudge calls = 44+ requests in ~5 min, exceeding
     # all per-IP limits. The module-init guard below — the `if TEST_MODE and
     # os.getenv("FLY_APP_NAME")` RuntimeError, search for "TEST_MODE cannot be
-    # enabled in production" — raises at import, so this branch can't leak to prod.
-    # (Citation repaired 2026-09-14: this comment said server.py:305-308, which
-    # lands on an unrelated statement. Symbol-first and line-free on purpose: the
-    # guard is ~50 lines below and a bare number drifts on every edit above it.)
-    # raises RuntimeError if TEST_MODE=true with FLY_APP_NAME set — process
-    # won't start, so this branch can't leak to prod.
+    # enabled in production" — raises at import when TEST_MODE is set together
+    # with FLY_APP_NAME, so the process won't start and this branch can't leak
+    # to prod. (Citation repaired 2026-09-14: this comment said
+    # server.py:305-308, which lands on an unrelated statement. Symbol-first and
+    # line-free on purpose — the guard is ~50 lines below and a bare number
+    # drifts on every edit above it.)
     if TEST_MODE:
         return await call_next(request)
 
