@@ -1,12 +1,18 @@
 # RETENTION EXECUTION CAR — opened 2026-09-14
 
-**Segment 1 (E1) BUILT LOCAL. NOT pushed, NOT deployed.** Prod is unchanged at **fly 254 =
-`93d704c286c752cb56edcef80cc0131c9720be19`**, machine version 256 *(carried from `STATE.md`; no `fly` call was
-made in this task)*.
+**Segment 1 (E1) ✅ SHIPPED as fly 257 — 2026-09-14.** Prod = **fly v257 = `e12d3f0bb4bb37006834e8eaa19fe77537000944`**, image `deployment-01M2F0WV3X3A0R5XQ2R85KVGD2`, both machines
+`started` in nrt. Previous prod was fly 254 = `93d704c286c752cb56edcef80cc0131c9720be19`.
+⚠️ **The release number was READ from `fly releases`, not computed** — “254+1” would have given v255, and
+**v255 / v256 (Sep 11, 04:54 / 04:55) were the `LEMON_SQUEEZY` secrets-unset rolling releases**, not rebuilds.
+⚠️ **Post-deploy docs commits are NOT deployed by design** — `/health` reads the CODE SHA, so a newer docs
+SHA on `origin/main` is not drift.
+
+*(The BUILT-LOCAL line this replaced: “Prod is unchanged at fly 254 … machine version 256” — true when
+written, superseded by the deploy below.)*
 
 | segment | item | status |
 |---|---|---|
-| **1** | **E1** — `[sec][COMPLIANCE][P1]` the 180-day retention task cannot be shown to have ever run | **🔧 BUILT LOCAL 2026-09-14** — run-then-sleep + unconditional log + `_cleanup_pass()` extraction; gate §6 written BLANK |
+| **1** | **E1** — `[sec][COMPLIANCE][P1]` the 180-day retention task cannot be shown to have ever run | **✅ SHIPPED as fly 257, 2026-09-14** — run-then-sleep + unconditional log + `_cleanup_pass()` extraction. Gate §6 **rows 1–5 PASS**, **row 6 founder-pending**. ⚠️ The TECH_DEBT entry stays **OPEN, not `[DONE]`**: no persisted last-run marker, and the daily-sweep-vs-「6 months」 question is unresolved |
 | 2 | **E5** — `pages/privacy.tsx:30` claims query **and answer** content are "de-identified (via PHI masking as a primary safeguard)", which is false for `answer` in every mode and for `question` at the three Verify sites | **NOT STARTED** — recorded inside the E2 entry 2026-09-14; not yet filed as its own entry |
 
 ---
@@ -274,12 +280,50 @@ exception. Rule 5 governs **API responses**, not logs, so this is in policy — 
 
 | # | where | check | EXPECTED | result |
 |---|---|---|---|---|
-| **1** | LOCAL | **⚠️⚠️ FIRST, BEFORE STARTING ANYTHING: confirm `DATABASE_URL` in your local `.env` points at the DEV branch (`ep-spring-voice-a127ye10`), NOT prod. Print it and read it. THIS TASK ISSUES `DELETE` STATEMENTS AT BOOT — this is the one row on this form where getting the branch wrong destroys production data, and it now fires within seconds of startup instead of 24 h later.** Then: `TEST_MODE=true uvicorn api.server:app --reload --port 8000` | the `Data cleanup pass: deleted N audit logs, M chat history records older than 180 days (cutoff=… UTC)` INFO line appears in the terminal **within seconds of boot**, not 24 h later, carrying **both counts and the cutoff** | |
-| **2** | LOCAL | `curl -s -o /dev/null -w "%{http_code}" http://localhost:8000/health` immediately after boot | **200** — startup is not blocked by the sweep | |
-| **3** | LOCAL | stop the server, start it again | the same INFO line appears **again**, proving per-boot execution rather than a one-off | |
-| **4** | MACHINE | pytest count; T1/T2 RED-then-GREEN evidence pasted; mutation table | **442 → 447**; RED = 5 failed on `AttributeError`, M1 = T1 assertion failure, GREEN = 5 passed; **5/5 mutations caught** | |
-| **5** | POST-DEPLOY *(founder, after authorization)* | `fly logs` at boot | the cleanup line present on **BOTH** machines | |
-| **6** | POST-DEPLOY *(founder)* | re-run the two prod `SELECT`s **after 2026-09-15 02:43 UTC**; record whether `min(created_at)` has moved past the 180-day line | `min` has advanced. ⚠️ **The sweep is daily, so a row can persist UP TO 24 h past its 180-day mark — `min` lagging the line by less than a day is EXPECTED, not a failure.** A lag of more than ~25 h is the failure signal | |
+| **1** | LOCAL | **⚠️⚠️ FIRST: `DATABASE_URL` on the DEV branch, printed without credentials.** Then `TEST_MODE=true uvicorn api.server:app --reload --port 8000` | the cleanup INFO line within **seconds** of boot, carrying both counts and the cutoff | **✅ PASS** — boot 11:46:43 → line 11:46:53 (**10 s**). DEV branch confirmed first (`ep-spring-voice-a127ye10-pooler…`). `2026-09-14 11:46:53,392 vela INFO Data cleanup pass: deleted 0 audit logs, 0 chat history records older than 180 days (cutoff=2026-03-18T03:46:52.944808 UTC)` — **both counts 0, which is the point: a zero-delete pass is now visible** |
+| **2** | LOCAL | `GET /health` right after boot | **200**, startup not blocked by the boot-time DB pass | **✅ PASS** — 200 in the same boot, after `Application startup complete` |
+| **3** | LOCAL | restart the server | the line appears **again**, proving per-boot execution | **✅ PASS** — restart 11:47:57 → line 11:48:06 (**9 s**). ⭐ **And the `cutoff` ADVANCED 03:46:52 → 03:48:05, by exactly the 73 s between boots — proving the cutoff is recomputed per pass, not frozen at import.** That is a stronger result than the row asked for |
+| **4** | MACHINE | pytest count; T1/T2 RED-then-GREEN; mutations | 442 → 447; 5/5 caught | **✅ PASS** — 442 → **447** / 28 skipped (+5). RED = 5 failed on `AttributeError: no _cleanup_pass`; the ordering-specific RED is M1 (T1 assertion). **5/5 mutations caught** |
+| **5** | POST-DEPLOY | `fly logs`: the cleanup line on **BOTH** machines at boot | present on both, with counts and `cutoff=` | **✅ PASS — ⭐ THE DELIVERABLE. Verbatim:**<br>`683d447c2e5428` @ `2026-09-14T03:58:23Z` → `2026-09-14 03:58:23,291 vela INFO Data cleanup pass: deleted 0 audit logs, 0 chat history records older than 180 days (cutoff=2026-03-18T03:58:22.829299 UTC)`<br>`2879720c66d478` @ `2026-09-14T03:58:59Z` → `2026-09-14 03:58:59,156 vela INFO Data cleanup pass: deleted 0 audit logs, 0 chat history records older than 180 days (cutoff=2026-03-18T03:58:58.794788 UTC)`<br>**Boot-to-log latency 20 s on both** (machines started 03:58:03Z / 03:58:39Z) |
+| **6** | POST-DEPLOY *(**FOUNDER ONLY** — not Claude Code; prod DB is not touched by this session)* | re-run the two prod `SELECT`s **after 2026-09-15 02:43:19 UTC**:<br>`SELECT MIN(created_at), MAX(created_at), COUNT(*) FROM chat_history;`<br>`SELECT MIN(created_at), COUNT(*) FROM chat_history WHERE created_at < NOW() - INTERVAL '180 days';` | `min(created_at)` has advanced past the 180-day line and the second query returns `count = 0` again. ⚠️ **A daily sweep means `min` may lag the line by UP TO 24 h — EXPECTED, not a failure.** Beyond ~25 h of lag is the failure signal | ⏳ **FOUNDER-PENDING** |
+
+### Backfill separation, and why a backfill line is impossible here
+
+The captured `fly logs` window runs `2026-09-13T15:51:51Z` → `2026-09-14T03:59:37Z` and contains **exactly two**
+cleanup lines, both timestamped after the v257 rollout. 🔑 More than that: **a backfill cleanup line could not
+exist by construction** — under the pre-257 code the log was guarded by `if deleted_audit or deleted_chat:` and
+every pass was zero-delete, so no such line was ever writable. Row 5 is therefore not "we found it in the
+window"; it is "the line exists for the first time."
+
+### ✅ The arithmetic that ties this deploy to the measured deadline
+
+| machine | cutoff logged | prod `min(created_at)` | gap | reading |
+|---|---|---|---|---|
+| `683d447c2e5428` | `2026-03-18T03:58:22.829299` | `2026-03-19 02:43:19.292984` | **22.75 h before** | 0 deletions is **arithmetically correct** |
+| `2879720c66d478` | `2026-03-18T03:58:58.794788` | `2026-03-19 02:43:19.292984` | **22.74 h before** | same |
+
+**That reading was impossible before this deploy.** A silent zero-delete pass and a dead task produced identical
+evidence; now the cutoff is in the line, so "nothing was old enough yet" is checkable against a number.
+
+### Deploy readbacks (a–g), derived
+
+| # | check | result |
+|---|---|---|
+| a | release number **READ** from `fly releases` | **v257**, 1m32s after the deploy. Above it: **v256** (Sep 11 04:55) and **v255** (Sep 11 04:54) — the `LEMON_SQUEEZY` secrets-unset rolling releases — then **v254** (Sep 11 02:54), the previous code deploy. ⚠️ "254+1" would have been **wrong** |
+| b | `/health` `revision` | `e12d3f0bb4bb37006834e8eaa19fe77537000944` — **full 40 chars, exact, FIRST poll**, 2026-09-14 **03:59:12 UTC** |
+| c | `fly status` | both machines **257**, **started**, nrt |
+| d | deploy.ps1 parser | Steps 1–6 all present, **exit 0**. Step 3 found `2879720c66d478` **`stopped`** — the `auto_stop_machines = true` behaviour, checked before being called anything else — and **Step 4 started it. NO manual `flyctl machine start` was needed.** Transcript: `tests/probes/deploy_parser/fly257_deploy_transcript.txt` (988 lines, ANSI-stripped), the **10th** consecutive clean-run record |
+| e | unauth `GET /api/history` | **403** `{"detail":"Missing token"}` |
+| f | the cleanup line, both machines | **✅ present** — gate row 5 above |
+| g | frontend unaffected **by construction** | `git diff --stat 93d704c..e12d3f0 -- pages/ components/ utils/ styles/` → **EMPTY** |
+
+### ⏱️ Timing, in UTC
+
+Push at **2026-09-14 03:55:03 UTC**, with **+22.80 h** of margin to the **2026-09-15 02:43:19 UTC** deadline.
+⚠️ Recorded in **UTC** deliberately: the local clock here is +08:00, and a previous session converted to local,
+read the window as closed, and was wrong by ~16 h.
+
+---
 
 ---
 
