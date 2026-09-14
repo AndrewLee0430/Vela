@@ -1,0 +1,77 @@
+{
+  "probe": "phi_mask_over_json",
+  "generated_at_utc": "2026-09-14T02:37:31+00:00",
+  "measures": "PHIDetector.sanitize_for_log applied to json.dumps() output of the three ChatHistory.answer payload shapes",
+  "inputs": "SYNTHETIC representative payloads; NO database was read",
+  "sanitizer_patterns_applied_in_order": [
+    "TAIWAN_ID_PATTERN",
+    "TAIWAN_PHONE_PATTERN",
+    "JAPAN_MY_NUMBER_FORMAT",
+    "JAPAN_PHONE_PATTERN",
+    "USA_SSN_WITH_DASH",
+    "USA_MRN_PATTERN",
+    "USA_PHONE_PATTERN",
+    "EMAIL_PATTERN",
+    "CREDIT_CARD_PATTERN",
+    "MEDICAL_RECORD_PATTERNS[0] = \\b[A-Z]{2,3}\\d{6,10}\\b",
+    "MEDICAL_RECORD_PATTERNS[1] = \\b\\d{8,12}\\b"
+  ],
+  "negative_control_valid": true,
+  "results": [
+    {
+      "case": "research_v1",
+      "role": "live payload shape",
+      "expect_parse_failure": false,
+      "bytes_before": 1116,
+      "bytes_after": 1090,
+      "changed": true,
+      "masked_json_parses": true,
+      "parse_error": null,
+      "control_behaved_as_expected": true,
+      "mask_contexts": [
+        "pubmed\", \"source_id\": \"PMID:***\", \"title\": \"A tri",
+        "s://pubmed.ncbi.nlm.nih.gov/***/\", \"credibility\":",
+        "type\": \"fda\", \"source_id\": \"***\", \"title\": \"Reg t",
+        "://clinicaltrials.gov/study/***\", \"credibility\": "
+      ]
+    },
+    {
+      "case": "verify",
+      "role": "live payload shape",
+      "expect_parse_failure": false,
+      "bytes_before": 655,
+      "bytes_after": 655,
+      "changed": false,
+      "masked_json_parses": true,
+      "parse_error": null,
+      "control_behaved_as_expected": true,
+      "mask_contexts": []
+    },
+    {
+      "case": "explain",
+      "role": "live payload shape",
+      "expect_parse_failure": false,
+      "bytes_before": 273,
+      "bytes_after": 273,
+      "changed": false,
+      "masked_json_parses": true,
+      "parse_error": null,
+      "control_behaved_as_expected": true,
+      "mask_contexts": []
+    },
+    {
+      "case": "HYPOTHETICAL_bare_int",
+      "role": "NEGATIVE CONTROL — must FAIL to parse; if it passes, the probe is broken",
+      "expect_parse_failure": true,
+      "bytes_before": 103,
+      "bytes_after": 91,
+      "changed": true,
+      "masked_json_parses": false,
+      "parse_error": "JSONDecodeError: Expecting value: line 1 column 71 (char 70)",
+      "control_behaved_as_expected": true,
+      "mask_contexts": [
+        "tations\": [], \"written_at\": ***, \"pmid_int\": ***}"
+      ]
+    }
+  ]
+}
