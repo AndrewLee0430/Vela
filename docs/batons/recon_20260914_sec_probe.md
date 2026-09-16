@@ -172,7 +172,7 @@ if TEST_MODE and os.getenv("FLY_APP_NAME"):
 ```
 
 ⚠️ The in-code comment at `api/server.py:271` says *"Production guard at module init (server.py:305-308)"* —
-**stale**. Not fixed in the ledger commit (docs-only); filed to ride the next commit touching `server.py`.
+**stale**. Not fixed in the ledger commit (docs-only); filed to ride the next commit touching `server.py`. *(✍️ 2026-09-15: DONE in `c96a31b` — the comment sat at `:272`, not `:271`; rewritten symbol-first with no line number; `e12d3f0` cleared a leftover fragment of the same comment. At `c590c77` the only `server.py:NNN` string left in `api/server.py` is that repair note quoting the old value.)*
 
 ### 2.10 Rating
 
@@ -393,7 +393,7 @@ All four carry **Class / P PROPOSED 2026-09-14 by derivation; founder ratificati
 
 | id | filed as | one line | why that class / P |
 |---|---|---|---|
-| **E1** | `[sec][COMPLIANCE][P1]` | the 180-day retention task cannot be shown ever to have run | `[COMPLIANCE]` against this file's own definition — a published retention promise (`pages/privacy.tsx:46`) backed by a mechanism whose execution is unestablished. **`[P1]` because it is the only item in this batch with a DATE: 2026-09-18** |
+| **E1** | `[sec][COMPLIANCE][P1]` | the 180-day retention task cannot be shown ever to have run | `[COMPLIANCE]` against this file's own definition — a published retention promise (`pages/privacy.tsx:46`) backed by a mechanism whose execution is unestablished. **`[P1]` because it is the only item in this batch with a DATE: 2026-09-18** *(✍️ 2026-09-15: the date became 2026-09-15 by prod measurement on 2026-09-14; the pass RAN on it; re-rated `[P2]` 2026-09-15 — retention baton §8)* |
 | **E2** | `[sec][COMPLIANCE][P2]` | the masked/unmasked asymmetry holds at only 2 of 5 sites; all three Verify sites mask NEITHER field | widens an accepted asymmetry rather than opening a new surface; `/api/history` stays authed + owner-filtered |
 | **E3** | `[sec][COMPLIANCE][P2]` | `VerifyRequest.patient_context` never reaches `_check_phi` | a gap in the input-side blocking ground itself; **`[P2]` not higher because `pages/verify.tsx:230` sends `null`** — reachable only by a direct API caller |
 | **E4** | `[sec][OTHER][P2]` | `_check_phi` is fail-open | ⚠️ **Rule 1 tension FLAGGED, NOT asserted as a violation** — `_check_phi` is not in the `run_guards` chain Rule 1 names. `[OTHER]` reflects that undecided scope; if the founder rules Rule 1 covers it, `[COMPLIANCE]` is likelier |

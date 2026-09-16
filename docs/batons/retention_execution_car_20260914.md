@@ -1,5 +1,7 @@
 # RETENTION EXECUTION CAR — opened 2026-09-14
 
+> **🏁 SEGMENT 1 CLOSED 2026-09-15 (founder ruling R1; written 2026-09-16).** Gate §6 **6/6 founder-PASS** — row 6 on the `fly logs` line of `2026-09-15T03:58:26Z` (`683d447c2e5428`: **deleted 3 audit logs, 4 chat history records**, `cutoff=2026-03-19T03:58:24.808924 UTC`, 86,403 s after the boot pass) plus the founder's three prod `SELECT`s (`chat_history` count **1394 → 1390**, `min` **02:43:19 → 04:02:30**, overdue **1** = daily lag; `audit_logs` `min` **04:02:30.35**). Prod UNCHANGED at **fly 257 = `e12d3f0bb4bb37006834e8eaa19fe77537000944`**; `2879720c66d478` has been `stopped` since 2026-09-14T04:06Z (auto-stop; the floor machine ticks — residual (1) MEASURED, not a coverage gap). Ledger: the TECH_DEBT E1 entry stays **OPEN**, re-rated **P1 → P2**; the 2026-08-17 `[COMPLIANCE][P2] retention automation` duplicate is **MERGED** into it as a stub (NAV 189, delta 0). Segment 2 (E5) **NOT started** — order per `STATE.md` Next Up. Closeout detail: **§8**. Docs-only, NOT deployed by design.
+
 **Segment 1 (E1) ✅ SHIPPED as fly 257 — 2026-09-14.** Prod = **fly v257 = `e12d3f0bb4bb37006834e8eaa19fe77537000944`**, image `deployment-01M2F0WV3X3A0R5XQ2R85KVGD2`, both machines
 `started` in nrt. Previous prod was fly 254 = `93d704c286c752cb56edcef80cc0131c9720be19`.
 ⚠️ **The release number was READ from `fly releases`, not computed** — “254+1” would have given v255, and
@@ -12,7 +14,7 @@ written, superseded by the deploy below.)*
 
 | segment | item | status |
 |---|---|---|
-| **1** | **E1** — `[sec][COMPLIANCE][P1]` the 180-day retention task cannot be shown to have ever run | **✅ SHIPPED as fly 257, 2026-09-14** — run-then-sleep + unconditional log + `_cleanup_pass()` extraction. Gate §6 **rows 1–5 PASS**, **row 6 founder-pending**. ⚠️ The TECH_DEBT entry stays **OPEN, not `[DONE]`**: no persisted last-run marker, and the daily-sweep-vs-「6 months」 question is unresolved |
+| **1** | **E1** — `[sec][COMPLIANCE][P1]` *(→ `[P2]` 2026-09-15)* the 180-day retention task cannot be shown to have ever run | **✅ SHIPPED as fly 257, 2026-09-14** — run-then-sleep + unconditional log + `_cleanup_pass()` extraction. Gate §6 **rows 1–5 PASS**, **row 6 founder-pending** *(→ **PASS 2026-09-15**; **🏁 SEGMENT 1 CLOSED** — §8)*. ⚠️ The TECH_DEBT entry stays **OPEN, not `[DONE]`** *(re-rated P1 → P2 2026-09-15; the 2026-08-17 duplicate MERGED into it)*: no persisted last-run marker, and the daily-sweep-vs-「6 months」 question is unresolved |
 | 2 | **E5** — `pages/privacy.tsx:30` claims query **and answer** content are "de-identified (via PHI masking as a primary safeguard)", which is false for `answer` in every mode and for `question` at the three Verify sites | **NOT STARTED** — recorded inside the E2 entry 2026-09-14; not yet filed as its own entry |
 
 ---
@@ -285,7 +287,7 @@ exception. Rule 5 governs **API responses**, not logs, so this is in policy — 
 | **3** | LOCAL | restart the server | the line appears **again**, proving per-boot execution | **✅ PASS** — restart 11:47:57 → line 11:48:06 (**9 s**). ⭐ **And the `cutoff` ADVANCED 03:46:52 → 03:48:05, by exactly the 73 s between boots — proving the cutoff is recomputed per pass, not frozen at import.** That is a stronger result than the row asked for |
 | **4** | MACHINE | pytest count; T1/T2 RED-then-GREEN; mutations | 442 → 447; 5/5 caught | **✅ PASS** — 442 → **447** / 28 skipped (+5). RED = 5 failed on `AttributeError: no _cleanup_pass`; the ordering-specific RED is M1 (T1 assertion). **5/5 mutations caught** |
 | **5** | POST-DEPLOY | `fly logs`: the cleanup line on **BOTH** machines at boot | present on both, with counts and `cutoff=` | **✅ PASS — ⭐ THE DELIVERABLE. Verbatim:**<br>`683d447c2e5428` @ `2026-09-14T03:58:23Z` → `2026-09-14 03:58:23,291 vela INFO Data cleanup pass: deleted 0 audit logs, 0 chat history records older than 180 days (cutoff=2026-03-18T03:58:22.829299 UTC)`<br>`2879720c66d478` @ `2026-09-14T03:58:59Z` → `2026-09-14 03:58:59,156 vela INFO Data cleanup pass: deleted 0 audit logs, 0 chat history records older than 180 days (cutoff=2026-03-18T03:58:58.794788 UTC)`<br>**Boot-to-log latency 20 s on both** (machines started 03:58:03Z / 03:58:39Z) |
-| **6** | POST-DEPLOY *(**FOUNDER ONLY** — not Claude Code; prod DB is not touched by this session)* | re-run the two prod `SELECT`s **after 2026-09-15 02:43:19 UTC**:<br>`SELECT MIN(created_at), MAX(created_at), COUNT(*) FROM chat_history;`<br>`SELECT MIN(created_at), COUNT(*) FROM chat_history WHERE created_at < NOW() - INTERVAL '180 days';` | `min(created_at)` has advanced past the 180-day line and the second query returns `count = 0` again. ⚠️ **A daily sweep means `min` may lag the line by UP TO 24 h — EXPECTED, not a failure.** Beyond ~25 h of lag is the failure signal | ⏳ **FOUNDER-PENDING** |
+| **6** | POST-DEPLOY *(**FOUNDER ONLY** — not Claude Code; prod DB is not touched by this session)* | re-run the two prod `SELECT`s **after 2026-09-15 02:43:19 UTC**:<br>`SELECT MIN(created_at), MAX(created_at), COUNT(*) FROM chat_history;`<br>`SELECT MIN(created_at), COUNT(*) FROM chat_history WHERE created_at < NOW() - INTERVAL '180 days';` | `min(created_at)` has advanced past the 180-day line and the second query returns `count = 0` again. ⚠️ **A daily sweep means `min` may lag the line by UP TO 24 h — EXPECTED, not a failure.** Beyond ~25 h of lag is the failure signal | **✅ PASS — founder, 2026-09-15.** **Primary (`fly logs`, read by Claude Code, read-only, 2026-09-15 ~05:55 UTC; window `2026-09-14T05:58:36Z` → `2026-09-15T05:45:24Z`, 88 lines, 0 from `2879720c66d478`, 0 `Data cleanup error`), verbatim:**<br>`2026-09-15T03:58:26Z app[683d447c2e5428] nrt [info]2026-09-15 03:58:26,284 vela INFO Data cleanup pass: deleted 3 audit logs, 4 chat history records older than 180 days (cutoff=2026-03-19T03:58:24.808924 UTC)`<br>**86,403 s after the 09-14 boot pass** = `sleep(86400)` + ~3 s; cutoff **1 h 15 m past** the measured `min` 02:43:19.29.<br>**Corroboration — founder's READ-ONLY prod `SELECT`s (Neon `production`, 2026-09-15; transcribed — Claude Code ran none, viewed no screenshot):**<br>`SELECT MIN(created_at), MAX(created_at), COUNT(*) FROM chat_history;` → **2026-03-19 04:02:30.968111** · 2026-09-11 04:55:48.109034 · **1390**<br>`SELECT COUNT(*) FROM chat_history WHERE created_at < NOW() - INTERVAL '180 days';` → **1**<br>`SELECT MIN(timestamp) FROM audit_logs;` → **2026-03-19 04:02:30.351771**<br>**Readings, pre-agreed:** 1394 → 1390 = **−4 = the line's 4** (two independent sources agree to the row) · `min` 02:43:19 → 04:02:30 — everything before the cutoff gone, first survivor 4 min after it · overdue **1** = that row, past the SELECT's line but not yet swept = **daily-sweep lag, EXPECTED** (failure signal was > ~25 h) · `audit_logs` `min` **0.6 s before** `chat_history` `min` (same request, AuditLog first) — both tables on one cutoff; the 2026-08-17 entry's own recheck query passes on its own terms |
 
 ### Backfill separation, and why a backfill line is impossible here
 
@@ -332,3 +334,59 @@ read the window as closed, and was wrong by ~16 h.
 Not pushed, not deployed, no `fly` call of any kind, no DB access of any kind by Claude Code. The gate above is
 **blank**. Prod remains **fly 254 = `93d704c`**, machine version 256. Rows 1-4 are the founder's to fill before
 push/deploy authorization is considered; rows 5-6 come after.
+
+**✍️ 2026-09-16 — SUPERSEDED; kept as the build-time record.** Prod has been **fly 257** since 2026-09-14 03:57 UTC (§5, §6); gate §6 is **filled 6/6** (rows 1–4 2026-09-14 local · row 5 2026-09-14 post-deploy · row 6 2026-09-15). Claude Code's `fly` use in this car, all READ-ONLY and all on 2026-09-15: `fly releases`, `fly status`, `fly logs --no-tail` (row 6's primary evidence). Still **NO DB access of any kind by Claude Code** — every `SELECT` in this baton is the founder's.
+
+---
+
+## §8 — SEGMENT 1 CLOSEOUT (founder rulings R1–R9 of 2026-09-15; written 2026-09-16)
+
+### §8.1 Row 6 — provenance first, then the reading
+
+| source | who | when | what |
+|---|---|---|---|
+| `fly logs -a vela-ai-medical --no-tail` | Claude Code, read-only | 2026-09-15 ~05:55 UTC | window `2026-09-14T05:58:36Z` → `2026-09-15T05:45:24Z`, **88 lines** (86 app lines, all from `683d447c2e5428`; **0** from `2879720c66d478`; 2 `proxy ord` "invalid authority" lines, unrelated); **exactly one** cleanup line — quoted verbatim in §6 row 6 |
+| `fly status` · `fly releases` | Claude Code, read-only | 2026-09-15 05:52 UTC | v257 at the top of `fly releases` (Sep 14 03:57); `683d447c2e5428` **started**, `2879720c66d478` **stopped** (last updated 2026-09-14T04:06:03Z) |
+| three prod `SELECT`s | **founder**, Neon `production`, read-only | 2026-09-15 | transcribed in §6 row 6 — Claude Code ran none and viewed no screenshot |
+
+Reading, in the order the criteria were fixed BEFORE the numbers: the log line is the primary evidence and says **the first real deletion happened** (3 + 4 rows, cutoff stated); the `SELECT`s corroborate it **row for row** (1394 → 1390 = −4); overdue **1** is the daily-sweep lag the gate pre-declared EXPECTED; `audit_logs` `min` 0.6 s before `chat_history` `min` shows both tables swept on one cutoff and discharges the 2026-08-17 entry's own recheck on its own terms. **Row 6 = PASS. Segment 1 = CLOSED.**
+
+⚠️ Rule 20: both sources are live snapshots — dated observations, not regenerable artifacts. The quoted line is committed (§6 row 6 · `TECH_DEBT.md` E1 row-6 bullet · `STATE.md`); the 88-line window stays in a session scratchpad outside the tree, deliberately — it is request-log noise around one line.
+
+### §8.2 What the closeout changed in the ledgers (all docs-only)
+
+| # | ruling | where | what |
+|---|---|---|---|
+| R1 | row 6 PASS, segment 1 CLOSED | this baton :3 · :15 · §6 · `STATE.md` header + Next Up + Recently Shipped | the `STATE` Recently Shipped entry for fly 257 was MISSING (CLAUDE.md step 9) — added at closeout, terse |
+| R2 | MERGE | `TECH_DEBT.md`: the 2026-08-17 `[COMPLIANCE][P2 · retention automation]` entry → heading-kept stub; body → `docs/archive/tech_debt_done.md` VERBATIM; E1 carries the MERGED IN bullet; the COMPLIANCE nav-list title annotated | mechanics DERIVED from the 2026-09-09 httpx / credential-hygiene stub: heading words kept with the status struck and the merge status appended inside the bracket; body relocated verbatim under a dated relocation comment; pointer both ways. ⚠️ Derived ≠ briefed on one point: the brief said "heading verbatim" — the precedent's own heading was NOT byte-verbatim (it struck `NOT fixed, NOT rotated` and appended the merge status); followed the precedent, every original word kept. Class: the precedent stub went `[DONE]` because its canonical closed that day; this stub KEEPS `[COMPLIANCE]` because E1 is OPEN — NAV delta 0 |
+| R3 | E1 P1 → P2 | E1 heading + dated bullet; the two `[P1]` cross-references in the `ChatHistory.answer` entry annotated; the sec-probe baton §6 E1 row annotated | class unchanged; no NAV movement |
+| R4 | grep-before-filing | NAV block 2026-09-16 | PROMOTED to CLAUDE.md Rule 27 in the following commit — not a candidate |
+| R5 | credential hygiene | `TECH_DEBT.md`: the httpx canonical's 2026-09-10 bullet (in-place premise) + a new 2026-09-14 bullet; the merged stub's 2026-09-10 bullet (in-place premise) + a new bullet | third rotation NOT DONE, founder 2026-09-14; the value entered one Claude Code transcript via an IDE selection; not git (`.gitignore:4`, `git log --all -- .env` = 0), not Fly logs (`api/server.py:18`); "never logged on Fly" stays TRUE with its premise; founder rationale recorded as the founder's |
+| R6 | the `:272` citation | `TECH_DEBT.md` 2026-09-14 [sec] NAV note (e) · sec-probe baton §2.9 | **nothing to fix in code** — done in `c96a31b` (this car's build), fragment cleared in `e12d3f0`; both "to ride the next commit" lines annotated, old text kept. Derived: the sentence was at `:272`; both ledger lines said `:271` |
+| R7 | STATE + baton current | `STATE.md` :3 header · Next Up 🏁 block · item 1 DONE · Recently Shipped fly 257 · this baton :3 / :15 / §6 / §7 / §8 | E5 next, then render-leftovers segment 2, then E2 / E3 / E4 (founder order 2026-09-15) |
+| R8 | stopped machine | E1 bullet 📏 · §8.3 | residual (1) MEASURED, not a coverage gap, not fixed by design |
+| R9 | adjacent notes 4 + 5 | §8.4 | one line each; no new entries |
+
+### §8.3 R8 — the stopped machine, measured
+
+`2879720c66d478` booted 2026-09-14T03:58:39Z, logged its boot pass at 03:58:59Z, and has been `stopped` since **2026-09-14T04:06:03Z** — 8 min later (`fly.toml:21` `auto_stop_machines = true`). It produced **0** lines in the 88-line window; its `sleep(86400)` will never return. Only `683d447c2e5428` — the `fly.toml:23` `min_machines_running = 1` floor — reached the 24 h tick. **Why this is not a coverage gap:** run-then-sleep (§2) makes every boot a pass, so auto-stop churn yields MORE passes, not fewer, and the floor machine's daily tick covers the quiet days. A persisted last-run marker would let the schedule survive restarts; it would not add a pass this design lacks. **Not fixed, by design; stays residual (1) in E1.**
+
+### §8.4 R9 — adjacent notes, one line each, no entries
+
+- **`STATE.md:3` is a single 75,918-byte line** (at `c590c77`) stacking three generations of header — four after this closeout; a ledger-slimming candidate under the 2026-08-27 founder ruling. Noted, not acted on.
+- **Scanner paths return 200 on prod** (`/.git/config`, `/.svn/wc.db`, `//wp-includes/wlwmanifest.xml` in the log window): `curl` 2026-09-15 — all three return the SAME `text/html` body as `/`, **22,043 bytes**, i.e. the static-export SPA fallback, not a real file. Same class as the fly-233 static-serving note in the `[OTHER][P3 · caching]` entry (`HEAD /media/research-demo.mp4`, no `Cache-Control`). Recorded so it is not re-diagnosed.
+
+### §8.5 What this closeout did NOT do
+
+No code, no deploy (docs are not deployed by design — `/health` still reads `e12d3f0`), no DB access by Claude Code, no change to the 180-day constant, no persisted marker, no ruling on the daily-sweep-vs-「6 months」 reading (founder / counsel). `stash@{0}` untouched. `tests/probes/baton_check/check_baton.py` re-run on this baton and the sec-probe baton after editing — see §8.6.
+
+### §8.6 Baton checker — before and after this closeout's edits
+
+`tests/probes/baton_check/check_baton.py`, run 2026-09-16 on the HEAD (`c590c77`) copy and on the edited working copy of each baton. It never blocks; "not a unique anchor" means a back-ticked phrase matches more than one ledger line — informational, not a wrong fact.
+
+| baton | HEAD copy | edited copy |
+|---|---|---|
+| this baton | DRIFTED 4 · ADVISORY 6 · VERIFIED 20 | DRIFTED 8 · ADVISORY 6 · VERIFIED 27 — the 4 new drifts are all non-unique-anchor notes on phrases this closeout quotes ("[COMPLIANCE][P2] retention automation", "NOT fixed, NOT rotated", "git log --all -- .env", "min_machines_running = 1"); 0 NOT IN REPO, 0 STALE |
+| `recon_20260914_sec_probe.md` | DRIFTED 5 · ADVISORY 6 · VERIFIED 68 | DRIFTED 5 · ADVISORY 6 · VERIFIED 71 — no new drift |
+
+The table describes the state before this §8.6 was appended; the final re-run after it is in the closeout commit's readback.
