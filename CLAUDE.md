@@ -39,8 +39,11 @@ Examples from 2026-04-19 to 2026-04-20 sessions:
 0. **Fact-check the baton first** — `python tests/probes/baton_check/check_baton.py <baton.md>`. Seconds, no LLM, never blocks. It catches citations, SHAs and ratification claims that have drifted; it does **not** catch a conclusion overturned by later evidence.
 
 1. Read `STATE.md` → top of "Next Up" queue is your task
-2. Find that task's AUTHORITY — its `BACKLOG.md` entry, or the `TECH_DEBT.md` entry that STATE.md names
-   (the sec-probe / render-leftovers / retention cars were all TECH_DEBT-sourced and had no BACKLOG entry)
+2. Find that task's AUTHORITY — its `BACKLOG.md` entry (read short description + phase, + estimated time
+   where an entry carries one — OPTIONAL, not a per-entry promise, per founder ruling A 2026-08-26), or the
+   `TECH_DEBT.md` entry that STATE.md names (the sec-probe / render-leftovers / retention cars were all
+   TECH_DEBT-sourced and had no BACKLOG entry)
+   *(2026-09-16: item 2 was replaced in 4809060 with text that dropped the estimated-time clause and the 2026-08-26 ruling A citation; restored the same day. Cause: the replacement text was supplied without listing what the original line carried — Rule 19 applied to rule text.)*
 3. If task references PRD §X.Y → read `docs/PRD.md` § section (requirements + acceptance + "not in scope")
 4. If task references ADR(s) → read `docs/decisions/00X-*.md` for decision context
 5. Grep codebase to verify partial implementation — `git grep "<feature_keyword>"` + `ls pages/<feature>` etc. Don't re-implement existing code.
