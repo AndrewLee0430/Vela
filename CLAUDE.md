@@ -39,7 +39,8 @@ Examples from 2026-04-19 to 2026-04-20 sessions:
 0. **Fact-check the baton first** — `python tests/probes/baton_check/check_baton.py <baton.md>`. Seconds, no LLM, never blocks. It catches citations, SHAs and ratification claims that have drifted; it does **not** catch a conclusion overturned by later evidence.
 
 1. Read `STATE.md` → top of "Next Up" queue is your task
-2. Find that task in `BACKLOG.md` → read short description + phase (+ estimated time where an entry carries one — OPTIONAL, not a per-entry promise, per founder ruling A 2026-08-26)
+2. Find that task's AUTHORITY — its `BACKLOG.md` entry, or the `TECH_DEBT.md` entry that STATE.md names
+   (the sec-probe / render-leftovers / retention cars were all TECH_DEBT-sourced and had no BACKLOG entry)
 3. If task references PRD §X.Y → read `docs/PRD.md` § section (requirements + acceptance + "not in scope")
 4. If task references ADR(s) → read `docs/decisions/00X-*.md` for decision context
 5. Grep codebase to verify partial implementation — `git grep "<feature_keyword>"` + `ls pages/<feature>` etc. Don't re-implement existing code.
@@ -72,7 +73,7 @@ Examples from 2026-04-19 to 2026-04-20 sessions:
 - `STATE.md` is the authoritative "what to do now" — not PRD, not BACKLOG
 - `BACKLOG.md` organizes work by phase; STATE.md "Next Up" is curated execution order
 - `docs/PRD.md` defines WHAT each item does; not an execution queue
-- `TECH_DEBT.md` is opportunistic side-channel; not a primary work source
+- `TECH_DEBT.md` is opportunistic side-channel; not a primary work source — but it IS a car source when STATE.md's Next Up points at one of its entries; three consecutive cars did (2026-09)
 - `docs/decisions/` ADRs are decision context; not work sources themselves
 
 ## What This Project Is
@@ -162,3 +163,25 @@ docker run -p 8000:8000 vela
 24. **FIRST LINE OF EVERY TASK: ASSERT THE REPO.** Run `git rev-parse --show-toplevel` and `git rev-parse HEAD` before anything else, and state both. **Two VS Code windows run side by side on this machine — Vela and another product — and a prompt pasted into the wrong one does not error.** `git log`, `git grep -c`, `sed -n`, `pytest` all **succeed** and return complete-looking results about the wrong repository; a count, a SHA and a passing suite are produced, and every one of them is about something else. **CHECK: the first tool call of a task prints the toplevel and HEAD, and the reply states them. A task that reports numbers without having asserted the repo has not established which repo they are from.** 🔑 Wrong-repo output is a **silent failure with no error surface** — unlike a missing file or a bad path, nothing anywhere says "wrong project".
 
 25. **NEVER TAKE A COUNT FROM A REPORT, BATON, OR PROMPT AS THE SCOPE OF A FIX — DERIVE IT, THEN COMPARE, THEN REPORT THE DIFFERENCE.** A figure in a document is a claim about the repo at the moment it was written, not a measurement of the repo now; and a figure in a prompt may be inherited from that same document. **CHECK: any fix whose scope is a set of sites names the COMMAND that enumerated them, and the reply states whether the derived count matches the cited one — including when it does. Silence about a difference is indistinguishable from not having looked.** ⚠️ **Also state the UNIT**: "10 regex literals" and "16 extraction points" describe the same defect and imply different fixes. Reference incidents: **fly 222** — a sampled count became the fix scope and was **wrong by 6×**, shipping a partial fix that fly 223 had to finish; and the **2026-08-24 count chain** — **5/5 → 4/6 → 7/3**, three successively published figures, **all three wrong**, each correcting the previous one's arithmetic while inheriting its classification and each looking self-consistent because the total kept reconciling to 10. 🔑 **A sum that reconciles is not a count that is right.**
+
+26. **THE REPO IS THE ONLY SOURCE OF TRUTH; the strategy-side chat (claude.ai) holds no mirror of it.**
+    Since 2026-09-15, Project Knowledge carries `CLAUDE.md` ONLY. When the strategy side needs repo state
+    to decide anything, Claude Code produces a READ-ONLY EXTRACTION and the founder pastes it across; every
+    session ENDS by producing the next session's extraction. An extraction carries three things or it is not
+    one: (i) `git rev-parse HEAD`, so every chat conclusion is pinned to a SHA; (ii) the COMMAND that
+    produced each section, not only its output, so the next session can re-run it; (iii) at least one
+    ADJACENT observation — something not asked for that a full-file reader would have noticed — because
+    dropping the mirror drops serendipity, and this line is its replacement. **CHECK: a strategy-side
+    conclusion citing no HEAD, or a pasted excerpt with no producing command, is a snapshot claim and is
+    treated as one (Rule 25).** Reference incident: 2026-09-15 — the FIRST extraction's adjacent line
+    surfaced `TECH_DEBT.md:1353` (at `c590c77`), a four-week-old duplicate of E1 that two full-file reads of the mirror
+    had missed. The mirror was not safer; it was only larger.
+
+27. **GREP BEFORE FILING.** Before a NEW ledger entry is written, grep `TECH_DEBT.md` (and `BACKLOG.md`) for
+    the defect's symbols and key terms — the function name, the table, the surface, the claim — and either
+    cite the existing entry or state "none found" WITH the grep that established it. A second entry for one
+    defect is how one copy gets closed while the other stays open forever. **CHECK: every new entry's first
+    bullet names the grep it ran, or the entry it extends. An entry with neither has not established that it
+    is new.** Reference incident: E1 (retention execution) was filed 2026-09-14 four weeks after
+    `[COMPLIANCE][P2] retention automation` (2026-08-17) had filed the same defect and scheduled its recheck
+    for the very day E1's clock derived independently — 2026-09-15. Merged 2026-09-15.
