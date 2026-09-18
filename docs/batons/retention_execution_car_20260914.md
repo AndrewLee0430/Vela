@@ -15,7 +15,7 @@ written, superseded by the deploy below.)*
 | segment | item | status |
 |---|---|---|
 | **1** | **E1** — `[sec][COMPLIANCE][P1]` *(→ `[P2]` 2026-09-15)* the 180-day retention task cannot be shown to have ever run | **✅ SHIPPED as fly 257, 2026-09-14** — run-then-sleep + unconditional log + `_cleanup_pass()` extraction. Gate §6 **rows 1–5 PASS**, **row 6 founder-pending** *(→ **PASS 2026-09-15**; **🏁 SEGMENT 1 CLOSED** — §8)*. ⚠️ The TECH_DEBT entry stays **OPEN, not `[DONE]`** *(re-rated P1 → P2 2026-09-15; the 2026-08-17 duplicate MERGED into it)*: no persisted last-run marker, and the daily-sweep-vs-「6 months」 question is unresolved |
-| 2 | **E5** — `pages/privacy.tsx:30` claims query **and answer** content are "de-identified (via PHI masking as a primary safeguard)", which is false for `answer` in every mode and for `question` at the three Verify sites | **NOT STARTED** — recorded inside the E2 entry 2026-09-14; not yet filed as its own entry |
+| 2 | **E5** — `pages/privacy.tsx:30` claims query **and answer** content are "de-identified (via PHI masking as a primary safeguard)", which is false for `answer` in every mode and for `question` at the three Verify sites | **NOT STARTED** — recorded inside the E2 entry 2026-09-14; not yet filed as its own entry → filed 2026-09-17, TECH_DEBT E5 entry |
 
 ---
 
