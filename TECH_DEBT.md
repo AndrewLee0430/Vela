@@ -17,6 +17,32 @@ Classes are **additive and orthogonal** to the existing `[P0]`–`[P3]` ratings 
 | [OTHER] | quality, hygiene, tooling, opportunistic | 100 |
 | | **total** | **190** |
 
+<!-- 🔴 NAV CHECKED 2026-09-18 (E5 RATIFIED + the e16a33a SHA written back into STATE; founder rulings 2026-09-18:
+     class [HONESTY] and [P2] RATIFIED, and the push authorized. Docs-only commit; NO deploy, prod stays fly v257 =
+     e12d3f0bb4bb37006834e8eaa19fe77537000944. This commit IS pushed — the first of this line of work that is.)
+     PRE-CHANGE CHECK (Rule 25), derived at e16a33a with grep -c "^- \[CLASS\]" per class: 0 + 11 + 19 + 60 + 100 = 190 =
+     the table. Cross-checks: grep -c "^- \[" = 190; grep -c "^- " = 228 = 190 + 38 (grep -c "^- [^\[]" = 38).
+     [sec]: loose grep -c "^- \[.*\[sec\]" = 15; strict grep -c -E "^- \[[A-Z]+\] \*\*\[sec\]" = 14. No discrepancy.
+     WHAT CHANGED: NO entry added, removed or re-classed — only a RATIFICATION MARKER and a SHA write-back.
+       (1) The E5 heading gains " — RATIFIED 2026-09-18 (founder)" INSIDE its bracket, on BOTH surfaces (the entry
+           heading and its #### [HONESTY] title row) — the two the 2026-09-17 commit created. "pending" is NOT removed:
+           the bracket now reads "class/P proposed 2026-09-17 — RATIFIED 2026-09-18", so the proposal and its
+           ratification are both legible (mark-never-delete).
+       (2) The E5 Status bullet gains "→ RATIFIED 2026-09-18; remains OPEN (wording awaits counsel)." RATIFIED is about
+           the CLASS and the P, not about the defect: privacy.tsx:30 is unchanged and the wording is still counsel's call.
+       (3) STATE.md: Next Up item 3 gains "→ recorded 2026-09-18: e16a33a" (the 2026-09-17 entry had deferred the SHA
+           per the c9f91e4 precedent, and this is the promised write-back); the Recently Shipped 2026-09-17 line gains
+           the same SHA; "Last updated" 2026-09-16 -> 2026-09-18. ⚠️ That header line is the ONE line this ledger
+           REWRITES rather than appends to — the file's own convention, stated here so the rewrite is not read as a
+           mark-never-delete breach. The 2026-09-17 entry's "NOT pushed" label is KEPT and annotated, not corrected:
+           it was true on its date.
+     POST-CHANGE RE-DERIVE (grep -c "^- \[CLASS\]" per class, not incremented): 0 + 11 + 19 + 60 + 100 = 190.
+     Delta 0 — a ratification marker changes no class and no count. Cross-checks: grep -c "^- \[" = 190;
+     grep -c "^- " = 228 = 190 + 38. [sec] loose 15 / strict 14. IDENTICAL to the pre-change derive: MATCH.
+     ⚠️ CLAUDE.md was MODIFIED in the working tree at this commit's Step 0 — one pasted fragment naming
+     scripts/extract_session.ps1 appended to Rule 26 — and was RESTORED with git checkout, not committed: the script
+     does not exist yet, so the sentence would have been a Rule 20 citation to nothing. It lands with its own car.
+     Baton: docs/batons/retention_execution_car_20260914.md (:18 row 2 — E5 filed pointer, written 2026-09-17). -->
 <!-- 🔴 NAV CHECKED 2026-09-17 (E5 FILED — the privacy.tsx:30 de-identification claim; founder rulings 2026-09-17 「照建議」×6,
      written at the 2026-09-18 local clock. Docs-only commit, NOT pushed, NOT deployed; prod UNCHANGED at fly v257 =
      e12d3f0bb4bb37006834e8eaa19fe77537000944.)
@@ -847,7 +873,7 @@ Classes are **additive and orthogonal** to the existing `[P0]`–`[P3]` ratings 
 <!-- 2026-09-07 (segment-3 final docs): list completed — it held 15 of the 19 `- [HONESTY]` entries (derived: grep -c "^- \[HONESTY\]" = 19); the four titles below were never listed (filed 2026-08-23 ×2, 2026-09-04, 2026-09-07). Newest first. -->
 <!-- 2026-09-09 → [DONE] (shipped fly 251, `2404f13`; heading-verbatim entry retained below): `[P2 · /history research rows redisplay a stored medical answer WITHOUT the disclaimer line /research renders — flagged in the segment-3 build report (baton §5b / §5f-3), derived + filed 2026-09-07]` -->
 <!-- 2026-09-08: the Verify site-3 entry left this list → [DONE], resolved by d13040e + 128d03e (fly 249) + the §8 gate 8/8 (search "Verify main path: false"). -->
-- `[sec][P2 · founder ratification pending — class/P proposed 2026-09-17]` E5 · privacy.tsx:30 "de-identified (via PHI masking as a primary safeguard)" vs the mask's actual coverage — filed 2026-09-17 *(row added 2026-09-17 with the entry; newest first)*
+- `[sec][P2 · founder ratification pending — class/P proposed 2026-09-17 — RATIFIED 2026-09-18 (founder)]` E5 · privacy.tsx:30 "de-identified (via PHI masking as a primary safeguard)" vs the mask's actual coverage — filed 2026-09-17 *(row added 2026-09-17 with the entry; newest first)*
 - `[P1 · citation SUPPORT — a NEW failure mode, distinct from wrong-drug, and INVISIBLE TO EVERY GATE; found 2026-08-23 by the founder-directed human review, N=1, NOT fixed]` 🔴 R12: every citation is real, relevant and correctly attributed — and none of them carries the inference the answer draws. Call it WRONG-SUPPORT
 - `[P1 · retrieval measurement / premise integrity — five read-only recons + TWO founder-authorized live runs, 2026-08-22/23; FINDINGS ONLY, nothing re-scoped]` 🔴 主線 A #1 (reserved seat + ownership interception) was scoped on a premise the measurements now contradict
 - `[P1 · retrieval-corpus integrity / honesty — PROPOSED RATING, founder to ratify; surfaced by the fly-214 citation gate 2026-07-29]` The 690-doc LOCAL drug corpus is
@@ -1170,7 +1196,7 @@ When entries are resolved, mark with the resolving commit SHA (git log is the re
   - **Class / P PROPOSED 2026-09-14 by derivation; founder ratification pending** — the same posture the LEMON_SQUEEZY entry used when it filed `[OTHER][P1]` with the class DISPUTED in its heading.
   - **Surfaced:** 2026-09-14, read-only `[sec]` probe at `9b24c19`; **filed** 2026-09-14.
 
-- [HONESTY] **[sec][P2 · founder ratification pending — class/P proposed 2026-09-17] E5 · privacy.tsx:30 "de-identified (via PHI masking as a primary safeguard)" vs the mask's actual coverage — filed 2026-09-17**
+- [HONESTY] **[sec][P2 · founder ratification pending — class/P proposed 2026-09-17 — RATIFIED 2026-09-18 (founder)] E5 · privacy.tsx:30 "de-identified (via PHI masking as a primary safeguard)" vs the mask's actual coverage — filed 2026-09-17**
   - **Rule 27**: `grep -n -E "\bE5\b" TECH_DEBT.md` → :1105 only (at `2a5d98c`); `grep -n -i -E "privacy\.tsx:30|3224|llms\.txt" TECH_DEBT.md BACKLOG.md STATE.md` → no entry titled for `privacy.tsx:30` or `server.py:3224` (the hits are the E2 :1115 bullet, the 05-25 entry's :2395 "Discovered" line, and unrelated DailyMed / llms lines). This entry EXTENDS the E2 (:1110) bullet at :1115 ("recorded as an observation and NOT filed"), per founder ruling 2026-09-17. Sibling entries (line numbers at `2a5d98c`): E2 :1110 (masking asymmetry), E3 :1122 (`patient_context` gate gap), E4 :1132 (`_check_phi` fail-open), the 05-25 entry :2394 (chat-history privacy model), R5 :2418 (`ChatHistory.answer` unsanitized).
   - **Surface #1 (verbatim, HEAD `2a5d98c`)**: `pages/privacy.tsx:30`, under the label "Signed-in Usage (Free & Pro)" — «To provide chat history and ensure service quality, query and answer content are processed, de-identified (via PHI masking as a primary safeguard), and linked to your account. This data is retained for a limited period of up to 6 months and is strictly never used to train artificial intelligence models.» Added by `bebe20e` (2026-06-09, `[docs] privacy — accurate de-identified/pseudonymous framing …`; 1 file, `pages/privacy.tsx` +23/−11; `git log -S"de-identified" -- pages/privacy.tsx` → bebe20e is the only introducing commit). `git blame -L 30,30` lands on `6cd980a` (2026-08-20) because that theme commit re-tokenized the `<strong>` class on the same line; the prose is bebe20e's, byte-identical. Also :36 — «Our PHI detection system actively blocks inputs containing identifiable patient data such as national IDs, passport numbers, or medical record numbers. De-identified query logs are retained for audit and service improvement purposes (see §4 below).» — and :46 — «We retain your signed-in chat history and related audit logs (in their de-identified state) for up to 6 months …».
   - **Surface #2 (Rule 19)**: `api/server.py:3224`, the `/llms.txt` body — «Query content is de-identified and PHI-masked; PHI (national IDs, medical record numbers, etc.) is blocked at the request boundary.» Narrower than :30 (query only) but the same "de-identified / PHI-masked" claim, false for Verify's `question` (below). Any counsel-approved rewording of :30 must be carried here.
@@ -1191,7 +1217,7 @@ When entries are resolved, mark with the resolving commit SHA (git log is the re
     (c) :61 PostHog wording (above).
     (d) the 05-25 entry's fix-path line numbers (`server.py` 697 / 898 / 938 / 1024 / 1128; `_cleanup_old_records` 179–197) are May figures — stale by construction (Rule 25).
   - **Probe**: 2026-09-17 read-only E5 probe (extraction kept in the strategy chat; not committed — Rule 20: it is a dated HEAD observation, every command is listed in this entry and re-runnable). The build re-derived every count at `2a5d98c` before filing: 5 / 6 / 16 / 0 — MATCH the probe.
-  - **Status**: OPEN. Founder ratification pending on class `[HONESTY]` and `[P2]`.
+  - **Status**: OPEN. Founder ratification pending on class `[HONESTY]` and `[P2]`. → RATIFIED 2026-09-18; remains OPEN (wording awaits counsel).
 
 - [OTHER] **[P3 · Rule 10 violation on a DORMANT path — surfaced 2026-09-11 by the HISTORY RENDER LEFTOVERS segment-1 probe, NOT fixed] `_EXPLAIN_PROMPT_FALLBACK` instructs the LLM to write a disclaimer — "End with a short disclaimer in the same language." — which CLAUDE.md Rule 10 forbids**
   - **Derived at `430ef01`:** `api/services/explain_service.py:66-72` defines the inline fallback prompt, whose last sentence is `"End with a short disclaimer in the same language."`. It is used ONLY in the `except FileNotFoundError` branch at `:74-79`, i.e. when `api/prompts/explain_system.md` is missing from the image — and that file says the OPPOSITE twice: `:103` "Do NOT include any disclaimer sentence inside the JSON output. A fixed localized disclaimer is appended server-side after your JSON." and `:238` "Do NOT include a disclaimer sentence in the JSON — it is appended server-side."
