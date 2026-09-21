@@ -17,6 +17,39 @@ Classes are **additive and orthogonal** to the existing `[P0]`–`[P3]` ratings 
 | [OTHER] | quality, hygiene, tooling, opportunistic | 101 |
 | | **total** | **191** |
 
+<!-- 🔴 NAV CHECKED 2026-09-21 (LEDGER SLIMMING — PASS 2 CLOSEOUT. Founder rulings 2026-09-21: R1 ADD the ship
+     entry the build brief's file gates had omitted — the car shipped three commits and left STATE's Recently
+     Shipped with no record of itself, which is the highest-cost drift CLAUDE.md names; R2 below. Push authorized
+     in the task prompt. STATE.md + this file only; NO deploy, prod stays fly v257 =
+     e12d3f0bb4bb37006834e8eaa19fe77537000944.)
+     PRE-CHANGE CHECK (Rule 25), derived at cbcc109 with grep -c "^- \[CLASS\]" per class: 0 + 11 + 19 + 60 + 101 =
+     191 = the table. Cross-checks: grep -c "^- \[" = 191; grep -c "^- " = 229 = 191 + 38 (grep -c "^- [^\[]" = 38).
+     [sec]: loose 15 / strict 14. No discrepancy.
+     RULE 27: this commit files NO new ledger entry, so no grep-before-filing was owed. Stated rather than left
+     silent — the absence of a Rule 27 line is deliberate here, not an omission.
+     WHAT CHANGED — two edits, both in STATE.md, NONE in this file's entries:
+       (1) ONE Recently Shipped entry dated 2026-09-21, terse per CLAUDE.md ship-entry terseness, carrying the
+           three SHAs (885eae3 / b66a6c0 / cbcc109, pushed cb7b8df..cbcc109), the two sha256 move proofs, the
+           line counts, the 14-of-40 citation cost, the 12-not-13 correction, and the dogfood reading.
+       (2) STATE.md line 3 "Last updated" 2026-09-18 -> 2026-09-21. Nothing else in the header was touched.
+     🔴 FOUNDER RULING R2, RECORDED HERE SO THE DECISION IS FINDABLE LATER — IT PRODUCED NO EDIT: the two
+     post-relocation status bullets under TECH_DEBT.md's 2026-08-21 credential-hygiene [DONE] entry (the second
+     rotation, release v253, 2026-09-10; and the third rotation NOT DONE, founder ruling 2026-09-14) STAY IN THIS
+     FILE. They are facts dated AFTER that entry's body was relocated on 2026-09-09, so they belong in the live
+     ledger, not in the 2026-08-27 archive pass; and the three lines above them are a POINTER, which
+     mark-never-delete forbids relocating ("summaries may point, only full text may carry"). This closes the
+     question the b66a6c0 NAV block left open as FOUNDER DECISION PENDING — the answer is: leave it alone.
+     ⚠️ Consequence, flagged not fixed: that entry is therefore the one [DONE] whose record is deliberately SPLIT
+     — body at docs/archive/tech_debt_done.md:597, two later facts here. Locate it by heading, never by number.
+     1c CHECKED, not assumed: sed -n "125,325p" STATE.md | grep -c -i "ledger slimming" -> 0, and the same range
+     grepped for "ledger (slim|weight|size)|archive pass|C1-30d|C3 rule" -> 0. No ⚠️ / 🏁 block in Next Up
+     describes the slimming as pending, so there was nothing to append a pointer to. Recorded because "nothing
+     found" and "did not look" are indistinguishable in a ledger.
+     POST-CHANGE RE-DERIVE (grep -c "^- \[CLASS\]" per class, not incremented): 0 + 11 + 19 + 60 + 101 = 191.
+     Delta 0 — a STATE ship entry and a date change add no class and no count, and R2 is a ruling with no edit.
+     Cross-checks: grep -c "^- \[" = 191; grep -c "^- " = 229 = 191 + 38. [sec] loose 15 / strict 14.
+     IDENTICAL to the pre-change derive: MATCH. -->
+
 <!-- 🔴 NAV CHECKED 2026-09-21 (LEDGER SLIMMING — PASS 2. THIS IS THE CAR'S ONLY NAV BLOCK: it covers all THREE
      commits, because the counts must be read against the car, not against one commit of it. Founder rulings
      2026-09-21, all 「照建議」: Q1 the 30-day clause of CLAUDE.md:72 does NOT govern the TECH_DEBT half — [DONE]
