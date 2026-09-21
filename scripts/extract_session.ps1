@@ -193,7 +193,14 @@ for ($k = 0; $k -lt $heads.Count; $k++) {
     while ($last -gt $first -and $stLines[$last].Trim() -eq "") { $last-- }
     # 🔑 EXCLUDE already-relocated entries BEFORE the date compare. Without this the count is inflated
     #    and looks perfectly plausible — measured 2026-09-21: 114 reported vs 55 true.
-    if ($stLines[$first] -like "*archived verbatim*") { $nArchived++; continue }
+    # 🔴 ANCHORED TO THE POINTER SUFFIX, NOT A SUBSTRING (founder ruling 2026-09-21): the first version tested
+    #    -like "*archived verbatim*" anywhere in the heading, so the 2026-09-21 ship entry — whose PROSE uses the
+    #    phrase twice — read as archived; an entry that TALKS about archiving counted as one that HAD BEEN. It was
+    #    harmless the day it landed (dated inside the 30-day window either way) and would have been SILENTLY skipped
+    #    from 2026-10-22 onward, never offered as a candidate, with the wrong total sitting next to a right answer.
+    #    Found in the slimming closeout's own dogfood run, 2026-09-21: excluded read 115 where 114 lines end with the
+    #    suffix. The literal below was derived from STATE.md's real tombstones (all 114 end with it), not retyped.
+    if ($stLines[$first].EndsWith(' *(→ archived verbatim: docs/archive/state_shipped_2026.md)*')) { $nArchived++; continue }
     $d = [datetime]::ParseExact($heads[$k][0], 'yyyy-MM-dd', $null)
     if ($d -lt $cutoff) {
         $nCand++

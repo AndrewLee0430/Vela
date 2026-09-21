@@ -17,6 +17,43 @@ Classes are **additive and orthogonal** to the existing `[P0]`–`[P3]` ratings 
 | [OTHER] | quality, hygiene, tooling, opportunistic | 101 |
 | | **total** | **191** |
 
+<!-- 🔴 NAV CHECKED 2026-09-21 (SCRIPT FIX — one predicate in scripts/extract_session.ps1 §6. Founder ruling
+     2026-09-21: apply the suffix predicate found in the slimming closeout's Step 4. Push authorized in the task
+     prompt. scripts/ + this file only; NO deploy, prod stays fly v257 =
+     e12d3f0bb4bb37006834e8eaa19fe77537000944.)
+     PRE-CHANGE CHECK (Rule 25), derived at 004a4d1 with grep -c "^- \[CLASS\]" per class: 0 + 11 + 19 + 60 + 101 =
+     191 = the table. Cross-checks: grep -c "^- \[" = 191; grep -c "^- " = 229 = 191 + 38 (grep -c "^- [^\[]" = 38).
+     [sec]: loose 15 / strict 14. No discrepancy.
+     RULE 27: this commit files NO new ledger entry — the defect it fixes is already recorded in the pass-2 closeout
+     block below and in this car's own script comment, so no grep-before-filing was owed. Stated rather than left
+     silent; the absence of a Rule 27 line is deliberate here, not an omission.
+     WHAT CHANGED — two things, both in scripts/extract_session.ps1, NONE in this file's entries:
+       (1) the §6 tombstone test stops being a substring match and becomes an anchored suffix match:
+           -like "*archived verbatim*"  ->  .EndsWith(' *(→ archived verbatim: docs/archive/state_shipped_2026.md)*')
+           The literal was DERIVED from STATE.md's real tombstones, not retyped from the brief: the longest common
+           trailing string across all 114 tombstone lines is exactly that 60-char suffix, and 114/114 end with it.
+       (2) one comment above it (wrapped to the file's existing ~118-col style) recording why, with the evidence.
+     THE DEFECT, for the record: the substring form counted the 2026-09-21 ship entry as a tombstone because its
+     PROSE uses the phrase "archived verbatim" twice — an entry that TALKS about archiving read as one that HAD
+     BEEN archived. Harmless on the day it landed (dated inside the 30-day window under either rule) and SILENTLY
+     wrong from 2026-10-22, when it ages past the cutoff and is skipped forever with nothing reporting it. Found by
+     reading the closeout's own dogfood output, not by a test: excluded printed 115 where 114 lines carry the
+     suffix. 🔑 The headline figure — 0 candidates — was correct under BOTH predicates, which is exactly why this
+     would have kept: the wrong count sat next to a right answer.
+     VERIFIED (Rule 17 — the check observes real effect, not a passing exit code): the script's §6 moves
+     excluded 115 -> 114 and within-30-days 37 -> 38, candidates unchanged at 0. Cross-checked by a DIFFERENT
+     implementation (python over STATE.md, not the script) classifying all 152 dated headings under both
+     predicates: EXACTLY ONE changes classification — line 332, the 2026-09-21 ship entry, EXCLUDED(tombstone) ->
+     KEPT(<=30d); it contains the phrase twice and ends with the suffix: False. Exit 0, BOM intact, 0 U+FFFD in the
+     output, em-dashes and arrows rendered; every "?" in the output traced to a genuine source character.
+     ⚠️ FLAGGED, NOT CHANGED (the ruling authorized one predicate): the Emit label two dozen lines below still reads
+     "heading already says 'archived verbatim'", which describes the OLD test. It remains true of all 114 excluded
+     entries, so it is imprecise rather than wrong — but a reader comparing label to code would misread which test
+     runs. Founder call whether to reword it.
+     POST-CHANGE RE-DERIVE (grep -c "^- \[CLASS\]" per class, not incremented): 0 + 11 + 19 + 60 + 101 = 191.
+     Delta 0 — a tooling predicate and a comment add no class and no count. Cross-checks: grep -c "^- \[" = 191;
+     grep -c "^- " = 229 = 191 + 38. [sec] loose 15 / strict 14. IDENTICAL to the pre-change derive: MATCH. -->
+
 <!-- 🔴 NAV CHECKED 2026-09-21 (LEDGER SLIMMING — PASS 2 CLOSEOUT. Founder rulings 2026-09-21: R1 ADD the ship
      entry the build brief's file gates had omitted — the car shipped three commits and left STATE's Recently
      Shipped with no record of itself, which is the highest-cost drift CLAUDE.md names; R2 below. Push authorized
