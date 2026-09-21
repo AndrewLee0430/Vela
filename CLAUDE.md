@@ -179,6 +179,7 @@ docker run -p 8000:8000 vela
     treated as one (Rule 25).** Reference incident: 2026-09-15 — the FIRST extraction's adjacent line
     surfaced `TECH_DEBT.md:1353` (at `c590c77`), a four-week-old duplicate of E1 that two full-file reads of the mirror
     had missed. The mirror was not safer; it was only larger.
+    *(2026-09-18: the extraction is produced by `scripts/extract_session.ps1` — read-only, output outside the working tree. It prints the machine date, `git log --oneline -10`, `git status --porcelain`, and, for each ledger the founder uploads to the strategy chat, the LF-normalized chars / lines / sha256-16 of BOTH the committed blob and the working file, so an uploaded copy can be pinned to a SHA rather than trusted. Uploaded ledgers therefore satisfy (i) and (ii) for LEDGER questions only; product-code questions still need a read-only probe, and (iii) the adjacent observation is written by hand — the script prints a placeholder and never invents one.)*
 
 27. **GREP BEFORE FILING.** Before a NEW ledger entry is written, grep `TECH_DEBT.md` (and `BACKLOG.md`) for
     the defect's symbols and key terms — the function name, the table, the surface, the claim — and either

@@ -17,9 +17,50 @@ Classes are **additive and orthogonal** to the existing `[P0]`–`[P3]` ratings 
 | [OTHER] | quality, hygiene, tooling, opportunistic | 100 |
 | | **total** | **190** |
 
+<!-- 🔴 NAV CHECKED 2026-09-21 (SCRIPT CAR — scripts/extract_session.ps1 added, cited in CLAUDE.md Rule 26, and the
+     ce6361f push clause corrected. Founder authorized the push in the task prompt. Docs + ONE new script; NO deploy,
+     prod stays fly v257 = e12d3f0bb4bb37006834e8eaa19fe77537000944 — the script is tooling, never imported by api/.)
+     PRE-CHANGE CHECK (Rule 25), derived at ce6361f with grep -c "^- \[CLASS\]" per class: 0 + 11 + 19 + 60 + 100 = 190 =
+     the table. Cross-checks: grep -c "^- \[" = 190; grep -c "^- " = 228 = 190 + 38 (grep -c "^- [^\[]" = 38).
+     [sec]: loose 15 / strict 14. No discrepancy.
+     RULE 27: this car files NO new ledger entry, so no grep-before-filing was owed. Stated rather than left silent —
+     the absence of a Rule 27 line is deliberate here, not an omission.
+     WHAT CHANGED — three things, no ledger entry added, removed or re-classed:
+       (1) NEW FILE scripts/extract_session.ps1 (195 lines incl. a UTF-8 BOM): the four-item opening probe for the
+           strategy chat's new protocol (founder, 2026-09-18) in which the founder UPLOADS STATE / BACKLOG / TECH_DEBT
+           and pastes this block. Read-only: it writes only under %TEMP%\vela_extraction and REFUSES to run if that
+           path resolves inside the working tree; it runs no add/commit/push and reads no .env. Every section prints
+           the command that produced it (Rule 26 ii); section 8 is a PLACEHOLDER the script never fills (Rule 26 iii).
+           Section 3 is the point of it: for each uploaded ledger it prints LF-normalized chars / bytes / lines /
+           sha256-16 for BOTH the committed blob and the working file, with a MATCH / DIFFERS verdict, so the chat can
+           pin an upload to a SHA instead of trusting it.
+       (2) CLAUDE.md Rule 26 gains ONE line citing the script — no renumbering, no reflow, 1 insertion / 0 deletions.
+       (3) The 2026-09-18 block's "first of this line of work" clause gains its correction in place (mark-never-delete:
+           the original words stay, the derived fact is appended).
+     🔴 TWO ENCODING DEFECTS FOUND AND FIXED DURING THE BUILD — recorded because the first draft SHIPPED WRONG NUMBERS
+     into its own output and a passing exit code did not say so (Rule 18):
+       (a) Windows PowerShell 5.1 parses a .ps1 as the ANSI codepage (cp950 here) unless the file carries a UTF-8 BOM,
+           so the script's own em-dash / middot literals came out mangled. Fixed by writing the file WITH a BOM.
+           ⚠️ deploy.ps1 has no BOM and does not need one — it is pure ASCII. Any future .ps1 carrying non-ASCII does.
+       (b) Get-Content WITHOUT -Encoding UTF8 UNDERCOUNTS lines on these files: measured 2026-09-21, TECH_DEBT.md 2493
+           vs the true 2517, BACKLOG.md 1929 vs 1952, STATE.md 1021 vs 1023. The wrong counts had already been printed
+           into section 6 of the first run, next to a section 3 that was right — two sections of one extraction
+           disagreeing. Fixed by pinning -Encoding UTF8; sections 3 and 6 now reconcile exactly, and the measurement is
+           printed in section 6 so the next reader does not re-discover it.
+     VERIFIED (Rule 17 — the check observes real effect, not a passing exit code): the script's section-3 arithmetic for
+     TECH_DEBT.md was re-computed by a DIFFERENT implementation — `git show HEAD:TECH_DEBT.md` piped to python, strip CR,
+     len / count / sha256 — and agrees on all four figures: chars 613854 · bytes 625317 · lines 2517 · sha f23d61b6caa74d8c.
+     Section 6's counts independently equal `wc -l` (1023 / 1952 / 2517). Section 3 verdict: all three files MATCH.
+     ⚠️ DATE, flagged not corrected: the Rule 26 sentence and the (3) correction clause are dated 2026-09-18 because the
+     founder supplied both texts verbatim with that date; the script, the citation and this block all actually landed
+     2026-09-21. The supplied wording is kept word-for-word (it is the founder's rule text); the difference is recorded
+     here rather than silently edited, and the machine date the script prints in its own section 1 is authoritative.
+     POST-CHANGE RE-DERIVE (grep -c "^- \[CLASS\]" per class, not incremented): 0 + 11 + 19 + 60 + 100 = 190.
+     Delta 0 — a tooling file and two prose additions change no class and no count. Cross-checks: grep -c "^- \[" = 190;
+     grep -c "^- " = 228 = 190 + 38. [sec] loose 15 / strict 14. IDENTICAL to the pre-change derive: MATCH. -->
 <!-- 🔴 NAV CHECKED 2026-09-18 (E5 RATIFIED + the e16a33a SHA written back into STATE; founder rulings 2026-09-18:
      class [HONESTY] and [P2] RATIFIED, and the push authorized. Docs-only commit; NO deploy, prod stays fly v257 =
-     e12d3f0bb4bb37006834e8eaa19fe77537000944. This commit IS pushed — the first of this line of work that is.)
+     e12d3f0bb4bb37006834e8eaa19fe77537000944. This commit IS pushed — the first of this line of work that is.) *(corrected 2026-09-18: `git rev-list --count 2a5d98c..ce6361f` = 2 — `e16a33a` and `ce6361f` went up in the SAME push; the original clause is kept per mark-never-delete.)*
      PRE-CHANGE CHECK (Rule 25), derived at e16a33a with grep -c "^- \[CLASS\]" per class: 0 + 11 + 19 + 60 + 100 = 190 =
      the table. Cross-checks: grep -c "^- \[" = 190; grep -c "^- " = 228 = 190 + 38 (grep -c "^- [^\[]" = 38).
      [sec]: loose grep -c "^- \[.*\[sec\]" = 15; strict grep -c -E "^- \[[A-Z]+\] \*\*\[sec\]" = 14. No discrepancy.
