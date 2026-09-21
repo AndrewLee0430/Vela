@@ -168,15 +168,75 @@ Sec "6. LEDGER SHAPE"
 Emit "(-Encoding UTF8 is REQUIRED: without it Windows PowerShell 5.1 decodes these UTF-8 files as the ANSI codepage (cp950 here)"
 Emit " and UNDERCOUNTS lines — measured 2026-09-21 on this repo: TECH_DEBT.md 2493 vs the true 2517, BACKLOG.md 1929 vs 1952,"
 Emit " STATE.md 1021 vs 1023. The values below agree with wc -l and with the LF counts in section 3.)"
+Emit " (that pair was measured at ce6361f; TECH_DEBT.md was already 2558 lines at cb7b8df, the commit that added this script"
+Emit "  — the live counts three lines below are authoritative. Kept rather than corrected: mark-never-delete.)"
 foreach ($f in $Files) { Run ('(Get-Content "' + $f + '" -Encoding UTF8).Count') }
 GrepCount "^- \[DONE\]" "TECH_DEBT.md" | Out-Null
 Emit ""
-Emit "30-day relocation check — PRINTED, NOT EVALUATED:"
+Emit "30-day relocation check — EVALUATED. Enumeration (verified 2026-09-21: 151/151 dated headings match, 0 hits"
+Emit "outside the Recently Shipped section, so no section-range logic is needed):"
 Emit '    git grep -n "^- \*\*20[0-9][0-9]-[0-9][0-9]-[0-9][0-9]\*\*" -- STATE.md'
-Emit "  The dates ARE machine-readable, so the >30d SET is derivable by comparing each to today. What is NOT mechanical is the"
-Emit "  decision: relocation moves the body VERBATIM to docs/archive/ and leaves a heading-verbatim tombstone, and whether an"
-Emit "  entry is ready for that is a founder call (ledger slimming, founder ruling 2026-08-27). Treat the grep as a candidate"
-Emit "  list, never as an action list."
+
+$stLines = Get-Content "STATE.md" -Encoding UTF8
+$dateRx = '^- \*\*(20[0-9][0-9]-[0-9][0-9]-[0-9][0-9])\*\*'
+$heads = New-Object System.Collections.ArrayList
+for ($i = 0; $i -lt $stLines.Count; $i++) {
+    if ($stLines[$i] -match $dateRx) { [void]$heads.Add(@($Matches[1], $i)) }
+}
+$today = (Get-Date).Date
+$cutoff = $today.AddDays(-30)
+$nArchived = 0; $nKept = 0
+$candFirst = -1; $candLast = -1; $nCand = 0; $candLines = 0; $candBytes = 0
+for ($k = 0; $k -lt $heads.Count; $k++) {
+    $first = $heads[$k][1]
+    if ($k + 1 -lt $heads.Count) { $last = $heads[$k + 1][1] - 1 } else { $last = $stLines.Count - 1 }
+    while ($last -gt $first -and $stLines[$last].Trim() -eq "") { $last-- }
+    # 🔑 EXCLUDE already-relocated entries BEFORE the date compare. Without this the count is inflated
+    #    and looks perfectly plausible — measured 2026-09-21: 114 reported vs 55 true.
+    if ($stLines[$first] -like "*archived verbatim*") { $nArchived++; continue }
+    $d = [datetime]::ParseExact($heads[$k][0], 'yyyy-MM-dd', $null)
+    if ($d -lt $cutoff) {
+        $nCand++
+        if ($candFirst -lt 0 -or $first -lt $candFirst) { $candFirst = $first }
+        if ($last -gt $candLast) { $candLast = $last }
+        for ($n = $first; $n -le $last; $n++) {
+            $candLines++
+            $candBytes += [System.Text.Encoding]::UTF8.GetByteCount($stLines[$n]) + 1
+        }
+    } else { $nKept++ }
+}
+$pct = 0.0
+if ($stLines.Count -gt 0) { $pct = [math]::Round(100.0 * $candLines / $stLines.Count, 1) }
+$span = "n/a"
+if ($nCand -gt 0) { $span = "lines " + ($candFirst + 1) + "-" + ($candLast + 1) }
+Emit ""
+Emit ("  excluded BEFORE the date compare (heading already says 'archived verbatim'): " + $nArchived)
+Emit ("30-day relocation check — EVALUATED at " + $today.ToString('yyyy-MM-dd') + ", cutoff " + $cutoff.ToString('yyyy-MM-dd') +
+      ": " + $nCand + " candidates (" + $nArchived + " already archived, " + $nKept + " within 30 days); they occupy " +
+      $candLines + " of " + $stLines.Count + " lines (" + $pct + "%), " + $span + ", " + $candBytes +
+      " bytes. CANDIDATE LIST, NOT AN ACTION LIST — relocation is a founder call (ledger slimming, founder ruling 2026-08-27).")
+
+$tdLines = Get-Content "TECH_DEBT.md" -Encoding UTF8
+$entryRx = '^- \[[A-Z_ -]+\]'
+$eIdx = New-Object System.Collections.ArrayList
+for ($i = 0; $i -lt $tdLines.Count; $i++) { if ($tdLines[$i] -match $entryRx) { [void]$eIdx.Add($i) } }
+$dTot = 0; $dRelocated = 0
+for ($k = 0; $k -lt $eIdx.Count; $k++) {
+    $first = $eIdx[$k]
+    if ($tdLines[$first] -notlike '- `[DONE`]*') { continue }
+    $dTot++
+    if ($k + 1 -lt $eIdx.Count) { $last = $eIdx[$k + 1] - 1 } else { $last = $tdLines.Count - 1 }
+    $body = ""
+    for ($n = $first + 1; $n -le $last; $n++) { $body += $tdLines[$n] }
+    if ($body -like "*docs/archive/tech_debt_done.md*") { $dRelocated++ }
+}
+Emit ""
+Emit ("TECH_DEBT [DONE] split: " + $dTot + " entries — " + $dRelocated + " bodies relocated to docs/archive/tech_debt_done.md, " +
+      ($dTot - $dRelocated) + " still full in the file. (Test: the entry body cites the archive path.)")
+Emit "  NO candidate count is emitted for TECH_DEBT, deliberately: [DONE] entries carry no heading-position date — they date"
+Emit "  themselves inside prose, in several formats — so an age test would have to be invented, not derived. Founder ruling"
+Emit "  2026-09-21 (Q1) held that the 30-day clause of CLAUDE.md:72 does NOT govern this half; C3 has no age test. Whether a"
+Emit "  relocated body is ready is, as before, a founder call."
 
 Sec "7. SCOPE NOTE"
 Emit "The upload set is LEDGERS ONLY. Any question about product behaviour (api/, pages/, utils/) is NOT answerable from these files — it needs a read-only probe at this HEAD."

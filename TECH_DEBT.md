@@ -14,8 +14,67 @@ Classes are **additive and orthogonal** to the existing `[P0]`–`[P3]` ratings 
 | **[COMPLIANCE]** | legal / regulatory / data-protection obligation | **11** |
 | **[HONESTY]** | the product currently tells the user something untrue or misleading | **19** |
 | [DONE] | already fixed / resolved / accepted; retained for the record only | 60 |
-| [OTHER] | quality, hygiene, tooling, opportunistic | 100 |
-| | **total** | **190** |
+| [OTHER] | quality, hygiene, tooling, opportunistic | 101 |
+| | **total** | **191** |
+
+<!-- 🔴 NAV CHECKED 2026-09-21 (LEDGER SLIMMING — PASS 2. THIS IS THE CAR'S ONLY NAV BLOCK: it covers all THREE
+     commits, because the counts must be read against the car, not against one commit of it. Founder rulings
+     2026-09-21, all 「照建議」: Q1 the 30-day clause of CLAUDE.md:72 does NOT govern the TECH_DEBT half — [DONE]
+     bodies relocate under C3 regardless of age; Q2 the STATE.md:848 line-number rot is FILED here, not repaired.
+     Push authorized in the task prompt. Docs + ONE tooling file; NO deploy, prod stays fly v257 =
+     e12d3f0bb4bb37006834e8eaa19fe77537000944.)
+     PRE-CHANGE CHECK (Rule 25), derived at cb7b8df with grep -c "^- \[CLASS\]" per class: 0 + 11 + 19 + 60 + 100 =
+     190 = the table. Cross-checks: grep -c "^- \[" = 190; grep -c "^- " = 228 = 190 + 38 (grep -c "^- [^\[]" = 38).
+     [sec]: loose 15 / strict 14. No discrepancy.
+     RULE 27 for the new entry: grep -n -i -E "^- \[[A-Z_ -]+\].*(line.number|citation rot|:848|stale citation|
+     shifted.in.range)" TECH_DEBT.md -> 0 hits; the same shape over BACKLOG.md "^### " -> 0 hits;
+     git grep -n "STATE.md:848" -- TECH_DEBT.md BACKLOG.md returns only the CITING line, no entry about it.
+     None found — the entry extends nothing.
+     WHAT CHANGED — across all three commits:
+       (1) 885eae3 — STATE.md: 55 Recently Shipped entries older than 30 days (2026-07-29 -> 2026-08-21, cutoff
+           < 2026-08-22 strict) relocated VERBATIM to docs/archive/state_shipped_2026.md under a second
+           "## Archive pass 2026-09-21" section; each keeps a one-line tombstone. STATE.md 1023 -> 653 lines.
+           NO effect on this file's counts.
+       (2) b66a6c0 — TECH_DEBT.md: 12 [DONE] entry BODIES relocated VERBATIM to docs/archive/tech_debt_done.md
+           under a second "## Archive pass 2026-09-21" section. Heading lines stay VERBATIM, so the nav is
+           unchanged BY CONSTRUCTION. 2558 -> 2464 lines; 08-27 C3 tombstones still 47, new 09-21 tombstones 12.
+       (3) this commit — scripts/extract_session.ps1 section 6 now EVALUATES the 30-day check instead of printing
+           the grep; two STATE.md pointer-block corrections; and ONE new entry (below).
+     🔴 THE PROMPT SAID 13 [DONE] BODIES. THE DERIVED SET IS 12 (Rule 25 / Rule 23) — stated because a silent
+     13-vs-12 would have looked perfectly self-consistent. The probe classified a [DONE] entry as "full body" iff
+     its heading line appears VERBATIM in docs/archive/tech_debt_done.md. That is ONE key, not the entity. The
+     2026-08-21 credential-hygiene entry FAILED that test while its body had ALREADY been relocated on 2026-09-09
+     — it sits at docs/archive/tech_debt_done.md:597 under the heading as it THEN read ([OTHER] ... "NOT fixed,
+     NOT rotated"); the TECH_DEBT heading was edited afterwards ([OTHER] -> [DONE], strikethrough added), so the
+     two strings diverged and the exact-match key missed it. Re-audited all 13 by BODY CONTENT and heading
+     similarity: 12 genuine, 1 already relocated. The 1 was LEFT UNTOUCHED — its remaining three lines are its
+     existing tombstone plus two post-relocation status bullets, and relocating a pointer would violate
+     mark-never-delete ("summaries may point, only full text may carry") and split one entry's record across two
+     archive passes. ⚠️ FOUNDER DECISION PENDING on whether those two later bullets should be folded into the
+     2026-08-27 archive record. Nothing was done to them.
+     VERIFIED (Rule 17 — the check observes real effect, not a passing exit code): each relocation was proved by
+     sha256 of the extracted region taken from `git show HEAD:<file>` BEFORE and re-extracted from the archive
+     file AFTER, and the two are identical, so the move is byte-for-byte and not merely plausible.
+       STATE     55 entries: b5fa0cbb81e0462f3484c26cca91fe2a31d0771ac53aebba4ea72b34ae3520dd
+       TECH_DEBT 12 entries: 14bf6fa8e9f5082b0632a39938bd3ece857d67ec8016cae8fb377f70a195286f
+     The STATE tombstone FORM was likewise derived rather than guessed: the rule (first line whole if <= 139
+     chars, else cut at the last space <= 139 and append U+2026 plus ** iff the prefix has an odd ** count) was
+     self-tested against all 59 tombstones of the 08-27 pass and reproduced 59/59 EXACTLY before it was used once.
+     🔴 A CLAIM IN THE TASK PROMPT WAS REFUTED, AND THE COST IS RECORDED RATHER THAN SMOOTHED OVER (Rule 18): the
+     prompt's item 3d asserted that "this car's moves shift nothing that is currently cited". Derived instead —
+     git grep -o -hE "STATE\.md:[0-9]+|TECH_DEBT\.md:[0-9]+" over the repo gives 40 distinct cited targets, each
+     resolved against cb7b8df and against this car: 26 unchanged · 10 CHANGED (silent) · 4 OUT OF RANGE (loud).
+     The probe had predicted 6; the true figure is 14, because a body leaving from ABOVE a cited line shifts it
+     too. This car therefore made the rot it is filing MEASURABLY WORSE, and the new entry below says so with the
+     numbers.
+     POST-CHANGE RE-DERIVE (grep -c "^- \[CLASS\]" per class, not incremented): 0 + 11 + 19 + 60 + 101 = 191.
+     Delta +1, all of it [OTHER], and its cause is the ONE new entry filed below by founder ruling Q2 (ledger
+     citation rot, [P3] PROPOSED). Cross-checks: grep -c "^- \[" = 191; grep -c "^- " = 229 = 191 + 38
+     (grep -c "^- [^\[]" = 38 — unchanged). [sec] loose 15 / strict 14 — unchanged. Every figure except [OTHER]
+     and the two totals is IDENTICAL to the pre-change derive: MATCH.
+     TOMBSTONE CHECK DERIVED, not assumed: this file carries #### title lists for [LAUNCH] / [COMPLIANCE] /
+     [HONESTY] only. The new entry is [OTHER], so there is no title list to join and nothing to tombstone — the
+     same reasoning the 2026-09-10 4b recount and the 2026-09-14 [sec] block recorded. -->
 
 <!-- 🔴 NAV CHECKED 2026-09-21 (SCRIPT CAR — scripts/extract_session.ps1 added, cited in CLAUDE.md Rule 26, and the
      ce6361f push clause corrected. Founder authorized the push in the task prompt. Docs + ONE new script; NO deploy,
@@ -1185,6 +1244,20 @@ When entries are resolved, mark with the resolving commit SHA (git log is the re
     (d) the 05-25 entry's fix-path line numbers (`server.py` 697 / 898 / 938 / 1024 / 1128; `_cleanup_old_records` 179–197) are May figures — stale by construction (Rule 25).
   - **Probe**: 2026-09-17 read-only E5 probe (extraction kept in the strategy chat; not committed — Rule 20: it is a dated HEAD observation, every command is listed in this entry and re-runnable). The build re-derived every count at `2a5d98c` before filing: 5 / 6 / 16 / 0 — MATCH the probe.
   - **Status**: OPEN. Founder ratification pending on class `[HONESTY]` and `[P2]`. → RATIFIED 2026-09-18; remains OPEN (wording awaits counsel).
+
+- [OTHER] **[P3 PROPOSED — founder ratification pending, 2026-09-21 · ledger citation rot / silent mis-resolution — surfaced 2026-09-21 by the ledger-slimming pass-2 read-only probe, NOT fixed] Bare `file.md:NNN` citations into `STATE.md` / `TECH_DEBT.md` rot as the files grow, and the rot is SILENT while the line stays in range — `STATE.md:848` is the measured instance**
+  - **Rule 27 — this entry is NEW; the greps that established it (run 2026-09-21 at `b66a6c0`):** `grep -n -i -E "^- \[[A-Z_ -]+\].*(line.number|citation rot|:848|stale citation|shifted.in.range)" TECH_DEBT.md` → **0 hits**. `grep -n -i -E "^### .*(line.number|citation rot|:848|stale citation)" BACKLOG.md` → **0 hits**. `git grep -n "STATE.md:848" -- TECH_DEBT.md BACKLOG.md` returns only the CITING line, no entry ABOUT it. **None found — this extends no existing entry.**
+  - **The citation, and what it claims.** The `[HONESTY]` citation-truth entry in this file carries: *"`citation_truth_20260614_113716.json` is **untracked** (`STATE.md:848` lists it among the gitignored artifacts…)"*. That bullet was at `TECH_DEBT.md:1403` when the probe measured it, `:1319` after this car's commit 2, `:1333` after this entry was inserted above it, and moved a **fourth** time when this car's NAV block was added — **four addresses in one working session, two of them caused by filing the entry that describes the problem.** That is the defect, demonstrating itself. **No current line number is pinned here, deliberately:** locate it with `git grep -n "STATE.md:848" -- TECH_DEBT.md`, which is stable under every edit above it.
+  - **Where the cited content actually is:** `grep -n "citation_truth_20260614_113716" STATE.md` → **`STATE.md:86`**. Line 848 has not held that content in any state this car observed.
+  - **What `STATE.md:848` resolved to, in three successive readings — and only the third is detectable:**
+    - **2026-08-27** (`docs/batons/recon_20260827_ledger_slimming.md` §B.2): line 848 was the FIRST archived entry's tombstone. The in-file rule note was deliberately placed at the Recently Shipped section TAIL *"[because] an insertion above line 848 would shift the TECH_DEBT.md-cited STATE.md:848 tombstone"* — the note is still there, unmoved, and its own line reference is now stale for the same reason.
+    - **At `cb7b8df`** (this car's start): `sed -n '848p' STATE.md` returned a table row inside the 2026-08-10 fly-219 entry. **NON-BLANK, so `check_baton.py`'s C1 did not fire.** The tombstone it was pinned to had moved to `:948` — **+100 lines, from ordinary growth at the TOP of the file, with no relocation involved.** 🔑 **The rot PREDATES any archive pass and was not caused by one.**
+    - **At `b66a6c0`** (after this car's commit 1): `STATE.md` is **653 lines**, so `848` is **OUT OF RANGE** and C1 **does** fire. The first 2026-07-27 tombstone is at `:578`. The defect became visible only because the file shrank.
+  - **🔴 WHAT THIS CAR COST, DERIVED NOT ASSERTED — the car made the rot worse, and that is recorded rather than smoothed over.** `git grep -o -hE "STATE\.md:[0-9]+|TECH_DEBT\.md:[0-9]+" -- . ":(exclude)node_modules"` → **40 distinct cited targets**; each resolved against `cb7b8df` and against `b66a6c0`: **26 unchanged · 10 CHANGED (silent) · 4 OUT OF RANGE (loud)**. STATE: `:612` changed, `:706 :730 :758 :848` out of range. TECH_DEBT: `:1044 :1079 :1218 :1353 :1403 :1552 :1792 :1793 :1968` changed. The probe predicted 6 would sit inside moved regions; the true figure is **14**, because bodies leaving from ABOVE a cited line shift it too — the same mechanism, counted once instead of twice. **A shifted-but-in-range citation is indistinguishable from a correct one; 10 of these are now wrong and nothing anywhere says so.**
+  - **NOT FIXED HERE — founder ruling 2026-09-21 (Q2):** the rot is FILED, not repaired, in this car. No citation was re-pointed, and the STATE.md rule note was left verbatim including its stale "line 848" clause (mark-never-delete).
+  - **Fix shapes, none chosen (founder call):** **(a)** re-point the 14 by hand once, which buys nothing durable — this is the third recorded time these numbers have moved; **(b)** convert `file.md:NNN` citations into heading/anchor citations, the convention `scripts/dailymed_danger_path_verify.py:9-10` already states in capitals (*"GREP THE HEADING, NOT THE NUMBER"*) and which survived both archive passes intact; **(c)** extend `check_baton.py`'s C1 to flag in-range-but-shifted by pinning a content hash beside the number, which is the only shape that catches the silent class.
+  - **Surfaced:** 2026-09-21, ledger-slimming pass-2 probe (read-only) at `cb7b8df`; **filed** 2026-09-21 at `b66a6c0`.
+  - **Status**: OPEN. Class `[OTHER]` and `[P3]` are **PROPOSED by derivation; founder ratification pending.**
 
 - [OTHER] **[P3 · Rule 10 violation on a DORMANT path — surfaced 2026-09-11 by the HISTORY RENDER LEFTOVERS segment-1 probe, NOT fixed] `_EXPLAIN_PROMPT_FALLBACK` instructs the LLM to write a disclaimer — "End with a short disclaimer in the same language." — which CLAUDE.md Rule 10 forbids**
   - **Derived at `430ef01`:** `api/services/explain_service.py:66-72` defines the inline fallback prompt, whose last sentence is `"End with a short disclaimer in the same language."`. It is used ONLY in the `except FileNotFoundError` branch at `:74-79`, i.e. when `api/prompts/explain_system.md` is missing from the image — and that file says the OPPOSITE twice: `:103` "Do NOT include any disclaimer sentence inside the JSON output. A fixed localized disclaimer is appended server-side after your JSON." and `:238` "Do NOT include a disclaimer sentence in the JSON — it is appended server-side."

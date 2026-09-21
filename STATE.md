@@ -645,9 +645,9 @@ None active. § 2.7 Step 8 acceptance protocol completed 2026-04-30 (commits c5b
 ## Pointer to Other Docs
 
 - **Active rules + workflow**: CLAUDE.md
-- **Open future tasks**: BACKLOG.md
+- **Decision archive** (NOT an execution queue — "Next Up" above is the sole execution order): BACKLOG.md *(re-labeled from "Open future tasks" — founder Ruling A 2026-08-26, `docs/batons/positioning_audit_20260823.md` §3; this pointer lagged the CLAUDE.md doc map and BACKLOG's own self-label by 26 days, corrected 2026-09-21)*
 - **Completed work log**: `git log` (recent window in Recently Shipped above)
 - **Tech debt entries**: TECH_DEBT.md
-- **Spec**: docs/PRD.md (v1.3)
+- **Spec**: docs/PRD.md (v1.5) *(was v1.3 here; `docs/PRD.md` line 1 reads "**Vela Master PRD v1.5**" and CLAUDE.md's doc map says v1.5 — corrected 2026-09-21)*
 - **Architecture**: docs/architecture.md
 - **ADRs**: docs/decisions/
