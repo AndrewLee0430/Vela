@@ -95,6 +95,7 @@ from api.models.explain_schemas import ExplainRequest
 from api.services.explain_service import run_explain_pipeline
 from api.utils.language_detector import detect_language, get_language_instruction, LANGUAGE_NAMES, get_language_name  # ← v2.5
 from api.i18n.verify_strings import get_verify_disclaimer
+from api.i18n.explain_strings import get_disclaimer as get_explain_disclaimer
 
 # ============================================================
 # Verify system prompt (PRD § 2.9, v2)
@@ -2043,6 +2044,10 @@ class ChatHistoryEntry(BaseModel):
     question: Optional[str] = None
     answer: Optional[str] = None
     created_at: Optional[_history_dt] = None
+    # Read-time field (render-leftovers segment 2, R1/R2 2026-09-22): filled
+    # for explain rows from the ONE Python source, null for every other row.
+    # Not a column. No description — component schemas publish to /openapi.json.
+    disclaimer: Optional[str] = None
 
     @field_serializer("created_at")
     def _serialize_created_at(self, v: Optional[_history_dt]) -> Optional[_history_dt]:
@@ -2058,10 +2063,19 @@ class ChatHistoryEntry(BaseModel):
 
 @app.get("/api/history", response_model=list[ChatHistoryEntry])
 async def get_user_history(
+    request: Request,
+    locale: str | None = None,
     creds: Optional[HTTPAuthorizationCredentials] = Depends(require_auth),
     db: Session = Depends(get_db)
 ):
     user_id = get_user_id(creds)
+    # Caption language for the read-time Explain disclaimer (R1, 2026-09-22):
+    # explicit ?locale= first, Accept-Language second, "en" last — the SAME
+    # resolver /explain uses (:1727), so its BCP-47 normalizer travels with
+    # the data (Rule 19; get_disclaimer itself has no normalizer). Resolved
+    # once per request; keyed to the REQUEST's language, not the row's
+    # (ChatHistory stores no locale — accepted cost of ruling (ii)).
+    lang = _resolve_response_language(locale, request)
 
     # Determine plan type
     from api.services.usage_service import get_active_usage
@@ -2081,7 +2095,20 @@ async def get_user_history(
         cutoff = datetime.now(timezone.utc) - timedelta(days=7)
         query = query.filter(ChatHistory.created_at >= cutoff)
 
-    return query.order_by(desc(ChatHistory.created_at)).limit(200).all()
+    rows = query.order_by(desc(ChatHistory.created_at)).limit(200).all()
+
+    # R2: every explain row carries the caption, every other row null. The
+    # server does NOT parse `answer` (legacy vs JSON is the frontend's call).
+    # Entries are CONSTRUCTED from the rows — no ORM instance is mutated, so
+    # the session has nothing to flush and the read path issues no write
+    # (tests/test_history_disclaimer_field.py captures every statement).
+    caption = get_explain_disclaimer(lang)
+    entries = []
+    for row in rows:
+        entry = ChatHistoryEntry.model_validate(row)
+        entry.disclaimer = caption if row.session_type == "explain" else None
+        entries.append(entry)
+    return entries
 
 
 # Per-entry history delete — HISTORY car, founder ruling (d)(iii) 2026-09-01:

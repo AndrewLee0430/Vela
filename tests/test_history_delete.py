@@ -158,9 +158,11 @@ def test_unauthenticated_delete_fails_exactly_like_get(monkeypatch):
 
 
 def test_get_history_excludes_user_id(monkeypatch):
-    """GET /api/history serializes exactly the five fields the frontend
-    consumes — user_id must NOT appear (recon §7-D1: the raw-ORM response
-    exposed all 6 columns). Fails against the pre-response_model handler."""
+    """GET /api/history serializes exactly the six fields the frontend
+    consumes (five columns + the read-time `disclaimer`, render-leftovers
+    segment 2 / R6 2026-09-22) — user_id must NOT appear (recon §7-D1: the
+    raw-ORM response exposed all 6 columns). Fails against the
+    pre-response_model handler."""
     server, client, engine, TestSession, get_db = _client_and_db(monkeypatch)
     try:
         _seed(TestSession, [
@@ -171,7 +173,7 @@ def test_get_history_excludes_user_id(monkeypatch):
         data = resp.json()
         assert len(data) == 1, "seeded row must be listed"
         assert set(data[0].keys()) == {
-            "id", "session_type", "question", "answer", "created_at"
+            "id", "session_type", "question", "answer", "created_at", "disclaimer"
         }, f"unexpected field set: {sorted(data[0].keys())}"
         assert "user_id" not in data[0]
     finally:
