@@ -173,8 +173,8 @@ Emit "  — the live counts three lines below are authoritative. Kept rather tha
 foreach ($f in $Files) { Run ('(Get-Content "' + $f + '" -Encoding UTF8).Count') }
 GrepCount "^- \[DONE\]" "TECH_DEBT.md" | Out-Null
 Emit ""
-Emit "30-day relocation check — EVALUATED. Enumeration (verified 2026-09-21: 151/151 dated headings match, 0 hits"
-Emit "outside the Recently Shipped section, so no section-range logic is needed):"
+Emit "30-day relocation check — EVALUATED. Enumeration (every dated heading sits inside the Recently Shipped section —"
+Emit "verified 2026-09-21 and 2026-09-22 with 0 hits outside it — so no section-range logic is needed):"
 Emit '    git grep -n "^- \*\*20[0-9][0-9]-[0-9][0-9]-[0-9][0-9]\*\*" -- STATE.md'
 
 $stLines = Get-Content "STATE.md" -Encoding UTF8
@@ -217,7 +217,7 @@ if ($stLines.Count -gt 0) { $pct = [math]::Round(100.0 * $candLines / $stLines.C
 $span = "n/a"
 if ($nCand -gt 0) { $span = "lines " + ($candFirst + 1) + "-" + ($candLast + 1) }
 Emit ""
-Emit ("  excluded BEFORE the date compare (heading already says 'archived verbatim'): " + $nArchived)
+Emit ("  excluded BEFORE the date compare (heading ENDS WITH the archive-pointer tombstone suffix): " + $nArchived)
 Emit ("30-day relocation check — EVALUATED at " + $today.ToString('yyyy-MM-dd') + ", cutoff " + $cutoff.ToString('yyyy-MM-dd') +
       ": " + $nCand + " candidates (" + $nArchived + " already archived, " + $nKept + " within 30 days); they occupy " +
       $candLines + " of " + $stLines.Count + " lines (" + $pct + "%), " + $span + ", " + $candBytes +
