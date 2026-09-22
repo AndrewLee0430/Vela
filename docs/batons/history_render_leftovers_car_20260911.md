@@ -1,6 +1,6 @@
-# HISTORY RENDER LEFTOVERS car — opened 2026-09-11 (Segment 1 = items A + C ✅ SHIPPED fly 254 — **SEGMENT 1 CLOSED 2026-09-11**, prod eye 2/2 founder-PASS · Segment 2 = item B, TRANSPORT RULED (ii), NOT started)
+# HISTORY RENDER LEFTOVERS car — opened 2026-09-11 (Segment 1 = items A + C ✅ SHIPPED fly 254 — **SEGMENT 1 CLOSED 2026-09-11**, prod eye 2/2 founder-PASS · Segment 2 = item B, TRANSPORT RULED (ii), ~~NOT started~~ ✅ SHIPPED fly 258 2026-09-22 — PROD EYE OPEN)
 
-> **STATUS — Segment 1: ✅ SHIPPED as fly 254 — SEGMENT 1 CLOSED 2026-09-11.** Prod = `93d704c286c752cb56edcef80cc0131c9720be19` at fly v254, image `deployment-01M2763DDMF08A3S7P8FPZSM46`; readbacks **§4**. **✅ PROD EYE 2026-09-11 — 2/2 founder-PASS** (prod, own account, hard-refresh first) — §2. **SEGMENT 2 (item B) is RULED (ii) and NOT started (§3)**; its two build-blocking facts are in §3b and §3c and should be read before any code is written.
+> **STATUS — Segment 1: ✅ SHIPPED as fly 254 — SEGMENT 1 CLOSED 2026-09-11.** Prod = `93d704c286c752cb56edcef80cc0131c9720be19` at fly v254, image `deployment-01M2763DDMF08A3S7P8FPZSM46`; readbacks **§4**. **✅ PROD EYE 2026-09-11 — 2/2 founder-PASS** (prod, own account, hard-refresh first) — §2. **SEGMENT 2 (item B) is RULED (ii) and NOT started (§3)**; its two build-blocking facts are in §3b and §3c and should be read before any code is written. **→ SEGMENT 2: ✅ SHIPPED as fly 258 (2026-09-22, attempt 4)** — prod = `9044d46502c9837376ffb7e438aa8cd5bd5c05d9` at fly v258, image `deployment-01M34SQ84RGD2PQ0E1ZERF5PN6`; readbacks **§5j**; **PROD EYE OPEN — 4 rows, founder (§5j)**.
 >
 > ⚠️ **Post-deploy docs commits are NOT deployed, by design** — `/health` `revision` reads the CODE SHA `93d704c…`, not the latest docs SHA. A later docs SHA on `origin/main` is not drift.
 
@@ -392,7 +392,7 @@ Not run by Claude Code; no AI observation is a gate result. Own account, **hard-
 
 ---
 
-## §5 SEGMENT 2 BUILD 2026-09-22 — 🔧 BUILT LOCAL, NOT pushed, NOT deployed (prod fly v257 = `e12d3f0bb4bb37006834e8eaa19fe77537000944`)
+## §5 SEGMENT 2 BUILD 2026-09-22 — ~~🔧 BUILT LOCAL, NOT pushed, NOT deployed (prod fly v257 = `e12d3f0bb4bb37006834e8eaa19fe77537000944`)~~ → ✅ SHIPPED as fly 258 2026-09-22 (deploy readbacks §5j; PROD EYE OPEN)
 
 - **Repo assertion (Rule 24):** toplevel `C:/Users/andre/projects/Vela`; build session opened at HEAD `d01ac6f1e03b6f0903939d088f7232e4e5e84805`; opening gate = the four untracked lines, `git diff --stat` empty. Code commits: **`f852e4a`** (backend + endpoint tests + the R6 test edit) · **`edb3b3b`** (frontend + guard). Ledger commit rides this section.
 - **Authority:** `TECH_DEBT.md` entry `[HONESTY] **[P3 · Explain LEGACY rows (the pre-wrap fallback path on /history) …` (`:1119` at `d01ac6f`, re-located by title — MATCH). Transport ruled (ii) 2026-09-11 (§3 above).
@@ -517,4 +517,37 @@ Between attempts: `Test-NetConnection 149.248.212.172 -Port 443` → **OPEN 3/3*
 
 **NEXT:** founder (or a re-authorized session) re-runs `.\deploy.ps1`; on success the E ship-docs commit follows unchanged — entry → `[DONE]`, `#### [HONESTY]` row tombstoned, STATE 🚀 header + ship entry, PROD EYE 4 rows OPEN, the `fly<N>` transcript committed. The code that will deploy is what is on `origin/main` now: `924da52` = docs on top of `edb3b3b`.
 
-**NOT PUSHED. NOT DEPLOYED.** Prod stays fly v257 = `e12d3f0bb4bb37006834e8eaa19fe77537000944`. Next: founder eye gate (5g) → push/deploy authorization. **→ 2026-09-22: gate §5g 8/8 founder-PASS; push + deploy AUTHORIZED by the closeout paste — PUSHING** (pre-push commits `fef798f` tooling + this docs commit). **→ 22:35 +08:00: PUSHED `d01ac6f..924da52`; DEPLOY BLOCKED (3 attempts, §5i); prod still fly v257.**
+### 5j. Deploy readbacks — ✅ SHIPPED as fly 258, 2026-09-22 (attempt 4) · PROD EYE OPEN
+
+`.\deploy.ps1` — **plain call, no `2>&1`**, background-captured, ANSI-stripped to `tests/probes/deploy_parser/fly258_deploy_transcript.txt` (**69,520 bytes**, 951 lines; 12 ANSI sequences + 302 CR removed). Attempts 1–3 (§5i) had died at the context upload; attempt 4, authorized 2026-09-22 with a cap of 2, uploaded the full **150.38 MB in 134.2 s** and built. The three failed raw transcripts are **NOT retained** — founder ruling 2026-09-22 (Rule 20: an uplink event, not a repo finding).
+
+| readback | value |
+|---|---|
+| version | **fly v258** — **READ from `fly releases`** ("2m3s ago" at 15:02Z, directly above v257 of Sep 14 2026 03:57; no intervening release) |
+| image | `deployment-01M34SQ84RGD2PQ0E1ZERF5PN6` (manifest sha256 `6ef981c6…`) |
+| `GIT_SHA` in transcript | `9044d46502c9837376ffb7e438aa8cd5bd5c05d9` (line 3) — the docs HEAD, not `924da52`, exactly as the brief said |
+| `/health` | `{"status":"healthy","version":"2.2.0","revision":"9044d46502c9837376ffb7e438aa8cd5bd5c05d9"}` — **full-string match, FIRST poll** (15:02:36Z) |
+| `fly status` | both machines **258 `started`** — `683d447c2e5428` 15:00:38Z · `2879720c66d478` 15:01:27Z |
+| parser | Step 3 detected `2879720c66d478` `stopped` at v258 (15:00:38Z) → Step 4 "2879720c66d478 has been started" → Step 6 "All machines running.", **exit 0, no manual start** |
+| clean-run count | **11th consecutive** — derived over the 11 transcripts fly 244 · 245 · 246 · 247 · 248 · 249 · 251 · 252 · 254 · 257 · 258, each with Found-stopped + has-been-started + All-machines-running (the brief's "10th" undercounted by one: fly 257 was the 10th) |
+| transient WARNING | `The app is not listening on the expected address …` once during the machine update — present once in every transcript since fly 246, 0 in fly 244/245; `/health` answered 200 on the first poll after it |
+| unauth `GET /api/history` | **403 `{"detail":"Missing token"}`** |
+| unauth `GET /api/history?locale=zh-tw` | **403 `{"detail":"Missing token"}`** — auth precedes the locale param; the param opens nothing |
+| prod `/openapi.json` | 26,795 bytes · `ChatHistoryEntry.disclaimer` = `{"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Disclaimer"}` — **no description** · 6 property keys (`answer, created_at, disclaimer, id, question, session_type`) · `_resolve_response_language` count **1**, carrier `ResearchRequest.response_language` = the re-sighted one, unchanged by this car |
+
+**`fly logs`, 65-s window (15:02:51Z → 15:03:57Z), populations split by timestamp** because `fly logs` prepends a backfill: **98 stamped lines = 38 BACKFILL** (04:35:09Z → 14:37:37Z) **+ 60 post-boundary v258** (15:00:20Z → 15:02:45Z, boundary 15:00:00Z = the v258 machines coming up). **`httpx` 0 and `api_key=` 0 in BOTH populations.** `/api/history` appears **twice**, both post-boundary, both this session's own readbacks (`403 Forbidden` at 15:02:44Z and 15:02:45Z on `2879720c66d478`).
+
+**Adjacent, observed in the same window, flagged not filed:** (a) the v258 boot on `683d447c2e5428` logged `Data cleanup pass: deleted 2 audit logs, 2 chat history records older than 180 days (cutoff=2026-03-26T15:00:54 UTC)` at 15:00:56Z — the fly-257 run-then-sleep retention design running on a fresh boot, a third real deletion on record; (b) the backfill's oldest lines (04:35Z) are a scanner walking WordPress paths (`GET //shop/wp-includes/wlwmanifest.xml`, `//wp1/…`, `//test/…`) and receiving `200 OK` — mechanism DERIVED at 9044d46: the client-side-routing fallback at \pi/server.py:3666-3667\ returns \index.html\ with 200 for any unknown path, so a scanner reads every probe as found; Rule 27 grep (wlwmanifest / wp-includes / catch-all / scanner over the three ledgers) → 0 prior hits; recorded so it is not re-discovered as new.
+
+### 5j PROD EYE — OPEN (founder, own account, prod fly 258, hard-refresh first)
+
+Not run by Claude Code; no AI observation is a gate result. **Ctrl+Shift+R first.**
+
+| # | item | result |
+|---|---|---|
+| 1 | prod `/history`, UI **zh-TW** → a **LEGACY** Explain row (pre-wrap text): the zh-TW caption (`⚠️ 本解讀僅供參考…`) under the text, same look as a JSON row's caption. **N/A, stated, if the founder's prod account has no legacy Explain row — the prod count was never read** | |
+| 2 | same row, UI switched to **en** → the en caption (`⚠️ This explanation is for reference only…`) | |
+| 3 | **CONTROL** — a JSON Explain row → its stored caption, ONCE, unchanged | |
+| 4 | `GET /api/history?locale=zh-tw` with the founder's own token → the zh-TW string in the body | |
+
+~~**NOT PUSHED. NOT DEPLOYED.** Prod stays fly v257 = `e12d3f0bb4bb37006834e8eaa19fe77537000944`.~~ Next: founder eye gate (5g) → push/deploy authorization. **→ 2026-09-22: gate §5g 8/8 founder-PASS; push + deploy AUTHORIZED by the closeout paste — PUSHING** (pre-push commits `fef798f` tooling + this docs commit). **→ 22:35 +08:00: PUSHED `d01ac6f..924da52`; DEPLOY BLOCKED (3 attempts, §5i); prod still fly v257.** **→ 23:02 +08:00: ✅ SHIPPED as fly 258 (attempt 4, §5j); PROD EYE OPEN — 4 rows.**
