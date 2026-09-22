@@ -490,4 +490,31 @@ Not run by Claude Code; no AI observation is a gate result. Own account, **hard-
 
 `api/server.py`: +1 for every line after `:97`; +5 after `:2045`; +7 after `:2060`; +14 after `:2064`; +27 after `:2084` (old numbering). `pages/history.tsx`: +5 after `:139`; +7 after `:192`; +15 after `:470`. Citations into those regions written at or before `d01ac6f` — including the ones in this baton's §1/§3 and in `TECH_DEBT.md` — now read shifted; none was re-pointed here (Q2 ruling 2026-09-21: line-number rot is filed, not repaired piecemeal).
 
-**NOT PUSHED. NOT DEPLOYED.** Prod stays fly v257 = `e12d3f0bb4bb37006834e8eaa19fe77537000944`. Next: founder eye gate (5g) → push/deploy authorization. **→ 2026-09-22: gate §5g 8/8 founder-PASS; push + deploy AUTHORIZED by the closeout paste — PUSHING** (pre-push commits `fef798f` tooling + this docs commit).
+### 5i. Push readback + deploy attempts — 2026-09-22: ✅ PUSHED · ⛔ DEPLOY BLOCKED (prod unchanged fly v257)
+
+| step | value |
+|---|---|
+| range | `d01ac6f..924da52` — **5 commits** |
+| commits | `f852e4a` backend + endpoint tests · `edb3b3b` frontend + guard · `f29ea59` build docs · `fef798f` fix(tooling) extract_session §6 labels · `924da52` gate 8/8 docs |
+| `git ls-remote origin main` | **`924da5230bfce387c2b667292e8504588efe77ce`** |
+| `git rev-parse HEAD` | `924da5230bfce387c2b667292e8504588efe77ce` |
+| match | **exact, 40 chars** — asserted from `ls-remote`, not from the push output; `git status -sb` = `## main...origin/main` (not ahead) |
+| product-code diff `f29ea59..924da52 -- api/ pages/ components/ utils/ styles/` | **EMPTY** |
+
+**Deploy — `.\deploy.ps1`, plain call (no `2>&1`, no `Tee-Object`), background-captured, THREE attempts, ALL FAILED at Step 1 before any image was built.** Each stamped `GIT_SHA = 924da5230bfce387c2b667292e8504588efe77ce` (line 3); each printed `WARN Build context is 150 MB across 607–610 files` (`data/` 125 MB, `assets-source/` 14 MB, `public/` 4.2 MB); each ended with the same builder line (host and code kept, path elided): `Error: failed to fetch an image or build from source: error building: failed to receive status: rpc error: code = Unavailable desc = error reading from server: read tcp 192.168.0.178:<port>->149.248.212.172:443: wsarecv: A connection attempt failed because the connected party did not properly respond …` → `Deploy failed (exit code 1)`.
+
+| attempt | task id | furthest point before the drop | transcript |
+|---|---|---|---|
+| 1 | `btinf46sp` | `#8 transferring context: 86.35MB 91.7s` | 188 lines |
+| 2 | `b9n90po9y` | `#9 transferring context: 135.73MB 30.7s`, then the context load restarted (`#4 transferring context` again) and dropped | 114 lines |
+| 3 | `bggha2o7i` | context load restarted twice; also `WARN failed to finish build in graphql` — the `api.fly.io` builds-finish call, 77.83.143.220:443, `wsarecv: An existing connection was forcibly closed by the remote host` | 110 lines |
+
+Between attempts: `Test-NetConnection 149.248.212.172 -Port 443` → **OPEN 3/3**; `api.fly.io` port 443 → **OPEN**. The handshakes succeed and the long-lived upload streams are what drop — an uplink problem on this machine at 22:00–22:35 +08:00, not a build or config error. **`fly releases` re-read after every attempt: v257 (Sep 14 2026 03:57) still on top; `fly status`: both machines at 257 on image `deployment-01M2F0WV3X3A0R5XQ2R85KVGD2` (`2879720c66d478` stopped since 2026-09-14T04:06:03Z, `683d447c2e5428` started).** 3-attempt cap → stopped rather than looped; no other deploy method was tried (`--depot=false` / `--local-only` would deviate from the required `.\deploy.ps1` path — founder's call).
+
+**Evidence (Rule 20, stated):** the three raw failed-attempt transcripts are NOT committed — the closeout's HARD RULES allow exactly one new file, a `fly<N>` deploy transcript under `tests/probes/deploy_parser/`, and no `<N>` exists because no release was created. Copies sit in the Claude Code session scratchpad (`deploy_attempt1_failed_raw.txt` · `deploy_attempt2_failed_raw.txt` · `deploy_attempt3_failed_raw.txt`) until the founder rules whether to commit them.
+
+**Adjacent, flagged not changed (collaboration principle #4):** the upload that keeps dropping is the 150 MB build context. `Dockerfile:8` `COPY . .` (frontend-builder stage) copies `data/` (125 MB) into a stage that never reads it; `Dockerfile:50` `COPY data/ ./data/` is the consumer. `.dockerignore` already excludes `drug_vectordb/`, `tests/`, `*.md`. Rule 27 grep (`build context` / `dockerignore` / `COPY . .` over the three ledgers) → 1 adjacent hit, `STATE.md:227` (the hygiene row ".dockerignore the 22 MB dead corpus"), 0 in TECH_DEBT / BACKLOG. Trim the context, or simply retry on a stable uplink: founder call.
+
+**NEXT:** founder (or a re-authorized session) re-runs `.\deploy.ps1`; on success the E ship-docs commit follows unchanged — entry → `[DONE]`, `#### [HONESTY]` row tombstoned, STATE 🚀 header + ship entry, PROD EYE 4 rows OPEN, the `fly<N>` transcript committed. The code that will deploy is what is on `origin/main` now: `924da52` = docs on top of `edb3b3b`.
+
+**NOT PUSHED. NOT DEPLOYED.** Prod stays fly v257 = `e12d3f0bb4bb37006834e8eaa19fe77537000944`. Next: founder eye gate (5g) → push/deploy authorization. **→ 2026-09-22: gate §5g 8/8 founder-PASS; push + deploy AUTHORIZED by the closeout paste — PUSHING** (pre-push commits `fef798f` tooling + this docs commit). **→ 22:35 +08:00: PUSHED `d01ac6f..924da52`; DEPLOY BLOCKED (3 attempts, §5i); prod still fly v257.**
