@@ -137,6 +137,11 @@ interface HistoryItem {
     question: string;
     answer: string;
     created_at: string;
+    // Read-time caption (render-leftovers segment 2, R2 2026-09-22): the server
+    // fills it on every explain row from its ONE disclaimer source and sends
+    // null on every other row. Rendered ONLY on the Explain pre-wrap path —
+    // JSON Explain rows keep their STORED parsed.disclaimer.
+    disclaimer?: string | null;
 }
 
 function TypeTag({ type, lang }: { type: string; lang: LangCode }) {
@@ -189,7 +194,9 @@ function HistoryList() {
                 }
             } catch {}
             // Fetch history
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/history`, {
+            // ?locale= carries the UI language (R1 2026-09-22) so the read-time Explain
+            // caption follows the in-app toggle, not the browser's Accept-Language.
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/history?locale=${encodeURIComponent(lang)}`, {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
             if (!res.ok) throw new Error('Failed to load history');
@@ -468,6 +475,14 @@ function HistoryList() {
                                             <p className="whitespace-pre-wrap text-sm leading-relaxed" style={{ color: "rgb(var(--color-text) / 0.75)" }}>
                                                 {item.answer}
                                             </p>
+                                            {/* Legacy (pre-§2.7) rows store no caption: the server fills item.disclaimer
+                                                at read time (render-leftovers segment 2, R2 2026-09-22). Same tokens as the
+                                                JSON branch's stored-caption <p> above, so both shapes caption identically. */}
+                                            {item.disclaimer && (
+                                                <p className="text-xs mb-4 text-center" style={{ color: "rgb(var(--color-text) / 0.35)" }}>
+                                                    {item.disclaimer}
+                                                </p>
+                                            )}
                                         </div>
                                     );
                                 })()}
