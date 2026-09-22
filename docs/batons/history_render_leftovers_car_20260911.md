@@ -4,6 +4,8 @@
 >
 > ⚠️ **Post-deploy docs commits are NOT deployed, by design** — `/health` `revision` reads the CODE SHA `93d704c…`, not the latest docs SHA. A later docs SHA on `origin/main` is not drift.
 
+> *(segment 2 pre-push status, kept as the record)* **GATE §5g PASSED 8/8 founder-PASS (2026-09-22) — PUSHING.** Rows 1–8 PASS. **Provenance:** founder blanket statement 「都pass」 in the 2026-09-22 strategy conversation, transcribed under the closeout authorization (zh-TW transcription precedent, as at §2 above); **no per-row screenshots were retained.** Pre-push commits: `fef798f` fix(tooling) — the two founder-ruled `scripts/extract_session.ps1` §6 label edits (§6 figures 114 / 38 / 0 unchanged before → after) · this docs commit. Prod still fly v257 = `e12d3f0bb4bb37006834e8eaa19fe77537000944` until the ship entry (§5i, written at the ship).
+
 > *(pre-push status, kept as the record)* **GATE §2 PASSED 9/9 founder-PASS (2026-09-11) — PUSHING.** Rows 1–9 PASS; row 10 is the machine row, already filled (CSS hash `466e58439a1a5bbd`). **Provenance:** founder blanket statement 「Gate 沒問題」 in the 2026-09-11 conversation, transcribed under the closeout authorization (zh-TW transcription precedent, as at §6 / §8 / §10 / §13 of the history-honesty baton); **no per-row screenshots were retained** — stated so the record does not imply evidence it does not have. **ROW 5 RULING (founder, 2026-09-11): the paragraph-spacing inversion is ACCEPTED as parity with /research.** Markdown paragraphs sit flush because preflight sets `p{margin:0}` and nothing re-adds it; the 4b narrow ruling STANDS and `.vela-md-list` is **NOT** widened with a `p` rule. **SEGMENT 2 TRANSPORT RULED — (ii)**, see §3. This commit is the pre-push docs commit; prod is still fly 252 until the ship entry below is written.
 
 > *(build-time status, kept as the record)* ~~**STATUS — Segment 1 (item A: reroute /history's no-section research path through `<ReactMarkdown>` · item C: delete the dead `components/MarkdownRenderer.tsx` and the orphan `.markdown-content` block): 🔧 BUILT LOCAL, NOT pushed, NOT deployed (2026-09-11).**~~ *(the rest of that line, also historical: prod still fly 252 = `07e704dbb625898f79f3fa899edfdf46aeb879dd` at machine version 253; code commits on `main` ahead of `origin`; "Gate §2 is BLANK — the founder fills it"; push and deploy founder-only. The gate is now filled — see §2.)*
@@ -465,21 +467,27 @@ Not run by Claude Code; no AI observation is a gate result. Own account, **hard-
 | `/openapi.json` `ChatHistoryEntry.disclaimer` | absent | `anyOf [string, null]`, title "Disclaimer", **no description** | founder ruling #5 |
 | `[PRD X.Y]` | — | none — `docs/PRD.md` pairs "history" with "disclaimer" on 0 lines | sibling `2404f13` carried none |
 
-### 5g. EYE GATE — BLANK. Founder fills on localhost at the build SHA `edb3b3b`. Ctrl+Shift+R first. `DATABASE_URL` = **DEV branch** confirmed before starting.
+### 5g. EYE GATE — ~~BLANK.~~ ✅ TRANSCRIBED 2026-09-22 — founder 8/8 PASS (blanket 「都pass」). Founder fills on localhost at the build SHA `edb3b3b`. Ctrl+Shift+R first. `DATABASE_URL` = **DEV branch** confirmed before starting.
 
 | # | what to look at | what PASS means | PASS / FAIL + note |
 |---|---|---|---|
-| 1 | one legacy Explain row on /history, UI **zh-TW**, LIGHT | the zh-TW caption (`⚠️ 本解讀僅供參考…`) under the pre-wrap text, same look as a JSON row's caption | |
-| 2 | same row, DARK | same caption, legible | |
-| 3 | same row, UI switched to **en** | the en caption (`⚠️ This explanation is for reference only…`) — proves R1 keys off the UI toggle, not the browser | |
-| 4 | CONTROL: a JSON Explain row | unchanged — stored caption, ONCE (not doubled) | |
-| 5 | CONTROL: a Verify row | unchanged | |
-| 6 | CONTROL: a Research sections row AND a Research pre-wrap/no-section row | unchanged | |
-| 7 | curl / Invoke-RestMethod (own token) `GET /api/history?locale=zh-tw` | the zh-TW string in the body (lowercase normalized) | |
-| 8 | unauth `GET /api/history` | `403 {"detail":"Missing token"}` | |
+| 1 | one legacy Explain row on /history, UI **zh-TW**, LIGHT | the zh-TW caption (`⚠️ 本解讀僅供參考…`) under the pre-wrap text, same look as a JSON row's caption | **PASS** (founder) |
+| 2 | same row, DARK | same caption, legible | **PASS** (founder) |
+| 3 | same row, UI switched to **en** | the en caption (`⚠️ This explanation is for reference only…`) — proves R1 keys off the UI toggle, not the browser | **PASS** (founder) |
+| 4 | CONTROL: a JSON Explain row | unchanged — stored caption, ONCE (not doubled) | **PASS** (founder) |
+| 5 | CONTROL: a Verify row | unchanged | **PASS** (founder) |
+| 6 | CONTROL: a Research sections row AND a Research pre-wrap/no-section row | unchanged | **PASS** (founder) |
+| 7 | curl / Invoke-RestMethod (own token) `GET /api/history?locale=zh-tw` | the zh-TW string in the body (lowercase normalized) | **PASS** (founder) |
+| 8 | unauth `GET /api/history` | `403 {"detail":"Missing token"}` | **PASS** (founder) |
+
+**Gate result: 8 / 8 founder-PASS** (rows 1–8) · date **2026-09-22** · founder **AndrewLee0430** · conditions as stated in the closeout brief: localhost at `edb3b3b`, `DATABASE_URL` = Dev branch, hard-refresh first (not observed by Claude Code).
+
+**Provenance, stated plainly:** the founder's verdict was a single blanket statement — 「都pass」 — in the 2026-09-22 strategy conversation, not eight separate row calls, and **no per-row screenshots were retained**. It is transcribed here under the closeout authorization using the same zh-TW transcription precedent as §2 above and §6 / §8 / §10 / §13 of the history-honesty baton. A future reader should not read rows 1–8 as independently evidenced observations; row 8 (unauth 403) is the one row re-read by machine on prod at the deploy readback (§5i).
+
+**STATUS 2026-09-22 — GATE §5g PASSED 8/8 — PUSHING.** Push + deploy authorized by the founder's closeout paste (2026-09-22). Pre-push commits: `fef798f` fix(tooling) — the two ruled `scripts/extract_session.ps1` §6 label edits (founder ruling 2026-09-22 on the 2026-09-21 "FLAGGED, NOT CHANGED" pair; §6 figures 114 / 38 / 0 unchanged before → after) · this docs commit. Prod still fly v257 = `e12d3f0bb4bb37006834e8eaa19fe77537000944` until the ship entry (§5i).
 
 ### 5h. What this build does to OTHER documents' line citations (Rule 25, stated not silent)
 
 `api/server.py`: +1 for every line after `:97`; +5 after `:2045`; +7 after `:2060`; +14 after `:2064`; +27 after `:2084` (old numbering). `pages/history.tsx`: +5 after `:139`; +7 after `:192`; +15 after `:470`. Citations into those regions written at or before `d01ac6f` — including the ones in this baton's §1/§3 and in `TECH_DEBT.md` — now read shifted; none was re-pointed here (Q2 ruling 2026-09-21: line-number rot is filed, not repaired piecemeal).
 
-**NOT PUSHED. NOT DEPLOYED.** Prod stays fly v257 = `e12d3f0bb4bb37006834e8eaa19fe77537000944`. Next: founder eye gate (5g) → push/deploy authorization.
+**NOT PUSHED. NOT DEPLOYED.** Prod stays fly v257 = `e12d3f0bb4bb37006834e8eaa19fe77537000944`. Next: founder eye gate (5g) → push/deploy authorization. **→ 2026-09-22: gate §5g 8/8 founder-PASS; push + deploy AUTHORIZED by the closeout paste — PUSHING** (pre-push commits `fef798f` tooling + this docs commit).
