@@ -387,3 +387,99 @@ Not run by Claude Code; no AI observation is a gate result. Own account, **hard-
 ---
 
 **✅ SEGMENT 1 CLOSED 2026-09-11.** Prod = **fly 254** (`93d704c286c752cb56edcef80cc0131c9720be19`), image `deployment-01M2763DDMF08A3S7P8FPZSM46`; prod eye **2/2 founder-PASS** (§2). **Segment 2 (item B) — TRANSPORT RULED (ii), NOT started (§3).**
+
+---
+
+## §5 SEGMENT 2 BUILD 2026-09-22 — 🔧 BUILT LOCAL, NOT pushed, NOT deployed (prod fly v257 = `e12d3f0bb4bb37006834e8eaa19fe77537000944`)
+
+- **Repo assertion (Rule 24):** toplevel `C:/Users/andre/projects/Vela`; build session opened at HEAD `d01ac6f1e03b6f0903939d088f7232e4e5e84805`; opening gate = the four untracked lines, `git diff --stat` empty. Code commits: **`f852e4a`** (backend + endpoint tests + the R6 test edit) · **`edb3b3b`** (frontend + guard). Ledger commit rides this section.
+- **Authority:** `TECH_DEBT.md` entry `[HONESTY] **[P3 · Explain LEGACY rows (the pre-wrap fallback path on /history) …` (`:1119` at `d01ac6f`, re-located by title — MATCH). Transport ruled (ii) 2026-09-11 (§3 above).
+
+### 5a. Founder rulings 2026-09-22 — VERBATIM (from the build brief and the resume prompt; all 「照建議」)
+
+- **R1** *"TRANSPORT = hybrid: GET /api/history takes `locale` as an optional query param (the spelling of the four existing GET precedents) AND an injected `Request`, and resolves the language with the EXISTING `_resolve_response_language(locale, request)` — explicit value first, Accept-Language fallback, "en" default, normalization included. One function reused; the normalizer mitigation is CARRIED, not copied (Rule 19)."*
+- **R2** *"FILL SCOPE = every row with session_type == "explain" gets `disclaimer = get_disclaimer(lang)`; all other rows get None. The server does NOT parse `answer` to decide legacy vs JSON. The frontend renders `item.disclaimer` ONLY on the Explain pre-wrap path; JSON Explain rows keep rendering their STORED `parsed.disclaimer` unchanged."*
+- **R3** *"CLASS/P = the entry stays [HONESTY][P3] — CONFIRMED, not re-rated. Append "RATIFIED 2026-09-22 (confirmed)"; rewrite nothing."*
+- **R4** *"STASH = FILE an entry for stash@{0}. Facts only. Class/P is a PROPOSAL pending founder ratification. Do NOT touch the stash."*
+- **R5** *"NORMALIZER GAP (probe §F) = NOT a separate entry. It is a build REQUIREMENT of this segment (tested) plus one dated bullet inside the segment-2 entry."*
+- **R6** (resume prompt, 2026-09-22 — *"the paste of this prompt is the ratification"*) *"tests/test_history_delete.py is ADDED to the allowed files, bounded to test_get_history_excludes_user_id: :173-175 expected key set gains "disclaimer" (six keys); its docstring's "exactly the five fields" (or equivalent wording — quote the line you change) becomes six; NOTHING else in that file. `git diff -- tests/test_history_delete.py` must show only those hunks; print it. R2 is UNCHANGED: every row carries the key; non-explain rows carry null. response_model_exclude_none is REJECTED (it would drop question/answer/created_at when NULL, changing the wire contract the :2034-2035 comment preserves). Sequencing for Rule 17: the key-set test must go RED once (after 2a lands, before the :173-175 edit) — record the failure message — then be updated and go GREEN. That RED is the proof the assertion still observes the wire."*
+  - Why R6 exists: the build STOPPED at its first read because `tests/test_history_delete.py:173-175` asserts the wire key set is exactly five keys; R2 makes it six. Observed RED (after the model change, before the edit): *`AssertionError: unexpected field set: ['answer', 'created_at', 'disclaimer', 'id', 'question', 'session_type']`* — 1 failed, 8 passed. Docstring line changed: *"GET /api/history serializes exactly the five fields the frontend consumes"* → *"exactly the six fields the frontend consumes (five columns + the read-time `disclaimer`, render-leftovers segment 2 / R6 2026-09-22)"*. `git diff -- tests/test_history_delete.py` showed exactly those two hunks; 9 passed after.
+
+### 5b. Rule 25 — cited (probe 2026-09-22 / brief / entry) vs derived at `d01ac6f` BEFORE editing
+
+| what | cited | derived at `d01ac6f` | verdict |
+|---|---|---|---|
+| authority entry heading | `TECH_DEBT.md:1119` | `:1119` | MATCH |
+| `response_model=list[ChatHistoryEntry]` | `api/server.py:2012` | `:2059` (`:2012` is a blank line) | +47 |
+| `class ChatHistoryEntry` / fields | — | `:2038` / `:2041-2045` | — |
+| handler `get_user_history` | `:2059-2084` (probe) | `:2059-2084` | MATCH |
+| Explain `ChatHistory` write site | `:1706-1707` / `:1717-1722` | `:1766-1767` / `:1764-1769` | +60 / ≈+47 |
+| `_explain_history_payload` | "DOES NOT EXIST" | 0 files under `api/ pages/ components/ utils/ scripts/ tests/` | CONFIRMED |
+| `_resolve_response_language` | `:126-134` | signature `:126`, body to `:168`; normalizes at `:156` (explicit) AND `:164` (header) | start MATCH; both paths normalize |
+| `?locale=` GET precedent | — | `:3018-3019`, `:3073-3074`, `:3094-3095`, `:3119-3120` | 4 precedents |
+| `HistoryItem` mirror | `:132` block | `:134-140` | MATCH |
+| fetch | `:192` | `:192-194` | MATCH |
+| Explain JSON caption `<p>` | `:431-433` | `:436-440` (tokens copied from `:437`) | +5 |
+| Explain pre-wrap `<p>` | `:463` | `:468-470` | +5 |
+| Research pattern (fly 251 `2404f13`) | — | `:403-405`, `:416-418` | — |
+| `parsed.disclaimer` | 2 | **4 occurrences = 2 render sites × (guard + value)** | unit: the brief counted sites |
+| `getResearchDisclaimer(` | 2 | 2 | MATCH |
+| `EXPLAIN_DISCLAIMERS` keys | 16 | 16 (dict `:20-44`; an unbounded sweep once read 48 across three dicts) | MATCH |
+| `LANGUAGE_NAMES` | — | `api/utils/language_detector.py:13`, 16 keys incl. `ja`, `zh-TW`, `en` | — |
+
+⚠️ **After `f852e4a`** one import line was inserted at `api/server.py:98`, so every `server.py` figure above below `:97` reads **+1** at `edb3b3b` (`_resolve_response_language` → `:127-169`; explain resolve call `:1727` → `:1728`; write site → `:1767`; the handler now spans `:2065-2111`). `pages/history.tsx` shifts after `edb3b3b`: lines after `:139` +5, after `:192` +7, after `:470` +15.
+
+### 5c. The exact change
+
+**`api/server.py` (`f852e4a`), five hunks:** `:98` import `get_disclaimer as get_explain_disclaimer` (no prior import; only `get_verify_disclaimer` existed at `:97`) · model field `disclaimer: Optional[str] = None` with a three-line comment, **no description** · signature gains `request: Request, locale: str | None = None` (precedent form) · `lang = _resolve_response_language(locale, request)` once · `return query…all()` → `rows = query…all()` (expression byte-identical) + construction loop: `ChatHistoryEntry.model_validate(row)`, `entry.disclaimer = caption if row.session_type == "explain" else None`. **The cutoff region (`:2066-2082` at `d01ac6f`) has zero diff hunks.** No ORM instance is mutated → nothing to flush → no write (test (vi) proves it at the engine).
+
+**`pages/history.tsx` (`edb3b3b`), three hunks and nothing else moves:** `:140` `disclaimer?: string | null` on `HistoryItem` · `:197` fetch `` `${…}/api/history?locale=${encodeURIComponent(lang)}` `` (headers unchanged; `lang` in scope from `useLang()` at `:152`) · `:478` `{item.disclaimer && (<p className="text-xs mb-4 text-center" style={{ color: "rgb(var(--color-text) / 0.35)" }}>{item.disclaimer}</p>)}` directly after the pre-wrap `<p>` — the JSON branch's caption tokens **verbatim**. Untouched by construction: the Explain JSON branch's `parsed.disclaimer` render, the Verify branch's, both Research paths.
+
+### 5d. Rule 19 — what surface #1 (`/explain` → `explain_service.py:451` via `_resolve_response_language` at `:1727`) does AROUND the disclaimer, and whether surface #2 (`/api/history`) carries it
+
+| mitigation on surface #1 | carried to surface #2? | how / why |
+|---|---|---|
+| **BCP-47 normalizer** (`_resolve_response_language._normalize`: `zh-tw→zh-TW`, bare `zh→zh-TW`, lowercase match) — the reason `get_disclaimer`'s bare `.get` has never missed | **CARRIED** | the SAME function is called (R1); asserted by test (ii) `?locale=zh-tw → zh-TW` and test (iii) header `zh-tw;q=0.9,en → zh-TW`. The `?locale=` precedent resolver (`_resolve_explore_locale_from_request :3010-3011`) returns the query value verbatim — deliberately NOT copied. |
+| **English fallback** (`get_disclaimer`: `or EXPLAIN_DISCLAIMERS["en"]` — catches missing AND empty; never returns None) | **CARRIED** | same call; asserted by test (iv) (no input → en) and the unknown-locale test (`xx-QQ` → en, never null) |
+| **⚠️ prefix** (part of each of the 16 strings) | **CARRIED** | the string itself carries it; the pre-wrap render copies the JSON branch's `<p>` and prepends nothing (the Verify branch's own comment: *"do not prepend a second marker"*) |
+| **`en` default at the chain's end** (`:168`) | **CARRIED** | same function; test (iv) sends `Accept-Language: ""` and gets `en` |
+| **Stored-at-write language** (surface #1 captions in the language the answer was GENERATED in, then stores the caption inside the JSON) | **NOT CARRIED — BY DESIGN, the accepted cost of ruling (ii)+R1** | legacy rows store no language of any kind (`ChatHistory` columns: `id user_id session_type question answer created_at` — probe A3, 0 `lang|locale` hits); the caption is keyed to the REQUEST's language. A legacy zh-TW explanation viewed with the UI on `en` captions in English. Recorded, not hidden. |
+| **JSON rows' stored caption** (surface #1's own output, already on the row) | **NOT APPLICABLE — left alone (R2)** | the server fills `disclaimer` on JSON explain rows too (no `answer` parsing), the frontend ignores it there and renders the stored `parsed.disclaimer` once; guard checks (2)/(3) and gate row 4 pin "once, not doubled" |
+| **Response-model filter** (`response_model` drops unknown attributes silently — baton §3b) | **HANDLED** | the field is on the model; every endpoint assertion is on `res.json()`; mutation check proves the test observes it |
+
+### 5e. Tests — TDD, RED watched first (Rule 17)
+
+- **`tests/test_history_disclaimer_field.py`** (NEW, 10 tests, all on the wire body): (i) `?locale=zh-TW` fills BOTH explain rows (legacy non-JSON and JSON-shaped), research null · (ii) `?locale=zh-tw` → zh-TW not en (R5) · (iii) `Accept-Language: ja,en;q=0.8` → ja; `zh-tw;q=0.9,en` → zh-TW · explicit wins over header · (iv) neither → en · unknown → en, never null · (v) 8-day-old row absent for a free user · (vi) every SQL statement captured, none UPDATE/INSERT/DELETE, stored `answer` read back identical, no `disclaimer` column · negative control: verify row → null · `/openapi.json`: no description, no internal names. **RED at `d01ac6f`:** 8/10 failed — *"key missing on the wire: ['answer', 'created_at', 'id', 'question', 'session_type']"* / `KeyError: 'disclaimer'`. **GREEN after `f852e4a`:** 10 passed. **Mutation:** field removed (uncommitted) → (i) RED *`ValueError: "ChatHistoryEntry" object has no field "disclaimer"`* (louder than the expected KeyError — the handler's assignment rejects the missing field before the wire); restored byte-identical (sha256-16 `83b53d76e2b19a4b`); GREEN. **1/1 caught.**
+- **`tests/history_explain_disclaimer_guard.mjs`** (NEW; wrapper `tests/test_history_explain_disclaimer.py`, exact form of the research wrapper). Checks: (1) fetch literal has `/api/history?locale=` and `encodeURIComponent(lang)` · (2) `item.disclaimer` EXACTLY 2 occurrences = ONE render site (guard + value), inside the Explain branch (IIFE marker; end = next `item.session_type ===`, derived), AFTER its `whitespace-pre-wrap` `<p>`, conditionally rendered, 0 outside · (3) `parsed.disclaimer` UNCHANGED at **4 occurrences** (2 sites × guard + value — unit stated) · (4) `getResearchDisclaimer(` UNCHANGED at 2 · (5) no frontend copy of any of the 16 `EXPLAIN_DISCLAIMERS` values (parsed from the dict's own braces; full and glyph-stripped; 67 files under `pages/ components/ utils/`), no code reference to the Python source by name (comments stripped — `utils/i18n-ui.ts:4647` is a pointer comment) · (6) the Explain pre-wrap `<p>` exists INSIDE the Explain branch — cites `tests/research_list_render_guard.mjs:263` and `tests/test_history_render_fallback.py:64` (at `d01ac6f`) and asserts only what they do not. **RED at `f852e4a` (before the frontend edits):** 7 failures — (1)×2, (2)×4, and one false positive (the name check read raw source; fixed to comment-stripped). After the edits: 2 failures from the guard's OWN unit error (expected 1 occurrence where guard + value is 2) — corrected to the derived figure. **GREEN:** *"all checks passed (67 frontend files scanned, 16 disclaimer values)"*. Sibling guards still GREEN.
+
+### 5f. Readbacks — before (`d01ac6f`, stopped session) → after (`edb3b3b`)
+
+| readback | before | after | note |
+|---|---|---|---|
+| `python -m pytest -q` | 447 passed / 28 skipped | **458 passed / 28 skipped** | +11 = 10 endpoint tests + 1 guard wrapper |
+| `npx tsc --noEmit` | 0 errors | 0 errors | |
+| `npm run lint` | 22 = 7e/15w | 22 = 7e/15w | **IDENTICAL message set** (position-stripped diff empty; shifts are line-number-only) |
+| `npm run build` | — | exit 0, **✓ Exporting (15/15)** | |
+| i18n | — | **+0 keys** — `git diff d01ac6f..edb3b3b --name-only -- utils/ components/` → 0 files | |
+| `git diff d01ac6f..edb3b3b --stat` | — | exactly 6 files: `api/server.py` (+29/−1), `pages/history.tsx` (+17/−1), `tests/history_explain_disclaimer_guard.mjs`, `tests/test_history_disclaimer_field.py`, `tests/test_history_explain_disclaimer.py`, `tests/test_history_delete.py` (R6, 2 hunks) | |
+| `/openapi.json` `ChatHistoryEntry.disclaimer` | absent | `anyOf [string, null]`, title "Disclaimer", **no description** | founder ruling #5 |
+| `[PRD X.Y]` | — | none — `docs/PRD.md` pairs "history" with "disclaimer" on 0 lines | sibling `2404f13` carried none |
+
+### 5g. EYE GATE — BLANK. Founder fills on localhost at the build SHA `edb3b3b`. Ctrl+Shift+R first. `DATABASE_URL` = **DEV branch** confirmed before starting.
+
+| # | what to look at | what PASS means | PASS / FAIL + note |
+|---|---|---|---|
+| 1 | one legacy Explain row on /history, UI **zh-TW**, LIGHT | the zh-TW caption (`⚠️ 本解讀僅供參考…`) under the pre-wrap text, same look as a JSON row's caption | |
+| 2 | same row, DARK | same caption, legible | |
+| 3 | same row, UI switched to **en** | the en caption (`⚠️ This explanation is for reference only…`) — proves R1 keys off the UI toggle, not the browser | |
+| 4 | CONTROL: a JSON Explain row | unchanged — stored caption, ONCE (not doubled) | |
+| 5 | CONTROL: a Verify row | unchanged | |
+| 6 | CONTROL: a Research sections row AND a Research pre-wrap/no-section row | unchanged | |
+| 7 | curl / Invoke-RestMethod (own token) `GET /api/history?locale=zh-tw` | the zh-TW string in the body (lowercase normalized) | |
+| 8 | unauth `GET /api/history` | `403 {"detail":"Missing token"}` | |
+
+### 5h. What this build does to OTHER documents' line citations (Rule 25, stated not silent)
+
+`api/server.py`: +1 for every line after `:97`; +5 after `:2045`; +7 after `:2060`; +14 after `:2064`; +27 after `:2084` (old numbering). `pages/history.tsx`: +5 after `:139`; +7 after `:192`; +15 after `:470`. Citations into those regions written at or before `d01ac6f` — including the ones in this baton's §1/§3 and in `TECH_DEBT.md` — now read shifted; none was re-pointed here (Q2 ruling 2026-09-21: line-number rot is filed, not repaired piecemeal).
+
+**NOT PUSHED. NOT DEPLOYED.** Prod stays fly v257 = `e12d3f0bb4bb37006834e8eaa19fe77537000944`. Next: founder eye gate (5g) → push/deploy authorization.
