@@ -131,7 +131,7 @@ docker run -p 8000:8000 vela
 
 ## Important Rules
 
-1. **Never change guard chain to fail-open** — if a guard throws, block the request
+1. **Never change guard chain to fail-open** — if a guard throws, block the request *(Scope RULED 2026-09-23: this includes route-level gates such as `_check_phi`, not only the `run_guards` chain — a detector exception blocks the request.)*
 2. **Never move PHI detection to middleware** — breaks SSE streaming
 3. **Never use sync `OpenAI()` in async code** — use `AsyncOpenAI()` + `await`
 4. **Never use `print()`** — use `logging.getLogger()`
