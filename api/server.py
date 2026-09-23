@@ -710,15 +710,24 @@ def _phi_blocked_response(phi_type: str) -> JSONResponse:
 
 
 def _check_phi(text: str, endpoint: str, request: Request) -> JSONResponse | None:
-    """Check text for PHI. Returns a 400 JSONResponse if detected, else None."""
+    """Check text for PHI. Returns a 400 JSONResponse if detected, else None.
+
+    Fail-CLOSED (CLAUDE.md Rule 1, scope ruled 2026-09-23): a detector exception
+    blocks the request with the run_guards precedent — same string as
+    guards.py's fail-closed branches, same 400 {"detail": ...} shape the Verify
+    route returns for a guard block. The exception goes to the log only."""
     try:
         phi_type = PHIDetector.detect(text)
         if phi_type:
             client_ip = _get_client_ip(request)
             logger.warning("[PHI] Blocked: type=%s, endpoint=%s, ip=%s", phi_type, endpoint, client_ip)
             return _phi_blocked_response(phi_type)
-    except Exception as e:
-        logger.error("PHI check error: %s", e)
+    except Exception:
+        logger.exception("PHI check failed; blocking request (fail-closed)")
+        return JSONResponse(
+            status_code=400,
+            content={"detail": "Security check temporarily unavailable. Please try again."},
+        )
     return None
 
 
