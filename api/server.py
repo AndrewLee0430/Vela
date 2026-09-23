@@ -1203,9 +1203,10 @@ async def verify_drug_interaction(
     user_id, anon_id = auth
     is_anonymous = anon_id is not None
 
-    # PHI 偵測
-    drugs_text = " ".join(body.drugs)
-    phi_resp = _check_phi(drugs_text, "/api/verify", request)
+    # PHI 偵測 — drugs AND patient_context (E3, ruled 2026-09-23). Built once; the
+    # same string feeds run_guards below, so the two gates inspect identical input.
+    verify_input = " ".join(body.drugs) + (f" {body.patient_context}" if body.patient_context else "")
+    phi_resp = _check_phi(verify_input, "/api/verify", request)
     if phi_resp:
         return phi_resp
 
@@ -1236,7 +1237,6 @@ async def verify_drug_interaction(
                     return JSONResponse(status_code=429, content={"error": "daily_cap_reached", "message": "You've reached today's usage limit. Resets at midnight UTC."})
 
     # ── Guard：藥物名稱不需要間接 injection 掃描 ──────────────────
-    verify_input = " ".join(body.drugs) + (f" {body.patient_context}" if body.patient_context else "")
     passed, guard_error = await run_guards(verify_input, skip_indirect=True)
     if not passed:
         return JSONResponse(status_code=400, content={"detail": guard_error})
