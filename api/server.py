@@ -1292,7 +1292,7 @@ async def verify_drug_interaction(
         if not is_anonymous:
             _safe_db_write(db, AuditLog(id=audit_id, user_id=user_id,
                     action="verify_defer_ambiguous",
-                    query_content=f"Ambiguous TFDA brand(s): {[body.drugs[i] for i, _ in ambiguous]}",
+                    query_content=PHIDetector.sanitize_for_log(f"Ambiguous TFDA brand(s): {[body.drugs[i] for i, _ in ambiguous]}"),
                     ip_address="0.0.0.0"),
                     label="Verify Audit")
         return VerifyResponse(
@@ -1426,7 +1426,7 @@ async def verify_drug_interaction(
         logger.warning("No FDA labels found for %s, falling back to LLM", body.drugs)
         if not is_anonymous:
             _safe_db_write(db, AuditLog(id=audit_id, user_id=user_id,
-                    action="verify_fallback", query_content=f"LLM fallback: {body.drugs}", ip_address="0.0.0.0"),
+                    action="verify_fallback", query_content=PHIDetector.sanitize_for_log(f"LLM fallback: {body.drugs}"), ip_address="0.0.0.0"),
                     label="Verify Audit")
 
         # PRD § 2.9: fallback prompt also follows response_language contract
@@ -1467,7 +1467,7 @@ async def verify_drug_interaction(
                 fb_summary = "TFDA grounding — " + "; ".join(tfda_notes) + ". " + fb_summary
             if not is_anonymous:
                 _safe_db_write(db, ChatHistory(user_id=user_id, session_type="verify",
-                        question=f"Drugs: {', '.join(body.drugs)}",
+                        question=PHIDetector.sanitize_for_log(f"Drugs: {', '.join(body.drugs)}"),
                         answer=_verify_history_payload(
                             drugs_analyzed=body.drugs, interactions=fb_interactions,
                             summary=fb_summary,
@@ -1518,7 +1518,7 @@ async def verify_drug_interaction(
             fallback_summary = "No FDA label data found. Please use specific drug names."
             if not is_anonymous:
                 _safe_db_write(db, ChatHistory(user_id=user_id, session_type="verify",
-                        question=f"Drugs: {', '.join(body.drugs)}",
+                        question=PHIDetector.sanitize_for_log(f"Drugs: {', '.join(body.drugs)}"),
                         answer=_verify_history_payload(
                             drugs_analyzed=body.drugs, interactions=[],
                             summary=fallback_summary, risk_level="Unknown",
@@ -1648,9 +1648,9 @@ async def verify_drug_interaction(
     if not is_anonymous:
         _safe_db_write(db,
             AuditLog(id=audit_id, user_id=user_id,
-                action="verify", query_content=f"Checked: {body.drugs}", ip_address="0.0.0.0"),
+                action="verify", query_content=PHIDetector.sanitize_for_log(f"Checked: {body.drugs}"), ip_address="0.0.0.0"),
             ChatHistory(user_id=user_id, session_type="verify",
-                question=f"Drugs: {', '.join(body.drugs)}",
+                question=PHIDetector.sanitize_for_log(f"Drugs: {', '.join(body.drugs)}"),
                 answer=_verify_history_payload(
                     drugs_analyzed=body.drugs, interactions=interactions,
                     summary=summary, risk_level=risk_level,
