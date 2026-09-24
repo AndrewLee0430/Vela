@@ -1,6 +1,6 @@
 # PHI-BOUNDARY car — E2 · E3 · E4 (built 2026-09-23)
 
-**Car tag:** `phi_boundary`. **Mode:** BUILD LOCAL — committed locally, **NOT pushed, NOT deployed**. Prod = fly 258 at
+**Car tag:** `phi_boundary`. **Mode:** ~~BUILD LOCAL — committed locally, **NOT pushed, NOT deployed**.~~ → **✅ SHIPPED fly 259 2026-09-24** (§7); prod eye OPEN. Prod = fly 258 at
 `9044d46502c9837376ffb7e438aa8cd5bd5c05d9`, unchanged.
 **Base:** `2805f8c543a849fba7e85af893c031069e08fe9e` == origin/main (Rule 24 asserted: toplevel `C:/Users/andre/projects/Vela`).
 **Line numbers** below are at `2805f8c` unless marked otherwise (commits B and C shift `api/server.py` below `:712` by +1 and
@@ -140,8 +140,28 @@ still describes the Verify question as the plain `"Drugs: {drug1, drug2, ...}"` 
 
 **Provenance (transcribed under the 2026-09-23 closeout authorization, zh-TW transcription precedent):** founder statement 2026-09-23 in the strategy conversation, blanket 「都pass」 — all four rows. Run on localhost at `c51f36e`, `TEST_MODE`, `DATABASE_URL` = Dev; rows 2–3 sent with `curl.exe` (not Invoke-RestMethod as the recipe named). No screenshots; no per-row readings transcribed. **STATUS: GATE PASSED 4/4 — PUSHING.**
 
-## §7 Open after this car
+## §7 Push + deploy readbacks (2026-09-24, closeout authorization)
 
-- Push + deploy: pending founder authorization.
+- **§1a CLAUDE.md sanity:** `git show --stat c51f36e -- CLAUDE.md` = **1 insertion(+), 1 deletion(-)**, and the changed-line grep = **2**, NOT the expected 1 / 0 / 1. **Not EOL churn** (the STOP case): both blobs have 0 CR bytes and 191 lines; the one changed line is the old Rule 1 line plus the appended clause (prefix-identical). An in-place append to an existing line is always −1/+1; the expectation assumed a new line. Proceeded.
+- **Gate commit** `9fc4d47` (§6 4/4). **Push** `2805f8c..9fc4d47`; `git ls-remote origin main` = `9fc4d47bf6dca6069a9fb7a5981d92b1a17bf7ca` = HEAD, exact 40 chars.
+- **Deploy:** `.\deploy.ps1`, plain call, background-captured, attempt 1 of the 2 authorized, exit 0. Transcript `tests/probes/deploy_parser/fly259_deploy_transcript.txt` (940 lines; 12 ANSI sequences stripped, 0 CR, 0 control bytes left). `GIT_SHA = 9fc4d47bf6dca6069a9fb7a5981d92b1a17bf7ca` (line 3) = HEAD at build = the gate commit. Image `registry.fly.io/vela-ai-medical:deployment-01M38GNDEW9DMBXP611CEHEYEF` (line 867). Rolling: `683d447c2e5428` reached started, `2879720c66d478` reached **stopped** (885–886); Step 3 found it stopped (917), Step 4 started it (920–921), Step 6 both 259 `started`, "All machines running." (938). No manual `machine start`.
+- **Release:** `fly releases` read directly — **v259** complete, "1m26s ago", the row directly above v258 (Sep 22 2026 15:00).
+- **`/health`:** `{"status":"healthy","version":"2.2.0","revision":"9fc4d47bf6dca6069a9fb7a5981d92b1a17bf7ca"}` — full-string match, **first poll**.
+- **`fly status`:** image `deployment-01M38GNDEW9DMBXP611CEHEYEF`; `2879720c66d478` 259 started 01:37:42Z · `683d447c2e5428` 259 started 01:37:11Z.
+- **Clean-run count, DERIVED** over `tests/probes/deploy_parser/fly*_deploy_transcript.txt` (12 files: 244 245 246 247 248 249 251 252 254 257 258 259), each with 6 `=== Step` headers, "All machines running.", 0 `Error:`/`ERROR` lines → fly 259 = the **12th** consecutive clean run (fly 258 = 11th: MATCH).
+- **Unauth probes:** `POST /api/verify` (no body) → **403 `{"detail":"Missing token"}`**; `GET /api/history` → **403 `{"detail":"Missing token"}`**. Auth precedes the PHI gate, so E3 / E4 change nothing an unauthenticated caller can reach.
+- **`fly logs` (65 s, 01:38–01:40Z):** 100 lines, bounds 2026-09-23T10:56:05Z → 2026-09-24T01:38:35Z. Split at 01:37:00Z: 43 backfill · 55 post-boundary (19 `2879720c66d478`, 30 `683d447c2e5428` app lines + 6 `runner[…]` image-prepare / machine-start lines) · 2 lines without a leading timestamp (proxy `invalid authority` errors dated 2026-09-23 16:0xZ — backfill). **`httpx` 0 · `api_key=` 0 · "PHI check failed" 0 · "[PHI] Blocked" 0** — the whole window was boot/backfill; no user traffic was observed in it, so the zeros are not evidence either way about traffic. No authenticated prod request was made.
+
+## §8 Prod eye — OPEN (founder)
+
+PROD EYE OPEN (founder, own account, prod fly 259, own token via browser console `await window.Clerk.session.getToken()`):
+- 1 UI /verify warfarin + aspirin → normal Major; /history row as before
+- 2 POST /api/verify {"drugs":["aspirin","warfarin"],"patient_context":"0912345678"} + Bearer → 400 type phi_blocked; no /history row
+- 3 POST /api/verify {"drugs":["AB1234567"]} + Bearer → result; GET /api/history → newest row question == "Drugs: ***" (the founder may delete that row afterwards via the UI Delete button)
+- 4 UI /research + /explain one query each → normal
+
+## §9 Open after this car
+
+- ~~Push + deploy: pending founder authorization.~~ → done, §7.
 - The **PHI-at-rest (`ChatHistory.answer`) entry body** named in STATE item 4 is **NOT** in this car.
 - Research / Explain frontend rendering of the fail-closed 400: not derived.
