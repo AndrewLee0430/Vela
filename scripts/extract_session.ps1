@@ -9,7 +9,9 @@
   committed blob and the working file and states MATCH / DIFFERS per file.
 
   READ-ONLY. Never writes inside the working tree, never runs add/commit/push, never
-  reads .env or any secret value. Output goes to stdout AND to a file under $env:TEMP.
+  reads .env or any secret value. Output goes to stdout AND to a file under $env:TEMP\vela_extraction;
+  after that file is written, only the newest -Keep extraction files in that folder are kept (founder
+  ruling R3, 2026-09-24) — the only files this script ever deletes, all outside the working tree.
 
   Rule 26 (ii): every section prints the command that produced it on the line above its
   output. Rule 26 (iii): section 8 is a PLACEHOLDER — the adjacent observation is written
@@ -21,6 +23,11 @@
 .PARAMETER Task
   Free text: the next car's keyword. Adds a located-authority section.
 
+.PARAMETER Keep
+  How many extraction files to keep in $env:TEMP\vela_extraction, newest by the timestamp in the file
+  NAME (extraction_yyyyMMdd_HHmmss.md). Default 2, minimum 1. A prune failure is a warning, never a
+  failed extraction.
+
 .PARAMETER Files
   The ledger set the founder uploads. Default STATE.md, BACKLOG.md, TECH_DEBT.md.
 
@@ -31,6 +38,7 @@
 param(
     [string]$PriorSha = "e12d3f0",
     [string]$Task = "",
+    [ValidateRange(1, 2147483647)][int]$Keep = 2,
     [string[]]$Files = @("STATE.md", "BACKLOG.md", "TECH_DEBT.md")
 )
 
@@ -154,13 +162,69 @@ if (-not [string]::IsNullOrEmpty($Task)) {
         Emit ""
         Emit ("No TECH_DEBT.md hit for """ + $Task + """ — if this car is TECH_DEBT-sourced the keyword is wrong; if it is BACKLOG-sourced that is normal (CLAUDE.md Step 0 item 2).")
     } else {
-        $first = [int]((([string]@($hits)[0]) -split ":")[1])
+        # 🔑 ENTRY WALKER — founder ruling R2 (2026-09-24). The previous walker took the FIRST hit and walked
+        #    upward to the nearest ^- \[ line; a first hit ABOVE the first entry heading (a NAV comment, a
+        #    title-list row "- `[", a <!-- … [DONE] --> tombstone) found none, stopped at line 1 and printed the
+        #    whole file head — lines 1–1250 at eb0db2e — with no warning. Selection is now:
+        #    (1) the first hit ON a ^- \[ heading line; else (2) the first hit NOT inside an <!-- --> block whose
+        #    upward walk reaches a ^- \[ line; else (3) NO ENTRY HIT + every hit classified. No fallback ever
+        #    prints a range starting at line 1.
         $td = Get-Content "TECH_DEBT.md" -Encoding UTF8
-        $s = $first; while ($s -gt 1 -and $td[$s - 1] -notmatch '^- \[') { $s-- }
-        $e = $s; while ($e -lt $td.Count -and $td[$e] -notmatch '^- \[') { $e++ }
+        $ord = [System.StringComparison]::Ordinal
+        # comment state at the START of each line, scanned across the whole file (NAV blocks span many lines)
+        $open = New-Object bool[] ($td.Count + 1)
+        $inC = $false
+        for ($i = 0; $i -lt $td.Count; $i++) {
+            $open[$i] = $inC
+            $ln = [string]$td[$i]; $p = 0
+            while ($true) {
+                if ($inC) { $j = $ln.IndexOf('-->', $p, $ord); if ($j -lt 0) { break }; $inC = $false; $p = $j + 3 }
+                else { $j = $ln.IndexOf('<!--', $p, $ord); if ($j -lt 0) { break }; $inC = $true; $p = $j + 4 }
+            }
+        }
+        function HitCol([int]$i) {
+            $ln = [string]$td[$i]
+            try { $m = [regex]::Match($ln, $Task, 'IgnoreCase'); if ($m.Success) { return $m.Index } } catch { }
+            $j = $ln.IndexOf($Task, [System.StringComparison]::OrdinalIgnoreCase); if ($j -ge 0) { return $j }
+            return 0
+        }
+        function InComment([int]$i, [int]$col) {
+            $st = $open[$i]; $ln = [string]$td[$i]; $p = 0
+            while ($true) {
+                if ($st) { $j = $ln.IndexOf('-->', $p, $ord); if ($j -lt 0 -or $col -lt ($j + 3)) { return $true }; $st = $false; $p = $j + 3 }
+                else { $j = $ln.IndexOf('<!--', $p, $ord); if ($j -lt 0 -or $col -lt $j) { return $false }; $st = $true; $p = $j + 4 }
+            }
+        }
+        function IsHeading([int]$i) { return (([string]$td[$i]) -match '^- \[') -and (-not $open[$i]) }
+        function EntryStart([int]$i) { for ($k = $i; $k -ge 0; $k--) { if (IsHeading $k) { return $k } }; return -1 }
+        $hitNos = @(@($hits) | ForEach-Object { [int](([string]$_ -split ":")[1]) })
+        $sel = -1; $how = ""
+        foreach ($h in $hitNos) { if (IsHeading ($h - 1)) { $sel = $h - 1; $how = "heading"; break } }
+        if ($sel -lt 0) {
+            foreach ($h in $hitNos) {
+                $i = $h - 1
+                $inCmt = InComment $i (HitCol $i)
+                if ((-not $inCmt) -and ((EntryStart $i) -ge 0)) { $sel = $i; $how = "body"; break }
+            }
+        }
         Emit ""
-        Emit ('$ (Get-Content TECH_DEBT.md -Encoding UTF8)[' + ($s - 1) + '..' + ($e - 1) + ']   # entry containing the first hit (line ' + $first + '); portable: sed -n ' + $s + ',' + $e + 'p TECH_DEBT.md')
-        foreach ($ln in $td[($s - 1)..($e - 1)]) { Emit ([string]$ln) }
+        if ($sel -lt 0) {
+            Emit ("NO ENTRY HIT for -Task '" + $Task + "' — " + $hitNos.Count + " hit(s) in TECH_DEBT.md, none on an entry heading and none in an entry body; no range is printed (founder ruling R2):")
+            foreach ($h in $hitNos) {
+                $i = $h - 1
+                if (InComment $i (HitCol $i)) { $cls = "comment" } elseif (([string]$td[$i]) -match '^- `\[') { $cls = "title-list" } else { $cls = "body-no-heading" }
+                $txt = [string]$td[$i]; if ($txt.Length -gt 120) { $txt = $txt.Substring(0, 120) }
+                Emit (":" + $h + " [" + $cls + "] " + $txt)
+            }
+            Emit "(the phrase is matched as ONE line's substring: markdown backticks inside a heading make a plain-text phrase miss it)"
+        } else {
+            $s0 = EntryStart $sel
+            $e0 = $s0; while (($e0 + 1) -lt $td.Count -and -not (IsHeading ($e0 + 1))) { $e0++ }
+            $s = $s0 + 1; $e = $e0 + 1
+            Emit ("entry walker: hit :" + ($sel + 1) + " selected by rule " + $how)
+            Emit ('$ (Get-Content TECH_DEBT.md -Encoding UTF8)[' + $s0 + '..' + $e0 + ']   # entry containing hit :' + ($sel + 1) + '; portable: sed -n ' + $s + ',' + $e + 'p TECH_DEBT.md')
+            foreach ($ln in $td[$s0..$e0]) { Emit ([string]$ln) }
+        }
     }
 }
 
@@ -256,7 +320,29 @@ if ($OutDir.ToLower().StartsWith($RepoRoot.ToLower())) { throw "refusing to writ
 if (-not (Test-Path $OutDir)) { New-Item -ItemType Directory -Path $OutDir | Out-Null }
 $OutFile = Join-Path $OutDir ("extraction_" + (Get-Date -Format "yyyyMMdd_HHmmss") + ".md")
 [System.IO.File]::WriteAllText($OutFile, (($L -join "`n") + "`n"), (New-Object System.Text.UTF8Encoding($false)))
+# 🔑 RETENTION — founder ruling R3 (2026-09-24): keep the newest -Keep extraction files by the timestamp in
+#    their NAME; top-level files matching the script's own name pattern only, no recursion, -LiteralPath.
+#    Runs only AFTER the new file is fully written, never deletes the file just written, and a prune failure
+#    is a warning, never a failed extraction. Recorded, NOT handled: two runs inside the same second get the
+#    same name, and the second overwrites the first.
+$pruneMsgs = New-Object System.Collections.Generic.List[string]
+try {
+    $nameRx = '^extraction_\d{8}_\d{6}\.md$'
+    $newName = [System.IO.Path]::GetFileName($OutFile)
+    $ours = @(Get-ChildItem -LiteralPath $OutDir -File | Where-Object { $_.Name -match $nameRx } |
+        Sort-Object -Property @{ Expression = { [datetime]::ParseExact($_.Name.Substring(11, 15), 'yyyyMMdd_HHmmss', $null) }; Descending = $true },
+                              @{ Expression = { $_.Name }; Descending = $true })
+    $kept = 0
+    for ($k = 0; $k -lt $ours.Count; $k++) {
+        $f = $ours[$k]
+        if ($k -lt $Keep -or $f.Name -eq $newName) { $kept++; continue }
+        try { Remove-Item -LiteralPath $f.FullName -Force; $pruneMsgs.Add("PRUNED: " + $f.Name) }
+        catch { Write-Warning ("prune: could not delete " + $f.Name + " — " + $_.Exception.Message) }
+    }
+    $pruneMsgs.Add("KEPT: " + $kept + " extraction file(s) in " + $OutDir + " (-Keep " + $Keep + ", newest by the timestamp in the name; " + ($pruneMsgs.Count) + " pruned this run)")
+} catch { Write-Warning ("prune step failed; the extraction itself was written: " + $_.Exception.Message) }
 Pop-Location
 foreach ($line in $L) { Write-Output $line }
 Write-Output ""
 Write-Output ("WRITTEN: " + $OutFile)
+foreach ($m in $pruneMsgs) { Write-Output $m }
