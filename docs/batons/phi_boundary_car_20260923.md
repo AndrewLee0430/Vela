@@ -129,14 +129,16 @@ re-uploads CLAUDE.md to Project Knowledge from the committed file.**
 (`:2222`, `:2227-2229`), so A / B / C carry `[PRD 6.4]`. **Drift flagged, not edited (PRD is outside this car's files):** `:2228`
 still describes the Verify question as the plain `"Drugs: {drug1, drug2, ...}"` string — now masked.
 
-## §6 Eye gate — BLANK (founder; localhost; `DATABASE_URL` = Dev; own token via Invoke-RestMethod)
+## §6 Eye gate — ✅ GATE PASSED 4/4 — PUSHING (founder; localhost; `DATABASE_URL` = Dev) *(was: BLANK)*
 
 | # | step | expected | result |
 |---|---|---|---|
-| 1 | UI `/verify`: warfarin + aspirin | normal result; a `/history` row as before, question "Drugs: warfarin, aspirin" | |
-| 2 | `POST /api/verify` with `patient_context` = a phone (e.g. `0912345678`) | 400, `type` = `phi_blocked`; no new `/history` row | |
-| 3 | `POST /api/verify` with `drugs` = `["AB1234567"]` | a result; the new `/history` row's question reads `Drugs: ***` | |
-| 4 | CONTROL: one Research query + one Explain run | both still run normally | |
+| 1 | UI `/verify`: warfarin + aspirin | normal result; a `/history` row as before, question "Drugs: warfarin, aspirin" || **PASS** |
+| 2 | `POST /api/verify` with `patient_context` = a phone (e.g. `0912345678`) | 400, `type` = `phi_blocked`; no new `/history` row || **PASS** |
+| 3 | `POST /api/verify` with `drugs` = `["AB1234567"]` | a result; the new `/history` row's question reads `Drugs: ***` || **PASS** |
+| 4 | CONTROL: one Research query + one Explain run | both still run normally || **PASS** |
+
+**Provenance (transcribed under the 2026-09-23 closeout authorization, zh-TW transcription precedent):** founder statement 2026-09-23 in the strategy conversation, blanket 「都pass」 — all four rows. Run on localhost at `c51f36e`, `TEST_MODE`, `DATABASE_URL` = Dev; rows 2–3 sent with `curl.exe` (not Invoke-RestMethod as the recipe named). No screenshots; no per-row readings transcribed. **STATUS: GATE PASSED 4/4 — PUSHING.**
 
 ## §7 Open after this car
 

@@ -2225,7 +2225,7 @@ Phase 1C 本版不做 Tier 3 使用者貢獻功能,但保留擴充點:
 **寫入但已脫敏 / 限縮**(對齊 privacy.tsx §1「Anonymized and sanitized query content」):
 
 - Research chat_history.question = `PHIDetector.sanitize_for_log(body.question)` — 已知 PHI patterns scrubbed
-- Verify chat_history.question = `"Drugs: {drug1, drug2, ...}"` — 僅藥名列表,patient_context 不寫入
+- Verify chat_history.question = `"Drugs: {drug1, drug2, ...}"` — 僅藥名列表,patient_context 不寫入 *(2026-09-23 note — old text kept: this string is now stored through `PHIDetector.sanitize_for_log` (E2, `09173e9`), as Research's is.)*
 - Explain chat_history.question = `body.report_text[:500]` — 前 500 字,且已通過 request-boundary PHI gate
 **6.5 Prompt 管理**
 
