@@ -407,6 +407,30 @@ async def get_jwks():
             _jwks_cache_ts = time.time()
     return _jwks_cache
 
+# Clerk claim pins (azp car, founder rulings 2026-09-24 Q1–Q3): code constants,
+# not env. CLERK_ISSUER is the host encoded in the publishable key committed in
+# fly.toml [build.args] (tests/test_clerk_token_claims.py asserts they agree).
+CLERK_ISSUER = "https://clerk.vela.an-tho.com"
+CLERK_AUTHORIZED_PARTIES = frozenset({"https://vela.an-tho.com"})
+
+
+def _decode_clerk_token(token: str, jwks) -> dict:
+    """Verify signature + iss + exp (required) + azp allowlist; raise JWTError
+    on any failure so every caller keeps its existing JWTError handling.
+    A token with no azp claim is rejected (Q3, fail-closed)."""
+    claims = jose_jwt.decode(
+        token,
+        jwks,
+        algorithms=["RS256"],
+        issuer=CLERK_ISSUER,
+        options={"verify_aud": False, "require_exp": True},
+    )
+    azp = claims.get("azp")
+    if azp not in CLERK_AUTHORIZED_PARTIES:
+        logger.warning("Clerk token rejected: azp not allowed (azp=%s, iss=%s)", azp, claims.get("iss"))
+        raise JWTError("azp not in authorized parties")
+    return claims
+
 if not TEST_MODE:
     clerk_guard = None  # 不再用 fastapi-clerk-auth
 else:
@@ -435,12 +459,7 @@ async def require_auth(request: Request) -> Optional[HTTPAuthorizationCredential
 
     try:
         jwks = await get_jwks()
-        payload = jose_jwt.decode(
-            token,
-            jwks,
-            algorithms=["RS256"],
-            options={"verify_aud": False}
-        )
+        payload = _decode_clerk_token(token, jwks)
         # 模擬 HTTPAuthorizationCredentials
         class FakeCreds:
             decoded = payload
@@ -1969,9 +1988,7 @@ async def _optional_user_id(request: Request) -> Optional[str]:
     token = auth_header.split(" ", 1)[1]
     try:
         jwks = await get_jwks()
-        payload = jose_jwt.decode(
-            token, jwks, algorithms=["RS256"], options={"verify_aud": False}
-        )
+        payload = _decode_clerk_token(token, jwks)
         return payload.get("sub")
     except JWTError as e:
         logger.warning("[bug-report] JWT verification failed: %s", e)
