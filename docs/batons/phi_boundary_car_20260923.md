@@ -1,6 +1,6 @@
-# PHI-BOUNDARY car — E2 · E3 · E4 (built 2026-09-23)
+# PHI-BOUNDARY car — E2 · E3 · E4 (built 2026-09-23) — ✅ SHIPPED fly 259 — CAR CLOSED 2026-09-24
 
-**Car tag:** `phi_boundary`. **Mode:** ~~BUILD LOCAL — committed locally, **NOT pushed, NOT deployed**.~~ → **✅ SHIPPED fly 259 2026-09-24** (§7); prod eye OPEN. Prod = fly 258 at
+**Car tag:** `phi_boundary`. **Mode:** ~~BUILD LOCAL — committed locally, **NOT pushed, NOT deployed**.~~ → **✅ SHIPPED fly 259 2026-09-24** (§7); ~~prod eye OPEN.~~ → **🏁 STATUS: CAR CLOSED 2026-09-24 — prod eye 4/4 PASS (§8).** Prod = fly 258 at
 `9044d46502c9837376ffb7e438aa8cd5bd5c05d9`, unchanged.
 **Base:** `2805f8c543a849fba7e85af893c031069e08fe9e` == origin/main (Rule 24 asserted: toplevel `C:/Users/andre/projects/Vela`).
 **Line numbers** below are at `2805f8c` unless marked otherwise (commits B and C shift `api/server.py` below `:712` by +1 and
@@ -152,7 +152,7 @@ still describes the Verify question as the plain `"Drugs: {drug1, drug2, ...}"` 
 - **Unauth probes:** `POST /api/verify` (no body) → **403 `{"detail":"Missing token"}`**; `GET /api/history` → **403 `{"detail":"Missing token"}`**. Auth precedes the PHI gate, so E3 / E4 change nothing an unauthenticated caller can reach.
 - **`fly logs` (65 s, 01:38–01:40Z):** 100 lines, bounds 2026-09-23T10:56:05Z → 2026-09-24T01:38:35Z. Split at 01:37:00Z: 43 backfill · 55 post-boundary (19 `2879720c66d478`, 30 `683d447c2e5428` app lines + 6 `runner[…]` image-prepare / machine-start lines) · 2 lines without a leading timestamp (proxy `invalid authority` errors dated 2026-09-23 16:0xZ — backfill). **`httpx` 0 · `api_key=` 0 · "PHI check failed" 0 · "[PHI] Blocked" 0** — the whole window was boot/backfill; no user traffic was observed in it, so the zeros are not evidence either way about traffic. No authenticated prod request was made.
 
-## §8 Prod eye — OPEN (founder)
+## §8 Prod eye — ✅ PROD EYE 4/4 PASS (founder, 2026-09-24) *(was: OPEN (founder))*
 
 PROD EYE OPEN (founder, own account, prod fly 259, own token via browser console `await window.Clerk.session.getToken()`):
 - 1 UI /verify warfarin + aspirin → normal Major; /history row as before
@@ -160,8 +160,23 @@ PROD EYE OPEN (founder, own account, prod fly 259, own token via browser console
 - 3 POST /api/verify {"drugs":["AB1234567"]} + Bearer → result; GET /api/history → newest row question == "Drugs: ***" (the founder may delete that row afterwards via the UI Delete button)
 - 4 UI /research + /explain one query each → normal
 
+**Results (transcribed):** provenance — founder screenshots + browser-console output in the strategy conversation, 2026-09-24 +08:00, own account, prod fly 259, own Clerk session token; transcribed under the car-close authorization (zh-TW transcription precedent).
+
+| row | result | reading |
+|---|---|---|
+| 1 | **PASS** | UI /verify warfarin + aspirin → normal result; /history row as before |
+| 2 | **PASS** | `POST /api/verify {"drugs":["aspirin","warfarin"],"patient_context":"0912345678"}` → 400 `{"type":"phi_blocked","content":"Personal information detected","detail":"…Taiwan Phone (台灣手機號碼)…","suggestion":…}`; no /history row written — **E3 live on prod** |
+| 3 | **PASS**, process note | first input `{"drugs":["AB1234567"]}` → 400 `{"detail":"Vela is a clinical medical assistant … outside our scope …"}` — the medical-intent guard (run_guards) rejected a nonsense drug name; NOT the PHI gate and NOT the E4 fail-closed branch (different body). Second input `{"drugs":["aspirin","warfarin","AB1234567"]}` → 200; `GET /api/history` → newest verify row question == `Drugs: aspirin, warfarin, ***` — **E2 live on prod** (the mask-only token masked, the drug names intact) |
+| 4 | **PASS** | UI /research and /explain, one query each, normal |
+
+Derived ordering (at `589c7a4`): on prod, run_guards' medical-intent check (`check_medical_intent`, `api/middleware/guards.py:320`, outside the `skip_indirect` branch) runs at `api/server.py:1249`, before the first Verify write site (`:1302`) — so a mask-only token can reach storage only inside an otherwise-medical request.
+
+**Boundary:** E4 (fail-closed) is verified by tests and the localhost gate only; no prod row exercises a detector exception, by design.
+
 ## §9 Open after this car
 
 - ~~Push + deploy: pending founder authorization.~~ → done, §7.
 - The **PHI-at-rest (`ChatHistory.answer`) entry body** named in STATE item 4 is **NOT** in this car.
 - Research / Explain frontend rendering of the fail-closed 400: not derived.
+- **(a) recorded, NOT filed (2026-09-24):** UX — a fail-closed 400 on /verify renders the generic "Server error (400)" (`pages/verify.tsx:295` at `c51f36e`), same as a run_guards block today; whether to surface `detail` is a founder call.
+- **(b) recorded, NOT filed:** the test-harness seam — see the dated "recorded, NOT filed" bullet on the E2 entry in `TECH_DEBT.md` (cross-reference only; not duplicated).
