@@ -17,6 +17,17 @@ Classes are **additive and orthogonal** to the existing `[P0]`–`[P3]` ratings 
 | [OTHER] | quality, hygiene, tooling, opportunistic | 101 |
 | | **total** | **192** |
 
+<!-- 🔴 NAV CHECKED 2026-09-24 (LEDGER-TOOLING CAR CLOSEOUT — commit C docs; push of 0fab1d0 · ad66b93 · C authorized by the
+     founder's closeout prompt; NOT deployed. Prod fly 259 = 9fc4d47bf6dca6069a9fb7a5981d92b1a17bf7ca, unchanged.)
+     PRE-CHANGE CHECK (Rule 25), derived at ad66b93 with git grep -c "^- \[CLASS\]" -- TECH_DEBT.md per class:
+     0 + 9 + 18 + 64 + 101 = 192 = the table. Cross-checks: git grep -c "^- \[" = 192; git grep -c "^- " = 227 = 192 + 35
+     (git grep -c "^- [^\[]" = 35). [sec]: loose 15 (git grep -c "^- \[.*\[sec\]") / strict 14
+     (git grep -c -E "^- \[[A-Z]+\] \*\*\[sec\]"). No discrepancy.
+     RULE 27: NO new entry. WHAT CHANGED: this block only — no entry text in this file changed (the push clause went to STATE and
+     the car baton; the two extraction §8 observations went to the baton's "recorded, NOT filed" list).
+     POST-CHANGE RE-DERIVE: 0 + 9 + 18 + 64 + 101 = 192. Delta 0. git grep -c "^- \[" = 192; git grep -c "^- " = 227 = 192 + 35.
+     [sec] loose 15 / strict 14. IDENTICAL to the pre-change derive: MATCH. -->
+
 <!-- 🔴 NAV CHECKED 2026-09-24 (LEDGER-TOOLING CAR — commit A 0fab1d0 fix(tooling) scripts/extract_session.ps1 + commit B docs;
      LOCAL, NOT pushed, NOT deployed; no product code. Prod fly 259 = 9fc4d47bf6dca6069a9fb7a5981d92b1a17bf7ca, unchanged.)
      PRE-CHANGE CHECK (Rule 25), derived at eb0db2e with git grep -c "^- \[CLASS\]" -- TECH_DEBT.md per class:

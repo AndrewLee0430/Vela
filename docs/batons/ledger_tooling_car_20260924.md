@@ -1,6 +1,6 @@
 # LEDGER-TOOLING car — entry walker · extraction retention · STATE 30-day ×5 · C3 ×1 (built 2026-09-24)
 
-**Car tag:** `ledger_tooling`. **Mode:** BUILD LOCAL — two commits, **NOT pushed, NOT deployed**. Docs + tooling only;
+**Car tag:** `ledger_tooling`. **Mode:** ~~BUILD LOCAL — two commits, **NOT pushed, NOT deployed**.~~ → **2026-09-24 — PUSH AUTHORIZED by the founder's closeout prompt; pushing 0fab1d0 · ad66b93 · commit C (this commit) together; NOT deployed (docs + tooling). Readback in the next extraction §1.** Docs + tooling only;
 no product file (api/ pages/ components/ utils/ styles/) touched. Prod = fly 259 at
 `9fc4d47bf6dca6069a9fb7a5981d92b1a17bf7ca`, unchanged.
 **Base:** `eb0db2e2c346b53db26a0a345c4f702d2d729212` (Rule 24 asserted: toplevel `C:/Users/andre/projects/Vela`).
@@ -93,6 +93,13 @@ newest two by name. The prune never deletes the file just written, even under cl
 - **(iii) A backtick in an entry heading makes a plain-text `-Task` phrase miss the heading.** The `ChatHistory.answer` entry heading
   (TECH_DEBT :2794 at `eb0db2e`) wraps the symbol in backticks, so "ChatHistory.answer stored unsanitized" matches only the NAV comment.
   The old walker hid this behind a file-head dump; it now surfaces as NO ENTRY HIT with the hit classified.
+- **(iv) The azp car must also read the webhook `user_usage` cleanup entry** — TECH_DEBT :2681 at `ad66b93` (:2680 at `eb0db2e`),
+  the `[COMPLIANCE][sec][P2 → Phase 1A §3.1]` "Clerk user.deleted webhook → user_usage cleanup not wired" entry. Its bullet (:2696 at
+  `ad66b93`) says to read it together with the azp entry. The fixed walker prints only the azp entry, so this cross-reference shows up
+  only in the §5 `git grep` list. Source: the `ad66b93` extraction §8.
+- **(v) STATE line 3 is 86,584 bytes (19% of STATE's 452,948 at `ad66b93`; 85,960 at `eb0db2e`) and grows every car** — the
+  prepend-a-header-segment convention adds to it every time. The 2026-08-27 slimming recon's class C2 (header history) covers it;
+  founder to sequence. Source: the `ad66b93` extraction §8.
 
 ## §5 Open after this car
 
