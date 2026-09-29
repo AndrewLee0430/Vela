@@ -1,0 +1,29 @@
+{
+ "probe": "bp_calcium PROBE 2 — which layer to fix (read-only)",
+ "query": "Can elderly patients take BP meds with calcium?",
+ "head": "71936e8f84577f09e1a5b566074cb3981279da69",
+ "date": "2026-09-29",
+ "budget_used": {"llm_completions": 0, "embedding_calls": "3 of 4 (step5_precautions x2 batched, step5_precautions_ub x1)",
+                 "dailymed_fetches": "3 of 3", "pubmed_string_lookups": "3 of 3 (each = esearch + efetch, the production path; 6 E-utilities requests)"},
+ "verdict_A": "NO interaction-on-target doc ever entered the pool (retrieval-side) — 0/5 runs by title-level hand-read. Supplement-TOPIC docs (regex-marked) entered in 3/5 runs (7 instances, 5 distinct PMIDs); the relevance filter dropped 5/7 and kept 2 (PMID:3415787, the dolomite paper, both times)",
+ "verdict_A_basis": "step5_census.json — TITLE ONLY (step3_trace.py did not record abstracts). Two title-negatives are FLAGGED, not cleared: PMID:3306212 'Diuretics in the management of hypertension' (run 2, filter-dropped) and PMID:28267687 'Pharmacology of the Kidney in Hypertension' (all runs, filter-dropped) could discuss thiazide hypercalcemia in the abstract.",
+ "verdict_B": "B: if 42232-9 were in the corpus, HCTZ PRECAUTIONS clears 0.6 on 0/9 strings (best 0.5096, would-be rank 10)",
+ "verdict_B_upper_bound": "the HCTZ calcium sentence ALONE ('Calcium excretion is decreased by thiazides ... hypercalcemia ...') clears 0.6 on 0/9 strings (best 0.4978) — so widening the section whitelist / ingesting PRECAUTIONS would NOT help this query at these rewrites",
+ "verdict_B_chlorthalidone": "UNANSWERED — builder picker chose 5441e163-459a-46b0-87a9-e9879091bf3c 'CHLORTHALIDONE TABLET [BRYANT RANCH PREPACK]' (repackager; doctype 34391-3 HUMAN PRESCRIPTION DRUG LABEL), which has NO 42232-9 section (PLR format). Its 43685-7 was not scored: the XML was not persisted and a refetch would exceed the 3-fetch cap.",
+ "verdict_B_query_count": "brief said 10 strings (9 rewrites + raw); step3b_dm_counterfactual.json holds 9 DISTINCT strings, raw included — 9 used",
+ "verdict_C": "C: a disambiguated rewrite WOULD retrieve on-target PubMed docs: YES, CONDITIONALLY — 5 on-target of 9 returned (15 slots): 4/4 for the string naming the mechanism ('thiazide diuretic calcium supplement hypercalcemia'), 1/5 for the population string, 0 docs at all for the most drug-specific string ('hydrochlorothiazide calcium carbonate interaction'). 2 of the 5 are directly about thiazide + calcium co-use (PMID:33178509 CATS, PMID:20068444).",
+ "verdict_C_hand_grades": {
+  "PMID:36282253": "on-target (review; names thiazides + calcium/vit-D supplements as hypercalcemia causes)",
+  "PMID:28806048": "on-target (review; 'lithium and thiazide diuretics ... can cause hypercalcemia')",
+  "PMID:33178509": "on-target DIRECT (Calcium-Alkali-Thiazide Syndrome; patient on calcium + vit D + thiazide for HTN)",
+  "PMID:20068444": "on-target DIRECT (thiazide-induced severe hypercalcemia, case + review)",
+  "PMID:31618867": "on-target, peripheral (prevalence study; analysed 'thiazides with vitamin D')",
+  "PMID:7598302": "off-target (nursing-home drug use)",
+  "PMID:41029351": "off-target (herbal medicines and BP; CCB regex hit is incidental)",
+  "PMID:10792199": "off-target (melatonin with nifedipine; CCB)",
+  "PMID:23719555": "off-target (vitamin K1 and coronary calcium)"
+ },
+ "layer_reading": "Retrieval-side, at the QUERY layer: no rewrite ever names the thiazide mechanism, so no source (DailyMed at any section scope, or PubMed) is asked for it. The filter is a secondary loss (it drops the supplement-topic docs 5/7) but it never saw an interaction doc to drop. Adding a section (42232-9) does not reach this query. This is a reading of three verdicts on ONE query, not a ruling.",
+ "does_not_support": ["any rate beyond this single query", "abstract-level claims about the 5 recorded runs (titles only)", "openFDA's contribution (HTTP 500 throughout the recorded runs)", "that the conditional-YES strings would be produced by any rewriter — they are hand-written"],
+ "filed": "NOTHING — recorded, NOT filed"
+}

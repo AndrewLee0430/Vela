@@ -1,0 +1,120 @@
+{
+ "floor": 0.6,
+ "fetches": [
+  "GET v2/spls/2b21f3fc-4164-401a-803e-b982dea97e19.xml -> 200",
+  "GET v2/spls.json?drug_name=chlorthalidone -> 200",
+  "GET v2/spls/5441e163-459a-46b0-87a9-e9879091bf3c.xml -> 200"
+ ],
+ "embedding_calls": 2,
+ "n_query_strings": 9,
+ "query_count_note": "the brief said 10 (9 rewrites + raw); step3b recorded 9 DISTINCT strings, raw included",
+ "hctz": {
+  "label": "HCTZ",
+  "doctype": {
+   "code": "34391-3",
+   "displayName": "HUMAN PRESCRIPTION DRUG LABEL"
+  },
+  "title": "® Tablets",
+  "precautions_found": true,
+  "precautions_chars": 7007,
+  "chunks": 1,
+  "calcium_sentences": [
+   "Parathyroid Disease: Calcium excretion is decreased by thiazides, and pathologic changes in the parathyroid glands, with hypercalcemia and hypophosphatemia, have been observed in a few patients on prolonged thiazide therapy."
+  ],
+  "setid": "2b21f3fc-4164-401a-803e-b982dea97e19"
+ },
+ "chlorthalidone": {
+  "label": "CHLORTHALIDONE",
+  "doctype": {
+   "code": "34391-3",
+   "displayName": "HUMAN PRESCRIPTION DRUG LABEL"
+  },
+  "title": "® Tablets",
+  "precautions_found": false,
+  "setid": "5441e163-459a-46b0-87a9-e9879091bf3c",
+  "spls_json_title": "CHLORTHALIDONE TABLET [BRYANT RANCH PREPACK]",
+  "spl_version": 103,
+  "candidates_returned": 50,
+  "picker": "bdl._pick_reference (original path, no marketing-category filter)"
+ },
+ "scored": [
+  {
+   "text": "HCTZ · FULL 42232-9",
+   "chars": 7007,
+   "n_clear_floor": 0,
+   "best": {
+    "query": "antihypertensive agents calcium drug interaction elderly",
+    "cos": 0.5096,
+    "clears_floor": false,
+    "would_be_rank": 10,
+    "store_max": 0.5548
+   },
+   "per_query": [
+    {
+     "query": "calcium interaction antihypertensive drugs mechanism",
+     "cos": 0.4427,
+     "clears_floor": false,
+     "would_be_rank": 42,
+     "store_max": 0.5363
+    },
+    {
+     "query": "blood pressure medication calcium elderly management",
+     "cos": 0.4717,
+     "clears_floor": false,
+     "would_be_rank": 25,
+     "store_max": 0.5236
+    },
+    {
+     "query": "antihypertensive agents calcium supplements pharmacology",
+     "cos": 0.4772,
+     "clears_floor": false,
+     "would_be_rank": 14,
+     "store_max": 0.532
+    },
+    {
+     "query": "hypertension treatment elderly calcium supplementation",
+     "cos": 0.4547,
+     "clears_floor": false,
+     "would_be_rank": 17,
+     "store_max": 0.4983
+    },
+    {
+     "query": "antihypertensive agents calcium drug interaction",
+     "cos": 0.4899,
+     "clears_floor": false,
+     "would_be_rank": 32,
+     "store_max": 0.5915
+    },
+    {
+     "query": "Can elderly patients take BP meds with calcium?",
+     "cos": 0.4518,
+     "clears_floor": false,
+     "would_be_rank": 32,
+     "store_max": 0.5101
+    },
+    {
+     "query": "antihypertensive agents calcium supplements elderly",
+     "cos": 0.5006,
+     "clears_floor": false,
+     "would_be_rank": 5,
+     "store_max": 0.5206
+    },
+    {
+     "query": "blood pressure medication calcium supplementation elderly",
+     "cos": 0.4477,
+     "clears_floor": false,
+     "would_be_rank": 27,
+     "store_max": 0.4958
+    },
+    {
+     "query": "antihypertensive agents calcium drug interaction elderly",
+     "cos": 0.5096,
+     "clears_floor": false,
+     "would_be_rank": 10,
+     "store_max": 0.5548
+    }
+   ]
+  }
+ ],
+ "verdict_B": "B: if 42232-9 were in the corpus, HCTZ PRECAUTIONS clears 0.6 on 0/9 strings (best 0.5096)"
+}

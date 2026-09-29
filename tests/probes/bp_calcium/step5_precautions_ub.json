@@ -1,0 +1,68 @@
+{
+ "text": "Parathyroid Disease: Calcium excretion is decreased by thiazides, and pathologic changes in the parathyroid glands, with hypercalcemia and hypophosphatemia, have been observed in a few patients on prolonged thiazide therapy.",
+ "embedding_calls": 1,
+ "rows": [
+  {
+   "query": "calcium interaction antihypertensive drugs mechanism",
+   "cos": 0.4626,
+   "clears_floor": false,
+   "would_be_rank": 22
+  },
+  {
+   "query": "blood pressure medication calcium elderly management",
+   "cos": 0.4307,
+   "clears_floor": false,
+   "would_be_rank": 124
+  },
+  {
+   "query": "antihypertensive agents calcium supplements pharmacology",
+   "cos": 0.4897,
+   "clears_floor": false,
+   "would_be_rank": 8
+  },
+  {
+   "query": "hypertension treatment elderly calcium supplementation",
+   "cos": 0.4347,
+   "clears_floor": false,
+   "would_be_rank": 56
+  },
+  {
+   "query": "antihypertensive agents calcium drug interaction",
+   "cos": 0.4978,
+   "clears_floor": false,
+   "would_be_rank": 29
+  },
+  {
+   "query": "Can elderly patients take BP meds with calcium?",
+   "cos": 0.4082,
+   "clears_floor": false,
+   "would_be_rank": 131
+  },
+  {
+   "query": "antihypertensive agents calcium supplements elderly",
+   "cos": 0.4848,
+   "clears_floor": false,
+   "would_be_rank": 7
+  },
+  {
+   "query": "blood pressure medication calcium supplementation elderly",
+   "cos": 0.4304,
+   "clears_floor": false,
+   "would_be_rank": 56
+  },
+  {
+   "query": "antihypertensive agents calcium drug interaction elderly",
+   "cos": 0.4697,
+   "clears_floor": false,
+   "would_be_rank": 46
+  }
+ ],
+ "n_clear_floor": 0,
+ "best": {
+  "query": "antihypertensive agents calcium drug interaction",
+  "cos": 0.4978,
+  "clears_floor": false,
+  "would_be_rank": 29
+ },
+ "verdict_B_upper_bound": "UPPER BOUND: the calcium sentence ALONE clears 0.6 on 0/9 strings (best 0.4978)"
+}

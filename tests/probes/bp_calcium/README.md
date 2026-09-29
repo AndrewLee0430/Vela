@@ -85,3 +85,43 @@ a store, so the result stands, and `_harness.py` now `chdir`s to the repo root.
   hand-read. The "valsartan + HCTZ combination" identity of setid `167f49f0…` comes from
   the model's own call-2 description and was **not independently verified** against
   DailyMed.
+
+## Probe 2 — which layer to fix (2026-09-29, HEAD `71936e8`)
+
+**Budget:** 0 LLM completions · 3 of 4 embedding calls (batched) · 3 of 3 DailyMed fetches
+· 3 of 3 PubMed string lookups (each is esearch + **efetch**, the production path; the
+brief said esummary). Summary: `step5_layer_choice.json`.
+
+| verdict | text |
+|---|---|
+| **A** | NO interaction-on-target doc ever entered the pool (retrieval-side), 0/5 runs by title-level hand-read. Supplement-TOPIC docs (regex-marked) entered in 3/5 runs (7 instances, 5 distinct PMIDs); the relevance filter dropped 5/7 and kept 2 (PMID:3415787, the dolomite paper, both times) |
+| **B** | if 42232-9 were in the corpus, HCTZ PRECAUTIONS clears 0.6 on **0/9** strings (best 0.5096, would-be rank 10). **Upper bound:** the calcium sentence alone clears 0/9 (best 0.4978). Chlorthalidone **unanswered** (below) |
+| **C** | a disambiguated rewrite WOULD retrieve on-target PubMed docs: **YES, CONDITIONALLY**. 5 on-target of 9 returned (15 slots): 4/4 for the mechanism-naming string, 1/5 for the population string, **0 docs** for `hydrochlorothiazide calcium carbonate interaction` |
+
+**Reading (not a ruling):** the loss is at the **query layer**. No rewrite names the thiazide
+mechanism, so neither DailyMed (at any section scope) nor PubMed is asked for it. The filter
+is a secondary loss that never saw an interaction doc, and adding a section does not reach
+this query.
+
+| artifact | what it does NOT support |
+|---|---|
+| `step5_census.py` / `.json` | abstract-level claims: step3_trace recorded **titles only**. Two title-negatives are **flagged, not cleared**: PMID:3306212 *Diuretics in the management of hypertension* and PMID:28267687 *Pharmacology of the Kidney in Hypertension* (both filter-dropped) |
+| `step5_precautions.py` / `.json` | chlorthalidone. The builder's picker chose `5441e163…` *CHLORTHALIDONE TABLET [BRYANT RANCH PREPACK]* (repackager, doctype 34391-3), which has **no 42232-9** (PLR format); its 43685-7 was not scored (XML not persisted; a refetch would exceed the cap) |
+| `step5_precautions_ub.py` / `.json` | a candidate doc: a single sentence the builder would never produce, a ceiling only |
+| `step5_pubmed.py` / `.json` | that any rewriter would emit these strings (they are hand-written); PubMed ranking is live and will drift |
+| all | a rate beyond this one query; openFDA's contribution (HTTP 500 throughout the recorded runs) |
+
+**Rule 25:** the brief said 10 DailyMed query strings ("9 rewrites + raw"). step3b recorded
+**9 distinct strings, raw included**, and 9 were used. Earlier in this session I said "6
+supplement-topic instances"; the script derives **7**.
+
+**Rule 21:** census markers are in `step5_census.json` with the rejected markers (bare
+"calcium", "diuretic", "antihypertensive") and every marked doc hand-graded, plus 3 unmarked
+negatives per run (title level). PubMed: all 9 returned abstracts were hand-read; grades
+are in `step5_layer_choice.json`. The CCB regex fired on 2 PubMed docs that are incidental
+CCB mentions.
+
+**Harness notes:** `scripts/build_dailymed_label_corpus.py` re-wraps `sys.stdout` at import,
+and the orphaned wrapper is GC-closed together with the shared buffer. `step5_precautions.py`
+keeps both wrappers alive; the first attempt failed before any network call, so no budget
+was spent.
