@@ -17,6 +17,18 @@ Classes are **additive and orthogonal** to the existing `[P0]`–`[P3]` ratings 
 | [OTHER] | quality, hygiene, tooling, opportunistic | 101 |
 | | **total** | **192** |
 
+<!-- 🔴 NAV RECOUNTED 2026-09-29 (AZP CAR — SHIPPED as fly 260; commit C docs, pushed, NOT deployed.
+     Pushed 8fca358..bfb4a8f; prod fly 260 = bfb4a8fd5c9e96708bc73ab1b13f5a8244440d34.)
+     PRE-CHANGE CHECK (Rule 25), derived at bfb4a8f with git grep -c "^- \[CLASS\]" -- TECH_DEBT.md per class:
+     0 + 9 + 18 + 64 + 101 = 192 = the table. Cross-checks: git grep -c "^- \[" = 192; git grep -c "^- " = 227 = 192 + 35
+     (git grep -c "^- [^\[]" = 35). [sec]: loose 15 (git grep -c "^- \[.*\[sec\]") / strict 14
+     (git grep -c -E "^- \[[A-Z]+\] \*\*\[sec\]"). No discrepancy.
+     RULE 27: NO new entry. WHAT CHANGED: the azp entry heading [OTHER] → [DONE] (+ SHIPPED marker, "was [OTHER]" note)
+     and one appended ship bullet; this block.
+     POST-CHANGE RE-DERIVE: 0 + 9 + 18 + 65 + 100 = 192. OTHER 101 → 100, DONE 64 → 65, total unchanged —
+     expected OTHER 100 / DONE 65 / 192: MATCH. git grep -c "^- \[" = 192; git grep -c "^- " = 227 = 192 + 35.
+     [sec] loose 15 / strict 14 (the strict regex matches [DONE] as readily as [OTHER]): unchanged, MATCH. -->
+
 <!-- 🔴 NAV CHECKED 2026-09-24 (AZP CAR — BUILT LOCAL: commit A b374398 fix(auth) api/server.py + tests; commit B docs;
      NOT pushed, NOT deployed. Prod fly 259 = 9fc4d47bf6dca6069a9fb7a5981d92b1a17bf7ca, unchanged.)
      PRE-CHANGE CHECK (Rule 25), derived at b374398 with git grep -c "^- \[CLASS\]" -- TECH_DEBT.md per class:
@@ -2549,7 +2561,7 @@ When entries are resolved, mark with the resolving commit SHA (git log is the re
 - [DONE] **[P1 → Phase 0 Retrospective] CLAUDE.md 結構性精簡 — ✅ DOING NOW (2026-04-30 doc reorg)**
   *(body → docs/archive/tech_debt_done.md, archived verbatim 2026-08-27 — C3 rule; heading above kept verbatim)*
 
-- [OTHER] **[sec][P2]** Clerk JWT authorized_parties (azp) claim 未驗證
+- [DONE] **[sec][P2 ✅ SHIPPED fly 260 2026-09-29 (`b374398`; deployed at `bfb4a8f`)]** Clerk JWT authorized_parties (azp) claim 未驗證 *(was [OTHER] — ship close 2026-09-29; the heading carried no status text, so nothing is struck)*
   - **現況**: `api/server.py` 使用 hand-rolled `jose_jwt.decode` with `options={"verify_aud": False}`,依賴 JWKS RS256 簽名驗證 + issuer 隱式信任。未檢查 `azp` claim。
   - **風險**: 理論上若攻擊者能取得 Clerk 公開 JWKS 並知道 issuer,可能能 forge token 通過 signature verify。實務上極難(需拿到使用者 session token 或攻破 Clerk infra),但 defense-in-depth 標準作業應驗證 authorized_parties。
   - **Resolution**:
@@ -2577,6 +2589,7 @@ When entries are resolved, mark with the resolving commit SHA (git log is the re
     - **(e) "A NEW SECRET IS REQUIRED" (the Fix-cost bullet above) — SUPERSEDED by Q2.** The issuer and the allowlist are code constants (`CLERK_ISSUER`, `CLERK_AUTHORIZED_PARTIES`, `api/server.py:413-414` at `b374398`); no `fly secrets set`, no env var. The bullet's other warning — an `azp` rejection that is not a `JWTError` would log nothing — is ADDRESSED: the helper logs `logger.warning` with the rejected `azp` and `iss` values (origins only; never the token, never `sub`) and raises `JWTError`, so `require_auth`'s existing `except JWTError` → 403 path and log line fire unchanged.
     - **(f) JWKS cache hardening (validate the key set / `raise_for_status()` before caching) — recorded, NOT filed (Q5).** Its home is this entry and the car baton; `get_jwks`, the cache and the TTL are unchanged by this car.
     - **(g) 🔧 BUILT LOCAL — commit A `b374398` (`fix(auth): [sec] verify Clerk iss + azp + exp at both decode sites`), `api/server.py` + new `tests/test_clerk_token_claims.py` only. NOT pushed, NOT deployed; prod = fly 259 at `9fc4d47bf6dca6069a9fb7a5981d92b1a17bf7ca`, unchanged.** One helper `_decode_clerk_token` (`api/server.py:417-432` at `b374398`): RS256 + `issuer=CLERK_ISSUER` + `options={"verify_aud": False, "require_exp": True}`, then `azp` must be in the allowlist (absent → rejected, Q3). Both call sites use it (`:462` `require_auth`, `:1991` `_optional_user_id` at `b374398`); `git grep -c "jose_jwt.decode" -- api/server.py` → **1** (expected 1: MATCH). **Tests (local RSA key, no network):** RED at `8fca358` **6 failed / 3 passed** (cases 2 foreign azp · 3 no azp · 4 foreign iss · 5 no exp → 200 instead of 403; `_optional_user_id` foreign azp → returned the sub; constants test → AttributeError); GREEN at `b374398` **9 passed**. **Mutations, each reverted:** m1 azp check removed → cases 2, 3 + optional-foreign-azp RED · m2 `issuer=` dropped → case 4 RED · m3 `require_exp` dropped → case 5 RED. Regression: 7 files (the new one + history_delete, research_history_payload, verify_history_payload, verify_phi_mask, verify_patient_context_gate, check_phi_fail_closed) → **46 passed**. Prod eye gate: BLANK in the baton, founder fills after deploy.
+  - **2026-09-29 — ✅ SHIPPED fly 260 → `[DONE]`** (own commit `b374398`; deployed at `bfb4a8fd5c9e96708bc73ab1b13f5a8244440d34`, image `deployment-01M3NDS6XKBTWZYJ7T4E2KVQXB`; v260 read from `fly releases`; `/health` revision full-string on the first poll; unauthenticated `POST /api/verify` + `GET /api/history` → 403 `Missing token`). **Prod eye OPEN** (founder, own account — baton §5, 6 rows). Readbacks: baton `docs/batons/azp_car_20260924.md` §8; transcript `tests/probes/deploy_parser/fly260_deploy_transcript.txt`.
 
 - [OTHER] **[P2 → Round 3 或 Phase 1A]** 阻止 signed-in user 訪問 `/sign-in` 和 `/sign-up`
   - **現況**: logged-in user 打 `/sign-in` 會看到 Clerk SignIn card,可能困惑
