@@ -1,0 +1,224 @@
+{
+ "query": "Can elderly patients take BP meds with calcium?",
+ "db_branch": "ep-spring-voice-a127ye10",
+ "model": "gpt-4.1-mini",
+ "config": {
+  "enable_local": false,
+  "enable_pubmed": true,
+  "enable_fda": true,
+  "enable_tfda": true,
+  "enable_dailymed": true,
+  "local_threshold": 0.6,
+  "max_results": 5,
+  "source_weight_active": true,
+  "annotate_research_question": true,
+  "arm": "rewrite (full pipeline — real retrieve())",
+  "n_runs": 8,
+  "min_usable_runs": 6
+ },
+ "samples": [
+  {
+   "run": 1,
+   "rewrites": [
+    "calcium interaction antihypertensive drugs mechanism",
+    "blood pressure medication calcium supplementation elderly",
+    "antihypertensive agents calcium drug interaction elderly"
+   ],
+   "class": [
+    {
+     "ccb": false,
+     "supplement": false,
+     "thiazide": false,
+     "hypercalcemia": false
+    },
+    {
+     "ccb": false,
+     "supplement": true,
+     "thiazide": false,
+     "hypercalcemia": false
+    },
+    {
+     "ccb": false,
+     "supplement": false,
+     "thiazide": false,
+     "hypercalcemia": false
+    }
+   ]
+  },
+  {
+   "run": 2,
+   "rewrites": [
+    "calcium interaction antihypertensive drugs mechanism",
+    "blood pressure medication calcium elderly management",
+    "antihypertensive agents calcium supplements elderly"
+   ],
+   "class": [
+    {
+     "ccb": false,
+     "supplement": false,
+     "thiazide": false,
+     "hypercalcemia": false
+    },
+    {
+     "ccb": false,
+     "supplement": false,
+     "thiazide": false,
+     "hypercalcemia": false
+    },
+    {
+     "ccb": false,
+     "supplement": true,
+     "thiazide": false,
+     "hypercalcemia": false
+    }
+   ]
+  },
+  {
+   "run": 3,
+   "rewrites": [
+    "calcium interaction antihypertensive drugs mechanism",
+    "blood pressure medication calcium elderly management",
+    "antihypertensive agents calcium supplements elderly"
+   ],
+   "class": [
+    {
+     "ccb": false,
+     "supplement": false,
+     "thiazide": false,
+     "hypercalcemia": false
+    },
+    {
+     "ccb": false,
+     "supplement": false,
+     "thiazide": false,
+     "hypercalcemia": false
+    },
+    {
+     "ccb": false,
+     "supplement": true,
+     "thiazide": false,
+     "hypercalcemia": false
+    }
+   ]
+  },
+  {
+   "run": 4,
+   "rewrites": [
+    "calcium interaction antihypertensive drugs mechanism",
+    "blood pressure medication calcium elderly management",
+    "antihypertensive agents calcium supplements pharmacology"
+   ],
+   "class": [
+    {
+     "ccb": false,
+     "supplement": false,
+     "thiazide": false,
+     "hypercalcemia": false
+    },
+    {
+     "ccb": false,
+     "supplement": false,
+     "thiazide": false,
+     "hypercalcemia": false
+    },
+    {
+     "ccb": false,
+     "supplement": true,
+     "thiazide": false,
+     "hypercalcemia": false
+    }
+   ]
+  },
+  {
+   "run": 5,
+   "rewrites": [
+    "calcium interaction antihypertensive drugs mechanism",
+    "blood pressure medication calcium elderly management",
+    "antihypertensive agents calcium supplements pharmacology"
+   ],
+   "class": [
+    {
+     "ccb": false,
+     "supplement": false,
+     "thiazide": false,
+     "hypercalcemia": false
+    },
+    {
+     "ccb": false,
+     "supplement": false,
+     "thiazide": false,
+     "hypercalcemia": false
+    },
+    {
+     "ccb": false,
+     "supplement": true,
+     "thiazide": false,
+     "hypercalcemia": false
+    }
+   ]
+  }
+ ],
+ "union_k3": [
+  "calcium interaction antihypertensive drugs mechanism",
+  "blood pressure medication calcium elderly management",
+  "antihypertensive agents calcium supplements pharmacology",
+  "blood pressure medication calcium supplementation elderly",
+  "antihypertensive agents calcium drug interaction elderly",
+  "Can elderly patients take BP meds with calcium?"
+ ],
+ "union_class": [
+  {
+   "ccb": false,
+   "supplement": false,
+   "thiazide": false,
+   "hypercalcemia": false
+  },
+  {
+   "ccb": false,
+   "supplement": false,
+   "thiazide": false,
+   "hypercalcemia": false
+  },
+  {
+   "ccb": false,
+   "supplement": true,
+   "thiazide": false,
+   "hypercalcemia": false
+  },
+  {
+   "ccb": false,
+   "supplement": true,
+   "thiazide": false,
+   "hypercalcemia": false
+  },
+  {
+   "ccb": false,
+   "supplement": false,
+   "thiazide": false,
+   "hypercalcemia": false
+  },
+  {
+   "ccb": false,
+   "supplement": false,
+   "thiazide": false,
+   "hypercalcemia": false
+  }
+ ],
+ "distribution_runs_with_marker_of_5": {
+  "supplement": 5
+ },
+ "distribution_strings_with_marker": {
+  "n_strings": 15,
+  "supplement": 5
+ },
+ "markers": {
+  "ccb": "calcium channel|\\bCCB\\b|amlodipine|nifedipine|diltiazem|verapamil|felodipine|dihydropyridine",
+  "supplement": "supplement|calcium carbonate|calcium citrate|dietary calcium|calcium intake|vitamin d",
+  "thiazide": "thiazide|hydrochlorothiazide|chlorthalidone|indapamide|diuretic",
+  "hypercalcemia": "hypercalc"
+ },
+ "markers_rejected": [
+  "bare 'calcium' (ambiguous by construction — it is the query's own word)",
+  "'antihypertensive' (names the class of BP meds, not either reading)"
+ ]
+}

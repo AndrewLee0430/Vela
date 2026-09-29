@@ -1,0 +1,461 @@
+{
+ "key_set_used": [
+  "HYDROCHLOROTHIAZIDE",
+  "INDAPAMIDE",
+  "METOLAZONE"
+ ],
+ "bases_searched": [
+  "HYDROCHLOROTHIAZIDE",
+  "CHLORTHALIDONE",
+  "CHLORTALIDONE",
+  "INDAPAMIDE",
+  "METOLAZONE",
+  "CHLOROTHIAZIDE",
+  "BENDROFLUMETHIAZIDE",
+  "METHYCLOTHIAZIDE",
+  "TRICHLORMETHIAZIDE",
+  "POLYTHIAZIDE",
+  "HYDROFLUMETHIAZIDE",
+  "CYCLOPENTHIAZIDE"
+ ],
+ "bases_absent_as_moiety": [
+  "CHLORTHALIDONE",
+  "CHLORTALIDONE",
+  "CHLOROTHIAZIDE",
+  "BENDROFLUMETHIAZIDE",
+  "METHYCLOTHIAZIDE",
+  "TRICHLORMETHIAZIDE",
+  "POLYTHIAZIDE",
+  "HYDROFLUMETHIAZIDE",
+  "CYCLOPENTHIAZIDE"
+ ],
+ "title_hit_moieties": [
+  "HYDROCHLOROTHIAZIDE",
+  "INDAPAMIDE",
+  "METOLAZONE"
+ ],
+ "dailymed_docs": [
+  {
+   "moiety": "HYDROCHLOROTHIAZIDE",
+   "source_id": "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34070-3",
+   "title": "Hydrochlorothiazide (Hydrochlorothiazide) — Contraindications",
+   "loinc": "34070-3",
+   "marketing_category": "ANDA",
+   "content_chars": 174,
+   "calcium_sentences": []
+  },
+  {
+   "moiety": "HYDROCHLOROTHIAZIDE",
+   "source_id": "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34068-7",
+   "title": "Hydrochlorothiazide (Hydrochlorothiazide) — Dosage and Administration",
+   "loinc": "34068-7",
+   "marketing_category": "ANDA",
+   "content_chars": 272
+  },
+  {
+   "moiety": "HYDROCHLOROTHIAZIDE",
+   "source_id": "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34067-9",
+   "title": "Hydrochlorothiazide (Hydrochlorothiazide) — Indications and Usage",
+   "loinc": "34067-9",
+   "marketing_category": "ANDA",
+   "content_chars": 1738
+  },
+  {
+   "moiety": "HYDROCHLOROTHIAZIDE",
+   "source_id": "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34073-7",
+   "title": "Hydrochlorothiazide (Hydrochlorothiazide) — Drug Interactions",
+   "loinc": "34073-7",
+   "marketing_category": "ANDA",
+   "content_chars": 1664,
+   "calcium_sentences": []
+  },
+  {
+   "moiety": "INDAPAMIDE",
+   "source_id": "DailyMed:6a643c56-794a-4289-8390-5d76fa2709b3#34070-3",
+   "title": "Indapamide (Indapamide) — Contraindications",
+   "loinc": "34070-3",
+   "marketing_category": "ANDA",
+   "content_chars": 101,
+   "calcium_sentences": []
+  },
+  {
+   "moiety": "INDAPAMIDE",
+   "source_id": "DailyMed:6a643c56-794a-4289-8390-5d76fa2709b3#34068-7",
+   "title": "Indapamide (Indapamide) — Dosage and Administration",
+   "loinc": "34068-7",
+   "marketing_category": "ANDA",
+   "content_chars": 1371
+  },
+  {
+   "moiety": "INDAPAMIDE",
+   "source_id": "DailyMed:6a643c56-794a-4289-8390-5d76fa2709b3#34073-7",
+   "title": "Indapamide (Indapamide) — Drug Interactions",
+   "loinc": "34073-7",
+   "marketing_category": "ANDA",
+   "content_chars": 754,
+   "calcium_sentences": []
+  },
+  {
+   "moiety": "METOLAZONE",
+   "source_id": "DailyMed:58935d94-5bf1-4065-b8b5-ac61292436a7#34070-3",
+   "title": "Zaroxolyn (metolazone) — Contraindications",
+   "loinc": "34070-3",
+   "marketing_category": "NDA",
+   "content_chars": 99,
+   "calcium_sentences": []
+  },
+  {
+   "moiety": "METOLAZONE",
+   "source_id": "DailyMed:58935d94-5bf1-4065-b8b5-ac61292436a7#34068-7",
+   "title": "Zaroxolyn (metolazone) — Dosage and Administration",
+   "loinc": "34068-7",
+   "marketing_category": "NDA",
+   "content_chars": 2056
+  },
+  {
+   "moiety": "METOLAZONE",
+   "source_id": "DailyMed:58935d94-5bf1-4065-b8b5-ac61292436a7#34067-9",
+   "title": "Zaroxolyn (metolazone) — Indications and Usage",
+   "loinc": "34067-9",
+   "marketing_category": "NDA",
+   "content_chars": 2015
+  },
+  {
+   "moiety": "METOLAZONE",
+   "source_id": "DailyMed:58935d94-5bf1-4065-b8b5-ac61292436a7#34073-7",
+   "title": "Zaroxolyn (metolazone) — Drug Interactions",
+   "loinc": "34073-7",
+   "marketing_category": "NDA",
+   "content_chars": 1849,
+   "calcium_sentences": []
+  }
+ ],
+ "tfda_thiazide_docs": 41,
+ "tfda_calcium_hits": [],
+ "reverse_key_set": [
+  "CALCITRIOL",
+  "CALCIUM",
+  "CALCIUM ACETATE",
+  "CALCIUM CARBONATE",
+  "CALCIUM CHLORIDE DIHYDRATE",
+  "CALCIUM GLUCONATE",
+  "CALCIUM SENNOSIDES",
+  "CHOLECALCIFEROL",
+  "PARICALCITOL"
+ ],
+ "reverse_rejected_moieties": [
+  "ACAMPROSATE CALCIUM",
+  "CALCITONIN SALMON",
+  "CINACALCET HYDROCHLORIDE",
+  "EDETATE CALCIUM DISODIUM",
+  "ETELCALCETIDE HYDROCHLORIDE",
+  "LEUCOVORIN CALCIUM",
+  "PITAVASTATIN CALCIUM",
+  "POLYCARBOPHIL CALCIUM",
+  "ROSUVASTATIN CALCIUM"
+ ],
+ "reverse_side_docs": [
+  {
+   "moiety": "CALCITRIOL",
+   "source_id": "DailyMed:a1567da9-af74-4afd-9ac5-8b53ec5d7cbf#34070-3",
+   "title": "Vectical (calcitriol) — Contraindications",
+   "loinc": "34070-3",
+   "marketing_category": "NDA",
+   "content_chars": 35,
+   "thiazide_sentences": []
+  },
+  {
+   "moiety": "CALCITRIOL",
+   "source_id": "DailyMed:a1567da9-af74-4afd-9ac5-8b53ec5d7cbf#34068-7",
+   "title": "Vectical (calcitriol) — Dosage and Administration",
+   "loinc": "34068-7",
+   "marketing_category": "NDA",
+   "content_chars": 921,
+   "thiazide_sentences": []
+  },
+  {
+   "moiety": "CALCITRIOL",
+   "source_id": "DailyMed:a1567da9-af74-4afd-9ac5-8b53ec5d7cbf#34067-9",
+   "title": "Vectical (calcitriol) — Indications and Usage",
+   "loinc": "34067-9",
+   "marketing_category": "NDA",
+   "content_chars": 692,
+   "thiazide_sentences": []
+  },
+  {
+   "moiety": "CALCITRIOL",
+   "source_id": "DailyMed:a1567da9-af74-4afd-9ac5-8b53ec5d7cbf#43685-7",
+   "title": "Vectical (calcitriol) — Warnings and Precautions",
+   "loinc": "43685-7",
+   "marketing_category": "NDA",
+   "content_chars": 1158,
+   "thiazide_sentences": [
+    "( 5.1 ) VECTICAL Ointment should be used with caution in patients receiving medications known to increase the serum calcium level, such as thiazide diuretics, and in patients receiving calcium supplements or high doses of vitamin D.",
+    "VECTICAL Ointment should be used with caution in patients receiving medications known to increase the serum calcium level, such as thiazide diuretics, and in patients receiving calcium supplements or high doses of vitamin D."
+   ]
+  },
+  {
+   "moiety": "CALCIUM",
+   "source_id": "DailyMed:4c635f60-7868-46d5-b932-d5cf8fc84432#34070-3",
+   "title": "Calcium Gluconate (Calcium Gluconate) — Contraindications",
+   "loinc": "34070-3",
+   "marketing_category": "NDA",
+   "content_chars": 267,
+   "thiazide_sentences": []
+  },
+  {
+   "moiety": "CALCIUM",
+   "source_id": "DailyMed:4c635f60-7868-46d5-b932-d5cf8fc84432#34068-7",
+   "title": "Calcium Gluconate (Calcium Gluconate) — Dosage and Administration",
+   "loinc": "34068-7",
+   "marketing_category": "NDA",
+   "content_chars": 6242,
+   "thiazide_sentences": []
+  },
+  {
+   "moiety": "CALCIUM",
+   "source_id": "DailyMed:4c635f60-7868-46d5-b932-d5cf8fc84432#34067-9",
+   "title": "Calcium Gluconate (Calcium Gluconate) — Indications and Usage",
+   "loinc": "34067-9",
+   "marketing_category": "NDA",
+   "content_chars": 518,
+   "thiazide_sentences": []
+  },
+  {
+   "moiety": "CALCIUM",
+   "source_id": "DailyMed:4c635f60-7868-46d5-b932-d5cf8fc84432#34073-7",
+   "title": "Calcium Gluconate (Calcium Gluconate) — Drug Interactions",
+   "loinc": "34073-7",
+   "marketing_category": "NDA",
+   "content_chars": 1314,
+   "thiazide_sentences": [
+    "( 7.2 ) Drugs that may cause hypercalcemia: Vitamin D, vitamin A, thiazide diuretics, estrogen, calcipotriene and teriparatide administration may cause hypercalcemia.",
+    "7.3 Drugs that may cause Hypercalcemia Vitamin D, vitamin A, thiazide diuretics, estrogen, calcipotriene and teriparatide administration may cause hypercalcemia."
+   ]
+  },
+  {
+   "moiety": "CALCIUM",
+   "source_id": "DailyMed:4c635f60-7868-46d5-b932-d5cf8fc84432#43685-7",
+   "title": "Calcium Gluconate (Calcium Gluconate) — Warnings and Precautions",
+   "loinc": "43685-7",
+   "marketing_category": "NDA",
+   "content_chars": 4805,
+   "thiazide_sentences": []
+  },
+  {
+   "moiety": "CALCIUM ACETATE",
+   "source_id": "DailyMed:6b0e60bb-0e9a-45a7-8f92-a43d939f8deb#34070-3",
+   "title": "Phoslo (Calcium Acetate) — Contraindications",
+   "loinc": "34070-3",
+   "marketing_category": "NDA",
+   "content_chars": 46,
+   "thiazide_sentences": []
+  },
+  {
+   "moiety": "CALCIUM ACETATE",
+   "source_id": "DailyMed:6b0e60bb-0e9a-45a7-8f92-a43d939f8deb#34068-7",
+   "title": "Phoslo (Calcium Acetate) — Dosage and Administration",
+   "loinc": "34068-7",
+   "marketing_category": "NDA",
+   "content_chars": 305,
+   "thiazide_sentences": []
+  },
+  {
+   "moiety": "CALCIUM ACETATE",
+   "source_id": "DailyMed:6b0e60bb-0e9a-45a7-8f92-a43d939f8deb#34067-9",
+   "title": "Phoslo (Calcium Acetate) — Indications and Usage",
+   "loinc": "34067-9",
+   "marketing_category": "NDA",
+   "content_chars": 147,
+   "thiazide_sentences": []
+  },
+  {
+   "moiety": "CALCIUM CARBONATE",
+   "source_id": "DailyMed:c22944b8-8733-4689-be0c-f320467f79ea#34068-7",
+   "title": "TUMS (calcium carbonate) — Dosage and Administration",
+   "loinc": "34068-7",
+   "marketing_category": "other",
+   "content_chars": 261,
+   "thiazide_sentences": []
+  },
+  {
+   "moiety": "CALCIUM CARBONATE",
+   "source_id": "DailyMed:c22944b8-8733-4689-be0c-f320467f79ea#34067-9",
+   "title": "TUMS (calcium carbonate) — Indications and Usage",
+   "loinc": "34067-9",
+   "marketing_category": "other",
+   "content_chars": 98,
+   "thiazide_sentences": []
+  },
+  {
+   "moiety": "CALCIUM CHLORIDE DIHYDRATE",
+   "source_id": "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34070-3",
+   "title": "Calcium Chloride (CALCIUM CHLORIDE) — Contraindications",
+   "loinc": "34070-3",
+   "marketing_category": "NDA",
+   "content_chars": 898,
+   "thiazide_sentences": []
+  },
+  {
+   "moiety": "CALCIUM CHLORIDE DIHYDRATE",
+   "source_id": "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34068-7",
+   "title": "Calcium Chloride (CALCIUM CHLORIDE) — Dosage and Administration",
+   "loinc": "34068-7",
+   "marketing_category": "NDA",
+   "content_chars": 3769,
+   "thiazide_sentences": []
+  },
+  {
+   "moiety": "CALCIUM CHLORIDE DIHYDRATE",
+   "source_id": "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34067-9",
+   "title": "Calcium Chloride (CALCIUM CHLORIDE) — Indications and Usage",
+   "loinc": "34067-9",
+   "marketing_category": "NDA",
+   "content_chars": 551,
+   "thiazide_sentences": []
+  },
+  {
+   "moiety": "CALCIUM CHLORIDE DIHYDRATE",
+   "source_id": "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7",
+   "title": "Calcium Chloride (CALCIUM CHLORIDE) — Drug Interactions",
+   "loinc": "34073-7",
+   "marketing_category": "NDA",
+   "content_chars": 1693,
+   "thiazide_sentences": [
+    "7.3 Drugs That Increase the Risk of Hypercalcemia Increase frequency of monitoring of calcium concentrations in patients taking concomitant Calcium Chloride Injection and other drugs that increase the risk of hypercalcemia (e.g., calcipotriene, estrogen, lithium, parathyroid hormone, teriparatide, thiazide diuretics, Vitamin A, and Vitamin D)."
+   ]
+  },
+  {
+   "moiety": "CALCIUM CHLORIDE DIHYDRATE",
+   "source_id": "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#43685-7",
+   "title": "Calcium Chloride (CALCIUM CHLORIDE) — Warnings and Precautions",
+   "loinc": "43685-7",
+   "marketing_category": "NDA",
+   "content_chars": 5972,
+   "thiazide_sentences": []
+  },
+  {
+   "moiety": "CALCIUM GLUCONATE",
+   "source_id": "DailyMed:e6d531ec-fcdc-49f6-b0c4-878d3952827f#34070-3",
+   "title": "Calcium Gluconate in Sodium Chloride (Calcium Gluconate) — Contraindications",
+   "loinc": "34070-3",
+   "marketing_category": "NDA",
+   "content_chars": 288,
+   "thiazide_sentences": []
+  },
+  {
+   "moiety": "CALCIUM GLUCONATE",
+   "source_id": "DailyMed:e6d531ec-fcdc-49f6-b0c4-878d3952827f#34068-7",
+   "title": "Calcium Gluconate in Sodium Chloride (Calcium Gluconate) — Dosage and Administration",
+   "loinc": "34068-7",
+   "marketing_category": "NDA",
+   "content_chars": 5414,
+   "thiazide_sentences": []
+  },
+  {
+   "moiety": "CALCIUM GLUCONATE",
+   "source_id": "DailyMed:e6d531ec-fcdc-49f6-b0c4-878d3952827f#34067-9",
+   "title": "Calcium Gluconate in Sodium Chloride (Calcium Gluconate) — Indications and Usage",
+   "loinc": "34067-9",
+   "marketing_category": "NDA",
+   "content_chars": 575,
+   "thiazide_sentences": []
+  },
+  {
+   "moiety": "CALCIUM GLUCONATE",
+   "source_id": "DailyMed:e6d531ec-fcdc-49f6-b0c4-878d3952827f#34073-7",
+   "title": "Calcium Gluconate in Sodium Chloride (Calcium Gluconate) — Drug Interactions",
+   "loinc": "34073-7",
+   "marketing_category": "NDA",
+   "content_chars": 1352,
+   "thiazide_sentences": [
+    "(7.2) • Drugs that may cause hypercalcemia: Vitamin D, vitamin A, thiazide diuretics, estrogen, calcipotriene and teriparatide administration may cause hypercalcemia.",
+    "7.3 Drugs that may cause Hypercalcemia Vitamin D, vitamin A, thiazide diuretics, estrogen, calcipotriene and teriparatide administration may cause hypercalcemia."
+   ]
+  },
+  {
+   "moiety": "CALCIUM GLUCONATE",
+   "source_id": "DailyMed:e6d531ec-fcdc-49f6-b0c4-878d3952827f#43685-7",
+   "title": "Calcium Gluconate in Sodium Chloride (Calcium Gluconate) — Warnings and Precautions",
+   "loinc": "43685-7",
+   "marketing_category": "NDA",
+   "content_chars": 5079,
+   "thiazide_sentences": []
+  },
+  {
+   "moiety": "CALCIUM SENNOSIDES",
+   "source_id": "DailyMed:11112859-ef1e-4b37-9915-ba4d06a3f198#34068-7",
+   "title": "Publix Laxative (Calcium Sennosides) — Dosage and Administration",
+   "loinc": "34068-7",
+   "marketing_category": "other",
+   "content_chars": 321,
+   "thiazide_sentences": []
+  },
+  {
+   "moiety": "CALCIUM SENNOSIDES",
+   "source_id": "DailyMed:11112859-ef1e-4b37-9915-ba4d06a3f198#34067-9",
+   "title": "Publix Laxative (Calcium Sennosides) — Indications and Usage",
+   "loinc": "34067-9",
+   "marketing_category": "other",
+   "content_chars": 103,
+   "thiazide_sentences": []
+  },
+  {
+   "moiety": "CHOLECALCIFEROL",
+   "source_id": "DailyMed:f823cb3a-607c-4272-a0c1-da823dabd8e9#34068-7",
+   "title": "D-Vite Pediatric Oral Liquid (CHOLECALCIFEROL) — Dosage and Administration",
+   "loinc": "34068-7",
+   "marketing_category": "other",
+   "content_chars": 356,
+   "thiazide_sentences": []
+  },
+  {
+   "moiety": "PARICALCITOL",
+   "source_id": "DailyMed:1b27c026-2d60-47b4-2a9c-ded1818f21b5#34070-3",
+   "title": "Zemplar (Paricalcitol) — Contraindications",
+   "loinc": "34070-3",
+   "marketing_category": "NDA",
+   "content_chars": 233,
+   "thiazide_sentences": []
+  },
+  {
+   "moiety": "PARICALCITOL",
+   "source_id": "DailyMed:1b27c026-2d60-47b4-2a9c-ded1818f21b5#34068-7",
+   "title": "Zemplar (Paricalcitol) — Dosage and Administration",
+   "loinc": "34068-7",
+   "marketing_category": "NDA",
+   "content_chars": 6215,
+   "thiazide_sentences": []
+  },
+  {
+   "moiety": "PARICALCITOL",
+   "source_id": "DailyMed:1b27c026-2d60-47b4-2a9c-ded1818f21b5#34067-9",
+   "title": "Zemplar (Paricalcitol) — Indications and Usage",
+   "loinc": "34067-9",
+   "marketing_category": "NDA",
+   "content_chars": 863,
+   "thiazide_sentences": []
+  },
+  {
+   "moiety": "PARICALCITOL",
+   "source_id": "DailyMed:1b27c026-2d60-47b4-2a9c-ded1818f21b5#34073-7",
+   "title": "Zemplar (Paricalcitol) — Drug Interactions",
+   "loinc": "34073-7",
+   "marketing_category": "NDA",
+   "content_chars": 1841,
+   "thiazide_sentences": []
+  },
+  {
+   "moiety": "PARICALCITOL",
+   "source_id": "DailyMed:1b27c026-2d60-47b4-2a9c-ded1818f21b5#43685-7",
+   "title": "Zemplar (Paricalcitol) — Warnings and Precautions",
+   "loinc": "43685-7",
+   "marketing_category": "NDA",
+   "content_chars": 2953,
+   "thiazide_sentences": [
+    "Concomitant administration of high doses of calcium-containing preparations or thiazide diuretics with ZEMPLAR may increase the risk of hypercalcemia."
+   ]
+  }
+ ],
+ "verdict": "H8 (thiazide side): ABSENT — H8 (calcium/vit-D side): thiazide named in 5 docs"
+}

@@ -1,0 +1,48 @@
+{
+ "probe": "bp_calcium — read-only root-cause trace of the heroChip2 Research answer",
+ "query": "Can elderly patients take BP meds with calcium?",
+ "query_source": "utils/i18n.ts:88 heroChip2 (en)",
+ "head": "13e56fb1858ffc4528092a7c55be284b6e9d8d4b",
+ "date": "2026-09-29",
+ "db_branch": "ep-spring-voice-a127ye10 (Dev)",
+ "budget_used": {"research_retrievals": 5, "rewrite_samples": 5, "rewrite_union_calls": 1,
+                 "verify_calls": 3, "generations": 1,
+                 "extra_embedding_only_calls": 9,
+                 "note": "the 9 embedding-only calls (step3b) are NOT retrievals — they re-score recorded DailyMed query strings to repair a harness defect; see README"},
+ "production_config": {"enable_local": false, "enable_pubmed": true, "enable_fda": true,
+                       "enable_tfda": true, "enable_dailymed": true, "local_threshold": 0.6,
+                       "max_results": 5, "source_weight_active": true,
+                       "source": "tests/probes/canary/canary_gate.py load_production_config() (parses api/server.py)"},
+ "H8": {
+  "thiazide_side": "ABSENT — key set {HYDROCHLOROTHIAZIDE, INDAPAMIDE, METOLAZONE}; 0 of their 6 safety sections (2 each) (34073-7/34070-3; no 43685-7 exists for any) contain calcium|hypercalc|vitamin D. CHLORTHALIDONE and CHLOROTHIAZIDE are not corpus moieties at all.",
+  "calcium_side": "EXISTS in 5 docs — Calcium Gluconate x2 + Calcium Chloride (IV, 34073-7), Vectical calcitriol ointment + Zemplar paricalcitol (43685-7). The ORAL supplement labels (TUMS calcium carbonate, D-Vite cholecalciferol) carry no interaction/warning section at all.",
+  "artifact": "step1_corpus.json"
+ },
+ "H1": {
+  "verdict": "REFUTED at the rewrite stage — 0/5 runs (0/15 strings) name calcium-channel blockers; 5/5 runs name 'calcium supplements' in exactly 1 of 3 strings; 0/5 name a thiazide or hypercalcemia. The other 2 strings per run keep a bare, ambiguous 'calcium'.",
+  "artifact": "step2_rewrite.json"
+ },
+ "stage_of_death": {
+  "thiazide_or_calcium_label_section": "NEVER ENTERED the pool — 0 DailyMed docs clear the 0.6 floor on ANY of the 9 distinct DailyMed query strings across all 5 runs. Closest: Calcium Chloride 34073-7 (which DOES name thiazides -> hypercalcemia) at 0.5919, margin -0.0081; Hydrochlorothiazide 34073-7 (which does NOT name calcium) at 0.5805.",
+  "artifacts": ["step3_trace.json (run 1 cosines)", "step3b_dm_counterfactual.json (all runs)"]
+ },
+ "per_run": [
+  {"run": 1, "status": "ok", "pool": 10, "filter_kept": 2, "filter_exempt": 0, "final": ["PMID:15927106 [Antihypertensive drug-drug interactions]", "PMID:3154329 Calcium channel antagonists. Part III"]},
+  {"run": 2, "status": "ok", "pool": 15, "filter_kept": 1, "filter_exempt": 0, "final": ["PMID:31825114 Hypertension in older adults"]},
+  {"run": 3, "status": "ok", "pool": 15, "filter_kept": 3, "filter_exempt": 0, "final": ["PMID:31825114", "PMID:15927106", "PMID:3415787 calcium supplements ... trace metal (dolomite)"]},
+  {"run": 4, "status": "irrelevant", "pool": 11, "filter_kept": 0, "filter_exempt": 0, "final": [], "consequence": "generator takes the NO-DOCS fallback path (FALLBACK_PROMPTS['research'])"},
+  {"run": 5, "status": "ok", "pool": 15, "filter_kept": 3, "filter_exempt": 0, "final": ["PMID:31825114", "PMID:3533638", "PMID:3415787"]}
+ ],
+ "pool_composition_all_runs": "100% PubMed — DailyMed 0 (floor), TFDA 0, openFDA 0 (HTTP 500 on every call — external outage, NOT production parity)",
+ "incident_reproduced": "YES on run 1 — 2 PubMed docs (one CCB efficacy review), answer reinterprets calcium as CCB, no thiazide, closes with 'The context does not address the use of calcium supplements ... no conclusion can be drawn'. The dolomite trace-metal paper (PMID:3415787) is final in runs 3 and 5.",
+ "generation_run1": {"model": "gpt-4.1 (authenticated path; model_override=None)", "veto_i_calcium_read_as_ccb": true,
+                     "veto_ii_mentions_thiazide_or_hypercalcemia": false, "grading": "regex + hand-read; judge NOT run",
+                     "artifacts": ["step3_answer_run1.md", "step3_trace.json generation_run1 (full system + user prompt)"]},
+ "E7_verify": {
+  "verdict": "capability exists in Verify: YES, UNRELIABLY — 3/3 calls return Moderate / dailymed_grounded; hypercalcemia named in 1/3 (HCTZ call 1), and that description itself says the label 'does not explicitly describe the interaction'.",
+  "grounding_labels": {"hydrochlorothiazide": "setid 167f49f0-2d39-49a2-9f9e-1359a7c7ba3d (a valsartan + hydrochlorothiazide COMBINATION label, per the call-2 description)",
+                       "chlorthalidone": "setid ac431d1b-b307-46fe-a3a9-29f40fe6742b"},
+  "artifact": "step4_verify.json"
+ },
+ "filed": "NOTHING — findings recorded, NOT filed (brief)"
+}

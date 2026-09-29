@@ -1,0 +1,114 @@
+{
+ "floor": 0.6,
+ "distinct_dailymed_queries": 9,
+ "per_run_union": {
+  "1": [
+   "calcium interaction antihypertensive drugs mechanism",
+   "blood pressure medication calcium elderly management",
+   "antihypertensive agents calcium supplements pharmacology",
+   "hypertension treatment elderly calcium supplementation",
+   "antihypertensive agents calcium drug interaction",
+   "Can elderly patients take BP meds with calcium?"
+  ],
+  "2": [
+   "calcium interaction antihypertensive drugs mechanism",
+   "blood pressure medication calcium elderly management",
+   "antihypertensive agents calcium supplements elderly",
+   "Can elderly patients take BP meds with calcium?"
+  ],
+  "3": [
+   "calcium interaction antihypertensive drugs mechanism",
+   "blood pressure medication calcium elderly management",
+   "antihypertensive agents calcium supplements elderly",
+   "antihypertensive agents calcium supplements pharmacology",
+   "Can elderly patients take BP meds with calcium?"
+  ],
+  "4": [
+   "calcium interaction antihypertensive drugs mechanism",
+   "blood pressure medication calcium supplementation elderly",
+   "antihypertensive agents calcium drug interaction elderly",
+   "Can elderly patients take BP meds with calcium?"
+  ],
+  "5": [
+   "calcium interaction antihypertensive drugs mechanism",
+   "blood pressure medication calcium elderly management",
+   "antihypertensive agents calcium supplements elderly",
+   "blood pressure medication calcium supplementation elderly",
+   "antihypertensive agents calcium drug interaction elderly",
+   "Can elderly patients take BP meds with calcium?"
+  ]
+ },
+ "rows": [
+  {
+   "query": "calcium interaction antihypertensive drugs mechanism",
+   "n_at_or_above_floor": 0,
+   "max_cos": 0.5363,
+   "max_doc": "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7",
+   "max_title": "Calcium Chloride (CALCIUM CHLORIDE) — Drug Interactions"
+  },
+  {
+   "query": "blood pressure medication calcium elderly management",
+   "n_at_or_above_floor": 0,
+   "max_cos": 0.5235,
+   "max_doc": "DailyMed:8a7002e7-e01f-43f9-e053-2a95a90a7191#34067-9",
+   "max_title": "VERAPAMIL HCL (VERAPAMIL HCL) — Indications and Usage"
+  },
+  {
+   "query": "antihypertensive agents calcium supplements pharmacology",
+   "n_at_or_above_floor": 0,
+   "max_cos": 0.5331,
+   "max_doc": "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7",
+   "max_title": "Calcium Chloride (CALCIUM CHLORIDE) — Drug Interactions"
+  },
+  {
+   "query": "hypertension treatment elderly calcium supplementation",
+   "n_at_or_above_floor": 0,
+   "max_cos": 0.4981,
+   "max_doc": "DailyMed:8a7002e7-e01f-43f9-e053-2a95a90a7191#34067-9",
+   "max_title": "VERAPAMIL HCL (VERAPAMIL HCL) — Indications and Usage"
+  },
+  {
+   "query": "antihypertensive agents calcium drug interaction",
+   "n_at_or_above_floor": 0,
+   "max_cos": 0.5919,
+   "max_doc": "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7",
+   "max_title": "Calcium Chloride (CALCIUM CHLORIDE) — Drug Interactions"
+  },
+  {
+   "query": "Can elderly patients take BP meds with calcium?",
+   "n_at_or_above_floor": 0,
+   "max_cos": 0.5101,
+   "max_doc": "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7",
+   "max_title": "Calcium Chloride (CALCIUM CHLORIDE) — Drug Interactions"
+  },
+  {
+   "query": "antihypertensive agents calcium supplements elderly",
+   "n_at_or_above_floor": 0,
+   "max_cos": 0.5213,
+   "max_doc": "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7",
+   "max_title": "Calcium Chloride (CALCIUM CHLORIDE) — Drug Interactions"
+  },
+  {
+   "query": "blood pressure medication calcium supplementation elderly",
+   "n_at_or_above_floor": 0,
+   "max_cos": 0.4958,
+   "max_doc": "DailyMed:cd270093-c6a8-4596-a4ab-e6aa0a2c8a0c#43685-7",
+   "max_title": "PARSABIV (etelcalcetide) — Warnings and Precautions"
+  },
+  {
+   "query": "antihypertensive agents calcium drug interaction elderly",
+   "n_at_or_above_floor": 0,
+   "max_cos": 0.5553,
+   "max_doc": "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7",
+   "max_title": "Calcium Chloride (CALCIUM CHLORIDE) — Drug Interactions"
+  }
+ ],
+ "any_string_clears_floor": false,
+ "global_max": {
+  "query": "antihypertensive agents calcium drug interaction",
+  "n_at_or_above_floor": 0,
+  "max_cos": 0.5919,
+  "max_doc": "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7",
+  "max_title": "Calcium Chloride (CALCIUM CHLORIDE) — Drug Interactions"
+ }
+}

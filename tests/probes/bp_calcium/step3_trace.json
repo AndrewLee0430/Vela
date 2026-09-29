@@ -1,0 +1,5664 @@
+{
+ "query": "Can elderly patients take BP meds with calcium?",
+ "db_branch": "ep-spring-voice-a127ye10",
+ "n_runs": 5,
+ "config": {
+  "enable_local": false,
+  "enable_pubmed": true,
+  "enable_fda": true,
+  "enable_tfda": true,
+  "enable_dailymed": true,
+  "local_threshold": 0.6,
+  "max_results": 5,
+  "source_weight_active": true,
+  "annotate_research_question": true,
+  "arm": "rewrite (full pipeline — real retrieve())",
+  "n_runs": 8,
+  "min_usable_runs": 6
+ },
+ "config_provenance": {
+  "enable_local": "api/server.py HybridRetriever(...) construction",
+  "enable_pubmed": "api/server.py HybridRetriever(...) construction",
+  "enable_fda": "api/server.py HybridRetriever(...) construction",
+  "enable_tfda": "api/server.py HybridRetriever(...) construction",
+  "enable_dailymed": "NOT passed by api/server.py; constructor default in api/rag/retriever.py",
+  "local_threshold": "api/server.py construction, cross-checked against the api/rag/retriever.py constructor default",
+  "max_results": "api/server.py retrieve(max_results=body.max_results or N), cross-checked against the retrieve() signature default",
+  "source_weight_active": "env flag read at api/server.py (shape asserted here). Deployed value ON per docs/kunion_cut_exemption_build.md:72 and docs/local_corpus_deprecation_c1_build.md:20 (secret digest d8c5ac2e11c8e492, Deployed). Mirrors the predecessor probe.",
+  "annotate_research_question": "api/server.py applies it before retrieve()"
+ },
+ "watch_moieties": {
+  "HYDROCHLOROTHIAZIDE": "thiazide",
+  "INDAPAMIDE": "thiazide",
+  "METOLAZONE": "thiazide",
+  "CALCIUM": "calcium",
+  "CALCIUM ACETATE": "calcium",
+  "CALCIUM CARBONATE": "calcium",
+  "CALCIUM CHLORIDE DIHYDRATE": "calcium",
+  "CALCIUM GLUCONATE": "calcium",
+  "CHOLECALCIFEROL": "vitD",
+  "CALCITRIOL": "vitD",
+  "PARICALCITOL": "vitD",
+  "AMLODIPINE": "ccb",
+  "NIFEDIPINE": "ccb",
+  "DILTIAZEM": "ccb",
+  "VERAPAMIL HCL": "ccb",
+  "FELODIPINE": "ccb"
+ },
+ "runs": [
+  {
+   "run": 1,
+   "rewrite_calls": [
+    [
+     "calcium interaction antihypertensive drugs elderly",
+     "blood pressure medication calcium supplementation management",
+     "antihypertensive agents calcium drug interaction elderly"
+    ],
+    [
+     "calcium interaction antihypertensive drugs mechanism",
+     "blood pressure medication calcium elderly management",
+     "antihypertensive agents calcium supplements pharmacology"
+    ],
+    [
+     "calcium interaction antihypertensive drugs mechanism",
+     "hypertension treatment elderly calcium supplementation",
+     "antihypertensive agents calcium drug interaction"
+    ],
+    [
+     "calcium interaction antihypertensive drugs mechanism",
+     "blood pressure medication calcium elderly management",
+     "antihypertensive agents calcium supplements pharmacology"
+    ]
+   ],
+   "source_calls": [
+    {
+     "fn": "_search_fda",
+     "query": "calcium interaction antihypertensive drugs elderly",
+     "docs": []
+    },
+    {
+     "fn": "_search_fda",
+     "query": "antihypertensive agents calcium drug interaction elderly",
+     "docs": []
+    },
+    {
+     "fn": "_search_fda",
+     "query": "blood pressure medication calcium supplementation management",
+     "docs": []
+    },
+    {
+     "fn": "_search_dailymed",
+     "query": "calcium interaction antihypertensive drugs mechanism",
+     "docs": []
+    },
+    {
+     "fn": "_search_tfda",
+     "query": "calcium interaction antihypertensive drugs elderly",
+     "docs": []
+    },
+    {
+     "fn": "_search_dailymed",
+     "query": "blood pressure medication calcium elderly management",
+     "docs": []
+    },
+    {
+     "fn": "_search_tfda",
+     "query": "antihypertensive agents calcium drug interaction elderly",
+     "docs": []
+    },
+    {
+     "fn": "_search_dailymed",
+     "query": "antihypertensive agents calcium drug interaction",
+     "docs": []
+    },
+    {
+     "fn": "_search_dailymed",
+     "query": "antihypertensive agents calcium supplements pharmacology",
+     "docs": []
+    },
+    {
+     "fn": "_search_dailymed",
+     "query": "Can elderly patients take BP meds with calcium?",
+     "docs": []
+    },
+    {
+     "fn": "_search_tfda",
+     "query": "blood pressure medication calcium supplementation management",
+     "docs": []
+    },
+    {
+     "fn": "_search_dailymed",
+     "query": "hypertension treatment elderly calcium supplementation",
+     "docs": []
+    },
+    {
+     "fn": "_search_pubmed",
+     "query": "antihypertensive agents calcium drug interaction elderly",
+     "docs": [
+      {
+       "source_id": "PMID:28267687",
+       "source_type": "pubmed",
+       "title": "Hypertension's 3 Dilemmas and 3 Solutions: Pharmacology of the Kidney in Hypertension.",
+       "score": 0.85
+      },
+      {
+       "source_id": "PMID:15927106",
+       "source_type": "pubmed",
+       "title": "[Antihypertensive drug-drug interactions].",
+       "score": 0.81
+      },
+      {
+       "source_id": "PMID:3154329",
+       "source_type": "pubmed",
+       "title": "Calcium channel antagonists. Part III: Use and comparative efficacy in hypertension and supraventricular arrhythmias. Minor indications.",
+       "score": 0.77
+      },
+      {
+       "source_id": "PMID:23324513",
+       "source_type": "pubmed",
+       "title": "Antidepressant-selective gynecomastia.",
+       "score": 0.73
+      },
+      {
+       "source_id": "PMID:38764043",
+       "source_type": "pubmed",
+       "title": "Association of genetic variants related to combined lipid-lowering and antihypertensive therapies with risk of cardiovascular disease: 2 × 2",
+       "score": 0.69
+      }
+     ]
+    },
+    {
+     "fn": "_search_pubmed",
+     "query": "blood pressure medication calcium supplementation management",
+     "docs": [
+      {
+       "source_id": "PMID:39539878",
+       "source_type": "pubmed",
+       "title": "Magnesium Matters: A Comprehensive Review of Its Vital Role in Health and Diseases.",
+       "score": 0.85
+      },
+      {
+       "source_id": "PMID:31111484",
+       "source_type": "pubmed",
+       "title": "The International Federation of Gynecology and Obstetrics (FIGO) initiative on pre-eclampsia: A pragmatic guide for first-trimester screenin",
+       "score": 0.7833
+      },
+      {
+       "source_id": "PMID:27721223",
+       "source_type": "pubmed",
+       "title": "Lifestyle Modifications to Prevent and Control Hypertension.",
+       "score": 0.7167
+      }
+     ]
+    },
+    {
+     "fn": "_search_pubmed",
+     "query": "calcium interaction antihypertensive drugs elderly",
+     "docs": [
+      {
+       "source_id": "PMID:27409075",
+       "source_type": "pubmed",
+       "title": "Proceedings of the 3rd IPLeiria's International Health Congress : Leiria, Portugal. 6-7 May 2016.",
+       "score": 0.85
+      },
+      {
+       "source_id": "PMID:28267687",
+       "source_type": "pubmed",
+       "title": "Hypertension's 3 Dilemmas and 3 Solutions: Pharmacology of the Kidney in Hypertension.",
+       "score": 0.81
+      },
+      {
+       "source_id": "PMID:9397294",
+       "source_type": "pubmed",
+       "title": "Interaction of antihypertensive drugs with anti-inflammatory drugs.",
+       "score": 0.77
+      },
+      {
+       "source_id": "PMID:15927106",
+       "source_type": "pubmed",
+       "title": "[Antihypertensive drug-drug interactions].",
+       "score": 0.73
+      },
+      {
+       "source_id": "PMID:38764043",
+       "source_type": "pubmed",
+       "title": "Association of genetic variants related to combined lipid-lowering and antihypertensive therapies with risk of cardiovascular disease: 2 × 2",
+       "score": 0.69
+      }
+     ]
+    }
+   ],
+   "filter_in": [
+    {
+     "source_id": "PMID:39539878",
+     "source_type": "pubmed",
+     "title": "Magnesium Matters: A Comprehensive Review of Its Vital Role in Health and Diseases.",
+     "score": 0.91
+    },
+    {
+     "source_id": "PMID:27409075",
+     "source_type": "pubmed",
+     "title": "Proceedings of the 3rd IPLeiria's International Health Congress : Leiria, Portugal. 6-7 May 2016.",
+     "score": 0.85
+    },
+    {
+     "source_id": "PMID:28267687",
+     "source_type": "pubmed",
+     "title": "Hypertension's 3 Dilemmas and 3 Solutions: Pharmacology of the Kidney in Hypertension.",
+     "score": 0.85
+    },
+    {
+     "source_id": "PMID:15927106",
+     "source_type": "pubmed",
+     "title": "[Antihypertensive drug-drug interactions].",
+     "score": 0.81
+    },
+    {
+     "source_id": "PMID:31111484",
+     "source_type": "pubmed",
+     "title": "The International Federation of Gynecology and Obstetrics (FIGO) initiative on pre-eclampsia: A pragmatic guide for first-trimester screenin",
+     "score": 0.7833
+    },
+    {
+     "source_id": "PMID:9397294",
+     "source_type": "pubmed",
+     "title": "Interaction of antihypertensive drugs with anti-inflammatory drugs.",
+     "score": 0.77
+    },
+    {
+     "source_id": "PMID:3154329",
+     "source_type": "pubmed",
+     "title": "Calcium channel antagonists. Part III: Use and comparative efficacy in hypertension and supraventricular arrhythmias. Minor indications.",
+     "score": 0.77
+    },
+    {
+     "source_id": "PMID:38764043",
+     "source_type": "pubmed",
+     "title": "Association of genetic variants related to combined lipid-lowering and antihypertensive therapies with risk of cardiovascular disease: 2 × 2",
+     "score": 0.75
+    },
+    {
+     "source_id": "PMID:23324513",
+     "source_type": "pubmed",
+     "title": "Antidepressant-selective gynecomastia.",
+     "score": 0.73
+    },
+    {
+     "source_id": "PMID:27721223",
+     "source_type": "pubmed",
+     "title": "Lifestyle Modifications to Prevent and Control Hypertension.",
+     "score": 0.7167
+    }
+   ],
+   "filter_out": [
+    {
+     "source_id": "PMID:15927106",
+     "source_type": "pubmed",
+     "title": "[Antihypertensive drug-drug interactions].",
+     "score": 0.81
+    },
+    {
+     "source_id": "PMID:3154329",
+     "source_type": "pubmed",
+     "title": "Calcium channel antagonists. Part III: Use and comparative efficacy in hypertension and supraventricular arrhythmias. Minor indications.",
+     "score": 0.77
+    }
+   ],
+   "rerank_out": [
+    {
+     "source_id": "PMID:15927106",
+     "source_type": "pubmed",
+     "title": "[Antihypertensive drug-drug interactions].",
+     "score": 0.81
+    },
+    {
+     "source_id": "PMID:3154329",
+     "source_type": "pubmed",
+     "title": "Calcium channel antagonists. Part III: Use and comparative efficacy in hypertension and supraventricular arrhythmias. Minor indications.",
+     "score": 0.77
+    }
+   ],
+   "rerank_pool": [
+    {
+     "source_id": "PMID:15927106",
+     "source_type": "pubmed",
+     "title": "[Antihypertensive drug-drug interactions].",
+     "score": 0.81
+    },
+    {
+     "source_id": "PMID:3154329",
+     "source_type": "pubmed",
+     "title": "Calcium channel antagonists. Part III: Use and comparative efficacy in hypertension and supraventricular arrhythmias. Minor indications.",
+     "score": 0.77
+    }
+   ],
+   "seconds": 14.6,
+   "status": "ok",
+   "final": [
+    {
+     "source_id": "PMID:15927106",
+     "source_type": "pubmed",
+     "title": "[Antihypertensive drug-drug interactions].",
+     "score": 0.81
+    },
+    {
+     "source_id": "PMID:3154329",
+     "source_type": "pubmed",
+     "title": "Calcium channel antagonists. Part III: Use and comparative efficacy in hypertension and supraventricular arrhythmias. Minor indications.",
+     "score": 0.77
+    }
+   ],
+   "log_lines": [
+    "Retrieved 13 docs, 10 unique after dedup",
+    "Relevance filter: 10 -> 2 documents kept"
+   ],
+   "cosines": [
+    {
+     "query": "calcium interaction antihypertensive drugs mechanism",
+     "n_above_0.6": 0,
+     "top5": [
+      {
+       "source_id": "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7",
+       "title": "Calcium Chloride (CALCIUM CHLORIDE) — Drug Interactions",
+       "cos": 0.5363
+      },
+      {
+       "source_id": "DailyMed:e6d531ec-fcdc-49f6-b0c4-878d3952827f#34073-7",
+       "title": "Calcium Gluconate in Sodium Chloride (Calcium Gluconate) — Drug Interactions",
+       "cos": 0.5253
+      },
+      {
+       "source_id": "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34073-7",
+       "title": "Hydrochlorothiazide (Hydrochlorothiazide) — Drug Interactions",
+       "cos": 0.5239
+      },
+      {
+       "source_id": "DailyMed:746db603-a6e1-4dc3-c2d8-92314419098c#34073-7",
+       "title": "TENORMIN (Atenolol) — Drug Interactions",
+       "cos": 0.5155
+      },
+      {
+       "source_id": "DailyMed:4c635f60-7868-46d5-b932-d5cf8fc84432#34073-7",
+       "title": "Calcium Gluconate (Calcium Gluconate) — Drug Interactions",
+       "cos": 0.5155
+      }
+     ],
+     "watch": [
+      {
+       "source_id": "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7",
+       "moiety": "CALCIUM CHLORIDE DIHYDRATE",
+       "class": "calcium",
+       "loinc": "34073-7",
+       "cos": 0.5363,
+       "rank": 0
+      },
+      {
+       "source_id": "DailyMed:e6d531ec-fcdc-49f6-b0c4-878d3952827f#34073-7",
+       "moiety": "CALCIUM GLUCONATE",
+       "class": "calcium",
+       "loinc": "34073-7",
+       "cos": 0.5253,
+       "rank": 1
+      },
+      {
+       "source_id": "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34073-7",
+       "moiety": "HYDROCHLOROTHIAZIDE",
+       "class": "thiazide",
+       "loinc": "34073-7",
+       "cos": 0.5239,
+       "rank": 2
+      },
+      {
+       "source_id": "DailyMed:4c635f60-7868-46d5-b932-d5cf8fc84432#34073-7",
+       "moiety": "CALCIUM",
+       "class": "calcium",
+       "loinc": "34073-7",
+       "cos": 0.5155,
+       "rank": 4
+      },
+      {
+       "source_id": "DailyMed:6a643c56-794a-4289-8390-5d76fa2709b3#34073-7",
+       "moiety": "INDAPAMIDE",
+       "class": "thiazide",
+       "loinc": "34073-7",
+       "cos": 0.4944,
+       "rank": 6
+      },
+      {
+       "source_id": "DailyMed:8a7002e7-e01f-43f9-e053-2a95a90a7191#34067-9",
+       "moiety": "VERAPAMIL HCL",
+       "class": "ccb",
+       "loinc": "34067-9",
+       "cos": 0.4685,
+       "rank": 18
+      },
+      {
+       "source_id": "DailyMed:8ebcb33c-f43b-4b36-9f94-9774b2a59e06#34073-7",
+       "moiety": "NIFEDIPINE",
+       "class": "ccb",
+       "loinc": "34073-7",
+       "cos": 0.4607,
+       "rank": 24
+      },
+      {
+       "source_id": "DailyMed:abd6a2ca-40c2-485c-bc53-db1c652505ed#34073-7",
+       "moiety": "AMLODIPINE",
+       "class": "ccb",
+       "loinc": "34073-7",
+       "cos": 0.4584,
+       "rank": 25
+      },
+      {
+       "source_id": "DailyMed:58935d94-5bf1-4065-b8b5-ac61292436a7#34073-7",
+       "moiety": "METOLAZONE",
+       "class": "thiazide",
+       "loinc": "34073-7",
+       "cos": 0.4495,
+       "rank": 35
+      },
+      {
+       "source_id": "DailyMed:b951455c-c235-4e23-9e21-08672d108726#34073-7",
+       "moiety": "FELODIPINE",
+       "class": "ccb",
+       "loinc": "34073-7",
+       "cos": 0.4457,
+       "rank": 37
+      },
+      {
+       "source_id": "DailyMed:1042fa13-e6af-46b9-8008-6c941f0978b1#34068-7",
+       "moiety": "DILTIAZEM",
+       "class": "ccb",
+       "loinc": "34068-7",
+       "cos": 0.4376,
+       "rank": 42
+      },
+      {
+       "source_id": "DailyMed:1042fa13-e6af-46b9-8008-6c941f0978b1#34073-7",
+       "moiety": "DILTIAZEM",
+       "class": "ccb",
+       "loinc": "34073-7",
+       "cos": 0.4328,
+       "rank": 48
+      },
+      {
+       "source_id": "DailyMed:8ebcb33c-f43b-4b36-9f94-9774b2a59e06#34067-9",
+       "moiety": "NIFEDIPINE",
+       "class": "ccb",
+       "loinc": "34067-9",
+       "cos": 0.415,
+       "rank": 82
+      },
+      {
+       "source_id": "DailyMed:abd6a2ca-40c2-485c-bc53-db1c652505ed#34067-9",
+       "moiety": "AMLODIPINE",
+       "class": "ccb",
+       "loinc": "34067-9",
+       "cos": 0.4063,
+       "rank": 103
+      },
+      {
+       "source_id": "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#43685-7",
+       "moiety": "CALCIUM CHLORIDE DIHYDRATE",
+       "class": "calcium",
+       "loinc": "43685-7",
+       "cos": 0.4038,
+       "rank": 111
+      },
+      {
+       "source_id": "DailyMed:e6d531ec-fcdc-49f6-b0c4-878d3952827f#43685-7",
+       "moiety": "CALCIUM GLUCONATE",
+       "class": "calcium",
+       "loinc": "43685-7",
+       "cos": 0.3974,
+       "rank": 131
+      },
+      {
+       "source_id": "DailyMed:1b27c026-2d60-47b4-2a9c-ded1818f21b5#34073-7",
+       "moiety": "PARICALCITOL",
+       "class": "vitD",
+       "loinc": "34073-7",
+       "cos": 0.3918,
+       "rank": 150
+      },
+      {
+       "source_id": "DailyMed:4c635f60-7868-46d5-b932-d5cf8fc84432#43685-7",
+       "moiety": "CALCIUM",
+       "class": "calcium",
+       "loinc": "43685-7",
+       "cos": 0.3862,
+       "rank": 175
+      },
+      {
+       "source_id": "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34068-7",
+       "moiety": "CALCIUM CHLORIDE DIHYDRATE",
+       "class": "calcium",
+       "loinc": "34068-7",
+       "cos": 0.3861,
+       "rank": 176
+      },
+      {
+       "source_id": "DailyMed:6b0e60bb-0e9a-45a7-8f92-a43d939f8deb#34070-3",
+       "moiety": "CALCIUM ACETATE",
+       "class": "calcium",
+       "loinc": "34070-3",
+       "cos": 0.379,
+       "rank": 203
+      },
+      {
+       "source_id": "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34067-9",
+       "moiety": "HYDROCHLOROTHIAZIDE",
+       "class": "thiazide",
+       "loinc": "34067-9",
+       "cos": 0.3748,
+       "rank": 222
+      },
+      {
+       "source_id": "DailyMed:1b27c026-2d60-47b4-2a9c-ded1818f21b5#43685-7",
+       "moiety": "PARICALCITOL",
+       "class": "vitD",
+       "loinc": "43685-7",
+       "cos": 0.3693,
+       "rank": 247
+      },
+      {
+       "source_id": "DailyMed:a1567da9-af74-4afd-9ac5-8b53ec5d7cbf#43685-7",
+       "moiety": "CALCITRIOL",
+       "class": "vitD",
+       "loinc": "43685-7",
+       "cos": 0.367,
+       "rank": 258
+      },
+      {
+       "source_id": "DailyMed:8ebcb33c-f43b-4b36-9f94-9774b2a59e06#34070-3",
+       "moiety": "NIFEDIPINE",
+       "class": "ccb",
+       "loinc": "34070-3",
+       "cos": 0.3668,
+       "rank": 262
+      },
+      {
+       "source_id": "DailyMed:abd6a2ca-40c2-485c-bc53-db1c652505ed#43685-7",
+       "moiety": "AMLODIPINE",
+       "class": "ccb",
+       "loinc": "43685-7",
+       "cos": 0.3658,
+       "rank": 267
+      },
+      {
+       "source_id": "DailyMed:1042fa13-e6af-46b9-8008-6c941f0978b1#34067-9",
+       "moiety": "DILTIAZEM",
+       "class": "ccb",
+       "loinc": "34067-9",
+       "cos": 0.3658,
+       "rank": 268
+      },
+      {
+       "source_id": "DailyMed:8ebcb33c-f43b-4b36-9f94-9774b2a59e06#34068-7",
+       "moiety": "NIFEDIPINE",
+       "class": "ccb",
+       "loinc": "34068-7",
+       "cos": 0.3621,
+       "rank": 288
+      },
+      {
+       "source_id": "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34068-7",
+       "moiety": "HYDROCHLOROTHIAZIDE",
+       "class": "thiazide",
+       "loinc": "34068-7",
+       "cos": 0.3618,
+       "rank": 292
+      },
+      {
+       "source_id": "DailyMed:b951455c-c235-4e23-9e21-08672d108726#34067-9",
+       "moiety": "FELODIPINE",
+       "class": "ccb",
+       "loinc": "34067-9",
+       "cos": 0.3609,
+       "rank": 296
+      },
+      {
+       "source_id": "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34070-3",
+       "moiety": "CALCIUM CHLORIDE DIHYDRATE",
+       "class": "calcium",
+       "loinc": "34070-3",
+       "cos": 0.3584,
+       "rank": 311
+      },
+      {
+       "source_id": "DailyMed:8a7002e7-e01f-43f9-e053-2a95a90a7191#34070-3",
+       "moiety": "VERAPAMIL HCL",
+       "class": "ccb",
+       "loinc": "34070-3",
+       "cos": 0.3561,
+       "rank": 324
+      },
+      {
+       "source_id": "DailyMed:6a643c56-794a-4289-8390-5d76fa2709b3#34068-7",
+       "moiety": "INDAPAMIDE",
+       "class": "thiazide",
+       "loinc": "34068-7",
+       "cos": 0.3515,
+       "rank": 363
+      },
+      {
+       "source_id": "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34067-9",
+       "moiety": "CALCIUM CHLORIDE DIHYDRATE",
+       "class": "calcium",
+       "loinc": "34067-9",
+       "cos": 0.3477,
+       "rank": 393
+      },
+      {
+       "source_id": "DailyMed:8a7002e7-e01f-43f9-e053-2a95a90a7191#34068-7",
+       "moiety": "VERAPAMIL HCL",
+       "class": "ccb",
+       "loinc": "34068-7",
+       "cos": 0.3426,
+       "rank": 430
+      },
+      {
+       "source_id": "DailyMed:abd6a2ca-40c2-485c-bc53-db1c652505ed#34068-7",
+       "moiety": "AMLODIPINE",
+       "class": "ccb",
+       "loinc": "34068-7",
+       "cos": 0.3382,
+       "rank": 468
+      },
+      {
+       "source_id": "DailyMed:1042fa13-e6af-46b9-8008-6c941f0978b1#34070-3",
+       "moiety": "DILTIAZEM",
+       "class": "ccb",
+       "loinc": "34070-3",
+       "cos": 0.338,
+       "rank": 469
+      },
+      {
+       "source_id": "DailyMed:abd6a2ca-40c2-485c-bc53-db1c652505ed#34070-3",
+       "moiety": "AMLODIPINE",
+       "class": "ccb",
+       "loinc": "34070-3",
+       "cos": 0.3365,
+       "rank": 483
+      },
+      {
+       "source_id": "DailyMed:e6d531ec-fcdc-49f6-b0c4-878d3952827f#34068-7",
+       "moiety": "CALCIUM GLUCONATE",
+       "class": "calcium",
+       "loinc": "34068-7",
+       "cos": 0.3348,
+       "rank": 496
+      },
+      {
+       "source_id": "DailyMed:4c635f60-7868-46d5-b932-d5cf8fc84432#34068-7",
+       "moiety": "CALCIUM",
+       "class": "calcium",
+       "loinc": "34068-7",
+       "cos": 0.332,
+       "rank": 516
+      },
+      {
+       "source_id": "DailyMed:b951455c-c235-4e23-9e21-08672d108726#34070-3",
+       "moiety": "FELODIPINE",
+       "class": "ccb",
+       "loinc": "34070-3",
+       "cos": 0.3317,
+       "rank": 521
+      },
+      {
+       "source_id": "DailyMed:b951455c-c235-4e23-9e21-08672d108726#34068-7",
+       "moiety": "FELODIPINE",
+       "class": "ccb",
+       "loinc": "34068-7",
+       "cos": 0.3312,
+       "rank": 525
+      },
+      {
+       "source_id": "DailyMed:e6d531ec-fcdc-49f6-b0c4-878d3952827f#34070-3",
+       "moiety": "CALCIUM GLUCONATE",
+       "class": "calcium",
+       "loinc": "34070-3",
+       "cos": 0.3255,
+       "rank": 580
+      },
+      {
+       "source_id": "DailyMed:4c635f60-7868-46d5-b932-d5cf8fc84432#34070-3",
+       "moiety": "CALCIUM",
+       "class": "calcium",
+       "loinc": "34070-3",
+       "cos": 0.3189,
+       "rank": 652
+      },
+      {
+       "source_id": "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34070-3",
+       "moiety": "HYDROCHLOROTHIAZIDE",
+       "class": "thiazide",
+       "loinc": "34070-3",
+       "cos": 0.3187,
+       "rank": 654
+      },
+      {
+       "source_id": "DailyMed:e6d531ec-fcdc-49f6-b0c4-878d3952827f#34067-9",
+       "moiety": "CALCIUM GLUCONATE",
+       "class": "calcium",
+       "loinc": "34067-9",
+       "cos": 0.3169,
+       "rank": 668
+      },
+      {
+       "source_id": "DailyMed:58935d94-5bf1-4065-b8b5-ac61292436a7#34068-7",
+       "moiety": "METOLAZONE",
+       "class": "thiazide",
+       "loinc": "34068-7",
+       "cos": 0.3135,
+       "rank": 704
+      },
+      {
+       "source_id": "DailyMed:58935d94-5bf1-4065-b8b5-ac61292436a7#34067-9",
+       "moiety": "METOLAZONE",
+       "class": "thiazide",
+       "loinc": "34067-9",
+       "cos": 0.307,
+       "rank": 769
+      },
+      {
+       "source_id": "DailyMed:6a643c56-794a-4289-8390-5d76fa2709b3#34070-3",
+       "moiety": "INDAPAMIDE",
+       "class": "thiazide",
+       "loinc": "34070-3",
+       "cos": 0.2994,
+       "rank": 863
+      },
+      {
+       "source_id": "DailyMed:4c635f60-7868-46d5-b932-d5cf8fc84432#34067-9",
+       "moiety": "CALCIUM",
+       "class": "calcium",
+       "loinc": "34067-9",
+       "cos": 0.2965,
+       "rank": 895
+      },
+      {
+       "source_id": "DailyMed:1b27c026-2d60-47b4-2a9c-ded1818f21b5#34070-3",
+       "moiety": "PARICALCITOL",
+       "class": "vitD",
+       "loinc": "34070-3",
+       "cos": 0.2941,
+       "rank": 927
+      },
+      {
+       "source_id": "DailyMed:1b27c026-2d60-47b4-2a9c-ded1818f21b5#34068-7",
+       "moiety": "PARICALCITOL",
+       "class": "vitD",
+       "loinc": "34068-7",
+       "cos": 0.283,
+       "rank": 1060
+      },
+      {
+       "source_id": "DailyMed:1b27c026-2d60-47b4-2a9c-ded1818f21b5#34067-9",
+       "moiety": "PARICALCITOL",
+       "class": "vitD",
+       "loinc": "34067-9",
+       "cos": 0.2684,
+       "rank": 1276
+      },
+      {
+       "source_id": "DailyMed:58935d94-5bf1-4065-b8b5-ac61292436a7#34070-3",
+       "moiety": "METOLAZONE",
+       "class": "thiazide",
+       "loinc": "34070-3",
+       "cos": 0.2613,
+       "rank": 1398
+      },
+      {
+       "source_id": "DailyMed:6b0e60bb-0e9a-45a7-8f92-a43d939f8deb#34067-9",
+       "moiety": "CALCIUM ACETATE",
+       "class": "calcium",
+       "loinc": "34067-9",
+       "cos": 0.2424,
+       "rank": 1746
+      },
+      {
+       "source_id": "DailyMed:6b0e60bb-0e9a-45a7-8f92-a43d939f8deb#34068-7",
+       "moiety": "CALCIUM ACETATE",
+       "class": "calcium",
+       "loinc": "34068-7",
+       "cos": 0.223,
+       "rank": 2154
+      },
+      {
+       "source_id": "DailyMed:c22944b8-8733-4689-be0c-f320467f79ea#34067-9",
+       "moiety": "CALCIUM CARBONATE",
+       "class": "calcium",
+       "loinc": "34067-9",
+       "cos": 0.2149,
+       "rank": 2345
+      },
+      {
+       "source_id": "DailyMed:a1567da9-af74-4afd-9ac5-8b53ec5d7cbf#34067-9",
+       "moiety": "CALCITRIOL",
+       "class": "vitD",
+       "loinc": "34067-9",
+       "cos": 0.2019,
+       "rank": 2672
+      },
+      {
+       "source_id": "DailyMed:a1567da9-af74-4afd-9ac5-8b53ec5d7cbf#34070-3",
+       "moiety": "CALCITRIOL",
+       "class": "vitD",
+       "loinc": "34070-3",
+       "cos": 0.1875,
+       "rank": 3147
+      },
+      {
+       "source_id": "DailyMed:f823cb3a-607c-4272-a0c1-da823dabd8e9#34068-7",
+       "moiety": "CHOLECALCIFEROL",
+       "class": "vitD",
+       "loinc": "34068-7",
+       "cos": 0.1361,
+       "rank": 4200
+      },
+      {
+       "source_id": "DailyMed:c22944b8-8733-4689-be0c-f320467f79ea#34068-7",
+       "moiety": "CALCIUM CARBONATE",
+       "class": "calcium",
+       "loinc": "34068-7",
+       "cos": 0.1339,
+       "rank": 4226
+      },
+      {
+       "source_id": "DailyMed:a1567da9-af74-4afd-9ac5-8b53ec5d7cbf#34068-7",
+       "moiety": "CALCITRIOL",
+       "class": "vitD",
+       "loinc": "34068-7",
+       "cos": 0.1025,
+       "rank": 4477
+      }
+     ]
+    },
+    {
+     "query": "blood pressure medication calcium elderly management",
+     "n_above_0.6": 0,
+     "top5": [
+      {
+       "source_id": "DailyMed:8a7002e7-e01f-43f9-e053-2a95a90a7191#34067-9",
+       "title": "VERAPAMIL HCL (VERAPAMIL HCL) — Indications and Usage",
+       "cos": 0.5235
+      },
+      {
+       "source_id": "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7",
+       "title": "Calcium Chloride (CALCIUM CHLORIDE) — Drug Interactions",
+       "cos": 0.5226
+      },
+      {
+       "source_id": "DailyMed:746db603-a6e1-4dc3-c2d8-92314419098c#34067-9",
+       "title": "TENORMIN (Atenolol) — Indications and Usage",
+       "cos": 0.5187
+      },
+      {
+       "source_id": "DailyMed:8ebcb33c-f43b-4b36-9f94-9774b2a59e06#34067-9",
+       "title": "Procardia (nifedipine) — Indications and Usage",
+       "cos": 0.506
+      },
+      {
+       "source_id": "DailyMed:cd270093-c6a8-4596-a4ab-e6aa0a2c8a0c#43685-7",
+       "title": "PARSABIV (etelcalcetide) — Warnings and Precautions",
+       "cos": 0.5002
+      }
+     ],
+     "watch": [
+      {
+       "source_id": "DailyMed:8a7002e7-e01f-43f9-e053-2a95a90a7191#34067-9",
+       "moiety": "VERAPAMIL HCL",
+       "class": "ccb",
+       "loinc": "34067-9",
+       "cos": 0.5235,
+       "rank": 0
+      },
+      {
+       "source_id": "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7",
+       "moiety": "CALCIUM CHLORIDE DIHYDRATE",
+       "class": "calcium",
+       "loinc": "34073-7",
+       "cos": 0.5226,
+       "rank": 1
+      },
+      {
+       "source_id": "DailyMed:8ebcb33c-f43b-4b36-9f94-9774b2a59e06#34067-9",
+       "moiety": "NIFEDIPINE",
+       "class": "ccb",
+       "loinc": "34067-9",
+       "cos": 0.506,
+       "rank": 3
+      },
+      {
+       "source_id": "DailyMed:4c635f60-7868-46d5-b932-d5cf8fc84432#34068-7",
+       "moiety": "CALCIUM",
+       "class": "calcium",
+       "loinc": "34068-7",
+       "cos": 0.4992,
+       "rank": 5
+      },
+      {
+       "source_id": "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34068-7",
+       "moiety": "CALCIUM CHLORIDE DIHYDRATE",
+       "class": "calcium",
+       "loinc": "34068-7",
+       "cos": 0.4958,
+       "rank": 8
+      },
+      {
+       "source_id": "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#43685-7",
+       "moiety": "CALCIUM CHLORIDE DIHYDRATE",
+       "class": "calcium",
+       "loinc": "43685-7",
+       "cos": 0.494,
+       "rank": 9
+      },
+      {
+       "source_id": "DailyMed:e6d531ec-fcdc-49f6-b0c4-878d3952827f#34068-7",
+       "moiety": "CALCIUM GLUCONATE",
+       "class": "calcium",
+       "loinc": "34068-7",
+       "cos": 0.4936,
+       "rank": 10
+      },
+      {
+       "source_id": "DailyMed:e6d531ec-fcdc-49f6-b0c4-878d3952827f#34073-7",
+       "moiety": "CALCIUM GLUCONATE",
+       "class": "calcium",
+       "loinc": "34073-7",
+       "cos": 0.4924,
+       "rank": 11
+      },
+      {
+       "source_id": "DailyMed:4c635f60-7868-46d5-b932-d5cf8fc84432#34073-7",
+       "moiety": "CALCIUM",
+       "class": "calcium",
+       "loinc": "34073-7",
+       "cos": 0.4778,
+       "rank": 18
+      },
+      {
+       "source_id": "DailyMed:b951455c-c235-4e23-9e21-08672d108726#34068-7",
+       "moiety": "FELODIPINE",
+       "class": "ccb",
+       "loinc": "34068-7",
+       "cos": 0.4763,
+       "rank": 19
+      },
+      {
+       "source_id": "DailyMed:e6d531ec-fcdc-49f6-b0c4-878d3952827f#43685-7",
+       "moiety": "CALCIUM GLUCONATE",
+       "class": "calcium",
+       "loinc": "43685-7",
+       "cos": 0.4745,
+       "rank": 20
+      },
+      {
+       "source_id": "DailyMed:1042fa13-e6af-46b9-8008-6c941f0978b1#34073-7",
+       "moiety": "DILTIAZEM",
+       "class": "ccb",
+       "loinc": "34073-7",
+       "cos": 0.4739,
+       "rank": 21
+      },
+      {
+       "source_id": "DailyMed:abd6a2ca-40c2-485c-bc53-db1c652505ed#34067-9",
+       "moiety": "AMLODIPINE",
+       "class": "ccb",
+       "loinc": "34067-9",
+       "cos": 0.472,
+       "rank": 23
+      },
+      {
+       "source_id": "DailyMed:4c635f60-7868-46d5-b932-d5cf8fc84432#43685-7",
+       "moiety": "CALCIUM",
+       "class": "calcium",
+       "loinc": "43685-7",
+       "cos": 0.4701,
+       "rank": 27
+      },
+      {
+       "source_id": "DailyMed:1b27c026-2d60-47b4-2a9c-ded1818f21b5#43685-7",
+       "moiety": "PARICALCITOL",
+       "class": "vitD",
+       "loinc": "43685-7",
+       "cos": 0.4681,
+       "rank": 32
+      },
+      {
+       "source_id": "DailyMed:1042fa13-e6af-46b9-8008-6c941f0978b1#34068-7",
+       "moiety": "DILTIAZEM",
+       "class": "ccb",
+       "loinc": "34068-7",
+       "cos": 0.4602,
+       "rank": 41
+      },
+      {
+       "source_id": "DailyMed:abd6a2ca-40c2-485c-bc53-db1c652505ed#34068-7",
+       "moiety": "AMLODIPINE",
+       "class": "ccb",
+       "loinc": "34068-7",
+       "cos": 0.4598,
+       "rank": 43
+      },
+      {
+       "source_id": "DailyMed:6b0e60bb-0e9a-45a7-8f92-a43d939f8deb#34070-3",
+       "moiety": "CALCIUM ACETATE",
+       "class": "calcium",
+       "loinc": "34070-3",
+       "cos": 0.4593,
+       "rank": 46
+      },
+      {
+       "source_id": "DailyMed:8ebcb33c-f43b-4b36-9f94-9774b2a59e06#34068-7",
+       "moiety": "NIFEDIPINE",
+       "class": "ccb",
+       "loinc": "34068-7",
+       "cos": 0.4565,
+       "rank": 53
+      },
+      {
+       "source_id": "DailyMed:8a7002e7-e01f-43f9-e053-2a95a90a7191#34068-7",
+       "moiety": "VERAPAMIL HCL",
+       "class": "ccb",
+       "loinc": "34068-7",
+       "cos": 0.4559,
+       "rank": 54
+      },
+      {
+       "source_id": "DailyMed:abd6a2ca-40c2-485c-bc53-db1c652505ed#43685-7",
+       "moiety": "AMLODIPINE",
+       "class": "ccb",
+       "loinc": "43685-7",
+       "cos": 0.4462,
+       "rank": 74
+      },
+      {
+       "source_id": "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34067-9",
+       "moiety": "CALCIUM CHLORIDE DIHYDRATE",
+       "class": "calcium",
+       "loinc": "34067-9",
+       "cos": 0.4448,
+       "rank": 78
+      },
+      {
+       "source_id": "DailyMed:e6d531ec-fcdc-49f6-b0c4-878d3952827f#34067-9",
+       "moiety": "CALCIUM GLUCONATE",
+       "class": "calcium",
+       "loinc": "34067-9",
+       "cos": 0.4394,
+       "rank": 94
+      },
+      {
+       "source_id": "DailyMed:a1567da9-af74-4afd-9ac5-8b53ec5d7cbf#43685-7",
+       "moiety": "CALCITRIOL",
+       "class": "vitD",
+       "loinc": "43685-7",
+       "cos": 0.4269,
+       "rank": 129
+      },
+      {
+       "source_id": "DailyMed:4c635f60-7868-46d5-b932-d5cf8fc84432#34067-9",
+       "moiety": "CALCIUM",
+       "class": "calcium",
+       "loinc": "34067-9",
+       "cos": 0.4269,
+       "rank": 128
+      },
+      {
+       "source_id": "DailyMed:8ebcb33c-f43b-4b36-9f94-9774b2a59e06#34073-7",
+       "moiety": "NIFEDIPINE",
+       "class": "ccb",
+       "loinc": "34073-7",
+       "cos": 0.4238,
+       "rank": 136
+      },
+      {
+       "source_id": "DailyMed:6a643c56-794a-4289-8390-5d76fa2709b3#34068-7",
+       "moiety": "INDAPAMIDE",
+       "class": "thiazide",
+       "loinc": "34068-7",
+       "cos": 0.4226,
+       "rank": 141
+      },
+      {
+       "source_id": "DailyMed:abd6a2ca-40c2-485c-bc53-db1c652505ed#34073-7",
+       "moiety": "AMLODIPINE",
+       "class": "ccb",
+       "loinc": "34073-7",
+       "cos": 0.4224,
+       "rank": 142
+      },
+      {
+       "source_id": "DailyMed:58935d94-5bf1-4065-b8b5-ac61292436a7#34073-7",
+       "moiety": "METOLAZONE",
+       "class": "thiazide",
+       "loinc": "34073-7",
+       "cos": 0.42,
+       "rank": 150
+      },
+      {
+       "source_id": "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34073-7",
+       "moiety": "HYDROCHLOROTHIAZIDE",
+       "class": "thiazide",
+       "loinc": "34073-7",
+       "cos": 0.4196,
+       "rank": 151
+      },
+      {
+       "source_id": "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34070-3",
+       "moiety": "CALCIUM CHLORIDE DIHYDRATE",
+       "class": "calcium",
+       "loinc": "34070-3",
+       "cos": 0.4183,
+       "rank": 156
+      },
+      {
+       "source_id": "DailyMed:1b27c026-2d60-47b4-2a9c-ded1818f21b5#34068-7",
+       "moiety": "PARICALCITOL",
+       "class": "vitD",
+       "loinc": "34068-7",
+       "cos": 0.4177,
+       "rank": 158
+      },
+      {
+       "source_id": "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34068-7",
+       "moiety": "HYDROCHLOROTHIAZIDE",
+       "class": "thiazide",
+       "loinc": "34068-7",
+       "cos": 0.412,
+       "rank": 169
+      },
+      {
+       "source_id": "DailyMed:b951455c-c235-4e23-9e21-08672d108726#34073-7",
+       "moiety": "FELODIPINE",
+       "class": "ccb",
+       "loinc": "34073-7",
+       "cos": 0.4108,
+       "rank": 174
+      },
+      {
+       "source_id": "DailyMed:1042fa13-e6af-46b9-8008-6c941f0978b1#34067-9",
+       "moiety": "DILTIAZEM",
+       "class": "ccb",
+       "loinc": "34067-9",
+       "cos": 0.4046,
+       "rank": 203
+      },
+      {
+       "source_id": "DailyMed:4c635f60-7868-46d5-b932-d5cf8fc84432#34070-3",
+       "moiety": "CALCIUM",
+       "class": "calcium",
+       "loinc": "34070-3",
+       "cos": 0.4033,
+       "rank": 208
+      },
+      {
+       "source_id": "DailyMed:e6d531ec-fcdc-49f6-b0c4-878d3952827f#34070-3",
+       "moiety": "CALCIUM GLUCONATE",
+       "class": "calcium",
+       "loinc": "34070-3",
+       "cos": 0.403,
+       "rank": 210
+      },
+      {
+       "source_id": "DailyMed:1b27c026-2d60-47b4-2a9c-ded1818f21b5#34073-7",
+       "moiety": "PARICALCITOL",
+       "class": "vitD",
+       "loinc": "34073-7",
+       "cos": 0.4024,
+       "rank": 214
+      },
+      {
+       "source_id": "DailyMed:8a7002e7-e01f-43f9-e053-2a95a90a7191#34070-3",
+       "moiety": "VERAPAMIL HCL",
+       "class": "ccb",
+       "loinc": "34070-3",
+       "cos": 0.4009,
+       "rank": 223
+      },
+      {
+       "source_id": "DailyMed:1b27c026-2d60-47b4-2a9c-ded1818f21b5#34067-9",
+       "moiety": "PARICALCITOL",
+       "class": "vitD",
+       "loinc": "34067-9",
+       "cos": 0.3959,
+       "rank": 247
+      },
+      {
+       "source_id": "DailyMed:58935d94-5bf1-4065-b8b5-ac61292436a7#34068-7",
+       "moiety": "METOLAZONE",
+       "class": "thiazide",
+       "loinc": "34068-7",
+       "cos": 0.3924,
+       "rank": 268
+      },
+      {
+       "source_id": "DailyMed:b951455c-c235-4e23-9e21-08672d108726#34067-9",
+       "moiety": "FELODIPINE",
+       "class": "ccb",
+       "loinc": "34067-9",
+       "cos": 0.3891,
+       "rank": 288
+      },
+      {
+       "source_id": "DailyMed:1b27c026-2d60-47b4-2a9c-ded1818f21b5#34070-3",
+       "moiety": "PARICALCITOL",
+       "class": "vitD",
+       "loinc": "34070-3",
+       "cos": 0.3836,
+       "rank": 321
+      },
+      {
+       "source_id": "DailyMed:6b0e60bb-0e9a-45a7-8f92-a43d939f8deb#34068-7",
+       "moiety": "CALCIUM ACETATE",
+       "class": "calcium",
+       "loinc": "34068-7",
+       "cos": 0.383,
+       "rank": 326
+      },
+      {
+       "source_id": "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34067-9",
+       "moiety": "HYDROCHLOROTHIAZIDE",
+       "class": "thiazide",
+       "loinc": "34067-9",
+       "cos": 0.3816,
+       "rank": 341
+      },
+      {
+       "source_id": "DailyMed:6a643c56-794a-4289-8390-5d76fa2709b3#34073-7",
+       "moiety": "INDAPAMIDE",
+       "class": "thiazide",
+       "loinc": "34073-7",
+       "cos": 0.3717,
+       "rank": 442
+      },
+      {
+       "source_id": "DailyMed:58935d94-5bf1-4065-b8b5-ac61292436a7#34067-9",
+       "moiety": "METOLAZONE",
+       "class": "thiazide",
+       "loinc": "34067-9",
+       "cos": 0.3692,
+       "rank": 471
+      },
+      {
+       "source_id": "DailyMed:1042fa13-e6af-46b9-8008-6c941f0978b1#34070-3",
+       "moiety": "DILTIAZEM",
+       "class": "ccb",
+       "loinc": "34070-3",
+       "cos": 0.3633,
+       "rank": 536
+      },
+      {
+       "source_id": "DailyMed:6b0e60bb-0e9a-45a7-8f92-a43d939f8deb#34067-9",
+       "moiety": "CALCIUM ACETATE",
+       "class": "calcium",
+       "loinc": "34067-9",
+       "cos": 0.3614,
+       "rank": 563
+      },
+      {
+       "source_id": "DailyMed:b951455c-c235-4e23-9e21-08672d108726#34070-3",
+       "moiety": "FELODIPINE",
+       "class": "ccb",
+       "loinc": "34070-3",
+       "cos": 0.3547,
+       "rank": 660
+      },
+      {
+       "source_id": "DailyMed:c22944b8-8733-4689-be0c-f320467f79ea#34068-7",
+       "moiety": "CALCIUM CARBONATE",
+       "class": "calcium",
+       "loinc": "34068-7",
+       "cos": 0.3482,
+       "rank": 780
+      },
+      {
+       "source_id": "DailyMed:abd6a2ca-40c2-485c-bc53-db1c652505ed#34070-3",
+       "moiety": "AMLODIPINE",
+       "class": "ccb",
+       "loinc": "34070-3",
+       "cos": 0.3421,
+       "rank": 895
+      },
+      {
+       "source_id": "DailyMed:a1567da9-af74-4afd-9ac5-8b53ec5d7cbf#34067-9",
+       "moiety": "CALCITRIOL",
+       "class": "vitD",
+       "loinc": "34067-9",
+       "cos": 0.3421,
+       "rank": 898
+      },
+      {
+       "source_id": "DailyMed:8ebcb33c-f43b-4b36-9f94-9774b2a59e06#34070-3",
+       "moiety": "NIFEDIPINE",
+       "class": "ccb",
+       "loinc": "34070-3",
+       "cos": 0.3374,
+       "rank": 999
+      },
+      {
+       "source_id": "DailyMed:58935d94-5bf1-4065-b8b5-ac61292436a7#34070-3",
+       "moiety": "METOLAZONE",
+       "class": "thiazide",
+       "loinc": "34070-3",
+       "cos": 0.3327,
+       "rank": 1107
+      },
+      {
+       "source_id": "DailyMed:f823cb3a-607c-4272-a0c1-da823dabd8e9#34068-7",
+       "moiety": "CHOLECALCIFEROL",
+       "class": "vitD",
+       "loinc": "34068-7",
+       "cos": 0.2902,
+       "rank": 2243
+      },
+      {
+       "source_id": "DailyMed:6a643c56-794a-4289-8390-5d76fa2709b3#34070-3",
+       "moiety": "INDAPAMIDE",
+       "class": "thiazide",
+       "loinc": "34070-3",
+       "cos": 0.2877,
+       "rank": 2299
+      },
+      {
+       "source_id": "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34070-3",
+       "moiety": "HYDROCHLOROTHIAZIDE",
+       "class": "thiazide",
+       "loinc": "34070-3",
+       "cos": 0.275,
+       "rank": 2624
+      },
+      {
+       "source_id": "DailyMed:a1567da9-af74-4afd-9ac5-8b53ec5d7cbf#34068-7",
+       "moiety": "CALCITRIOL",
+       "class": "vitD",
+       "loinc": "34068-7",
+       "cos": 0.2626,
+       "rank": 3066
+      },
+      {
+       "source_id": "DailyMed:a1567da9-af74-4afd-9ac5-8b53ec5d7cbf#34070-3",
+       "moiety": "CALCITRIOL",
+       "class": "vitD",
+       "loinc": "34070-3",
+       "cos": 0.2616,
+       "rank": 3102
+      },
+      {
+       "source_id": "DailyMed:c22944b8-8733-4689-be0c-f320467f79ea#34067-9",
+       "moiety": "CALCIUM CARBONATE",
+       "class": "calcium",
+       "loinc": "34067-9",
+       "cos": 0.2454,
+       "rank": 3474
+      }
+     ]
+    },
+    {
+     "query": "antihypertensive agents calcium drug interaction",
+     "n_above_0.6": 0,
+     "top5": [
+      {
+       "source_id": "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7",
+       "title": "Calcium Chloride (CALCIUM CHLORIDE) — Drug Interactions",
+       "cos": 0.5919
+      },
+      {
+       "source_id": "DailyMed:e6d531ec-fcdc-49f6-b0c4-878d3952827f#34073-7",
+       "title": "Calcium Gluconate in Sodium Chloride (Calcium Gluconate) — Drug Interactions",
+       "cos": 0.5913
+      },
+      {
+       "source_id": "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34073-7",
+       "title": "Hydrochlorothiazide (Hydrochlorothiazide) — Drug Interactions",
+       "cos": 0.5805
+      },
+      {
+       "source_id": "DailyMed:4c635f60-7868-46d5-b932-d5cf8fc84432#34073-7",
+       "title": "Calcium Gluconate (Calcium Gluconate) — Drug Interactions",
+       "cos": 0.5803
+      },
+      {
+       "source_id": "DailyMed:746db603-a6e1-4dc3-c2d8-92314419098c#34073-7",
+       "title": "TENORMIN (Atenolol) — Drug Interactions",
+       "cos": 0.5568
+      }
+     ],
+     "watch": [
+      {
+       "source_id": "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7",
+       "moiety": "CALCIUM CHLORIDE DIHYDRATE",
+       "class": "calcium",
+       "loinc": "34073-7",
+       "cos": 0.5919,
+       "rank": 0
+      },
+      {
+       "source_id": "DailyMed:e6d531ec-fcdc-49f6-b0c4-878d3952827f#34073-7",
+       "moiety": "CALCIUM GLUCONATE",
+       "class": "calcium",
+       "loinc": "34073-7",
+       "cos": 0.5913,
+       "rank": 1
+      },
+      {
+       "source_id": "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34073-7",
+       "moiety": "HYDROCHLOROTHIAZIDE",
+       "class": "thiazide",
+       "loinc": "34073-7",
+       "cos": 0.5805,
+       "rank": 2
+      },
+      {
+       "source_id": "DailyMed:4c635f60-7868-46d5-b932-d5cf8fc84432#34073-7",
+       "moiety": "CALCIUM",
+       "class": "calcium",
+       "loinc": "34073-7",
+       "cos": 0.5803,
+       "rank": 3
+      },
+      {
+       "source_id": "DailyMed:6a643c56-794a-4289-8390-5d76fa2709b3#34073-7",
+       "moiety": "INDAPAMIDE",
+       "class": "thiazide",
+       "loinc": "34073-7",
+       "cos": 0.5435,
+       "rank": 6
+      },
+      {
+       "source_id": "DailyMed:8ebcb33c-f43b-4b36-9f94-9774b2a59e06#34073-7",
+       "moiety": "NIFEDIPINE",
+       "class": "ccb",
+       "loinc": "34073-7",
+       "cos": 0.5177,
+       "rank": 16
+      },
+      {
+       "source_id": "DailyMed:abd6a2ca-40c2-485c-bc53-db1c652505ed#34073-7",
+       "moiety": "AMLODIPINE",
+       "class": "ccb",
+       "loinc": "34073-7",
+       "cos": 0.5069,
+       "rank": 23
+      },
+      {
+       "source_id": "DailyMed:58935d94-5bf1-4065-b8b5-ac61292436a7#34073-7",
+       "moiety": "METOLAZONE",
+       "class": "thiazide",
+       "loinc": "34073-7",
+       "cos": 0.4978,
+       "rank": 28
+      },
+      {
+       "source_id": "DailyMed:b951455c-c235-4e23-9e21-08672d108726#34073-7",
+       "moiety": "FELODIPINE",
+       "class": "ccb",
+       "loinc": "34073-7",
+       "cos": 0.4919,
+       "rank": 30
+      },
+      {
+       "source_id": "DailyMed:8a7002e7-e01f-43f9-e053-2a95a90a7191#34067-9",
+       "moiety": "VERAPAMIL HCL",
+       "class": "ccb",
+       "loinc": "34067-9",
+       "cos": 0.4884,
+       "rank": 31
+      },
+      {
+       "source_id": "DailyMed:6b0e60bb-0e9a-45a7-8f92-a43d939f8deb#34070-3",
+       "moiety": "CALCIUM ACETATE",
+       "class": "calcium",
+       "loinc": "34070-3",
+       "cos": 0.4767,
+       "rank": 54
+      },
+      {
+       "source_id": "DailyMed:1042fa13-e6af-46b9-8008-6c941f0978b1#34068-7",
+       "moiety": "DILTIAZEM",
+       "class": "ccb",
+       "loinc": "34068-7",
+       "cos": 0.4644,
+       "rank": 72
+      },
+      {
+       "source_id": "DailyMed:8ebcb33c-f43b-4b36-9f94-9774b2a59e06#34067-9",
+       "moiety": "NIFEDIPINE",
+       "class": "ccb",
+       "loinc": "34067-9",
+       "cos": 0.4585,
+       "rank": 88
+      },
+      {
+       "source_id": "DailyMed:1042fa13-e6af-46b9-8008-6c941f0978b1#34073-7",
+       "moiety": "DILTIAZEM",
+       "class": "ccb",
+       "loinc": "34073-7",
+       "cos": 0.4579,
+       "rank": 90
+      },
+      {
+       "source_id": "DailyMed:e6d531ec-fcdc-49f6-b0c4-878d3952827f#43685-7",
+       "moiety": "CALCIUM GLUCONATE",
+       "class": "calcium",
+       "loinc": "43685-7",
+       "cos": 0.4552,
+       "rank": 99
+      },
+      {
+       "source_id": "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#43685-7",
+       "moiety": "CALCIUM CHLORIDE DIHYDRATE",
+       "class": "calcium",
+       "loinc": "43685-7",
+       "cos": 0.455,
+       "rank": 100
+      },
+      {
+       "source_id": "DailyMed:1b27c026-2d60-47b4-2a9c-ded1818f21b5#34073-7",
+       "moiety": "PARICALCITOL",
+       "class": "vitD",
+       "loinc": "34073-7",
+       "cos": 0.454,
+       "rank": 101
+      },
+      {
+       "source_id": "DailyMed:abd6a2ca-40c2-485c-bc53-db1c652505ed#34067-9",
+       "moiety": "AMLODIPINE",
+       "class": "ccb",
+       "loinc": "34067-9",
+       "cos": 0.4536,
+       "rank": 104
+      },
+      {
+       "source_id": "DailyMed:4c635f60-7868-46d5-b932-d5cf8fc84432#43685-7",
+       "moiety": "CALCIUM",
+       "class": "calcium",
+       "loinc": "43685-7",
+       "cos": 0.4477,
+       "rank": 113
+      },
+      {
+       "source_id": "DailyMed:1b27c026-2d60-47b4-2a9c-ded1818f21b5#43685-7",
+       "moiety": "PARICALCITOL",
+       "class": "vitD",
+       "loinc": "43685-7",
+       "cos": 0.4375,
+       "rank": 147
+      },
+      {
+       "source_id": "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34068-7",
+       "moiety": "CALCIUM CHLORIDE DIHYDRATE",
+       "class": "calcium",
+       "loinc": "34068-7",
+       "cos": 0.4359,
+       "rank": 150
+      },
+      {
+       "source_id": "DailyMed:8ebcb33c-f43b-4b36-9f94-9774b2a59e06#34070-3",
+       "moiety": "NIFEDIPINE",
+       "class": "ccb",
+       "loinc": "34070-3",
+       "cos": 0.4273,
+       "rank": 187
+      },
+      {
+       "source_id": "DailyMed:8ebcb33c-f43b-4b36-9f94-9774b2a59e06#34068-7",
+       "moiety": "NIFEDIPINE",
+       "class": "ccb",
+       "loinc": "34068-7",
+       "cos": 0.4256,
+       "rank": 200
+      },
+      {
+       "source_id": "DailyMed:abd6a2ca-40c2-485c-bc53-db1c652505ed#43685-7",
+       "moiety": "AMLODIPINE",
+       "class": "ccb",
+       "loinc": "43685-7",
+       "cos": 0.4221,
+       "rank": 216
+      },
+      {
+       "source_id": "DailyMed:b951455c-c235-4e23-9e21-08672d108726#34070-3",
+       "moiety": "FELODIPINE",
+       "class": "ccb",
+       "loinc": "34070-3",
+       "cos": 0.42,
+       "rank": 231
+      },
+      {
+       "source_id": "DailyMed:a1567da9-af74-4afd-9ac5-8b53ec5d7cbf#43685-7",
+       "moiety": "CALCITRIOL",
+       "class": "vitD",
+       "loinc": "43685-7",
+       "cos": 0.4185,
+       "rank": 238
+      },
+      {
+       "source_id": "DailyMed:abd6a2ca-40c2-485c-bc53-db1c652505ed#34070-3",
+       "moiety": "AMLODIPINE",
+       "class": "ccb",
+       "loinc": "34070-3",
+       "cos": 0.4174,
+       "rank": 244
+      },
+      {
+       "source_id": "DailyMed:b951455c-c235-4e23-9e21-08672d108726#34067-9",
+       "moiety": "FELODIPINE",
+       "class": "ccb",
+       "loinc": "34067-9",
+       "cos": 0.4168,
+       "rank": 247
+      },
+      {
+       "source_id": "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34070-3",
+       "moiety": "CALCIUM CHLORIDE DIHYDRATE",
+       "class": "calcium",
+       "loinc": "34070-3",
+       "cos": 0.4111,
+       "rank": 276
+      },
+      {
+       "source_id": "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34067-9",
+       "moiety": "HYDROCHLOROTHIAZIDE",
+       "class": "thiazide",
+       "loinc": "34067-9",
+       "cos": 0.4101,
+       "rank": 283
+      },
+      {
+       "source_id": "DailyMed:8a7002e7-e01f-43f9-e053-2a95a90a7191#34070-3",
+       "moiety": "VERAPAMIL HCL",
+       "class": "ccb",
+       "loinc": "34070-3",
+       "cos": 0.4075,
+       "rank": 303
+      },
+      {
+       "source_id": "DailyMed:e6d531ec-fcdc-49f6-b0c4-878d3952827f#34070-3",
+       "moiety": "CALCIUM GLUCONATE",
+       "class": "calcium",
+       "loinc": "34070-3",
+       "cos": 0.3992,
+       "rank": 352
+      },
+      {
+       "source_id": "DailyMed:4c635f60-7868-46d5-b932-d5cf8fc84432#34070-3",
+       "moiety": "CALCIUM",
+       "class": "calcium",
+       "loinc": "34070-3",
+       "cos": 0.3991,
+       "rank": 353
+      },
+      {
+       "source_id": "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34068-7",
+       "moiety": "HYDROCHLOROTHIAZIDE",
+       "class": "thiazide",
+       "loinc": "34068-7",
+       "cos": 0.3988,
+       "rank": 355
+      },
+      {
+       "source_id": "DailyMed:6a643c56-794a-4289-8390-5d76fa2709b3#34068-7",
+       "moiety": "INDAPAMIDE",
+       "class": "thiazide",
+       "loinc": "34068-7",
+       "cos": 0.3974,
+       "rank": 369
+      },
+      {
+       "source_id": "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34067-9",
+       "moiety": "CALCIUM CHLORIDE DIHYDRATE",
+       "class": "calcium",
+       "loinc": "34067-9",
+       "cos": 0.3964,
+       "rank": 381
+      },
+      {
+       "source_id": "DailyMed:1042fa13-e6af-46b9-8008-6c941f0978b1#34067-9",
+       "moiety": "DILTIAZEM",
+       "class": "ccb",
+       "loinc": "34067-9",
+       "cos": 0.3881,
+       "rank": 451
+      },
+      {
+       "source_id": "DailyMed:4c635f60-7868-46d5-b932-d5cf8fc84432#34068-7",
+       "moiety": "CALCIUM",
+       "class": "calcium",
+       "loinc": "34068-7",
+       "cos": 0.3873,
+       "rank": 462
+      },
+      {
+       "source_id": "DailyMed:e6d531ec-fcdc-49f6-b0c4-878d3952827f#34068-7",
+       "moiety": "CALCIUM GLUCONATE",
+       "class": "calcium",
+       "loinc": "34068-7",
+       "cos": 0.3869,
+       "rank": 468
+      },
+      {
+       "source_id": "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34070-3",
+       "moiety": "HYDROCHLOROTHIAZIDE",
+       "class": "thiazide",
+       "loinc": "34070-3",
+       "cos": 0.3855,
+       "rank": 476
+      },
+      {
+       "source_id": "DailyMed:abd6a2ca-40c2-485c-bc53-db1c652505ed#34068-7",
+       "moiety": "AMLODIPINE",
+       "class": "ccb",
+       "loinc": "34068-7",
+       "cos": 0.3846,
+       "rank": 480
+      },
+      {
+       "source_id": "DailyMed:1b27c026-2d60-47b4-2a9c-ded1818f21b5#34070-3",
+       "moiety": "PARICALCITOL",
+       "class": "vitD",
+       "loinc": "34070-3",
+       "cos": 0.3835,
+       "rank": 492
+      },
+      {
+       "source_id": "DailyMed:8a7002e7-e01f-43f9-e053-2a95a90a7191#34068-7",
+       "moiety": "VERAPAMIL HCL",
+       "class": "ccb",
+       "loinc": "34068-7",
+       "cos": 0.3808,
+       "rank": 511
+      },
+      {
+       "source_id": "DailyMed:b951455c-c235-4e23-9e21-08672d108726#34068-7",
+       "moiety": "FELODIPINE",
+       "class": "ccb",
+       "loinc": "34068-7",
+       "cos": 0.3784,
+       "rank": 530
+      },
+      {
+       "source_id": "DailyMed:6a643c56-794a-4289-8390-5d76fa2709b3#34070-3",
+       "moiety": "INDAPAMIDE",
+       "class": "thiazide",
+       "loinc": "34070-3",
+       "cos": 0.3784,
+       "rank": 529
+      },
+      {
+       "source_id": "DailyMed:e6d531ec-fcdc-49f6-b0c4-878d3952827f#34067-9",
+       "moiety": "CALCIUM GLUCONATE",
+       "class": "calcium",
+       "loinc": "34067-9",
+       "cos": 0.3764,
+       "rank": 551
+      },
+      {
+       "source_id": "DailyMed:1042fa13-e6af-46b9-8008-6c941f0978b1#34070-3",
+       "moiety": "DILTIAZEM",
+       "class": "ccb",
+       "loinc": "34070-3",
+       "cos": 0.3711,
+       "rank": 610
+      },
+      {
+       "source_id": "DailyMed:4c635f60-7868-46d5-b932-d5cf8fc84432#34067-9",
+       "moiety": "CALCIUM",
+       "class": "calcium",
+       "loinc": "34067-9",
+       "cos": 0.3555,
+       "rank": 798
+      },
+      {
+       "source_id": "DailyMed:58935d94-5bf1-4065-b8b5-ac61292436a7#34068-7",
+       "moiety": "METOLAZONE",
+       "class": "thiazide",
+       "loinc": "34068-7",
+       "cos": 0.3428,
+       "rank": 948
+      },
+      {
+       "source_id": "DailyMed:58935d94-5bf1-4065-b8b5-ac61292436a7#34067-9",
+       "moiety": "METOLAZONE",
+       "class": "thiazide",
+       "loinc": "34067-9",
+       "cos": 0.3406,
+       "rank": 974
+      },
+      {
+       "source_id": "DailyMed:58935d94-5bf1-4065-b8b5-ac61292436a7#34070-3",
+       "moiety": "METOLAZONE",
+       "class": "thiazide",
+       "loinc": "34070-3",
+       "cos": 0.3324,
+       "rank": 1084
+      },
+      {
+       "source_id": "DailyMed:1b27c026-2d60-47b4-2a9c-ded1818f21b5#34067-9",
+       "moiety": "PARICALCITOL",
+       "class": "vitD",
+       "loinc": "34067-9",
+       "cos": 0.3277,
+       "rank": 1155
+      },
+      {
+       "source_id": "DailyMed:1b27c026-2d60-47b4-2a9c-ded1818f21b5#34068-7",
+       "moiety": "PARICALCITOL",
+       "class": "vitD",
+       "loinc": "34068-7",
+       "cos": 0.3119,
+       "rank": 1407
+      },
+      {
+       "source_id": "DailyMed:6b0e60bb-0e9a-45a7-8f92-a43d939f8deb#34067-9",
+       "moiety": "CALCIUM ACETATE",
+       "class": "calcium",
+       "loinc": "34067-9",
+       "cos": 0.2933,
+       "rank": 1744
+      },
+      {
+       "source_id": "DailyMed:6b0e60bb-0e9a-45a7-8f92-a43d939f8deb#34068-7",
+       "moiety": "CALCIUM ACETATE",
+       "class": "calcium",
+       "loinc": "34068-7",
+       "cos": 0.2841,
+       "rank": 1921
+      },
+      {
+       "source_id": "DailyMed:a1567da9-af74-4afd-9ac5-8b53ec5d7cbf#34070-3",
+       "moiety": "CALCITRIOL",
+       "class": "vitD",
+       "loinc": "34070-3",
+       "cos": 0.2554,
+       "rank": 2704
+      },
+      {
+       "source_id": "DailyMed:a1567da9-af74-4afd-9ac5-8b53ec5d7cbf#34067-9",
+       "moiety": "CALCITRIOL",
+       "class": "vitD",
+       "loinc": "34067-9",
+       "cos": 0.2514,
+       "rank": 2812
+      },
+      {
+       "source_id": "DailyMed:c22944b8-8733-4689-be0c-f320467f79ea#34067-9",
+       "moiety": "CALCIUM CARBONATE",
+       "class": "calcium",
+       "loinc": "34067-9",
+       "cos": 0.2108,
+       "rank": 3688
+      },
+      {
+       "source_id": "DailyMed:f823cb3a-607c-4272-a0c1-da823dabd8e9#34068-7",
+       "moiety": "CHOLECALCIFEROL",
+       "class": "vitD",
+       "loinc": "34068-7",
+       "cos": 0.2016,
+       "rank": 3840
+      },
+      {
+       "source_id": "DailyMed:c22944b8-8733-4689-be0c-f320467f79ea#34068-7",
+       "moiety": "CALCIUM CARBONATE",
+       "class": "calcium",
+       "loinc": "34068-7",
+       "cos": 0.1904,
+       "rank": 4034
+      },
+      {
+       "source_id": "DailyMed:a1567da9-af74-4afd-9ac5-8b53ec5d7cbf#34068-7",
+       "moiety": "CALCITRIOL",
+       "class": "vitD",
+       "loinc": "34068-7",
+       "cos": 0.1624,
+       "rank": 4321
+      }
+     ]
+    },
+    {
+     "query": "antihypertensive agents calcium supplements pharmacology",
+     "n_above_0.6": 0,
+     "top5": [
+      {
+       "source_id": "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7",
+       "title": "Calcium Chloride (CALCIUM CHLORIDE) — Drug Interactions",
+       "cos": 0.5331
+      },
+      {
+       "source_id": "DailyMed:e6d531ec-fcdc-49f6-b0c4-878d3952827f#34073-7",
+       "title": "Calcium Gluconate in Sodium Chloride (Calcium Gluconate) — Drug Interactions",
+       "cos": 0.5291
+      },
+      {
+       "source_id": "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34073-7",
+       "title": "Hydrochlorothiazide (Hydrochlorothiazide) — Drug Interactions",
+       "cos": 0.5226
+      },
+      {
+       "source_id": "DailyMed:8a7002e7-e01f-43f9-e053-2a95a90a7191#34067-9",
+       "title": "VERAPAMIL HCL (VERAPAMIL HCL) — Indications and Usage",
+       "cos": 0.5206
+      },
+      {
+       "source_id": "DailyMed:4c635f60-7868-46d5-b932-d5cf8fc84432#34073-7",
+       "title": "Calcium Gluconate (Calcium Gluconate) — Drug Interactions",
+       "cos": 0.5125
+      }
+     ],
+     "watch": [
+      {
+       "source_id": "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7",
+       "moiety": "CALCIUM CHLORIDE DIHYDRATE",
+       "class": "calcium",
+       "loinc": "34073-7",
+       "cos": 0.5331,
+       "rank": 0
+      },
+      {
+       "source_id": "DailyMed:e6d531ec-fcdc-49f6-b0c4-878d3952827f#34073-7",
+       "moiety": "CALCIUM GLUCONATE",
+       "class": "calcium",
+       "loinc": "34073-7",
+       "cos": 0.5291,
+       "rank": 1
+      },
+      {
+       "source_id": "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34073-7",
+       "moiety": "HYDROCHLOROTHIAZIDE",
+       "class": "thiazide",
+       "loinc": "34073-7",
+       "cos": 0.5226,
+       "rank": 2
+      },
+      {
+       "source_id": "DailyMed:8a7002e7-e01f-43f9-e053-2a95a90a7191#34067-9",
+       "moiety": "VERAPAMIL HCL",
+       "class": "ccb",
+       "loinc": "34067-9",
+       "cos": 0.5206,
+       "rank": 3
+      },
+      {
+       "source_id": "DailyMed:4c635f60-7868-46d5-b932-d5cf8fc84432#34073-7",
+       "moiety": "CALCIUM",
+       "class": "calcium",
+       "loinc": "34073-7",
+       "cos": 0.5125,
+       "rank": 4
+      },
+      {
+       "source_id": "DailyMed:abd6a2ca-40c2-485c-bc53-db1c652505ed#34067-9",
+       "moiety": "AMLODIPINE",
+       "class": "ccb",
+       "loinc": "34067-9",
+       "cos": 0.4926,
+       "rank": 5
+      },
+      {
+       "source_id": "DailyMed:8ebcb33c-f43b-4b36-9f94-9774b2a59e06#34067-9",
+       "moiety": "NIFEDIPINE",
+       "class": "ccb",
+       "loinc": "34067-9",
+       "cos": 0.4854,
+       "rank": 10
+      },
+      {
+       "source_id": "DailyMed:1042fa13-e6af-46b9-8008-6c941f0978b1#34068-7",
+       "moiety": "DILTIAZEM",
+       "class": "ccb",
+       "loinc": "34068-7",
+       "cos": 0.4703,
+       "rank": 14
+      },
+      {
+       "source_id": "DailyMed:6b0e60bb-0e9a-45a7-8f92-a43d939f8deb#34070-3",
+       "moiety": "CALCIUM ACETATE",
+       "class": "calcium",
+       "loinc": "34070-3",
+       "cos": 0.4692,
+       "rank": 15
+      },
+      {
+       "source_id": "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#43685-7",
+       "moiety": "CALCIUM CHLORIDE DIHYDRATE",
+       "class": "calcium",
+       "loinc": "43685-7",
+       "cos": 0.4598,
+       "rank": 22
+      },
+      {
+       "source_id": "DailyMed:6a643c56-794a-4289-8390-5d76fa2709b3#34073-7",
+       "moiety": "INDAPAMIDE",
+       "class": "thiazide",
+       "loinc": "34073-7",
+       "cos": 0.4595,
+       "rank": 24
+      },
+      {
+       "source_id": "DailyMed:8ebcb33c-f43b-4b36-9f94-9774b2a59e06#34073-7",
+       "moiety": "NIFEDIPINE",
+       "class": "ccb",
+       "loinc": "34073-7",
+       "cos": 0.4531,
+       "rank": 28
+      },
+      {
+       "source_id": "DailyMed:e6d531ec-fcdc-49f6-b0c4-878d3952827f#43685-7",
+       "moiety": "CALCIUM GLUCONATE",
+       "class": "calcium",
+       "loinc": "43685-7",
+       "cos": 0.4515,
+       "rank": 30
+      },
+      {
+       "source_id": "DailyMed:58935d94-5bf1-4065-b8b5-ac61292436a7#34073-7",
+       "moiety": "METOLAZONE",
+       "class": "thiazide",
+       "loinc": "34073-7",
+       "cos": 0.4487,
+       "rank": 33
+      },
+      {
+       "source_id": "DailyMed:1b27c026-2d60-47b4-2a9c-ded1818f21b5#43685-7",
+       "moiety": "PARICALCITOL",
+       "class": "vitD",
+       "loinc": "43685-7",
+       "cos": 0.4463,
+       "rank": 39
+      },
+      {
+       "source_id": "DailyMed:4c635f60-7868-46d5-b932-d5cf8fc84432#43685-7",
+       "moiety": "CALCIUM",
+       "class": "calcium",
+       "loinc": "43685-7",
+       "cos": 0.4427,
+       "rank": 49
+      },
+      {
+       "source_id": "DailyMed:abd6a2ca-40c2-485c-bc53-db1c652505ed#34073-7",
+       "moiety": "AMLODIPINE",
+       "class": "ccb",
+       "loinc": "34073-7",
+       "cos": 0.4423,
+       "rank": 50
+      },
+      {
+       "source_id": "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34068-7",
+       "moiety": "CALCIUM CHLORIDE DIHYDRATE",
+       "class": "calcium",
+       "loinc": "34068-7",
+       "cos": 0.4408,
+       "rank": 56
+      },
+      {
+       "source_id": "DailyMed:1042fa13-e6af-46b9-8008-6c941f0978b1#34073-7",
+       "moiety": "DILTIAZEM",
+       "class": "ccb",
+       "loinc": "34073-7",
+       "cos": 0.4369,
+       "rank": 61
+      },
+      {
+       "source_id": "DailyMed:abd6a2ca-40c2-485c-bc53-db1c652505ed#43685-7",
+       "moiety": "AMLODIPINE",
+       "class": "ccb",
+       "loinc": "43685-7",
+       "cos": 0.4335,
+       "rank": 66
+      },
+      {
+       "source_id": "DailyMed:b951455c-c235-4e23-9e21-08672d108726#34073-7",
+       "moiety": "FELODIPINE",
+       "class": "ccb",
+       "loinc": "34073-7",
+       "cos": 0.4317,
+       "rank": 70
+      },
+      {
+       "source_id": "DailyMed:a1567da9-af74-4afd-9ac5-8b53ec5d7cbf#43685-7",
+       "moiety": "CALCITRIOL",
+       "class": "vitD",
+       "loinc": "43685-7",
+       "cos": 0.4255,
+       "rank": 79
+      },
+      {
+       "source_id": "DailyMed:8ebcb33c-f43b-4b36-9f94-9774b2a59e06#34068-7",
+       "moiety": "NIFEDIPINE",
+       "class": "ccb",
+       "loinc": "34068-7",
+       "cos": 0.4214,
+       "rank": 85
+      },
+      {
+       "source_id": "DailyMed:abd6a2ca-40c2-485c-bc53-db1c652505ed#34068-7",
+       "moiety": "AMLODIPINE",
+       "class": "ccb",
+       "loinc": "34068-7",
+       "cos": 0.4201,
+       "rank": 89
+      },
+      {
+       "source_id": "DailyMed:4c635f60-7868-46d5-b932-d5cf8fc84432#34068-7",
+       "moiety": "CALCIUM",
+       "class": "calcium",
+       "loinc": "34068-7",
+       "cos": 0.419,
+       "rank": 91
+      },
+      {
+       "source_id": "DailyMed:1b27c026-2d60-47b4-2a9c-ded1818f21b5#34073-7",
+       "moiety": "PARICALCITOL",
+       "class": "vitD",
+       "loinc": "34073-7",
+       "cos": 0.419,
+       "rank": 90
+      },
+      {
+       "source_id": "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34067-9",
+       "moiety": "CALCIUM CHLORIDE DIHYDRATE",
+       "class": "calcium",
+       "loinc": "34067-9",
+       "cos": 0.4186,
+       "rank": 93
+      },
+      {
+       "source_id": "DailyMed:e6d531ec-fcdc-49f6-b0c4-878d3952827f#34068-7",
+       "moiety": "CALCIUM GLUCONATE",
+       "class": "calcium",
+       "loinc": "34068-7",
+       "cos": 0.4182,
+       "rank": 95
+      },
+      {
+       "source_id": "DailyMed:8a7002e7-e01f-43f9-e053-2a95a90a7191#34068-7",
+       "moiety": "VERAPAMIL HCL",
+       "class": "ccb",
+       "loinc": "34068-7",
+       "cos": 0.4126,
+       "rank": 111
+      },
+      {
+       "source_id": "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34068-7",
+       "moiety": "HYDROCHLOROTHIAZIDE",
+       "class": "thiazide",
+       "loinc": "34068-7",
+       "cos": 0.411,
+       "rank": 116
+      },
+      {
+       "source_id": "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34067-9",
+       "moiety": "HYDROCHLOROTHIAZIDE",
+       "class": "thiazide",
+       "loinc": "34067-9",
+       "cos": 0.4098,
+       "rank": 122
+      },
+      {
+       "source_id": "DailyMed:b951455c-c235-4e23-9e21-08672d108726#34067-9",
+       "moiety": "FELODIPINE",
+       "class": "ccb",
+       "loinc": "34067-9",
+       "cos": 0.4041,
+       "rank": 138
+      },
+      {
+       "source_id": "DailyMed:e6d531ec-fcdc-49f6-b0c4-878d3952827f#34067-9",
+       "moiety": "CALCIUM GLUCONATE",
+       "class": "calcium",
+       "loinc": "34067-9",
+       "cos": 0.4035,
+       "rank": 142
+      },
+      {
+       "source_id": "DailyMed:8a7002e7-e01f-43f9-e053-2a95a90a7191#34070-3",
+       "moiety": "VERAPAMIL HCL",
+       "class": "ccb",
+       "loinc": "34070-3",
+       "cos": 0.394,
+       "rank": 165
+      },
+      {
+       "source_id": "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34070-3",
+       "moiety": "CALCIUM CHLORIDE DIHYDRATE",
+       "class": "calcium",
+       "loinc": "34070-3",
+       "cos": 0.3888,
+       "rank": 193
+      },
+      {
+       "source_id": "DailyMed:b951455c-c235-4e23-9e21-08672d108726#34068-7",
+       "moiety": "FELODIPINE",
+       "class": "ccb",
+       "loinc": "34068-7",
+       "cos": 0.3879,
+       "rank": 198
+      },
+      {
+       "source_id": "DailyMed:4c635f60-7868-46d5-b932-d5cf8fc84432#34067-9",
+       "moiety": "CALCIUM",
+       "class": "calcium",
+       "loinc": "34067-9",
+       "cos": 0.3839,
+       "rank": 212
+      },
+      {
+       "source_id": "DailyMed:abd6a2ca-40c2-485c-bc53-db1c652505ed#34070-3",
+       "moiety": "AMLODIPINE",
+       "class": "ccb",
+       "loinc": "34070-3",
+       "cos": 0.3826,
+       "rank": 218
+      },
+      {
+       "source_id": "DailyMed:1042fa13-e6af-46b9-8008-6c941f0978b1#34067-9",
+       "moiety": "DILTIAZEM",
+       "class": "ccb",
+       "loinc": "34067-9",
+       "cos": 0.3811,
+       "rank": 230
+      },
+      {
+       "source_id": "DailyMed:6a643c56-794a-4289-8390-5d76fa2709b3#34068-7",
+       "moiety": "INDAPAMIDE",
+       "class": "thiazide",
+       "loinc": "34068-7",
+       "cos": 0.3804,
+       "rank": 236
+      },
+      {
+       "source_id": "DailyMed:e6d531ec-fcdc-49f6-b0c4-878d3952827f#34070-3",
+       "moiety": "CALCIUM GLUCONATE",
+       "class": "calcium",
+       "loinc": "34070-3",
+       "cos": 0.3794,
+       "rank": 242
+      },
+      {
+       "source_id": "DailyMed:b951455c-c235-4e23-9e21-08672d108726#34070-3",
+       "moiety": "FELODIPINE",
+       "class": "ccb",
+       "loinc": "34070-3",
+       "cos": 0.3772,
+       "rank": 253
+      },
+      {
+       "source_id": "DailyMed:1b27c026-2d60-47b4-2a9c-ded1818f21b5#34070-3",
+       "moiety": "PARICALCITOL",
+       "class": "vitD",
+       "loinc": "34070-3",
+       "cos": 0.3746,
+       "rank": 267
+      },
+      {
+       "source_id": "DailyMed:4c635f60-7868-46d5-b932-d5cf8fc84432#34070-3",
+       "moiety": "CALCIUM",
+       "class": "calcium",
+       "loinc": "34070-3",
+       "cos": 0.3712,
+       "rank": 286
+      },
+      {
+       "source_id": "DailyMed:8ebcb33c-f43b-4b36-9f94-9774b2a59e06#34070-3",
+       "moiety": "NIFEDIPINE",
+       "class": "ccb",
+       "loinc": "34070-3",
+       "cos": 0.3694,
+       "rank": 299
+      },
+      {
+       "source_id": "DailyMed:58935d94-5bf1-4065-b8b5-ac61292436a7#34068-7",
+       "moiety": "METOLAZONE",
+       "class": "thiazide",
+       "loinc": "34068-7",
+       "cos": 0.3682,
+       "rank": 306
+      },
+      {
+       "source_id": "DailyMed:58935d94-5bf1-4065-b8b5-ac61292436a7#34067-9",
+       "moiety": "METOLAZONE",
+       "class": "thiazide",
+       "loinc": "34067-9",
+       "cos": 0.3569,
+       "rank": 382
+      },
+      {
+       "source_id": "DailyMed:1b27c026-2d60-47b4-2a9c-ded1818f21b5#34068-7",
+       "moiety": "PARICALCITOL",
+       "class": "vitD",
+       "loinc": "34068-7",
+       "cos": 0.3552,
+       "rank": 396
+      },
+      {
+       "source_id": "DailyMed:1b27c026-2d60-47b4-2a9c-ded1818f21b5#34067-9",
+       "moiety": "PARICALCITOL",
+       "class": "vitD",
+       "loinc": "34067-9",
+       "cos": 0.3529,
+       "rank": 412
+      },
+      {
+       "source_id": "DailyMed:6b0e60bb-0e9a-45a7-8f92-a43d939f8deb#34067-9",
+       "moiety": "CALCIUM ACETATE",
+       "class": "calcium",
+       "loinc": "34067-9",
+       "cos": 0.3493,
+       "rank": 445
+      },
+      {
+       "source_id": "DailyMed:6b0e60bb-0e9a-45a7-8f92-a43d939f8deb#34068-7",
+       "moiety": "CALCIUM ACETATE",
+       "class": "calcium",
+       "loinc": "34068-7",
+       "cos": 0.3447,
+       "rank": 484
+      },
+      {
+       "source_id": "DailyMed:1042fa13-e6af-46b9-8008-6c941f0978b1#34070-3",
+       "moiety": "DILTIAZEM",
+       "class": "ccb",
+       "loinc": "34070-3",
+       "cos": 0.3382,
+       "rank": 553
+      },
+      {
+       "source_id": "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34070-3",
+       "moiety": "HYDROCHLOROTHIAZIDE",
+       "class": "thiazide",
+       "loinc": "34070-3",
+       "cos": 0.3244,
+       "rank": 707
+      },
+      {
+       "source_id": "DailyMed:6a643c56-794a-4289-8390-5d76fa2709b3#34070-3",
+       "moiety": "INDAPAMIDE",
+       "class": "thiazide",
+       "loinc": "34070-3",
+       "cos": 0.3011,
+       "rank": 1082
+      },
+      {
+       "source_id": "DailyMed:a1567da9-af74-4afd-9ac5-8b53ec5d7cbf#34067-9",
+       "moiety": "CALCITRIOL",
+       "class": "vitD",
+       "loinc": "34067-9",
+       "cos": 0.2992,
+       "rank": 1117
+      },
+      {
+       "source_id": "DailyMed:58935d94-5bf1-4065-b8b5-ac61292436a7#34070-3",
+       "moiety": "METOLAZONE",
+       "class": "thiazide",
+       "loinc": "34070-3",
+       "cos": 0.2772,
+       "rank": 1614
+      },
+      {
+       "source_id": "DailyMed:a1567da9-af74-4afd-9ac5-8b53ec5d7cbf#34070-3",
+       "moiety": "CALCITRIOL",
+       "class": "vitD",
+       "loinc": "34070-3",
+       "cos": 0.2367,
+       "rank": 2894
+      },
+      {
+       "source_id": "DailyMed:f823cb3a-607c-4272-a0c1-da823dabd8e9#34068-7",
+       "moiety": "CHOLECALCIFEROL",
+       "class": "vitD",
+       "loinc": "34068-7",
+       "cos": 0.2202,
+       "rank": 3352
+      },
+      {
+       "source_id": "DailyMed:c22944b8-8733-4689-be0c-f320467f79ea#34067-9",
+       "moiety": "CALCIUM CARBONATE",
+       "class": "calcium",
+       "loinc": "34067-9",
+       "cos": 0.2171,
+       "rank": 3437
+      },
+      {
+       "source_id": "DailyMed:c22944b8-8733-4689-be0c-f320467f79ea#34068-7",
+       "moiety": "CALCIUM CARBONATE",
+       "class": "calcium",
+       "loinc": "34068-7",
+       "cos": 0.2102,
+       "rank": 3588
+      },
+      {
+       "source_id": "DailyMed:a1567da9-af74-4afd-9ac5-8b53ec5d7cbf#34068-7",
+       "moiety": "CALCITRIOL",
+       "class": "vitD",
+       "loinc": "34068-7",
+       "cos": 0.1847,
+       "rank": 4035
+      }
+     ]
+    },
+    {
+     "query": "Can elderly patients take BP meds with calcium?",
+     "n_above_0.6": 0,
+     "top5": [
+      {
+       "source_id": "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7",
+       "title": "Calcium Chloride (CALCIUM CHLORIDE) — Drug Interactions",
+       "cos": 0.5101
+      },
+      {
+       "source_id": "DailyMed:cd270093-c6a8-4596-a4ab-e6aa0a2c8a0c#43685-7",
+       "title": "PARSABIV (etelcalcetide) — Warnings and Precautions",
+       "cos": 0.5004
+      },
+      {
+       "source_id": "DailyMed:6b0e60bb-0e9a-45a7-8f92-a43d939f8deb#34070-3",
+       "title": "Phoslo (Calcium Acetate) — Contraindications",
+       "cos": 0.4853
+      },
+      {
+       "source_id": "DailyMed:45028573-13c4-4c8b-ae62-6c75bba97c81#43685-7",
+       "title": "Sensipar (cinacalcet hydrochloride) — Warnings and Precautions",
+       "cos": 0.4838
+      },
+      {
+       "source_id": "DailyMed:e6d531ec-fcdc-49f6-b0c4-878d3952827f#34073-7",
+       "title": "Calcium Gluconate in Sodium Chloride (Calcium Gluconate) — Drug Interactions",
+       "cos": 0.4798
+      }
+     ],
+     "watch": [
+      {
+       "source_id": "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7",
+       "moiety": "CALCIUM CHLORIDE DIHYDRATE",
+       "class": "calcium",
+       "loinc": "34073-7",
+       "cos": 0.5101,
+       "rank": 0
+      },
+      {
+       "source_id": "DailyMed:6b0e60bb-0e9a-45a7-8f92-a43d939f8deb#34070-3",
+       "moiety": "CALCIUM ACETATE",
+       "class": "calcium",
+       "loinc": "34070-3",
+       "cos": 0.4853,
+       "rank": 2
+      },
+      {
+       "source_id": "DailyMed:e6d531ec-fcdc-49f6-b0c4-878d3952827f#34073-7",
+       "moiety": "CALCIUM GLUCONATE",
+       "class": "calcium",
+       "loinc": "34073-7",
+       "cos": 0.4798,
+       "rank": 4
+      },
+      {
+       "source_id": "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#43685-7",
+       "moiety": "CALCIUM CHLORIDE DIHYDRATE",
+       "class": "calcium",
+       "loinc": "43685-7",
+       "cos": 0.4697,
+       "rank": 10
+      },
+      {
+       "source_id": "DailyMed:4c635f60-7868-46d5-b932-d5cf8fc84432#34073-7",
+       "moiety": "CALCIUM",
+       "class": "calcium",
+       "loinc": "34073-7",
+       "cos": 0.4675,
+       "rank": 12
+      },
+      {
+       "source_id": "DailyMed:8a7002e7-e01f-43f9-e053-2a95a90a7191#34067-9",
+       "moiety": "VERAPAMIL HCL",
+       "class": "ccb",
+       "loinc": "34067-9",
+       "cos": 0.4616,
+       "rank": 15
+      },
+      {
+       "source_id": "DailyMed:e6d531ec-fcdc-49f6-b0c4-878d3952827f#43685-7",
+       "moiety": "CALCIUM GLUCONATE",
+       "class": "calcium",
+       "loinc": "43685-7",
+       "cos": 0.459,
+       "rank": 20
+      },
+      {
+       "source_id": "DailyMed:1042fa13-e6af-46b9-8008-6c941f0978b1#34073-7",
+       "moiety": "DILTIAZEM",
+       "class": "ccb",
+       "loinc": "34073-7",
+       "cos": 0.4584,
+       "rank": 22
+      },
+      {
+       "source_id": "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34073-7",
+       "moiety": "HYDROCHLOROTHIAZIDE",
+       "class": "thiazide",
+       "loinc": "34073-7",
+       "cos": 0.4571,
+       "rank": 25
+      },
+      {
+       "source_id": "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34068-7",
+       "moiety": "CALCIUM CHLORIDE DIHYDRATE",
+       "class": "calcium",
+       "loinc": "34068-7",
+       "cos": 0.4497,
+       "rank": 32
+      },
+      {
+       "source_id": "DailyMed:8ebcb33c-f43b-4b36-9f94-9774b2a59e06#34067-9",
+       "moiety": "NIFEDIPINE",
+       "class": "ccb",
+       "loinc": "34067-9",
+       "cos": 0.4424,
+       "rank": 39
+      },
+      {
+       "source_id": "DailyMed:4c635f60-7868-46d5-b932-d5cf8fc84432#43685-7",
+       "moiety": "CALCIUM",
+       "class": "calcium",
+       "loinc": "43685-7",
+       "cos": 0.4423,
+       "rank": 40
+      },
+      {
+       "source_id": "DailyMed:8a7002e7-e01f-43f9-e053-2a95a90a7191#34068-7",
+       "moiety": "VERAPAMIL HCL",
+       "class": "ccb",
+       "loinc": "34068-7",
+       "cos": 0.4384,
+       "rank": 52
+      },
+      {
+       "source_id": "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34070-3",
+       "moiety": "CALCIUM CHLORIDE DIHYDRATE",
+       "class": "calcium",
+       "loinc": "34070-3",
+       "cos": 0.4361,
+       "rank": 54
+      },
+      {
+       "source_id": "DailyMed:1b27c026-2d60-47b4-2a9c-ded1818f21b5#43685-7",
+       "moiety": "PARICALCITOL",
+       "class": "vitD",
+       "loinc": "43685-7",
+       "cos": 0.4354,
+       "rank": 56
+      },
+      {
+       "source_id": "DailyMed:8ebcb33c-f43b-4b36-9f94-9774b2a59e06#34068-7",
+       "moiety": "NIFEDIPINE",
+       "class": "ccb",
+       "loinc": "34068-7",
+       "cos": 0.4337,
+       "rank": 64
+      },
+      {
+       "source_id": "DailyMed:1b27c026-2d60-47b4-2a9c-ded1818f21b5#34073-7",
+       "moiety": "PARICALCITOL",
+       "class": "vitD",
+       "loinc": "34073-7",
+       "cos": 0.4267,
+       "rank": 74
+      },
+      {
+       "source_id": "DailyMed:b951455c-c235-4e23-9e21-08672d108726#34068-7",
+       "moiety": "FELODIPINE",
+       "class": "ccb",
+       "loinc": "34068-7",
+       "cos": 0.4258,
+       "rank": 79
+      },
+      {
+       "source_id": "DailyMed:abd6a2ca-40c2-485c-bc53-db1c652505ed#43685-7",
+       "moiety": "AMLODIPINE",
+       "class": "ccb",
+       "loinc": "43685-7",
+       "cos": 0.4244,
+       "rank": 84
+      },
+      {
+       "source_id": "DailyMed:8ebcb33c-f43b-4b36-9f94-9774b2a59e06#34073-7",
+       "moiety": "NIFEDIPINE",
+       "class": "ccb",
+       "loinc": "34073-7",
+       "cos": 0.4243,
+       "rank": 85
+      },
+      {
+       "source_id": "DailyMed:4c635f60-7868-46d5-b932-d5cf8fc84432#34068-7",
+       "moiety": "CALCIUM",
+       "class": "calcium",
+       "loinc": "34068-7",
+       "cos": 0.423,
+       "rank": 88
+      },
+      {
+       "source_id": "DailyMed:8a7002e7-e01f-43f9-e053-2a95a90a7191#34070-3",
+       "moiety": "VERAPAMIL HCL",
+       "class": "ccb",
+       "loinc": "34070-3",
+       "cos": 0.4227,
+       "rank": 92
+      },
+      {
+       "source_id": "DailyMed:1042fa13-e6af-46b9-8008-6c941f0978b1#34068-7",
+       "moiety": "DILTIAZEM",
+       "class": "ccb",
+       "loinc": "34068-7",
+       "cos": 0.4214,
+       "rank": 96
+      },
+      {
+       "source_id": "DailyMed:58935d94-5bf1-4065-b8b5-ac61292436a7#34073-7",
+       "moiety": "METOLAZONE",
+       "class": "thiazide",
+       "loinc": "34073-7",
+       "cos": 0.4205,
+       "rank": 97
+      },
+      {
+       "source_id": "DailyMed:e6d531ec-fcdc-49f6-b0c4-878d3952827f#34068-7",
+       "moiety": "CALCIUM GLUCONATE",
+       "class": "calcium",
+       "loinc": "34068-7",
+       "cos": 0.4152,
+       "rank": 106
+      },
+      {
+       "source_id": "DailyMed:abd6a2ca-40c2-485c-bc53-db1c652505ed#34068-7",
+       "moiety": "AMLODIPINE",
+       "class": "ccb",
+       "loinc": "34068-7",
+       "cos": 0.4136,
+       "rank": 113
+      },
+      {
+       "source_id": "DailyMed:abd6a2ca-40c2-485c-bc53-db1c652505ed#34067-9",
+       "moiety": "AMLODIPINE",
+       "class": "ccb",
+       "loinc": "34067-9",
+       "cos": 0.411,
+       "rank": 122
+      },
+      {
+       "source_id": "DailyMed:abd6a2ca-40c2-485c-bc53-db1c652505ed#34073-7",
+       "moiety": "AMLODIPINE",
+       "class": "ccb",
+       "loinc": "34073-7",
+       "cos": 0.4059,
+       "rank": 137
+      },
+      {
+       "source_id": "DailyMed:b951455c-c235-4e23-9e21-08672d108726#34073-7",
+       "moiety": "FELODIPINE",
+       "class": "ccb",
+       "loinc": "34073-7",
+       "cos": 0.4017,
+       "rank": 150
+      },
+      {
+       "source_id": "DailyMed:a1567da9-af74-4afd-9ac5-8b53ec5d7cbf#43685-7",
+       "moiety": "CALCITRIOL",
+       "class": "vitD",
+       "loinc": "43685-7",
+       "cos": 0.3868,
+       "rank": 235
+      },
+      {
+       "source_id": "DailyMed:e6d531ec-fcdc-49f6-b0c4-878d3952827f#34070-3",
+       "moiety": "CALCIUM GLUCONATE",
+       "class": "calcium",
+       "loinc": "34070-3",
+       "cos": 0.3852,
+       "rank": 249
+      },
+      {
+       "source_id": "DailyMed:6a643c56-794a-4289-8390-5d76fa2709b3#34068-7",
+       "moiety": "INDAPAMIDE",
+       "class": "thiazide",
+       "loinc": "34068-7",
+       "cos": 0.3838,
+       "rank": 268
+      },
+      {
+       "source_id": "DailyMed:6a643c56-794a-4289-8390-5d76fa2709b3#34073-7",
+       "moiety": "INDAPAMIDE",
+       "class": "thiazide",
+       "loinc": "34073-7",
+       "cos": 0.3838,
+       "rank": 267
+      },
+      {
+       "source_id": "DailyMed:4c635f60-7868-46d5-b932-d5cf8fc84432#34070-3",
+       "moiety": "CALCIUM",
+       "class": "calcium",
+       "loinc": "34070-3",
+       "cos": 0.3825,
+       "rank": 273
+      },
+      {
+       "source_id": "DailyMed:e6d531ec-fcdc-49f6-b0c4-878d3952827f#34067-9",
+       "moiety": "CALCIUM GLUCONATE",
+       "class": "calcium",
+       "loinc": "34067-9",
+       "cos": 0.3756,
+       "rank": 330
+      },
+      {
+       "source_id": "DailyMed:1b27c026-2d60-47b4-2a9c-ded1818f21b5#34070-3",
+       "moiety": "PARICALCITOL",
+       "class": "vitD",
+       "loinc": "34070-3",
+       "cos": 0.3751,
+       "rank": 336
+      },
+      {
+       "source_id": "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34067-9",
+       "moiety": "CALCIUM CHLORIDE DIHYDRATE",
+       "class": "calcium",
+       "loinc": "34067-9",
+       "cos": 0.3683,
+       "rank": 395
+      },
+      {
+       "source_id": "DailyMed:6b0e60bb-0e9a-45a7-8f92-a43d939f8deb#34068-7",
+       "moiety": "CALCIUM ACETATE",
+       "class": "calcium",
+       "loinc": "34068-7",
+       "cos": 0.3616,
+       "rank": 469
+      },
+      {
+       "source_id": "DailyMed:1b27c026-2d60-47b4-2a9c-ded1818f21b5#34067-9",
+       "moiety": "PARICALCITOL",
+       "class": "vitD",
+       "loinc": "34067-9",
+       "cos": 0.3611,
+       "rank": 479
+      },
+      {
+       "source_id": "DailyMed:1b27c026-2d60-47b4-2a9c-ded1818f21b5#34068-7",
+       "moiety": "PARICALCITOL",
+       "class": "vitD",
+       "loinc": "34068-7",
+       "cos": 0.359,
+       "rank": 508
+      },
+      {
+       "source_id": "DailyMed:58935d94-5bf1-4065-b8b5-ac61292436a7#34068-7",
+       "moiety": "METOLAZONE",
+       "class": "thiazide",
+       "loinc": "34068-7",
+       "cos": 0.3534,
+       "rank": 573
+      },
+      {
+       "source_id": "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34067-9",
+       "moiety": "HYDROCHLOROTHIAZIDE",
+       "class": "thiazide",
+       "loinc": "34067-9",
+       "cos": 0.3531,
+       "rank": 580
+      },
+      {
+       "source_id": "DailyMed:b951455c-c235-4e23-9e21-08672d108726#34067-9",
+       "moiety": "FELODIPINE",
+       "class": "ccb",
+       "loinc": "34067-9",
+       "cos": 0.353,
+       "rank": 581
+      },
+      {
+       "source_id": "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34068-7",
+       "moiety": "HYDROCHLOROTHIAZIDE",
+       "class": "thiazide",
+       "loinc": "34068-7",
+       "cos": 0.3499,
+       "rank": 630
+      },
+      {
+       "source_id": "DailyMed:b951455c-c235-4e23-9e21-08672d108726#34070-3",
+       "moiety": "FELODIPINE",
+       "class": "ccb",
+       "loinc": "34070-3",
+       "cos": 0.3473,
+       "rank": 670
+      },
+      {
+       "source_id": "DailyMed:abd6a2ca-40c2-485c-bc53-db1c652505ed#34070-3",
+       "moiety": "AMLODIPINE",
+       "class": "ccb",
+       "loinc": "34070-3",
+       "cos": 0.3456,
+       "rank": 698
+      },
+      {
+       "source_id": "DailyMed:4c635f60-7868-46d5-b932-d5cf8fc84432#34067-9",
+       "moiety": "CALCIUM",
+       "class": "calcium",
+       "loinc": "34067-9",
+       "cos": 0.3454,
+       "rank": 699
+      },
+      {
+       "source_id": "DailyMed:1042fa13-e6af-46b9-8008-6c941f0978b1#34070-3",
+       "moiety": "DILTIAZEM",
+       "class": "ccb",
+       "loinc": "34070-3",
+       "cos": 0.3449,
+       "rank": 706
+      },
+      {
+       "source_id": "DailyMed:58935d94-5bf1-4065-b8b5-ac61292436a7#34067-9",
+       "moiety": "METOLAZONE",
+       "class": "thiazide",
+       "loinc": "34067-9",
+       "cos": 0.3395,
+       "rank": 793
+      },
+      {
+       "source_id": "DailyMed:6b0e60bb-0e9a-45a7-8f92-a43d939f8deb#34067-9",
+       "moiety": "CALCIUM ACETATE",
+       "class": "calcium",
+       "loinc": "34067-9",
+       "cos": 0.3371,
+       "rank": 842
+      },
+      {
+       "source_id": "DailyMed:8ebcb33c-f43b-4b36-9f94-9774b2a59e06#34070-3",
+       "moiety": "NIFEDIPINE",
+       "class": "ccb",
+       "loinc": "34070-3",
+       "cos": 0.3336,
+       "rank": 911
+      },
+      {
+       "source_id": "DailyMed:1042fa13-e6af-46b9-8008-6c941f0978b1#34067-9",
+       "moiety": "DILTIAZEM",
+       "class": "ccb",
+       "loinc": "34067-9",
+       "cos": 0.3272,
+       "rank": 1036
+      },
+      {
+       "source_id": "DailyMed:58935d94-5bf1-4065-b8b5-ac61292436a7#34070-3",
+       "moiety": "METOLAZONE",
+       "class": "thiazide",
+       "loinc": "34070-3",
+       "cos": 0.3221,
+       "rank": 1134
+      },
+      {
+       "source_id": "DailyMed:6a643c56-794a-4289-8390-5d76fa2709b3#34070-3",
+       "moiety": "INDAPAMIDE",
+       "class": "thiazide",
+       "loinc": "34070-3",
+       "cos": 0.3109,
+       "rank": 1417
+      },
+      {
+       "source_id": "DailyMed:c22944b8-8733-4689-be0c-f320467f79ea#34068-7",
+       "moiety": "CALCIUM CARBONATE",
+       "class": "calcium",
+       "loinc": "34068-7",
+       "cos": 0.3049,
+       "rank": 1562
+      },
+      {
+       "source_id": "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34070-3",
+       "moiety": "HYDROCHLOROTHIAZIDE",
+       "class": "thiazide",
+       "loinc": "34070-3",
+       "cos": 0.2919,
+       "rank": 1874
+      },
+      {
+       "source_id": "DailyMed:a1567da9-af74-4afd-9ac5-8b53ec5d7cbf#34067-9",
+       "moiety": "CALCITRIOL",
+       "class": "vitD",
+       "loinc": "34067-9",
+       "cos": 0.2904,
+       "rank": 1907
+      },
+      {
+       "source_id": "DailyMed:a1567da9-af74-4afd-9ac5-8b53ec5d7cbf#34070-3",
+       "moiety": "CALCITRIOL",
+       "class": "vitD",
+       "loinc": "34070-3",
+       "cos": 0.2674,
+       "rank": 2679
+      },
+      {
+       "source_id": "DailyMed:f823cb3a-607c-4272-a0c1-da823dabd8e9#34068-7",
+       "moiety": "CHOLECALCIFEROL",
+       "class": "vitD",
+       "loinc": "34068-7",
+       "cos": 0.2301,
+       "rank": 3558
+      },
+      {
+       "source_id": "DailyMed:c22944b8-8733-4689-be0c-f320467f79ea#34067-9",
+       "moiety": "CALCIUM CARBONATE",
+       "class": "calcium",
+       "loinc": "34067-9",
+       "cos": 0.2064,
+       "rank": 3955
+      },
+      {
+       "source_id": "DailyMed:a1567da9-af74-4afd-9ac5-8b53ec5d7cbf#34068-7",
+       "moiety": "CALCITRIOL",
+       "class": "vitD",
+       "loinc": "34068-7",
+       "cos": 0.2002,
+       "rank": 4033
+      }
+     ]
+    },
+    {
+     "query": "hypertension treatment elderly calcium supplementation",
+     "n_above_0.6": 0,
+     "top5": [
+      {
+       "source_id": "DailyMed:8a7002e7-e01f-43f9-e053-2a95a90a7191#34067-9",
+       "title": "VERAPAMIL HCL (VERAPAMIL HCL) — Indications and Usage",
+       "cos": 0.4981
+      },
+      {
+       "source_id": "DailyMed:746db603-a6e1-4dc3-c2d8-92314419098c#34067-9",
+       "title": "TENORMIN (Atenolol) — Indications and Usage",
+       "cos": 0.4929
+      },
+      {
+       "source_id": "DailyMed:45028573-13c4-4c8b-ae62-6c75bba97c81#43685-7",
+       "title": "Sensipar (cinacalcet hydrochloride) — Warnings and Precautions",
+       "cos": 0.4731
+      },
+      {
+       "source_id": "DailyMed:746db603-a6e1-4dc3-c2d8-92314419098c#34068-7",
+       "title": "TENORMIN (Atenolol) — Dosage and Administration",
+       "cos": 0.4728
+      },
+      {
+       "source_id": "DailyMed:8ebcb33c-f43b-4b36-9f94-9774b2a59e06#34067-9",
+       "title": "Procardia (nifedipine) — Indications and Usage",
+       "cos": 0.4693
+      }
+     ],
+     "watch": [
+      {
+       "source_id": "DailyMed:8a7002e7-e01f-43f9-e053-2a95a90a7191#34067-9",
+       "moiety": "VERAPAMIL HCL",
+       "class": "ccb",
+       "loinc": "34067-9",
+       "cos": 0.4981,
+       "rank": 0
+      },
+      {
+       "source_id": "DailyMed:8ebcb33c-f43b-4b36-9f94-9774b2a59e06#34067-9",
+       "moiety": "NIFEDIPINE",
+       "class": "ccb",
+       "loinc": "34067-9",
+       "cos": 0.4693,
+       "rank": 4
+      },
+      {
+       "source_id": "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7",
+       "moiety": "CALCIUM CHLORIDE DIHYDRATE",
+       "class": "calcium",
+       "loinc": "34073-7",
+       "cos": 0.4607,
+       "rank": 7
+      },
+      {
+       "source_id": "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34068-7",
+       "moiety": "HYDROCHLOROTHIAZIDE",
+       "class": "thiazide",
+       "loinc": "34068-7",
+       "cos": 0.4603,
+       "rank": 8
+      },
+      {
+       "source_id": "DailyMed:abd6a2ca-40c2-485c-bc53-db1c652505ed#34067-9",
+       "moiety": "AMLODIPINE",
+       "class": "ccb",
+       "loinc": "34067-9",
+       "cos": 0.4533,
+       "rank": 17
+      },
+      {
+       "source_id": "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34068-7",
+       "moiety": "CALCIUM CHLORIDE DIHYDRATE",
+       "class": "calcium",
+       "loinc": "34068-7",
+       "cos": 0.4522,
+       "rank": 18
+      },
+      {
+       "source_id": "DailyMed:1b27c026-2d60-47b4-2a9c-ded1818f21b5#43685-7",
+       "moiety": "PARICALCITOL",
+       "class": "vitD",
+       "loinc": "43685-7",
+       "cos": 0.4491,
+       "rank": 21
+      },
+      {
+       "source_id": "DailyMed:e6d531ec-fcdc-49f6-b0c4-878d3952827f#34073-7",
+       "moiety": "CALCIUM GLUCONATE",
+       "class": "calcium",
+       "loinc": "34073-7",
+       "cos": 0.4479,
+       "rank": 22
+      },
+      {
+       "source_id": "DailyMed:8a7002e7-e01f-43f9-e053-2a95a90a7191#34068-7",
+       "moiety": "VERAPAMIL HCL",
+       "class": "ccb",
+       "loinc": "34068-7",
+       "cos": 0.444,
+       "rank": 29
+      },
+      {
+       "source_id": "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34067-9",
+       "moiety": "CALCIUM CHLORIDE DIHYDRATE",
+       "class": "calcium",
+       "loinc": "34067-9",
+       "cos": 0.4424,
+       "rank": 36
+      },
+      {
+       "source_id": "DailyMed:1042fa13-e6af-46b9-8008-6c941f0978b1#34068-7",
+       "moiety": "DILTIAZEM",
+       "class": "ccb",
+       "loinc": "34068-7",
+       "cos": 0.4423,
+       "rank": 37
+      },
+      {
+       "source_id": "DailyMed:4c635f60-7868-46d5-b932-d5cf8fc84432#34068-7",
+       "moiety": "CALCIUM",
+       "class": "calcium",
+       "loinc": "34068-7",
+       "cos": 0.4418,
+       "rank": 38
+      },
+      {
+       "source_id": "DailyMed:abd6a2ca-40c2-485c-bc53-db1c652505ed#34068-7",
+       "moiety": "AMLODIPINE",
+       "class": "ccb",
+       "loinc": "34068-7",
+       "cos": 0.4414,
+       "rank": 41
+      },
+      {
+       "source_id": "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#43685-7",
+       "moiety": "CALCIUM CHLORIDE DIHYDRATE",
+       "class": "calcium",
+       "loinc": "43685-7",
+       "cos": 0.4414,
+       "rank": 40
+      },
+      {
+       "source_id": "DailyMed:6b0e60bb-0e9a-45a7-8f92-a43d939f8deb#34070-3",
+       "moiety": "CALCIUM ACETATE",
+       "class": "calcium",
+       "loinc": "34070-3",
+       "cos": 0.4408,
+       "rank": 45
+      },
+      {
+       "source_id": "DailyMed:e6d531ec-fcdc-49f6-b0c4-878d3952827f#34068-7",
+       "moiety": "CALCIUM GLUCONATE",
+       "class": "calcium",
+       "loinc": "34068-7",
+       "cos": 0.4408,
+       "rank": 46
+      },
+      {
+       "source_id": "DailyMed:1042fa13-e6af-46b9-8008-6c941f0978b1#34073-7",
+       "moiety": "DILTIAZEM",
+       "class": "ccb",
+       "loinc": "34073-7",
+       "cos": 0.4408,
+       "rank": 44
+      },
+      {
+       "source_id": "DailyMed:b951455c-c235-4e23-9e21-08672d108726#34068-7",
+       "moiety": "FELODIPINE",
+       "class": "ccb",
+       "loinc": "34068-7",
+       "cos": 0.4341,
+       "rank": 56
+      },
+      {
+       "source_id": "DailyMed:4c635f60-7868-46d5-b932-d5cf8fc84432#34073-7",
+       "moiety": "CALCIUM",
+       "class": "calcium",
+       "loinc": "34073-7",
+       "cos": 0.4291,
+       "rank": 59
+      },
+      {
+       "source_id": "DailyMed:e6d531ec-fcdc-49f6-b0c4-878d3952827f#43685-7",
+       "moiety": "CALCIUM GLUCONATE",
+       "class": "calcium",
+       "loinc": "43685-7",
+       "cos": 0.4289,
+       "rank": 60
+      },
+      {
+       "source_id": "DailyMed:e6d531ec-fcdc-49f6-b0c4-878d3952827f#34067-9",
+       "moiety": "CALCIUM GLUCONATE",
+       "class": "calcium",
+       "loinc": "34067-9",
+       "cos": 0.4249,
+       "rank": 66
+      },
+      {
+       "source_id": "DailyMed:a1567da9-af74-4afd-9ac5-8b53ec5d7cbf#43685-7",
+       "moiety": "CALCITRIOL",
+       "class": "vitD",
+       "loinc": "43685-7",
+       "cos": 0.4231,
+       "rank": 68
+      },
+      {
+       "source_id": "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34073-7",
+       "moiety": "HYDROCHLOROTHIAZIDE",
+       "class": "thiazide",
+       "loinc": "34073-7",
+       "cos": 0.4227,
+       "rank": 70
+      },
+      {
+       "source_id": "DailyMed:4c635f60-7868-46d5-b932-d5cf8fc84432#43685-7",
+       "moiety": "CALCIUM",
+       "class": "calcium",
+       "loinc": "43685-7",
+       "cos": 0.4184,
+       "rank": 83
+      },
+      {
+       "source_id": "DailyMed:8ebcb33c-f43b-4b36-9f94-9774b2a59e06#34068-7",
+       "moiety": "NIFEDIPINE",
+       "class": "ccb",
+       "loinc": "34068-7",
+       "cos": 0.4172,
+       "rank": 85
+      },
+      {
+       "source_id": "DailyMed:abd6a2ca-40c2-485c-bc53-db1c652505ed#43685-7",
+       "moiety": "AMLODIPINE",
+       "class": "ccb",
+       "loinc": "43685-7",
+       "cos": 0.4169,
+       "rank": 87
+      },
+      {
+       "source_id": "DailyMed:1b27c026-2d60-47b4-2a9c-ded1818f21b5#34067-9",
+       "moiety": "PARICALCITOL",
+       "class": "vitD",
+       "loinc": "34067-9",
+       "cos": 0.4156,
+       "rank": 92
+      },
+      {
+       "source_id": "DailyMed:4c635f60-7868-46d5-b932-d5cf8fc84432#34067-9",
+       "moiety": "CALCIUM",
+       "class": "calcium",
+       "loinc": "34067-9",
+       "cos": 0.4052,
+       "rank": 110
+      },
+      {
+       "source_id": "DailyMed:b951455c-c235-4e23-9e21-08672d108726#34067-9",
+       "moiety": "FELODIPINE",
+       "class": "ccb",
+       "loinc": "34067-9",
+       "cos": 0.4016,
+       "rank": 124
+      },
+      {
+       "source_id": "DailyMed:1b27c026-2d60-47b4-2a9c-ded1818f21b5#34068-7",
+       "moiety": "PARICALCITOL",
+       "class": "vitD",
+       "loinc": "34068-7",
+       "cos": 0.3992,
+       "rank": 135
+      },
+      {
+       "source_id": "DailyMed:58935d94-5bf1-4065-b8b5-ac61292436a7#34073-7",
+       "moiety": "METOLAZONE",
+       "class": "thiazide",
+       "loinc": "34073-7",
+       "cos": 0.3981,
+       "rank": 138
+      },
+      {
+       "source_id": "DailyMed:6a643c56-794a-4289-8390-5d76fa2709b3#34068-7",
+       "moiety": "INDAPAMIDE",
+       "class": "thiazide",
+       "loinc": "34068-7",
+       "cos": 0.3931,
+       "rank": 156
+      },
+      {
+       "source_id": "DailyMed:e6d531ec-fcdc-49f6-b0c4-878d3952827f#34070-3",
+       "moiety": "CALCIUM GLUCONATE",
+       "class": "calcium",
+       "loinc": "34070-3",
+       "cos": 0.3918,
+       "rank": 162
+      },
+      {
+       "source_id": "DailyMed:1042fa13-e6af-46b9-8008-6c941f0978b1#34067-9",
+       "moiety": "DILTIAZEM",
+       "class": "ccb",
+       "loinc": "34067-9",
+       "cos": 0.3851,
+       "rank": 180
+      },
+      {
+       "source_id": "DailyMed:58935d94-5bf1-4065-b8b5-ac61292436a7#34068-7",
+       "moiety": "METOLAZONE",
+       "class": "thiazide",
+       "loinc": "34068-7",
+       "cos": 0.3847,
+       "rank": 181
+      },
+      {
+       "source_id": "DailyMed:b951455c-c235-4e23-9e21-08672d108726#34073-7",
+       "moiety": "FELODIPINE",
+       "class": "ccb",
+       "loinc": "34073-7",
+       "cos": 0.3824,
+       "rank": 187
+      },
+      {
+       "source_id": "DailyMed:4c635f60-7868-46d5-b932-d5cf8fc84432#34070-3",
+       "moiety": "CALCIUM",
+       "class": "calcium",
+       "loinc": "34070-3",
+       "cos": 0.3819,
+       "rank": 189
+      },
+      {
+       "source_id": "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34067-9",
+       "moiety": "HYDROCHLOROTHIAZIDE",
+       "class": "thiazide",
+       "loinc": "34067-9",
+       "cos": 0.3807,
+       "rank": 193
+      },
+      {
+       "source_id": "DailyMed:1b27c026-2d60-47b4-2a9c-ded1818f21b5#34073-7",
+       "moiety": "PARICALCITOL",
+       "class": "vitD",
+       "loinc": "34073-7",
+       "cos": 0.3802,
+       "rank": 197
+      },
+      {
+       "source_id": "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34070-3",
+       "moiety": "CALCIUM CHLORIDE DIHYDRATE",
+       "class": "calcium",
+       "loinc": "34070-3",
+       "cos": 0.3782,
+       "rank": 205
+      },
+      {
+       "source_id": "DailyMed:1b27c026-2d60-47b4-2a9c-ded1818f21b5#34070-3",
+       "moiety": "PARICALCITOL",
+       "class": "vitD",
+       "loinc": "34070-3",
+       "cos": 0.3778,
+       "rank": 206
+      },
+      {
+       "source_id": "DailyMed:6b0e60bb-0e9a-45a7-8f92-a43d939f8deb#34068-7",
+       "moiety": "CALCIUM ACETATE",
+       "class": "calcium",
+       "loinc": "34068-7",
+       "cos": 0.3713,
+       "rank": 226
+      },
+      {
+       "source_id": "DailyMed:abd6a2ca-40c2-485c-bc53-db1c652505ed#34073-7",
+       "moiety": "AMLODIPINE",
+       "class": "ccb",
+       "loinc": "34073-7",
+       "cos": 0.3689,
+       "rank": 237
+      },
+      {
+       "source_id": "DailyMed:58935d94-5bf1-4065-b8b5-ac61292436a7#34067-9",
+       "moiety": "METOLAZONE",
+       "class": "thiazide",
+       "loinc": "34067-9",
+       "cos": 0.3685,
+       "rank": 241
+      },
+      {
+       "source_id": "DailyMed:8ebcb33c-f43b-4b36-9f94-9774b2a59e06#34073-7",
+       "moiety": "NIFEDIPINE",
+       "class": "ccb",
+       "loinc": "34073-7",
+       "cos": 0.3682,
+       "rank": 243
+      },
+      {
+       "source_id": "DailyMed:6b0e60bb-0e9a-45a7-8f92-a43d939f8deb#34067-9",
+       "moiety": "CALCIUM ACETATE",
+       "class": "calcium",
+       "loinc": "34067-9",
+       "cos": 0.3676,
+       "rank": 246
+      },
+      {
+       "source_id": "DailyMed:8a7002e7-e01f-43f9-e053-2a95a90a7191#34070-3",
+       "moiety": "VERAPAMIL HCL",
+       "class": "ccb",
+       "loinc": "34070-3",
+       "cos": 0.3475,
+       "rank": 391
+      },
+      {
+       "source_id": "DailyMed:a1567da9-af74-4afd-9ac5-8b53ec5d7cbf#34067-9",
+       "moiety": "CALCITRIOL",
+       "class": "vitD",
+       "loinc": "34067-9",
+       "cos": 0.3432,
+       "rank": 433
+      },
+      {
+       "source_id": "DailyMed:6a643c56-794a-4289-8390-5d76fa2709b3#34073-7",
+       "moiety": "INDAPAMIDE",
+       "class": "thiazide",
+       "loinc": "34073-7",
+       "cos": 0.3361,
+       "rank": 524
+      },
+      {
+       "source_id": "DailyMed:b951455c-c235-4e23-9e21-08672d108726#34070-3",
+       "moiety": "FELODIPINE",
+       "class": "ccb",
+       "loinc": "34070-3",
+       "cos": 0.3255,
+       "rank": 664
+      },
+      {
+       "source_id": "DailyMed:58935d94-5bf1-4065-b8b5-ac61292436a7#34070-3",
+       "moiety": "METOLAZONE",
+       "class": "thiazide",
+       "loinc": "34070-3",
+       "cos": 0.3128,
+       "rank": 890
+      },
+      {
+       "source_id": "DailyMed:8ebcb33c-f43b-4b36-9f94-9774b2a59e06#34070-3",
+       "moiety": "NIFEDIPINE",
+       "class": "ccb",
+       "loinc": "34070-3",
+       "cos": 0.311,
+       "rank": 926
+      },
+      {
+       "source_id": "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34070-3",
+       "moiety": "HYDROCHLOROTHIAZIDE",
+       "class": "thiazide",
+       "loinc": "34070-3",
+       "cos": 0.3091,
+       "rank": 964
+      },
+      {
+       "source_id": "DailyMed:c22944b8-8733-4689-be0c-f320467f79ea#34068-7",
+       "moiety": "CALCIUM CARBONATE",
+       "class": "calcium",
+       "loinc": "34068-7",
+       "cos": 0.3068,
+       "rank": 1019
+      },
+      {
+       "source_id": "DailyMed:abd6a2ca-40c2-485c-bc53-db1c652505ed#34070-3",
+       "moiety": "AMLODIPINE",
+       "class": "ccb",
+       "loinc": "34070-3",
+       "cos": 0.3066,
+       "rank": 1025
+      },
+      {
+       "source_id": "DailyMed:1042fa13-e6af-46b9-8008-6c941f0978b1#34070-3",
+       "moiety": "DILTIAZEM",
+       "class": "ccb",
+       "loinc": "34070-3",
+       "cos": 0.295,
+       "rank": 1334
+      },
+      {
+       "source_id": "DailyMed:a1567da9-af74-4afd-9ac5-8b53ec5d7cbf#34068-7",
+       "moiety": "CALCITRIOL",
+       "class": "vitD",
+       "loinc": "34068-7",
+       "cos": 0.2682,
+       "rank": 2109
+      },
+      {
+       "source_id": "DailyMed:6a643c56-794a-4289-8390-5d76fa2709b3#34070-3",
+       "moiety": "INDAPAMIDE",
+       "class": "thiazide",
+       "loinc": "34070-3",
+       "cos": 0.2669,
+       "rank": 2155
+      },
+      {
+       "source_id": "DailyMed:f823cb3a-607c-4272-a0c1-da823dabd8e9#34068-7",
+       "moiety": "CHOLECALCIFEROL",
+       "class": "vitD",
+       "loinc": "34068-7",
+       "cos": 0.2406,
+       "rank": 2961
+      },
+      {
+       "source_id": "DailyMed:a1567da9-af74-4afd-9ac5-8b53ec5d7cbf#34070-3",
+       "moiety": "CALCITRIOL",
+       "class": "vitD",
+       "loinc": "34070-3",
+       "cos": 0.2192,
+       "rank": 3682
+      },
+      {
+       "source_id": "DailyMed:c22944b8-8733-4689-be0c-f320467f79ea#34067-9",
+       "moiety": "CALCIUM CARBONATE",
+       "class": "calcium",
+       "loinc": "34067-9",
+       "cos": 0.2065,
+       "rank": 3968
+      }
+     ]
+    }
+   ],
+   "pool_unique": [
+    {
+     "source_id": "PMID:28267687",
+     "source_type": "pubmed",
+     "title": "Hypertension's 3 Dilemmas and 3 Solutions: Pharmacology of the Kidney in Hypertension.",
+     "score": 0.85
+    },
+    {
+     "source_id": "PMID:39539878",
+     "source_type": "pubmed",
+     "title": "Magnesium Matters: A Comprehensive Review of Its Vital Role in Health and Diseases.",
+     "score": 0.85
+    },
+    {
+     "source_id": "PMID:27409075",
+     "source_type": "pubmed",
+     "title": "Proceedings of the 3rd IPLeiria's International Health Congress : Leiria, Portugal. 6-7 May 2016.",
+     "score": 0.85
+    },
+    {
+     "source_id": "PMID:15927106",
+     "source_type": "pubmed",
+     "title": "[Antihypertensive drug-drug interactions].",
+     "score": 0.81
+    },
+    {
+     "source_id": "PMID:31111484",
+     "source_type": "pubmed",
+     "title": "The International Federation of Gynecology and Obstetrics (FIGO) initiative on pre-eclampsia: A pragmatic guide for first-trimester screenin",
+     "score": 0.7833
+    },
+    {
+     "source_id": "PMID:3154329",
+     "source_type": "pubmed",
+     "title": "Calcium channel antagonists. Part III: Use and comparative efficacy in hypertension and supraventricular arrhythmias. Minor indications.",
+     "score": 0.77
+    },
+    {
+     "source_id": "PMID:9397294",
+     "source_type": "pubmed",
+     "title": "Interaction of antihypertensive drugs with anti-inflammatory drugs.",
+     "score": 0.77
+    },
+    {
+     "source_id": "PMID:23324513",
+     "source_type": "pubmed",
+     "title": "Antidepressant-selective gynecomastia.",
+     "score": 0.73
+    },
+    {
+     "source_id": "PMID:27721223",
+     "source_type": "pubmed",
+     "title": "Lifestyle Modifications to Prevent and Control Hypertension.",
+     "score": 0.7167
+    },
+    {
+     "source_id": "PMID:38764043",
+     "source_type": "pubmed",
+     "title": "Association of genetic variants related to combined lipid-lowering and antihypertensive therapies with risk of cardiovascular disease: 2 × 2",
+     "score": 0.69
+    }
+   ],
+   "cut_dropped": [],
+   "filter_dropped": [
+    {
+     "source_id": "PMID:39539878",
+     "source_type": "pubmed",
+     "title": "Magnesium Matters: A Comprehensive Review of Its Vital Role in Health and Diseases.",
+     "score": 0.91
+    },
+    {
+     "source_id": "PMID:27409075",
+     "source_type": "pubmed",
+     "title": "Proceedings of the 3rd IPLeiria's International Health Congress : Leiria, Portugal. 6-7 May 2016.",
+     "score": 0.85
+    },
+    {
+     "source_id": "PMID:28267687",
+     "source_type": "pubmed",
+     "title": "Hypertension's 3 Dilemmas and 3 Solutions: Pharmacology of the Kidney in Hypertension.",
+     "score": 0.85
+    },
+    {
+     "source_id": "PMID:31111484",
+     "source_type": "pubmed",
+     "title": "The International Federation of Gynecology and Obstetrics (FIGO) initiative on pre-eclampsia: A pragmatic guide for first-trimester screenin",
+     "score": 0.7833
+    },
+    {
+     "source_id": "PMID:9397294",
+     "source_type": "pubmed",
+     "title": "Interaction of antihypertensive drugs with anti-inflammatory drugs.",
+     "score": 0.77
+    },
+    {
+     "source_id": "PMID:38764043",
+     "source_type": "pubmed",
+     "title": "Association of genetic variants related to combined lipid-lowering and antihypertensive therapies with risk of cardiovascular disease: 2 × 2",
+     "score": 0.75
+    },
+    {
+     "source_id": "PMID:23324513",
+     "source_type": "pubmed",
+     "title": "Antidepressant-selective gynecomastia.",
+     "score": 0.73
+    },
+    {
+     "source_id": "PMID:27721223",
+     "source_type": "pubmed",
+     "title": "Lifestyle Modifications to Prevent and Control Hypertension.",
+     "score": 0.7167
+    }
+   ],
+   "filter_exempt_readded": [],
+   "filter_llm_kept": [
+    {
+     "source_id": "PMID:15927106",
+     "source_type": "pubmed",
+     "title": "[Antihypertensive drug-drug interactions].",
+     "score": 0.81
+    },
+    {
+     "source_id": "PMID:3154329",
+     "source_type": "pubmed",
+     "title": "Calcium channel antagonists. Part III: Use and comparative efficacy in hypertension and supraventricular arrhythmias. Minor indications.",
+     "score": 0.77
+    }
+   ],
+   "rerank_dropped": [],
+   "topk_dropped": []
+  },
+  {
+   "run": 2,
+   "rewrite_calls": [
+    [
+     "calcium interaction antihypertensive drugs mechanism",
+     "blood pressure medication calcium elderly management",
+     "antihypertensive agents calcium supplements elderly"
+    ],
+    [
+     "calcium interaction antihypertensive drugs mechanism",
+     "blood pressure medication calcium elderly management",
+     "antihypertensive agents calcium supplements elderly"
+    ],
+    [
+     "calcium interaction antihypertensive drugs mechanism",
+     "blood pressure medication calcium elderly management",
+     "antihypertensive agents calcium supplements elderly"
+    ],
+    [
+     "calcium interaction antihypertensive drugs mechanism",
+     "blood pressure medication calcium elderly management",
+     "antihypertensive agents calcium supplements elderly"
+    ]
+   ],
+   "source_calls": [
+    {
+     "fn": "_search_tfda",
+     "query": "blood pressure medication calcium elderly management",
+     "docs": []
+    },
+    {
+     "fn": "_search_dailymed",
+     "query": "calcium interaction antihypertensive drugs mechanism",
+     "docs": []
+    },
+    {
+     "fn": "_search_dailymed",
+     "query": "Can elderly patients take BP meds with calcium?",
+     "docs": []
+    },
+    {
+     "fn": "_search_tfda",
+     "query": "calcium interaction antihypertensive drugs mechanism",
+     "docs": []
+    },
+    {
+     "fn": "_search_tfda",
+     "query": "antihypertensive agents calcium supplements elderly",
+     "docs": []
+    },
+    {
+     "fn": "_search_dailymed",
+     "query": "antihypertensive agents calcium supplements elderly",
+     "docs": []
+    },
+    {
+     "fn": "_search_dailymed",
+     "query": "blood pressure medication calcium elderly management",
+     "docs": []
+    },
+    {
+     "fn": "_search_fda",
+     "query": "antihypertensive agents calcium supplements elderly",
+     "docs": []
+    },
+    {
+     "fn": "_search_fda",
+     "query": "blood pressure medication calcium elderly management",
+     "docs": []
+    },
+    {
+     "fn": "_search_fda",
+     "query": "calcium interaction antihypertensive drugs mechanism",
+     "docs": []
+    },
+    {
+     "fn": "_search_pubmed",
+     "query": "calcium interaction antihypertensive drugs mechanism",
+     "docs": [
+      {
+       "source_id": "PMID:28267687",
+       "source_type": "pubmed",
+       "title": "Hypertension's 3 Dilemmas and 3 Solutions: Pharmacology of the Kidney in Hypertension.",
+       "score": 0.85
+      },
+      {
+       "source_id": "PMID:9397294",
+       "source_type": "pubmed",
+       "title": "Interaction of antihypertensive drugs with anti-inflammatory drugs.",
+       "score": 0.81
+      },
+      {
+       "source_id": "PMID:3154329",
+       "source_type": "pubmed",
+       "title": "Calcium channel antagonists. Part III: Use and comparative efficacy in hypertension and supraventricular arrhythmias. Minor indications.",
+       "score": 0.77
+      },
+      {
+       "source_id": "PMID:15927106",
+       "source_type": "pubmed",
+       "title": "[Antihypertensive drug-drug interactions].",
+       "score": 0.73
+      },
+      {
+       "source_id": "PMID:3533638",
+       "source_type": "pubmed",
+       "title": "Metabolic considerations and cellular mechanism related to calcium's antihypertensive effects.",
+       "score": 0.69
+      }
+     ]
+    },
+    {
+     "fn": "_search_pubmed",
+     "query": "antihypertensive agents calcium supplements elderly",
+     "docs": [
+      {
+       "source_id": "PMID:3306212",
+       "source_type": "pubmed",
+       "title": "Diuretics in the management of hypertension.",
+       "score": 0.85
+      },
+      {
+       "source_id": "PMID:34909902",
+       "source_type": "pubmed",
+       "title": "Morbidities and medications used by practicing nurses during the climacteric.",
+       "score": 0.81
+      },
+      {
+       "source_id": "PMID:39993475",
+       "source_type": "pubmed",
+       "title": "Oleuropein Supplementation Increases Resting Skeletal Muscle Fractional Pyruvate Dehydrogenase Activity but Does Not Influence Whole-Body Me",
+       "score": 0.77
+      },
+      {
+       "source_id": "PMID:7598302",
+       "source_type": "pubmed",
+       "title": "Drug use in the nursing home.",
+       "score": 0.73
+      },
+      {
+       "source_id": "PMID:17605023",
+       "source_type": "pubmed",
+       "title": "Tibolone and osteoporosis.",
+       "score": 0.69
+      }
+     ]
+    },
+    {
+     "fn": "_search_pubmed",
+     "query": "blood pressure medication calcium elderly management",
+     "docs": [
+      {
+       "source_id": "PMID:24352797",
+       "source_type": "pubmed",
+       "title": "2014 evidence-based guideline for the management of high blood pressure in adults: report from the panel members appointed to the Eighth Joi",
+       "score": 0.85
+      },
+      {
+       "source_id": "PMID:37551050",
+       "source_type": "pubmed",
+       "title": "Amlodipine in the current management of hypertension.",
+       "score": 0.81
+      },
+      {
+       "source_id": "PMID:31825114",
+       "source_type": "pubmed",
+       "title": "Hypertension in older adults: Assessment, management, and challenges.",
+       "score": 0.77
+      },
+      {
+       "source_id": "PMID:29449338",
+       "source_type": "pubmed",
+       "title": "Status of Hypertension in China: Results From the China Hypertension Survey, 2012-2015.",
+       "score": 0.73
+      },
+      {
+       "source_id": "PMID:15076798",
+       "source_type": "pubmed",
+       "title": "American College of Sports Medicine position stand. Exercise and hypertension.",
+       "score": 0.69
+      }
+     ]
+    }
+   ],
+   "filter_in": [
+    {
+     "source_id": "PMID:28267687",
+     "source_type": "pubmed",
+     "title": "Hypertension's 3 Dilemmas and 3 Solutions: Pharmacology of the Kidney in Hypertension.",
+     "score": 0.85
+    },
+    {
+     "source_id": "PMID:24352797",
+     "source_type": "pubmed",
+     "title": "2014 evidence-based guideline for the management of high blood pressure in adults: report from the panel members appointed to the Eighth Joi",
+     "score": 0.85
+    },
+    {
+     "source_id": "PMID:37551050",
+     "source_type": "pubmed",
+     "title": "Amlodipine in the current management of hypertension.",
+     "score": 0.85
+    },
+    {
+     "source_id": "PMID:3306212",
+     "source_type": "pubmed",
+     "title": "Diuretics in the management of hypertension.",
+     "score": 0.85
+    },
+    {
+     "source_id": "PMID:39993475",
+     "source_type": "pubmed",
+     "title": "Oleuropein Supplementation Increases Resting Skeletal Muscle Fractional Pyruvate Dehydrogenase Activity but Does Not Influence Whole-Body Me",
+     "score": 0.85
+    },
+    {
+     "source_id": "PMID:9397294",
+     "source_type": "pubmed",
+     "title": "Interaction of antihypertensive drugs with anti-inflammatory drugs.",
+     "score": 0.81
+    },
+    {
+     "source_id": "PMID:34909902",
+     "source_type": "pubmed",
+     "title": "Morbidities and medications used by practicing nurses during the climacteric.",
+     "score": 0.81
+    },
+    {
+     "source_id": "PMID:3154329",
+     "source_type": "pubmed",
+     "title": "Calcium channel antagonists. Part III: Use and comparative efficacy in hypertension and supraventricular arrhythmias. Minor indications.",
+     "score": 0.77
+    },
+    {
+     "source_id": "PMID:31825114",
+     "source_type": "pubmed",
+     "title": "Hypertension in older adults: Assessment, management, and challenges.",
+     "score": 0.77
+    },
+    {
+     "source_id": "PMID:15927106",
+     "source_type": "pubmed",
+     "title": "[Antihypertensive drug-drug interactions].",
+     "score": 0.73
+    },
+    {
+     "source_id": "PMID:29449338",
+     "source_type": "pubmed",
+     "title": "Status of Hypertension in China: Results From the China Hypertension Survey, 2012-2015.",
+     "score": 0.73
+    },
+    {
+     "source_id": "PMID:7598302",
+     "source_type": "pubmed",
+     "title": "Drug use in the nursing home.",
+     "score": 0.73
+    },
+    {
+     "source_id": "PMID:3533638",
+     "source_type": "pubmed",
+     "title": "Metabolic considerations and cellular mechanism related to calcium's antihypertensive effects.",
+     "score": 0.69
+    },
+    {
+     "source_id": "PMID:15076798",
+     "source_type": "pubmed",
+     "title": "American College of Sports Medicine position stand. Exercise and hypertension.",
+     "score": 0.69
+    },
+    {
+     "source_id": "PMID:17605023",
+     "source_type": "pubmed",
+     "title": "Tibolone and osteoporosis.",
+     "score": 0.69
+    }
+   ],
+   "filter_out": [
+    {
+     "source_id": "PMID:31825114",
+     "source_type": "pubmed",
+     "title": "Hypertension in older adults: Assessment, management, and challenges.",
+     "score": 0.77
+    }
+   ],
+   "rerank_out": [
+    {
+     "source_id": "PMID:31825114",
+     "source_type": "pubmed",
+     "title": "Hypertension in older adults: Assessment, management, and challenges.",
+     "score": 0.77
+    }
+   ],
+   "rerank_pool": [
+    {
+     "source_id": "PMID:31825114",
+     "source_type": "pubmed",
+     "title": "Hypertension in older adults: Assessment, management, and challenges.",
+     "score": 0.77
+    }
+   ],
+   "seconds": 13.2,
+   "status": "ok",
+   "final": [
+    {
+     "source_id": "PMID:31825114",
+     "source_type": "pubmed",
+     "title": "Hypertension in older adults: Assessment, management, and challenges.",
+     "score": 0.77
+    }
+   ],
+   "log_lines": [
+    "Retrieved 15 docs, 15 unique after dedup",
+    "Relevance filter: 15 -> 1 documents kept"
+   ],
+   "cosines": [],
+   "pool_unique": [
+    {
+     "source_id": "PMID:28267687",
+     "source_type": "pubmed",
+     "title": "Hypertension's 3 Dilemmas and 3 Solutions: Pharmacology of the Kidney in Hypertension.",
+     "score": 0.85
+    },
+    {
+     "source_id": "PMID:3306212",
+     "source_type": "pubmed",
+     "title": "Diuretics in the management of hypertension.",
+     "score": 0.85
+    },
+    {
+     "source_id": "PMID:24352797",
+     "source_type": "pubmed",
+     "title": "2014 evidence-based guideline for the management of high blood pressure in adults: report from the panel members appointed to the Eighth Joi",
+     "score": 0.85
+    },
+    {
+     "source_id": "PMID:9397294",
+     "source_type": "pubmed",
+     "title": "Interaction of antihypertensive drugs with anti-inflammatory drugs.",
+     "score": 0.81
+    },
+    {
+     "source_id": "PMID:34909902",
+     "source_type": "pubmed",
+     "title": "Morbidities and medications used by practicing nurses during the climacteric.",
+     "score": 0.81
+    },
+    {
+     "source_id": "PMID:37551050",
+     "source_type": "pubmed",
+     "title": "Amlodipine in the current management of hypertension.",
+     "score": 0.81
+    },
+    {
+     "source_id": "PMID:3154329",
+     "source_type": "pubmed",
+     "title": "Calcium channel antagonists. Part III: Use and comparative efficacy in hypertension and supraventricular arrhythmias. Minor indications.",
+     "score": 0.77
+    },
+    {
+     "source_id": "PMID:39993475",
+     "source_type": "pubmed",
+     "title": "Oleuropein Supplementation Increases Resting Skeletal Muscle Fractional Pyruvate Dehydrogenase Activity but Does Not Influence Whole-Body Me",
+     "score": 0.77
+    },
+    {
+     "source_id": "PMID:31825114",
+     "source_type": "pubmed",
+     "title": "Hypertension in older adults: Assessment, management, and challenges.",
+     "score": 0.77
+    },
+    {
+     "source_id": "PMID:15927106",
+     "source_type": "pubmed",
+     "title": "[Antihypertensive drug-drug interactions].",
+     "score": 0.73
+    },
+    {
+     "source_id": "PMID:7598302",
+     "source_type": "pubmed",
+     "title": "Drug use in the nursing home.",
+     "score": 0.73
+    },
+    {
+     "source_id": "PMID:29449338",
+     "source_type": "pubmed",
+     "title": "Status of Hypertension in China: Results From the China Hypertension Survey, 2012-2015.",
+     "score": 0.73
+    },
+    {
+     "source_id": "PMID:3533638",
+     "source_type": "pubmed",
+     "title": "Metabolic considerations and cellular mechanism related to calcium's antihypertensive effects.",
+     "score": 0.69
+    },
+    {
+     "source_id": "PMID:17605023",
+     "source_type": "pubmed",
+     "title": "Tibolone and osteoporosis.",
+     "score": 0.69
+    },
+    {
+     "source_id": "PMID:15076798",
+     "source_type": "pubmed",
+     "title": "American College of Sports Medicine position stand. Exercise and hypertension.",
+     "score": 0.69
+    }
+   ],
+   "cut_dropped": [],
+   "filter_dropped": [
+    {
+     "source_id": "PMID:28267687",
+     "source_type": "pubmed",
+     "title": "Hypertension's 3 Dilemmas and 3 Solutions: Pharmacology of the Kidney in Hypertension.",
+     "score": 0.85
+    },
+    {
+     "source_id": "PMID:24352797",
+     "source_type": "pubmed",
+     "title": "2014 evidence-based guideline for the management of high blood pressure in adults: report from the panel members appointed to the Eighth Joi",
+     "score": 0.85
+    },
+    {
+     "source_id": "PMID:37551050",
+     "source_type": "pubmed",
+     "title": "Amlodipine in the current management of hypertension.",
+     "score": 0.85
+    },
+    {
+     "source_id": "PMID:3306212",
+     "source_type": "pubmed",
+     "title": "Diuretics in the management of hypertension.",
+     "score": 0.85
+    },
+    {
+     "source_id": "PMID:39993475",
+     "source_type": "pubmed",
+     "title": "Oleuropein Supplementation Increases Resting Skeletal Muscle Fractional Pyruvate Dehydrogenase Activity but Does Not Influence Whole-Body Me",
+     "score": 0.85
+    },
+    {
+     "source_id": "PMID:9397294",
+     "source_type": "pubmed",
+     "title": "Interaction of antihypertensive drugs with anti-inflammatory drugs.",
+     "score": 0.81
+    },
+    {
+     "source_id": "PMID:34909902",
+     "source_type": "pubmed",
+     "title": "Morbidities and medications used by practicing nurses during the climacteric.",
+     "score": 0.81
+    },
+    {
+     "source_id": "PMID:3154329",
+     "source_type": "pubmed",
+     "title": "Calcium channel antagonists. Part III: Use and comparative efficacy in hypertension and supraventricular arrhythmias. Minor indications.",
+     "score": 0.77
+    },
+    {
+     "source_id": "PMID:15927106",
+     "source_type": "pubmed",
+     "title": "[Antihypertensive drug-drug interactions].",
+     "score": 0.73
+    },
+    {
+     "source_id": "PMID:29449338",
+     "source_type": "pubmed",
+     "title": "Status of Hypertension in China: Results From the China Hypertension Survey, 2012-2015.",
+     "score": 0.73
+    },
+    {
+     "source_id": "PMID:7598302",
+     "source_type": "pubmed",
+     "title": "Drug use in the nursing home.",
+     "score": 0.73
+    },
+    {
+     "source_id": "PMID:3533638",
+     "source_type": "pubmed",
+     "title": "Metabolic considerations and cellular mechanism related to calcium's antihypertensive effects.",
+     "score": 0.69
+    },
+    {
+     "source_id": "PMID:15076798",
+     "source_type": "pubmed",
+     "title": "American College of Sports Medicine position stand. Exercise and hypertension.",
+     "score": 0.69
+    },
+    {
+     "source_id": "PMID:17605023",
+     "source_type": "pubmed",
+     "title": "Tibolone and osteoporosis.",
+     "score": 0.69
+    }
+   ],
+   "filter_exempt_readded": [],
+   "filter_llm_kept": [
+    {
+     "source_id": "PMID:31825114",
+     "source_type": "pubmed",
+     "title": "Hypertension in older adults: Assessment, management, and challenges.",
+     "score": 0.77
+    }
+   ],
+   "rerank_dropped": [],
+   "topk_dropped": []
+  },
+  {
+   "run": 3,
+   "rewrite_calls": [
+    [
+     "calcium interaction antihypertensive drugs mechanism",
+     "blood pressure medication calcium elderly management",
+     "antihypertensive agents calcium supplements pharmacology"
+    ],
+    [
+     "calcium interaction antihypertensive drugs mechanism",
+     "blood pressure medication calcium elderly management",
+     "antihypertensive agents calcium supplements elderly"
+    ],
+    [
+     "calcium interaction antihypertensive drugs mechanism",
+     "blood pressure medication calcium elderly management",
+     "antihypertensive agents calcium supplements pharmacology"
+    ],
+    [
+     "calcium interaction antihypertensive drugs mechanism",
+     "blood pressure medication calcium elderly management",
+     "antihypertensive agents calcium supplements elderly"
+    ]
+   ],
+   "source_calls": [
+    {
+     "fn": "_search_tfda",
+     "query": "calcium interaction antihypertensive drugs mechanism",
+     "docs": []
+    },
+    {
+     "fn": "_search_tfda",
+     "query": "blood pressure medication calcium elderly management",
+     "docs": []
+    },
+    {
+     "fn": "_search_dailymed",
+     "query": "blood pressure medication calcium elderly management",
+     "docs": []
+    },
+    {
+     "fn": "_search_dailymed",
+     "query": "antihypertensive agents calcium supplements elderly",
+     "docs": []
+    },
+    {
+     "fn": "_search_dailymed",
+     "query": "Can elderly patients take BP meds with calcium?",
+     "docs": []
+    },
+    {
+     "fn": "_search_dailymed",
+     "query": "calcium interaction antihypertensive drugs mechanism",
+     "docs": []
+    },
+    {
+     "fn": "_search_dailymed",
+     "query": "antihypertensive agents calcium supplements pharmacology",
+     "docs": []
+    },
+    {
+     "fn": "_search_tfda",
+     "query": "antihypertensive agents calcium supplements pharmacology",
+     "docs": []
+    },
+    {
+     "fn": "_search_fda",
+     "query": "blood pressure medication calcium elderly management",
+     "docs": []
+    },
+    {
+     "fn": "_search_fda",
+     "query": "calcium interaction antihypertensive drugs mechanism",
+     "docs": []
+    },
+    {
+     "fn": "_search_fda",
+     "query": "antihypertensive agents calcium supplements pharmacology",
+     "docs": []
+    },
+    {
+     "fn": "_search_pubmed",
+     "query": "antihypertensive agents calcium supplements pharmacology",
+     "docs": [
+      {
+       "source_id": "PMID:39661905",
+       "source_type": "pubmed",
+       "title": "Novel pharmacologic approaches in resistant hypertension.",
+       "score": 0.85
+      },
+      {
+       "source_id": "PMID:36902110",
+       "source_type": "pubmed",
+       "title": "Latest Knowledge on the Role of Vitamin D in Hypertension.",
+       "score": 0.81
+      },
+      {
+       "source_id": "PMID:25341854",
+       "source_type": "pubmed",
+       "title": "Antihypertensive drugs metabolism: an update to pharmacokinetic profiles and computational approaches.",
+       "score": 0.77
+      },
+      {
+       "source_id": "PMID:3415787",
+       "source_type": "pubmed",
+       "title": "Alert to users of calcium supplements as antihypertensive agents due to trace metal contaminants.",
+       "score": 0.73
+      },
+      {
+       "source_id": "PMID:39993475",
+       "source_type": "pubmed",
+       "title": "Oleuropein Supplementation Increases Resting Skeletal Muscle Fractional Pyruvate Dehydrogenase Activity but Does Not Influence Whole-Body Me",
+       "score": 0.69
+      }
+     ]
+    },
+    {
+     "fn": "_search_pubmed",
+     "query": "calcium interaction antihypertensive drugs mechanism",
+     "docs": [
+      {
+       "source_id": "PMID:36007633",
+       "source_type": "pubmed",
+       "title": "The effect of CYP3A4 genetic polymorphism and drug interaction on the metabolism of istradefylline.",
+       "score": 0.85
+      },
+      {
+       "source_id": "PMID:28267687",
+       "source_type": "pubmed",
+       "title": "Hypertension's 3 Dilemmas and 3 Solutions: Pharmacology of the Kidney in Hypertension.",
+       "score": 0.81
+      },
+      {
+       "source_id": "PMID:9397294",
+       "source_type": "pubmed",
+       "title": "Interaction of antihypertensive drugs with anti-inflammatory drugs.",
+       "score": 0.77
+      },
+      {
+       "source_id": "PMID:3154329",
+       "source_type": "pubmed",
+       "title": "Calcium channel antagonists. Part III: Use and comparative efficacy in hypertension and supraventricular arrhythmias. Minor indications.",
+       "score": 0.73
+      },
+      {
+       "source_id": "PMID:15927106",
+       "source_type": "pubmed",
+       "title": "[Antihypertensive drug-drug interactions].",
+       "score": 0.69
+      }
+     ]
+    },
+    {
+     "fn": "_search_pubmed",
+     "query": "blood pressure medication calcium elderly management",
+     "docs": [
+      {
+       "source_id": "PMID:24352797",
+       "source_type": "pubmed",
+       "title": "2014 evidence-based guideline for the management of high blood pressure in adults: report from the panel members appointed to the Eighth Joi",
+       "score": 0.85
+      },
+      {
+       "source_id": "PMID:37551050",
+       "source_type": "pubmed",
+       "title": "Amlodipine in the current management of hypertension.",
+       "score": 0.81
+      },
+      {
+       "source_id": "PMID:31825114",
+       "source_type": "pubmed",
+       "title": "Hypertension in older adults: Assessment, management, and challenges.",
+       "score": 0.77
+      },
+      {
+       "source_id": "PMID:29449338",
+       "source_type": "pubmed",
+       "title": "Status of Hypertension in China: Results From the China Hypertension Survey, 2012-2015.",
+       "score": 0.73
+      },
+      {
+       "source_id": "PMID:15076798",
+       "source_type": "pubmed",
+       "title": "American College of Sports Medicine position stand. Exercise and hypertension.",
+       "score": 0.69
+      }
+     ]
+    }
+   ],
+   "filter_in": [
+    {
+     "source_id": "PMID:39661905",
+     "source_type": "pubmed",
+     "title": "Novel pharmacologic approaches in resistant hypertension.",
+     "score": 0.91
+    },
+    {
+     "source_id": "PMID:36007633",
+     "source_type": "pubmed",
+     "title": "The effect of CYP3A4 genetic polymorphism and drug interaction on the metabolism of istradefylline.",
+     "score": 0.87
+    },
+    {
+     "source_id": "PMID:24352797",
+     "source_type": "pubmed",
+     "title": "2014 evidence-based guideline for the management of high blood pressure in adults: report from the panel members appointed to the Eighth Joi",
+     "score": 0.85
+    },
+    {
+     "source_id": "PMID:37551050",
+     "source_type": "pubmed",
+     "title": "Amlodipine in the current management of hypertension.",
+     "score": 0.85
+    },
+    {
+     "source_id": "PMID:36902110",
+     "source_type": "pubmed",
+     "title": "Latest Knowledge on the Role of Vitamin D in Hypertension.",
+     "score": 0.85
+    },
+    {
+     "source_id": "PMID:28267687",
+     "source_type": "pubmed",
+     "title": "Hypertension's 3 Dilemmas and 3 Solutions: Pharmacology of the Kidney in Hypertension.",
+     "score": 0.81
+    },
+    {
+     "source_id": "PMID:9397294",
+     "source_type": "pubmed",
+     "title": "Interaction of antihypertensive drugs with anti-inflammatory drugs.",
+     "score": 0.77
+    },
+    {
+     "source_id": "PMID:31825114",
+     "source_type": "pubmed",
+     "title": "Hypertension in older adults: Assessment, management, and challenges.",
+     "score": 0.77
+    },
+    {
+     "source_id": "PMID:25341854",
+     "source_type": "pubmed",
+     "title": "Antihypertensive drugs metabolism: an update to pharmacokinetic profiles and computational approaches.",
+     "score": 0.77
+    },
+    {
+     "source_id": "PMID:39993475",
+     "source_type": "pubmed",
+     "title": "Oleuropein Supplementation Increases Resting Skeletal Muscle Fractional Pyruvate Dehydrogenase Activity but Does Not Influence Whole-Body Me",
+     "score": 0.77
+    },
+    {
+     "source_id": "PMID:3154329",
+     "source_type": "pubmed",
+     "title": "Calcium channel antagonists. Part III: Use and comparative efficacy in hypertension and supraventricular arrhythmias. Minor indications.",
+     "score": 0.73
+    },
+    {
+     "source_id": "PMID:29449338",
+     "source_type": "pubmed",
+     "title": "Status of Hypertension in China: Results From the China Hypertension Survey, 2012-2015.",
+     "score": 0.73
+    },
+    {
+     "source_id": "PMID:3415787",
+     "source_type": "pubmed",
+     "title": "Alert to users of calcium supplements as antihypertensive agents due to trace metal contaminants.",
+     "score": 0.73
+    },
+    {
+     "source_id": "PMID:15927106",
+     "source_type": "pubmed",
+     "title": "[Antihypertensive drug-drug interactions].",
+     "score": 0.69
+    },
+    {
+     "source_id": "PMID:15076798",
+     "source_type": "pubmed",
+     "title": "American College of Sports Medicine position stand. Exercise and hypertension.",
+     "score": 0.69
+    }
+   ],
+   "filter_out": [
+    {
+     "source_id": "PMID:31825114",
+     "source_type": "pubmed",
+     "title": "Hypertension in older adults: Assessment, management, and challenges.",
+     "score": 0.77
+    },
+    {
+     "source_id": "PMID:3415787",
+     "source_type": "pubmed",
+     "title": "Alert to users of calcium supplements as antihypertensive agents due to trace metal contaminants.",
+     "score": 0.73
+    },
+    {
+     "source_id": "PMID:15927106",
+     "source_type": "pubmed",
+     "title": "[Antihypertensive drug-drug interactions].",
+     "score": 0.69
+    }
+   ],
+   "rerank_out": [
+    {
+     "source_id": "PMID:31825114",
+     "source_type": "pubmed",
+     "title": "Hypertension in older adults: Assessment, management, and challenges.",
+     "score": 0.85
+    },
+    {
+     "source_id": "PMID:15927106",
+     "source_type": "pubmed",
+     "title": "[Antihypertensive drug-drug interactions].",
+     "score": 0.7
+    },
+    {
+     "source_id": "PMID:3415787",
+     "source_type": "pubmed",
+     "title": "Alert to users of calcium supplements as antihypertensive agents due to trace metal contaminants.",
+     "score": 0.4
+    }
+   ],
+   "rerank_pool": [
+    {
+     "source_id": "PMID:31825114",
+     "source_type": "pubmed",
+     "title": "Hypertension in older adults: Assessment, management, and challenges.",
+     "score": 0.85
+    },
+    {
+     "source_id": "PMID:15927106",
+     "source_type": "pubmed",
+     "title": "[Antihypertensive drug-drug interactions].",
+     "score": 0.7
+    },
+    {
+     "source_id": "PMID:3415787",
+     "source_type": "pubmed",
+     "title": "Alert to users of calcium supplements as antihypertensive agents due to trace metal contaminants.",
+     "score": 0.4
+    }
+   ],
+   "seconds": 13.9,
+   "status": "ok",
+   "final": [
+    {
+     "source_id": "PMID:31825114",
+     "source_type": "pubmed",
+     "title": "Hypertension in older adults: Assessment, management, and challenges.",
+     "score": 0.85
+    },
+    {
+     "source_id": "PMID:15927106",
+     "source_type": "pubmed",
+     "title": "[Antihypertensive drug-drug interactions].",
+     "score": 0.7
+    },
+    {
+     "source_id": "PMID:3415787",
+     "source_type": "pubmed",
+     "title": "Alert to users of calcium supplements as antihypertensive agents due to trace metal contaminants.",
+     "score": 0.4
+    }
+   ],
+   "log_lines": [
+    "Retrieved 15 docs, 15 unique after dedup",
+    "Relevance filter: 15 -> 3 documents kept"
+   ],
+   "cosines": [],
+   "pool_unique": [
+    {
+     "source_id": "PMID:39661905",
+     "source_type": "pubmed",
+     "title": "Novel pharmacologic approaches in resistant hypertension.",
+     "score": 0.85
+    },
+    {
+     "source_id": "PMID:36007633",
+     "source_type": "pubmed",
+     "title": "The effect of CYP3A4 genetic polymorphism and drug interaction on the metabolism of istradefylline.",
+     "score": 0.85
+    },
+    {
+     "source_id": "PMID:24352797",
+     "source_type": "pubmed",
+     "title": "2014 evidence-based guideline for the management of high blood pressure in adults: report from the panel members appointed to the Eighth Joi",
+     "score": 0.85
+    },
+    {
+     "source_id": "PMID:36902110",
+     "source_type": "pubmed",
+     "title": "Latest Knowledge on the Role of Vitamin D in Hypertension.",
+     "score": 0.81
+    },
+    {
+     "source_id": "PMID:28267687",
+     "source_type": "pubmed",
+     "title": "Hypertension's 3 Dilemmas and 3 Solutions: Pharmacology of the Kidney in Hypertension.",
+     "score": 0.81
+    },
+    {
+     "source_id": "PMID:37551050",
+     "source_type": "pubmed",
+     "title": "Amlodipine in the current management of hypertension.",
+     "score": 0.81
+    },
+    {
+     "source_id": "PMID:25341854",
+     "source_type": "pubmed",
+     "title": "Antihypertensive drugs metabolism: an update to pharmacokinetic profiles and computational approaches.",
+     "score": 0.77
+    },
+    {
+     "source_id": "PMID:9397294",
+     "source_type": "pubmed",
+     "title": "Interaction of antihypertensive drugs with anti-inflammatory drugs.",
+     "score": 0.77
+    },
+    {
+     "source_id": "PMID:31825114",
+     "source_type": "pubmed",
+     "title": "Hypertension in older adults: Assessment, management, and challenges.",
+     "score": 0.77
+    },
+    {
+     "source_id": "PMID:3415787",
+     "source_type": "pubmed",
+     "title": "Alert to users of calcium supplements as antihypertensive agents due to trace metal contaminants.",
+     "score": 0.73
+    },
+    {
+     "source_id": "PMID:3154329",
+     "source_type": "pubmed",
+     "title": "Calcium channel antagonists. Part III: Use and comparative efficacy in hypertension and supraventricular arrhythmias. Minor indications.",
+     "score": 0.73
+    },
+    {
+     "source_id": "PMID:29449338",
+     "source_type": "pubmed",
+     "title": "Status of Hypertension in China: Results From the China Hypertension Survey, 2012-2015.",
+     "score": 0.73
+    },
+    {
+     "source_id": "PMID:39993475",
+     "source_type": "pubmed",
+     "title": "Oleuropein Supplementation Increases Resting Skeletal Muscle Fractional Pyruvate Dehydrogenase Activity but Does Not Influence Whole-Body Me",
+     "score": 0.69
+    },
+    {
+     "source_id": "PMID:15927106",
+     "source_type": "pubmed",
+     "title": "[Antihypertensive drug-drug interactions].",
+     "score": 0.69
+    },
+    {
+     "source_id": "PMID:15076798",
+     "source_type": "pubmed",
+     "title": "American College of Sports Medicine position stand. Exercise and hypertension.",
+     "score": 0.69
+    }
+   ],
+   "cut_dropped": [],
+   "filter_dropped": [
+    {
+     "source_id": "PMID:39661905",
+     "source_type": "pubmed",
+     "title": "Novel pharmacologic approaches in resistant hypertension.",
+     "score": 0.91
+    },
+    {
+     "source_id": "PMID:36007633",
+     "source_type": "pubmed",
+     "title": "The effect of CYP3A4 genetic polymorphism and drug interaction on the metabolism of istradefylline.",
+     "score": 0.87
+    },
+    {
+     "source_id": "PMID:24352797",
+     "source_type": "pubmed",
+     "title": "2014 evidence-based guideline for the management of high blood pressure in adults: report from the panel members appointed to the Eighth Joi",
+     "score": 0.85
+    },
+    {
+     "source_id": "PMID:37551050",
+     "source_type": "pubmed",
+     "title": "Amlodipine in the current management of hypertension.",
+     "score": 0.85
+    },
+    {
+     "source_id": "PMID:36902110",
+     "source_type": "pubmed",
+     "title": "Latest Knowledge on the Role of Vitamin D in Hypertension.",
+     "score": 0.85
+    },
+    {
+     "source_id": "PMID:28267687",
+     "source_type": "pubmed",
+     "title": "Hypertension's 3 Dilemmas and 3 Solutions: Pharmacology of the Kidney in Hypertension.",
+     "score": 0.81
+    },
+    {
+     "source_id": "PMID:9397294",
+     "source_type": "pubmed",
+     "title": "Interaction of antihypertensive drugs with anti-inflammatory drugs.",
+     "score": 0.77
+    },
+    {
+     "source_id": "PMID:25341854",
+     "source_type": "pubmed",
+     "title": "Antihypertensive drugs metabolism: an update to pharmacokinetic profiles and computational approaches.",
+     "score": 0.77
+    },
+    {
+     "source_id": "PMID:39993475",
+     "source_type": "pubmed",
+     "title": "Oleuropein Supplementation Increases Resting Skeletal Muscle Fractional Pyruvate Dehydrogenase Activity but Does Not Influence Whole-Body Me",
+     "score": 0.77
+    },
+    {
+     "source_id": "PMID:3154329",
+     "source_type": "pubmed",
+     "title": "Calcium channel antagonists. Part III: Use and comparative efficacy in hypertension and supraventricular arrhythmias. Minor indications.",
+     "score": 0.73
+    },
+    {
+     "source_id": "PMID:29449338",
+     "source_type": "pubmed",
+     "title": "Status of Hypertension in China: Results From the China Hypertension Survey, 2012-2015.",
+     "score": 0.73
+    },
+    {
+     "source_id": "PMID:15076798",
+     "source_type": "pubmed",
+     "title": "American College of Sports Medicine position stand. Exercise and hypertension.",
+     "score": 0.69
+    }
+   ],
+   "filter_exempt_readded": [],
+   "filter_llm_kept": [
+    {
+     "source_id": "PMID:31825114",
+     "source_type": "pubmed",
+     "title": "Hypertension in older adults: Assessment, management, and challenges.",
+     "score": 0.77
+    },
+    {
+     "source_id": "PMID:3415787",
+     "source_type": "pubmed",
+     "title": "Alert to users of calcium supplements as antihypertensive agents due to trace metal contaminants.",
+     "score": 0.73
+    },
+    {
+     "source_id": "PMID:15927106",
+     "source_type": "pubmed",
+     "title": "[Antihypertensive drug-drug interactions].",
+     "score": 0.69
+    }
+   ],
+   "rerank_dropped": [],
+   "topk_dropped": []
+  },
+  {
+   "run": 4,
+   "rewrite_calls": [
+    [
+     "calcium interaction antihypertensive drugs mechanism",
+     "blood pressure medication calcium supplementation elderly",
+     "antihypertensive agents calcium drug interaction elderly"
+    ],
+    [
+     "calcium interaction antihypertensive drugs mechanism",
+     "blood pressure medication calcium supplementation elderly",
+     "antihypertensive agents calcium drug interaction elderly"
+    ],
+    [
+     "calcium interaction antihypertensive drugs mechanism",
+     "blood pressure medication calcium supplementation elderly",
+     "antihypertensive agents calcium drug interaction elderly"
+    ],
+    [
+     "calcium interaction antihypertensive drugs mechanism",
+     "blood pressure medication calcium supplementation elderly",
+     "antihypertensive agents calcium drug interaction elderly"
+    ]
+   ],
+   "source_calls": [
+    {
+     "fn": "_search_tfda",
+     "query": "antihypertensive agents calcium drug interaction elderly",
+     "docs": []
+    },
+    {
+     "fn": "_search_tfda",
+     "query": "blood pressure medication calcium supplementation elderly",
+     "docs": []
+    },
+    {
+     "fn": "_search_dailymed",
+     "query": "blood pressure medication calcium supplementation elderly",
+     "docs": []
+    },
+    {
+     "fn": "_search_dailymed",
+     "query": "calcium interaction antihypertensive drugs mechanism",
+     "docs": []
+    },
+    {
+     "fn": "_search_dailymed",
+     "query": "Can elderly patients take BP meds with calcium?",
+     "docs": []
+    },
+    {
+     "fn": "_search_dailymed",
+     "query": "antihypertensive agents calcium drug interaction elderly",
+     "docs": []
+    },
+    {
+     "fn": "_search_tfda",
+     "query": "calcium interaction antihypertensive drugs mechanism",
+     "docs": []
+    },
+    {
+     "fn": "_search_pubmed",
+     "query": "calcium interaction antihypertensive drugs mechanism",
+     "docs": [
+      {
+       "source_id": "PMID:36007633",
+       "source_type": "pubmed",
+       "title": "The effect of CYP3A4 genetic polymorphism and drug interaction on the metabolism of istradefylline.",
+       "score": 0.85
+      },
+      {
+       "source_id": "PMID:28267687",
+       "source_type": "pubmed",
+       "title": "Hypertension's 3 Dilemmas and 3 Solutions: Pharmacology of the Kidney in Hypertension.",
+       "score": 0.81
+      },
+      {
+       "source_id": "PMID:9397294",
+       "source_type": "pubmed",
+       "title": "Interaction of antihypertensive drugs with anti-inflammatory drugs.",
+       "score": 0.77
+      },
+      {
+       "source_id": "PMID:3154329",
+       "source_type": "pubmed",
+       "title": "Calcium channel antagonists. Part III: Use and comparative efficacy in hypertension and supraventricular arrhythmias. Minor indications.",
+       "score": 0.73
+      },
+      {
+       "source_id": "PMID:15927106",
+       "source_type": "pubmed",
+       "title": "[Antihypertensive drug-drug interactions].",
+       "score": 0.69
+      }
+     ]
+    },
+    {
+     "fn": "_search_pubmed",
+     "query": "blood pressure medication calcium supplementation elderly",
+     "docs": [
+      {
+       "source_id": "PMID:31111484",
+       "source_type": "pubmed",
+       "title": "The International Federation of Gynecology and Obstetrics (FIGO) initiative on pre-eclampsia: A pragmatic guide for first-trimester screenin",
+       "score": 0.85
+      },
+      {
+       "source_id": "PMID:39534319",
+       "source_type": "pubmed",
+       "title": "Blood Pressure Decreases in Overweight Elderly Individuals on Vitamin D: A Randomized Trial.",
+       "score": 0.81
+      },
+      {
+       "source_id": "PMID:27287826",
+       "source_type": "pubmed",
+       "title": "Effect of vitamin D3 supplementation on blood pressure in adults: An updated meta-analysis.",
+       "score": 0.77
+      },
+      {
+       "source_id": "PMID:26764327",
+       "source_type": "pubmed",
+       "title": "Garlic and Heart Disease.",
+       "score": 0.73
+      },
+      {
+       "source_id": "PMID:38721870",
+       "source_type": "pubmed",
+       "title": "Calcium supplementation for people with overweight or obesity.",
+       "score": 0.69
+      }
+     ]
+    },
+    {
+     "fn": "_search_fda",
+     "query": "blood pressure medication calcium supplementation elderly",
+     "docs": []
+    },
+    {
+     "fn": "_search_fda",
+     "query": "calcium interaction antihypertensive drugs mechanism",
+     "docs": []
+    },
+    {
+     "fn": "_search_pubmed",
+     "query": "antihypertensive agents calcium drug interaction elderly",
+     "docs": [
+      {
+       "source_id": "PMID:28267687",
+       "source_type": "pubmed",
+       "title": "Hypertension's 3 Dilemmas and 3 Solutions: Pharmacology of the Kidney in Hypertension.",
+       "score": 0.85
+      },
+      {
+       "source_id": "PMID:9397294",
+       "source_type": "pubmed",
+       "title": "Interaction of antihypertensive drugs with anti-inflammatory drugs.",
+       "score": 0.81
+      },
+      {
+       "source_id": "PMID:3154329",
+       "source_type": "pubmed",
+       "title": "Calcium channel antagonists. Part III: Use and comparative efficacy in hypertension and supraventricular arrhythmias. Minor indications.",
+       "score": 0.77
+      },
+      {
+       "source_id": "PMID:15927106",
+       "source_type": "pubmed",
+       "title": "[Antihypertensive drug-drug interactions].",
+       "score": 0.73
+      },
+      {
+       "source_id": "PMID:23324513",
+       "source_type": "pubmed",
+       "title": "Antidepressant-selective gynecomastia.",
+       "score": 0.69
+      }
+     ]
+    },
+    {
+     "fn": "_search_fda",
+     "query": "antihypertensive agents calcium drug interaction elderly",
+     "docs": []
+    }
+   ],
+   "filter_in": [
+    {
+     "source_id": "PMID:36007633",
+     "source_type": "pubmed",
+     "title": "The effect of CYP3A4 genetic polymorphism and drug interaction on the metabolism of istradefylline.",
+     "score": 0.87
+    },
+    {
+     "source_id": "PMID:39534319",
+     "source_type": "pubmed",
+     "title": "Blood Pressure Decreases in Overweight Elderly Individuals on Vitamin D: A Randomized Trial.",
+     "score": 0.87
+    },
+    {
+     "source_id": "PMID:31111484",
+     "source_type": "pubmed",
+     "title": "The International Federation of Gynecology and Obstetrics (FIGO) initiative on pre-eclampsia: A pragmatic guide for first-trimester screenin",
+     "score": 0.85
+    },
+    {
+     "source_id": "PMID:28267687",
+     "source_type": "pubmed",
+     "title": "Hypertension's 3 Dilemmas and 3 Solutions: Pharmacology of the Kidney in Hypertension.",
+     "score": 0.85
+    },
+    {
+     "source_id": "PMID:9397294",
+     "source_type": "pubmed",
+     "title": "Interaction of antihypertensive drugs with anti-inflammatory drugs.",
+     "score": 0.81
+    },
+    {
+     "source_id": "PMID:27287826",
+     "source_type": "pubmed",
+     "title": "Effect of vitamin D3 supplementation on blood pressure in adults: An updated meta-analysis.",
+     "score": 0.77
+    },
+    {
+     "source_id": "PMID:3154329",
+     "source_type": "pubmed",
+     "title": "Calcium channel antagonists. Part III: Use and comparative efficacy in hypertension and supraventricular arrhythmias. Minor indications.",
+     "score": 0.77
+    },
+    {
+     "source_id": "PMID:38721870",
+     "source_type": "pubmed",
+     "title": "Calcium supplementation for people with overweight or obesity.",
+     "score": 0.75
+    },
+    {
+     "source_id": "PMID:26764327",
+     "source_type": "pubmed",
+     "title": "Garlic and Heart Disease.",
+     "score": 0.73
+    },
+    {
+     "source_id": "PMID:15927106",
+     "source_type": "pubmed",
+     "title": "[Antihypertensive drug-drug interactions].",
+     "score": 0.73
+    },
+    {
+     "source_id": "PMID:23324513",
+     "source_type": "pubmed",
+     "title": "Antidepressant-selective gynecomastia.",
+     "score": 0.69
+    }
+   ],
+   "filter_out": [],
+   "seconds": 13.0,
+   "status": "irrelevant",
+   "final": [],
+   "log_lines": [
+    "Retrieved 15 docs, 11 unique after dedup",
+    "Relevance filter: 11 -> 0 documents kept"
+   ],
+   "cosines": [],
+   "pool_unique": [
+    {
+     "source_id": "PMID:36007633",
+     "source_type": "pubmed",
+     "title": "The effect of CYP3A4 genetic polymorphism and drug interaction on the metabolism of istradefylline.",
+     "score": 0.85
+    },
+    {
+     "source_id": "PMID:28267687",
+     "source_type": "pubmed",
+     "title": "Hypertension's 3 Dilemmas and 3 Solutions: Pharmacology of the Kidney in Hypertension.",
+     "score": 0.85
+    },
+    {
+     "source_id": "PMID:31111484",
+     "source_type": "pubmed",
+     "title": "The International Federation of Gynecology and Obstetrics (FIGO) initiative on pre-eclampsia: A pragmatic guide for first-trimester screenin",
+     "score": 0.85
+    },
+    {
+     "source_id": "PMID:9397294",
+     "source_type": "pubmed",
+     "title": "Interaction of antihypertensive drugs with anti-inflammatory drugs.",
+     "score": 0.81
+    },
+    {
+     "source_id": "PMID:39534319",
+     "source_type": "pubmed",
+     "title": "Blood Pressure Decreases in Overweight Elderly Individuals on Vitamin D: A Randomized Trial.",
+     "score": 0.81
+    },
+    {
+     "source_id": "PMID:3154329",
+     "source_type": "pubmed",
+     "title": "Calcium channel antagonists. Part III: Use and comparative efficacy in hypertension and supraventricular arrhythmias. Minor indications.",
+     "score": 0.77
+    },
+    {
+     "source_id": "PMID:27287826",
+     "source_type": "pubmed",
+     "title": "Effect of vitamin D3 supplementation on blood pressure in adults: An updated meta-analysis.",
+     "score": 0.77
+    },
+    {
+     "source_id": "PMID:15927106",
+     "source_type": "pubmed",
+     "title": "[Antihypertensive drug-drug interactions].",
+     "score": 0.73
+    },
+    {
+     "source_id": "PMID:26764327",
+     "source_type": "pubmed",
+     "title": "Garlic and Heart Disease.",
+     "score": 0.73
+    },
+    {
+     "source_id": "PMID:38721870",
+     "source_type": "pubmed",
+     "title": "Calcium supplementation for people with overweight or obesity.",
+     "score": 0.69
+    },
+    {
+     "source_id": "PMID:23324513",
+     "source_type": "pubmed",
+     "title": "Antidepressant-selective gynecomastia.",
+     "score": 0.69
+    }
+   ],
+   "cut_dropped": [],
+   "filter_dropped": [
+    {
+     "source_id": "PMID:36007633",
+     "source_type": "pubmed",
+     "title": "The effect of CYP3A4 genetic polymorphism and drug interaction on the metabolism of istradefylline.",
+     "score": 0.87
+    },
+    {
+     "source_id": "PMID:39534319",
+     "source_type": "pubmed",
+     "title": "Blood Pressure Decreases in Overweight Elderly Individuals on Vitamin D: A Randomized Trial.",
+     "score": 0.87
+    },
+    {
+     "source_id": "PMID:31111484",
+     "source_type": "pubmed",
+     "title": "The International Federation of Gynecology and Obstetrics (FIGO) initiative on pre-eclampsia: A pragmatic guide for first-trimester screenin",
+     "score": 0.85
+    },
+    {
+     "source_id": "PMID:28267687",
+     "source_type": "pubmed",
+     "title": "Hypertension's 3 Dilemmas and 3 Solutions: Pharmacology of the Kidney in Hypertension.",
+     "score": 0.85
+    },
+    {
+     "source_id": "PMID:9397294",
+     "source_type": "pubmed",
+     "title": "Interaction of antihypertensive drugs with anti-inflammatory drugs.",
+     "score": 0.81
+    },
+    {
+     "source_id": "PMID:27287826",
+     "source_type": "pubmed",
+     "title": "Effect of vitamin D3 supplementation on blood pressure in adults: An updated meta-analysis.",
+     "score": 0.77
+    },
+    {
+     "source_id": "PMID:3154329",
+     "source_type": "pubmed",
+     "title": "Calcium channel antagonists. Part III: Use and comparative efficacy in hypertension and supraventricular arrhythmias. Minor indications.",
+     "score": 0.77
+    },
+    {
+     "source_id": "PMID:38721870",
+     "source_type": "pubmed",
+     "title": "Calcium supplementation for people with overweight or obesity.",
+     "score": 0.75
+    },
+    {
+     "source_id": "PMID:26764327",
+     "source_type": "pubmed",
+     "title": "Garlic and Heart Disease.",
+     "score": 0.73
+    },
+    {
+     "source_id": "PMID:15927106",
+     "source_type": "pubmed",
+     "title": "[Antihypertensive drug-drug interactions].",
+     "score": 0.73
+    },
+    {
+     "source_id": "PMID:23324513",
+     "source_type": "pubmed",
+     "title": "Antidepressant-selective gynecomastia.",
+     "score": 0.69
+    }
+   ],
+   "filter_exempt_readded": [],
+   "filter_llm_kept": [],
+   "rerank_dropped": [],
+   "topk_dropped": []
+  },
+  {
+   "run": 5,
+   "rewrite_calls": [
+    [
+     "calcium interaction antihypertensive drugs mechanism",
+     "blood pressure medication calcium elderly management",
+     "antihypertensive agents calcium supplements pharmacology"
+    ],
+    [
+     "calcium interaction antihypertensive drugs mechanism",
+     "blood pressure medication calcium elderly management",
+     "antihypertensive agents calcium supplements elderly"
+    ],
+    [
+     "calcium interaction antihypertensive drugs mechanism",
+     "blood pressure medication calcium supplementation elderly",
+     "antihypertensive agents calcium drug interaction elderly"
+    ],
+    [
+     "calcium interaction antihypertensive drugs mechanism",
+     "blood pressure medication calcium elderly management",
+     "antihypertensive agents calcium supplements elderly"
+    ]
+   ],
+   "source_calls": [
+    {
+     "fn": "_search_dailymed",
+     "query": "blood pressure medication calcium elderly management",
+     "docs": []
+    },
+    {
+     "fn": "_search_dailymed",
+     "query": "antihypertensive agents calcium supplements elderly",
+     "docs": []
+    },
+    {
+     "fn": "_search_dailymed",
+     "query": "Can elderly patients take BP meds with calcium?",
+     "docs": []
+    },
+    {
+     "fn": "_search_tfda",
+     "query": "calcium interaction antihypertensive drugs mechanism",
+     "docs": []
+    },
+    {
+     "fn": "_search_dailymed",
+     "query": "blood pressure medication calcium supplementation elderly",
+     "docs": []
+    },
+    {
+     "fn": "_search_tfda",
+     "query": "antihypertensive agents calcium supplements pharmacology",
+     "docs": []
+    },
+    {
+     "fn": "_search_tfda",
+     "query": "blood pressure medication calcium elderly management",
+     "docs": []
+    },
+    {
+     "fn": "_search_dailymed",
+     "query": "calcium interaction antihypertensive drugs mechanism",
+     "docs": []
+    },
+    {
+     "fn": "_search_dailymed",
+     "query": "antihypertensive agents calcium drug interaction elderly",
+     "docs": []
+    },
+    {
+     "fn": "_search_pubmed",
+     "query": "blood pressure medication calcium elderly management",
+     "docs": [
+      {
+       "source_id": "PMID:24352797",
+       "source_type": "pubmed",
+       "title": "2014 evidence-based guideline for the management of high blood pressure in adults: report from the panel members appointed to the Eighth Joi",
+       "score": 0.85
+      },
+      {
+       "source_id": "PMID:37551050",
+       "source_type": "pubmed",
+       "title": "Amlodipine in the current management of hypertension.",
+       "score": 0.81
+      },
+      {
+       "source_id": "PMID:31825114",
+       "source_type": "pubmed",
+       "title": "Hypertension in older adults: Assessment, management, and challenges.",
+       "score": 0.77
+      },
+      {
+       "source_id": "PMID:29449338",
+       "source_type": "pubmed",
+       "title": "Status of Hypertension in China: Results From the China Hypertension Survey, 2012-2015.",
+       "score": 0.73
+      },
+      {
+       "source_id": "PMID:15076798",
+       "source_type": "pubmed",
+       "title": "American College of Sports Medicine position stand. Exercise and hypertension.",
+       "score": 0.69
+      }
+     ]
+    },
+    {
+     "fn": "_search_pubmed",
+     "query": "antihypertensive agents calcium supplements pharmacology",
+     "docs": [
+      {
+       "source_id": "PMID:39661905",
+       "source_type": "pubmed",
+       "title": "Novel pharmacologic approaches in resistant hypertension.",
+       "score": 0.85
+      },
+      {
+       "source_id": "PMID:36902110",
+       "source_type": "pubmed",
+       "title": "Latest Knowledge on the Role of Vitamin D in Hypertension.",
+       "score": 0.81
+      },
+      {
+       "source_id": "PMID:25341854",
+       "source_type": "pubmed",
+       "title": "Antihypertensive drugs metabolism: an update to pharmacokinetic profiles and computational approaches.",
+       "score": 0.77
+      },
+      {
+       "source_id": "PMID:3415787",
+       "source_type": "pubmed",
+       "title": "Alert to users of calcium supplements as antihypertensive agents due to trace metal contaminants.",
+       "score": 0.73
+      },
+      {
+       "source_id": "PMID:39993475",
+       "source_type": "pubmed",
+       "title": "Oleuropein Supplementation Increases Resting Skeletal Muscle Fractional Pyruvate Dehydrogenase Activity but Does Not Influence Whole-Body Me",
+       "score": 0.69
+      }
+     ]
+    },
+    {
+     "fn": "_search_fda",
+     "query": "calcium interaction antihypertensive drugs mechanism",
+     "docs": []
+    },
+    {
+     "fn": "_search_fda",
+     "query": "antihypertensive agents calcium supplements pharmacology",
+     "docs": []
+    },
+    {
+     "fn": "_search_fda",
+     "query": "blood pressure medication calcium elderly management",
+     "docs": []
+    },
+    {
+     "fn": "_search_pubmed",
+     "query": "calcium interaction antihypertensive drugs mechanism",
+     "docs": [
+      {
+       "source_id": "PMID:28267687",
+       "source_type": "pubmed",
+       "title": "Hypertension's 3 Dilemmas and 3 Solutions: Pharmacology of the Kidney in Hypertension.",
+       "score": 0.85
+      },
+      {
+       "source_id": "PMID:9397294",
+       "source_type": "pubmed",
+       "title": "Interaction of antihypertensive drugs with anti-inflammatory drugs.",
+       "score": 0.81
+      },
+      {
+       "source_id": "PMID:3154329",
+       "source_type": "pubmed",
+       "title": "Calcium channel antagonists. Part III: Use and comparative efficacy in hypertension and supraventricular arrhythmias. Minor indications.",
+       "score": 0.77
+      },
+      {
+       "source_id": "PMID:15927106",
+       "source_type": "pubmed",
+       "title": "[Antihypertensive drug-drug interactions].",
+       "score": 0.73
+      },
+      {
+       "source_id": "PMID:3533638",
+       "source_type": "pubmed",
+       "title": "Metabolic considerations and cellular mechanism related to calcium's antihypertensive effects.",
+       "score": 0.69
+      }
+     ]
+    }
+   ],
+   "filter_in": [
+    {
+     "source_id": "PMID:39661905",
+     "source_type": "pubmed",
+     "title": "Novel pharmacologic approaches in resistant hypertension.",
+     "score": 0.91
+    },
+    {
+     "source_id": "PMID:28267687",
+     "source_type": "pubmed",
+     "title": "Hypertension's 3 Dilemmas and 3 Solutions: Pharmacology of the Kidney in Hypertension.",
+     "score": 0.85
+    },
+    {
+     "source_id": "PMID:24352797",
+     "source_type": "pubmed",
+     "title": "2014 evidence-based guideline for the management of high blood pressure in adults: report from the panel members appointed to the Eighth Joi",
+     "score": 0.85
+    },
+    {
+     "source_id": "PMID:37551050",
+     "source_type": "pubmed",
+     "title": "Amlodipine in the current management of hypertension.",
+     "score": 0.85
+    },
+    {
+     "source_id": "PMID:36902110",
+     "source_type": "pubmed",
+     "title": "Latest Knowledge on the Role of Vitamin D in Hypertension.",
+     "score": 0.85
+    },
+    {
+     "source_id": "PMID:9397294",
+     "source_type": "pubmed",
+     "title": "Interaction of antihypertensive drugs with anti-inflammatory drugs.",
+     "score": 0.81
+    },
+    {
+     "source_id": "PMID:3154329",
+     "source_type": "pubmed",
+     "title": "Calcium channel antagonists. Part III: Use and comparative efficacy in hypertension and supraventricular arrhythmias. Minor indications.",
+     "score": 0.77
+    },
+    {
+     "source_id": "PMID:31825114",
+     "source_type": "pubmed",
+     "title": "Hypertension in older adults: Assessment, management, and challenges.",
+     "score": 0.77
+    },
+    {
+     "source_id": "PMID:25341854",
+     "source_type": "pubmed",
+     "title": "Antihypertensive drugs metabolism: an update to pharmacokinetic profiles and computational approaches.",
+     "score": 0.77
+    },
+    {
+     "source_id": "PMID:39993475",
+     "source_type": "pubmed",
+     "title": "Oleuropein Supplementation Increases Resting Skeletal Muscle Fractional Pyruvate Dehydrogenase Activity but Does Not Influence Whole-Body Me",
+     "score": 0.77
+    },
+    {
+     "source_id": "PMID:15927106",
+     "source_type": "pubmed",
+     "title": "[Antihypertensive drug-drug interactions].",
+     "score": 0.73
+    },
+    {
+     "source_id": "PMID:29449338",
+     "source_type": "pubmed",
+     "title": "Status of Hypertension in China: Results From the China Hypertension Survey, 2012-2015.",
+     "score": 0.73
+    },
+    {
+     "source_id": "PMID:3415787",
+     "source_type": "pubmed",
+     "title": "Alert to users of calcium supplements as antihypertensive agents due to trace metal contaminants.",
+     "score": 0.73
+    },
+    {
+     "source_id": "PMID:3533638",
+     "source_type": "pubmed",
+     "title": "Metabolic considerations and cellular mechanism related to calcium's antihypertensive effects.",
+     "score": 0.69
+    },
+    {
+     "source_id": "PMID:15076798",
+     "source_type": "pubmed",
+     "title": "American College of Sports Medicine position stand. Exercise and hypertension.",
+     "score": 0.69
+    }
+   ],
+   "filter_out": [
+    {
+     "source_id": "PMID:31825114",
+     "source_type": "pubmed",
+     "title": "Hypertension in older adults: Assessment, management, and challenges.",
+     "score": 0.77
+    },
+    {
+     "source_id": "PMID:3415787",
+     "source_type": "pubmed",
+     "title": "Alert to users of calcium supplements as antihypertensive agents due to trace metal contaminants.",
+     "score": 0.73
+    },
+    {
+     "source_id": "PMID:3533638",
+     "source_type": "pubmed",
+     "title": "Metabolic considerations and cellular mechanism related to calcium's antihypertensive effects.",
+     "score": 0.69
+    }
+   ],
+   "rerank_out": [
+    {
+     "source_id": "PMID:31825114",
+     "source_type": "pubmed",
+     "title": "Hypertension in older adults: Assessment, management, and challenges.",
+     "score": 0.85
+    },
+    {
+     "source_id": "PMID:3533638",
+     "source_type": "pubmed",
+     "title": "Metabolic considerations and cellular mechanism related to calcium's antihypertensive effects.",
+     "score": 0.6
+    },
+    {
+     "source_id": "PMID:3415787",
+     "source_type": "pubmed",
+     "title": "Alert to users of calcium supplements as antihypertensive agents due to trace metal contaminants.",
+     "score": 0.4
+    }
+   ],
+   "rerank_pool": [
+    {
+     "source_id": "PMID:31825114",
+     "source_type": "pubmed",
+     "title": "Hypertension in older adults: Assessment, management, and challenges.",
+     "score": 0.85
+    },
+    {
+     "source_id": "PMID:3533638",
+     "source_type": "pubmed",
+     "title": "Metabolic considerations and cellular mechanism related to calcium's antihypertensive effects.",
+     "score": 0.6
+    },
+    {
+     "source_id": "PMID:3415787",
+     "source_type": "pubmed",
+     "title": "Alert to users of calcium supplements as antihypertensive agents due to trace metal contaminants.",
+     "score": 0.4
+    }
+   ],
+   "seconds": 13.8,
+   "status": "ok",
+   "final": [
+    {
+     "source_id": "PMID:31825114",
+     "source_type": "pubmed",
+     "title": "Hypertension in older adults: Assessment, management, and challenges.",
+     "score": 0.85
+    },
+    {
+     "source_id": "PMID:3533638",
+     "source_type": "pubmed",
+     "title": "Metabolic considerations and cellular mechanism related to calcium's antihypertensive effects.",
+     "score": 0.6
+    },
+    {
+     "source_id": "PMID:3415787",
+     "source_type": "pubmed",
+     "title": "Alert to users of calcium supplements as antihypertensive agents due to trace metal contaminants.",
+     "score": 0.4
+    }
+   ],
+   "log_lines": [
+    "Retrieved 15 docs, 15 unique after dedup",
+    "Relevance filter: 15 -> 3 documents kept"
+   ],
+   "cosines": [],
+   "pool_unique": [
+    {
+     "source_id": "PMID:24352797",
+     "source_type": "pubmed",
+     "title": "2014 evidence-based guideline for the management of high blood pressure in adults: report from the panel members appointed to the Eighth Joi",
+     "score": 0.85
+    },
+    {
+     "source_id": "PMID:39661905",
+     "source_type": "pubmed",
+     "title": "Novel pharmacologic approaches in resistant hypertension.",
+     "score": 0.85
+    },
+    {
+     "source_id": "PMID:28267687",
+     "source_type": "pubmed",
+     "title": "Hypertension's 3 Dilemmas and 3 Solutions: Pharmacology of the Kidney in Hypertension.",
+     "score": 0.85
+    },
+    {
+     "source_id": "PMID:37551050",
+     "source_type": "pubmed",
+     "title": "Amlodipine in the current management of hypertension.",
+     "score": 0.81
+    },
+    {
+     "source_id": "PMID:36902110",
+     "source_type": "pubmed",
+     "title": "Latest Knowledge on the Role of Vitamin D in Hypertension.",
+     "score": 0.81
+    },
+    {
+     "source_id": "PMID:9397294",
+     "source_type": "pubmed",
+     "title": "Interaction of antihypertensive drugs with anti-inflammatory drugs.",
+     "score": 0.81
+    },
+    {
+     "source_id": "PMID:31825114",
+     "source_type": "pubmed",
+     "title": "Hypertension in older adults: Assessment, management, and challenges.",
+     "score": 0.77
+    },
+    {
+     "source_id": "PMID:25341854",
+     "source_type": "pubmed",
+     "title": "Antihypertensive drugs metabolism: an update to pharmacokinetic profiles and computational approaches.",
+     "score": 0.77
+    },
+    {
+     "source_id": "PMID:3154329",
+     "source_type": "pubmed",
+     "title": "Calcium channel antagonists. Part III: Use and comparative efficacy in hypertension and supraventricular arrhythmias. Minor indications.",
+     "score": 0.77
+    },
+    {
+     "source_id": "PMID:29449338",
+     "source_type": "pubmed",
+     "title": "Status of Hypertension in China: Results From the China Hypertension Survey, 2012-2015.",
+     "score": 0.73
+    },
+    {
+     "source_id": "PMID:3415787",
+     "source_type": "pubmed",
+     "title": "Alert to users of calcium supplements as antihypertensive agents due to trace metal contaminants.",
+     "score": 0.73
+    },
+    {
+     "source_id": "PMID:15927106",
+     "source_type": "pubmed",
+     "title": "[Antihypertensive drug-drug interactions].",
+     "score": 0.73
+    },
+    {
+     "source_id": "PMID:15076798",
+     "source_type": "pubmed",
+     "title": "American College of Sports Medicine position stand. Exercise and hypertension.",
+     "score": 0.69
+    },
+    {
+     "source_id": "PMID:39993475",
+     "source_type": "pubmed",
+     "title": "Oleuropein Supplementation Increases Resting Skeletal Muscle Fractional Pyruvate Dehydrogenase Activity but Does Not Influence Whole-Body Me",
+     "score": 0.69
+    },
+    {
+     "source_id": "PMID:3533638",
+     "source_type": "pubmed",
+     "title": "Metabolic considerations and cellular mechanism related to calcium's antihypertensive effects.",
+     "score": 0.69
+    }
+   ],
+   "cut_dropped": [],
+   "filter_dropped": [
+    {
+     "source_id": "PMID:39661905",
+     "source_type": "pubmed",
+     "title": "Novel pharmacologic approaches in resistant hypertension.",
+     "score": 0.91
+    },
+    {
+     "source_id": "PMID:28267687",
+     "source_type": "pubmed",
+     "title": "Hypertension's 3 Dilemmas and 3 Solutions: Pharmacology of the Kidney in Hypertension.",
+     "score": 0.85
+    },
+    {
+     "source_id": "PMID:24352797",
+     "source_type": "pubmed",
+     "title": "2014 evidence-based guideline for the management of high blood pressure in adults: report from the panel members appointed to the Eighth Joi",
+     "score": 0.85
+    },
+    {
+     "source_id": "PMID:37551050",
+     "source_type": "pubmed",
+     "title": "Amlodipine in the current management of hypertension.",
+     "score": 0.85
+    },
+    {
+     "source_id": "PMID:36902110",
+     "source_type": "pubmed",
+     "title": "Latest Knowledge on the Role of Vitamin D in Hypertension.",
+     "score": 0.85
+    },
+    {
+     "source_id": "PMID:9397294",
+     "source_type": "pubmed",
+     "title": "Interaction of antihypertensive drugs with anti-inflammatory drugs.",
+     "score": 0.81
+    },
+    {
+     "source_id": "PMID:3154329",
+     "source_type": "pubmed",
+     "title": "Calcium channel antagonists. Part III: Use and comparative efficacy in hypertension and supraventricular arrhythmias. Minor indications.",
+     "score": 0.77
+    },
+    {
+     "source_id": "PMID:25341854",
+     "source_type": "pubmed",
+     "title": "Antihypertensive drugs metabolism: an update to pharmacokinetic profiles and computational approaches.",
+     "score": 0.77
+    },
+    {
+     "source_id": "PMID:39993475",
+     "source_type": "pubmed",
+     "title": "Oleuropein Supplementation Increases Resting Skeletal Muscle Fractional Pyruvate Dehydrogenase Activity but Does Not Influence Whole-Body Me",
+     "score": 0.77
+    },
+    {
+     "source_id": "PMID:15927106",
+     "source_type": "pubmed",
+     "title": "[Antihypertensive drug-drug interactions].",
+     "score": 0.73
+    },
+    {
+     "source_id": "PMID:29449338",
+     "source_type": "pubmed",
+     "title": "Status of Hypertension in China: Results From the China Hypertension Survey, 2012-2015.",
+     "score": 0.73
+    },
+    {
+     "source_id": "PMID:15076798",
+     "source_type": "pubmed",
+     "title": "American College of Sports Medicine position stand. Exercise and hypertension.",
+     "score": 0.69
+    }
+   ],
+   "filter_exempt_readded": [],
+   "filter_llm_kept": [
+    {
+     "source_id": "PMID:31825114",
+     "source_type": "pubmed",
+     "title": "Hypertension in older adults: Assessment, management, and challenges.",
+     "score": 0.77
+    },
+    {
+     "source_id": "PMID:3415787",
+     "source_type": "pubmed",
+     "title": "Alert to users of calcium supplements as antihypertensive agents due to trace metal contaminants.",
+     "score": 0.73
+    },
+    {
+     "source_id": "PMID:3533638",
+     "source_type": "pubmed",
+     "title": "Metabolic considerations and cellular mechanism related to calcium's antihypertensive effects.",
+     "score": 0.69
+    }
+   ],
+   "rerank_dropped": [],
+   "topk_dropped": []
+  }
+ ],
+ "generation_run1": {
+  "retrieval_status": "ok",
+  "n_docs": 2,
+  "lang": "en",
+  "model_override": null,
+  "model": "gpt-4.1",
+  "system_prompt": "You are a clinical AI assistant supporting healthcare professionals.\nYour answers must be evidence-based, precise, and clinically actionable.\n\nCore rules:\n- Cite EVERY factual claim using [1], [2] format\n- Never make claims beyond what the provided context supports\n- Always note if evidence is low-certainty or outdated\n- Do NOT add any disclaimer at the end — the system will handle that separately\n\nDIRECTION-OF-EFFECT FIDELITY (critical):\n- Report the direction of every effect exactly as the cited source states it, even when counterintuitive. Never \"correct\" a finding toward what seems more clinically plausible.\n- Whenever you state increases/decreases or higher/lower risk, anchor it to the source's reported effect measure inline (e.g. \"lower mortality (OR 0.78)\"). The numeric measure is ground truth; your directional wording MUST agree with it (OR/HR/RR < 1 → lower; > 1 → higher).\n- If a source's direction is counterintuitive and the mechanism is unclear, report the direction faithfully and label it counterintuitive — do not reverse it.\n\nSupported languages: English, 繁體中文 (zh-TW), 简体中文 (zh-CN), 日本語, 한국어, Español, Français, Deutsch, Italiano, Português, ภาษาไทย.\nIMPORTANT: An explicit language instruction will be appended in the user message — follow it exactly.\n\nChinese variant handling (when output language is zh-CN or zh-TW):\n\n**For zh-CN (Simplified Chinese, Mainland China / Singapore medical context):**\n- Use Simplified Chinese characters (简体字) EXCLUSIVELY\n- Do NOT use Traditional Chinese characters like 嚴/導/聯/時/監/評/狀/覆/與/證\n- Use simplified equivalents: 严/导/联/时/监/评/状/覆/与/证\n- Medical terminology should follow PRC / NMPA conventions (药物相互作用, 不良反应, 随访)\n\n**For zh-TW (Traditional Chinese, Taiwan medical context):**\n- Use Traditional Chinese characters (繁體字) as used in Taiwan\n- Medical terminology should follow Taiwan TFDA conventions (藥物交互作用, 不良反應, 追蹤)\n\nIf output language is zh-CN but you produce Traditional Chinese characters, the output is INCORRECT. Always verify character form matches the specified variant before returning.\n\nStructure the answer as exactly two sections with `## ` markdown headers.\nHeader format: translate ONLY the section NAME to the user's language; do NOT output square brackets around the header.\n\n## Summary — translated to user's language\n2-3 sentences: direct answer first, then key mechanism.\nPut the conclusion FIRST. Do not bury it after background.\n\n---\n\n## Clinical Notes — translated to user's language\nCover ALL of the following in natural prose or structured bullets:\n- Safety warnings and when NOT to use the drug/treatment\n- Key contraindications (cardiac, respiratory, metabolic, drug interactions)\n- Specific monitoring parameters with concrete thresholds and frequency\n  (e.g. \"Check eGFR at baseline; reduce dose if eGFR 30-60; stop if eGFR < 30\")\n\nDo NOT include a separate Evidence section. Do NOT add any disclaimer at the end — the system will handle that separately.\nIf evidence predates 2020, note it inline. If sources conflict, present both sides.\nBefore relying on a cited source for a population or setting, check that the source's study cohort matches the question's scope; if it differs (a different region, ethnicity, age group, or care setting), say so explicitly rather than presenting it as directly-applicable evidence.\nFor questions spanning a broad geography (e.g. \"Asia\", \"globally\", \"East Asia\"), state which regions your cited evidence actually covers and which it does not, instead of generalizing a narrow evidence base to the whole region.\n",
+  "user_prompt": "Reference documents (with publication year):\n[1] [Antihypertensive drug-drug interactions]. [2005]\n# [Antihypertensive drug-drug interactions].\n\n**Authors:** Morales-Olivas Francisco J, Estañ Luis\n**Journal:** Medicina clinica (2005)\n**PMID:** 15927106\n\n## Abstract\nA drug interaction is the quantitative or qualitative modification of the effect of a drug by the simultaneous or successive administration of a different one. Hypertensive patients, mainly the more elderly ones, frequently present concomitant diseases that require the administration of several medicines which facilitates the appearance of interactions. The lack of effectiveness of the antihypertensive treatment is a relatively frequent fact that sometimes is due to interactions of antihypertensive drugs with other treatments. It is difficult to determine the incidence of interactions, but it is related to the number of drugs administered simultaneously. Between 37 and 60% of hospital-admissions are treated with potentially dangerous drug associations and up to a 6% of fatal events are due to this circumstance. Among antihypertensive drugs, diuretics and angiotensin converting enzyme inhibitors are less affected by drug-interactions. Lipophilic beta-blockers agents may present some clinical relevant interactions, whereas calcium channel blockers, especially the non-dihydropiridinic ones, are implied in clinically relevant pharmacokinetic interactions. Among the angiotensin receptor blockers there are differences that would have to be considered when they are used in patients who receive other drugs. Although it is impossible for the doctor to remember all the clinical relevant interactions, it is important to bear in mind their existence and the possible mechanisms of production which can help to identify them and to contribute to their prevention. The most frequent interactions related with clinical problems are the pharmacokinetic ones, mainly those related to the metabolism through the cytochrome P450 system or the presystemic clearance by means of the P-glycoprotein. Enzymes of the cytochrome P450 ...\n\n[2] Calcium channel antagonists. Part III: Use and comparative efficacy in hypertension and supraventricular arrhythmias. Minor indications. [1988]\n# Calcium channel antagonists. Part III: Use and comparative efficacy in hypertension and supraventricular arrhythmias. Minor indications.\n\n**Authors:** Opie L H\n**Journal:** Cardiovascular drugs and therapy (1988)\n**PMID:** 3154329\n\n## Abstract\nThe major antihypertensive mechanism of calcium antagonists is by decreasing the systemic vascular resistance, modified by the counter-regulatory responses of the baroreflexes and the renin-angiotensin-aldosterone system. In severe hypertension, the concept that calcium overload of the vascular myocyte could precipitate or aggravate peripheral vasoconstriction provides a logical basis for the use of these agents as first choice therapy; nifedipine, especially, has been well tested. As monotherapy for mild to moderate hypertension each of the three first-generation agents compares well with beta-blockers. Calcium antagonists may have a special role in the therapy of certain patient groups (elderly, black) or in those subjects whose life style involves intense physical or mental exertion (hemodynamics better maintained than with beta-blockade) or in patients with early end-organ damage such as left ventricular hypertrophy or renal insufficiency. However, the goal blood pressure may not be reached during monotherapy so that drug combinations may be required. Further indications for these compounds are as follows. Verapamil and diltiazem are frequently used in supraventricular tachycardias including acute and chronic atrial fibrillation. In the arrhythmias of the Wolff-Parkinson-White syndrome, there is the potential danger of provocation of anterograde conduction. Further indications for calcium antagonists, still under evaluation, include congestive heart failure (controversial), hypertrophic cardiomyopathy (verapamil), primary pulmonary hypertension (high doses required), Raynaud's phenomenon (nifedipine and diltiazem effective), peripheral vascular disease (proof not yet documented), cerebral insufficiency and subarachnoid h...\n\nQuestion: Can elderly patients take BP meds with calcium?\n\nIMPORTANT: Follow the mandatory 2-section structure: Summary → Clinical Notes. Do NOT include a separate Evidence section.\n\nInstructions:\n1. Answer ONLY based on the provided context\n2. Cite every claim with [1], [2], etc.\n3. If context is insufficient, state what's missing\n4. Be clinically precise\n\nLANGUAGE: Respond entirely in English. Do NOT switch to any other language.\n\nAnswer:",
+  "events": [
+   "answer",
+   "citations",
+   "done"
+  ],
+  "answer": "## Summary\n\nElderly patients can take blood pressure medications that include calcium channel blockers, as these agents are specifically noted to be effective in this population and may be preferred in certain clinical scenarios[2]. The main antihypertensive mechanism is through reduction of systemic vascular resistance, and calcium channel blockers have demonstrated efficacy in elderly patients, particularly those with early end-organ damage or specific comorbidities[2].\n\n---\n\n## Clinical Notes\n\n- Calcium channel blockers (CCBs) are considered effective antihypertensive agents for elderly patients, especially those with left ventricular hypertrophy or renal insufficiency[2].\n- CCBs may be preferred in elderly or Black patients, or in individuals whose lifestyle involves intense physical or mental exertion, as they maintain hemodynamics better than beta-blockers[2].\n- Non-dihydropyridine CCBs (e.g., verapamil, diltiazem) are also used for supraventricular arrhythmias, but caution is advised in patients with arrhythmias such as Wolff-Parkinson-White syndrome due to the risk of provoking anterograde conduction[2].\n- Drug-drug interactions are a concern in elderly hypertensive patients, who often require multiple medications. Calcium channel blockers, particularly non-dihydropyridines, are implicated in clinically relevant pharmacokinetic interactions, mainly via the cytochrome P450 system or P-glycoprotein[1].\n- Monitoring for drug interactions is important, especially when CCBs are combined with other antihypertensives or medications metabolized by CYP450 enzymes[1].\n- The evidence provided does not specify concrete monitoring parameters or thresholds for elderly patients on CCBs, nor does it detail absolute contraindications or frequency of monitoring.\n- The context does not address the use of calcium supplements or dietary calcium in combination with antihypertensive therapy, so no conclusion can be drawn about interactions with calcium itself.",
+  "veto_i_calcium_read_as_ccb": true,
+  "veto_ii_mentions_thiazide_or_hypercalcemia": false
+ }
+}
