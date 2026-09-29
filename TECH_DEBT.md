@@ -17,6 +17,16 @@ Classes are **additive and orthogonal** to the existing `[P0]`–`[P3]` ratings 
 | [OTHER] | quality, hygiene, tooling, opportunistic | 101 |
 | | **total** | **192** |
 
+<!-- 🔴 NAV CHECKED 2026-09-29 (AZP CAR CLOSED — prod eye 6/6 PASS transcribed; docs-only commit, pushed, NOT deployed.
+     Prod fly 260 = bfb4a8fd5c9e96708bc73ab1b13f5a8244440d34, unchanged.)
+     PRE-CHANGE CHECK (Rule 25), derived at 0c22a5b with git grep -c "^- \[CLASS\]" -- TECH_DEBT.md per class:
+     0 + 9 + 18 + 65 + 100 = 192 = the table (expected 192: MATCH). Cross-checks: git grep -c "^- \[" = 192;
+     git grep -c "^- " = 227 = 192 + 35 (git grep -c "^- [^\[]" = 35). [sec]: loose 15 (git grep -c "^- \[.*\[sec\]")
+     / strict 14 (git grep -c -E "^- \[[A-Z]+\] \*\*\[sec\]"). No discrepancy.
+     RULE 27: NO new entry. WHAT CHANGED: one appended "prod eye PASS" bullet on the azp entry; this block.
+     POST-CHANGE RE-DERIVE: 0 + 9 + 18 + 65 + 100 = 192. Delta 0. git grep -c "^- \[" = 192; git grep -c "^- " = 227 = 192 + 35.
+     [sec] loose 15 / strict 14. IDENTICAL to the pre-change derive: MATCH. -->
+
 <!-- 🔴 NAV RECOUNTED 2026-09-29 (AZP CAR — SHIPPED as fly 260; commit C docs, pushed, NOT deployed.
      Pushed 8fca358..bfb4a8f; prod fly 260 = bfb4a8fd5c9e96708bc73ab1b13f5a8244440d34.)
      PRE-CHANGE CHECK (Rule 25), derived at bfb4a8f with git grep -c "^- \[CLASS\]" -- TECH_DEBT.md per class:
@@ -2590,6 +2600,7 @@ When entries are resolved, mark with the resolving commit SHA (git log is the re
     - **(f) JWKS cache hardening (validate the key set / `raise_for_status()` before caching) — recorded, NOT filed (Q5).** Its home is this entry and the car baton; `get_jwks`, the cache and the TTL are unchanged by this car.
     - **(g) 🔧 BUILT LOCAL — commit A `b374398` (`fix(auth): [sec] verify Clerk iss + azp + exp at both decode sites`), `api/server.py` + new `tests/test_clerk_token_claims.py` only. NOT pushed, NOT deployed; prod = fly 259 at `9fc4d47bf6dca6069a9fb7a5981d92b1a17bf7ca`, unchanged.** One helper `_decode_clerk_token` (`api/server.py:417-432` at `b374398`): RS256 + `issuer=CLERK_ISSUER` + `options={"verify_aud": False, "require_exp": True}`, then `azp` must be in the allowlist (absent → rejected, Q3). Both call sites use it (`:462` `require_auth`, `:1991` `_optional_user_id` at `b374398`); `git grep -c "jose_jwt.decode" -- api/server.py` → **1** (expected 1: MATCH). **Tests (local RSA key, no network):** RED at `8fca358` **6 failed / 3 passed** (cases 2 foreign azp · 3 no azp · 4 foreign iss · 5 no exp → 200 instead of 403; `_optional_user_id` foreign azp → returned the sub; constants test → AttributeError); GREEN at `b374398` **9 passed**. **Mutations, each reverted:** m1 azp check removed → cases 2, 3 + optional-foreign-azp RED · m2 `issuer=` dropped → case 4 RED · m3 `require_exp` dropped → case 5 RED. Regression: 7 files (the new one + history_delete, research_history_payload, verify_history_payload, verify_phi_mask, verify_patient_context_gate, check_phi_fail_closed) → **46 passed**. Prod eye gate: BLANK in the baton, founder fills after deploy.
   - **2026-09-29 — ✅ SHIPPED fly 260 → `[DONE]`** (own commit `b374398`; deployed at `bfb4a8fd5c9e96708bc73ab1b13f5a8244440d34`, image `deployment-01M3NDS6XKBTWZYJ7T4E2KVQXB`; v260 read from `fly releases`; `/health` revision full-string on the first poll; unauthenticated `POST /api/verify` + `GET /api/history` → 403 `Missing token`). **Prod eye OPEN** (founder, own account — baton §5, 6 rows). Readbacks: baton `docs/batons/azp_car_20260924.md` §8; transcript `tests/probes/deploy_parser/fly260_deploy_transcript.txt`.
+  - **2026-09-29 — prod eye PASS** (baton §5, 6/6 founder-PASS; founder statement + two screenshots in the strategy conversation, 2026-09-29 +08:00, own account, prod fly 260; transcribed under the car-close authorization (zh-TW transcription precedent)): rows 1–4 /verify · /research · /explain · /history PASS; row 5 bug report submitted signed-in → `POST /api/bug-report` 200 at 03:17:49Z, 0 `azp not allowed` / 0 `JWT decode error` / 0 `Traceback` within ±2 min (attribution not determinable from logs); row 6 console decode azp `https://vela.an-tho.com`, iss `https://clerk.vela.an-tho.com` (identical to the 2026-09-24 founder fact). Car CLOSED.
 
 - [OTHER] **[P2 → Round 3 或 Phase 1A]** 阻止 signed-in user 訪問 `/sign-in` 和 `/sign-up`
   - **現況**: logged-in user 打 `/sign-in` 會看到 Clerk SignIn card,可能困惑
