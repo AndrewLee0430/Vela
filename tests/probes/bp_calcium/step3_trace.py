@@ -37,6 +37,9 @@ import argparse  # noqa: E402
 _ap = argparse.ArgumentParser()
 _ap.add_argument("--n", type=int, default=5)
 _ap.add_argument("--prefix", default="step3")
+# Segment 1b STEP A (2026-09-30): generate for EVERY run, not only run 1; per-run answers are written
+# as {prefix}_answer_run{i}.md and per-run veto regexes recorded (hand-read stays the instrument for veto i).
+_ap.add_argument("--gen-all", action="store_true")
 _ARGS = _ap.parse_args()
 N = _ARGS.n
 OUT = HERE / f"{_ARGS.prefix}_trace.json"
@@ -168,6 +171,7 @@ async def main():
     # A fresh production-config retriever per run, so each run's wrappers record into
     # their own dict (the wrappers close over `rec`).
     runs = []
+    run_docs = []
     first_docs = first_status = None
     for i in range(N):
         r, _ = production_retriever()
@@ -217,37 +221,52 @@ async def main():
             print("      FINAL", d["source_type"], d["source_id"], "|", d["title"][:80], flush=True)
         if i == 0:
             first_docs, first_status = docs, status
+        run_docs.append((docs, status))
         runs.append(rec)
 
-    # ── generation, run 1 only ──
+    # ── generation: run 1 only by default; every run with --gen-all ──
     from api.rag.generator import AnswerGenerator
     from api.models.schemas import SourceType
     gen = AnswerGenerator()
-    gen_rec = {"retrieval_status": first_status, "n_docs": len(first_docs), "lang": "en",
-               "model_override": None, "model": gen.model}
-    if first_docs:
-        context = gen._build_context(first_docs)
-        has_tfda = any(getattr(d, "source_type", None) == SourceType.TFDA for d in first_docs)
-        gen_rec["system_prompt"] = gen._get_system_prompt("research")
-        gen_rec["user_prompt"] = gen._build_user_prompt(question, context, "research", "en", has_tfda)
-    else:
-        gen_rec["path"] = "FALLBACK (no documents) — FALLBACK_PROMPTS['research']"
-    answer, events = "", []
-    async for ev in gen.generate_stream(question=question, documents=first_docs,
-                                        retrieval_status=first_status, query_type="research",
-                                        lang="en", usage_out=[], model_override=None):
-        t = getattr(ev.type, "value", str(ev.type))
-        events.append(t)
-        if t == "answer":
-            answer += ev.content or ""
-    gen_rec["events"] = sorted(set(events))
-    gen_rec["answer"] = answer
-    gen_rec["veto_i_calcium_read_as_ccb"] = bool(re.search(r"calcium[- ]channel", answer, re.I))
-    gen_rec["veto_ii_mentions_thiazide_or_hypercalcemia"] = bool(
-        re.search(r"thiazide|hydrochlorothiazide|chlorthalidone|hypercalc", answer, re.I))
-    ANSWER_OUT.write_text(answer, encoding="utf-8")
 
-    res = {"query": QUERY, "db_branch": dev, "n_runs": N,
+    async def generate_once(docs, status):
+        gen_rec = {"retrieval_status": status, "n_docs": len(docs), "lang": "en",
+                   "model_override": None, "model": gen.model}
+        if docs:
+            context = gen._build_context(docs)
+            has_tfda = any(getattr(d, "source_type", None) == SourceType.TFDA for d in docs)
+            gen_rec["path"] = "GROUNDED (documents present)"
+            gen_rec["system_prompt"] = gen._get_system_prompt("research")
+            gen_rec["user_prompt"] = gen._build_user_prompt(question, context, "research", "en", has_tfda)
+        else:
+            gen_rec["path"] = "FALLBACK (no documents) — FALLBACK_PROMPTS['research']"
+        answer, events = "", []
+        async for ev in gen.generate_stream(question=question, documents=docs,
+                                            retrieval_status=status, query_type="research",
+                                            lang="en", usage_out=[], model_override=None):
+            t = getattr(ev.type, "value", str(ev.type))
+            events.append(t)
+            if t == "answer":
+                answer += ev.content or ""
+        gen_rec["events"] = sorted(set(events))
+        gen_rec["answer"] = answer
+        gen_rec["veto_i_calcium_read_as_ccb"] = bool(re.search(r"calcium[- ]channel", answer, re.I))
+        gen_rec["veto_ii_mentions_thiazide_or_hypercalcemia"] = bool(
+            re.search(r"thiazide|hydrochlorothiazide|chlorthalidone|hypercalc", answer, re.I))
+        return gen_rec
+
+    gen_rec = await generate_once(first_docs, first_status)
+    ANSWER_OUT.write_text(gen_rec["answer"], encoding="utf-8")
+    if _ARGS.gen_all:
+        runs[0]["generation"] = gen_rec
+        for k in range(1, len(run_docs)):
+            g = await generate_once(*run_docs[k])
+            runs[k]["generation"] = g
+            (HERE / f"{_ARGS.prefix}_answer_run{k + 1}.md").write_text(g["answer"], encoding="utf-8")
+            print(f"[gen run {k+1}] {g['path'][:9]} veto(i)regex={g['veto_i_calcium_read_as_ccb']} "
+                  f"veto(ii)={g['veto_ii_mentions_thiazide_or_hypercalcemia']}", flush=True)
+
+    res = {"query": QUERY, "db_branch": dev, "n_runs": N, "gen_all": _ARGS.gen_all,
            "config": {k: v for k, v in cfg.items() if k != "provenance"},
            "config_provenance": cfg.get("provenance"),
            "watch_moieties": WATCH_MOIETY, "runs": runs, "generation_run1": gen_rec}

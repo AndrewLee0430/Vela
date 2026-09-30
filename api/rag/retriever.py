@@ -302,7 +302,7 @@ class HybridRetriever:
         策略：
         - Query 1：機制導向（why / how it works）
         - Query 2：臨床導向（symptoms / management / dosing）
-        - Query 3：藥名/術語精確版（official drug names + MeSH terms）
+        - Query 3：藥名/術語精確版（INN names for the drugs the user NAMED + MeSH terms; never collapse a drug class into one drug pair）
 
         Examples:
           "warfarin 和阿斯匹靈一起安全嗎？"
@@ -336,10 +336,24 @@ class HybridRetriever:
                             "- \"bones feel sore\" → musculoskeletal pain, arthralgia "
                             "(NOT bone cancer)\n"
                             "Apply this same clinical reasoning to ALL languages and symptom descriptions.\n\n"
+                            # bp_calcium car (2026-09-29, tests/probes/bp_calcium/ verdicts A/C): a
+                            # class-level question ("BP meds with calcium") never produced a rewrite naming
+                            # the thiazide/hypercalcemia mechanism, so no source was ever asked for it.
+                            "STEP 1b — Confusable terms and class-level interactions:\n"
+                            "- CONFUSABLE TERMS: calcium, potassium, magnesium, iron or vitamin D taken as a "
+                            "co-administered SUPPLEMENT is NOT the drug class that shares the word "
+                            "(calcium channel blocker, potassium-sparing diuretic ...). Read it from context: "
+                            "when a supplement, food or OTC product is taken WITH a drug or drug class, "
+                            "treat it as a supplement.\n"
+                            "- CLASS-LEVEL INTERACTION QUESTIONS (one side is a drug CLASS or a lay term such as "
+                            "\"BP meds\", or a supplement/food): at least ONE query must name the specific known "
+                            "interaction as CLASS + MECHANISM + OUTCOME "
+                            "(e.g. \"thiazide diuretic calcium supplement hypercalcemia\"), not a single drug pair.\n\n"
                             "STEP 2 — Generate 3 queries from different angles:\n"
                             "1. Mechanism/pharmacology angle (how/why)\n"
                             "2. Clinical management angle (symptoms/treatment/dosing)\n"
-                            "3. Precise medical terminology angle (official drug names, MeSH terms)\n\n"
+                            "3. Precise medical terminology angle (INN names for the drugs the user NAMED, MeSH terms; "
+                            "never collapse a drug class into one drug pair)\n\n"
                             "Rules:\n"
                             "- Output ONLY valid JSON array with exactly 3 strings\n"
                             "- Each query: 4-8 words, English only, no punctuation\n"

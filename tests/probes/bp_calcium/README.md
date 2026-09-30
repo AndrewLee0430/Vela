@@ -170,3 +170,61 @@ founder's call**, not a tuning loop.
 
 **Spend:** logged **$0.937** (gpt-4.1 generations 58 calls $0.54 · rewrites 852 calls $0.20 · filter 209 $0.12 ·
 server-side judge 58 $0.05 · rerank 193 $0.03) + ≈ $0.04 unlogged ≈ **$0.98 of the US$5 cap**.
+
+## Segment 1b — gate (e) re-measured at N=8; edit RE-APPLIED (2026-09-30, base `f38307f`)
+
+**Founder ruling 2026-09-30:** the N=2 straddle gate had no discriminating power (the strategy side's own design error,
+recorded). **Pre-registered rule, written in baton §3b before any run:** PASS iff treatment_total(40) ≥ control_total(40) − 2
+AND no single query drops by more than 2 runs vs control.
+
+| query | control8 (prompt == `0b210da`, 03:16–03:25Z) | treatment8 (baton §2 edit + `:305` docstring, 03:26–03:34Z) | drop |
+|---|---|---|---|
+| warfarin+aspirin | 4/8 | 4/8 | 0 |
+| spironolactone | 8/8 | 8/8 | 0 |
+| warfarin+NSAID | 8/8 | 8/8 | 0 |
+| lithium+ibuprofen | 8/8 | 8/8 | 0 |
+| R07 beta-blocker | 8/8 | 8/8 | 0 |
+| **total** | **36/40** | **36/40** | **PASS** (36 ≥ 34; worst drop 0; 0 unusable runs either arm) |
+
+`step6_straddle.py --n 8` also captured every rewrite string per run: warfarin+aspirin rewrites are INN-pair strings in
+BOTH arms (neither new clause engages on a two-INN query), so the Segment-1 0/2 was drift, not the edit.
+
+**bp query at N=8 on the re-applied prompt** (`step3_trace.py --n 8 --prefix step7b --gen-all`; retrieval + generation
+each; veto (i) HAND-READ on all 8 answers per the founder's ship bar — *"does the answer answer a CCB question instead of the
+supplement question?"*):
+
+| run | DailyMed in pool | 34073-7 in FINAL | path | veto (i) hand-read | veto (ii) regex | FINAL |
+|---|---|---|---|---|---|---|
+| 1 | 1 | 1 | grounded | FALSE (IV-chloride framing) | TRUE | Calcium Chloride 34073-7 (FilterExempt re-add) |
+| 2 | 0 | 0 | grounded | FALSE | FALSE | PMID:16199918 (CCB drug-food interactions review) |
+| 3 | 1 | 1 | grounded | FALSE | TRUE | Calcium Chloride 34073-7 + PMID:38345765 (oral calcium citrate, elderly) |
+| 4 | 1 | 1 | grounded | FALSE | TRUE | HCTZ 34073-7 (FilterExempt re-add) |
+| 5 | 1 | 1 | grounded | FALSE (IV-chloride framing) | TRUE | Calcium Chloride 34073-7 + PMID:16199918 |
+| 6 | 2 | 2 | grounded | FALSE | TRUE | HCTZ + Calcium Chloride 34073-7 + PMID:16199918 (FilterExempt re-add) |
+| 7 | 2 | 2 | grounded | FALSE | TRUE | Calcium Chloride + HCTZ 34073-7 |
+| 8 | 2 | 2 | grounded | FALSE | TRUE | Calcium Chloride + HCTZ 34073-7 |
+| **rate** | | **7/8** | **8/8 grounded, 0 fallbacks** | **0/8 → SHIP BAR MET** | **7/8** | |
+
+Veto (i) hand-read: every answer treats the user's "calcium" as a calcium substance (supplement / citrate / chloride) and
+mentions CCBs only as a BP-drug CLASS the label says calcium blunts; none answers a CCB question in place of the
+supplement question. **Caveat recorded, not filed:** 6/8 answers frame calcium primarily around **IV calcium chloride**
+(the corpus's only calcium-side interaction sections are IV products — H8); runs 3 and 4 frame it as an oral supplement.
+Run 2 (no DailyMed in pool) is grounded on a CCB drug-food-interaction review and names no thiazide.
+
+**The floor-edge mechanism (why 7/8, not 8/8):** the label section enters only through specific phrasings the K=3 union
+happens to draw — `calcium channel blockers calcium supplement drug interaction` → Calcium Chloride 34073-7 at **0.6272**
+(runs 1, 3, 5, 7, 8); `thiazide diuretics calcium supplements drug interaction` → HCTZ 34073-7 at **0.6226** (runs 4, 6, 7, 8);
+a `…supplements…` variant at 0.6212 (run 6). `…supplement interaction elderly` scores **0.5993** and the flagship
+mechanism string `calcium supplement thiazide diuretic hypercalcemia risk` only **0.5646** — neither clears 0.6. This is
+the recorded K-union straddle mechanism (BACKLOG DailyMed-integration entry, "cosine flips across the 0.6 line") on a
+class-level query — cited, not re-filed. `[FilterExempt]` (surface iii) rescued the dropped section in runs 1, 4, 6.
+
+| artifact | what it is | what it does NOT support |
+|---|---|---|
+| `step6_straddle_control8.json` / `step6_straddle_treatment8.json` (`step6_straddle.py --n 8`, rewrites captured) | the two N=8 arms with timestamps | a rate beyond N=8; PubMed drift between arms (10 min apart) |
+| `step6_straddle_compare8.json` (`step6_compare_straddle.py`) | the pre-registered rule applied; per-query rewrite-set diffs | — |
+| `step7_rewrite.json` / `step7_trace.json` / `step7_answer_run1.md` | the first single-run confirm on the re-applied edit (0 DailyMed in pool → fallback) — superseded by step7b, kept as the run that surfaced the floor edge | anything rate-like (N=1) |
+| `step7b_trace.json` / `step7b_answer_run1..8.md` (`step3_trace.py --n 8 --gen-all`) | 8 retrievals + 8 generations, per-run cosines and prompts | the anonymous L0 path (fallback model); a rate beyond N=8 |
+| `step6_spend_seg1b.json` | `api_cost_log` since t1 = 2026-09-30T03:15:42Z | the unlogged pieces (embeddings; no judge ran in 1b) |
+
+**Spend (Segment 1b):** $0.15 logged of the US$1 cap. pytest: see baton §3b.

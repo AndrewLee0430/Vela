@@ -1,8 +1,9 @@
-# BP+CALCIUM car — Segment 1: rewrite disambiguation, ONE variable (built 2026-09-29 → REVERTED 2026-09-30)
+# BP+CALCIUM car — Segment 1: rewrite disambiguation, ONE variable (built 2026-09-29 → REVERTED 2026-09-30 → RE-APPLIED 2026-09-30, Segment 1b)
 
-**Car tag:** `bp_calcium`. **Mode:** BUILD LOCAL → **GATED → REVERTED.** The commit that adds this file carries
-**NO product code**: `api/rag/retriever.py` was edited, gated and restored byte-identical to `0b210da` inside the car.
-**NOT pushed, NOT deployed.** Prod = fly 260 at `bfb4a8fd5c9e96708bc73ab1b13f5a8244440d34`, unchanged.
+**Car tag:** `bp_calcium`. **Mode:** BUILD LOCAL → GATED → REVERTED (Segment 1, commit `f38307f`, product code net-zero)
+→ **Segment 1b: gate (e) re-measured at N=8 → PASS → the edit RE-APPLIED byte-identically (+ the `:305` docstring line);
+BUILT LOCAL — the Segment-1b commit carries `api/rag/retriever.py`.** **NOT pushed, NOT deployed.** Prod = fly 260 at
+`bfb4a8fd5c9e96708bc73ab1b13f5a8244440d34`, unchanged. Eye gate §5 BLANK for the founder; push + deploy pending authorization.
 **Base:** `0b210da04fa168a74efde0585a3d256f888fe3a1` (Rule 24 asserted: toplevel `C:/Users/andre/projects/Vela`).
 **Authority:** `tests/probes/bp_calcium/` verdicts A / B / C at `0b210da` (probe 1 `71936e8`, probe 2 `0b210da`).
 **Ledger pins at base (extraction §3 at `0b210da`, all MATCH):** STATE `1e4b845038df2619` · BACKLOG `be5c292f43454a57` ·
@@ -153,12 +154,21 @@ Artifacts: `tests/probes/bp_calcium/step6_*` (README "Segment 1 build" carries t
   entries (2)+(3) (R5); CANDIDATE ONLY = (i) re-measure (e) at N=8, (ii) Segment 2 generator branch.
 - **BACKLOG.md:** untouched.
 - All three ledgers: LF, 0 control bytes (asserted by the patch script and re-checked after).
+- **Segment 1b (this commit):** TECH_DEBT entry (1) gains a "→ RE-APPLIED" heading marker, a RESOLVED marker on its "Open
+  decision" bullet and one Segment-1b STATUS bullet (numbers as §3b); NAV dated block headed "NAV CHECKED 2026-09-30
+  (BP+CALCIUM CAR SEGMENT 1b": pre-change and post-change derives both total 196 with the same per-class split (delta 0,
+  no new entry — the floor edge is cited to the recorded K-union straddle mechanism, the PubMed drops to the
+  `_filter_by_relevance` [P2] entry); STATE header + Recently Shipped entry + Next Up line.
+- **Segment 1b closing gate:** `SENTRY_DSN= python -m pytest -q` on the re-applied edit → **480 passed / 28 skipped**
+  (= the Segment-1 baseline; 199 s). `git diff --stat` = `api/rag/retriever.py` + `tests/probes/bp_calcium/**` + the two
+  ledgers + this baton; BACKLOG untouched. No `[PRD X.Y]` on the commit: `docs/PRD.md` has no section on query rewriting
+  (the only "rewrite" hits are Explain-prompt items), so a reference would be invented.
 
-## §5 Local eye gate — MOOT while the edit is reverted (kept BLANK for a re-apply; localhost, Dev DB, Ctrl+Shift+R)
+## §5 Local eye gate — BLANK, founder fills (the edit is RE-APPLIED; localhost, Dev DB, Ctrl+Shift+R first)
 
 | # | step | expected | PASS/FAIL | note |
 |---|---|---|---|---|
-| 1 | click hero chip 2 on `/` (EN UI) | first paragraph is about calcium **supplements** and names thiazide / hypercalcemia | | |
+| 1 | click hero chip 2 on `/` (EN UI) | first paragraph is about calcium as a **supplement/substance** (not CCBs as the subject) and names thiazide / hypercalcemia | | expected rate from N=8 (`step7b`): thiazide → hypercalcemia named in **7/8**; **6/8 framed around IV calcium chloride** (the corpus's calcium-side sections are IV labels); 1/8 grounded on a CCB drug-food review only. A miss on one click is inside that rate — re-click once before calling FAIL |
 | 2 | same question typed in the zh-TW UI | same content, zh-TW prose | | |
 | 3 | CONTROL "metformin renal dosing" | unchanged in shape | | |
 | 4 | CONTROL 冠脂妥+warfarin | a DailyMed safety section still cited | | |
@@ -177,7 +187,8 @@ Artifacts: `tests/probes/bp_calcium/step6_*` (README "Segment 1 build" carries t
 
 ## §7 Rollback
 
-Already at base: `api/rag/retriever.py` == `0b210da`. Nothing else to roll back; no migration, no env, no secret.
+Segment 1b: `git checkout 0b210da -- api/rag/retriever.py` restores the prompt + docstring byte-identically; no migration,
+no env, no secret. (Segment 1 had already restored it once, commit `f38307f`.)
 
 ## §8 Candidate ONLY (founder to sequence)
 
@@ -185,3 +196,46 @@ Already at base: `api/rag/retriever.py` == `0b210da`. Nothing else to roll back;
   what's missing" (`api/rag/generator.py:441-447`) is obeyed LAST — after an adjacent question has been answered
   confidently. A branch that says so FIRST is the candidate.
 - **Re-measure (e) warfarin+aspirin at N=8 on both arms** before any re-apply of §2 (≈ $0.05).
+
+## §3b Segment 1b — gate (e) re-measured at N=8 (founder ruling 2026-09-30)
+
+**Ruling (verbatim):** "the N=2 straddle gate had no discriminating power (the strategy side's own design error, recorded).
+Re-measure BOTH arms at N=8 on all 5 straddle queries. Budget: ~80 retrieve() calls ≈ US$0.3; STOP above US$1."
+
+**PRE-REGISTERED RULE (verbatim, written before any run — 2026-09-30 03:15 UTC, at `f38307f`):**
+"PASS iff treatment_total(40) >= control_total(40) - 2 AND no single query drops by more than 2 runs vs control.
+FAIL otherwise -> the revert stands, record, STOP."
+
+Harness: `tests/probes/bp_calcium/step6_straddle.py --arm control8|treatment8 --n 8` (this run also captures every
+rewrite string per run, so edit-vs-drift on warfarin+aspirin is separable — the N=2 harness did not). Serial, one harness
+resident at a time; Dev DB; production-parity retriever via `_harness.py`.
+
+| step | arm | timestamp (UTC) | result |
+|---|---|---|---|
+| 1 | control8 at `f38307f` (prompt == `0b210da`) | 03:16:44 → 03:25:39 | **36/40** — warfarin+aspirin 4/8 · spironolactone 8/8 · warfarin+NSAID 8/8 · lithium+ibuprofen 8/8 · R07 8/8; 0 unusable |
+| 3 | treatment8 (baton §2 edit re-applied byte-identically — `git diff 0b210da` hunks verified identical — + the `:305` docstring line) | 03:26:34 → 03:34:54 | **36/40** — 4/8 · 8/8 · 8/8 · 8/8 · 8/8; 0 unusable |
+
+**Rule verdict: PASS** (36 ≥ 34; worst per-query drop 0). `step6_straddle_compare8.json`. The captured rewrites show the
+warfarin+aspirin strings are INN-pair phrasings in BOTH arms — neither new clause engages on a two-INN query — so the
+Segment-1 N=2 result (0/2 vs 1/2) was drift, not the edit.
+
+**STEP A (founder ruling 11:39) — bp query at N=8 on the re-applied prompt, retrieval + generation each** (`step7b_*`;
+the earlier single-run `step7` confirm had 0 DailyMed in pool → fallback, and is what surfaced the floor edge):
+
+| run | DailyMed in pool | 34073-7 in FINAL | path | veto (i) HAND-READ | veto (ii) |
+|---|---|---|---|---|---|
+| 1 | 1 | 1 | grounded | FALSE (IV-chloride framing) | TRUE |
+| 2 | 0 | 0 | grounded (PMID:16199918, CCB drug-food review) | FALSE | FALSE |
+| 3 | 1 | 1 | grounded | FALSE | TRUE |
+| 4 | 1 | 1 | grounded (HCTZ 34073-7) | FALSE | TRUE |
+| 5 | 1 | 1 | grounded | FALSE (IV-chloride framing) | TRUE |
+| 6 | 2 | 2 | grounded | FALSE | TRUE |
+| 7 | 2 | 2 | grounded | FALSE | TRUE |
+| 8 | 2 | 2 | grounded | FALSE | TRUE |
+| **rate** | | **7/8** | **8/8, 0 fallbacks** | **0/8 → SHIP BAR MET** | **7/8** |
+
+Floor-edge cosines: `calcium channel blockers calcium supplement drug interaction` → Calcium Chloride 34073-7 **0.6272**;
+`thiazide diuretics calcium supplements drug interaction` → HCTZ 34073-7 **0.6226**; `…supplement interaction elderly`
+**0.5993**; `calcium supplement thiazide diuretic hypercalcemia risk` **0.5646** (never clears). Recorded K-union straddle
+mechanism — cited on TECH_DEBT entry (1), no new entry (Rule 27). `[FilterExempt]` rescued the section in runs 1, 4, 6.
+pytest on the re-applied edit: see the closing-gate line in §4. Segment 1b spend: **$0.15** logged (cap US$1).

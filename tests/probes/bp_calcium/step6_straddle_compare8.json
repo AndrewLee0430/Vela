@@ -1,0 +1,316 @@
+{
+ "rule": "PASS iff treatment_total(40) >= control_total(40) - 2 AND no single query drops by more than 2 runs vs control",
+ "control": {
+  "started_utc": "2026-09-30T03:16:44Z",
+  "finished_utc": "2026-09-30T03:25:39Z",
+  "total": "36/40"
+ },
+ "treatment": {
+  "started_utc": "2026-09-30T03:26:34Z",
+  "finished_utc": "2026-09-30T03:34:54Z",
+  "total": "36/40"
+ },
+ "condition_total": {
+  "treatment_total": 36,
+  "control_total_minus_2": 34,
+  "met": true
+ },
+ "condition_per_query": {
+  "worst_drop": 0,
+  "met": true
+ },
+ "verdict": "PASS",
+ "rows": [
+  {
+   "id": "warfarin_aspirin",
+   "query": "warfarin aspirin bleeding risk interaction",
+   "control": "4/8",
+   "treatment": "4/8",
+   "drop": 0,
+   "control_unusable": 0,
+   "treatment_unusable": 0,
+   "control_distinct_rewrites": [
+    "anticoagulant antiplatelet combination INR monitoring",
+    "bleeding risk management warfarin aspirin therapy",
+    "warfarin aspirin bleeding risk management",
+    "warfarin aspirin bleeding risk mechanism",
+    "warfarin aspirin drug interaction anticoagulants",
+    "warfarin aspirin drug interaction hemorrhage",
+    "warfarin aspirin drug interaction hemorrhage risk",
+    "warfarin aspirin drug interaction pharmacology",
+    "warfarin aspirin hemorrhage pharmacodynamic interaction",
+    "warfarin aspirin interaction clinical management",
+    "warfarin aspirin pharmacodynamic interaction mechanism"
+   ],
+   "treatment_distinct_rewrites": [
+    "bleeding risk management warfarin aspirin combination",
+    "management bleeding risk warfarin aspirin",
+    "management bleeding risk warfarin aspirin combination",
+    "warfarin anticoagulants aspirin antiplatelet interaction",
+    "warfarin antiplatelet drug interaction hemorrhage",
+    "warfarin aspirin bleeding risk mechanism",
+    "warfarin aspirin combined therapy bleeding management",
+    "warfarin aspirin drug interaction hemorrhage risk",
+    "warfarin aspirin pharmacodynamic interaction bleeding",
+    "warfarin vitamin K antagonists aspirin drug interaction",
+    "warfarin vitamin k antagonists aspirin antiplatelet interaction",
+    "warfarin vitamin k antagonists aspirin drug interaction"
+   ],
+   "rewrites_only_in_treatment": [
+    "bleeding risk management warfarin aspirin combination",
+    "management bleeding risk warfarin aspirin",
+    "management bleeding risk warfarin aspirin combination",
+    "warfarin anticoagulants aspirin antiplatelet interaction",
+    "warfarin antiplatelet drug interaction hemorrhage",
+    "warfarin aspirin combined therapy bleeding management",
+    "warfarin aspirin pharmacodynamic interaction bleeding",
+    "warfarin vitamin K antagonists aspirin drug interaction",
+    "warfarin vitamin k antagonists aspirin antiplatelet interaction",
+    "warfarin vitamin k antagonists aspirin drug interaction"
+   ],
+   "rewrites_only_in_control": [
+    "anticoagulant antiplatelet combination INR monitoring",
+    "bleeding risk management warfarin aspirin therapy",
+    "warfarin aspirin bleeding risk management",
+    "warfarin aspirin drug interaction anticoagulants",
+    "warfarin aspirin drug interaction hemorrhage",
+    "warfarin aspirin drug interaction pharmacology",
+    "warfarin aspirin hemorrhage pharmacodynamic interaction",
+    "warfarin aspirin interaction clinical management",
+    "warfarin aspirin pharmacodynamic interaction mechanism"
+   ],
+   "treatment_runs_with_new_clause_term": 1,
+   "control_runs_with_new_clause_term": 8
+  },
+  {
+   "id": "spironolactone",
+   "query": "spironolactone potassium hyperkalemia contraindication",
+   "control": "8/8",
+   "treatment": "8/8",
+   "drop": 0,
+   "control_unusable": 0,
+   "treatment_unusable": 0,
+   "control_distinct_rewrites": [
+    "spironolactone contraindications hyperkalemia",
+    "spironolactone contraindications hyperkalemia MeSH",
+    "spironolactone contraindications hyperkalemia risk",
+    "spironolactone hyperkalemia management guidelines",
+    "spironolactone hyperkalemia management treatment",
+    "spironolactone hyperkalemia mechanism",
+    "spironolactone hyperkalemia pathophysiology",
+    "spironolactone hyperkalemia risk mechanism",
+    "spironolactone potassium hyperkalemia contraindications",
+    "spironolactone potassium monitoring management",
+    "spironolactone potassium regulation mechanism"
+   ],
+   "treatment_distinct_rewrites": [
+    "potassium sparing diuretics hyperkalemia adverse effects",
+    "potassium sparing diuretics hyperkalemia clinical guidelines",
+    "potassium sparing diuretics hyperkalemia contraindications",
+    "spironolactone hyperkalemia management contraindications",
+    "spironolactone hyperkalemia management guidelines",
+    "spironolactone hyperkalemia management treatment",
+    "spironolactone hyperkalemia risk management guidelines",
+    "spironolactone induced hyperkalemia management",
+    "spironolactone potassium hyperkalemia contraindication",
+    "spironolactone potassium hyperkalemia contraindications",
+    "spironolactone potassium hyperkalemia mechanism",
+    "spironolactone potassium interaction contraindications",
+    "spironolactone potassium sparing diuretic contraindications",
+    "spironolactone potassium sparing diuretic hyperkalemia",
+    "spironolactone potassium sparing diuretic hyperkalemia contraindication",
+    "spironolactone potassium sparing diuretic hyperkalemia contraindications",
+    "spironolactone potassium sparing diuretic hyperkalemia risk",
+    "spironolactone potassium supplement hyperkalemia mechanism",
+    "spironolactone potassium supplement hyperkalemia risk"
+   ],
+   "rewrites_only_in_treatment": [
+    "potassium sparing diuretics hyperkalemia adverse effects",
+    "potassium sparing diuretics hyperkalemia clinical guidelines",
+    "potassium sparing diuretics hyperkalemia contraindications",
+    "spironolactone hyperkalemia management contraindications",
+    "spironolactone hyperkalemia risk management guidelines",
+    "spironolactone induced hyperkalemia management",
+    "spironolactone potassium hyperkalemia contraindication",
+    "spironolactone potassium hyperkalemia mechanism",
+    "spironolactone potassium interaction contraindications",
+    "spironolactone potassium sparing diuretic contraindications",
+    "spironolactone potassium sparing diuretic hyperkalemia",
+    "spironolactone potassium sparing diuretic hyperkalemia contraindication",
+    "spironolactone potassium sparing diuretic hyperkalemia contraindications",
+    "spironolactone potassium sparing diuretic hyperkalemia risk",
+    "spironolactone potassium supplement hyperkalemia mechanism",
+    "spironolactone potassium supplement hyperkalemia risk"
+   ],
+   "rewrites_only_in_control": [
+    "spironolactone contraindications hyperkalemia",
+    "spironolactone contraindications hyperkalemia MeSH",
+    "spironolactone contraindications hyperkalemia risk",
+    "spironolactone hyperkalemia mechanism",
+    "spironolactone hyperkalemia pathophysiology",
+    "spironolactone hyperkalemia risk mechanism",
+    "spironolactone potassium monitoring management",
+    "spironolactone potassium regulation mechanism"
+   ],
+   "treatment_runs_with_new_clause_term": 8,
+   "control_runs_with_new_clause_term": 8
+  },
+  {
+   "id": "warfarin_nsaid",
+   "query": "warfarin NSAID bleeding interaction",
+   "control": "8/8",
+   "treatment": "8/8",
+   "drop": 0,
+   "control_unusable": 0,
+   "treatment_unusable": 0,
+   "control_distinct_rewrites": [
+    "management warfarin nsaid induced bleeding",
+    "warfarin nsaid bleeding risk mechanism",
+    "warfarin nsaid coadministration bleeding management",
+    "warfarin nsaid drug interaction management",
+    "warfarin nsaid drug interaction pharmacology",
+    "warfarin nsaid hemorrhage pharmacology",
+    "warfarin nsaid induced hemorrhage management",
+    "warfarin nsaids drug interaction pharmacology"
+   ],
+   "treatment_distinct_rewrites": [
+    "management bleeding risk warfarin nsaid coadministration",
+    "management warfarin nsaid induced bleeding",
+    "warfarin NSAID bleeding interaction",
+    "warfarin nonsteroidal anti inflammatory drugs drug interaction",
+    "warfarin nsaid bleeding risk mechanism",
+    "warfarin nsaid drug interaction hemorrhage",
+    "warfarin nsaid drug interaction hemorrhage risk",
+    "warfarin nsaid drug interaction pharmacology",
+    "warfarin nsaid induced hemorrhage management",
+    "warfarin nsaid pharmacodynamic bleeding risk",
+    "warfarin nsaid pharmacodynamic interaction bleeding"
+   ],
+   "rewrites_only_in_treatment": [
+    "management bleeding risk warfarin nsaid coadministration",
+    "warfarin NSAID bleeding interaction",
+    "warfarin nonsteroidal anti inflammatory drugs drug interaction",
+    "warfarin nsaid drug interaction hemorrhage",
+    "warfarin nsaid drug interaction hemorrhage risk",
+    "warfarin nsaid pharmacodynamic bleeding risk",
+    "warfarin nsaid pharmacodynamic interaction bleeding"
+   ],
+   "rewrites_only_in_control": [
+    "warfarin nsaid coadministration bleeding management",
+    "warfarin nsaid drug interaction management",
+    "warfarin nsaid hemorrhage pharmacology",
+    "warfarin nsaids drug interaction pharmacology"
+   ],
+   "treatment_runs_with_new_clause_term": 7,
+   "control_runs_with_new_clause_term": 8
+  },
+  {
+   "id": "lithium_ibuprofen",
+   "query": "lithium ibuprofen interaction toxicity",
+   "control": "8/8",
+   "treatment": "8/8",
+   "drop": 0,
+   "control_unusable": 0,
+   "treatment_unusable": 0,
+   "control_distinct_rewrites": [
+    "lithium carbonate nonsteroidal anti inflammatory drugs adverse effects",
+    "lithium carbonate nonsteroidal anti inflammatory drugs interaction",
+    "lithium ibuprofen interaction pharmacokinetics",
+    "lithium ibuprofen pharmacokinetic interaction mechanism",
+    "lithium ibuprofen toxicity clinical management",
+    "lithium ibuprofen toxicity management treatment",
+    "lithium nonsteroidal anti inflammatory drugs drug interaction",
+    "lithium nonsteroidal anti inflammatory drugs interaction",
+    "lithium nonsteroidal antiinflammatory drugs drug interaction",
+    "lithium toxicity risk with NSAIDs management",
+    "management lithium toxicity ibuprofen coadministration",
+    "management lithium toxicity ibuprofen use"
+   ],
+   "treatment_distinct_rewrites": [
+    "lithium ibuprofen drug interaction adverse effects",
+    "lithium ibuprofen drug interaction nephrotoxicity",
+    "lithium ibuprofen drug interaction pharmacology",
+    "lithium ibuprofen toxicity clinical management",
+    "lithium ibuprofen toxicity management guidelines",
+    "lithium nonsteroidal anti inflammatory drug interaction mechanism"
+   ],
+   "rewrites_only_in_treatment": [
+    "lithium ibuprofen drug interaction adverse effects",
+    "lithium ibuprofen drug interaction nephrotoxicity",
+    "lithium ibuprofen drug interaction pharmacology",
+    "lithium ibuprofen toxicity management guidelines",
+    "lithium nonsteroidal anti inflammatory drug interaction mechanism"
+   ],
+   "rewrites_only_in_control": [
+    "lithium carbonate nonsteroidal anti inflammatory drugs adverse effects",
+    "lithium carbonate nonsteroidal anti inflammatory drugs interaction",
+    "lithium ibuprofen interaction pharmacokinetics",
+    "lithium ibuprofen pharmacokinetic interaction mechanism",
+    "lithium ibuprofen toxicity management treatment",
+    "lithium nonsteroidal anti inflammatory drugs drug interaction",
+    "lithium nonsteroidal anti inflammatory drugs interaction",
+    "lithium nonsteroidal antiinflammatory drugs drug interaction",
+    "lithium toxicity risk with NSAIDs management",
+    "management lithium toxicity ibuprofen coadministration",
+    "management lithium toxicity ibuprofen use"
+   ],
+   "treatment_runs_with_new_clause_term": 8,
+   "control_runs_with_new_clause_term": 8
+  },
+  {
+   "id": "r07_betablocker",
+   "query": "What are the contraindications for using beta-blockers?",
+   "control": "8/8",
+   "treatment": "8/8",
+   "drop": 0,
+   "control_unusable": 0,
+   "treatment_unusable": 0,
+   "control_distinct_rewrites": [
+    "beta adrenergic antagonists adverse effects management",
+    "beta adrenergic antagonists contraindications",
+    "beta adrenergic antagonists contraindications MeSH",
+    "beta blocker contraindications clinical management",
+    "beta blocker contraindications mechanism",
+    "beta blocker use contraindications management",
+    "beta blockers contraindications clinical guidelines",
+    "beta blockers contraindications clinical management",
+    "beta blockers contraindications heart failure asthma",
+    "beta blockers contraindications mechanism"
+   ],
+   "treatment_distinct_rewrites": [
+    "beta adrenergic antagonist adverse effects contraindications",
+    "beta adrenergic antagonist adverse effects management",
+    "beta adrenergic antagonists adverse effects contraindications",
+    "beta adrenergic antagonists adverse effects management",
+    "beta blocker contraindications clinical guidelines",
+    "beta blocker contraindications heart failure asthma",
+    "beta blocker use asthma COPD contraindication",
+    "beta blocker use contraindications MeSH terms",
+    "beta blockers contraindications clinical guidelines",
+    "beta blockers contraindications heart failure asthma",
+    "beta blockers heart failure asthma contraindications"
+   ],
+   "rewrites_only_in_treatment": [
+    "beta adrenergic antagonist adverse effects contraindications",
+    "beta adrenergic antagonist adverse effects management",
+    "beta adrenergic antagonists adverse effects contraindications",
+    "beta blocker contraindications clinical guidelines",
+    "beta blocker contraindications heart failure asthma",
+    "beta blocker use asthma COPD contraindication",
+    "beta blocker use contraindications MeSH terms",
+    "beta blockers heart failure asthma contraindications"
+   ],
+   "rewrites_only_in_control": [
+    "beta adrenergic antagonists contraindications",
+    "beta adrenergic antagonists contraindications MeSH",
+    "beta blocker contraindications clinical management",
+    "beta blocker contraindications mechanism",
+    "beta blocker use contraindications management",
+    "beta blockers contraindications clinical management",
+    "beta blockers contraindications mechanism"
+   ],
+   "treatment_runs_with_new_clause_term": 0,
+   "control_runs_with_new_clause_term": 8
+  }
+ ]
+}
