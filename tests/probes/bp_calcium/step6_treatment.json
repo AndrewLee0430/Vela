@@ -1,0 +1,405 @@
+{
+ "car": "bp_calcium Segment 1 — _rewrite_query prompt edit, ONE variable",
+ "base": "0b210da04fa168a74efde0585a3d256f888fe3a1",
+ "killed_partial_runs": "2026-09-29 golden treatment (18/20 done) + canary treatment (3.4/6 queries) were stopped by Claude Code for host memory pressure; their logs are scratch only and are NOT evidence. All treatment numbers below come from the 2026-09-30 SERIAL re-runs.",
+ "bp_query": {
+  "rewrites_control": {
+   "runs_naming_thiazide": "0/5",
+   "runs_naming_supplement": "5/5",
+   "runs_naming_hypercalcemia": "0/5",
+   "runs_naming_ccb": "0/5",
+   "strings_naming_thiazide": "0/15",
+   "strings_naming_supplement": "5/15"
+  },
+  "rewrites_treatment": {
+   "runs_naming_thiazide": "5/5",
+   "runs_naming_supplement": "5/5",
+   "runs_naming_hypercalcemia": "2/5",
+   "runs_naming_ccb": "2/5",
+   "strings_naming_thiazide": "5/15",
+   "strings_naming_supplement": "15/15"
+  },
+  "trace_control_probe1": {
+   "runs": [
+    {
+     "run": 1,
+     "status": "ok",
+     "pool": 10,
+     "dailymed_in_pool": [],
+     "dailymed_safety_in_final": [],
+     "on_target_title_entered": 0,
+     "on_target_title_kept_by_filter": 0,
+     "on_target_title_final": 0,
+     "filter": "10->2",
+     "final": [
+      "PMID:15927106 | [Antihypertensive drug-drug interactions].",
+      "PMID:3154329 | Calcium channel antagonists. Part III: Use and comparative efficacy in"
+     ]
+    },
+    {
+     "run": 2,
+     "status": "ok",
+     "pool": 15,
+     "dailymed_in_pool": [],
+     "dailymed_safety_in_final": [],
+     "on_target_title_entered": 0,
+     "on_target_title_kept_by_filter": 0,
+     "on_target_title_final": 0,
+     "filter": "15->1",
+     "final": [
+      "PMID:31825114 | Hypertension in older adults: Assessment, management, and challenges."
+     ]
+    },
+    {
+     "run": 3,
+     "status": "ok",
+     "pool": 15,
+     "dailymed_in_pool": [],
+     "dailymed_safety_in_final": [],
+     "on_target_title_entered": 2,
+     "on_target_title_kept_by_filter": 1,
+     "on_target_title_final": 1,
+     "filter": "15->3",
+     "final": [
+      "PMID:31825114 | Hypertension in older adults: Assessment, management, and challenges.",
+      "PMID:15927106 | [Antihypertensive drug-drug interactions].",
+      "PMID:3415787 | Alert to users of calcium supplements as antihypertensive agents due t"
+     ]
+    },
+    {
+     "run": 4,
+     "status": "irrelevant",
+     "pool": 11,
+     "dailymed_in_pool": [],
+     "dailymed_safety_in_final": [],
+     "on_target_title_entered": 3,
+     "on_target_title_kept_by_filter": 0,
+     "on_target_title_final": 0,
+     "filter": "11->0",
+     "final": []
+    },
+    {
+     "run": 5,
+     "status": "ok",
+     "pool": 15,
+     "dailymed_in_pool": [],
+     "dailymed_safety_in_final": [],
+     "on_target_title_entered": 2,
+     "on_target_title_kept_by_filter": 1,
+     "on_target_title_final": 1,
+     "filter": "15->3",
+     "final": [
+      "PMID:31825114 | Hypertension in older adults: Assessment, management, and challenges.",
+      "PMID:3533638 | Metabolic considerations and cellular mechanism related to calcium's a",
+      "PMID:3415787 | Alert to users of calcium supplements as antihypertensive agents due t"
+     ]
+    }
+   ],
+   "generation_run1": {
+    "model": "gpt-4.1",
+    "n_docs": 2,
+    "veto_i_regex": true,
+    "veto_ii_regex": false
+   }
+  },
+  "trace_treatment": {
+   "runs": [
+    {
+     "run": 1,
+     "status": "ok",
+     "pool": 12,
+     "dailymed_in_pool": [
+      "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7"
+     ],
+     "dailymed_safety_in_final": [
+      "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7"
+     ],
+     "on_target_title_entered": 3,
+     "on_target_title_kept_by_filter": 1,
+     "on_target_title_final": 1,
+     "filter": "12->2",
+     "final": [
+      "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7 | Calcium Chloride (CALCIUM CHLORIDE) — Drug Interactions",
+      "PMID:38345765 | Evaluating adherence, tolerability and safety of oral calcium citrate "
+     ]
+    },
+    {
+     "run": 2,
+     "status": "ok",
+     "pool": 14,
+     "dailymed_in_pool": [
+      "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7",
+      "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34073-7"
+     ],
+     "dailymed_safety_in_final": [
+      "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7",
+      "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34073-7"
+     ],
+     "on_target_title_entered": 5,
+     "on_target_title_kept_by_filter": 1,
+     "on_target_title_final": 1,
+     "filter": "14->2",
+     "final": [
+      "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7 | Calcium Chloride (CALCIUM CHLORIDE) — Drug Interactions",
+      "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34073-7 | Hydrochlorothiazide (Hydrochlorothiazide) — Drug Interactions"
+     ]
+    }
+   ],
+   "generation_run1": {
+    "model": "gpt-4.1",
+    "n_docs": 2,
+    "veto_i_regex": true,
+    "veto_ii_regex": true
+   }
+  },
+  "veto_i_hand_read_treatment_run1": "FALSE — the answer opens 'blood pressure (BP) medications with calcium supplements'; its only CCB mentions are CCBs as a BP-drug CLASS whose effect IV calcium chloride may blunt (from the cited label). The regex `calcium[- ]channel` fires on that and is too coarse for veto (i).",
+  "veto_ii_hand_read_treatment_run1": "TRUE — 'Hypercalcemia Risk: For patients on drugs that increase hypercalcemia risk (e.g., thiazide diuretics, vitamin D, lithium) ... increase the frequency of serum calcium monitoring' [1]"
+ },
+ "golden": {
+  "control": {
+   "summary": {
+    "PASS": 18,
+    "WARN": 2,
+    "FAIL": 0,
+    "ERROR": 0
+   },
+   "floor_met": true,
+   "reason": "RESEARCH GOLDEN FLOOR MET (founder ruling 2026-08-21) — 18 PASS / 2 WARN / 0 FAIL over 20 golden cases (floor 18/2/0).",
+   "file": "20260929_195639"
+  },
+  "treatment": {
+   "summary": {
+    "PASS": 20,
+    "WARN": 0,
+    "FAIL": 0,
+    "ERROR": 0
+   },
+   "floor_met": true,
+   "reason": "RESEARCH GOLDEN FLOOR MET (founder ruling 2026-08-21) — 20 PASS / 0 WARN / 0 FAIL over 20 golden cases (floor 18/2/0).",
+   "file": "20260930_095410"
+  },
+  "pools_identical": 1,
+  "pools_same_set": 1,
+  "verdict_moved_on_same_pool_set (judge variance, NOT attributable)": [],
+  "verdict_moved_on_different_pool (attributable-by-pool, adjudicate)": [
+   "R03",
+   "R20"
+  ]
+ },
+ "canary": {
+  "control": {
+   "verdict": {
+    "queries": 6,
+    "passed": 6,
+    "failed": 0,
+    "failed_on_wrong_object_citation": [],
+    "failed_on_insufficient_runs": [],
+    "verdict": "PASS",
+    "criterion": "wrong-object safety LOINC in the final top-N (AMENDED 2026-08-21; the old criterion was ANY safety LOINC and is still recorded per query as safety_cited)",
+    "old_criterion_would_have_failed": [],
+    "exit_code": 0,
+    "reasons": []
+   },
+   "git_head": "0b210da04fa168a74efde0585a3d256f888fe3a1",
+   "started": "2026-09-29 11:46:51Z",
+   "per_query": {
+    "metformin_moa": {
+     "wrong_object_cited": 0,
+     "safety_cited": 0,
+     "usable_runs": 8,
+     "errored": 0
+    },
+    "statin_moa": {
+     "wrong_object_cited": 0,
+     "safety_cited": 0,
+     "usable_runs": 8,
+     "errored": 0
+    },
+    "glp1_weight": {
+     "wrong_object_cited": 0,
+     "safety_cited": 0,
+     "usable_runs": 8,
+     "errored": 0
+    },
+    "statin_efficacy": {
+     "wrong_object_cited": 0,
+     "safety_cited": 0,
+     "usable_runs": 8,
+     "errored": 0
+    },
+    "sglt2_cv": {
+     "wrong_object_cited": 0,
+     "safety_cited": 0,
+     "usable_runs": 8,
+     "errored": 0
+    },
+    "statin_moa_tracked": {
+     "wrong_object_cited": 0,
+     "safety_cited": 0,
+     "usable_runs": 8,
+     "errored": 0
+    }
+   },
+   "keys_seen": [
+    "aggregate",
+    "config",
+    "criterion_amendment",
+    "exclusions",
+    "generated",
+    "git_head",
+    "historical",
+    "queries",
+    "reproducibility_note",
+    "self_test",
+    "started",
+    "string_provenance",
+    "wall_clock"
+   ]
+  },
+  "treatment": {
+   "verdict": {
+    "queries": 6,
+    "passed": 6,
+    "failed": 0,
+    "failed_on_wrong_object_citation": [],
+    "failed_on_insufficient_runs": [],
+    "verdict": "PASS",
+    "criterion": "wrong-object safety LOINC in the final top-N (AMENDED 2026-08-21; the old criterion was ANY safety LOINC and is still recorded per query as safety_cited)",
+    "old_criterion_would_have_failed": [],
+    "exit_code": 0,
+    "reasons": []
+   },
+   "git_head": "0b210da04fa168a74efde0585a3d256f888fe3a1",
+   "started": "2026-09-30 01:54:52Z",
+   "per_query": {
+    "metformin_moa": {
+     "wrong_object_cited": 0,
+     "safety_cited": 0,
+     "usable_runs": 8,
+     "errored": 0
+    },
+    "statin_moa": {
+     "wrong_object_cited": 0,
+     "safety_cited": 0,
+     "usable_runs": 8,
+     "errored": 0
+    },
+    "glp1_weight": {
+     "wrong_object_cited": 0,
+     "safety_cited": 0,
+     "usable_runs": 8,
+     "errored": 0
+    },
+    "statin_efficacy": {
+     "wrong_object_cited": 0,
+     "safety_cited": 0,
+     "usable_runs": 8,
+     "errored": 0
+    },
+    "sglt2_cv": {
+     "wrong_object_cited": 0,
+     "safety_cited": 0,
+     "usable_runs": 8,
+     "errored": 0
+    },
+    "statin_moa_tracked": {
+     "wrong_object_cited": 0,
+     "safety_cited": 0,
+     "usable_runs": 8,
+     "errored": 0
+    }
+   },
+   "keys_seen": [
+    "aggregate",
+    "config",
+    "criterion_amendment",
+    "exclusions",
+    "generated",
+    "git_head",
+    "historical",
+    "queries",
+    "reproducibility_note",
+    "self_test",
+    "started",
+    "string_provenance",
+    "wall_clock"
+   ]
+  }
+ },
+ "danger": {
+  "control": {
+   "violations": 0,
+   "rechecks": [],
+   "timestamp": "20260929_195853"
+  },
+  "treatment": {
+   "violations": 0,
+   "rechecks": [],
+   "timestamp": "20260930_100706"
+  }
+ },
+ "straddle": {
+  "control": {
+   "warfarin_aspirin": "1/2",
+   "spironolactone": "2/2",
+   "warfarin_nsaid": "2/2",
+   "lithium_ibuprofen": "1/2",
+   "r07_betablocker": "2/2"
+  },
+  "treatment": {
+   "warfarin_aspirin": "0/2",
+   "spironolactone": "2/2",
+   "warfarin_nsaid": "2/2",
+   "lithium_ibuprofen": "1/2",
+   "r07_betablocker": "2/2"
+  }
+ },
+ "spend": {
+  "since_utc": "2026-09-29T11:45:35",
+  "label": "final",
+  "rows": [
+   {
+    "feature": "research",
+    "model": "gpt-4.1",
+    "calls": 58,
+    "prompt_tokens": 139661,
+    "completion_tokens": 32840,
+    "usd": 0.542
+   },
+   {
+    "feature": "research/rewrite_query",
+    "model": "gpt-4.1-mini",
+    "calls": 852,
+    "prompt_tokens": 381420,
+    "completion_tokens": 27408,
+    "usd": 0.1964
+   },
+   {
+    "feature": "research/relevance_filter",
+    "model": "gpt-4.1-mini",
+    "calls": 209,
+    "prompt_tokens": 291220,
+    "completion_tokens": 2770,
+    "usd": 0.1209
+   },
+   {
+    "feature": "research/llm_judge",
+    "model": "gpt-4.1-mini",
+    "calls": 58,
+    "prompt_tokens": 67300,
+    "completion_tokens": 12933,
+    "usd": 0.0476
+   },
+   {
+    "feature": "research/rerank",
+    "model": "gpt-4o-mini",
+    "calls": 193,
+    "prompt_tokens": 164481,
+    "completion_tokens": 9037,
+    "usd": 0.0301
+   }
+  ],
+  "logged_usd_total": 0.937,
+  "at_utc": "2026-09-30T02:10:40.825056"
+ }
+}

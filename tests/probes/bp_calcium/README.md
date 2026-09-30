@@ -125,3 +125,48 @@ CCB mentions.
 and the orphaned wrapper is GC-closed together with the shared buffer. `step5_precautions.py`
 keeps both wrappers alive; the first attempt failed before any network call, so no budget
 was spent.
+
+## Segment 1 build — rewrite disambiguation, ONE variable (2026-09-29 → 30, base `0b210da`) — BUILT, GATED, **REVERTED**
+
+**The edit:** one additive block in the `_rewrite_query` system prompt (`api/rag/retriever.py`) — "STEP 1b —
+Confusable terms and class-level interactions" (supplement ≠ the drug class sharing the word; a class-level
+interaction question must carry one CLASS + MECHANISM + OUTCOME query) — and the clause `(official drug names,
+MeSH terms)` re-worded to `(INN names for the drugs the user NAMED, MeSH terms; never collapse a drug class into
+one drug pair)`. Nothing else in the prompt changed. **Verbatim diff: `docs/batons/bp_calcium_car_20260929.md` §2.**
+**Status: REVERTED** (`git checkout -- api/rag/retriever.py`, byte-identical to `0b210da`) on gate (e) below, per the
+founder's rule "any regression in (c)(d)(e) → REVERT, record, STOP. Do not tune the prompt in a loop."
+
+**Killed partial runs are NOT evidence.** On 2026-09-29 the first treatment golden (18/20 done) and canary (3.4/6
+queries) runs were stopped by Claude Code for host memory pressure; their logs stay in scratch. Every treatment number
+below is from the 2026-09-30 SERIAL re-runs (one harness resident at a time). Spend: `step6_spend_final.json`.
+
+| gate | control (at `0b210da`, 2026-09-29) | treatment (edit applied, 2026-09-30) | verdict |
+|---|---|---|---|
+| (a) bp query — rewrites (5 runs × 3 strings) | thiazide **0/5** runs (0/15 strings) · supplement 5/5 runs (5/15 strings) · hypercalcemia 0/5 | thiazide **5/5** runs (5/15 strings) · supplement 5/5 (15/15 strings) · hypercalcemia 2/5 · a "calcium channel blockers + calcium supplement interaction" string in 2/5 (CCB as a BP-drug CLASS with the supplement — the on-target reading, hand-read) | changed as intended |
+| (a) bp query — pool / FINAL (N=2 treatment; control = probe-1 run 1) | control: 0 DailyMed in pool, FINAL = 2 PubMed (one CCB review) | run 1: pool 12, **Calcium Chloride 34073-7 enters at 0.6272** (was 0.5919), FINAL = that section + PMID:38345765 (oral calcium citrate in elderly) · run 2: pool 14, Calcium Chloride 0.6272 + **HCTZ 34073-7 0.6226**, FINAL = both. On-target PubMed titles entered 3 / 5 but the filter kept 1 / 0 (CATS PMID:33178509 dropped) | the mechanism section now reaches the generator |
+| (a) bp query — generation run 1 (gpt-4.1, authenticated path) | veto (i) CCB reading **TRUE** · veto (ii) thiazide/hypercalcemia **FALSE** | veto (ii) **TRUE** ("Hypercalcemia Risk: … thiazide diuretics, vitamin D, lithium … increase the frequency of serum calcium monitoring" [1]) · veto (i) **regex TRUE / hand-read FALSE, regex too coarse** — the answer opens "with calcium **supplements**"; its CCB mentions are CCBs as a BP class whose effect IV calcium chloride may blunt (from the cited label) | PASS bar met on the hand-read; the regex is the wrong instrument |
+| (b) golden R01–R20, floor 18/2/0 | **18 / 2 / 0** — floor MET (R03, R20 WARN; `golden_results_20260929_195639`, 19:56 +08:00) | **20 / 0 / 0** — floor MET (`golden_results_20260930_095410`, 09:54 +08:00). Pools identical 1/20 (R13); **0 verdicts moved on an identical pool**; R03 and R20 WARN→PASS on DIFFERENT pools (R20 gained three DailyMed 34066-1 Boxed Warnings); DailyMed 17→18, PubMed 63→73 docs across the 20 FINAL pools | no breach; the two moves are attributable-by-pool, not separable from PubMed drift |
+| (c) canary, 6 × N=8 | PASS · wrong-object 0/8 ×6 · old criterion (any safety) 0/8 ×6 · 48/48 usable | PASS · wrong-object 0/8 ×6 · old criterion 0/8 ×6 · 48/48 usable (the owned metformin citation seen once in the killed partial did not recur) | unchanged |
+| (d) danger-path, 3 queries | 0 hard violations · 0 rechecks · exit 0 | 0 · 0 · exit 0 | unchanged |
+| (e) straddle, 5 × N=2 — runs with a whitelisted DailyMed safety section in FINAL | **8/10** — warfarin+aspirin **1/2** · spironolactone 2/2 · warfarin+NSAID 2/2 · lithium+ibuprofen 1/2 · R07 2/2 | **7/10** — warfarin+aspirin **0/2** · 2/2 · 2/2 · 1/2 · 2/2 | **REGRESSION on the stated metric → REVERTED** |
+
+**What (e) does and does not support.** N=2 per query. The control's own warfarin+aspirin pair was {2 sections, 0
+sections} — the same swing the treatment shows as {0, 0}. The straddle harness does not capture rewrite strings, so
+whether the 0/2 is the edit or PubMed/LLM nondeterminism is **not separable** here. The query names two INNs and no
+supplement or class, so neither new clause applies to it on its face — that is a reading, not a measurement. The rule
+was applied as written; **whether to re-measure that one query at N=8 on both arms (~16 retrievals, ≈ $0.05) is the
+founder's call**, not a tuning loop.
+
+| artifact | what it is | what it does NOT support |
+|---|---|---|
+| `step6_treatment_rewrite.json` (`step2_rewrite.py step6_treatment`) | 5 rewrites + 1 union under the edit | a rate beyond N=5 |
+| `step6_treatment_trace.json` / `step6_treatment_answer_run1.md` (`step3_trace.py --n 2 --prefix step6_treatment`, singleton re-wrap fixed) | 2 retrievals + 1 generation under the edit | the anonymous L0 path; N=2 |
+| `step6_golden_{control,treatment}.json` + `step6_golden_compare.json` (`step6_compare_golden.py`) | the two `--filter R` runs and their per-case pool_identity diff; floor via the runner's own `research_golden_floor` | separating PubMed drift from the edit (rewrites not captured by the runner); the pre-top_k pool |
+| `step6_canary_{control,treatment}.json` (`canary_gate.py`, output moved out of `canary/`) | the two 48-call gates, both criteria per query | — |
+| `step6_danger_{control,treatment}.json` | the two 3-query danger-path runs | — |
+| `step6_straddle_{control,treatment}.json` (`step6_straddle.py`) | N=2 per straddle query, production retriever | attribution (no rewrite capture); statistical power at N=2 |
+| `step6_spend_final.json` (`step6_spend.py`) | `api_cost_log` SELECT since t0 = 2026-09-29T11:45:35Z, grouped by feature/model | the runner's own judge (40 gpt-4.1-mini calls, ≈ $0.03), the danger-path judge (6 calls), embeddings — all unlogged; the killed partial runs ARE included (real spend) |
+| `step6_treatment.json` (`step6_collect.py`) | the machine-readable summary of everything above, derived not typed | — |
+
+**Spend:** logged **$0.937** (gpt-4.1 generations 58 calls $0.54 · rewrites 852 calls $0.20 · filter 209 $0.12 ·
+server-side judge 58 $0.05 · rerank 193 $0.03) + ≈ $0.04 unlogged ≈ **$0.98 of the US$5 cap**.

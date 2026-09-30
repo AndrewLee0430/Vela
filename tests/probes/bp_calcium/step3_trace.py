@@ -30,8 +30,17 @@ import numpy as np
 from _harness import QUERY, assert_dev_db, production_retriever
 
 HERE = Path(__file__).resolve().parent
-OUT = HERE / "step3_trace.json"
-N = 5
+# Defaults reproduce the probe-1 artifact names. The Segment-1 TREATMENT run passes
+# `--n 2 --prefix step6_treatment` so the committed control (step3_trace.json) is never
+# overwritten.
+import argparse  # noqa: E402
+_ap = argparse.ArgumentParser()
+_ap.add_argument("--n", type=int, default=5)
+_ap.add_argument("--prefix", default="step3")
+_ARGS = _ap.parse_args()
+N = _ARGS.n
+OUT = HERE / f"{_ARGS.prefix}_trace.json"
+ANSWER_OUT = HERE / f"{_ARGS.prefix}_answer_run1.md"
 
 WATCH_MOIETY = {
     # thiazide side (derived key set, step1)
@@ -86,14 +95,21 @@ def instrument(r, rec):
             return w
         setattr(r, name, mk(orig, name))
 
+    # The DailyMed store is a process SINGLETON (get_dailymed_store), so it must be
+    # wrapped ONCE; the wrapper records into whichever rec is CURRENT. The first
+    # version re-wrapped it per run and runs 2-5 hit the previous run's popped key
+    # ("DailyMed search error: '_dm_emb'") — documented in README "Harness defect".
     store = r.dailymed_store
-    orig_emb = store._get_embedding
+    if not getattr(store, "_bp_wrapped", False):
+        orig_emb = store._get_embedding
 
-    async def emb(text):
-        e = await orig_emb(text)
-        rec["_dm_emb"].append((text, e))
-        return e
-    store._get_embedding = emb
+        async def emb(text):
+            e = await orig_emb(text)
+            store._bp_current["_dm_emb"].append((text, e))
+            return e
+        store._get_embedding = emb
+        store._bp_wrapped = True
+    store._bp_current = rec
 
     orig_f = r._filter_by_relevance
 
@@ -229,7 +245,7 @@ async def main():
     gen_rec["veto_i_calcium_read_as_ccb"] = bool(re.search(r"calcium[- ]channel", answer, re.I))
     gen_rec["veto_ii_mentions_thiazide_or_hypercalcemia"] = bool(
         re.search(r"thiazide|hydrochlorothiazide|chlorthalidone|hypercalc", answer, re.I))
-    (HERE / "step3_answer_run1.md").write_text(answer, encoding="utf-8")
+    ANSWER_OUT.write_text(answer, encoding="utf-8")
 
     res = {"query": QUERY, "db_branch": dev, "n_runs": N,
            "config": {k: v for k, v in cfg.items() if k != "provenance"},

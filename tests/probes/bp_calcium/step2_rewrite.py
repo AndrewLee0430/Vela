@@ -15,7 +15,11 @@ from pathlib import Path
 
 from _harness import QUERY, assert_dev_db, production_retriever
 
-OUT = Path(__file__).resolve().parent / "step2_rewrite.json"
+import sys  # noqa: E402
+# Default reproduces the probe-1 artifact; the Segment-1 TREATMENT run passes a prefix
+# (`step6_treatment`) so the committed control is never overwritten.
+_PREFIX = sys.argv[1] if len(sys.argv) > 1 else "step2"
+OUT = Path(__file__).resolve().parent / f"{_PREFIX}_rewrite.json"
 
 MARKERS = {
     "ccb": re.compile(r"calcium channel|\bCCB\b|amlodipine|nifedipine|diltiazem|verapamil|felodipine|dihydropyridine", re.I),

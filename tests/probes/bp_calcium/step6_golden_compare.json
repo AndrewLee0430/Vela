@@ -1,0 +1,616 @@
+{
+ "control": {
+  "summary": {
+   "PASS": 18,
+   "WARN": 2,
+   "FAIL": 0,
+   "ERROR": 0
+  },
+  "floor_met": true,
+  "reason": "RESEARCH GOLDEN FLOOR MET (founder ruling 2026-08-21) — 18 PASS / 2 WARN / 0 FAIL over 20 golden cases (floor 18/2/0).",
+  "file": "20260929_195639"
+ },
+ "treatment": {
+  "summary": {
+   "PASS": 20,
+   "WARN": 0,
+   "FAIL": 0,
+   "ERROR": 0
+  },
+  "floor_met": true,
+  "reason": "RESEARCH GOLDEN FLOOR MET (founder ruling 2026-08-21) — 20 PASS / 0 WARN / 0 FAIL over 20 golden cases (floor 18/2/0).",
+  "file": "20260930_095410"
+ },
+ "cases": [
+  {
+   "id": "R01",
+   "control": "PASS",
+   "treatment": "PASS",
+   "pool_identical": false,
+   "pool_same_set_reordered": false,
+   "control_pool": [
+    "DailyMed:1f8833f9-1232-4aa7-a0d4-04a9f87dc2f0#34070-3",
+    "PMID:25536258",
+    "PMID:26773926",
+    "DailyMed:fb832474-88d9-4e29-95cd-fbc446944cc4#43685-7"
+   ],
+   "treatment_pool": [
+    "DailyMed:1f8833f9-1232-4aa7-a0d4-04a9f87dc2f0#34070-3",
+    "PMID:25536258",
+    "PMID:31187887",
+    "PMID:26773926",
+    "DailyMed:fb832474-88d9-4e29-95cd-fbc446944cc4#43685-7"
+   ],
+   "only_control": [],
+   "only_treatment": [
+    "PMID:31187887"
+   ]
+  },
+  {
+   "id": "R02",
+   "control": "PASS",
+   "treatment": "PASS",
+   "pool_identical": false,
+   "pool_same_set_reordered": false,
+   "control_pool": [
+    "PMID:27052224"
+   ],
+   "treatment_pool": [
+    "PMID:40545747",
+    "PMID:29602404",
+    "PMID:10757223",
+    "PMID:37831122"
+   ],
+   "only_control": [
+    "PMID:27052224"
+   ],
+   "only_treatment": [
+    "PMID:10757223",
+    "PMID:29602404",
+    "PMID:37831122",
+    "PMID:40545747"
+   ]
+  },
+  {
+   "id": "R03",
+   "control": "WARN",
+   "treatment": "PASS",
+   "pool_identical": false,
+   "pool_same_set_reordered": false,
+   "control_pool": [
+    "PMID:22047781",
+    "PMID:28279251",
+    "PMID:12496498",
+    "PMID:40023176"
+   ],
+   "treatment_pool": [
+    "PMID:31533990",
+    "PMID:42377292",
+    "PMID:39680399",
+    "PMID:39716733"
+   ],
+   "only_control": [
+    "PMID:12496498",
+    "PMID:22047781",
+    "PMID:28279251",
+    "PMID:40023176"
+   ],
+   "only_treatment": [
+    "PMID:31533990",
+    "PMID:39680399",
+    "PMID:39716733",
+    "PMID:42377292"
+   ],
+   "control_missing": [
+    "mentions CHA2DS2-VASc or stroke risk scoring"
+   ],
+   "treatment_missing": []
+  },
+  {
+   "id": "R04",
+   "control": "PASS",
+   "treatment": "PASS",
+   "pool_identical": false,
+   "pool_same_set_reordered": false,
+   "control_pool": [
+    "PMID:12067471",
+    "PMID:24657242",
+    "PMID:28057795",
+    "PMID:15559032"
+   ],
+   "treatment_pool": [
+    "PMID:11349148",
+    "PMID:12067471",
+    "PMID:24657242"
+   ],
+   "only_control": [
+    "PMID:15559032",
+    "PMID:28057795"
+   ],
+   "only_treatment": [
+    "PMID:11349148"
+   ]
+  },
+  {
+   "id": "R05",
+   "control": "PASS",
+   "treatment": "PASS",
+   "pool_identical": false,
+   "pool_same_set_reordered": false,
+   "control_pool": [
+    "PMID:31523132",
+    "PMID:37309284",
+    "PMID:38926083"
+   ],
+   "treatment_pool": [
+    "PMID:35551099",
+    "PMID:37309284",
+    "DailyMed:f7c7ffdd-8270-4030-bc1e-a1cb28a6de56#34073-7",
+    "PMID:31523132",
+    "PMID:22563571"
+   ],
+   "only_control": [
+    "PMID:38926083"
+   ],
+   "only_treatment": [
+    "DailyMed:f7c7ffdd-8270-4030-bc1e-a1cb28a6de56#34073-7",
+    "PMID:22563571",
+    "PMID:35551099"
+   ]
+  },
+  {
+   "id": "R06",
+   "control": "PASS",
+   "treatment": "PASS",
+   "pool_identical": false,
+   "pool_same_set_reordered": false,
+   "control_pool": [
+    "PMID:22315270",
+    "PMID:30482768",
+    "PMID:42092507",
+    "PMID:31155728",
+    "PMID:33095876"
+   ],
+   "treatment_pool": [
+    "PMID:22315270",
+    "PMID:32195628",
+    "PMID:30482768",
+    "PMID:32337112",
+    "PMID:27230048"
+   ],
+   "only_control": [
+    "PMID:31155728",
+    "PMID:33095876",
+    "PMID:42092507"
+   ],
+   "only_treatment": [
+    "PMID:27230048",
+    "PMID:32195628",
+    "PMID:32337112"
+   ]
+  },
+  {
+   "id": "R07",
+   "control": "PASS",
+   "treatment": "PASS",
+   "pool_identical": false,
+   "pool_same_set_reordered": false,
+   "control_pool": [
+    "DailyMed:0283bc9d-6998-493a-824a-d4c85f704111#43685-7",
+    "DailyMed:595cc3d5-1306-4828-aefa-5595219ffd62#43685-7",
+    "DailyMed:8b8ad213-1dc8-454e-a524-075685c0e1a8#43685-7",
+    "DailyMed:fb2fe258-fe2e-47f6-8adf-ca75bf6f90af#34073-7",
+    "DailyMed:746db603-a6e1-4dc3-c2d8-92314419098c#34073-7"
+   ],
+   "treatment_pool": [
+    "DailyMed:4ef5d75f-ca30-cd4a-e063-6394a90a8a43#34070-3",
+    "DailyMed:22b95e96-ead9-4149-badb-7d33077e82ec#34070-3",
+    "DailyMed:99a715a0-4579-410c-b102-7ef6fab8db55#34070-3",
+    "DailyMed:0283bc9d-6998-493a-824a-d4c85f704111#43685-7",
+    "PMID:38597063"
+   ],
+   "only_control": [
+    "DailyMed:595cc3d5-1306-4828-aefa-5595219ffd62#43685-7",
+    "DailyMed:746db603-a6e1-4dc3-c2d8-92314419098c#34073-7",
+    "DailyMed:8b8ad213-1dc8-454e-a524-075685c0e1a8#43685-7",
+    "DailyMed:fb2fe258-fe2e-47f6-8adf-ca75bf6f90af#34073-7"
+   ],
+   "only_treatment": [
+    "DailyMed:22b95e96-ead9-4149-badb-7d33077e82ec#34070-3",
+    "DailyMed:4ef5d75f-ca30-cd4a-e063-6394a90a8a43#34070-3",
+    "DailyMed:99a715a0-4579-410c-b102-7ef6fab8db55#34070-3",
+    "PMID:38597063"
+   ]
+  },
+  {
+   "id": "R08",
+   "control": "PASS",
+   "treatment": "PASS",
+   "pool_identical": false,
+   "pool_same_set_reordered": false,
+   "control_pool": [
+    "PMID:26653848",
+    "PMID:15134467",
+    "PMID:31887781",
+    "PMID:35253137",
+    "PMID:2030640"
+   ],
+   "treatment_pool": [
+    "PMID:41294093",
+    "PMID:41876873",
+    "PMID:31887781",
+    "PMID:19482214",
+    "PMID:26323750"
+   ],
+   "only_control": [
+    "PMID:15134467",
+    "PMID:2030640",
+    "PMID:26653848",
+    "PMID:35253137"
+   ],
+   "only_treatment": [
+    "PMID:19482214",
+    "PMID:26323750",
+    "PMID:41294093",
+    "PMID:41876873"
+   ]
+  },
+  {
+   "id": "R09",
+   "control": "PASS",
+   "treatment": "PASS",
+   "pool_identical": false,
+   "pool_same_set_reordered": false,
+   "control_pool": [
+    "DailyMed:16ebe1f9-501d-468b-a37d-f6a46f8f32d1#34066-1",
+    "PMID:3308295",
+    "DailyMed:16ebe1f9-501d-468b-a37d-f6a46f8f32d1#43685-7",
+    "PMID:30390660",
+    "PMID:28953792"
+   ],
+   "treatment_pool": [
+    "PMID:3308295",
+    "DailyMed:16ebe1f9-501d-468b-a37d-f6a46f8f32d1#43685-7",
+    "DailyMed:16ebe1f9-501d-468b-a37d-f6a46f8f32d1#34066-1"
+   ],
+   "only_control": [
+    "PMID:28953792",
+    "PMID:30390660"
+   ],
+   "only_treatment": []
+  },
+  {
+   "id": "R10",
+   "control": "PASS",
+   "treatment": "PASS",
+   "pool_identical": false,
+   "pool_same_set_reordered": false,
+   "control_pool": [
+    "PMID:39265879",
+    "PMID:40687894",
+    "PMID:2979993",
+    "PMID:3886755",
+    "PMID:24883458"
+   ],
+   "treatment_pool": [
+    "PMID:27041802",
+    "PMID:21262953",
+    "PMID:2520037",
+    "PMID:40687894",
+    "PMID:20568489"
+   ],
+   "only_control": [
+    "PMID:24883458",
+    "PMID:2979993",
+    "PMID:3886755",
+    "PMID:39265879"
+   ],
+   "only_treatment": [
+    "PMID:20568489",
+    "PMID:21262953",
+    "PMID:2520037",
+    "PMID:27041802"
+   ]
+  },
+  {
+   "id": "R11",
+   "control": "PASS",
+   "treatment": "PASS",
+   "pool_identical": false,
+   "pool_same_set_reordered": false,
+   "control_pool": [
+    "DailyMed:1f8833f9-1232-4aa7-a0d4-04a9f87dc2f0#34070-3",
+    "DailyMed:fb832474-88d9-4e29-95cd-fbc446944cc4#34070-3",
+    "PMID:25536258",
+    "PMID:38837240",
+    "DailyMed:fb832474-88d9-4e29-95cd-fbc446944cc4#43685-7"
+   ],
+   "treatment_pool": [
+    "DailyMed:1f8833f9-1232-4aa7-a0d4-04a9f87dc2f0#34070-3",
+    "DailyMed:fb832474-88d9-4e29-95cd-fbc446944cc4#34070-3",
+    "PMID:32097995",
+    "PMID:31187887",
+    "PMID:36189689"
+   ],
+   "only_control": [
+    "DailyMed:fb832474-88d9-4e29-95cd-fbc446944cc4#43685-7",
+    "PMID:25536258",
+    "PMID:38837240"
+   ],
+   "only_treatment": [
+    "PMID:31187887",
+    "PMID:32097995",
+    "PMID:36189689"
+   ]
+  },
+  {
+   "id": "R12",
+   "control": "PASS",
+   "treatment": "PASS",
+   "pool_identical": false,
+   "pool_same_set_reordered": false,
+   "control_pool": [
+    "PMID:30691551",
+    "DailyMed:fe0ced75-ccbf-4d2e-bd0d-b57e60ab913f#34073-7",
+    "PMID:19276776",
+    "DailyMed:f1d77dba-9dae-4f30-b3e3-b4898993f865#34073-7",
+    "PMID:33279389"
+   ],
+   "treatment_pool": [
+    "DailyMed:fe0ced75-ccbf-4d2e-bd0d-b57e60ab913f#34073-7",
+    "DailyMed:bfe5cfb9-591d-4df8-12a3-6555cde3185d#34073-7",
+    "PMID:33279389",
+    "DailyMed:f1d77dba-9dae-4f30-b3e3-b4898993f865#34073-7",
+    "PMID:32100736"
+   ],
+   "only_control": [
+    "PMID:19276776",
+    "PMID:30691551"
+   ],
+   "only_treatment": [
+    "DailyMed:bfe5cfb9-591d-4df8-12a3-6555cde3185d#34073-7",
+    "PMID:32100736"
+   ]
+  },
+  {
+   "id": "R13",
+   "control": "PASS",
+   "treatment": "PASS",
+   "pool_identical": true,
+   "pool_same_set_reordered": false,
+   "control_pool": [
+    "PMID:27785526",
+    "PMID:17267456",
+    "PMID:21813162"
+   ],
+   "treatment_pool": [
+    "PMID:27785526",
+    "PMID:17267456",
+    "PMID:21813162"
+   ],
+   "only_control": [],
+   "only_treatment": []
+  },
+  {
+   "id": "R14",
+   "control": "PASS",
+   "treatment": "PASS",
+   "pool_identical": false,
+   "pool_same_set_reordered": false,
+   "control_pool": [
+    "PMID:32981932",
+    "PMID:36086982",
+    "PMID:17297209"
+   ],
+   "treatment_pool": [
+    "PMID:26391145",
+    "PMID:18839161",
+    "PMID:37311917",
+    "PMID:7995265",
+    "PMID:17297209"
+   ],
+   "only_control": [
+    "PMID:32981932",
+    "PMID:36086982"
+   ],
+   "only_treatment": [
+    "PMID:18839161",
+    "PMID:26391145",
+    "PMID:37311917",
+    "PMID:7995265"
+   ]
+  },
+  {
+   "id": "R15",
+   "control": "PASS",
+   "treatment": "PASS",
+   "pool_identical": false,
+   "pool_same_set_reordered": false,
+   "control_pool": [
+    "PMID:8975463"
+   ],
+   "treatment_pool": [
+    "PMID:9475822",
+    "PMID:37575780",
+    "PMID:37175923",
+    "PMID:15225114",
+    "PMID:16643427"
+   ],
+   "only_control": [
+    "PMID:8975463"
+   ],
+   "only_treatment": [
+    "PMID:15225114",
+    "PMID:16643427",
+    "PMID:37175923",
+    "PMID:37575780",
+    "PMID:9475822"
+   ]
+  },
+  {
+   "id": "R16",
+   "control": "PASS",
+   "treatment": "PASS",
+   "pool_identical": false,
+   "pool_same_set_reordered": false,
+   "control_pool": [
+    "PMID:32322101",
+    "PMID:27682515",
+    "PMID:35453005",
+    "DailyMed:213f0930-4a4a-4894-90b9-70c12daaa093#34066-1",
+    "DailyMed:198a4140-f4c0-4478-9157-ee1d68d0bb96#34066-1"
+   ],
+   "treatment_pool": [
+    "PMID:32322101",
+    "PMID:29468706",
+    "PMID:20883058",
+    "PMID:35453005",
+    "PMID:34376069"
+   ],
+   "only_control": [
+    "DailyMed:198a4140-f4c0-4478-9157-ee1d68d0bb96#34066-1",
+    "DailyMed:213f0930-4a4a-4894-90b9-70c12daaa093#34066-1",
+    "PMID:27682515"
+   ],
+   "only_treatment": [
+    "PMID:20883058",
+    "PMID:29468706",
+    "PMID:34376069"
+   ]
+  },
+  {
+   "id": "R17",
+   "control": "PASS",
+   "treatment": "PASS",
+   "pool_identical": false,
+   "pool_same_set_reordered": false,
+   "control_pool": [
+    "PMID:38599220",
+    "PMID:39038086",
+    "PMID:32247565",
+    "PMID:38242567",
+    "PMID:37261665"
+   ],
+   "treatment_pool": [
+    "PMID:30166073",
+    "PMID:34078616",
+    "PMID:32270731",
+    "PMID:38213748",
+    "PMID:29602648"
+   ],
+   "only_control": [
+    "PMID:32247565",
+    "PMID:37261665",
+    "PMID:38242567",
+    "PMID:38599220",
+    "PMID:39038086"
+   ],
+   "only_treatment": [
+    "PMID:29602648",
+    "PMID:30166073",
+    "PMID:32270731",
+    "PMID:34078616",
+    "PMID:38213748"
+   ]
+  },
+  {
+   "id": "R18",
+   "control": "PASS",
+   "treatment": "PASS",
+   "pool_identical": false,
+   "pool_same_set_reordered": false,
+   "control_pool": [
+    "PMID:37212306",
+    "PMID:36958647",
+    "PMID:19217515",
+    "PMID:22560377",
+    "PMID:27199064"
+   ],
+   "treatment_pool": [
+    "PMID:37212306",
+    "PMID:36958647",
+    "PMID:35955495",
+    "PMID:22001973",
+    "PMID:31468006"
+   ],
+   "only_control": [
+    "PMID:19217515",
+    "PMID:22560377",
+    "PMID:27199064"
+   ],
+   "only_treatment": [
+    "PMID:22001973",
+    "PMID:31468006",
+    "PMID:35955495"
+   ]
+  },
+  {
+   "id": "R19",
+   "control": "PASS",
+   "treatment": "PASS",
+   "pool_identical": false,
+   "pool_same_set_reordered": false,
+   "control_pool": [
+    "PMID:30862698",
+    "PMID:20736235"
+   ],
+   "treatment_pool": [
+    "PMID:38252170",
+    "PMID:20736235",
+    "PMID:41331481",
+    "PMID:30862698"
+   ],
+   "only_control": [],
+   "only_treatment": [
+    "PMID:38252170",
+    "PMID:41331481"
+   ]
+  },
+  {
+   "id": "R20",
+   "control": "WARN",
+   "treatment": "PASS",
+   "pool_identical": false,
+   "pool_same_set_reordered": false,
+   "control_pool": [
+    "DailyMed:97a9e8bf-91ed-4256-97d4-f9504bb01373#34066-1",
+    "PMID:9761159",
+    "PMID:9201818",
+    "PMID:33779043",
+    "PMID:32815286"
+   ],
+   "treatment_pool": [
+    "DailyMed:97a9e8bf-91ed-4256-97d4-f9504bb01373#34066-1",
+    "DailyMed:94a59260-d2b6-464a-b5b9-bbc599e57e10#34066-1",
+    "DailyMed:18f1a4fc-dfca-4dde-8a11-f7e6d9e5656d#34066-1",
+    "DailyMed:5ddba454-f3e6-43c2-a7a6-58365d297213#34066-1",
+    "PMID:21823839"
+   ],
+   "only_control": [
+    "PMID:32815286",
+    "PMID:33779043",
+    "PMID:9201818",
+    "PMID:9761159"
+   ],
+   "only_treatment": [
+    "DailyMed:18f1a4fc-dfca-4dde-8a11-f7e6d9e5656d#34066-1",
+    "DailyMed:5ddba454-f3e6-43c2-a7a6-58365d297213#34066-1",
+    "DailyMed:94a59260-d2b6-464a-b5b9-bbc599e57e10#34066-1",
+    "PMID:21823839"
+   ],
+   "control_missing": [
+    "mentions safer alternative such as methyldopa or labetalol"
+   ],
+   "treatment_missing": []
+  }
+ ],
+ "n_cases": 20,
+ "pools_identical": 1,
+ "pools_same_set": 1,
+ "verdict_moved_on_same_pool_set (judge variance, NOT attributable)": [],
+ "verdict_moved_on_different_pool (attributable-by-pool, adjudicate)": [
+  "R03",
+  "R20"
+ ],
+ "note": "pool = FINAL top_k handed to the generator (runner capture scope); PubMed is live, so a different pool can be PubMed drift as well as the edit — the rewrite strings are not captured by the runner, so drift vs edit is NOT separable here beyond the pool diff"
+}

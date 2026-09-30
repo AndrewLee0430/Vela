@@ -1,0 +1,213 @@
+{
+ "arm": "control",
+ "n_per_query": 2,
+ "db_branch": "ep-spring-voice-a127ye10",
+ "config": {
+  "enable_local": false,
+  "enable_pubmed": true,
+  "enable_fda": true,
+  "enable_tfda": true,
+  "enable_dailymed": true,
+  "local_threshold": 0.6,
+  "max_results": 5,
+  "source_weight_active": true,
+  "annotate_research_question": true,
+  "arm": "rewrite (full pipeline — real retrieve())",
+  "n_runs": 8,
+  "min_usable_runs": 6
+ },
+ "metric": "count of runs (of N) whose FINAL top_k contains >=1 whitelisted DailyMed safety section",
+ "rows": [
+  {
+   "id": "warfarin_aspirin",
+   "query": "warfarin aspirin bleeding risk interaction",
+   "runs": [
+    {
+     "run": 1,
+     "status": "ok",
+     "seconds": 21.6,
+     "final": [
+      "DailyMed:91fa852c-b43d-4a55-983b-74aa6827125d#34073-7",
+      "DailyMed:d3b30c68-cf45-4b46-8ba6-72090f7ba01a#34073-7",
+      "PMID:26548565",
+      "PMID:22867637"
+     ],
+     "dm_safety_in_final": [
+      "DailyMed:91fa852c-b43d-4a55-983b-74aa6827125d#34073-7",
+      "DailyMed:d3b30c68-cf45-4b46-8ba6-72090f7ba01a#34073-7"
+     ]
+    },
+    {
+     "run": 2,
+     "status": "ok",
+     "seconds": 23.9,
+     "final": [
+      "PMID:22867637",
+      "PMID:26548565"
+     ],
+     "dm_safety_in_final": []
+    }
+   ],
+   "runs_with_safety_in_final": 1
+  },
+  {
+   "id": "spironolactone",
+   "query": "spironolactone potassium hyperkalemia contraindication",
+   "runs": [
+    {
+     "run": 1,
+     "status": "ok",
+     "seconds": 21.4,
+     "final": [
+      "DailyMed:8123cce8-42e3-49e4-a488-3bb836ecccd0#34070-3",
+      "PMID:20960534",
+      "PMID:39566872",
+      "PMID:32520623"
+     ],
+     "dm_safety_in_final": [
+      "DailyMed:8123cce8-42e3-49e4-a488-3bb836ecccd0#34070-3"
+     ]
+    },
+    {
+     "run": 2,
+     "status": "ok",
+     "seconds": 21.7,
+     "final": [
+      "DailyMed:8123cce8-42e3-49e4-a488-3bb836ecccd0#34070-3",
+      "PMID:39566872",
+      "PMID:30176673",
+      "PMID:32520623",
+      "PMID:39584253"
+     ],
+     "dm_safety_in_final": [
+      "DailyMed:8123cce8-42e3-49e4-a488-3bb836ecccd0#34070-3"
+     ]
+    }
+   ],
+   "runs_with_safety_in_final": 2
+  },
+  {
+   "id": "warfarin_nsaid",
+   "query": "warfarin NSAID bleeding interaction",
+   "runs": [
+    {
+     "run": 1,
+     "status": "ok",
+     "seconds": 21.2,
+     "final": [
+      "DailyMed:91fa852c-b43d-4a55-983b-74aa6827125d#34073-7",
+      "PMID:33769581",
+      "PMID:40833918",
+      "DailyMed:198a4140-f4c0-4478-9157-ee1d68d0bb96#34073-7",
+      "PMID:24496251"
+     ],
+     "dm_safety_in_final": [
+      "DailyMed:91fa852c-b43d-4a55-983b-74aa6827125d#34073-7",
+      "DailyMed:198a4140-f4c0-4478-9157-ee1d68d0bb96#34073-7"
+     ]
+    },
+    {
+     "run": 2,
+     "status": "ok",
+     "seconds": 23.0,
+     "final": [
+      "PMID:33769581",
+      "PMID:40833918",
+      "DailyMed:198a4140-f4c0-4478-9157-ee1d68d0bb96#34073-7",
+      "PMID:28196633",
+      "PMID:8898449"
+     ],
+     "dm_safety_in_final": [
+      "DailyMed:198a4140-f4c0-4478-9157-ee1d68d0bb96#34073-7"
+     ]
+    }
+   ],
+   "runs_with_safety_in_final": 2
+  },
+  {
+   "id": "lithium_ibuprofen",
+   "query": "lithium ibuprofen interaction toxicity",
+   "runs": [
+    {
+     "run": 1,
+     "status": "ok",
+     "seconds": 20.6,
+     "final": [
+      "PMID:2258452",
+      "PMID:32340061",
+      "PMID:41620355",
+      "PMID:42559461"
+     ],
+     "dm_safety_in_final": []
+    },
+    {
+     "run": 2,
+     "status": "ok",
+     "seconds": 19.8,
+     "final": [
+      "DailyMed:16ebe1f9-501d-468b-a37d-f6a46f8f32d1#34073-7",
+      "PMID:2258452",
+      "PMID:14658947",
+      "DailyMed:8a023942-01e8-4849-aa3c-1a640ffc7fd3#34073-7"
+     ],
+     "dm_safety_in_final": [
+      "DailyMed:16ebe1f9-501d-468b-a37d-f6a46f8f32d1#34073-7",
+      "DailyMed:8a023942-01e8-4849-aa3c-1a640ffc7fd3#34073-7"
+     ]
+    }
+   ],
+   "runs_with_safety_in_final": 1
+  },
+  {
+   "id": "r07_betablocker",
+   "query": "What are the contraindications for using beta-blockers?",
+   "runs": [
+    {
+     "run": 1,
+     "status": "ok",
+     "seconds": 20.5,
+     "final": [
+      "DailyMed:0283bc9d-6998-493a-824a-d4c85f704111#43685-7",
+      "DailyMed:595cc3d5-1306-4828-aefa-5595219ffd62#43685-7",
+      "DailyMed:8b8ad213-1dc8-454e-a524-075685c0e1a8#43685-7",
+      "DailyMed:fb2fe258-fe2e-47f6-8adf-ca75bf6f90af#34073-7",
+      "DailyMed:746db603-a6e1-4dc3-c2d8-92314419098c#34073-7"
+     ],
+     "dm_safety_in_final": [
+      "DailyMed:0283bc9d-6998-493a-824a-d4c85f704111#43685-7",
+      "DailyMed:595cc3d5-1306-4828-aefa-5595219ffd62#43685-7",
+      "DailyMed:8b8ad213-1dc8-454e-a524-075685c0e1a8#43685-7",
+      "DailyMed:fb2fe258-fe2e-47f6-8adf-ca75bf6f90af#34073-7",
+      "DailyMed:746db603-a6e1-4dc3-c2d8-92314419098c#34073-7"
+     ]
+    },
+    {
+     "run": 2,
+     "status": "ok",
+     "seconds": 21.2,
+     "final": [
+      "DailyMed:0283bc9d-6998-493a-824a-d4c85f704111#43685-7",
+      "DailyMed:595cc3d5-1306-4828-aefa-5595219ffd62#43685-7",
+      "DailyMed:8b8ad213-1dc8-454e-a524-075685c0e1a8#43685-7",
+      "DailyMed:746db603-a6e1-4dc3-c2d8-92314419098c#34073-7",
+      "PMID:29349"
+     ],
+     "dm_safety_in_final": [
+      "DailyMed:0283bc9d-6998-493a-824a-d4c85f704111#43685-7",
+      "DailyMed:595cc3d5-1306-4828-aefa-5595219ffd62#43685-7",
+      "DailyMed:8b8ad213-1dc8-454e-a524-075685c0e1a8#43685-7",
+      "DailyMed:746db603-a6e1-4dc3-c2d8-92314419098c#34073-7"
+     ]
+    }
+   ],
+   "runs_with_safety_in_final": 2
+  }
+ ],
+ "summary": {
+  "warfarin_aspirin": "1/2",
+  "spironolactone": "2/2",
+  "warfarin_nsaid": "2/2",
+  "lithium_ibuprofen": "1/2",
+  "r07_betablocker": "2/2"
+ }
+}
