@@ -40,6 +40,12 @@ _ap.add_argument("--prefix", default="step3")
 # Segment 1b STEP A (2026-09-30): generate for EVERY run, not only run 1; per-run answers are written
 # as {prefix}_answer_run{i}.md and per-run veto regexes recorded (hand-read stays the instrument for veto i).
 _ap.add_argument("--gen-all", action="store_true")
+# Segment 1c (2026-10-01): --l0 binds generation to the anonymous path's model
+# (generator._fallback_model, as api/server.py's is_anonymous branch does); --query / --lang
+# run another hero-chip string (e.g. the zh-TW chip) with the UI locale's answer language.
+_ap.add_argument("--l0", action="store_true")
+_ap.add_argument("--query", default=None)
+_ap.add_argument("--lang", default="en")
 _ARGS = _ap.parse_args()
 N = _ARGS.n
 OUT = HERE / f"{_ARGS.prefix}_trace.json"
@@ -161,8 +167,10 @@ async def main():
     dev = assert_dev_db()
     r, cfg = production_retriever()
     from api.server import _annotate_research_question
-    question = _annotate_research_question(QUERY)
-    assert question == QUERY, "English query must pass through the CJK-gated annotator unchanged"
+    Q = _ARGS.query or QUERY
+    question = _annotate_research_question(Q)
+    if not re.search(r"[一-鿿]", Q):
+        assert question == Q, "English query must pass through the CJK-gated annotator unchanged"
 
     cap = Cap()
     logging.getLogger("api.rag.retriever").addHandler(cap)
@@ -229,30 +237,40 @@ async def main():
     from api.models.schemas import SourceType
     gen = AnswerGenerator()
 
+    _override = gen._fallback_model if _ARGS.l0 else None
+    _lang = _ARGS.lang
+
     async def generate_once(docs, status):
-        gen_rec = {"retrieval_status": status, "n_docs": len(docs), "lang": "en",
-                   "model_override": None, "model": gen.model}
+        gen_rec = {"retrieval_status": status, "n_docs": len(docs), "lang": _lang,
+                   "model_override": _override, "model": _override or gen.model}
         if docs:
             context = gen._build_context(docs)
             has_tfda = any(getattr(d, "source_type", None) == SourceType.TFDA for d in docs)
             gen_rec["path"] = "GROUNDED (documents present)"
             gen_rec["system_prompt"] = gen._get_system_prompt("research")
-            gen_rec["user_prompt"] = gen._build_user_prompt(question, context, "research", "en", has_tfda)
+            gen_rec["user_prompt"] = gen._build_user_prompt(question, context, "research", _lang, has_tfda)
         else:
             gen_rec["path"] = "FALLBACK (no documents) — FALLBACK_PROMPTS['research']"
         answer, events = "", []
         async for ev in gen.generate_stream(question=question, documents=docs,
                                             retrieval_status=status, query_type="research",
-                                            lang="en", usage_out=[], model_override=None):
+                                            lang=_lang, usage_out=[], model_override=_override):
             t = getattr(ev.type, "value", str(ev.type))
             events.append(t)
             if t == "answer":
                 answer += ev.content or ""
         gen_rec["events"] = sorted(set(events))
         gen_rec["answer"] = answer
-        gen_rec["veto_i_calcium_read_as_ccb"] = bool(re.search(r"calcium[- ]channel", answer, re.I))
+        # PRE-MARKS only (en + zh terms); veto (i) is decided by hand-read, never by this regex
+        gen_rec["veto_i_calcium_read_as_ccb"] = bool(
+            re.search(r"calcium[- ]channel|鈣離子阻斷劑|鈣通道阻斷劑|钙通道|钙离子拮抗", answer, re.I))
         gen_rec["veto_ii_mentions_thiazide_or_hypercalcemia"] = bool(
-            re.search(r"thiazide|hydrochlorothiazide|chlorthalidone|hypercalc", answer, re.I))
+            re.search(r"thiazide|hydrochlorothiazide|chlorthalidone|hypercalc|噻嗪|高血鈣|高血钙|血鈣", answer, re.I))
+        # "thiazide sentence retained when its section was cited": the cited Calcium Chloride / HCTZ
+        # 34073-7 sections carry the thiazide→hypercalcemia text; was it carried into the answer?
+        cited_34073 = any(getattr(d, "source_id", "").endswith("#34073-7") for d in docs)
+        gen_rec["thiazide_section_cited"] = cited_34073
+        gen_rec["thiazide_sentence_retained"] = (cited_34073 and gen_rec["veto_ii_mentions_thiazide_or_hypercalcemia"])
         return gen_rec
 
     gen_rec = await generate_once(first_docs, first_status)
@@ -266,7 +284,9 @@ async def main():
             print(f"[gen run {k+1}] {g['path'][:9]} veto(i)regex={g['veto_i_calcium_read_as_ccb']} "
                   f"veto(ii)={g['veto_ii_mentions_thiazide_or_hypercalcemia']}", flush=True)
 
-    res = {"query": QUERY, "db_branch": dev, "n_runs": N, "gen_all": _ARGS.gen_all,
+    res = {"query": Q, "annotated_question": question, "lang": _lang, "l0": _ARGS.l0,
+           "generation_model": _override or gen.model,
+           "db_branch": dev, "n_runs": N, "gen_all": _ARGS.gen_all,
            "config": {k: v for k, v in cfg.items() if k != "provenance"},
            "config_provenance": cfg.get("provenance"),
            "watch_moieties": WATCH_MOIETY, "runs": runs, "generation_run1": gen_rec}

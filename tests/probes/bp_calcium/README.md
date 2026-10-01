@@ -259,3 +259,24 @@ class-level query — cited, not re-filed. `[FilterExempt]` (surface iii) rescue
 **Readings (hand):** (1) **Q11 is the original harm on a bare INN pair** — "calcium and lisinopril" is read as calcium-channel blockers in both runs; the rewriter returned the raw string unchanged in 7/8 calls, so the confusable-terms clause never engaged (it engages when the query has a verb/context: "take … with …", "Calcium with amlodipine?" → `calcium supplement amlodipine …`). (2) **Q1, the hero chip in zh-TW, never produced a thiazide-naming rewrite** (0/8 calls) — the clause's English example did not transfer to 鈣片/降血壓藥; run 1 was grounded on one rat-model paper (reads 降血壓藥 as CCBs), run 2 named 噻嗪類 only via the no-docs fallback. (3) Q8 "sugar pills" is resolved silently to placebo (judgment call, founder may overrule). (4) No over-trigger anywhere; potassium (Q2/Q7/Q12), vitamin D (Q6), magnesium (Q5), grapefruit (Q10) generalise correctly with the expected mechanism named.
 
 **Does NOT support:** a rate beyond N=2 per query; the L1 (gpt-4.1) path — this is the L0 path by design; zh-TW results beyond the two CJK queries. **Spend:** $0.04 logged (rewrite/filter/rerank; in-process gpt-4.1-mini generations are not logged by the generator — ≈ $0.07 unlogged) ≈ $0.11 of the US$0.8 cap.
+
+**E6 mini — founder re-grade (2026-10-01):** Q8 "sugar pills" re-graded **PASS-with-note** (ruling: placebo is the dominant
+English sense; the diabetes reading is a zh calque). The original hand grade stays visible in `step9_e6_mini_grades.json`
+(`different_question: true` + `ruled_different_question: false`) and `step9_e6_mini_table.md` now prints both rates:
+**strict 4/24 runs · 2/12 queries (Q8, Q11)** · **ruled 2/24 runs · 1/12 queries (Q11)**. ⚠️ **Q1 is still a hero-chip miss
+regardless of the rate** — the zh-TW phrasing produced 0/8 thiazide-naming rewrite calls and the grounded run named no
+mechanism; it is NOT the shipped chip string (`utils/i18n.ts:499` = `老人血壓藥可以跟鈣片一起吃嗎？`), which Segment 1c
+measures directly (`step8_zh_*`).
+
+## Segment 1c — L0 binding + the shipped zh-TW chip (2026-10-01, read-only)
+
+| artifact | what it is | what it does NOT support |
+|---|---|---|
+| `step8_l0_trace.json` / `step8_l0_answer_run1..8.md` (`step3_trace.py --n 8 --prefix step8_l0 --gen-all --l0`) | EN hero chip on the anonymous binding (gpt-4.1-mini), retrieval + generation ×8 | the L1 path (measured in Segment 1b); a rate beyond N=8 |
+| `step8_zh_l0_*` / `step8_zh_l1_*` (`--query "老人血壓藥可以跟鈣片一起吃嗎？" --lang zh-TW`, N=4 each) | the SHIPPED zh-TW chip string (`utils/i18n.ts:499`) on L0 and on gpt-4.1 | other locales; a rate beyond N=4 |
+| `step8_grades.json` | HAND grades for all 16 answers + the three verdict lines | — |
+| `step6_spend_seg1c.json` | `api_cost_log` since t3 = 2026-10-01T03:15:12Z | the unlogged in-process generations |
+
+**Verdicts:** `EN chip L0: veto (i) 6/8 FALSE · veto (ii) 5/8 · grounded 8/8` (original harm 2/8 on the anonymous path) ·
+`zh-TW chip: L0 veto (i) 4/4 FALSE, veto (ii) 3/4 · L1 veto (i) 4/4 FALSE, veto (ii) 4/4` (thiazide-naming rewrites 0/22 and
+0/28 — the clause does not transfer to zh). STEP 2d (rewriter passthrough) and the full tables: baton §9.

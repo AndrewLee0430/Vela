@@ -1,0 +1,37 @@
+{
+ "_how": "HAND grades, 2026-10-01, after reading all 16 answers (step8_l0_answer_run1..8.md, step8_zh_l0_answer_run1..4.md, step8_zh_l1_answer_run1..4.md). veto_i = the answer answers a CCB question instead of the supplement question (the original harm). veto_ii = thiazide/hypercalcemia mentioned (the founder's column; regex-level). mechanism = the thiazide→hypercalcemia mechanism actually named. The 'thiazide sentence' exists ONLY in the Calcium Chloride 34073-7 section (06e40959cc79) — the HCTZ 34073-7 section (b982dea97e19) carries no calcium text (probe-1 H8) — so 'retained' is judged only when Calcium Chloride was cited.",
+ "step8_l0": {
+  "query": "Can elderly patients take BP meds with calcium?", "model": "gpt-4.1-mini (L0 binding)", "n": 8,
+  "runs": {
+   "1": {"veto_i": true, "veto_ii": false, "mechanism": false, "grounded": true, "ca_chloride_cited": false, "retained": null, "note": "ORIGINAL HARM: grounded on the CCB drug-food-interaction review only; the answer is about CCBs as the BP drug and never treats calcium as a substance"},
+   "2": {"veto_i": false, "veto_ii": true, "mechanism": true, "grounded": true, "ca_chloride_cited": false, "retained": null, "note": "supplement reading; CATS (PubMed) + HCTZ 34073-7; thiazide→hypercalcemia named from the PubMed doc"},
+   "3": {"veto_i": false, "veto_ii": false, "mechanism": false, "grounded": true, "ca_chloride_cited": true, "retained": false, "note": "IV calcium chloride vs CCB framing; the cited section's thiazide sentence DROPPED"},
+   "4": {"veto_i": true, "veto_ii": true, "mechanism": false, "grounded": true, "ca_chloride_cited": false, "retained": null, "note": "ORIGINAL HARM variant: 'BP medications including calcium channel blockers … with thiazide diuretics' — CCB + HCTZ combination therapy; calcium as a substance vanished; thiazide named only as a BP drug, no hypercalcemia"},
+   "5": {"veto_i": false, "veto_ii": false, "mechanism": false, "grounded": true, "ca_chloride_cited": false, "retained": null, "note": "oral calcium citrate in elderly (PubMed only); no thiazide content"},
+   "6": {"veto_i": false, "veto_ii": true, "mechanism": true, "grounded": true, "ca_chloride_cited": true, "retained": true, "note": "IV-chloride framing + HCTZ; hypercalcemia with thiazides/vit D named"},
+   "7": {"veto_i": false, "veto_ii": true, "mechanism": true, "grounded": true, "ca_chloride_cited": true, "retained": true, "note": "IV-chloride vs CCB framing; 'drugs that increase hypercalcemia risk' named (thiazide not spelled out)"},
+   "8": {"veto_i": false, "veto_ii": true, "mechanism": true, "grounded": true, "ca_chloride_cited": true, "retained": true, "note": "full: supplements/chloride with thiazides → hypercalcemia, CATS"}
+  },
+  "verdict": "EN chip L0: veto (i) 6/8 FALSE · veto (ii) 5/8 · grounded 8/8 — 34073-7 in FINAL 6/8; thiazide→hypercalcemia mechanism named 4/8; Calcium Chloride 34073-7 cited 4/8 and its thiazide sentence retained 3/4; the original harm reproduces 2/8 (runs 1, 4)"
+ },
+ "step8_zh_l0": {
+  "query": "老人血壓藥可以跟鈣片一起吃嗎？ (utils/i18n.ts:499, the shipped zh-TW chip)", "model": "gpt-4.1-mini (L0 binding)", "n": 4,
+  "runs": {
+   "1": {"veto_i": false, "veto_ii": true, "mechanism": false, "grounded": true, "ca_chloride_cited": false, "retained": null, "note": "supplement reading; 噻嗪類利尿劑 named as a BP class that may interact; 高鈣血症 only as a pre-existing-condition caution, mechanism not stated; grounded on a supplement-use prevalence study"},
+   "2": {"veto_i": false, "veto_ii": false, "mechanism": false, "grounded": true, "ca_chloride_cited": false, "retained": null, "note": "⚠️ WRONG MECHANISM: claims calcium + ARB → potassium imbalance / hyperkalemia — a fabricated interaction (not in the two cited docs); supplement reading, so not veto (i)"},
+   "3": {"veto_i": false, "veto_ii": true, "mechanism": true, "grounded": true, "ca_chloride_cited": true, "retained": true, "note": "鈣離子阻斷劑 + 鈣片 (chloride/oral) reduces efficacy; thiazide/vit-D hypercalcemia monitoring named"},
+   "4": {"veto_i": false, "veto_ii": true, "mechanism": true, "grounded": false, "ca_chloride_cited": false, "retained": null, "note": "no-docs FALLBACK; 利尿劑（噻嗪類）→ 高鈣血症 from model knowledge"}
+  },
+  "verdict": "zh-TW chip L0: veto (i) 4/4 FALSE, veto (ii) 3/4 · grounded 3/4 · 34073-7 in FINAL 1/4 · thiazide-naming rewrite strings 0/22 across all calls (the rewriter mostly returned ONE string, 'elderly antihypertensive drugs calcium supplements interaction'); run 2 fabricates a calcium+ARB→hyperkalemia interaction"
+ },
+ "step8_zh_l1": {
+  "query": "老人血壓藥可以跟鈣片一起吃嗎？", "model": "gpt-4.1 (L1 path)", "n": 4,
+  "runs": {
+   "1": {"veto_i": false, "veto_ii": true, "mechanism": true, "grounded": true, "ca_chloride_cited": true, "retained": true, "note": "鈣通道阻斷劑 + 鈣片（氯化鈣）; 噻嗪類利尿劑 in the hypercalcemia-risk list; states the data is IV"},
+   "2": {"veto_i": false, "veto_ii": true, "mechanism": true, "grounded": true, "ca_chloride_cited": true, "retained": true, "note": "same; '利尿劑' listed (噻嗪 not spelled), 高血鈣 named"},
+   "3": {"veto_i": false, "veto_ii": true, "mechanism": true, "grounded": true, "ca_chloride_cited": true, "retained": true, "note": "same as run 1, with 噻嗪類; flags the IV-only data limitation"},
+   "4": {"veto_i": false, "veto_ii": true, "mechanism": true, "grounded": true, "ca_chloride_cited": true, "retained": true, "note": "鈣片 + 鈣通道阻斷劑 synergy (rat study) + 高血鈣 monitoring with 利尿劑"}
+  },
+  "verdict": "zh-TW chip L1: veto (i) 4/4 FALSE, veto (ii) 4/4 · grounded 4/4 · 34073-7 in FINAL 4/4 (Calcium Chloride, every run) · thiazide-naming rewrite strings 0/28 — the mechanism arrives via the Calcium Chloride section (the union string 'antihypertensive drugs calcium supplement interaction' clears 0.6), not via a thiazide rewrite"
+ }
+}

@@ -287,3 +287,73 @@ Each line derived, none inherited.
 | 2 | same question in the zh-TW UI | same content, zh-TW prose | | |
 | 3 | CONTROL "metformin renal dosing" | unchanged | | |
 | 4 | CONTROL 冠脂妥+warfarin | DailyMed safety section cited | | |
+
+## §9 Segment 1c (2026-10-01, read-only; HEAD `852b1a0` = prod fly 261 code + the E6 probe) — FIX PARTIAL
+
+**L0 binding (read, not assumed):** `api/server.py` `/api/research` `is_anonymous` branch sets `model_override =
+generator._fallback_model` (`GENERATOR_FALLBACK_DEFAULT = "gpt-4.1-mini"`, `api/providers/factory.py:36`); `generate_stream`
+uses `effective_model = model_override or self.model` with **identical** temperature 0.2, max_tokens 2500, system/user prompts.
+**The only L0/L1 generation difference is the model.** (L0 also skips the AuditLog write — not a generation difference.)
+
+**STEP 2 — EN chip on L0, N=8** (`step3_trace.py --n 8 --prefix step8_l0 --gen-all --l0`; hand grades `step8_grades.json`):
+
+| run | 34073-7 in FINAL | grounded | veto (i) HAND | veto (ii) | mechanism named | Ca-chloride sentence retained |
+|---|---|---|---|---|---|---|
+| 1 | 0 | y | **TRUE** — CCBs as the drug, calcium vanished (PMID:16199918 only) | n | n | — |
+| 2 | 1 (HCTZ) | y | FALSE | y | y (CATS, PubMed) | — (HCTZ section has no calcium text) |
+| 3 | 1 (Ca chloride) | y | FALSE (IV framing) | n | n | **dropped** |
+| 4 | 1 (HCTZ) | y | **TRUE** — CCB + HCTZ combination therapy, calcium vanished | y (thiazide as a BP drug only) | n | — |
+| 5 | 0 | y | FALSE (calcium citrate) | n | n | — |
+| 6 | 2 | y | FALSE (IV framing) | y | y | retained |
+| 7 | 1 (Ca chloride) | y | FALSE (IV framing) | y (hypercalcemia) | y (partial) | retained |
+| 8 | 1 (Ca chloride) | y | FALSE | y | y | retained |
+
+**Verdict: `EN chip L0: veto (i) 6/8 FALSE · veto (ii) 5/8 · grounded 8/8`** — 34073-7 in FINAL 6/8; mechanism named 4/8; the
+Calcium Chloride section's thiazide sentence retained 3/4 when cited; **the original harm reproduces 2/8 on the anonymous
+hero-chip path** (vs 0/8 on L1 in Segment 1b). Rewrites were fine in all 8 runs (thiazide-naming strings 4–6 of 12 per run):
+the loss is in the gpt-4.1-mini generation and the pool mix, not the rewrite.
+
+**STEP 2b — the zh-TW chip.** Verbatim `utils/i18n.ts:499`: `heroChip2: '老人血壓藥可以跟鈣片一起吃嗎？'`. `pages/index.tsx:116`
+builds the chips from `t.heroChip1/2/3` (the localized bundle) and the click does
+`router.push(`/research?q=${encodeURIComponent(trimmed)})` — **the localized text is what is sent.** E6 Q1
+(`鈣片和降血壓藥可以一起吃嗎`) was the team's phrasing, NOT this string. N=4 on L0 + N=4 on gpt-4.1, lang zh-TW:
+
+| arm | run | 34073-7 in FINAL | grounded | veto (i) HAND | veto (ii) | rewrite shape (sizes of the 4 calls) | thiazide-naming strings |
+|---|---|---|---|---|---|---|---|
+| L0 | 1 | 0 | y | FALSE | y | [1,1,1,1] | 0/4 |
+| L0 | 2 | 0 | y | FALSE — ⚠️ fabricates calcium + ARB → hyperkalemia | n | [1,1,1,1] | 0/4 |
+| L0 | 3 | 1 | y | FALSE | y | [1,3,3,1] | 0/8 |
+| L0 | 4 | 0 | FALLBACK | FALSE | y | [3,1,1,1] | 0/6 |
+| L1 | 1 | 1 | y | FALSE | y | [1,3,1,1] | 0/6 |
+| L1 | 2 | 1 | y | FALSE | y | [1,3,1,1] | 0/6 |
+| L1 | 3 | 1 | y | FALSE | y | [1,3,1,1] | 0/6 |
+| L1 | 4 | 1 | y | FALSE | y | [3,3,3,1] | 0/10 |
+
+**Verdict: `zh-TW chip: L0 veto (i) 4/4 FALSE, veto (ii) 3/4 · L1 veto (i) 4/4 FALSE, veto (ii) 4/4`** — 34073-7 in FINAL L0 1/4,
+L1 4/4. **Thiazide-naming rewrites 0/22 (L0) and 0/28 (L1):** the shipped clause's English example does not transfer to the zh
+phrasing, and the rewriter mostly returns a ONE-string array (`elderly antihypertensive drugs calcium supplements interaction`).
+On L1 the mechanism still arrives because the union string `antihypertensive drugs calcium supplement interaction` clears 0.6
+to the Calcium Chloride section every run — a floor-edge dependency, not the rewrite doing its job.
+
+**STEP 2d — why the rewriter returns the raw string on "calcium and lisinopril" (read-only, zero LLM).**
+- `_rewrite_query` is called from `retrieve()` (`retriever.py:177`, K=1) and `_dailymed_union_queries` (`:418`, k=3). **There is
+  no short-query, already-English or passthrough branch.**
+- The only code passthrough is the fallback: `:400-408` —
+  `if len(queries) >= 1: return queries` / `except Exception as e: logger.warning("Query rewriting failed: %s, falling back to
+  translation", e)` / `fallback = await self._translate_to_medical_english(query); return [fallback]` — reached **on exception
+  OR silently when the parsed JSON yields zero strings** (the warning is only in the `except`). `_translate_to_medical_english`
+  `:432-434`: `has_chinese = any(...)` / `if not has_chinese: return query.strip()` — the raw English query.
+- `:397-398`: `queries = [q for q in queries if isinstance(q, str) and q.strip()][:3]` — the code accepts **any ≥ 1** strings
+  although the prompt says "exactly 3 strings" and "4-8 words"; a 1-element echo of the input passes unchanged.
+- The E6 log holds **0** "Query rewriting failed" warnings, so Q11's "['calcium and lisinopril']" ×7 is either (a) the model
+  echoing the input as a 1-element array or (b) the silent zero-strings fallback — **not separable from the recorded data**
+  (the harness captured the parsed list, not `response.content`). Segment 1d's first step: capture the raw response on one call.
+- The clause the rewrite edit added sits at `retriever.py:342-354` ("STEP 1b — Confusable terms and class-level interactions:",
+  `:343` "- CONFUSABLE TERMS: …", `:348` "- CLASS-LEVEL INTERACTION QUESTIONS …") and clause 3 at `:355` ("3. Precise medical
+  terminology angle (INN names for the drugs the user NAMED, MeSH terms; never collapse a drug class into one drug pair)").
+
+**STEP 3 — Q8 re-graded** PASS-with-note (founder 2026-10-01); original grade kept. E6 mini: **strict 4/24 · 2/12 (Q8, Q11)
+→ ruled 2/24 · 1/12 (Q11)**. Q1 (team zh phrasing) stays a hero-chip miss regardless of the rate.
+
+**Spend (1c):** $0.02 logged (rewrites/filter/rerank; in-process generations unlogged ≈ +$0.05) ≈ $0.07 of the US$0.6 cap.
+**Ship state unchanged:** prod fly 261; this segment is read-only; commits local, NOT pushed, NOT deployed.
