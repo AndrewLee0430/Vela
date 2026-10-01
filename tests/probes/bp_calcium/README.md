@@ -228,3 +228,9 @@ class-level query — cited, not re-filed. `[FilterExempt]` (surface iii) rescue
 | `step6_spend_seg1b.json` | `api_cost_log` since t1 = 2026-09-30T03:15:42Z | the unlogged pieces (embeddings; no judge ran in 1b) |
 
 **Spend (Segment 1b):** $0.15 logged of the US$1 cap. pytest: see baton §3b.
+
+## Ship readback — fly 261 (2026-10-01)
+
+| artifact | what it is | what it does NOT support |
+|---|---|---|
+| `step8_prod_smoke.py` / `step8_prod_smoke.json` / `step8_prod_smoke_answer.md` | ONE anonymous prod `/api/research` call with the hero-chip question after fly 261 (readback, not a gate): HTTP 200, citations = Calcium Chloride 34073-7, answer names no thiazide (frames calcium as IV calcium chloride vs CCBs) | the L1 path (L0 uses the generator's fallback model); a rate (N=1); the prod eye gate, which is the founder's |

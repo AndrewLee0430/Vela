@@ -249,3 +249,41 @@ Floor-edge cosines: `calcium channel blockers calcium supplement drug interactio
 **0.5993**; `calcium supplement thiazide diuretic hypercalcemia risk` **0.5646** (never clears). Recorded K-union straddle
 mechanism — cited on TECH_DEBT entry (1), no new entry (Rule 27). `[FilterExempt]` rescued the section in runs 1, 4, 6.
 pytest on the re-applied edit: see the closing-gate line in §4. Segment 1b spend: **$0.15** logged (cap US$1).
+
+## §7b Ship readbacks — fly 261 (2026-10-01; closeout prompt: push + deploy authorized, max 3 deploy attempts)
+
+Each line derived, none inherited.
+
+- **Push:** `git push origin main` → `13e56fb..24c7465` (**5 commits** — the paste said 5; `git rev-list 13e56fb..HEAD` gave
+  4 before the docs(gate) commit was added, 5 after; product code in **`cf6b78b` only**, 1 file). `git ls-remote origin main`
+  == `git rev-parse HEAD` = `24c74658a776418cd0a27812f68314c4e4f0a1f5`, 40 chars exact.
+- **Deploy:** `.\deploy.ps1` plain call, **attempt 1 of 3 succeeded** (the 150 MB context upload went through this time).
+  Image `registry.fly.io/vela-ai-medical:deployment-01M3THH5N849HKRRD2P8TZATQ0`, 341 MB. Release **v261 READ from
+  `fly releases`** (v260 Sep 29 → v261 "1m19s ago" at the readback).
+- **`/health`** FIRST poll 01:36:31Z → `{"status":"healthy","version":"2.2.0","revision":"24c74658a776418cd0a27812f68314c4e4f0a1f5"}`
+  == pushed SHA, full 40 chars.
+- **`fly status`:** `683d447c2e5428` 261 started 01:35:36Z · `2879720c66d478` 261 stopped 01:35:33Z → "has been started" by the
+  script's Step 4 → started 01:36:03Z; live re-read: both started on 261.
+- **Transcript:** `tests/probes/deploy_parser/fly261_deploy_transcript.txt` — 1262 lines, ANSI-stripped, 0 ESC bytes (Steps
+  1–6 incl. the Step 3/4 parser output).
+- **Unauth `GET /api/history`** → **403**.
+- **`fly logs`** post-boundary (01:35:33Z → 01:36:56Z, 52 timestamped lines over a `--no-tail` read + a 70-s live tail):
+  **httpx 0 · api_key= 0 · Traceback 0.** Two proxy lines `error.message="client problem: invalid authority"` (22:58Z,
+  `/` and `/sellers.json`) are PRE-boundary and not the app's; they surfaced because their timestamp is not the first field.
+- **Prod anon smoke ONCE** (`tests/probes/bp_calcium/step8_prod_smoke.py`; readback, NOT a gate; ~1 anon Research credit;
+  L0 path → the generator's FALLBACK model, not the gpt-4.1 path the N=8 measured): HTTP 200, 14.8 s, events
+  status/language/answer/citations/done, no `fallback` event; **citations = ONE DailyMed section — Calcium Chloride
+  34073-7**; the answer **does NOT name thiazide/hypercalcemia** — it frames calcium as IV calcium chloride vs CCB-class BP
+  meds and omits the thiazide sentence the cited section contains (`step8_prod_smoke.json` / `_answer.md`). Inside the
+  measured miss band (veto (ii) 7/8 in the gpt-4.1 arm) and the recorded IV-framing caveat (§6). Not evidence either way
+  about the L1 path the prod eye exercises.
+- **Spend:** the smoke ≈ 1 anon credit; nothing else billed by this closeout.
+
+**PROD EYE — OPEN (founder, own account = L1 gpt-4.1 path, prod fly 261, Ctrl+Shift+R first):**
+
+| # | step | expected | PASS/FAIL | note |
+|---|---|---|---|---|
+| 1 | hero chip 2 on prod `/` | supplement reading + thiazide/hypercalcemia (re-click once on a miss; expect ~7/8; 6/8 may frame around IV calcium chloride) | | |
+| 2 | same question in the zh-TW UI | same content, zh-TW prose | | |
+| 3 | CONTROL "metformin renal dosing" | unchanged | | |
+| 4 | CONTROL 冠脂妥+warfarin | DailyMed safety section cited | | |
