@@ -1,0 +1,32 @@
+{
+ "since_utc": "2026-10-01T03:02:08",
+ "label": "e6mini",
+ "rows": [
+  {
+   "feature": "research/rewrite_query",
+   "model": "gpt-4.1-mini",
+   "calls": 96,
+   "prompt_tokens": 49272,
+   "completion_tokens": 3370,
+   "usd": 0.0251
+  },
+  {
+   "feature": "research/relevance_filter",
+   "model": "gpt-4.1-mini",
+   "calls": 24,
+   "prompt_tokens": 24920,
+   "completion_tokens": 187,
+   "usd": 0.0103
+  },
+  {
+   "feature": "research/rerank",
+   "model": "gpt-4o-mini",
+   "calls": 11,
+   "prompt_tokens": 8910,
+   "completion_tokens": 487,
+   "usd": 0.0016
+  }
+ ],
+ "logged_usd_total": 0.037,
+ "at_utc": "2026-10-01T03:10:16.351174"
+}

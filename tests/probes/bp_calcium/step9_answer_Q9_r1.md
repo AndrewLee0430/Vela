@@ -1,0 +1,12 @@
+## Summary  
+In elderly patients, daily low-dose aspirin (100 mg) does not significantly affect blood pressure (BP) when used alone or in combination with antihypertensive medications. Longitudinal data from a large randomized trial (ASPREE) showed no meaningful difference in systolic or diastolic BP changes between aspirin and placebo groups over nearly 5 years, regardless of baseline BP or antihypertensive treatment status [1]. Aspirin’s cardiovascular benefits in older adults appear independent of BP modulation, and its interaction with BP medications does not alter BP control significantly [2].
+
+## Clinical Notes  
+- **Safety and Use:** Low-dose aspirin (100 mg daily) is generally safe in older adults without cardiovascular disease for prevention purposes but does not lower BP or interfere with antihypertensive therapy effectiveness [1].  
+- **Contraindications:** Aspirin should be avoided in patients with known aspirin allergy, active bleeding, or high bleeding risk. No specific contraindications related to cardiac, respiratory, or metabolic conditions were highlighted regarding aspirin’s interaction with BP medications in the elderly [1,2].  
+- **Drug Interactions:** Aspirin’s effect on BP is minimal and does not significantly interact with common antihypertensive drugs to worsen or improve BP control [1,2]. Higher aspirin doses (not low-dose) may negatively impact renal function and BP control via cyclooxygenase-2 inhibition, but this is less relevant at low doses used in elderly prevention [2].  
+- **Monitoring:** Routine BP monitoring remains essential in elderly patients on antihypertensive therapy, but no additional BP monitoring adjustments are required solely due to aspirin use [1]. Renal function monitoring is advisable if higher aspirin doses or other nephrotoxic drugs are used, though this is not typical for low-dose aspirin [2].  
+- **Clinical Context:** The evidence is derived from community-dwelling older adults without cardiovascular disease in Australia and the U.S. and may not fully extrapolate to elderly patients with established CVD or frailty [1].  
+- **Additional Considerations:** Heart stress markers (e.g., NT-proBNP) may help stratify cardiovascular risk and guide BP management in elderly patients but are not directly influenced by aspirin use [3].  
+
+In summary, low-dose aspirin can be safely combined with antihypertensive medications in elderly patients without expecting significant changes in blood pressure control.

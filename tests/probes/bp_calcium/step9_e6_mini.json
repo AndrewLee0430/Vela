@@ -1,0 +1,1405 @@
+{
+ "probe": "E6 mini — generalisation + over-trigger, L0 binding",
+ "head": "a6d59b9 (prod fly 261 code)",
+ "db_branch": "ep-spring-voice-a127ye10",
+ "n_per_query": 2,
+ "l0_model": "gpt-4.1-mini",
+ "started_utc": "2026-10-01T03:03:05Z",
+ "finished_utc": "2026-10-01T03:09:22Z",
+ "config": {
+  "enable_local": false,
+  "enable_pubmed": true,
+  "enable_fda": true,
+  "enable_tfda": true,
+  "enable_dailymed": true,
+  "local_threshold": 0.6,
+  "max_results": 5,
+  "source_weight_active": true,
+  "annotate_research_question": true,
+  "arm": "rewrite (full pipeline — real retrieve())",
+  "n_runs": 8,
+  "min_usable_runs": 6
+ },
+ "grading": "regex columns are PRE-MARKS; the grades of record are hand-read, in step9_e6_mini_grades.json",
+ "rows": [
+  {
+   "id": "Q1",
+   "query": "鈣片和降血壓藥可以一起吃嗎",
+   "annotated": "鈣片和降血壓藥可以一起吃嗎",
+   "lang": "zh-TW",
+   "expected_mechanism": "thiazide + calcium → hypercalcemia (hero chip, zh-TW)",
+   "premark_mechanism_regex": "thiazide|hypercalc|噻嗪|高血鈣|血鈣",
+   "over_trigger_regex": null,
+   "runs": [
+    {
+     "run": 1,
+     "status": "ok",
+     "seconds": 17.6,
+     "rewrite_calls": [
+      [
+       "calcium supplement antihypertensive drug interaction mechanism",
+       "management calcium supplement with blood pressure medication",
+       "calcium supplement antihypertensive agents coadministration safety"
+      ],
+      [
+       "calcium supplement antihypertensive drug interaction mechanism",
+       "calcium supplement and blood pressure medication co administration",
+       "calcium supplement antihypertensive therapy drug interaction"
+      ],
+      [
+       "calcium supplement antihypertensive drug interaction mechanism",
+       "management calcium supplement with blood pressure medication",
+       "calcium supplement antihypertensive agents drug interaction"
+      ],
+      [
+       "calcium supplements and antihypertensive drugs interaction"
+      ]
+     ],
+     "final": [
+      {
+       "source_id": "PMID:1378127",
+       "source_type": "pubmed",
+       "title": "Combined effect of dietary calcium and calcium antagonists on blood pressure reduction in spontaneously hypertensive rat"
+      }
+     ],
+     "dm_safety_in_final": [],
+     "path": "grounded",
+     "events": [
+      "answer",
+      "citations",
+      "done"
+     ],
+     "answer_chars": 530,
+     "premark_mechanism": false,
+     "premark_thiazide_content": false,
+     "premark_over_trigger": false
+    },
+    {
+     "run": 2,
+     "status": "irrelevant",
+     "seconds": 14.0,
+     "rewrite_calls": [
+      [
+       "calcium supplement antihypertensive drug interaction mechanism",
+       "management calcium supplement with blood pressure medication",
+       "calcium supplement antihypertensive agents coadministration safety"
+      ],
+      [
+       "calcium supplement antihypertensive drug interaction mechanism",
+       "management calcium supplement with blood pressure medication",
+       "calcium supplement antihypertensive agents coadministration safety"
+      ],
+      [
+       "calcium supplement antihypertensive drug interaction mechanism",
+       "management calcium supplement with blood pressure medication",
+       "calcium supplement antihypertensive agents drug interaction"
+      ],
+      [
+       "calcium supplement antihypertensive drug interaction mechanism",
+       "management calcium supplement with blood pressure medication",
+       "calcium supplement antihypertensive agents drug interaction"
+      ]
+     ],
+     "final": [],
+     "dm_safety_in_final": [],
+     "path": "FALLBACK (no docs)",
+     "events": [
+      "answer",
+      "citations",
+      "done",
+      "fallback"
+     ],
+     "answer_chars": 656,
+     "premark_mechanism": true,
+     "premark_thiazide_content": true,
+     "premark_over_trigger": false
+    }
+   ]
+  },
+  {
+   "id": "Q2",
+   "query": "Can I take potassium with my BP pills?",
+   "annotated": "Can I take potassium with my BP pills?",
+   "lang": "en",
+   "expected_mechanism": "ACEI/ARB/K-sparing diuretic + potassium → hyperkalemia",
+   "premark_mechanism_regex": "hyperkal|ACE|ARB|angiotensin|spironolactone|potassium[- ]sparing",
+   "over_trigger_regex": null,
+   "runs": [
+    {
+     "run": 1,
+     "status": "ok",
+     "seconds": 16.6,
+     "rewrite_calls": [
+      [
+       "potassium supplement antihypertensive drug interaction",
+       "management potassium supplementation blood pressure medication",
+       "potassium antihypertensive agents drug interaction"
+      ],
+      [
+       "potassium supplement antihypertensive drug interaction",
+       "management potassium supplementation blood pressure medication",
+       "potassium antihypertensive agents drug interaction"
+      ],
+      [
+       "potassium supplement antihypertensive drug interaction",
+       "management potassium supplementation blood pressure medication",
+       "potassium antihypertensive agents drug interaction"
+      ],
+      [
+       "potassium supplement antihypertensive drug interaction",
+       "management potassium supplementation blood pressure medication",
+       "potassium antihypertensive agents drug interaction"
+      ]
+     ],
+     "final": [
+      {
+       "source_id": "DailyMed:14cd12ee-a4a3-465a-9550-58c9ef0e4f21#34073-7",
+       "source_type": "dailymed",
+       "title": "Potassium Chloride (Potassium Chloride) — Drug Interactions"
+      },
+      {
+       "source_id": "DailyMed:5ddba454-f3e6-43c2-a7a6-58365d297213#34073-7",
+       "source_type": "dailymed",
+       "title": "Diovan (valsartan) — Drug Interactions"
+      },
+      {
+       "source_id": "DailyMed:1cf090a2-b6c0-42cd-857e-60a9cd85fe19#34073-7",
+       "source_type": "dailymed",
+       "title": "AMILORIDE HYDROCHLORIDE (amiloride hydrochloride) — Drug Interactions"
+      },
+      {
+       "source_id": "DailyMed:afd2d1ba-e7af-4e4e-8b7e-a9f72612fc97#34073-7",
+       "source_type": "dailymed",
+       "title": "ARBLI (losartan potassium) — Drug Interactions"
+      }
+     ],
+     "dm_safety_in_final": [
+      "DailyMed:14cd12ee-a4a3-465a-9550-58c9ef0e4f21#34073-7",
+      "DailyMed:5ddba454-f3e6-43c2-a7a6-58365d297213#34073-7",
+      "DailyMed:1cf090a2-b6c0-42cd-857e-60a9cd85fe19#34073-7",
+      "DailyMed:afd2d1ba-e7af-4e4e-8b7e-a9f72612fc97#34073-7"
+     ],
+     "path": "grounded",
+     "events": [
+      "answer",
+      "citations",
+      "done"
+     ],
+     "answer_chars": 2000,
+     "premark_mechanism": true,
+     "premark_thiazide_content": false,
+     "premark_over_trigger": false
+    },
+    {
+     "run": 2,
+     "status": "ok",
+     "seconds": 16.3,
+     "rewrite_calls": [
+      [
+       "potassium supplement antihypertensive drug interaction",
+       "management potassium supplementation blood pressure medication",
+       "potassium antihypertensive agents drug interaction"
+      ],
+      [
+       "potassium supplement antihypertensive drug interaction",
+       "management potassium supplementation blood pressure medication",
+       "potassium antihypertensive agents drug interaction"
+      ],
+      [
+       "potassium supplement antihypertensive drug interaction",
+       "management potassium supplementation blood pressure medication",
+       "potassium antihypertensive agents drug interaction"
+      ],
+      [
+       "potassium supplement antihypertensive drug interaction",
+       "management potassium supplementation blood pressure medication",
+       "potassium antihypertensive agents drug interaction"
+      ]
+     ],
+     "final": [
+      {
+       "source_id": "DailyMed:14cd12ee-a4a3-465a-9550-58c9ef0e4f21#34073-7",
+       "source_type": "dailymed",
+       "title": "Potassium Chloride (Potassium Chloride) — Drug Interactions"
+      },
+      {
+       "source_id": "DailyMed:5ddba454-f3e6-43c2-a7a6-58365d297213#34073-7",
+       "source_type": "dailymed",
+       "title": "Diovan (valsartan) — Drug Interactions"
+      },
+      {
+       "source_id": "DailyMed:1cf090a2-b6c0-42cd-857e-60a9cd85fe19#34073-7",
+       "source_type": "dailymed",
+       "title": "AMILORIDE HYDROCHLORIDE (amiloride hydrochloride) — Drug Interactions"
+      },
+      {
+       "source_id": "DailyMed:afd2d1ba-e7af-4e4e-8b7e-a9f72612fc97#34073-7",
+       "source_type": "dailymed",
+       "title": "ARBLI (losartan potassium) — Drug Interactions"
+      }
+     ],
+     "dm_safety_in_final": [
+      "DailyMed:14cd12ee-a4a3-465a-9550-58c9ef0e4f21#34073-7",
+      "DailyMed:5ddba454-f3e6-43c2-a7a6-58365d297213#34073-7",
+      "DailyMed:1cf090a2-b6c0-42cd-857e-60a9cd85fe19#34073-7",
+      "DailyMed:afd2d1ba-e7af-4e4e-8b7e-a9f72612fc97#34073-7"
+     ],
+     "path": "grounded",
+     "events": [
+      "answer",
+      "citations",
+      "done"
+     ],
+     "answer_chars": 2007,
+     "premark_mechanism": true,
+     "premark_thiazide_content": false,
+     "premark_over_trigger": false
+    }
+   ]
+  },
+  {
+   "id": "Q3",
+   "query": "Calcium with amlodipine?",
+   "annotated": "Calcium with amlodipine?",
+   "lang": "en",
+   "expected_mechanism": "calcium may blunt the CCB effect; NO thiazide content expected",
+   "premark_mechanism_regex": "amlodipine|calcium channel|dihydropyridine",
+   "over_trigger_regex": "thiazide|hydrochlorothiazide|chlorthalidone|indapamide|噻嗪|利尿",
+   "runs": [
+    {
+     "run": 1,
+     "status": "ok",
+     "seconds": 15.9,
+     "rewrite_calls": [
+      [
+       "calcium supplement amlodipine interaction mechanism",
+       "amlodipine calcium supplement coadministration management",
+       "calcium channel blockers amlodipine drug interactions"
+      ],
+      [
+       "calcium supplement amlodipine interaction mechanism",
+       "amlodipine calcium supplement coadministration effects",
+       "calcium channel blockers amlodipine drug interactions"
+      ],
+      [
+       "calcium supplement amlodipine absorption interaction",
+       "amlodipine calcium supplement coadministration effects",
+       "calcium channel blockers amlodipine pharmacology"
+      ],
+      [
+       "Calcium with amlodipine?"
+      ]
+     ],
+     "final": [
+      {
+       "source_id": "DailyMed:abd6a2ca-40c2-485c-bc53-db1c652505ed#34073-7",
+       "source_type": "dailymed",
+       "title": "Norvasc (amlodipine besylate) — Drug Interactions"
+      },
+      {
+       "source_id": "PMID:1532771",
+       "source_type": "pubmed",
+       "title": "Clinical pharmacokinetics of amlodipine."
+      },
+      {
+       "source_id": "PMID:10640508",
+       "source_type": "pubmed",
+       "title": "Drug interactions with calcium channel blockers: possible involvement of metabolite-intermediate complexation with CYP3A"
+      },
+      {
+       "source_id": "PMID:39159743",
+       "source_type": "pubmed",
+       "title": "Association between calcium-channel blockers and gingival enlargement: A case-control study."
+      }
+     ],
+     "dm_safety_in_final": [
+      "DailyMed:abd6a2ca-40c2-485c-bc53-db1c652505ed#34073-7"
+     ],
+     "path": "grounded",
+     "events": [
+      "answer",
+      "citations",
+      "done"
+     ],
+     "answer_chars": 1833,
+     "premark_mechanism": true,
+     "premark_thiazide_content": false,
+     "premark_over_trigger": false
+    },
+    {
+     "run": 2,
+     "status": "ok",
+     "seconds": 13.4,
+     "rewrite_calls": [
+      [
+       "calcium supplement amlodipine interaction mechanism",
+       "amlodipine calcium supplement coadministration effects",
+       "calcium channel blockers amlodipine drug interactions"
+      ],
+      [
+       "Calcium with amlodipine?"
+      ],
+      [
+       "Calcium with amlodipine?"
+      ],
+      [
+       "calcium supplement amlodipine interaction mechanism",
+       "amlodipine calcium supplement coadministration effects",
+       "calcium channel blockers amlodipine drug interactions"
+      ]
+     ],
+     "final": [
+      {
+       "source_id": "DailyMed:abd6a2ca-40c2-485c-bc53-db1c652505ed#34073-7",
+       "source_type": "dailymed",
+       "title": "Norvasc (amlodipine besylate) — Drug Interactions"
+      }
+     ],
+     "dm_safety_in_final": [
+      "DailyMed:abd6a2ca-40c2-485c-bc53-db1c652505ed#34073-7"
+     ],
+     "path": "grounded",
+     "events": [
+      "answer",
+      "citations",
+      "done"
+     ],
+     "answer_chars": 1029,
+     "premark_mechanism": true,
+     "premark_thiazide_content": false,
+     "premark_over_trigger": false
+    }
+   ]
+  },
+  {
+   "id": "Q4",
+   "query": "iron supplements with blood pressure medication",
+   "annotated": "iron supplements with blood pressure medication",
+   "lang": "en",
+   "expected_mechanism": "iron chelation / absorption (e.g. methyldopa; ACEI + IV iron reactions)",
+   "premark_mechanism_regex": "absor|chelat|methyldopa|ACE",
+   "over_trigger_regex": null,
+   "runs": [
+    {
+     "run": 1,
+     "status": "irrelevant",
+     "seconds": 14.6,
+     "rewrite_calls": [
+      [
+       "iron supplement antihypertensive drug interaction mechanism",
+       "management iron supplementation hypertension treatment",
+       "iron supplement blood pressure medication pharmacology"
+      ],
+      [
+       "iron supplement antihypertensive drug interaction mechanism",
+       "management iron supplementation hypertension treatment",
+       "iron supplement blood pressure medication pharmacology"
+      ],
+      [
+       "iron supplement antihypertensive drug interaction mechanism",
+       "management iron supplementation hypertension treatment",
+       "iron supplement blood pressure medication pharmacology"
+      ],
+      [
+       "iron supplements with blood pressure medication"
+      ]
+     ],
+     "final": [],
+     "dm_safety_in_final": [],
+     "path": "FALLBACK (no docs)",
+     "events": [
+      "answer",
+      "citations",
+      "done",
+      "fallback"
+     ],
+     "answer_chars": 2803,
+     "premark_mechanism": true,
+     "premark_thiazide_content": true,
+     "premark_over_trigger": false
+    },
+    {
+     "run": 2,
+     "status": "irrelevant",
+     "seconds": 15.8,
+     "rewrite_calls": [
+      [
+       "iron supplement antihypertensive drug interaction mechanism",
+       "management iron supplementation hypertension treatment",
+       "iron supplement blood pressure medication pharmacology"
+      ],
+      [
+       "iron supplement antihypertensive drug interaction mechanism",
+       "management iron supplementation hypertension treatment",
+       "iron supplement blood pressure medication pharmacology"
+      ],
+      [
+       "iron supplement antihypertensive drug interaction mechanism",
+       "management iron supplementation hypertension treatment",
+       "iron supplement blood pressure medication pharmacology"
+      ],
+      [
+       "iron supplements with blood pressure medication"
+      ]
+     ],
+     "final": [],
+     "dm_safety_in_final": [],
+     "path": "FALLBACK (no docs)",
+     "events": [
+      "answer",
+      "citations",
+      "done",
+      "fallback"
+     ],
+     "answer_chars": 3233,
+     "premark_mechanism": true,
+     "premark_thiazide_content": true,
+     "premark_over_trigger": false
+    }
+   ]
+  },
+  {
+   "id": "Q5",
+   "query": "magnesium and diuretics elderly",
+   "annotated": "magnesium and diuretics elderly",
+   "lang": "en",
+   "expected_mechanism": "loop/thiazide diuretics → hypomagnesemia (K-sparing raise Mg)",
+   "premark_mechanism_regex": "hypomagnes|magnesium (loss|deplet|wast|excret)|low magnesium",
+   "over_trigger_regex": null,
+   "runs": [
+    {
+     "run": 1,
+     "status": "ok",
+     "seconds": 12.3,
+     "rewrite_calls": [
+      [
+       "magnesium diuretic interaction elderly mechanism",
+       "magnesium supplementation diuretic induced hypomagnesemia elderly",
+       "magnesium diuretics elderly pharmacology clinical management"
+      ],
+      [
+       "magnesium depletion diuretics elderly mechanism",
+       "management hypomagnesemia elderly diuretic therapy",
+       "magnesium diuretics elderly pharmacology interaction"
+      ],
+      [
+       "magnesium depletion diuretics elderly mechanism",
+       "magnesium supplementation diuretic induced hypomagnesemia elderly",
+       "diuretics magnesium elderly pharmacokinetics interaction"
+      ],
+      [
+       "magnesium diuretic interaction elderly mechanism",
+       "magnesium supplementation diuretic induced hypomagnesemia elderly",
+       "magnesium diuretics elderly pharmacology clinical management"
+      ]
+     ],
+     "final": [
+      {
+       "source_id": "PMID:42645866",
+       "source_type": "pubmed",
+       "title": "Diuretics in Cardiovascular Disease: For How Long and at What Dose?"
+      }
+     ],
+     "dm_safety_in_final": [],
+     "path": "grounded",
+     "events": [
+      "answer",
+      "citations",
+      "done"
+     ],
+     "answer_chars": 1695,
+     "premark_mechanism": true,
+     "premark_thiazide_content": false,
+     "premark_over_trigger": false
+    },
+    {
+     "run": 2,
+     "status": "ok",
+     "seconds": 16.0,
+     "rewrite_calls": [
+      [
+       "magnesium depletion diuretics elderly mechanism",
+       "magnesium supplementation diuretic induced hypomagnesemia elderly",
+       "diuretics magnesium imbalance elderly pharmacology"
+      ],
+      [
+       "magnesium depletion diuretics elderly mechanism",
+       "magnesium supplementation diuretic induced hypomagnesemia elderly",
+       "diuretic agents magnesium imbalance elderly patients"
+      ],
+      [
+       "magnesium depletion diuretics elderly mechanism",
+       "magnesium supplementation diuretic induced hypomagnesemia elderly",
+       "diuretic agents magnesium imbalance elderly patients"
+      ],
+      [
+       "magnesium depletion diuretics elderly mechanism",
+       "magnesium supplementation diuretic induced hypomagnesemia elderly",
+       "diuretic agents magnesium imbalance elderly patients"
+      ]
+     ],
+     "final": [
+      {
+       "source_id": "PMID:24410347",
+       "source_type": "pubmed",
+       "title": "Diuretic-associated electrolyte disorders in the elderly: risk factors, impact, management and prevention."
+      },
+      {
+       "source_id": "PMID:9595547",
+       "source_type": "pubmed",
+       "title": "Magnesium status and ageing: an update."
+      },
+      {
+       "source_id": "PMID:8155490",
+       "source_type": "pubmed",
+       "title": "Magnesium and ageing. II. Clinical data: aetiological mechanisms and pathophysiological consequences of magnesium defici"
+      }
+     ],
+     "dm_safety_in_final": [],
+     "path": "grounded",
+     "events": [
+      "answer",
+      "citations",
+      "done"
+     ],
+     "answer_chars": 2457,
+     "premark_mechanism": true,
+     "premark_thiazide_content": false,
+     "premark_over_trigger": false
+    }
+   ]
+  },
+  {
+   "id": "Q6",
+   "query": "Can elderly take vitamin D with water pills?",
+   "annotated": "Can elderly take vitamin D with water pills?",
+   "lang": "en",
+   "expected_mechanism": "thiazide + vitamin D → hypercalcemia",
+   "premark_mechanism_regex": "thiazide|hypercalc|calcium",
+   "over_trigger_regex": null,
+   "runs": [
+    {
+     "run": 1,
+     "status": "ok",
+     "seconds": 17.1,
+     "rewrite_calls": [
+      [
+       "thiazide diuretics vitamin D hypercalcemia risk",
+       "vitamin D supplementation elderly diuretic use",
+       "thiazide diuretics vitamin D interaction elderly"
+      ],
+      [
+       "thiazide diuretic vitamin D hypercalcemia risk",
+       "vitamin D supplementation elderly diuretic use",
+       "thiazide diuretics vitamin D interaction elderly"
+      ],
+      [
+       "thiazide diuretics vitamin D hypercalcemia risk",
+       "vitamin D supplementation elderly diuretic use",
+       "hydrochlorothiazide vitamin D drug interaction"
+      ],
+      [
+       "thiazide diuretics vitamin D hypercalcemia risk",
+       "vitamin D supplementation elderly diuretic use",
+       "thiazide diuretics vitamin D drug interaction"
+      ]
+     ],
+     "final": [
+      {
+       "source_id": "PMID:24657333",
+       "source_type": "pubmed",
+       "title": "Risk of hypercalcemia in blacks taking hydrochlorothiazide and vitamin D."
+      },
+      {
+       "source_id": "PMID:23307906",
+       "source_type": "pubmed",
+       "title": "Drug-vitamin D interactions: a systematic review of the literature."
+      },
+      {
+       "source_id": "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34073-7",
+       "source_type": "dailymed",
+       "title": "Hydrochlorothiazide (Hydrochlorothiazide) — Drug Interactions"
+      },
+      {
+       "source_id": "PMID:24385337",
+       "source_type": "pubmed",
+       "title": "The association between drugs frequently used by the elderly and vitamin D blood levels: a review of observational and e"
+      },
+      {
+       "source_id": "PMID:41100446",
+       "source_type": "pubmed",
+       "title": "Signal Detection of Drug-Drug Interactions Between Topical Vitamin D3 Analogs and Oral Thiazide Diuretics in Hypercalcem"
+      }
+     ],
+     "dm_safety_in_final": [
+      "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34073-7"
+     ],
+     "path": "grounded",
+     "events": [
+      "answer",
+      "citations",
+      "done"
+     ],
+     "answer_chars": 2171,
+     "premark_mechanism": true,
+     "premark_thiazide_content": true,
+     "premark_over_trigger": false
+    },
+    {
+     "run": 2,
+     "status": "ok",
+     "seconds": 18.3,
+     "rewrite_calls": [
+      [
+       "thiazide diuretic vitamin D hypercalcemia risk",
+       "vitamin D supplementation elderly diuretic use",
+       "thiazide diuretics vitamin D interaction elderly"
+      ],
+      [
+       "thiazide diuretic vitamin D hypercalcemia risk",
+       "vitamin D supplementation elderly diuretic use",
+       "hydrochlorothiazide vitamin D drug interaction"
+      ],
+      [
+       "thiazide diuretics vitamin D hypercalcemia risk",
+       "vitamin D supplementation elderly diuretic use",
+       "hydrochlorothiazide vitamin D drug interaction"
+      ],
+      [
+       "thiazide diuretics vitamin D hypercalcemia risk",
+       "vitamin D supplementation elderly diuretic use",
+       "thiazide diuretics vitamin D interaction management"
+      ]
+     ],
+     "final": [
+      {
+       "source_id": "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34073-7",
+       "source_type": "dailymed",
+       "title": "Hydrochlorothiazide (Hydrochlorothiazide) — Drug Interactions"
+      },
+      {
+       "source_id": "PMID:31608419",
+       "source_type": "pubmed",
+       "title": "Do Vitamin D Level and Dietary Calcium Intake Modify the Association Between Loop Diuretics and Bone Health?"
+      },
+      {
+       "source_id": "PMID:23307906",
+       "source_type": "pubmed",
+       "title": "Drug-vitamin D interactions: a systematic review of the literature."
+      },
+      {
+       "source_id": "PMID:24385337",
+       "source_type": "pubmed",
+       "title": "The association between drugs frequently used by the elderly and vitamin D blood levels: a review of observational and e"
+      },
+      {
+       "source_id": "PMID:41100446",
+       "source_type": "pubmed",
+       "title": "Signal Detection of Drug-Drug Interactions Between Topical Vitamin D3 Analogs and Oral Thiazide Diuretics in Hypercalcem"
+      }
+     ],
+     "dm_safety_in_final": [
+      "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34073-7"
+     ],
+     "path": "grounded",
+     "events": [
+      "answer",
+      "citations",
+      "done"
+     ],
+     "answer_chars": 2348,
+     "premark_mechanism": true,
+     "premark_thiazide_content": true,
+     "premark_over_trigger": false
+    }
+   ]
+  },
+  {
+   "id": "Q7",
+   "query": "降血壓藥和鉀離子補充劑",
+   "annotated": "降血壓藥和鉀離子補充劑",
+   "lang": "zh-TW",
+   "expected_mechanism": "ACEI/ARB/K-sparing + potassium → hyperkalemia (zh-TW)",
+   "premark_mechanism_regex": "hyperkal|高血鉀|血鉀|ACE|ARB|血管收縮素|保鉀|螺內酯",
+   "over_trigger_regex": null,
+   "runs": [
+    {
+     "run": 1,
+     "status": "ok",
+     "seconds": 15.0,
+     "rewrite_calls": [
+      [
+       "antihypertensive drugs potassium supplements"
+      ],
+      [
+       "antihypertensive drugs potassium supplements"
+      ],
+      [
+       "antihypertensive drugs potassium supplements"
+      ],
+      [
+       "antihypertensive drugs potassium supplements"
+      ]
+     ],
+     "final": [
+      {
+       "source_id": "DailyMed:14cd12ee-a4a3-465a-9550-58c9ef0e4f21#34073-7",
+       "source_type": "dailymed",
+       "title": "Potassium Chloride (Potassium Chloride) — Drug Interactions"
+      },
+      {
+       "source_id": "PMID:7623367",
+       "source_type": "pubmed",
+       "title": "Poisoning with antihypertensive drugs: diuretics and potassium supplements."
+      }
+     ],
+     "dm_safety_in_final": [
+      "DailyMed:14cd12ee-a4a3-465a-9550-58c9ef0e4f21#34073-7"
+     ],
+     "path": "grounded",
+     "events": [
+      "answer",
+      "citations",
+      "done"
+     ],
+     "answer_chars": 621,
+     "premark_mechanism": true,
+     "premark_thiazide_content": true,
+     "premark_over_trigger": false
+    },
+    {
+     "run": 2,
+     "status": "ok",
+     "seconds": 14.5,
+     "rewrite_calls": [
+      [
+       "antihypertensive drugs potassium supplements"
+      ],
+      [
+       "antihypertensive drugs potassium supplements"
+      ],
+      [
+       "antihypertensive drugs potassium supplements"
+      ],
+      [
+       "antihypertensive drugs potassium supplements"
+      ]
+     ],
+     "final": [
+      {
+       "source_id": "DailyMed:14cd12ee-a4a3-465a-9550-58c9ef0e4f21#34073-7",
+       "source_type": "dailymed",
+       "title": "Potassium Chloride (Potassium Chloride) — Drug Interactions"
+      },
+      {
+       "source_id": "PMID:7623367",
+       "source_type": "pubmed",
+       "title": "Poisoning with antihypertensive drugs: diuretics and potassium supplements."
+      }
+     ],
+     "dm_safety_in_final": [
+      "DailyMed:14cd12ee-a4a3-465a-9550-58c9ef0e4f21#34073-7"
+     ],
+     "path": "grounded",
+     "events": [
+      "answer",
+      "citations",
+      "done"
+     ],
+     "answer_chars": 610,
+     "premark_mechanism": true,
+     "premark_thiazide_content": true,
+     "premark_over_trigger": false
+    }
+   ]
+  },
+  {
+   "id": "Q8",
+   "query": "sugar pills with BP meds",
+   "annotated": "sugar pills with BP meds",
+   "lang": "en",
+   "expected_mechanism": "LAY-TERM AMBIGUITY (placebo vs diabetes meds) — pass iff the answer flags or reasonably resolves it",
+   "premark_mechanism_regex": "placebo|diabet|glucose|metformin|clarif|unclear|ambig|assum",
+   "over_trigger_regex": null,
+   "runs": [
+    {
+     "run": 1,
+     "status": "irrelevant",
+     "seconds": 19.2,
+     "rewrite_calls": [
+      [
+       "placebo effect blood pressure medication mechanism",
+       "management blood pressure with placebo control",
+       "antihypertensive drugs placebo controlled trials"
+      ],
+      [
+       "placebo effect blood pressure medication mechanism",
+       "management blood pressure with placebo control",
+       "antihypertensive drugs placebo controlled trials"
+      ],
+      [
+       "placebo effect blood pressure medication mechanism",
+       "management blood pressure with placebo control",
+       "antihypertensive drugs placebo controlled trials"
+      ],
+      [
+       "placebo effect blood pressure medication interaction",
+       "management hypertension placebo controlled trials",
+       "antihypertensive drugs placebo response mechanisms"
+      ]
+     ],
+     "final": [],
+     "dm_safety_in_final": [],
+     "path": "FALLBACK (no docs)",
+     "events": [
+      "answer",
+      "citations",
+      "done",
+      "fallback"
+     ],
+     "answer_chars": 1812,
+     "premark_mechanism": true,
+     "premark_thiazide_content": false,
+     "premark_over_trigger": false
+    },
+    {
+     "run": 2,
+     "status": "irrelevant",
+     "seconds": 19.4,
+     "rewrite_calls": [
+      [
+       "placebo effect blood pressure medication mechanism",
+       "management blood pressure with placebo control",
+       "antihypertensive drugs placebo controlled trials"
+      ],
+      [
+       "placebo effect blood pressure medication mechanism",
+       "management blood pressure with placebo control",
+       "antihypertensive drugs placebo controlled trials"
+      ],
+      [
+       "placebo effect blood pressure medication mechanism",
+       "management blood pressure with placebo control",
+       "antihypertensive drugs placebo controlled trials"
+      ],
+      [
+       "placebo effect blood pressure medication mechanism",
+       "management blood pressure with placebo control",
+       "antihypertensive drugs placebo controlled trials"
+      ]
+     ],
+     "final": [],
+     "dm_safety_in_final": [],
+     "path": "FALLBACK (no docs)",
+     "events": [
+      "answer",
+      "citations",
+      "done",
+      "fallback"
+     ],
+     "answer_chars": 1475,
+     "premark_mechanism": true,
+     "premark_thiazide_content": false,
+     "premark_over_trigger": false
+    }
+   ]
+  },
+  {
+   "id": "Q9",
+   "query": "aspirin with BP medication elderly",
+   "annotated": "aspirin with BP medication elderly",
+   "lang": "en",
+   "expected_mechanism": "CONTROL (named INN + class): aspirin blunts ACEI/diuretic effect, bleeding, renal; NO thiazide-specific content expected",
+   "premark_mechanism_regex": "ACE|bleed|renal|NSAID|antiplatelet|antihypertensive effect",
+   "over_trigger_regex": "thiazide|hydrochlorothiazide|chlorthalidone|indapamide|噻嗪|利尿",
+   "runs": [
+    {
+     "run": 1,
+     "status": "ok",
+     "seconds": 17.2,
+     "rewrite_calls": [
+      [
+       "aspirin antihypertensive drug interaction mechanism",
+       "aspirin blood pressure medication elderly management",
+       "acetylsalicylic acid antihypertensive agents elderly"
+      ],
+      [
+       "aspirin antihypertensive drug interaction mechanism",
+       "aspirin blood pressure medication elderly management",
+       "acetylsalicylic acid antihypertensive agents elderly"
+      ],
+      [
+       "aspirin antihypertensive drug interaction mechanism",
+       "aspirin blood pressure medication elderly management",
+       "acetylsalicylic acid antihypertensive agents aged patients"
+      ],
+      [
+       "aspirin antihypertensive drug interaction mechanism",
+       "aspirin blood pressure medication elderly management",
+       "acetylsalicylic acid antihypertensive agents elderly"
+      ]
+     ],
+     "final": [
+      {
+       "source_id": "PMID:39185614",
+       "source_type": "pubmed",
+       "title": "Daily low-dose aspirin and blood pressure in community-dwelling older adults."
+      },
+      {
+       "source_id": "PMID:28684123",
+       "source_type": "pubmed",
+       "title": "Aspirin and blood pressure: Effects when used alone or in combination with antihypertensive drugs."
+      },
+      {
+       "source_id": "PMID:41122849",
+       "source_type": "pubmed",
+       "title": "Heart Stress and Blood Pressure Management in Older Adults: Post Hoc Analysis of the ASPREE Trial."
+      },
+      {
+       "source_id": "PMID:33186492",
+       "source_type": "pubmed",
+       "title": "Polypill with or without Aspirin in Persons without Cardiovascular Disease."
+      }
+     ],
+     "dm_safety_in_final": [],
+     "path": "grounded",
+     "events": [
+      "answer",
+      "citations",
+      "done"
+     ],
+     "answer_chars": 2490,
+     "premark_mechanism": true,
+     "premark_thiazide_content": false,
+     "premark_over_trigger": false
+    },
+    {
+     "run": 2,
+     "status": "ok",
+     "seconds": 14.8,
+     "rewrite_calls": [
+      [
+       "aspirin antihypertensive drug interaction mechanism",
+       "aspirin blood pressure medication elderly management",
+       "acetylsalicylic acid antihypertensive agents elderly"
+      ],
+      [
+       "aspirin antihypertensive drug interaction mechanism",
+       "aspirin blood pressure medication elderly management",
+       "acetylsalicylic acid antihypertensive agents elderly"
+      ],
+      [
+       "aspirin antihypertensive drug interaction mechanism",
+       "aspirin blood pressure medication elderly management",
+       "acetylsalicylic acid antihypertensive agents elderly"
+      ],
+      [
+       "aspirin antihypertensive drug interaction mechanism",
+       "aspirin blood pressure medication elderly management",
+       "acetylsalicylic acid antihypertensive agents elderly"
+      ]
+     ],
+     "final": [
+      {
+       "source_id": "PMID:33186492",
+       "source_type": "pubmed",
+       "title": "Polypill with or without Aspirin in Persons without Cardiovascular Disease."
+      },
+      {
+       "source_id": "PMID:39185614",
+       "source_type": "pubmed",
+       "title": "Daily low-dose aspirin and blood pressure in community-dwelling older adults."
+      }
+     ],
+     "dm_safety_in_final": [],
+     "path": "grounded",
+     "events": [
+      "answer",
+      "citations",
+      "done"
+     ],
+     "answer_chars": 1699,
+     "premark_mechanism": true,
+     "premark_thiazide_content": false,
+     "premark_over_trigger": false
+    }
+   ]
+  },
+  {
+   "id": "Q10",
+   "query": "BP meds with grapefruit",
+   "annotated": "BP meds with grapefruit",
+   "lang": "en",
+   "expected_mechanism": "CYP3A4 inhibition → ↑ CCB (felodipine/nifedipine/amlodipine) levels",
+   "premark_mechanism_regex": "CYP3A4|CYP|felodipine|nifedipine|amlodipine|calcium channel",
+   "over_trigger_regex": null,
+   "runs": [
+    {
+     "run": 1,
+     "status": "ok",
+     "seconds": 20.1,
+     "rewrite_calls": [
+      [
+       "calcium channel blockers grapefruit juice interaction",
+       "grapefruit induced blood pressure medication effects",
+       "calcium channel blocker grapefruit juice pharmacokinetics"
+      ],
+      [
+       "calcium channel blockers grapefruit juice interaction",
+       "management grapefruit juice calcium channel blocker toxicity",
+       "calcium channel blockers drug food interactions"
+      ],
+      [
+       "calcium channel blockers grapefruit juice interaction",
+       "management of hypertension grapefruit drug interactions",
+       "calcium channel blockers grapefruit pharmacokinetics"
+      ],
+      [
+       "calcium channel blockers grapefruit juice interaction",
+       "management of hypertension grapefruit juice effects",
+       "calcium channel blockers drug food interactions"
+      ]
+     ],
+     "final": [
+      {
+       "source_id": "PMID:22039822",
+       "source_type": "pubmed",
+       "title": "Integrated analysis on the physicochemical properties of dihydropyridine calcium channel blockers in grapefruit juice in"
+      },
+      {
+       "source_id": "PMID:21142260",
+       "source_type": "pubmed",
+       "title": "Grapefruit-drug interactions."
+      },
+      {
+       "source_id": "PMID:16814135",
+       "source_type": "pubmed",
+       "title": "Interaction of grapefruit juice and calcium channel blockers."
+      },
+      {
+       "source_id": "PMID:9723817",
+       "source_type": "pubmed",
+       "title": "Grapefruit juice-drug interactions."
+      },
+      {
+       "source_id": "PMID:10994829",
+       "source_type": "pubmed",
+       "title": "Drug-grapefruit juice interactions."
+      }
+     ],
+     "dm_safety_in_final": [],
+     "path": "grounded",
+     "events": [
+      "answer",
+      "citations",
+      "done"
+     ],
+     "answer_chars": 2741,
+     "premark_mechanism": true,
+     "premark_thiazide_content": false,
+     "premark_over_trigger": false
+    },
+    {
+     "run": 2,
+     "status": "ok",
+     "seconds": 17.4,
+     "rewrite_calls": [
+      [
+       "calcium channel blockers grapefruit juice interaction",
+       "management of hypertension grapefruit juice effects",
+       "antihypertensive drugs grapefruit juice pharmacology"
+      ],
+      [
+       "calcium channel blockers grapefruit juice interaction",
+       "management of hypertension grapefruit drug interactions",
+       "calcium channel blockers grapefruit pharmacokinetics"
+      ],
+      [
+       "calcium channel blockers grapefruit juice interaction",
+       "grapefruit induced hypertension medication effects",
+       "calcium channel blockers cytochrome p450 grapefruit"
+      ],
+      [
+       "calcium channel blockers grapefruit juice interaction",
+       "management of hypertension grapefruit drug interactions",
+       "calcium channel blockers grapefruit pharmacokinetics"
+      ]
+     ],
+     "final": [
+      {
+       "source_id": "PMID:40122403",
+       "source_type": "pubmed",
+       "title": "Pharmacokinetic interactions of fruit juices with antihypertensive drugs in humans: A systematic review and meta-analysi"
+      },
+      {
+       "source_id": "PMID:22039822",
+       "source_type": "pubmed",
+       "title": "Integrated analysis on the physicochemical properties of dihydropyridine calcium channel blockers in grapefruit juice in"
+      },
+      {
+       "source_id": "PMID:15449971",
+       "source_type": "pubmed",
+       "title": "Interactions between grapefruit juice and cardiovascular drugs."
+      },
+      {
+       "source_id": "PMID:16814135",
+       "source_type": "pubmed",
+       "title": "Interaction of grapefruit juice and calcium channel blockers."
+      },
+      {
+       "source_id": "PMID:21142260",
+       "source_type": "pubmed",
+       "title": "Grapefruit-drug interactions."
+      }
+     ],
+     "dm_safety_in_final": [],
+     "path": "grounded",
+     "events": [
+      "answer",
+      "citations",
+      "done"
+     ],
+     "answer_chars": 2293,
+     "premark_mechanism": true,
+     "premark_thiazide_content": false,
+     "premark_over_trigger": false
+    }
+   ]
+  },
+  {
+   "id": "Q11",
+   "query": "calcium and lisinopril",
+   "annotated": "calcium and lisinopril",
+   "lang": "en",
+   "expected_mechanism": "no clinically significant interaction expected; NO thiazide content expected",
+   "premark_mechanism_regex": "lisinopril|no (clinically )?significant|not (a )?(significant|known)|minimal|hyperkal",
+   "over_trigger_regex": "thiazide|hydrochlorothiazide|chlorthalidone|indapamide|噻嗪|利尿",
+   "runs": [
+    {
+     "run": 1,
+     "status": "ok",
+     "seconds": 11.8,
+     "rewrite_calls": [
+      [
+       "calcium and lisinopril"
+      ],
+      [
+       "lisinopril calcium supplement interaction mechanism",
+       "lisinopril calcium supplementation blood pressure management",
+       "angiotensin converting enzyme inhibitors calcium supplements pharmacology"
+      ],
+      [
+       "calcium and lisinopril"
+      ],
+      [
+       "calcium and lisinopril"
+      ]
+     ],
+     "final": [
+      {
+       "source_id": "PMID:37354687",
+       "source_type": "pubmed",
+       "title": "THE NITROSAMINE CONTAMINATION IN BETA BLOCKERS (BISOPROLOL/METOPROLOL), ACE INHIBITORS (LISINOPRIL/PERINDOPRIL), THIAZID"
+      },
+      {
+       "source_id": "PMID:9179532",
+       "source_type": "pubmed",
+       "title": "Lisinopril. A review of its pharmacology and use in the management of the complications of diabetes mellitus."
+      }
+     ],
+     "dm_safety_in_final": [],
+     "path": "grounded",
+     "events": [
+      "answer",
+      "citations",
+      "done"
+     ],
+     "answer_chars": 2589,
+     "premark_mechanism": true,
+     "premark_thiazide_content": false,
+     "premark_over_trigger": false
+    },
+    {
+     "run": 2,
+     "status": "ok",
+     "seconds": 11.4,
+     "rewrite_calls": [
+      [
+       "calcium and lisinopril"
+      ],
+      [
+       "calcium and lisinopril"
+      ],
+      [
+       "calcium and lisinopril"
+      ],
+      [
+       "calcium and lisinopril"
+      ]
+     ],
+     "final": [
+      {
+       "source_id": "PMID:37354687",
+       "source_type": "pubmed",
+       "title": "THE NITROSAMINE CONTAMINATION IN BETA BLOCKERS (BISOPROLOL/METOPROLOL), ACE INHIBITORS (LISINOPRIL/PERINDOPRIL), THIAZID"
+      },
+      {
+       "source_id": "PMID:9179532",
+       "source_type": "pubmed",
+       "title": "Lisinopril. A review of its pharmacology and use in the management of the complications of diabetes mellitus."
+      }
+     ],
+     "dm_safety_in_final": [],
+     "path": "grounded",
+     "events": [
+      "answer",
+      "citations",
+      "done"
+     ],
+     "answer_chars": 2867,
+     "premark_mechanism": true,
+     "premark_thiazide_content": false,
+     "premark_over_trigger": false
+    }
+   ]
+  },
+  {
+   "id": "Q12",
+   "query": "potassium with spironolactone",
+   "annotated": "potassium with spironolactone",
+   "lang": "en",
+   "expected_mechanism": "hyperkalemia (K-sparing + potassium) — the straddle family",
+   "premark_mechanism_regex": "hyperkal",
+   "over_trigger_regex": null,
+   "runs": [
+    {
+     "run": 1,
+     "status": "ok",
+     "seconds": 13.2,
+     "rewrite_calls": [
+      [
+       "potassium with spironolactone"
+      ],
+      [
+       "spironolactone potassium interaction hyperkalemia risk",
+       "spironolactone potassium monitoring treatment guidelines",
+       "potassium sparing diuretics spironolactone hyperkalemia"
+      ],
+      [
+       "spironolactone potassium interaction hyperkalemia risk",
+       "spironolactone potassium monitoring treatment guidelines",
+       "potassium sparing diuretics spironolactone hyperkalemia"
+      ],
+      [
+       "spironolactone potassium interaction hyperkalemia risk",
+       "spironolactone potassium monitoring treatment guidelines",
+       "potassium sparing diuretics spironolactone hyperkalemia"
+      ]
+     ],
+     "final": [
+      {
+       "source_id": "DailyMed:14cd12ee-a4a3-465a-9550-58c9ef0e4f21#34073-7",
+       "source_type": "dailymed",
+       "title": "Potassium Chloride (Potassium Chloride) — Drug Interactions"
+      },
+      {
+       "source_id": "PMID:2049255",
+       "source_type": "pubmed",
+       "title": "Adequacy of twice daily dosing with potassium chloride and spironolactone in thiazide treated hypertensive patients."
+      },
+      {
+       "source_id": "DailyMed:1a52bedc-8e2c-4116-a296-a87770676b4a#43685-7",
+       "source_type": "dailymed",
+       "title": "Inspra (eplerenone) — Warnings and Precautions"
+      },
+      {
+       "source_id": "PMID:30971598",
+       "source_type": "pubmed",
+       "title": "Hyperkalemia in ambulant postcardiac surgery patients during combined therapy with angiotensin-converting enzyme inhibit"
+      },
+      {
+       "source_id": "PMID:33502462",
+       "source_type": "pubmed",
+       "title": "Temporal Trends and Clinician Variability in Potassium Monitoring of Healthy Young Women Treated for Acne With Spironola"
+      }
+     ],
+     "dm_safety_in_final": [
+      "DailyMed:14cd12ee-a4a3-465a-9550-58c9ef0e4f21#34073-7",
+      "DailyMed:1a52bedc-8e2c-4116-a296-a87770676b4a#43685-7"
+     ],
+     "path": "grounded",
+     "events": [
+      "answer",
+      "citations",
+      "done"
+     ],
+     "answer_chars": 2240,
+     "premark_mechanism": true,
+     "premark_thiazide_content": true,
+     "premark_over_trigger": false
+    },
+    {
+     "run": 2,
+     "status": "ok",
+     "seconds": 14.0,
+     "rewrite_calls": [
+      [
+       "potassium with spironolactone"
+      ],
+      [
+       "spironolactone potassium interaction hyperkalemia risk",
+       "spironolactone potassium monitoring treatment guidelines",
+       "potassium sparing diuretics spironolactone hyperkalemia"
+      ],
+      [
+       "spironolactone potassium interaction hyperkalemia risk",
+       "spironolactone potassium monitoring treatment guidelines",
+       "potassium sparing diuretics spironolactone hyperkalemia"
+      ],
+      [
+       "spironolactone potassium interaction hyperkalemia risk",
+       "spironolactone potassium monitoring treatment guidelines",
+       "potassium sparing diuretics hyperkalemia management"
+      ]
+     ],
+     "final": [
+      {
+       "source_id": "DailyMed:14cd12ee-a4a3-465a-9550-58c9ef0e4f21#34073-7",
+       "source_type": "dailymed",
+       "title": "Potassium Chloride (Potassium Chloride) — Drug Interactions"
+      },
+      {
+       "source_id": "DailyMed:1a52bedc-8e2c-4116-a296-a87770676b4a#43685-7",
+       "source_type": "dailymed",
+       "title": "Inspra (eplerenone) — Warnings and Precautions"
+      },
+      {
+       "source_id": "PMID:33502462",
+       "source_type": "pubmed",
+       "title": "Temporal Trends and Clinician Variability in Potassium Monitoring of Healthy Young Women Treated for Acne With Spironola"
+      },
+      {
+       "source_id": "PMID:35964859",
+       "source_type": "pubmed",
+       "title": "Potassium Concentrations in Transgender Women Using Spironolactone: A Retrospective Chart Review."
+      }
+     ],
+     "dm_safety_in_final": [
+      "DailyMed:14cd12ee-a4a3-465a-9550-58c9ef0e4f21#34073-7",
+      "DailyMed:1a52bedc-8e2c-4116-a296-a87770676b4a#43685-7"
+     ],
+     "path": "grounded",
+     "events": [
+      "answer",
+      "citations",
+      "done"
+     ],
+     "answer_chars": 2640,
+     "premark_mechanism": true,
+     "premark_thiazide_content": false,
+     "premark_over_trigger": false
+    }
+   ]
+  }
+ ]
+}

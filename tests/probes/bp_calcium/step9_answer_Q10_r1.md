@@ -1,0 +1,13 @@
+## Summary  
+Grapefruit juice significantly increases the plasma concentration of many dihydropyridine calcium channel blockers (CCBs) used for blood pressure control by inhibiting intestinal CYP3A4 enzymes, which reduces first-pass metabolism and increases drug bioavailability. This interaction varies among different CCBs, with felodipine showing the most prominent increase in exposure, while amlodipine appears to have no significant interaction. The increased drug levels can lead to enhanced pharmacologic effects and potentially dose-dependent adverse reactions [1][2][3][4][5].
+
+## Clinical Notes  
+- **Drugs affected:** Most dihydropyridine CCBs such as felodipine, nifedipine, nicardipine, nimodipine, and others are susceptible to grapefruit juice interactions. Amlodipine is an exception with no statistically significant interaction observed [1][3][4].  
+- **Mechanism:** Grapefruit juice contains furanocoumarins that irreversibly inhibit intestinal CYP3A4, decreasing presystemic metabolism and increasing systemic drug exposure. Flavonoids may also affect P-glycoprotein and uptake transporters, further influencing drug absorption [2][4][5].  
+- **Clinical implications:** Increased plasma levels of CCBs can enhance hypotensive effects and increase the risk of adverse effects such as excessive vasodilation, edema, and reflex tachycardia. The magnitude of interaction depends on the specific CCB, amount and timing of grapefruit juice intake, and individual variability in CYP3A4 expression [3][4].  
+- **Recommendations:** Patients on susceptible CCBs should avoid grapefruit juice to prevent unpredictable increases in drug levels and adverse effects. If grapefruit juice consumption cannot be avoided, close monitoring of blood pressure and signs of toxicity is warranted.  
+- **Monitoring:** Regular blood pressure monitoring is essential. Watch for symptoms of hypotension or CCB toxicity (e.g., dizziness, peripheral edema). No specific dose adjustments are standardized, but dose reduction may be considered if grapefruit juice intake is consistent.  
+- **Contraindications:** Avoid grapefruit juice in patients on CCBs with narrow therapeutic windows or those prone to hypotension. Caution is also advised in patients with hepatic impairment, as metabolism may be further compromised.  
+- **Additional considerations:** Other antihypertensive classes are not prominently affected by grapefruit juice; the interaction is mainly relevant for dihydropyridine CCBs [2][5].  
+
+In summary, grapefruit juice can cause clinically significant increases in plasma concentrations of many dihydropyridine calcium channel blockers, necessitating avoidance or careful monitoring when these drugs are prescribed [1][2][3][4][5].
