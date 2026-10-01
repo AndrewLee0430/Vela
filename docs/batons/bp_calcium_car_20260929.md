@@ -75,9 +75,12 @@ TECH_DEBT `0fe197fcdbd640ef`.
   relabel, shipped). **None records that the grounded tag attaches to the setid rather than the claim → entry (2) is NEW.**
 - `git grep -n -i -E "combination label|wrong-object|repackager" -- TECH_DEBT.md BACKLOG.md STATE.md` → `BACKLOG.md:1023`
   **"[OTHER] [P2] DailyMed setid selection prefers repackager over reference label"** (max-`spl_version` pick — entry (3)
-  cross-references it), `BACKLOG.md:968` wrong-object intrusion [P2], `TECH_DEBT.md:1947` veterinary labels [P2],
-  `TECH_DEBT.md:1882` combination products in the local corpus. **No Verify grounding on a COMBINATION label → entry (3) NEW.**
-- `git grep -n -i "dormant" -- TECH_DEBT.md BACKLOG.md STATE.md api/` → `TECH_DEBT.md:2347`/`:2350` (two `[DONE]` P3s
+  cross-references it), `BACKLOG.md:968` wrong-object intrusion [P2], the TECH_DEBT entry headed *"15 pinned DailyMed
+  reference labels are NOT human drug labels"* (veterinary, [P2]; `:1947` at `0b210da`), and the local-corpus bullet
+  *"22/190 (11.6%) full_label records are COMBINATION products"* (`:1882` at `0b210da`; both shifted by this car's own
+  insertions). **No Verify grounding on a COMBINATION label → entry (3) NEW.**
+- `git grep -n -i "dormant" -- TECH_DEBT.md BACKLOG.md STATE.md api/` → the two `[DONE]` P3 entries headed *"DailyMed corpus
+  (dormant, B-2 Phase 1)"* (`:2347`/`:2350` at `0b210da`; two `[DONE]` P3s
   calling the corpus "dormant" as of 2026-07-14 — a superseded state), `api/database/vector_store.py:204` (the docstring).
   **No entry says the docstring is stale → entry (4) NEW.**
 
@@ -149,7 +152,7 @@ Artifacts: `tests/probes/bp_calcium/step6_*` (README "Segment 1 build" carries t
 - **NAV** (dated block + table; the block is the one headed "NAV RECOUNTED 2026-09-30 (BP+CALCIUM CAR SEGMENT 1"):
   pre-change derive at `0b210da` = 0 + 9 + 18 + 65 + 100 = 192 (bullets 227 = 192 + 35; [sec] 15 / 14). ⚠️ **The table read DONE 64 / OTHER 101** — the 2026-09-29 RECOUNT block computed 65 / 100 and did not
   write it into the table (same total, wrong split; Rule 25). Corrected from the derive. Post-change re-derive
-  `0 + 9 + 21 + 65 + 101 = 196` (bullets 231 = 196 + 35; [sec] unchanged 15 / 14): MATCH.
+  a 196 total with the per-class split 0 / 9 / 21 / 65 / 101 (bullets 231 = 196 + 35; [sec] unchanged 15 / 14): MATCH.
 - **STATE.md:** header parenthetical (2026-09-30) · Recently Shipped terse entry · Next Up line extended: NEXT CAR =
   entries (2)+(3) (R5); CANDIDATE ONLY = (i) re-measure (e) at N=8, (ii) Segment 2 generator branch.
 - **BACKLOG.md:** untouched.
@@ -164,14 +167,21 @@ Artifacts: `tests/probes/bp_calcium/step6_*` (README "Segment 1 build" carries t
   ledgers + this baton; BACKLOG untouched. No `[PRD X.Y]` on the commit: `docs/PRD.md` has no section on query rewriting
   (the only "rewrite" hits are Explain-prompt items), so a reference would be invented.
 
-## §5 Local eye gate — BLANK, founder fills (the edit is RE-APPLIED; localhost, Dev DB, Ctrl+Shift+R first)
+## §5 Local eye gate — ✅ FOUNDER-PASS 4/4 (2026-09-30 15:12 +08:00; localhost, Dev DB, Ctrl+Shift+R first)
+
+**Provenance:** founder statement in the strategy conversation — blanket 「都pass」, no per-row detail supplied (the fly 246 /
+fly 254 blanket precedent); transcribed here by Claude Code, zh-TW-transcription precedent. Claude Code did not run the UI.
 
 | # | step | expected | PASS/FAIL | note |
 |---|---|---|---|---|
-| 1 | click hero chip 2 on `/` (EN UI) | first paragraph is about calcium as a **supplement/substance** (not CCBs as the subject) and names thiazide / hypercalcemia | | expected rate from N=8 (`step7b`): thiazide → hypercalcemia named in **7/8**; **6/8 framed around IV calcium chloride** (the corpus's calcium-side sections are IV labels); 1/8 grounded on a CCB drug-food review only. A miss on one click is inside that rate — re-click once before calling FAIL |
-| 2 | same question typed in the zh-TW UI | same content, zh-TW prose | | |
-| 3 | CONTROL "metformin renal dosing" | unchanged in shape | | |
-| 4 | CONTROL 冠脂妥+warfarin | a DailyMed safety section still cited | | |
+| 1 | click hero chip 2 on `/` (EN UI) | first paragraph is about calcium as a **supplement/substance** (not CCBs as the subject) and names thiazide / hypercalcemia | **PASS** (founder) | expected rate from N=8 (`step7b`): thiazide → hypercalcemia named in **7/8**; **6/8 framed around IV calcium chloride** (the corpus's calcium-side sections are IV labels); 1/8 grounded on a CCB drug-food review only |
+| 2 | same question typed in the zh-TW UI | same content, zh-TW prose | **PASS** (founder) | |
+| 3 | CONTROL "metformin renal dosing" | unchanged in shape | **PASS** (founder) | |
+| 4 | CONTROL 冠脂妥+warfarin | a DailyMed safety section still cited | **PASS** (founder) | |
+
+**Ratification (same ruling, 2026-09-30 15:12 +08:00):** the four 2026-09-30 TECH_DEBT entries 「照提案」 — (1) [HONESTY][P1] ·
+(2) [HONESTY][P2] · (3) [HONESTY][P2] · (4) [OTHER][P3]. Given by delegation (「你直接幫我填寫」) to the strategy side and
+recorded as the founder's; each entry's bracket gains " — RATIFIED 2026-09-30 (founder)" (appended, the "proposed" text kept).
 
 ## §6 Recorded, NOT filed
 
