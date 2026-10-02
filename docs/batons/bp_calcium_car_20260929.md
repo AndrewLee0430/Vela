@@ -749,7 +749,7 @@ harness reads that binding from the code line (`_harness.l0_generation_override`
 | arm | bar (pre-registered §11) | result (HAND-read) | evidence |
 |---|---|---|---|
 | EN chip L0 N=8 | veto (i) FALSE ≥ 7/8 | **8/8** — supplement reading every run; 34073-7 in the FINAL pool 8/8 | `step11_2b_en_l0_*` |
-| zh chip L0 N=4 | veto (i) FALSE ≥ 3/4 | **4/4** — 鈣片 read as a supplement every run (the answers drew on rat-model synergy content) | `step11_2b_zh_l0_*` |
+| zh chip L0 N=4 | veto (i) FALSE ≥ 3/4 | **4/4** (= the mini control's 4/4, §10.1 — no regression, not a gain) — 鈣片 read as a supplement every run (the answers drew on rat-model synergy content) | `step11_2b_zh_l0_*` |
 | cost delta | derived from `api_cost_log` | **+$0.0074/query** — gpt-4.1 $0.0086 (n=1200) vs gpt-4.1-mini $0.0011 (n=73); the $2/day aggregate cap now binds at ≈ 233 anonymous generations/day (was ≈ 1746) | `step11_2b_grades.json` |
 
 **Verdict: BAR MET → Commit B** `5d574ab` `feat(research): [PRD 2.8] anonymous Research generation on gpt-4.1 (founder ruling 0b)`
@@ -758,7 +758,7 @@ Decision 001 **A7 UNCHANGED** (the $2/day aggregate cap still gates L0); **A8 CH
 `5d574ab`: **480 passed, 28 skipped**. NOT pushed, NOT deployed.
 
 **What 2b does NOT fix:** the zh chip's rewrite still falls back silently (the rewriter-contract entry, unshipped), so no thiazide-naming
-query is issued for it; the 4/4 is a generator-side improvement on the pool the fallback produces. The bare pair's harm path
+query is issued for it; ⚠️ *Corrected the same day, before any push:* this line first called the zh 4/4 "a generator-side improvement" — it is NOT one: the gpt-4.1-mini control already read veto (i) 4/4 FALSE on the zh chip L0 (§10.1). The zh row is a NO-REGRESSION reading; the only measured gain is the EN chip L0, 6/8 on gpt-4.1-mini (Segment 1c, `f85bb66`) → 8/8 on gpt-4.1. The bare pair's harm path
 ("calcium and lisinopril" → the pool door) is untouched.
 
 ### §11.5 — R3 recorded
