@@ -283,10 +283,13 @@ Each line derived, none inherited.
 
 | # | step | expected | PASS/FAIL | note |
 |---|---|---|---|---|
-| 1 | hero chip 2 on prod `/` | supplement reading + thiazide/hypercalcemia (re-click once on a miss; expect ~7/8; 6/8 may frame around IV calcium chloride) | | |
-| 2 | same question in the zh-TW UI | same content, zh-TW prose | | |
-| 3 | CONTROL "metformin renal dosing" | unchanged | | |
-| 4 | CONTROL 冠脂妥+warfarin | DailyMed safety section cited | | |
+| 1 | hero chip 2 on prod `/` | supplement reading + thiazide/hypercalcemia (re-click once on a miss; expect ~7/8; 6/8 may frame around IV calcium chloride) | **PASS** (founder) | |
+| 2 | same question in the zh-TW UI | same content, zh-TW prose | **MISS** (founder) | the zh chip — measured UNFIXED in Segment 1c (thiazide-naming rewrites 0/22, 0/28); NOT a fly-261 FAIL; Segment 1d scope |
+| 3 | CONTROL "metformin renal dosing" | unchanged | **PASS** (founder) | |
+| 4 | CONTROL 冠脂妥+warfarin | DailyMed safety section cited | **PASS** (founder) | |
+
+**Prod eye transcribed 2026-10-01** — provenance: the founder's four pasted answers (2026-10-01 10:45 +08:00) in the strategy
+conversation; Claude Code did not run the UI. Rows 1/3/4 PASS, row 2 MISS (zh chip, known-unfixed, Segment 1d).
 
 ## §9 Segment 1c (2026-10-01, read-only; HEAD `852b1a0` = prod fly 261 code + the E6 probe) — FIX PARTIAL
 
@@ -357,3 +360,261 @@ to the Calcium Chloride section every run — a floor-edge dependency, not the r
 
 **Spend (1c):** $0.02 logged (rewrites/filter/rerank; in-process generations unlogged ≈ +$0.05) ≈ $0.07 of the US$0.6 cap.
 **Ship state unchanged:** prod fly 261; this segment is read-only; commits local, NOT pushed, NOT deployed.
+
+## §10 Segment 1d — rewrite iteration 2 (zh input + bare-pair shape) + the L0 generator decision (2026-10-01, base `f85bb66`)
+
+**Founder rulings 2026-10-01 (「都照建議」):** order = Segment 1d → then the Verify grounded-tag car · L0 generator = MEASURE FIRST
+(Step 0b rule below) · **prod eye fly 261 = rows 1 / 3 / 4 PASS, row 2 = zh-chip MISS** — measured UNFIXED in Segment 1c, so NOT a
+fly-261 FAIL (provenance: the founder's four pasted answers, 2026-10-01 10:45 +08:00; transcribed in §7b and the STATE ship entry).
+Budget ≈ US$2.5; STOP above US$4. Serial, one harness resident; Dev DB; production-parity retriever.
+
+**PRE-REGISTERED RULES (written 2026-10-01 03:36 UTC at `f85bb66`, BEFORE any run):**
+- **Step 0b (L0 generator):** regenerate the 8 `step8_l0` runs on gpt-4.1 from the SAVED system + user prompts (identical docs,
+  temperature 0.2, max_tokens 2500 — the same request shape `generate_stream` builds); hand-read veto (i) on each pair.
+  **gpt-4.1 veto (i) FALSE ≥ 7/8 on the same pools → ruling (b): L0 Research generation moves to gpt-4.1 in THIS car (Step 2c),
+  anon $2/day aggregate cap UNCHANGED, per-query cost delta reported from `api_cost_log`; else → (a) becomes Segment 2, L0 stays
+  on mini and the 1d L0 ship bar is REPORTED, not gated.**
+- **Step 3 straddle (e), N=8 both arms:** "PASS iff treatment_total(40) ≥ control_total(40) − 2 AND no single query drops by more
+  than 2 runs vs control. FAIL otherwise → the revert stands, record, STOP."
+- **Ship bars (hand-read):** veto (i) FALSE on EVERY L1 run of both chips and of the bare pair · a thiazide-naming rewrite ≥ 3/4
+  on the zh chip (either path) · E6 over-trigger 0 on Q3/Q9/Q11 · L0 veto (i) gated iff (b) was ruled, else reported. Any
+  (b)(c)(d)(e) regression or ship-bar miss → REVERT all of Step 2, record, STOP. No tuning loop.
+
+### §10.0a — raw rewrite capture on "calcium and lisinopril" (≤ 3 calls) — TO FILL
+### §10.0b — L0 vs gpt-4.1 on identical pools (8 pairs) — TO FILL
+### §10.1 — control arm at `f85bb66` — TO FILL
+
+**§10.0a — FILLED.** `step10_0a.py` wrapped `provider.complete` + `_translate_to_medical_english` on the harness instance and
+called `_rewrite_query("calcium and lisinopril")` 3×. **All three `response.content` values verbatim:**
+1. `{"result":["lisinopril calcium supplement interaction mechanism","lisinopril calcium supplementation blood pressure management","angiotensin converting enzyme inhibitors calcium supplements pharmacology"]}`
+2. `{"result":["lisinopril calcium supplement interaction mechanism","management of lisinopril and calcium supplement","angiotensin converting enzyme inhibitors calcium supplements"]}`
+3. `{"result":["lisinopril calcium supplement interaction mechanism","management of lisinopril and calcium supplement","angiotensin converting enzyme inhibitors calcium supplements interaction"]}`
+
+**Verdict: SILENT FALLBACK fired 3/3.** The model returned three correct, supplement-reading rewrites — under the key
+`"result"`. The parser (`retriever.py:390-391`) accepts only `queries` / `query` on a dict, so `queries = []` → the
+`len(queries) >= 1` gate fails → `_translate_to_medical_english` returns the raw English query (`:432-434`), **with no
+warning** (the warning lives only in the `except`). The model did NOT echo the input and did NOT return < 3 strings. ⚠️ This
+is a SPEC MISMATCH with Step 2a's premise (a prompt-side cause): on this input the prompt is already doing its job; the
+JSON wrapper key is the defect. Read-only, 3 calls (`step10_0a_raw_rewrite.json`).
+
+**§10.0b — FILLED.** 8 pairs on IDENTICAL pools (prompts replayed from `step8_l0_trace.json`; `step10_0b_pairs.json`,
+hand grades `step10_0b_grades.json`):
+
+| pair | docs | gpt-4.1-mini veto (i) | gpt-4.1 veto (i) |
+|---|---|---|---|
+| 1 | CCB drug-food review only | **TRUE** | FALSE |
+| 2 | HCTZ 34073-7 + CATS | FALSE | FALSE |
+| 3 | Calcium Chloride 34073-7 | FALSE | FALSE (and retains the thiazide sentence mini dropped) |
+| 4 | HCTZ 34073-7 + CCB review | **TRUE** | FALSE |
+| 5 | calcium citrate | FALSE | FALSE |
+| 6 | Ca chloride + HCTZ | FALSE | FALSE |
+| 7 | Calcium Chloride 34073-7 | FALSE | FALSE |
+| 8 | Ca chloride + CATS | FALSE | FALSE |
+
+**gpt-4.1 veto (i) FALSE 8/8 (mini 6/8) → pre-registered rule → ruling (b): L0 Research generation moves to gpt-4.1 in
+this car (Step 2c); anon $2/day aggregate cap UNCHANGED.** Cost delta: see the line recorded below from `MODEL_COSTS` on the
+0b token averages and from `api_cost_log`.
+
+**Cost delta for ruling (b), derived:** on the 0b token averages (in 1662 / out 425 per answer) `MODEL_COSTS` gives
+**gpt-4.1 $0.0067 vs gpt-4.1-mini $0.0013 per generation → +$0.0054 (×5.0)**; `api_cost_log` (Dev branch, all time) averages
+**gpt-4.1 $0.0085/query (n=1139) vs gpt-4.1-mini $0.0011/query (n=73) → +$0.0074**. Against the UNCHANGED anon $2/day
+aggregate cap that is ≈ 235 anonymous generations/day on gpt-4.1 vs ≈ 1,800 on mini (generation only; retrieval-side
+rewrite/filter/rerank costs are identical on both paths) — the cap binds ~7.7× sooner, which is the intended guard
+(Decision 001 v0.3 A7 cap unchanged; A8 model binding changed by this ruling).
+
+**§10.0a — zh chip, 3 more calls (`step10_0a_raw_rewrite_zh.json`): SILENT FALLBACK 3/3, by a DIFFERENT shape.** On
+`老人血壓藥可以跟鈣片一起吃嗎？` the model returned NO array at all — a JSON object with descriptive keys, verbatim:
+1. `{"clinical interpretation":"hypertension treatment and calcium supplement interaction","drug classes":"antihypertensive agents and calcium supplements","concern":"potential drug supplement interaction affecting blood pressure control"}`
+2. `{"clinical interpretation":"hypertension treatment and calcium supplement interaction","drug classes":"antihypertensive agents and calcium supplements","concern":"potential interaction between blood pressure medications and calcium supplements"}`
+3. `{"clinical interpretation":"hypertension treatment and calcium supplement interaction","drug class":"antihypertensive agents","supplement":"calcium supplement"}`
+
+The prompt says "Output ONLY valid JSON array" while `response_format={"type": "json_object"}` forces an OBJECT — the model
+resolves the contradiction by inventing a wrapper key (`result`, bare pair) or by emitting its STEP-1 "clinical
+interpretation" as the object (zh chip). Either way the parser sees zero strings and `_translate_to_medical_english`
+TRANSLATES the CJK query into one string (`elderly antihypertensive drugs calcium supplements interaction` — the
+"1-string rewrite" seen in Segments 1c/1d). **For zh input the rewriter — and every clause in it — is bypassed.**
+The zh miss is therefore NOT "the clause does not transfer to zh" (Segment 1c's reading, now corrected) but "the clause is
+never applied to zh". 6 calls, read-only, ≈ $0.002.
+
+### §10.1 — control arm at `f85bb66` (fly 261 code), 2026-10-01 03:38–04:10 UTC — FILLED
+
+| gate | control result | note |
+|---|---|---|
+| (b) golden R01–R20 | **17 / 3 / 0 → FLOOR BREACH (exit 1)** | R10 WARN on an IDENTICAL FINAL pool to the 09-30 same-code 20/0/0 run (judge variance); R16, R20 WARN on different pools (PubMed drift; R20 was WARN at `0b210da` too). ⚠️ ~~Same code, three runs: 18/2/0 (`0b210da` control) · 20/0/0 (09-30) · 17/3/0 (10-01).~~ → **CORRECTED 2026-10-01 (Rule 25):** the SAME-CODE pair is **20/0/0 (2026-09-30, the rewrite edit applied) → 17/3/0 (2026-10-01, `f85bb66`)**; the 18/2/0 ran at `0b210da`, the PRE-edit prompt — a different `retriever.py`. The founder's 13:49 ruling inherited the uncorrected framing; the golden-floor bullet records the corrected one. `step10_golden_control.json` |
+| (c) canary | PASS, wrong-object 0/8 ×6, old criterion 0/8 ×6, 48/48 usable | `step10_canary_control.json` |
+| (d) danger-path | 0 violations / 0 rechecks | `step10_danger_control.json` |
+| (e) straddle N=8 | **36/40** (warfarin+aspirin 4/8; others 8/8; 0 unusable) | `step6_straddle_ctl8_1d.json` — identical to Segment 1b's two arms |
+| EN chip L1 N=4 | veto (i) 4/4 FALSE · veto (ii) 3/4 · 34073-7 in FINAL 3/4 | `step10_ctl_en_l1_*`, grades `step10_ctl_grades.json` |
+| zh chip L1 N=4 | veto (i) 4/4 FALSE · veto (ii) 3/4 · 34073-7 0/4 · grounded 2/4 | thiazide-naming rewrites 0/30 — the fallback path (above) |
+| zh chip L0 N=4 | veto (i) 4/4 FALSE · veto (ii) 3/4 regex (mechanism 1/4) · 34073-7 1/4 | rat-model "synergy" paper dominates |
+| E6 subset L0 N=2 | Q1 n/n · Q2 ✓ · Q3 ✓ (no over-trigger) · Q9 ✓ (no over-trigger) · **Q11 r2 = the original harm** (grounded on a CCB+ACEI PK review, with PROPER supplement rewrites this time) · Q11 r1 fallback and correct | two doors on Q11: the parser fallback (0a) AND the pool/generator |
+
+Spend, Segment 1d so far: see `step6_spend_seg1d.json` at closeout.
+
+### §10.2 — Founder ruling 2026-10-01 13:49 (「A, i」) and the STEP 2 edit (applied ~07:05 UTC)
+
+**Ruling (condensed from the paste):** STEP 2 = Option A — (i) prompt contract line → `Output ONLY a JSON object
+{"queries": ["q1","q2","q3"]} — exactly 3 strings, no other keys` (array wording + example replaced, everything else
+byte-identical); (ii) parser accepts queries/query/result, else the first list-of-strings value, ≥1 gate kept; (iii) WARNING on
+<3 strings or fallback fired (count + query, no content); (iv) 2c anon Research generation → gpt-4.1, $2/day cap untouched
+(A7 unchanged / A8 changed by ruling 0b). The pasted 2a lines (zh example, bare-pair rule) are NOT applied — Segment 1e only if
+the zh ship bar fails after A. **Golden gate rule:** a treatment breach is attributable ONLY if (1) a case FAILs on an IDENTICAL
+pool or (2) a control-PASS case becomes FAIL on a different pool; WARN moves follow the pool rule; otherwise ONE re-run before
+calling it.
+
+**One deliberate deviation, flagged (founder may overrule with a one-token change):** (iii) logs **count + query LENGTH**, not
+the query text. Reason found while editing: the ratified E5 privacy entry records `pages/privacy.tsx:29` "not … logged" and
+states "Research logs length only (`:816`, `:830`)" — `api/server.py`'s Research convention is `query_length=%d`. A new
+content-logging site would widen that open [HONESTY] defect; the operational purpose (an echo/short return visible in prod logs)
+is served by the count, and the same request's INFO line `retriever.py:178` (`Query rewritten: '%s'`) already carries the text.
+⚠️ That `:178` line (and `:247`'s WARNING) means the E5 entry's "Research logs length only" is FALSE for the retriever —
+recorded below, NOT filed. To log the query as ruled: replace `len(query)` with `query` in the two new `logger.warning` calls.
+
+**The api/ diff vs `f85bb66` (4 hunks in retriever.py + 2 in server.py):**
+```diff
+--- api/rag/retriever.py
+@@ -357,3 +357,3 @@
+                             "Rules:\n"
+-                            "- Output ONLY valid JSON array with exactly 3 strings\n"
++                            "- Output ONLY a JSON object {\"queries\": [\"q1\",\"q2\",\"q3\"]} — exactly 3 strings, no other keys\n"
+@@ -361,5 +361,5 @@
+-                            'Example output: ["warfarin aspirin bleeding risk mechanism", '
++                            'Example output: {"queries": ["warfarin aspirin bleeding risk mechanism", '
+                             '"anticoagulant antiplatelet combination INR monitoring", '
+-                            '"warfarin aspirin hemorrhage pharmacodynamic interaction"]'
++                            '"warfarin aspirin hemorrhage pharmacodynamic interaction"]}'
+@@ -389,4 +389,12 @@   (parser, + a 4-line comment citing step10_0a_raw_rewrite*.json)
+-                queries = parsed.get("queries", parsed.get("query", []))
++                queries = next((parsed[k] for k in ("queries", "query", "result")
++                                if isinstance(parsed.get(k), list)), None)
++                if queries is None:
++                    queries = next((v for v in parsed.values()
++                                    if isinstance(v, list) and any(isinstance(x, str) for x in v)), [])
+@@ -400,3 +408,12 @@   (observability — no behaviour change)
++                if len(queries) < 3:
++                    logger.warning("[REWRITE_SHORT] rewrite returned %d of 3 queries (query_length=%d)",
++                                   len(queries), len(query))
+                 return queries
++            logger.warning("[REWRITE_FALLBACK] rewrite returned 0 usable queries (query_length=%d); "
++                           "falling back to translation", len(query))
+--- api/server.py
+@@ -843,2 +843,3 @@   (+1 comment line: "the gpt-4.1-mini half of A8 no longer holds for Research")
+@@ -854,5 +855,9 @@
+-        model_override: Optional[str] = generator._fallback_model
++        model_override: Optional[str] = None      (+ a 5-line comment: ruling 0b, A7 unchanged / A8 changed, the old line)
+```
+Offline parser self-check on the 0a raw responses: the bare pair's `{"result": [...]}` now yields its 3 supplement rewrites; the
+zh chip's keyed object with NO list still yields `[]` → fallback (the contract line, not the parser, must fix zh).
+`ast.parse` OK both files · **pytest 480 passed / 28 skipped** (= baseline).
+
+**Harness made binding-aware (no product behaviour change):** `_harness.l0_generation_override()` READS the anon `model_override`
+code line from `api/server.py` (comment lines skipped — the first version matched the "Was:" text inside the new comment and
+reported mini; caught by a negative control and fixed before any treatment run). Now `--l0` → `None` → gpt-4.1; at `f85bb66` the
+same reader yields `generator._fallback_model`, which is what the control arm ran.
+
+**PRE-REGISTERED readings — ⚠️ TIMING, stated plainly:** these were drafted at ~07:10 UTC for writing BEFORE the treatment
+run, but the shell command that carried them failed to parse (a quoting error in a trailing `grep`), so nothing in it was
+written, while the treatment chain had been launched in the same turn (~08:39 UTC). This block was therefore written at
+~08:40 UTC, **after the chain started and before any treatment result existed** (the chain's first gate, golden, needs ~7 min;
+`chain_trt.log` was still empty when this was written). The text is the one drafted at 07:10, unchanged. My interpretation
+where the paste was silent:
+- **L0 ship bar (gated — ruling (b)):** the Step-0b threshold, veto (i) FALSE ≥ 7/8, on the EN chip L0 N=8 and the zh chip L0
+  N=8; on the bare pair L0 N=4 the same ratio means **4/4**.
+- **zh rewrite bar (gated):** "≥ 3/4 on the zh chip (either path)" = met if at least ONE path (L1 N=4 or L0 N=8) has a
+  thiazide-naming rewrite string in ≥ 3/4 of its runs; the pooled rate is reported. (The rewrite is path-independent.)
+- **Golden, after the ruled attribution test:** if the treatment breaches 18/2/0 and nothing is attributable → ONE re-run; if the
+  re-run meets the floor → PASS; if it breaches again and is still not attributable → PASS-with-note (by the ruling's own
+  definition a non-attributable breach is not the edit's), recorded for the founder; any attributable breach → REVERT.
+- **Straddle (e):** the Segment-1d rule verbatim — treatment ≥ 36 − 2 = 34/40 AND no query drops > 2 vs `ctl8_1d`.
+- **The running chain** is the one staged at 11:37 +08:00: identical gates/arms, minus the two `step10_0a` re-checks (bare pair,
+  zh) on the treated code — those run after it, serially.
+
+### §10.3 — The reaped-but-alive treatment chain, its unattended outputs (QUARANTINED, not evidence), and the restart
+
+**What happened (2026-10-01):** the first treatment chain (launched 08:39Z) was reported "stopped because the system is
+running low on memory" at ~08:41Z. On this Windows host that stop killed only the wrapper shell: the chain script's `bash.exe`
+and its python children kept running. I stopped the orphaned golden runner + server at 08:41Z (believing the chain dead); the
+script then advanced on its own — canary (08:41:58Z), danger-path (08:58:13Z), straddle N=8 (09:00:11Z), EN chip L1 (09:14:45Z →
+13:52:56Z, **4h38m**, control 1m09s), EN chip L0 (stopped mid-run at ~13:53Z). Found at the restart prompt's RAM check (free
+RAM 303 MB) by listing processes; all chain processes stopped (script bash first, then python; zero left). The chain's golden
+step had copied "the newest golden file" as the treatment result — after its own run was killed that file was the CONTROL
+(byte-identical, `cmp`) → a mislabelled artifact.
+
+**Founder ruling 2026-10-01 (option (a)), verbatim reason:** "discard ALL unattended outputs (canary, danger-path, straddle, EN L1,
+and the quarantined golden copy); move them to quarantine, not evidence … the unattended steps ran 2× slower than control and EN
+L1 ran 4h38m (machine sleep + memory pressure) — not the same conditions, and the counters cannot see timeout-shrunk pools."
+Their verdicts were never opened before the ruling.
+
+**QUARANTINED — NOT EVIDENCE** (moved out of `tests/probes/bp_calcium/` to the session scratch
+`%TEMP%\claude_step10\quarantine\`, never committed): `UNATTENDED_step10_canary_treatment.json` ·
+`UNATTENDED_step10_danger_treatment.json` · `UNATTENDED_step6_straddle_trt8_1d.json` · `UNATTENDED_step10_trt_en_l1_trace.json` +
+`…_answer_run1..4.md` · `step10_golden_treatment_MISLABELLED_CONTROL_COPY.json` · their step logs (`UNATTENDED_*.log`,
+`en_l0_trt_STOPPED.log`). Spend they incurred (≈ $0.18) is real and stays in the segment total.
+
+**Restart (founder: "restart, golden last", 2026-10-02):** free RAM 2,339 MB at the gate (≥ 1.2 GB); the three document rulings
+applied FIRST (E5 correction bullet; PRD §2.8 table note + item-9 sub-bullet; ADR 001 :22 sub-bullet + §2.4 post-table note);
+then the chain `claude_step10_restart_chain.sh` launched 00:25:40Z with 2,064 MB free — order: 0a re-checks (bare pair, zh chip)
+→ canary → danger-path → straddle N=8 → EN chip L1 N=4 + L0 N=8 → zh chip L1 N=4 + L0 N=8 → E6 12×2 → bare pair L0 N=4 + L1 N=2 →
+(free RAM ≥ 800 MB check) → server + golden. Defences added after the failures: every output located by mtime newer than a
+per-step stamp (a missing output is logged MISSING, never substituted), free RAM logged at each step, the server stopped by PORT.
+The PRD/ADR amendments describe the uncommitted 2c change; if the run triggers the revert rule they are reverted with Step 2
+(never committed — not a rewrite).
+
+### §10.4 — Treatment arm (restart run, 2026-10-02 00:25–01:15 UTC) — results, verdict, REVERT
+
+All 13 steps exit 0; free RAM 1.1–3.3 GB at every step start (logged); step durations match control (canary 10m10s vs 9m42s,
+straddle 8m14s vs 7m45s, EN L1 1m05s vs 1m09s). The wrapper shell was reaped again at ~00:56Z; the chain kept running and was
+left to finish (it was the authorized run, under normal conditions — §10.3); clean end: 0 processes, :8000 free.
+
+**0a re-check on Option A** (`step10_0a_raw_rewrite_pair_trt.json`, `…_zh_trt.json`): both inputs now return
+`{"queries": [3 strings]}` — **0/6 fallbacks** (was 6/6). Bare pair: `lisinopril calcium supplement interaction mechanism` · …
+(supplement reading reaches retrieval). zh chip: `antihypertensive drugs calcium supplement interaction mechanism` · … —
+supplement reading, **0/9 strings name a thiazide**.
+
+| gate / ship bar | control (`f85bb66`) | treatment (Option A) | verdict |
+|---|---|---|---|
+| (b) golden R01–R20 | 17/3/0 — floor BREACH | **18/2/0 — floor MET**; 0 FAIL; pools identical 1/20; R16 WARN→PASS (different pool); no attributable breach | PASS |
+| (c) canary 6 × N=8 | PASS, 0/8 ×6 (old criterion 0/8 ×6) | PASS, wrong-object 0/8 ×6 (old criterion: metformin_moa 1/8, an owned section) | PASS |
+| (d) danger-path | 0 / 0 | 0 / 0 | PASS |
+| (e) straddle N=8 | 36/40 | **40/40** (warfarin+aspirin 8/8 vs 4/8; others 8/8; 0 unusable) — rule: 40 ≥ 34, worst drop 0 | PASS |
+| veto (i) FALSE, every L1 run: EN chip / zh chip / bare pair | — | 4/4 · 4/4 · 2/2 | MET |
+| L0 veto (i) (ruling (b)): EN ≥ 7/8 · zh ≥ 7/8 · bare pair 4/4 | — | 8/8 · 8/8 · 4/4 | MET |
+| E6 over-trigger 0 on Q3/Q9/Q11 | — | 0/6 | MET |
+| **zh thiazide-naming rewrite ≥ 3/4 (either path)** | — | **L1 0/4 · L0 0/8** | **MISS** |
+
+**Verdict: ONE gated ship bar missed → per the pre-registered revert rule: REVERT all of Step 2, record, STOP.** Done
+~01:25Z: `api/rag/retriever.py`, `api/server.py`, `docs/PRD.md`, `docs/decisions/001-anonymous-trial-flow.md` →
+`git checkout` (never committed); `git diff --quiet f85bb66 -- api/ docs/PRD.md docs/decisions/` clean. **Option A retained as
+`tests/probes/bp_calcium/step10_option_a.patch`** (127 lines; `git apply --check` onto `f85bb66` clean). pytest on the reverted
+tree: 480 passed / 28 skipped. The E5 correction bullet stays (independent of the revert; its text updated to say the WARNINGs
+were reverted). Founder ruling 13:49: the pasted 2a lines become **Segment 1e**.
+
+**What the treatment arm showed beyond the bars (recorded, NOT filed):**
+1. **The contract fixes PARSING, not CONTENT, on zh** — zh answers lean on one rat-model "鈣片 + 鈣通道阻斷劑 協同降壓" paper;
+   34073-7 in FINAL 0/12; thiazide → hypercalcemia appears only as a monitoring aside or in the no-docs fallbacks.
+2. **The object contract cut EN thiazide-naming rewrites** (control: every run 4–5/12 strings → treatment: 1/4 L1, 1/8 L0 runs);
+   EN answers stayed veto (i) FALSE with 34073-7 in FINAL 4/4 + 7/8, but framed calcium around IV calcium chloride and lost the
+   control's direct thiazide mechanism content (CATS paper / HCTZ section).
+3. **Q11 r1 = the original harm WITH correct rewrites**: the third rewrite string (`angiotensin converting enzyme inhibitors
+   calcium interaction`) drops "supplement", PubMed returns the 1993 CCB + ACE-inhibitor PK review, and gpt-4.1 answers "calcium
+   antagonists + lisinopril". A pool/generator door the parser fix does not close (input for 1e's bare-pair rule).
+4. **Straddle improved** 36/40 → 40/40 (warfarin+aspirin 4/8 → 8/8) — not attributable from N=8 alone; recorded.
+5. Research's **no-documents fallback** answers on `GENERATOR_FALLBACK_MODEL` (gpt-4.1-mini) for L0 AND L1 regardless of 2c
+   (`generator.py` `_generate_fallback_stream`) — 2c would only have moved grounded generation.
+6. `api/rag/generator.py` signature comments (`model_override … # Decision 001 v0.3 A8 — L0 uses gpt-4.1-mini`) would have gone
+   stale under 2c — out of this car's allowed files; a 1e re-apply should carry them (Rule 19).
+
+### §10.5 — Local eye gate — MOOT while Option A is reverted (kept BLANK for a re-apply in Segment 1e)
+
+| # | step | expected | PASS/FAIL | note |
+|---|---|---|---|---|
+| 1 | EN hero chip, **anonymous window** (L0!) | supplement reading + thiazide/hypercalcemia | | |
+| 2 | EN hero chip, signed in (L1) | same | | |
+| 3 | zh hero chip, anonymous window (L0) | 鈣片 as a supplement; 噻嗪類 → 高血鈣 named | | |
+| 4 | zh hero chip, signed in (L1) | same | | |
+| 5 | CONTROL 冠脂妥+warfarin | DailyMed safety section cited | | |
+| 6 | CONTROL metformin renal dosing | unchanged | | |
+
+**Spend, Segment 1d:** logged **$1.17** in `api_cost_log` since 2026-10-01 03:35Z (`step6_spend_seg1d.json`; includes the
+quarantined unattended runs, ≈ $0.18) + ≈ $0.6 of in-process gpt-4.1 generations the generator does not log ≈ **$1.8 of the
+US$4 cap**.

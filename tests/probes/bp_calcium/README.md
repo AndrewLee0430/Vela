@@ -280,3 +280,24 @@ measures directly (`step8_zh_*`).
 **Verdicts:** `EN chip L0: veto (i) 6/8 FALSE · veto (ii) 5/8 · grounded 8/8` (original harm 2/8 on the anonymous path) ·
 `zh-TW chip: L0 veto (i) 4/4 FALSE, veto (ii) 3/4 · L1 veto (i) 4/4 FALSE, veto (ii) 4/4` (thiazide-naming rewrites 0/22 and
 0/28 — the clause does not transfer to zh). STEP 2d (rewriter passthrough) and the full tables: baton §9.
+
+## Segment 1d — rewrite iteration 2 (Option A) + the L0 generator decision (2026-10-01 → 02) — BUILT, GATED, **REVERTED**
+
+**Result:** Option A (JSON-object output contract + tolerant parser + short/fallback WARNINGs logging `query_length` only +
+L0 Research generation → gpt-4.1) passed every gate (golden 18/2/0 vs control 17/3/0 · canary · danger · straddle N=8 40/40 vs
+36/40) and every veto bar, but missed the gated zh rewrite bar (thiazide-naming rewrites L1 0/4, L0 0/8) → reverted per the
+pre-registered rule; kept as `step10_option_a.patch`. Full tables, rules and timings: baton §10.
+
+| artifact | what it is | what it does NOT support |
+|---|---|---|
+| `step10_0a.py` → `step10_0a_raw_rewrite.json` / `_zh.json` / `_pair_trt.json` / `_zh_trt.json` | the rewriter's raw `response.content` (3 calls each) — the silent-fallback mechanism (control) and its removal (treatment) | a rate; models other than gpt-4.1-mini |
+| `step10_0b.py` → `step10_0b_pairs.json` / `step10_0b_answer_run*_gpt41.md` / `step10_0b_grades.json` | gpt-4.1 vs gpt-4.1-mini on the 8 IDENTICAL `step8_l0` pools (replayed prompts) — ruling (b) | other queries |
+| `step10_golden_{control,treatment}.json` + `step10_golden_compare.json` | the two `--filter R` runs and their pool-identity diff | separating drift from the edit |
+| `step10_canary_*` · `step10_danger_*` · `step6_straddle_ctl8_1d.json` / `_trt8_1d.json` | gates (c)(d)(e) | — |
+| `step10_ctl_*` / `step10_trt_*` traces + answers · `step10_e6_ctl*` / `step10_e6_trt*` | chip arms (EN/zh × L1/L0), bare pair, E6 | the L0 arms in TREATMENT ran gpt-4.1 because the harness reads the anon binding from `api/server.py` (`_harness.l0_generation_override`) |
+| `step10_ctl_grades.json` · `step10_trt_grades.json` · `step10_e6_trt_grades.json` | HAND grades | — |
+| `step10_option_a.patch` | the reverted Option A, re-applicable onto `f85bb66` | a decision to re-apply it (Segment 1e, founder) |
+| `step6_spend_seg1d.json` | `api_cost_log` since 2026-10-01 03:35Z | in-process generations (≈ $0.6, unlogged) |
+
+**Not evidence:** the first treatment chain's unattended outputs (reaped-but-alive, 2× slower, EN L1 4h38m) are QUARANTINED in
+the session scratch, never committed (founder ruling (a), baton §10.3).

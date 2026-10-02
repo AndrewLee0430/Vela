@@ -1,0 +1,1412 @@
+{
+  "timestamp": "20261001_114539",
+  "base_url": "http://127.0.0.1:8000",
+  "run_complete": true,
+  "cases_expected": 20,
+  "cases_attempted": 20,
+  "never_ran": [],
+  "gate_valid": true,
+  "gate_invalid_reason": null,
+  "selection": {
+    "filter_prefix": "R",
+    "smoke_only": false,
+    "case_ids_run": [
+      "R01",
+      "R02",
+      "R03",
+      "R04",
+      "R05",
+      "R06",
+      "R07",
+      "R08",
+      "R09",
+      "R10",
+      "R11",
+      "R12",
+      "R13",
+      "R14",
+      "R15",
+      "R16",
+      "R17",
+      "R18",
+      "R19",
+      "R20"
+    ],
+    "case_count_run": 20
+  },
+  "research_golden_floor": {
+    "scored": true,
+    "floor_met": false,
+    "exit_code": 1,
+    "reason": "RESEARCH GOLDEN FLOOR BREACH (founder ruling 2026-08-21) — PASS 17 < 18 and WARN 3 > 2 (floor is 18 PASS / 2 WARN / 0 FAIL over 20 cases).",
+    "case_ids_scored": [
+      "R01",
+      "R02",
+      "R03",
+      "R04",
+      "R05",
+      "R06",
+      "R07",
+      "R08",
+      "R09",
+      "R10",
+      "R11",
+      "R12",
+      "R13",
+      "R14",
+      "R15",
+      "R16",
+      "R17",
+      "R18",
+      "R19",
+      "R20"
+    ],
+    "missing": [],
+    "counts": {
+      "PASS": 17,
+      "WARN": 3,
+      "FAIL": 0,
+      "ERROR": 0
+    },
+    "non_research_golden_cases_ignored": 0,
+    "floor": {
+      "min_pass": 18,
+      "max_warn": 2,
+      "max_fail": 0
+    }
+  },
+  "explain_floor": {
+    "scored": false,
+    "floor_met": null,
+    "exit_code": 0,
+    "reason": "NOT SCORED — no explain-category cases in this run. The Explain acceptance floor (PRD § 2.7) is not defined over this selection, so it exits 0 and defers.",
+    "explain_pass": 0,
+    "explain_total": 0,
+    "explain_rate": null,
+    "threshold": 95.0,
+    "threshold_met": null,
+    "judged_cases": 0,
+    "binding_breaches": [],
+    "report_only_failures": [],
+    "floor": {
+      "binding_dimensions": [
+        "no_fabricated_citations"
+      ],
+      "report_only_dimensions": [
+        "citation_source_types_valid"
+      ],
+      "report_only_threshold": 95.0,
+      "authority": "founder ruling 2026-08-25"
+    }
+  },
+  "summary": {
+    "PASS": 17,
+    "WARN": 3,
+    "FAIL": 0,
+    "ERROR": 0
+  },
+  "pass_rate": 85.0,
+  "evaluator": "LLM Judge (gpt-4.1-mini)",
+  "results": [
+    {
+      "id": "R01",
+      "category": "research",
+      "status": "PASS",
+      "api_elapsed_s": 19.8,
+      "total_elapsed_s": 21.6,
+      "eval": {
+        "passed_concepts": [
+          "mentions lactic acidosis as a risk",
+          "mentions renal function or kidney function",
+          "mentions eGFR or creatinine clearance as a threshold"
+        ],
+        "missing_concepts": [],
+        "forbidden_found": [],
+        "all_pass": true,
+        "score": 95,
+        "reasoning": "The response clearly discusses lactic acidosis as a primary risk in patients with renal impairment using metformin. It mentions renal function explicitly and provides specific thresholds involving serum creatinine and eGFR for discontinuation. There is no mention of metformin stimulating insulin secretion, thus no forbidden concepts are present. The response is detailed, accurate, and clinically relevant."
+      },
+      "answer_preview": "## Summary\n\nIn patients with renal impairment, metformin use is primarily associated with an increased risk of lactic acidosis, a rare but potentially life-threatening complication. Other side effects include possible worsening of vitamin B12 deficiency and increased risk of hypoglycemia when combined with insulin or insulin secretagogues, but lactic acidosis is the most clinically significant con...",
+      "pool_identity": {
+        "retrieved_pool": [
+          {
+            "id": 1,
+            "source_id": "DailyMed:1f8833f9-1232-4aa7-a0d4-04a9f87dc2f0#34070-3",
+            "source_type": "dailymed",
+            "title": "Metformin HCl (Metformin HCl) — Contraindications"
+          },
+          {
+            "id": 2,
+            "source_id": "PMID:25536258",
+            "source_type": "pubmed",
+            "title": "Metformin in patients with type 2 diabetes and kidney disease: a systematic review."
+          },
+          {
+            "id": 3,
+            "source_id": "PMID:26773926",
+            "source_type": "pubmed",
+            "title": "Metformin-associated lactic acidosis: Current perspectives on causes and risk."
+          },
+          {
+            "id": 4,
+            "source_id": "DailyMed:fb832474-88d9-4e29-95cd-fbc446944cc4#43685-7",
+            "source_type": "dailymed",
+            "title": "Glumetza (metformin hydrochloride) — Warnings and Precautions"
+          },
+          {
+            "id": 5,
+            "source_id": "PMID:34244196",
+            "source_type": "pubmed",
+            "title": "Metformin-associated lactic acidosis."
+          }
+        ],
+        "pool_size": 5,
+        "pool_ids": [
+          "DailyMed:1f8833f9-1232-4aa7-a0d4-04a9f87dc2f0#34070-3",
+          "PMID:25536258",
+          "PMID:26773926",
+          "DailyMed:fb832474-88d9-4e29-95cd-fbc446944cc4#43685-7",
+          "PMID:34244196"
+        ],
+        "cited_in_answer": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "capture_scope": "final top_k pool handed to the generator (SSE citations event); pre-top_k candidate pool NOT captured (would require api/ change)"
+      }
+    },
+    {
+      "id": "R02",
+      "category": "research",
+      "status": "PASS",
+      "api_elapsed_s": 16.8,
+      "total_elapsed_s": 18.2,
+      "eval": {
+        "passed_concepts": [
+          "mentions ACE inhibitor or angiotensin-converting enzyme inhibitor or ARB",
+          "mentions diabetes or diabetic patients as the target population"
+        ],
+        "missing_concepts": [],
+        "forbidden_found": [],
+        "all_pass": true,
+        "score": 95,
+        "reasoning": "The response clearly identifies ACE inhibitors and ARBs as first-line treatments for hypertension in diabetic patients, explicitly mentioning the target population and the drug classes. It also provides detailed clinical notes supporting the recommendation, demonstrating a comprehensive understanding of the topic."
+      },
+      "answer_preview": "## Summary\n\nThe first-line treatment for hypertension in diabetic patients is the use of angiotensin-converting enzyme inhibitors (ACEIs) or angiotensin receptor blockers (ARBs) [1]. These agents are recommended due to their proven efficacy in lowering blood pressure and providing renal protection in diabetic populations [1].\n\n---\n\n## Clinical Notes\n\n- ACEIs and ARBs are preferred as first-line an...",
+      "pool_identity": {
+        "retrieved_pool": [
+          {
+            "id": 1,
+            "source_id": "PMID:40545747",
+            "source_type": "pubmed",
+            "title": "Management Guidelines for Diabetic Patients With Hypertension."
+          }
+        ],
+        "pool_size": 1,
+        "pool_ids": [
+          "PMID:40545747"
+        ],
+        "cited_in_answer": [
+          1
+        ],
+        "capture_scope": "final top_k pool handed to the generator (SSE citations event); pre-top_k candidate pool NOT captured (would require api/ change)"
+      }
+    },
+    {
+      "id": "R03",
+      "category": "research",
+      "status": "PASS",
+      "api_elapsed_s": 21.6,
+      "total_elapsed_s": 23.4,
+      "eval": {
+        "passed_concepts": [
+          "mentions CHA2DS2-VASc or stroke risk scoring",
+          "mentions anticoagulation or anticoagulant therapy"
+        ],
+        "missing_concepts": [],
+        "forbidden_found": [],
+        "all_pass": true,
+        "score": 90,
+        "reasoning": "The response clearly discusses the use of the CHA2DS2-VASc score for stroke risk stratification and indicates anticoagulation therapy as the prophylactic treatment in atrial fibrillation. It provides detailed clinical context, guideline references, and therapy considerations, fully satisfying the required concepts."
+      },
+      "answer_preview": "## Summary\n\nProphylactic anticoagulation in atrial fibrillation (AF) is indicated for patients at increased risk of stroke, as determined by risk stratification tools such as the CHA₂DS₂-VASc score. Recent evidence shows that in patients with intermediate stroke risk (CHA₂DS₂-VASc score of 1 in men or 2 in women), direct oral anticoagulant (DOAC) therapy results in a lower risk of stroke, systemic...",
+      "pool_identity": {
+        "retrieved_pool": [
+          {
+            "id": 1,
+            "source_id": "PMID:42663303",
+            "source_type": "pubmed",
+            "title": "Anticoagulation for Atrial Fibrillation with Intermediate Stroke Risk."
+          },
+          {
+            "id": 2,
+            "source_id": "PMID:39716733",
+            "source_type": "pubmed",
+            "title": "Spotlight on the 2024 ESC/EACTS management of atrial fibrillation guidelines: 10 novel key aspects."
+          },
+          {
+            "id": 3,
+            "source_id": "PMID:33851396",
+            "source_type": "pubmed",
+            "title": "Atrial Fibrillation and Ischemic Stroke: A Clinical Review."
+          },
+          {
+            "id": 4,
+            "source_id": "PMID:33441477",
+            "source_type": "pubmed",
+            "title": "Guidelines for mono, double and triple antithrombotic therapy."
+          }
+        ],
+        "pool_size": 4,
+        "pool_ids": [
+          "PMID:42663303",
+          "PMID:39716733",
+          "PMID:33851396",
+          "PMID:33441477"
+        ],
+        "cited_in_answer": [
+          1,
+          2,
+          4
+        ],
+        "capture_scope": "final top_k pool handed to the generator (SSE citations event); pre-top_k candidate pool NOT captured (would require api/ change)"
+      }
+    },
+    {
+      "id": "R04",
+      "category": "research",
+      "status": "PASS",
+      "api_elapsed_s": 18.1,
+      "total_elapsed_s": 19.4,
+      "eval": {
+        "passed_concepts": [
+          "mentions HMG-CoA reductase inhibition",
+          "mentions LDL cholesterol lowering"
+        ],
+        "missing_concepts": [],
+        "forbidden_found": [],
+        "all_pass": true,
+        "score": 95,
+        "reasoning": "The response clearly explains that statins competitively inhibit HMG-CoA reductase, the rate-limiting enzyme in cholesterol synthesis, and describes how this leads to reduced cholesterol production and lower serum LDL cholesterol levels. The explanation is detailed, accurate, and includes relevant biochemical and clinical context, fully satisfying the required concepts."
+      },
+      "answer_preview": "## Summary\n\nStatins act by competitively inhibiting the enzyme HMG-CoA reductase, which catalyzes the rate-limiting step in cholesterol biosynthesis in the liver, resulting in reduced cholesterol production and lower serum LDL cholesterol levels [1], [2], [3]. Statins bind to the active site of HMG-CoA reductase, blocking access of the natural substrate and thereby decreasing cholesterol synthesis...",
+      "pool_identity": {
+        "retrieved_pool": [
+          {
+            "id": 1,
+            "source_id": "PMID:11349148",
+            "source_type": "pubmed",
+            "title": "Structural mechanism for statin inhibition of HMG-CoA reductase."
+          },
+          {
+            "id": 2,
+            "source_id": "PMID:12067471",
+            "source_type": "pubmed",
+            "title": "Statins: mechanism of action and effects."
+          },
+          {
+            "id": 3,
+            "source_id": "PMID:24657242",
+            "source_type": "pubmed",
+            "title": "The pharmacology of statins."
+          }
+        ],
+        "pool_size": 3,
+        "pool_ids": [
+          "PMID:11349148",
+          "PMID:12067471",
+          "PMID:24657242"
+        ],
+        "cited_in_answer": [
+          1,
+          2,
+          3
+        ],
+        "capture_scope": "final top_k pool handed to the generator (SSE citations event); pre-top_k candidate pool NOT captured (would require api/ change)"
+      }
+    },
+    {
+      "id": "R05",
+      "category": "research",
+      "status": "PASS",
+      "api_elapsed_s": 18.8,
+      "total_elapsed_s": 20.5,
+      "eval": {
+        "passed_concepts": [
+          "mentions hyperthermia or high body temperature",
+          "mentions agitation or altered mental status",
+          "mentions clonus or neuromuscular abnormality"
+        ],
+        "missing_concepts": [],
+        "forbidden_found": [],
+        "all_pass": true,
+        "score": 95,
+        "reasoning": "The response clearly mentions hyperthermia (high body temperature), agitation and altered mental status, and neuromuscular abnormalities including clonus. It provides a comprehensive and semantically accurate description of the signs of serotonin syndrome."
+      },
+      "answer_preview": "## Summary\n\nThe key signs of serotonin syndrome are altered mental state, autonomic hyperactivity, and neuromuscular abnormalities, typically in the context of recent initiation or change in serotonergic therapy. These features may not all be present in every patient, but their combination is central to diagnosis. The syndrome can range from mild to life-threatening, and early recognition is criti...",
+      "pool_identity": {
+        "retrieved_pool": [
+          {
+            "id": 1,
+            "source_id": "PMID:35551099",
+            "source_type": "pubmed",
+            "title": "Serotonin syndrome."
+          },
+          {
+            "id": 2,
+            "source_id": "PMID:37309284",
+            "source_type": "pubmed",
+            "title": "Serotonin syndrome-A focused review."
+          },
+          {
+            "id": 3,
+            "source_id": "DailyMed:f7c7ffdd-8270-4030-bc1e-a1cb28a6de56#34073-7",
+            "source_type": "dailymed",
+            "title": "SUSTOL (granisetron) — Drug Interactions"
+          },
+          {
+            "id": 4,
+            "source_id": "PMID:31523132",
+            "source_type": "pubmed",
+            "title": "Serotonin Syndrome: Pathophysiology, Clinical Features, Management, and Potential Future Directions."
+          },
+          {
+            "id": 5,
+            "source_id": "PMID:26218943",
+            "source_type": "pubmed",
+            "title": "Tramadol, Pharmacology, Side Effects, and Serotonin Syndrome: A Review."
+          }
+        ],
+        "pool_size": 5,
+        "pool_ids": [
+          "PMID:35551099",
+          "PMID:37309284",
+          "DailyMed:f7c7ffdd-8270-4030-bc1e-a1cb28a6de56#34073-7",
+          "PMID:31523132",
+          "PMID:26218943"
+        ],
+        "cited_in_answer": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "capture_scope": "final top_k pool handed to the generator (SSE citations event); pre-top_k candidate pool NOT captured (would require api/ change)"
+      }
+    },
+    {
+      "id": "R06",
+      "category": "research",
+      "status": "PASS",
+      "api_elapsed_s": 18.7,
+      "total_elapsed_s": 20.4,
+      "eval": {
+        "passed_concepts": [
+          "mentions stopping heparin or discontinuing heparin",
+          "mentions platelet count or thrombocytopenia",
+          "mentions alternative anticoagulant such as argatroban or fondaparinux or direct thrombin inhibitor"
+        ],
+        "missing_concepts": [],
+        "forbidden_found": [],
+        "all_pass": true,
+        "score": 95,
+        "reasoning": "The response clearly states the need to stop all heparin products immediately, discusses platelet counts in the context of warfarin initiation and monitoring, and extensively covers alternative anticoagulants including argatroban, fondaparinux, and direct thrombin inhibitors. The information is comprehensive and semantically satisfies all required concepts."
+      },
+      "answer_preview": "## Summary\n\nHeparin-induced thrombocytopenia (HIT) should be managed by immediately discontinuing all forms of heparin and initiating an alternative, non-heparin anticoagulant to prevent thrombotic complications. Early recognition and prompt intervention are critical, as HIT carries a high risk of both arterial and venous thrombosis and significant mortality if not treated appropriately [1][3][4][...",
+      "pool_identity": {
+        "retrieved_pool": [
+          {
+            "id": 1,
+            "source_id": "PMID:30482768",
+            "source_type": "pubmed",
+            "title": "American Society of Hematology 2018 guidelines for management of venous thromboembolism: heparin-induced thrombocytopeni"
+          },
+          {
+            "id": 2,
+            "source_id": "PMID:22315270",
+            "source_type": "pubmed",
+            "title": "Treatment and prevention of heparin-induced thrombocytopenia: Antithrombotic Therapy and Prevention of Thrombosis, 9th e"
+          },
+          {
+            "id": 3,
+            "source_id": "PMID:32337112",
+            "source_type": "pubmed",
+            "title": "Heparin-induced Thrombocytopenia: Pathophysiology, Diagnosis and Management."
+          },
+          {
+            "id": 4,
+            "source_id": "PMID:32195628",
+            "source_type": "pubmed",
+            "title": "Heparin-induced thrombocytopenia (HIT): Review of incidence, diagnosis, and management."
+          },
+          {
+            "id": 5,
+            "source_id": "PMID:37667778",
+            "source_type": "pubmed",
+            "title": "Heparin Induced Thrombocytopenia - Pathophysiology, Diagnosis and Treatment: A Narrative Review."
+          }
+        ],
+        "pool_size": 5,
+        "pool_ids": [
+          "PMID:30482768",
+          "PMID:22315270",
+          "PMID:32337112",
+          "PMID:32195628",
+          "PMID:37667778"
+        ],
+        "cited_in_answer": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "capture_scope": "final top_k pool handed to the generator (SSE citations event); pre-top_k candidate pool NOT captured (would require api/ change)"
+      }
+    },
+    {
+      "id": "R07",
+      "category": "research",
+      "status": "PASS",
+      "api_elapsed_s": 19.5,
+      "total_elapsed_s": 21.0,
+      "eval": {
+        "passed_concepts": [
+          "mentions asthma or bronchospasm or reactive airway disease as a contraindication",
+          "mentions bradycardia or heart block as a contraindication"
+        ],
+        "missing_concepts": [],
+        "forbidden_found": [],
+        "all_pass": true,
+        "score": 95,
+        "reasoning": "The response clearly states bronchial asthma and bronchospasm as contraindications and also mentions severe bradycardia and greater-than-first-degree heart block as contraindications. The information is comprehensive, accurate, and well-structured, fully satisfying the required concepts."
+      },
+      "answer_preview": "## Summary\n\nBeta-blockers are contraindicated in patients with bronchial asthma, overt cardiac failure, cardiogenic shock, severe bradycardia, greater-than-first-degree heart block, and known hypersensitivity to the specific beta-blocker. Additional contraindications may apply to certain agents, such as concurrent IV administration of non-dihydropyridine calcium-channel antagonists with labetalol[...",
+      "pool_identity": {
+        "retrieved_pool": [
+          {
+            "id": 1,
+            "source_id": "DailyMed:4ef5d75f-ca30-cd4a-e063-6394a90a8a43#34070-3",
+            "source_type": "dailymed",
+            "title": "Propranolol HCL (Propranolol HCL) — Contraindications"
+          },
+          {
+            "id": 2,
+            "source_id": "DailyMed:22b95e96-ead9-4149-badb-7d33077e82ec#34070-3",
+            "source_type": "dailymed",
+            "title": "Pindolol (Pindolol) — Contraindications"
+          },
+          {
+            "id": 3,
+            "source_id": "DailyMed:99a715a0-4579-410c-b102-7ef6fab8db55#34070-3",
+            "source_type": "dailymed",
+            "title": "Labetalol HCl in Sodium Chloride (LABETALOL HYDROCHLORIDE) — Contraindications"
+          },
+          {
+            "id": 4,
+            "source_id": "DailyMed:0283bc9d-6998-493a-824a-d4c85f704111#43685-7",
+            "source_type": "dailymed",
+            "title": "Lopressor (metoprolol tartrate) — Warnings and Precautions"
+          },
+          {
+            "id": 5,
+            "source_id": "PMID:38597063",
+            "source_type": "pubmed",
+            "title": "Safety and tolerability of β-blockers: importance of cardioselectivity."
+          }
+        ],
+        "pool_size": 5,
+        "pool_ids": [
+          "DailyMed:4ef5d75f-ca30-cd4a-e063-6394a90a8a43#34070-3",
+          "DailyMed:22b95e96-ead9-4149-badb-7d33077e82ec#34070-3",
+          "DailyMed:99a715a0-4579-410c-b102-7ef6fab8db55#34070-3",
+          "DailyMed:0283bc9d-6998-493a-824a-d4c85f704111#43685-7",
+          "PMID:38597063"
+        ],
+        "cited_in_answer": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "capture_scope": "final top_k pool handed to the generator (SSE citations event); pre-top_k candidate pool NOT captured (would require api/ change)"
+      }
+    },
+    {
+      "id": "R08",
+      "category": "research",
+      "status": "PASS",
+      "api_elapsed_s": 17.6,
+      "total_elapsed_s": 19.2,
+      "eval": {
+        "passed_concepts": [
+          "mentions low-dose aspirin or 75mg or 81mg or 100mg",
+          "mentions cardiovascular prevention or secondary prevention or primary prevention"
+        ],
+        "missing_concepts": [],
+        "forbidden_found": [],
+        "all_pass": true,
+        "score": 95,
+        "reasoning": "The response clearly states the recommended low-dose aspirin range (75-100 mg daily) and explicitly discusses secondary prevention of cardiovascular disease. It also briefly mentions primary prevention as less clear, fulfilling all required concepts with no forbidden content. The information is detailed, accurate, and well-structured."
+      },
+      "answer_preview": "## Summary\n\nFor secondary prevention of atherosclerotic cardiovascular disease (ASCVD), the recommended dose of aspirin is low-dose (75–100 mg daily), as higher doses do not improve efficacy and may increase bleeding risk [1], [2]. This recommendation applies to patients with and without chronic obstructive pulmonary disease (COPD) or asthma, with no significant difference in ASCVD outcomes betwee...",
+      "pool_identity": {
+        "retrieved_pool": [
+          {
+            "id": 1,
+            "source_id": "PMID:41294093",
+            "source_type": "pubmed",
+            "title": "Aspirin Dosing for Secondary Prevention of Atherosclerotic Cardiovascular Disease in Chronic Obstructive Pulmonary Disea"
+          },
+          {
+            "id": 2,
+            "source_id": "PMID:41876873",
+            "source_type": "pubmed",
+            "title": "Aspirin Dosing in Secondary Prevention of Atherosclerotic Cardiovascular Disease."
+          },
+          {
+            "id": 3,
+            "source_id": "PMID:26323750",
+            "source_type": "pubmed",
+            "title": "Aspirin dosing in cardiovascular disease prevention and management: an update."
+          },
+          {
+            "id": 4,
+            "source_id": "PMID:19482214",
+            "source_type": "pubmed",
+            "title": "Aspirin in the primary and secondary prevention of vascular disease: collaborative meta-analysis of individual participa"
+          },
+          {
+            "id": 5,
+            "source_id": "PMID:31545683",
+            "source_type": "pubmed",
+            "title": "Revisiting the Role of Aspirin for the Primary Prevention of Cardiovascular Disease."
+          }
+        ],
+        "pool_size": 5,
+        "pool_ids": [
+          "PMID:41294093",
+          "PMID:41876873",
+          "PMID:26323750",
+          "PMID:19482214",
+          "PMID:31545683"
+        ],
+        "cited_in_answer": [
+          1,
+          2,
+          4,
+          5
+        ],
+        "capture_scope": "final top_k pool handed to the generator (SSE citations event); pre-top_k candidate pool NOT captured (would require api/ change)"
+      }
+    },
+    {
+      "id": "R09",
+      "category": "research",
+      "status": "PASS",
+      "api_elapsed_s": 17.2,
+      "total_elapsed_s": 18.6,
+      "eval": {
+        "passed_concepts": [
+          "renal function monitoring",
+          "thyroid function monitoring",
+          "serum lithium level monitoring"
+        ],
+        "missing_concepts": [],
+        "forbidden_found": [],
+        "all_pass": true,
+        "score": 95,
+        "reasoning": "The response clearly and comprehensively addresses all required concepts: it details the need for monitoring renal function, thyroid function, and serum lithium levels, including specifics about timing and thresholds. No forbidden concepts are present. The information is thorough and clinically relevant, though exact monitoring intervals are not specified, which is acknowledged."
+      },
+      "answer_preview": "## Summary\n\nPatients on lithium therapy require regular monitoring of serum lithium concentrations, renal function, thyroid function, and serum calcium. Lithium has a narrow therapeutic range, and toxicity can occur at concentrations close to therapeutic levels, making precise and frequent monitoring essential for safety and efficacy[1][2][4][5].\n\n---\n\n## Clinical Notes\n\n- **Serum Lithium Concentr...",
+      "pool_identity": {
+        "retrieved_pool": [
+          {
+            "id": 1,
+            "source_id": "DailyMed:16ebe1f9-501d-468b-a37d-f6a46f8f32d1#43685-7",
+            "source_type": "dailymed",
+            "title": "Lithium Carbonate (Lithium Carbonate) — Warnings and Precautions"
+          },
+          {
+            "id": 2,
+            "source_id": "DailyMed:16ebe1f9-501d-468b-a37d-f6a46f8f32d1#34066-1",
+            "source_type": "dailymed",
+            "title": "Lithium Carbonate (Lithium Carbonate) — Boxed Warning"
+          },
+          {
+            "id": 3,
+            "source_id": "DailyMed:16ebe1f9-501d-468b-a37d-f6a46f8f32d1#34073-7",
+            "source_type": "dailymed",
+            "title": "Lithium Carbonate (Lithium Carbonate) — Drug Interactions"
+          },
+          {
+            "id": 4,
+            "source_id": "PMID:3308295",
+            "source_type": "pubmed",
+            "title": "Lithium monitoring."
+          },
+          {
+            "id": 5,
+            "source_id": "PMID:30390660",
+            "source_type": "pubmed",
+            "title": "Lithium and nephrotoxicity: a literature review of approaches to clinical management and risk stratification."
+          }
+        ],
+        "pool_size": 5,
+        "pool_ids": [
+          "DailyMed:16ebe1f9-501d-468b-a37d-f6a46f8f32d1#43685-7",
+          "DailyMed:16ebe1f9-501d-468b-a37d-f6a46f8f32d1#34066-1",
+          "DailyMed:16ebe1f9-501d-468b-a37d-f6a46f8f32d1#34073-7",
+          "PMID:3308295",
+          "PMID:30390660"
+        ],
+        "cited_in_answer": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "capture_scope": "final top_k pool handed to the generator (SSE citations event); pre-top_k candidate pool NOT captured (would require api/ change)"
+      }
+    },
+    {
+      "id": "R10",
+      "category": "research",
+      "status": "WARN",
+      "api_elapsed_s": 17.8,
+      "total_elapsed_s": 19.2,
+      "eval": {
+        "passed_concepts": [
+          "mentions nausea or vomiting or gastrointestinal symptoms",
+          "mentions arrhythmia or cardiac toxicity"
+        ],
+        "missing_concepts": [
+          "mentions visual disturbances or yellow vision or xanthopsia"
+        ],
+        "forbidden_found": [],
+        "all_pass": false,
+        "score": 70,
+        "reasoning": "The response clearly mentions gastrointestinal symptoms including nausea and vomiting, and describes cardiac toxicity with arrhythmias such as bradycardia. However, it only generically mentions 'visual changes' without specifying visual disturbances like yellow vision or xanthopsia, which are classic features of digoxin toxicity. Therefore, the visual disturbances concept is not fully satisfied."
+      },
+      "answer_preview": "## Summary\n\nThe clinical features of digoxin toxicity include gastrointestinal symptoms (anorexia, nausea, vomiting), neurological symptoms, and potentially fatal cardiac arrhythmias such as bradycardia and other dysrhythmias. These symptoms can occur even when serum digoxin concentrations are within the therapeutic range, so clinical presentation is critical for diagnosis [1], [4].\n\n---\n\n## Clini...",
+      "pool_identity": {
+        "retrieved_pool": [
+          {
+            "id": 1,
+            "source_id": "PMID:27041802",
+            "source_type": "pubmed",
+            "title": "Management of digoxin toxicity."
+          },
+          {
+            "id": 2,
+            "source_id": "PMID:21262953",
+            "source_type": "pubmed",
+            "title": "Clinical features and successful management of suicidal digoxin toxicity without use of digoxin-specific antibody (Fab) "
+          },
+          {
+            "id": 3,
+            "source_id": "PMID:2520037",
+            "source_type": "pubmed",
+            "title": "Digoxin toxicity: clinical and laboratory assessment."
+          },
+          {
+            "id": 4,
+            "source_id": "PMID:40687894",
+            "source_type": "pubmed",
+            "title": "Digoxin toxicity with therapeutic serum digoxin concentrations."
+          },
+          {
+            "id": 5,
+            "source_id": "PMID:20568489",
+            "source_type": "pubmed",
+            "title": "Digoxin: serious drug interactions."
+          }
+        ],
+        "pool_size": 5,
+        "pool_ids": [
+          "PMID:27041802",
+          "PMID:21262953",
+          "PMID:2520037",
+          "PMID:40687894",
+          "PMID:20568489"
+        ],
+        "cited_in_answer": [
+          1,
+          3,
+          4,
+          5
+        ],
+        "capture_scope": "final top_k pool handed to the generator (SSE citations event); pre-top_k candidate pool NOT captured (would require api/ change)"
+      }
+    },
+    {
+      "id": "R11",
+      "category": "research",
+      "status": "PASS",
+      "api_elapsed_s": 19.8,
+      "total_elapsed_s": 21.1,
+      "eval": {
+        "passed_concepts": [
+          "mentions lactic acidosis risk",
+          "mentions renal function or eGFR threshold",
+          "mentions dose adjustment or contraindication based on kidney function"
+        ],
+        "missing_concepts": [],
+        "forbidden_found": [],
+        "all_pass": true,
+        "score": 95,
+        "reasoning": "The response clearly addresses the risk of lactic acidosis, specifies eGFR thresholds for contraindication and dose adjustment, and discusses contraindications based on kidney function. It provides detailed clinical guidance consistent with the query."
+      },
+      "answer_preview": "## Summary\n\nMetformin can be used in patients with chronic kidney disease (CKD) if renal function is not severely impaired, but it is contraindicated in those with severe renal impairment (eGFR <30 mL/min/1.73 m²) or abnormal creatinine clearance [1], [2], [4], [5]. Metformin may provide renoprotective effects and is associated with reduced mortality and cardiovascular events in CKD patients with ...",
+      "pool_identity": {
+        "retrieved_pool": [
+          {
+            "id": 1,
+            "source_id": "DailyMed:1f8833f9-1232-4aa7-a0d4-04a9f87dc2f0#34070-3",
+            "source_type": "dailymed",
+            "title": "Metformin HCl (Metformin HCl) — Contraindications"
+          },
+          {
+            "id": 2,
+            "source_id": "DailyMed:fb832474-88d9-4e29-95cd-fbc446944cc4#34070-3",
+            "source_type": "dailymed",
+            "title": "Glumetza (metformin hydrochloride) — Contraindications"
+          },
+          {
+            "id": 3,
+            "source_id": "PMID:32545901",
+            "source_type": "pubmed",
+            "title": "Significance of Metformin Use in Diabetic Kidney Disease."
+          },
+          {
+            "id": 4,
+            "source_id": "PMID:36189689",
+            "source_type": "pubmed",
+            "title": "Diabetes Management in Chronic Kidney Disease: A Consensus Report by the American Diabetes Association (ADA) and Kidney "
+          },
+          {
+            "id": 5,
+            "source_id": "PMID:36202661",
+            "source_type": "pubmed",
+            "title": "Diabetes management in chronic kidney disease: a consensus report by the American Diabetes Association (ADA) and Kidney "
+          }
+        ],
+        "pool_size": 5,
+        "pool_ids": [
+          "DailyMed:1f8833f9-1232-4aa7-a0d4-04a9f87dc2f0#34070-3",
+          "DailyMed:fb832474-88d9-4e29-95cd-fbc446944cc4#34070-3",
+          "PMID:32545901",
+          "PMID:36189689",
+          "PMID:36202661"
+        ],
+        "cited_in_answer": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "capture_scope": "final top_k pool handed to the generator (SSE citations event); pre-top_k candidate pool NOT captured (would require api/ change)"
+      }
+    },
+    {
+      "id": "R12",
+      "category": "research",
+      "status": "PASS",
+      "api_elapsed_s": 20.2,
+      "total_elapsed_s": 22.5,
+      "eval": {
+        "passed_concepts": [
+          "mentions bleeding risk with combination antithrombotic therapy",
+          "mentions clinical monitoring or indication-based decision"
+        ],
+        "missing_concepts": [],
+        "forbidden_found": [],
+        "all_pass": true,
+        "score": 95,
+        "reasoning": "The response clearly discusses the increased bleeding risk associated with combined anticoagulant and antiplatelet therapy and emphasizes the need for clinical monitoring and indication-based decision-making. It provides detailed safety warnings, contraindications, monitoring parameters, and guidance on when combination therapy is appropriate, fully satisfying the required concepts."
+      },
+      "answer_preview": "## Summary\n\nConcomitant use of both anticoagulants and antiplatelet agents (\"blood thinners\") increases the risk of major bleeding events, including intracranial and gastrointestinal hemorrhage, compared to anticoagulant therapy alone [1][3][4][5]. In patients with atrial fibrillation and prior ischemic stroke, adding antiplatelet therapy to oral anticoagulation was associated with a higher risk o...",
+      "pool_identity": {
+        "retrieved_pool": [
+          {
+            "id": 1,
+            "source_id": "PMID:37458099",
+            "source_type": "pubmed",
+            "title": "Risk of recurrent stroke in patients with atrial fibrillation treated with oral anticoagulants alone or in combination w"
+          },
+          {
+            "id": 2,
+            "source_id": "PMID:19276776",
+            "source_type": "pubmed",
+            "title": "Management of prehospital antiplatelet and anticoagulant therapy in traumatic head injury: a review."
+          },
+          {
+            "id": 3,
+            "source_id": "DailyMed:fe0ced75-ccbf-4d2e-bd0d-b57e60ab913f#34073-7",
+            "source_type": "dailymed",
+            "title": "AGGRASTAT (TIROFIBAN) — Drug Interactions"
+          },
+          {
+            "id": 4,
+            "source_id": "PMID:33279389",
+            "source_type": "pubmed",
+            "title": "Gastroprotection in patients on antiplatelet and/or anticoagulant therapy: a position paper of National Association of H"
+          },
+          {
+            "id": 5,
+            "source_id": "DailyMed:bfe5cfb9-591d-4df8-12a3-6555cde3185d#34073-7",
+            "source_type": "dailymed",
+            "title": "UROKINASE (UROKINASE) — Drug Interactions"
+          }
+        ],
+        "pool_size": 5,
+        "pool_ids": [
+          "PMID:37458099",
+          "PMID:19276776",
+          "DailyMed:fe0ced75-ccbf-4d2e-bd0d-b57e60ab913f#34073-7",
+          "PMID:33279389",
+          "DailyMed:bfe5cfb9-591d-4df8-12a3-6555cde3185d#34073-7"
+        ],
+        "cited_in_answer": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "capture_scope": "final top_k pool handed to the generator (SSE citations event); pre-top_k candidate pool NOT captured (would require api/ change)"
+      }
+    },
+    {
+      "id": "R13",
+      "category": "research",
+      "status": "PASS",
+      "api_elapsed_s": 16.4,
+      "total_elapsed_s": 17.8,
+      "eval": {
+        "passed_concepts": [
+          "mentions increased bleeding risk",
+          "mentions monitoring recommendation or clinical caution"
+        ],
+        "missing_concepts": [],
+        "forbidden_found": [],
+        "all_pass": true,
+        "score": 90,
+        "reasoning": "The response clearly states the increased bleeding risk associated with combining warfarin and aspirin, including specific risk ratios. It also provides detailed monitoring recommendations and clinical cautions, such as INR monitoring, bleeding signs surveillance, and contraindications. The information is comprehensive and semantically satisfies all required concepts."
+      },
+      "answer_preview": "## Summary\n\nThe combination of warfarin and aspirin increases the risk of major and minor bleeding compared to aspirin alone, but may reduce thromboembolic events in specific populations such as those with mechanical heart valves [1][3]. In patients with acute coronary syndrome, combined therapy does not significantly reduce myocardial infarction, stroke, or all-cause death compared to aspirin alo...",
+      "pool_identity": {
+        "retrieved_pool": [
+          {
+            "id": 1,
+            "source_id": "PMID:27785526",
+            "source_type": "pubmed",
+            "title": "Efficacy and safety of aspirin combined with warfarin after acute coronary syndrome : A meta-analysis."
+          },
+          {
+            "id": 2,
+            "source_id": "PMID:17267456",
+            "source_type": "pubmed",
+            "title": "Safety and efficacy of combined antiplatelet-warfarin therapy after coronary stenting."
+          },
+          {
+            "id": 3,
+            "source_id": "PMID:21813162",
+            "source_type": "pubmed",
+            "title": "Anticoagulation therapy with combined low dose aspirin and warfarin following mechanical heart valve replacement."
+          }
+        ],
+        "pool_size": 3,
+        "pool_ids": [
+          "PMID:27785526",
+          "PMID:17267456",
+          "PMID:21813162"
+        ],
+        "cited_in_answer": [
+          1,
+          2,
+          3
+        ],
+        "capture_scope": "final top_k pool handed to the generator (SSE citations event); pre-top_k candidate pool NOT captured (would require api/ change)"
+      }
+    },
+    {
+      "id": "R14",
+      "category": "research",
+      "status": "PASS",
+      "api_elapsed_s": 19.7,
+      "total_elapsed_s": 21.5,
+      "eval": {
+        "passed_concepts": [
+          "mentions beta-blockers are indicated in stable chronic heart failure with reduced ejection fraction",
+          "mentions contraindicated in acute decompensated heart failure",
+          "mentions the distinction between stable and decompensated heart failure"
+        ],
+        "missing_concepts": [],
+        "forbidden_found": [],
+        "all_pass": true,
+        "score": 95,
+        "reasoning": "The response clearly states that beta blockers are indicated in stable chronic heart failure with reduced ejection fraction, explicitly mentions that they are contraindicated in acute decompensated heart failure, and distinguishes between stable and decompensated heart failure. The information is comprehensive, accurate, and well-structured, fulfilling all required concepts without introducing any forbidden content."
+      },
+      "answer_preview": "## Summary\n\nBeta blockers are not universally contraindicated in heart failure; in fact, they are a core component of guideline-directed medical therapy for patients with heart failure and reduced ejection fraction (HFrEF), especially those in sinus rhythm, where they reduce cardiovascular hospitalizations and mortality[1][3][4][5]. However, in patients with heart failure and concomitant atrial fi...",
+      "pool_identity": {
+        "retrieved_pool": [
+          {
+            "id": 1,
+            "source_id": "PMID:26391145",
+            "source_type": "pubmed",
+            "title": "Should β-blockers be used in patients with heart failure and atrial fibrillation?"
+          },
+          {
+            "id": 2,
+            "source_id": "PMID:7995265",
+            "source_type": "pubmed",
+            "title": "Beta-blockers in cardiac failure."
+          },
+          {
+            "id": 3,
+            "source_id": "PMID:39257278",
+            "source_type": "pubmed",
+            "title": "Heart failure in Europe: Guideline-directed medical therapy use and decision making in chronic and acute, pre-existing a"
+          },
+          {
+            "id": 4,
+            "source_id": "PMID:37895150",
+            "source_type": "pubmed",
+            "title": "Neurohumoral Activation in Heart Failure."
+          },
+          {
+            "id": 5,
+            "source_id": "PMID:36202739",
+            "source_type": "pubmed",
+            "title": "Heart Failure Drug Treatment-Inertia, Titration, and Discontinuation: A Multinational Observational Study (EVOLUTION HF)"
+          }
+        ],
+        "pool_size": 5,
+        "pool_ids": [
+          "PMID:26391145",
+          "PMID:7995265",
+          "PMID:39257278",
+          "PMID:37895150",
+          "PMID:36202739"
+        ],
+        "cited_in_answer": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "capture_scope": "final top_k pool handed to the generator (SSE citations event); pre-top_k candidate pool NOT captured (would require api/ change)"
+      }
+    },
+    {
+      "id": "R15",
+      "category": "research",
+      "status": "PASS",
+      "api_elapsed_s": 18.4,
+      "total_elapsed_s": 19.8,
+      "eval": {
+        "passed_concepts": [
+          "mentions Type 1 is non-immune and mild platelet drop",
+          "mentions Type 2 is immune-mediated and clinically significant",
+          "mentions thrombosis risk in Type 2"
+        ],
+        "missing_concepts": [],
+        "forbidden_found": [],
+        "all_pass": true,
+        "score": 95,
+        "reasoning": "The response clearly states that Type 1 HIT is non-immune and causes a mild, transient platelet drop. It also explains that Type 2 HIT is immune-mediated, clinically significant, and associated with a high risk of thrombosis. All required concepts are semantically satisfied with detailed explanations."
+      },
+      "answer_preview": "## Summary\n\nType 1 heparin-induced thrombocytopenia (HIT) is a mild, non-immune, transient decrease in platelet count that typically occurs within 1–2 days of starting heparin and resolves even if heparin is continued. In contrast, Type 2 HIT is an immune-mediated, prothrombotic disorder caused by anti-heparin/PF4 IgG antibodies, usually manifesting 5–8 days after heparin initiation, and is associ...",
+      "pool_identity": {
+        "retrieved_pool": [
+          {
+            "id": 1,
+            "source_id": "PMID:37575780",
+            "source_type": "pubmed",
+            "title": "Type II Heparin-Induced Thrombocytopenia: An Underrecognized Cause of Dialysis Catheter Dysfunction - A Case Report."
+          },
+          {
+            "id": 2,
+            "source_id": "PMID:9475822",
+            "source_type": "pubmed",
+            "title": "Heparin-induced thrombocytopenia."
+          },
+          {
+            "id": 3,
+            "source_id": "PMID:33258456",
+            "source_type": "pubmed",
+            "title": "[Complex management of type 2 heparin-induced thrombocytopenia in patients with major bleeding tendency: two case report"
+          },
+          {
+            "id": 4,
+            "source_id": "PMID:38066843",
+            "source_type": "pubmed",
+            "title": "Thrombotic anti-PF4 immune disorders: HIT, VITT, and beyond."
+          },
+          {
+            "id": 5,
+            "source_id": "PMID:17896955",
+            "source_type": "pubmed",
+            "title": "Heparin induced thrombocytopenia: pathogenetic, clinical, diagnostic and therapeutic aspects."
+          }
+        ],
+        "pool_size": 5,
+        "pool_ids": [
+          "PMID:37575780",
+          "PMID:9475822",
+          "PMID:33258456",
+          "PMID:38066843",
+          "PMID:17896955"
+        ],
+        "cited_in_answer": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "capture_scope": "final top_k pool handed to the generator (SSE citations event); pre-top_k candidate pool NOT captured (would require api/ change)"
+      }
+    },
+    {
+      "id": "R16",
+      "category": "research",
+      "status": "WARN",
+      "api_elapsed_s": 21.5,
+      "total_elapsed_s": 22.9,
+      "eval": {
+        "passed_concepts": [
+          "mentions cardiovascular risk of NSAIDs",
+          "mentions renal risk in elderly"
+        ],
+        "missing_concepts": [
+          "mentions naproxen or acetaminophen as safer alternatives"
+        ],
+        "forbidden_found": [],
+        "all_pass": false,
+        "score": 70,
+        "reasoning": "The response clearly discusses the cardiovascular risks of NSAIDs and the renal risks specifically in elderly patients. It mentions naproxen in comparison to celecoxib but does not present naproxen or acetaminophen as safer alternatives; acetaminophen is not mentioned at all. Therefore, one required concept is missing, lowering the score to good but not excellent."
+      },
+      "answer_preview": "## Summary\n\nAmong NSAIDs, celecoxib appears to have the lowest cardiovascular and bleeding risk for elderly patients with cardiovascular disease, but all NSAIDs significantly increase cardiovascular and bleeding events compared to non-use in this population (HR for celecoxib: 4.65 for cardiovascular events, 3.44 for bleeding events vs. no NSAID use) [3]. Celecoxib is non-inferior to naproxen and i...",
+      "pool_identity": {
+        "retrieved_pool": [
+          {
+            "id": 1,
+            "source_id": "PMID:27959716",
+            "source_type": "pubmed",
+            "title": "Cardiovascular Safety of Celecoxib, Naproxen, or Ibuprofen for Arthritis."
+          },
+          {
+            "id": 2,
+            "source_id": "PMID:32322101",
+            "source_type": "pubmed",
+            "title": "Cardiovascular effects and safety of (non-aspirin) NSAIDs."
+          },
+          {
+            "id": 3,
+            "source_id": "PMID:32731930",
+            "source_type": "pubmed",
+            "title": "Cardiovascular and Bleeding Risks Associated With Nonsteroidal Anti-Inflammatory Drugs After Myocardial Infarction."
+          },
+          {
+            "id": 4,
+            "source_id": "PMID:25163793",
+            "source_type": "pubmed",
+            "title": "Non-steroidal anti-inflammatory drug use in chronic pain conditions with special emphasis on the elderly and patients wi"
+          },
+          {
+            "id": 5,
+            "source_id": "PMID:35453005",
+            "source_type": "pubmed",
+            "title": "Non-steroidal anti-inflammatory drugs (NSAIDs), pain and aging: Adjusting prescription to patient features."
+          }
+        ],
+        "pool_size": 5,
+        "pool_ids": [
+          "PMID:27959716",
+          "PMID:32322101",
+          "PMID:32731930",
+          "PMID:25163793",
+          "PMID:35453005"
+        ],
+        "cited_in_answer": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "capture_scope": "final top_k pool handed to the generator (SSE citations event); pre-top_k candidate pool NOT captured (would require api/ change)"
+      }
+    },
+    {
+      "id": "R17",
+      "category": "research",
+      "status": "PASS",
+      "api_elapsed_s": 17.3,
+      "total_elapsed_s": 18.8,
+      "eval": {
+        "passed_concepts": [
+          "mentions duration recommendation of at least 6 or 12 months",
+          "mentions bleeding risk vs thrombosis risk balance",
+          "mentions type of stent as a factor"
+        ],
+        "missing_concepts": [],
+        "forbidden_found": [],
+        "all_pass": true,
+        "score": 95,
+        "reasoning": "The response clearly states the standard duration of 12 months for DAPT after drug-eluting stent placement, discusses balancing bleeding risk versus ischemic (thrombosis) risk, and highlights the type of stent (especially drug-eluting stents) as a key factor influencing therapy duration. The information is comprehensive, nuanced, and clinically relevant."
+      },
+      "answer_preview": "## Summary\n\nThe optimal duration of dual antiplatelet therapy (DAPT) after coronary stent placement is increasingly individualized, but standard practice has historically recommended 12 months of DAPT, especially after drug-eluting stent implantation [2], [4], [5]. Recent evidence supports shorter DAPT durations (as short as 1 month) in selected patients to reduce bleeding risk, particularly with ...",
+      "pool_identity": {
+        "retrieved_pool": [
+          {
+            "id": 1,
+            "source_id": "PMID:30166073",
+            "source_type": "pubmed",
+            "title": "Ticagrelor plus aspirin for 1 month, followed by ticagrelor monotherapy for 23 months vs aspirin plus clopidogrel or tic"
+          },
+          {
+            "id": 2,
+            "source_id": "PMID:34078616",
+            "source_type": "pubmed",
+            "title": "Dual antiplatelet therapy after percutaneous coronary intervention: Personalize the duration."
+          },
+          {
+            "id": 3,
+            "source_id": "PMID:29602648",
+            "source_type": "pubmed",
+            "title": "Dual antiplatelet therapy after coronary stent implantation: Individualizing the optimal duration."
+          },
+          {
+            "id": 4,
+            "source_id": "PMID:38213748",
+            "source_type": "pubmed",
+            "title": "Shortened Duration of Dual Antiplatelet Therapy Following Percutaneous Coronary Intervention: A Contemporary Clinical Re"
+          },
+          {
+            "id": 5,
+            "source_id": "PMID:29291426",
+            "source_type": "pubmed",
+            "title": "Evolution of Coronary Stent Technology and Implications for Duration of Dual Antiplatelet Therapy."
+          }
+        ],
+        "pool_size": 5,
+        "pool_ids": [
+          "PMID:30166073",
+          "PMID:34078616",
+          "PMID:29602648",
+          "PMID:38213748",
+          "PMID:29291426"
+        ],
+        "cited_in_answer": [
+          1,
+          2,
+          4,
+          5
+        ],
+        "capture_scope": "final top_k pool handed to the generator (SSE citations event); pre-top_k candidate pool NOT captured (would require api/ change)"
+      }
+    },
+    {
+      "id": "R18",
+      "category": "research",
+      "status": "PASS",
+      "api_elapsed_s": 16.3,
+      "total_elapsed_s": 18.1,
+      "eval": {
+        "passed_concepts": [
+          "mentions statin-induced myopathy or rhabdomyolysis",
+          "mentions CK level monitoring",
+          "mentions dose reduction or switching statin or discontinuation"
+        ],
+        "missing_concepts": [],
+        "forbidden_found": [],
+        "all_pass": true,
+        "score": 95,
+        "reasoning": "The response clearly addresses statin-induced myopathy and rhabdomyolysis, discusses CK level monitoring in detail, and covers dose reduction, switching statins, and discontinuation strategies comprehensively. It provides a thorough and clinically relevant approach to managing muscle pain in patients on statins."
+      },
+      "answer_preview": "## Summary\n\nIf your patient on statin therapy reports muscle pain, first assess whether the symptoms are likely statin-associated muscle symptoms (SAMS). Most muscle symptoms are mild and not associated with significant creatine kinase (CK) elevation, but rare serious myopathy must be excluded. Temporarily discontinuing the statin and re-challenging with a different statin or lower dose can help c...",
+      "pool_identity": {
+        "retrieved_pool": [
+          {
+            "id": 1,
+            "source_id": "PMID:25694464",
+            "source_type": "pubmed",
+            "title": "Statin-associated muscle symptoms: impact on statin therapy-European Atherosclerosis Society Consensus Panel Statement o"
+          },
+          {
+            "id": 2,
+            "source_id": "PMID:36958647",
+            "source_type": "pubmed",
+            "title": "Statin Intolerance: A Review and Update."
+          },
+          {
+            "id": 3,
+            "source_id": "PMID:36049498",
+            "source_type": "pubmed",
+            "title": "Effect of statin therapy on muscle symptoms: an individual participant data meta-analysis of large-scale, randomised, do"
+          },
+          {
+            "id": 4,
+            "source_id": "PMID:27199064",
+            "source_type": "pubmed",
+            "title": "Statin-Associated Side Effects."
+          }
+        ],
+        "pool_size": 4,
+        "pool_ids": [
+          "PMID:25694464",
+          "PMID:36958647",
+          "PMID:36049498",
+          "PMID:27199064"
+        ],
+        "cited_in_answer": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "capture_scope": "final top_k pool handed to the generator (SSE citations event); pre-top_k candidate pool NOT captured (would require api/ change)"
+      }
+    },
+    {
+      "id": "R19",
+      "category": "research",
+      "status": "PASS",
+      "api_elapsed_s": 17.9,
+      "total_elapsed_s": 19.4,
+      "eval": {
+        "passed_concepts": [
+          "mentions dose adjustment based on creatinine clearance or eGFR",
+          "mentions at least one specific antibiotic requiring adjustment"
+        ],
+        "missing_concepts": [],
+        "forbidden_found": [],
+        "all_pass": true,
+        "score": 90,
+        "reasoning": "The response clearly discusses dose adjustments based on creatinine clearance (CrCL) and eGFR, and provides specific examples of antibiotics requiring adjustment, such as cefoperazone and aztreonam-avibactam. The information is detailed, clinically relevant, and includes monitoring and safety considerations, fulfilling the required concepts well."
+      },
+      "answer_preview": "## Summary\n\nRenal dosing adjustments for antibiotics depend on the drug's primary route of elimination and the degree of renal impairment. Most antibiotics eliminated by the kidneys require dose reductions in patients with decreased renal function, but some (such as cefoperazone) do not need adjustment unless there is concomitant hepatic dysfunction or severe biliary obstruction. The optimal appro...",
+      "pool_identity": {
+        "retrieved_pool": [
+          {
+            "id": 1,
+            "source_id": "PMID:20736235",
+            "source_type": "pubmed",
+            "title": "Determination of antibiotic dosage adjustments in patients with renal impairment: elements for success."
+          },
+          {
+            "id": 2,
+            "source_id": "PMID:38252170",
+            "source_type": "pubmed",
+            "title": "Dose selection for aztreonam-avibactam, including adjustments for renal impairment, for Phase IIa and Phase III evaluati"
+          },
+          {
+            "id": 3,
+            "source_id": "PMID:30219824",
+            "source_type": "pubmed",
+            "title": "Renal Dosing of Antibiotics: Are We Jumping the Gun?"
+          },
+          {
+            "id": 4,
+            "source_id": "PMID:6456890",
+            "source_type": "pubmed",
+            "title": "Pharmacokinetics of cefoperazone: a review."
+          }
+        ],
+        "pool_size": 4,
+        "pool_ids": [
+          "PMID:20736235",
+          "PMID:38252170",
+          "PMID:30219824",
+          "PMID:6456890"
+        ],
+        "cited_in_answer": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "capture_scope": "final top_k pool handed to the generator (SSE citations event); pre-top_k candidate pool NOT captured (would require api/ change)"
+      }
+    },
+    {
+      "id": "R20",
+      "category": "research",
+      "status": "WARN",
+      "api_elapsed_s": 17.1,
+      "total_elapsed_s": 18.6,
+      "eval": {
+        "passed_concepts": [
+          "mentions ACE inhibitors are contraindicated in pregnancy",
+          "mentions fetal risk or teratogenicity"
+        ],
+        "missing_concepts": [
+          "mentions safer alternative such as methyldopa or labetalol"
+        ],
+        "forbidden_found": [],
+        "all_pass": false,
+        "score": 70,
+        "reasoning": "The response clearly states that ACE inhibitors are contraindicated in pregnancy and details fetal risks associated with their use. However, it does not mention specific safer alternatives like methyldopa or labetalol, which is a required concept."
+      },
+      "answer_preview": "## Summary\n\nACE inhibitors should not be used during pregnancy due to the risk of serious fetal harm, including injury and death. These drugs can cause fetal renal failure, renal dysplasia, hypotension, oligohydramnios, pulmonary hypoplasia, and hypocalvaria, especially when exposure occurs in the second and third trimesters [1], [5].\n\n---\n\n## Clinical Notes\n\n- ACE inhibitors (e.g., perindopril) a...",
+      "pool_identity": {
+        "retrieved_pool": [
+          {
+            "id": 1,
+            "source_id": "DailyMed:97a9e8bf-91ed-4256-97d4-f9504bb01373#34066-1",
+            "source_type": "dailymed",
+            "title": "Aceon (perindopril erbumine) — Boxed Warning"
+          },
+          {
+            "id": 2,
+            "source_id": "DailyMed:94a59260-d2b6-464a-b5b9-bbc599e57e10#34066-1",
+            "source_type": "dailymed",
+            "title": "ATACAND (Candesartan Cilexetil) — Boxed Warning"
+          },
+          {
+            "id": 3,
+            "source_id": "DailyMed:18f1a4fc-dfca-4dde-8a11-f7e6d9e5656d#34066-1",
+            "source_type": "dailymed",
+            "title": "Benicar (olmesartan medoxomil) — Boxed Warning"
+          },
+          {
+            "id": 4,
+            "source_id": "DailyMed:5ddba454-f3e6-43c2-a7a6-58365d297213#34066-1",
+            "source_type": "dailymed",
+            "title": "Diovan (valsartan) — Boxed Warning"
+          },
+          {
+            "id": 5,
+            "source_id": "PMID:16427219",
+            "source_type": "pubmed",
+            "title": "Fetopathy associated with exposure to angiotensin converting enzyme inhibitors and angiotensin receptor antagonists."
+          }
+        ],
+        "pool_size": 5,
+        "pool_ids": [
+          "DailyMed:97a9e8bf-91ed-4256-97d4-f9504bb01373#34066-1",
+          "DailyMed:94a59260-d2b6-464a-b5b9-bbc599e57e10#34066-1",
+          "DailyMed:18f1a4fc-dfca-4dde-8a11-f7e6d9e5656d#34066-1",
+          "DailyMed:5ddba454-f3e6-43c2-a7a6-58365d297213#34066-1",
+          "PMID:16427219"
+        ],
+        "cited_in_answer": [
+          1,
+          5
+        ],
+        "capture_scope": "final top_k pool handed to the generator (SSE citations event); pre-top_k candidate pool NOT captured (would require api/ change)"
+      }
+    }
+  ]
+}

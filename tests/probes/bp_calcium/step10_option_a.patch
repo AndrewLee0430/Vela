@@ -1,0 +1,127 @@
+diff --git a/api/rag/retriever.py b/api/rag/retriever.py
+index b0daed3..b623eec 100644
+--- a/api/rag/retriever.py
++++ b/api/rag/retriever.py
+@@ -355,13 +355,13 @@ class HybridRetriever:
+                             "3. Precise medical terminology angle (INN names for the drugs the user NAMED, MeSH terms; "
+                             "never collapse a drug class into one drug pair)\n\n"
+                             "Rules:\n"
+-                            "- Output ONLY valid JSON array with exactly 3 strings\n"
++                            "- Output ONLY a JSON object {\"queries\": [\"q1\",\"q2\",\"q3\"]} — exactly 3 strings, no other keys\n"
+                             "- Each query: 4-8 words, English only, no punctuation\n"
+                             "- Use standard medical terminology and drug names\n"
+                             "- NO explanations, NO extra text\n\n"
+-                            'Example output: ["warfarin aspirin bleeding risk mechanism", '
++                            'Example output: {"queries": ["warfarin aspirin bleeding risk mechanism", '
+                             '"anticoagulant antiplatelet combination INR monitoring", '
+-                            '"warfarin aspirin hemorrhage pharmacodynamic interaction"]'
++                            '"warfarin aspirin hemorrhage pharmacodynamic interaction"]}'
+                         )
+                     },
+                     {"role": "user", "content": query}
+@@ -387,8 +387,16 @@ class HybridRetriever:
+             parsed = json.loads(raw)
+ 
+             # 支援 {"queries": [...]} 或直接 [...]
++            # bp_calcium car Segment 1d (2026-10-01, tests/probes/bp_calcium/step10_0a_raw_rewrite*.json): under
++            # response_format=json_object the model wrapped correct rewrites under "result" (bare pair) or emitted a
++            # keyed object with no array (zh chip); only queries/query were read, so both fell to the SILENT fallback
++            # below and bypassed every prompt clause. Accept queries/query/result, else the first list-of-strings value.
+             if isinstance(parsed, dict):
+-                queries = parsed.get("queries", parsed.get("query", []))
++                queries = next((parsed[k] for k in ("queries", "query", "result")
++                                if isinstance(parsed.get(k), list)), None)
++                if queries is None:
++                    queries = next((v for v in parsed.values()
++                                    if isinstance(v, list) and any(isinstance(x, str) for x in v)), [])
+             elif isinstance(parsed, list):
+                 queries = parsed
+             else:
+@@ -398,7 +406,16 @@ class HybridRetriever:
+             queries = [q for q in queries if isinstance(q, str) and q.strip()][:3]
+ 
+             if len(queries) >= 1:
++                # Observability only (no behaviour change): a short return is visible in prod logs. Logs the
++                # count + query LENGTH, never the query text or the response content (api/server.py's Research
++                # convention: length only — see the E5 privacy entry in TECH_DEBT.md).
++                if len(queries) < 3:
++                    logger.warning("[REWRITE_SHORT] rewrite returned %d of 3 queries (query_length=%d)",
++                                   len(queries), len(query))
+                 return queries
++            # Previously silent: parsed JSON held zero usable strings → translation fallback below.
++            logger.warning("[REWRITE_FALLBACK] rewrite returned 0 usable queries (query_length=%d); "
++                           "falling back to translation", len(query))
+ 
+         except Exception as e:
+             logger.warning("Query rewriting failed: %s, falling back to translation", e)
+diff --git a/api/server.py b/api/server.py
+index 2eff288..79191a7 100644
+--- a/api/server.py
++++ b/api/server.py
+@@ -841,6 +841,7 @@ async def research_query(
+ 
+     # Credit / quota / budget 檢查（在 streaming 開始前）
+     # Decision 001 v0.3 A7 / A8: L0 走 $2/day aggregate cap + per-anon ANONYMOUS_DAILY_LIMIT + gpt-4.1-mini
++    # (2026-10-01: the gpt-4.1-mini half of A8 no longer holds for Research — see model_override below.)
+     if is_anonymous:
+         logger.info("[Research] tier=L0 anon_id=%s query_length=%d", anon_id[:8], len(body.question))
+         budget_ok, _spent = await check_anonymous_budget(db)
+@@ -852,9 +853,13 @@ async def research_query(
+                 used=ANONYMOUS_DAILY_LIMIT - remaining,
+                 limit=ANONYMOUS_DAILY_LIMIT,
+             )
+-        # §2.1 PHASE D: anon path uses GENERATOR_FALLBACK_MODEL (default gpt-4.1-mini)
+-        # so the literal stays env-var-driven. Preserves Decision 001 v0.3 A8 intent.
+-        model_override: Optional[str] = generator._fallback_model
++        # bp_calcium car Segment 1d, founder ruling 0b (2026-10-01): anon Research generation uses the SAME
++        # generator binding as L1 (gpt-4.1). Measured on identical pools: gpt-4.1-mini answered a CCB question
++        # instead of the calcium-supplement question 2/8, gpt-4.1 0/8 (tests/probes/bp_calcium/step10_0b_*).
++        # Decision 001 v0.3 A7 UNCHANGED — the $2/day aggregate cap above (check_anonymous_budget) still
++        # gates L0; A8 (L0 = gpt-4.1-mini) is CHANGED for Research by that ruling. Was:
++        # `model_override = generator._fallback_model` (§2.1 PHASE D, GENERATOR_FALLBACK_MODEL).
++        model_override: Optional[str] = None
+     else:
+         logger.info("[Research] user=%s query_length=%d", user_id, len(body.question))
+         if not TEST_MODE:
+diff --git a/docs/PRD.md b/docs/PRD.md
+index 336eade..012b7b8 100644
+--- a/docs/PRD.md
++++ b/docs/PRD.md
+@@ -716,6 +716,8 @@ Landing Page 承諾 "No account required to try"(§ 0.3),但實際上點 "Try it
+ | L1 "Vela for Work" | 2/day | 2/day | 1/day | GPT-4.1 | **10 credits** ✅ |
+ | L2 Pro | ~30/day | ~100/day | ~50/day | GPT-4.1 | 100 credits cap |
+ 
++> **2026-10-02 AMENDMENT (append-only; the L0 row above is the 2026-04 record):** per founder ruling 0b (2026-10-01, bp_calcium car Segment 1d — `tests/probes/bp_calcium/step10_0b_*`), **anonymous (L0) Research generation uses GPT-4.1**, the same generator binding as L1 (`api/server.py` research_query `is_anonymous` → `model_override = None`). Measured on IDENTICAL retrieval pools: answered the question asked (veto (i) FALSE) GPT-4.1 8/8 vs GPT-4.1-mini 6/8; cost +$0.0054–0.0074 per query; the $2/day aggregate cap (Decision 001 A7) is UNCHANGED and now binds at ≈235 anonymous Research generations/day. Derived from the code at the same commit: **Verify** has no L0-specific model — both tiers use the verify binding (`VERIFY_MODEL`, default GPT-4.1-mini); **Explain** stays closed to L0; Research's **no-documents fallback** answers on `GENERATOR_FALLBACK_MODEL` (GPT-4.1-mini) for L0 and L1 alike. Status: BUILT LOCAL 2026-10-02, effective on deploy — see STATE.md.
++
+ **L1 升級感來源(不靠量,靠解鎖 + 品質)**:
+ 1. ⭐ Explain 從 L0 完全不開放 → L1 1/day(新功能解鎖)
+ 2. ⭐ 持久 history(stateless → persistent;Free UI 顯示最近 7 天,Pro 顯示全部 + 搜尋)
+@@ -748,6 +750,7 @@ Landing Page 承諾 "No account required to try"(§ 0.3),但實際上點 "Try it
+ 7. 已註冊 L1/L2 使用者不受 anonymous cap 影響
+ 8. L1 使用者的 Research / Verify / Explain 走 GPT-4.1(非 mini),延遲 / 品質符合既有 L2 行為
+ 9. L0 使用者的 Research / Verify 走 GPT-4.1-mini
++   - **2026-10-02 amendment (append-only):** the **Research** half of item 9 is superseded — L0 Research generation = GPT-4.1 (founder ruling 0b, 2026-10-01; full text under the §2.8 credit table). The Verify half holds, but it is not L0-specific: Verify uses `VERIFY_MODEL` (GPT-4.1-mini) on every tier.
+ 10. PostHog 可追蹤 L0 → L1 轉換 funnel(event: `anonymous_to_registered`)
+ 11. 新 event `explain_locked_viewed` 可追蹤多少 L0 使用者試圖進入 Explain(重要:Phase 1A Week 4 review 的核心指標)
+ 
+diff --git a/docs/decisions/001-anonymous-trial-flow.md b/docs/decisions/001-anonymous-trial-flow.md
+index b409a11..6e48436 100644
+--- a/docs/decisions/001-anonymous-trial-flow.md
++++ b/docs/decisions/001-anonymous-trial-flow.md
+@@ -20,6 +20,7 @@ Vela 的 Landing Page 承諾 "No account required to try",但實際上點 "Try i
+ - L1 同 L0 次數,升級感來自四個**解鎖新功能**:Explain / History / 跨裝置 / 個人化 + 品質升級
+ - L1 brand name:"Vela for Work"
+ - L0 使用 GPT-4.1-mini,L1 升級到 GPT-4.1
++  - **2026-10-02 amendment (append-only; A8 changed for Research):** per founder ruling 0b (2026-10-01, bp_calcium car Segment 1d — `tests/probes/bp_calcium/step10_0b_*`), **anonymous (L0) Research generation uses GPT-4.1**, the same generator binding as L1 (`api/server.py` research_query `is_anonymous` → `model_override = None`). Measured on IDENTICAL retrieval pools: answered the question asked (veto (i) FALSE) GPT-4.1 8/8 vs GPT-4.1-mini 6/8; cost +$0.0054–0.0074 per query; the $2/day aggregate cap (Decision 001 A7) is UNCHANGED and now binds at ≈235 anonymous Research generations/day. Derived from the code at the same commit: **Verify** has no L0-specific model — both tiers use the verify binding (`VERIFY_MODEL`, default GPT-4.1-mini); **Explain** stays closed to L0; Research's **no-documents fallback** answers on `GENERATOR_FALLBACK_MODEL` (GPT-4.1-mini) for L0 and L1 alike. Status: BUILT LOCAL 2026-10-02, effective on deploy — see STATE.md. The same superseded statement also stands in §2.3's credit table (L0 row) and in the v0.2 spec lines ("L0 anonymous users 用 GPT-4.1-mini" and its example) — NOT amended there (the ruling named this line and the §2.4 comparison table only).
+ - Daily budget cap: $2 USD/day ($60/month hard ceiling)
+ - 排入 Phase 0,位於 § 2.4 之後、§ 2.7 之前,工期 1.5-2 天
+ 
+@@ -134,6 +135,8 @@ L1 不是為了給使用者多一點 quota,而是為了 **Vela 自己的資料
+ | **個人化範例** | 通用池 | role-based | ⭐ **解鎖新功能** |
+ | FeedbackBar 送出 | 顯示但提示登入 | 可送出 | 小加值 |
+ 
++> **2026-10-02 amendment (append-only; the "Model 品質" row above is the v0.x record):** for **Research** the row no longer holds — L0 Research generation = GPT-4.1 since founder ruling 0b (2026-10-01; see the A8 amendment at the top). Research's L0→L1 upgrade is now Explain / History / 跨裝置 / 個人化 only. Derived from the code: Verify's model is the same on both tiers (`VERIFY_MODEL`, GPT-4.1-mini), so the Verify row's "品質更深" has no model behind it either (pre-existing, not caused by this ruling).
++
+ **三個「解鎖新功能」(Explain / History / 跨裝置)+ 一個「品質升級」**。比純量升級有感 10 倍。
+ 
+ ### 2.5 L1 Brand Name 與行銷語言("Vela for Work")

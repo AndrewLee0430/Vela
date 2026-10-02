@@ -18,8 +18,13 @@ from pathlib import Path
 
 from _harness import assert_dev_db, production_retriever
 
+import argparse  # noqa: E402
+_ap = argparse.ArgumentParser()
+_ap.add_argument("--only", default=None, help="comma-separated query ids, e.g. Q1,Q2,Q3,Q9,Q11")
+_ap.add_argument("--prefix", default="step9_e6_mini", help="output prefix (Segment 1d: step10_e6_ctl / step10_e6_trt)")
+_ARGS = _ap.parse_args()
 HERE = Path(__file__).resolve().parent
-OUT = HERE / "step9_e6_mini.json"
+OUT = HERE / f"{_ARGS.prefix}.json"
 N = 2
 CJK = re.compile(r"[一-鿿]")
 
@@ -65,7 +70,8 @@ async def main():
     from api.server import _annotate_research_question
     r, cfg = production_retriever()
     gen = AnswerGenerator()
-    l0_model = gen._fallback_model
+    from _harness import l0_generation_override
+    l0_model, l0_src = l0_generation_override(gen)
     captured: list = []
     orig_rw = r._rewrite_query
 
@@ -77,7 +83,10 @@ async def main():
 
     rows = []
     t_start = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+    _only = set(_ARGS.only.split(",")) if _ARGS.only else None
     for qid, q, expected, mech_re, over_re in QS:
+        if _only and qid not in _only:
+            continue
         lang = "zh-TW" if CJK.search(q) else "en"
         annotated = _annotate_research_question(q)
         runs = []
@@ -94,7 +103,8 @@ async def main():
                 events.append(t)
                 if t == "answer":
                     answer += ev.content or ""
-            (HERE / f"step9_answer_{qid}_r{i+1}.md").write_text(answer, encoding="utf-8")
+            _ans_prefix = "step9" if _ARGS.prefix == "step9_e6_mini" else _ARGS.prefix
+            (HERE / f"{_ans_prefix}_answer_{qid}_r{i+1}.md").write_text(answer, encoding="utf-8")
             run = {"run": i + 1, "status": status, "seconds": round(time.perf_counter() - t0, 1),
                    "rewrite_calls": [list(c) for c in captured],
                    "final": [d2(d) for d in docs],
@@ -112,7 +122,7 @@ async def main():
         rows.append({"id": qid, "query": q, "annotated": annotated, "lang": lang, "expected_mechanism": expected,
                      "premark_mechanism_regex": mech_re, "over_trigger_regex": over_re, "runs": runs})
     res = {"probe": "E6 mini — generalisation + over-trigger, L0 binding", "head": "a6d59b9 (prod fly 261 code)",
-           "db_branch": dev, "n_per_query": N, "l0_model": l0_model, "started_utc": t_start,
+           "db_branch": dev, "n_per_query": N, "l0_model": l0_model or gen.model, "l0_binding_source": l0_src, "started_utc": t_start,
            "finished_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
            "config": {k: v for k, v in cfg.items() if k != "provenance"},
            "grading": "regex columns are PRE-MARKS; the grades of record are hand-read, in step9_e6_mini_grades.json",

@@ -1,0 +1,42 @@
+{
+ "query": "老人血壓藥可以跟鈣片一起吃嗎？",
+ "db_branch": "ep-spring-voice-a127ye10",
+ "model": "gpt-4.1-mini",
+ "calls": [
+  {
+   "call": 1,
+   "raw_content": "{\"queries\": [\"antihypertensive drugs calcium supplement interaction mechanism\",\"management of hypertension with calcium supplementation\",\"calcium channel blockers and calcium supplement coadministration\"]}",
+   "parsed": [
+    "antihypertensive drugs calcium supplement interaction mechanism",
+    "management of hypertension with calcium supplementation",
+    "calcium channel blockers and calcium supplement coadministration"
+   ],
+   "fallback_fired": false,
+   "verdict": "returns 3 string(s)"
+  },
+  {
+   "call": 2,
+   "raw_content": "{\"queries\": [\"calcium supplement antihypertensive drug interaction mechanism\",\"management of hypertension with calcium supplements\",\"calcium supplement antihypertensive agents drug interaction\"]}",
+   "parsed": [
+    "calcium supplement antihypertensive drug interaction mechanism",
+    "management of hypertension with calcium supplements",
+    "calcium supplement antihypertensive agents drug interaction"
+   ],
+   "fallback_fired": false,
+   "verdict": "returns 3 string(s)"
+  },
+  {
+   "call": 3,
+   "raw_content": "{\"queries\": [\"antihypertensive drugs calcium supplement interaction mechanism\",\"management of hypertension with calcium supplementation\",\"calcium supplement antihypertensive drug drug interaction\"]}",
+   "parsed": [
+    "antihypertensive drugs calcium supplement interaction mechanism",
+    "management of hypertension with calcium supplementation",
+    "calcium supplement antihypertensive drug drug interaction"
+   ],
+   "fallback_fired": false,
+   "verdict": "returns 3 string(s)"
+  }
+ ],
+ "n_provider_calls": 3,
+ "n_fallbacks": 0
+}

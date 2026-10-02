@@ -1,0 +1,36 @@
+{
+ "query": "老人血壓藥可以跟鈣片一起吃嗎？",
+ "db_branch": "ep-spring-voice-a127ye10",
+ "model": "gpt-4.1-mini",
+ "calls": [
+  {
+   "call": 1,
+   "raw_content": "{\"clinical interpretation\":\"hypertension treatment and calcium supplement interaction\",\"drug classes\":\"antihypertensive agents and calcium supplements\",\"concern\":\"potential drug supplement interaction affecting blood pressure control\"}",
+   "parsed": [
+    "elderly antihypertensive drugs calcium supplements interaction"
+   ],
+   "fallback_fired": true,
+   "verdict": "SILENT FALLBACK fired (zero parsed strings)"
+  },
+  {
+   "call": 2,
+   "raw_content": "{\"clinical interpretation\":\"hypertension treatment and calcium supplement interaction\",\"drug classes\":\"antihypertensive agents and calcium supplements\",\"concern\":\"potential interaction between blood pressure medications and calcium supplements\"}",
+   "parsed": [
+    "elderly antihypertensive drugs calcium supplements interaction"
+   ],
+   "fallback_fired": true,
+   "verdict": "SILENT FALLBACK fired (zero parsed strings)"
+  },
+  {
+   "call": 3,
+   "raw_content": "{\"clinical interpretation\":\"hypertension treatment and calcium supplement interaction\",\"drug class\":\"antihypertensive agents\",\"supplement\":\"calcium supplement\"}",
+   "parsed": [
+    "elderly antihypertensive drugs calcium supplements interaction"
+   ],
+   "fallback_fired": true,
+   "verdict": "SILENT FALLBACK fired (zero parsed strings)"
+  }
+ ],
+ "n_provider_calls": 6,
+ "n_fallbacks": 3
+}

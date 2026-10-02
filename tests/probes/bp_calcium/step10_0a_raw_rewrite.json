@@ -1,0 +1,36 @@
+{
+ "query": "calcium and lisinopril",
+ "db_branch": "ep-spring-voice-a127ye10",
+ "model": "gpt-4.1-mini",
+ "calls": [
+  {
+   "call": 1,
+   "raw_content": "{\"result\":[\"lisinopril calcium supplement interaction mechanism\",\"lisinopril calcium supplementation blood pressure management\",\"angiotensin converting enzyme inhibitors calcium supplements pharmacology\"]}",
+   "parsed": [
+    "calcium and lisinopril"
+   ],
+   "fallback_fired": true,
+   "verdict": "SILENT FALLBACK fired (zero parsed strings)"
+  },
+  {
+   "call": 2,
+   "raw_content": "{\"result\":[\"lisinopril calcium supplement interaction mechanism\",\"management of lisinopril and calcium supplement\",\"angiotensin converting enzyme inhibitors calcium supplements\"]}",
+   "parsed": [
+    "calcium and lisinopril"
+   ],
+   "fallback_fired": true,
+   "verdict": "SILENT FALLBACK fired (zero parsed strings)"
+  },
+  {
+   "call": 3,
+   "raw_content": "{\"result\":[\"lisinopril calcium supplement interaction mechanism\",\"management of lisinopril and calcium supplement\",\"angiotensin converting enzyme inhibitors calcium supplements interaction\"]}",
+   "parsed": [
+    "calcium and lisinopril"
+   ],
+   "fallback_fired": true,
+   "verdict": "SILENT FALLBACK fired (zero parsed strings)"
+  }
+ ],
+ "n_provider_calls": 3,
+ "n_fallbacks": 3
+}

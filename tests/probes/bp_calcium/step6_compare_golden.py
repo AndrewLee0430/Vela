@@ -16,7 +16,10 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[2]
-OUT = HERE / "step6_golden_compare.json"
+import sys as _sys  # noqa: E402
+# usage: step6_compare_golden.py [<prefix>]   default prefix "step6" (Segment 1); Segment 1d uses "step10"
+_PFX = _sys.argv[1] if len(_sys.argv) > 1 else "step6"
+OUT = HERE / f"{_PFX}_golden_compare.json"
 
 spec = importlib.util.spec_from_file_location("rgt", ROOT / "tests" / "run_golden_tests.py")
 rgt = importlib.util.module_from_spec(spec)
@@ -32,8 +35,8 @@ def load(name):
 
 
 def main():
-    c_raw, c = load("step6_golden_control.json")
-    t_raw, t = load("step6_golden_treatment.json")
+    c_raw, c = load(f"{_PFX}_golden_control.json")
+    t_raw, t = load(f"{_PFX}_golden_treatment.json")
     c_code, c_reason, c_v = rgt.research_golden_floor(c_raw["results"])
     t_code, t_reason, t_v = rgt.research_golden_floor(t_raw["results"])
     rows, moved_same, moved_diff = [], [], []

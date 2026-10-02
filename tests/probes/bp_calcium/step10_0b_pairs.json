@@ -1,0 +1,176 @@
+{
+ "db_branch": "ep-spring-voice-a127ye10",
+ "source": "step8_l0_trace.json (saved prompts = identical docs)",
+ "gpt41_model": "gpt-4.1",
+ "l0_model": "gpt-4.1-mini",
+ "pairs": [
+  {
+   "run": 1,
+   "final": [
+    "PMID:16199918"
+   ],
+   "l0": {
+    "model": "gpt-4.1-mini",
+    "answer_file": "step8_l0_answer_run1.md",
+    "premark_veto_i": true,
+    "premark_veto_ii": false
+   },
+   "gpt41": {
+    "model": "gpt-4.1",
+    "answer_file": "step10_0b_answer_run1_gpt41.md",
+    "premark_veto_i": true,
+    "premark_veto_ii": false,
+    "input_tokens": 1119,
+    "output_tokens": 279
+   }
+  },
+  {
+   "run": 2,
+   "final": [
+    "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34073-7",
+    "PMID:2867747",
+    "PMID:33178509"
+   ],
+   "l0": {
+    "model": "gpt-4.1-mini",
+    "answer_file": "step8_l0_answer_run2.md",
+    "premark_veto_i": false,
+    "premark_veto_ii": true
+   },
+   "gpt41": {
+    "model": "gpt-4.1",
+    "answer_file": "step10_0b_answer_run2_gpt41.md",
+    "premark_veto_i": false,
+    "premark_veto_ii": true,
+    "input_tokens": 2155,
+    "output_tokens": 513
+   }
+  },
+  {
+   "run": 3,
+   "final": [
+    "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7"
+   ],
+   "l0": {
+    "model": "gpt-4.1-mini",
+    "answer_file": "step8_l0_answer_run3.md",
+    "premark_veto_i": true,
+    "premark_veto_ii": false
+   },
+   "gpt41": {
+    "model": "gpt-4.1",
+    "answer_file": "step10_0b_answer_run3_gpt41.md",
+    "premark_veto_i": true,
+    "premark_veto_ii": true,
+    "input_tokens": 1306,
+    "output_tokens": 290
+   }
+  },
+  {
+   "run": 4,
+   "final": [
+    "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34073-7",
+    "PMID:16199918"
+   ],
+   "l0": {
+    "model": "gpt-4.1-mini",
+    "answer_file": "step8_l0_answer_run4.md",
+    "premark_veto_i": true,
+    "premark_veto_ii": true
+   },
+   "gpt41": {
+    "model": "gpt-4.1",
+    "answer_file": "step10_0b_answer_run4_gpt41.md",
+    "premark_veto_i": true,
+    "premark_veto_ii": false,
+    "input_tokens": 1498,
+    "output_tokens": 343
+   }
+  },
+  {
+   "run": 5,
+   "final": [
+    "PMID:38345765",
+    "PMID:14670550",
+    "PMID:2867747"
+   ],
+   "l0": {
+    "model": "gpt-4.1-mini",
+    "answer_file": "step8_l0_answer_run5.md",
+    "premark_veto_i": false,
+    "premark_veto_ii": false
+   },
+   "gpt41": {
+    "model": "gpt-4.1",
+    "answer_file": "step10_0b_answer_run5_gpt41.md",
+    "premark_veto_i": false,
+    "premark_veto_ii": true,
+    "input_tokens": 2082,
+    "output_tokens": 491
+   }
+  },
+  {
+   "run": 6,
+   "final": [
+    "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7",
+    "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34073-7"
+   ],
+   "l0": {
+    "model": "gpt-4.1-mini",
+    "answer_file": "step8_l0_answer_run6.md",
+    "premark_veto_i": true,
+    "premark_veto_ii": true
+   },
+   "gpt41": {
+    "model": "gpt-4.1",
+    "answer_file": "step10_0b_answer_run6_gpt41.md",
+    "premark_veto_i": true,
+    "premark_veto_ii": true,
+    "input_tokens": 1685,
+    "output_tokens": 460
+   }
+  },
+  {
+   "run": 7,
+   "final": [
+    "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7"
+   ],
+   "l0": {
+    "model": "gpt-4.1-mini",
+    "answer_file": "step8_l0_answer_run7.md",
+    "premark_veto_i": true,
+    "premark_veto_ii": true
+   },
+   "gpt41": {
+    "model": "gpt-4.1",
+    "answer_file": "step10_0b_answer_run7_gpt41.md",
+    "premark_veto_i": true,
+    "premark_veto_ii": true,
+    "input_tokens": 1306,
+    "output_tokens": 350
+   }
+  },
+  {
+   "run": 8,
+   "final": [
+    "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7",
+    "PMID:2867747",
+    "PMID:33178509"
+   ],
+   "l0": {
+    "model": "gpt-4.1-mini",
+    "answer_file": "step8_l0_answer_run8.md",
+    "premark_veto_i": true,
+    "premark_veto_ii": true
+   },
+   "gpt41": {
+    "model": "gpt-4.1",
+    "answer_file": "step10_0b_answer_run8_gpt41.md",
+    "premark_veto_i": true,
+    "premark_veto_ii": true,
+    "input_tokens": 2149,
+    "output_tokens": 675
+   }
+  }
+ ]
+}

@@ -32,7 +32,7 @@ STRADDLES = [
 
 async def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--arm", required=True, choices=["control", "treatment", "control8", "treatment8"])
+    ap.add_argument("--arm", required=True)  # free text: the output is step6_straddle_<arm>.json (Segment 1d uses ctl8_1d / trt8_1d)
     ap.add_argument("--n", type=int, default=2)
     args = ap.parse_args()
     N = args.n

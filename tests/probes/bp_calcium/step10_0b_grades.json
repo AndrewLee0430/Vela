@@ -1,0 +1,16 @@
+{
+ "_how": "HAND grades 2026-10-01 after reading all 8 gpt-4.1 answers (step10_0b_answer_run{i}_gpt41.md) against the 8 gpt-4.1-mini answers already graded in step8_grades.json (step8_l0_answer_run{i}.md). Same docs per pair (replayed from the saved system+user prompt). veto_i = answers a CCB question instead of the supplement question.",
+ "rule_pre_registered": "gpt-4.1 veto (i) FALSE >= 7/8 on the same pools -> ruling (b): L0 Research generation moves to gpt-4.1 in THIS car (Step 2c), anon $2/day aggregate cap UNCHANGED, per-query cost delta reported; else (a) becomes Segment 2.",
+ "pairs": {
+  "1": {"docs": "PMID:16199918 only (CCB drug-food review)", "l0_veto_i": true, "gpt41_veto_i": false, "note": "gpt-4.1 reads calcium as a substance ('calcium-containing foods and supplements') interacting with CCB-class BP meds and says the source does not specify the impact of calcium supplementation; mini answered about CCBs as the drug"},
+  "2": {"docs": "HCTZ 34073-7 + CATS + COPD papers", "l0_veto_i": false, "gpt41_veto_i": false, "note": "both: thiazide + calcium -> CATS; gpt-4.1 adds monitoring thresholds and 'ACEI/ARB do not carry this risk'"},
+  "3": {"docs": "Calcium Chloride 34073-7", "l0_veto_i": false, "gpt41_veto_i": false, "note": "both IV-chloride vs CCB framing; gpt-4.1 RETAINS the thiazide/hypercalcemia sentence, mini dropped it"},
+  "4": {"docs": "HCTZ 34073-7 + CCB review", "l0_veto_i": true, "gpt41_veto_i": false, "note": "gpt-4.1: 'supplements such as calcium' with CCB-class caution; mini answered CCB + HCTZ combination therapy with calcium vanished"},
+  "5": {"docs": "calcium citrate (elderly) + COPD", "l0_veto_i": false, "gpt41_veto_i": false, "note": "both supplement reading; gpt-4.1 adds an unsourced-but-flagged thiazide caution"},
+  "6": {"docs": "Calcium Chloride + HCTZ 34073-7", "l0_veto_i": false, "gpt41_veto_i": false, "note": "both: chloride vs CCB + thiazide hypercalcemia"},
+  "7": {"docs": "Calcium Chloride 34073-7", "l0_veto_i": false, "gpt41_veto_i": false, "note": "both IV-chloride vs CCB framing; both list thiazides among hypercalcemia-risk drugs"},
+  "8": {"docs": "Calcium Chloride + CATS + COPD", "l0_veto_i": false, "gpt41_veto_i": false, "note": "both full; gpt-4.1 adds thresholds"}
+ },
+ "tally": {"gpt41_veto_i_false": "8/8", "l0_veto_i_false": "6/8", "gpt41_veto_ii_regex": "6/8 (pairs 2,3,5,6,7,8)", "l0_veto_ii_regex": "5/8"},
+ "ruling_applied": "(b) — gpt-4.1 veto (i) FALSE 8/8 >= 7/8 on identical pools -> L0 Research generation moves to gpt-4.1 in this car (Step 2c); anon $2/day aggregate cap UNCHANGED; the two mini failures (pairs 1, 4) are exactly the pools where calcium vanished, and gpt-4.1 held the supplement reading on both"
+}

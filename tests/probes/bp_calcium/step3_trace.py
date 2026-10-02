@@ -237,7 +237,8 @@ async def main():
     from api.models.schemas import SourceType
     gen = AnswerGenerator()
 
-    _override = gen._fallback_model if _ARGS.l0 else None
+    from _harness import l0_generation_override
+    _override, _l0_src = (l0_generation_override(gen) if _ARGS.l0 else (None, "L1 (model_override=None)"))
     _lang = _ARGS.lang
 
     async def generate_once(docs, status):
@@ -284,7 +285,7 @@ async def main():
             print(f"[gen run {k+1}] {g['path'][:9]} veto(i)regex={g['veto_i_calcium_read_as_ccb']} "
                   f"veto(ii)={g['veto_ii_mentions_thiazide_or_hypercalcemia']}", flush=True)
 
-    res = {"query": Q, "annotated_question": question, "lang": _lang, "l0": _ARGS.l0,
+    res = {"query": Q, "annotated_question": question, "lang": _lang, "l0": _ARGS.l0, "binding_source": _l0_src,
            "generation_model": _override or gen.model,
            "db_branch": dev, "n_runs": N, "gen_all": _ARGS.gen_all,
            "config": {k: v for k, v in cfg.items() if k != "provenance"},
