@@ -180,7 +180,7 @@
   {
    "q": "Q12",
    "source_id": "DailyMed:14cd12ee-a4a3-465a-9550-58c9ef0e4f21#34073-7",
-   "route": "HAND:INJECTION",
+   "route": "MIXED",
    "title": "Potassium Chloride (Potassium Chloride)",
    "n_runs": 4
   },
@@ -201,7 +201,7 @@
   {
    "q": "Q2",
    "source_id": "DailyMed:14cd12ee-a4a3-465a-9550-58c9ef0e4f21#34073-7",
-   "route": "HAND:INJECTION",
+   "route": "MIXED",
    "title": "Potassium Chloride (Potassium Chloride)",
    "n_runs": 6
   },
@@ -243,7 +243,7 @@
   {
    "q": "Q7",
    "source_id": "DailyMed:14cd12ee-a4a3-465a-9550-58c9ef0e4f21#34073-7",
-   "route": "HAND:INJECTION",
+   "route": "MIXED",
    "title": "Potassium Chloride (Potassium Chloride)",
    "n_runs": 4
   },

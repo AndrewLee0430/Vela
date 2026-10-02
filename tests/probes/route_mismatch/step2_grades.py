@@ -8,8 +8,8 @@ every ambiguous answer and of a negatives sample; this script only stores and ta
       (which carried that caveat) is the precedent; `caveat` marks those answers.
   B — injection framing stated and FENCED: the injection content is explicitly limited to IV / injectable calcium and the
       oral answer does not rest on it.
-  C — none. (An injection-route label cited for ROUTE-AGNOSTIC content — Potassium Chloride Injection's K-sparing / RAAS /
-      NSAID hyperkalemia items — is C with note `inj_label_route_agnostic`.)
+  C — none. (Potassium Chloride 34073-7 in FINAL is noted; the first version of this note called it an injection label —
+      the Segment-1 SPL route key shows it is an ORAL solution label, so those potassium answers were route-MATCHED.)
 Usage: python tests/probes/route_mismatch/step2_grades.py → step2_grades.json (same dir)
 """
 import collections
@@ -92,7 +92,7 @@ def main():
         note = A.get(p.name) or B.get(p.name) or C_NOTES.get(p.name, "")
         fin = final_for(p.name)
         if g == "C" and fin and any("14cd12ee-a4a3-465a-9550-58c9ef0e4f21" in s for s in fin):
-            note = (note + "; " if note else "") + "inj_label_route_agnostic (Potassium Chloride Injection 34073-7 in FINAL)"
+            note = (note + "; " if note else "") + "Potassium Chloride 34073-7 in FINAL — an ORAL solution label by the SPL key (seg1); the STEP-1 note called it an injection label, wrongly"
         rows.append({"file": p.name, "arm": arm_of(p.name), "family": fam, "query": q, "grade": g, "note": note, "final_dailymed": fin})
     table = collections.defaultdict(collections.Counter)
     fam_tot = collections.defaultdict(collections.Counter)

@@ -55,7 +55,7 @@ not reading package text at all.
 |---|---|---|
 | calcium | CALCIUM (Calcium Gluconate IV) · CALCIUM CHLORIDE DIHYDRATE (IV) · CALCIUM GLUCONATE (IV) — each 34070/34073/43685 · CALCIUM ACETATE (PhosLo oral, 34070 only) · CALCIUM CARBONATE (TUMS, none) | **Interactions + Warnings text = injection-only**; the only oral safety text is PhosLo's Contraindications |
 | magnesium | MAGNESIUM SULFATE HEPTAHYDRATE (inj, 34070) · MAGNESIUM OXIDE / HYDROXIDE (oral, none) | **only safety text = injection** |
-| potassium | POTASSIUM CHLORIDE (inj concentrate, 34070/34073/43685) · POTASSIUM ACETATE (inj, 34070) · POTASSIUM GLUCONATE (RenaKare — veterinary, none) | **only safety text = injection**; the only oral key is veterinary (already in `docs/nonhuman_label_scope_20260804.md:49`) |
+| potassium | POTASSIUM CHLORIDE (~~inj concentrate~~ **ORAL solution by the SPL key — corrected in §2**, 34070/34073/43685) · POTASSIUM ACETATE (inj, 34070) · POTASSIUM GLUCONATE (RenaKare — veterinary, none) | ~~**only safety text = injection**; the only oral key is veterinary~~ **CORRECTED (§2): NOT injection-only — the KCl oral solution carries the full safety set** (RenaKare veterinary status already in `docs/nonhuman_label_scope_20260804.md:49`) |
 | sodium bicarbonate | SODIUM BICARBONATE (inj, 34070/34073) | **injection-only**; TFDA licenses 8 oral mono products (蘇打錠) |
 | iron | IRON (Venofer IV) · IRON DEXTRAN (INFeD IV) · FERRIC CITRATE (Auryxia oral, full set) · 2 oral keys without safety | NOT injection-only |
 | zinc | ZINC (zinc chloride inj, 34070) · ZINC ACETATE DIHYDRATE (GALZIN oral, 34070/34073) | NOT injection-only |
@@ -96,9 +96,9 @@ Per query × arm: `step2_grades.json` `by_query_arm` (e.g. 2b EN L0 7/8 A · Opt
 **The (A) carrier is ONE section: `DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7` (Calcium Chloride — Drug Interactions),
 in FINAL for 42/42 A answers** (8 of them also carried HCTZ 34073-7). **Separation is total:** that section in FINAL → A 42 · B 5 ·
 C 0 (n = 47 answers); not in FINAL → C 102/102. The generator never declined it.
-**Potassium:** Potassium Chloride Injection 34073-7 reached FINAL on E6 Q2 / Q7 / Q12 (14 runs), but its interaction text (K-sparing
+~~**Potassium:** Potassium Chloride Injection 34073-7 reached FINAL on E6 Q2 / Q7 / Q12 (14 runs), but its interaction text (K-sparing
 diuretics, RAAS inhibitors, NSAIDs → hyperkalemia) is route-agnostic and no IV-specific text was carried → C, noted
-`inj_label_route_agnostic`. **Iron / magnesium / vitamin D:** no injection-route safety section reached FINAL in any E6 run.
+`inj_label_route_agnostic`.~~ **CORRECTED (§2):** that label is an ORAL solution (SPL key) — the 14 potassium runs were route-MATCHED; grades unchanged (C). **Iron / magnesium / vitamin D:** no injection-route safety section reached FINAL in any E6 run.
 **Introduced by the fly-261 rewrite fix — consistent, not proven:** pre-fix EN traced runs carried an injection-route section in
 FINAL **0/5** (`step3_trace`, `71936e8`; the miss then was the CCB misreading); on the shipped rewrite **22/31** (`step6` 2/2 · `step7`
 0/1 · `step7b` 6/8 · `step8_l0` 4/8 · `step10_ctl_en_l1` 3/4 · `step11_2b_en_l0` 7/8). The rewrite's "calcium supplement …" strings
@@ -145,3 +145,46 @@ KEY accident while Calcium Gluconate IV (key CALCIUM) would count OWNED; "iron s
 4. **Gate:** a safety-query canary with a route criterion — today's canary cannot see this class (§5).
 
 ## §7 Eye gate — none this segment (nothing built)
+
+## §2 Segment 1 — the route KEY sidecar (2026-10-02, base `48416bb`; no behaviour change; network = DailyMed only; zero LLM)
+
+**Founder rulings 2026-10-02 14:17:** (1) the route-mismatch entry **RATIFIED [HONESTY][P1]**. (2) **Fix design = LABEL + SCOPE, not
+exclusion** — exclusion would drop valid substance-level safety text (e.g. furosemide + lithium, whose only corpus safety section is an
+injection label); Segment 1 obtains the route KEY (Rule 21), Segment 2 wires it. (3) The A/B clinical line is pending clinician
+confirmation — not a gate yet. (4) SODIUM CHLORIDE → Adrenalin and FLUORIDE → F-18 are NOT this car — Rule 27 → extend the covering
+reference-label / wrong-object entry.
+
+**STEP 1 — the endpoint, read not invented:** `scripts/build_dailymed_label_corpus.py:420` calls `DailyMedClient._fetch_spl_xml`
+(`api/data_sources/dailymed.py:167-178`) → `GET https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/{setid}.xml` (`BASE_URL`
+`:98`), parsed with `xml.etree.ElementTree`, namespace `{urn:hl7-org:v3}` (`:34`). That fetcher swallows every error to `None`, so the
+sidecar has its own fail-loud fetch (same URL). In the SPL it already fetched, the KEY sits at
+`…/section/subject/manufacturedProduct/manufacturedProduct/formCode` (product form) and
+`…/section/subject/manufacturedProduct/consumedIn/substanceAdministration/routeCode` (route); kits carry the route per part at
+`…/manufacturedProduct/manufacturedProduct/part/consumedIn/substanceAdministration/routeCode`. ⚠️ A plain `iter(formCode)` also returns
+PACKAGING (CARTON, SYRINGE, CONTAINER — seen on Calcium Chloride) — the 2026-08-04 E-B container-token error; the sidecar reads only the
+product's direct-child formCode.
+
+**STEP 2 — `scripts/build_dailymed_route_sidecar.py` → `data/dailymed/label_routes.json`:** 4 workers, 0.25 s pause, 4 retries with
+backoff on 429 / 5xx / network; resumable parsed-result cache `tests/results/route_sidecar_cache.jsonl` (gitignored); `label_docs.json`,
+`label_emb.npy` and `api/` untouched. 1038 setids fetched in 165 s. **Fail loud:** 21 × HTTP 404 (listed in `_meta.failures`), 0 SPLs
+without a routeCode; no route defaulted.
+
+**STEP 3 — validation (`tests/probes/route_mismatch/seg1_route_key_validation.py` → `.json`; tables in the README there):**
+- **(a) coverage 1017/1038 = 97.98%.**
+- **(b) key vs classifier, injection axis: 2466/2544 safety docs agree (96.9%), 884/910 labels (97.1%).** All 26 disagreeing labels hand-read: key right 20 · right but split across classes 2 · **key misleading 1** (FLUORESCITE — SPL route OPHTHALMIC on an IV dye) · no key 3 (404). Off-axis: 23 classifier-ORAL labels are topical / inhaled by key.
+- **(c) re-derived (Rule 25):** injection-route safety sections **726 vs 770 (−44)**; any-parenteral 787. Oral-licensed moieties with only injection-route safety text: **50 vs 49 (+1 = +3 −2)**, raw 58 vs 67.
+- **(d) 115** setids' current SPL version ≠ the corpus build (report only).
+
+**⚠️ CORRECTION to §1/§2 (Rule 21 — the key refuted my own STEP-1 text read):** Potassium Chloride (`14cd12ee…`, SPL v11 = corpus v11)
+is an **ORAL solution**, not an injection — "Dilute the potassium chloride solution with at least 4 ounces of cold water … Take with
+meals". **Potassium is NOT injection-only**; the 14 E6 potassium runs were route-MATCHED. Struck through above (mark-never-delete);
+`step1_hand_verification.json` `_corrections`; STEP-2 grades and STEP-3 totals unchanged. Of the 10 STEP-1 hand overrides: 8 confirmed by
+the key, 1 wrong (this), 1 no key.
+
+**Adjacent (not asked):** the sidecar's `document_type` KEY counts exactly **15** non-human-drug-label setids — **9 animal-drug labels,
+5 dietary supplements, 1 plasma derivative** — the same 15 the veterinary entry bounded by title / form / species evidence on
+2026-08-04, now confirmed by key (its "at least 7 veterinary" → 9 animal by key; 21 setids unfetched).
+
+**Fail loud (Rule 18) — a lint regression from the probe commit:** `3a6448b` was committed without running pytest, and its `step3_exempt_door.py` `parse_sid()` read a `source_id` with a regex — `tests/test_source_id_pmid_guard.py` failed (479/1/28). Fixed here with `.startswith` / `.split` (the repo invariant); `step3_exempt_door.json` regenerated byte-identical; pytest back to 480/28.
+
+**Next — Segment 2 (not started):** wire the key as LABEL + SCOPE (ruling 2) — not exclusion.

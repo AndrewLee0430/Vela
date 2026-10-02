@@ -543,7 +543,7 @@
    "family": "potassium",
    "query": "Can I take potassium with my BP pills?",
    "grade": "C",
-   "note": "inj_label_route_agnostic (Potassium Chloride Injection 34073-7 in FINAL)",
+   "note": "Potassium Chloride 34073-7 in FINAL — an ORAL solution label by the SPL key (seg1); the STEP-1 note called it an injection label, wrongly",
    "final_dailymed": [
     "DailyMed:14cd12ee-a4a3-465a-9550-58c9ef0e4f21#34073-7",
     "DailyMed:5ddba454-f3e6-43c2-a7a6-58365d297213#34073-7",
@@ -557,7 +557,7 @@
    "family": "potassium",
    "query": "Can I take potassium with my BP pills?",
    "grade": "C",
-   "note": "inj_label_route_agnostic (Potassium Chloride Injection 34073-7 in FINAL)",
+   "note": "Potassium Chloride 34073-7 in FINAL — an ORAL solution label by the SPL key (seg1); the STEP-1 note called it an injection label, wrongly",
    "final_dailymed": [
     "DailyMed:14cd12ee-a4a3-465a-9550-58c9ef0e4f21#34073-7",
     "DailyMed:5ddba454-f3e6-43c2-a7a6-58365d297213#34073-7",
@@ -651,7 +651,7 @@
    "family": "potassium",
    "query": "potassium with spironolactone",
    "grade": "C",
-   "note": "inj_label_route_agnostic (Potassium Chloride Injection 34073-7 in FINAL)",
+   "note": "Potassium Chloride 34073-7 in FINAL — an ORAL solution label by the SPL key (seg1); the STEP-1 note called it an injection label, wrongly",
    "final_dailymed": [
     "DailyMed:0fed2822-3a03-4b64-9857-c682fcd462bc#34073-7",
     "DailyMed:14cd12ee-a4a3-465a-9550-58c9ef0e4f21#34073-7",
@@ -664,7 +664,7 @@
    "family": "potassium",
    "query": "potassium with spironolactone",
    "grade": "C",
-   "note": "inj_label_route_agnostic (Potassium Chloride Injection 34073-7 in FINAL)",
+   "note": "Potassium Chloride 34073-7 in FINAL — an ORAL solution label by the SPL key (seg1); the STEP-1 note called it an injection label, wrongly",
    "final_dailymed": [
     "DailyMed:0fed2822-3a03-4b64-9857-c682fcd462bc#43685-7",
     "DailyMed:1a52bedc-8e2c-4116-a296-a87770676b4a#43685-7",
@@ -695,7 +695,7 @@
    "family": "potassium",
    "query": "Can I take potassium with my BP pills?",
    "grade": "C",
-   "note": "inj_label_route_agnostic (Potassium Chloride Injection 34073-7 in FINAL)",
+   "note": "Potassium Chloride 34073-7 in FINAL — an ORAL solution label by the SPL key (seg1); the STEP-1 note called it an injection label, wrongly",
    "final_dailymed": [
     "DailyMed:14cd12ee-a4a3-465a-9550-58c9ef0e4f21#34073-7",
     "DailyMed:5ddba454-f3e6-43c2-a7a6-58365d297213#34073-7",
@@ -709,7 +709,7 @@
    "family": "potassium",
    "query": "Can I take potassium with my BP pills?",
    "grade": "C",
-   "note": "inj_label_route_agnostic (Potassium Chloride Injection 34073-7 in FINAL)",
+   "note": "Potassium Chloride 34073-7 in FINAL — an ORAL solution label by the SPL key (seg1); the STEP-1 note called it an injection label, wrongly",
    "final_dailymed": [
     "DailyMed:14cd12ee-a4a3-465a-9550-58c9ef0e4f21#34073-7",
     "DailyMed:5ddba454-f3e6-43c2-a7a6-58365d297213#34073-7",
@@ -801,7 +801,7 @@
    "family": "potassium",
    "query": "降血壓藥和鉀離子補充劑",
    "grade": "C",
-   "note": "inj_label_route_agnostic (Potassium Chloride Injection 34073-7 in FINAL)",
+   "note": "Potassium Chloride 34073-7 in FINAL — an ORAL solution label by the SPL key (seg1); the STEP-1 note called it an injection label, wrongly",
    "final_dailymed": [
     "DailyMed:5ddba454-f3e6-43c2-a7a6-58365d297213#34073-7",
     "DailyMed:1cf090a2-b6c0-42cd-857e-60a9cd85fe19#34073-7",
@@ -815,7 +815,7 @@
    "family": "potassium",
    "query": "降血壓藥和鉀離子補充劑",
    "grade": "C",
-   "note": "inj_label_route_agnostic (Potassium Chloride Injection 34073-7 in FINAL)",
+   "note": "Potassium Chloride 34073-7 in FINAL — an ORAL solution label by the SPL key (seg1); the STEP-1 note called it an injection label, wrongly",
    "final_dailymed": [
     "DailyMed:1cf090a2-b6c0-42cd-857e-60a9cd85fe19#34073-7",
     "DailyMed:5ddba454-f3e6-43c2-a7a6-58365d297213#34073-7",
@@ -1639,7 +1639,7 @@
    "family": "potassium",
    "query": "potassium with spironolactone",
    "grade": "C",
-   "note": "inj_label_route_agnostic (Potassium Chloride Injection 34073-7 in FINAL)",
+   "note": "Potassium Chloride 34073-7 in FINAL — an ORAL solution label by the SPL key (seg1); the STEP-1 note called it an injection label, wrongly",
    "final_dailymed": [
     "DailyMed:14cd12ee-a4a3-465a-9550-58c9ef0e4f21#34073-7",
     "DailyMed:1a52bedc-8e2c-4116-a296-a87770676b4a#43685-7"
@@ -1651,7 +1651,7 @@
    "family": "potassium",
    "query": "potassium with spironolactone",
    "grade": "C",
-   "note": "inj_label_route_agnostic (Potassium Chloride Injection 34073-7 in FINAL)",
+   "note": "Potassium Chloride 34073-7 in FINAL — an ORAL solution label by the SPL key (seg1); the STEP-1 note called it an injection label, wrongly",
    "final_dailymed": [
     "DailyMed:14cd12ee-a4a3-465a-9550-58c9ef0e4f21#34073-7",
     "DailyMed:1a52bedc-8e2c-4116-a296-a87770676b4a#43685-7"
@@ -1681,7 +1681,7 @@
    "family": "potassium",
    "query": "Can I take potassium with my BP pills?",
    "grade": "C",
-   "note": "inj_label_route_agnostic (Potassium Chloride Injection 34073-7 in FINAL)",
+   "note": "Potassium Chloride 34073-7 in FINAL — an ORAL solution label by the SPL key (seg1); the STEP-1 note called it an injection label, wrongly",
    "final_dailymed": [
     "DailyMed:14cd12ee-a4a3-465a-9550-58c9ef0e4f21#34073-7",
     "DailyMed:5ddba454-f3e6-43c2-a7a6-58365d297213#34073-7",
@@ -1695,7 +1695,7 @@
    "family": "potassium",
    "query": "Can I take potassium with my BP pills?",
    "grade": "C",
-   "note": "inj_label_route_agnostic (Potassium Chloride Injection 34073-7 in FINAL)",
+   "note": "Potassium Chloride 34073-7 in FINAL — an ORAL solution label by the SPL key (seg1); the STEP-1 note called it an injection label, wrongly",
    "final_dailymed": [
     "DailyMed:14cd12ee-a4a3-465a-9550-58c9ef0e4f21#34073-7",
     "DailyMed:5ddba454-f3e6-43c2-a7a6-58365d297213#34073-7",
@@ -1789,7 +1789,7 @@
    "family": "potassium",
    "query": "降血壓藥和鉀離子補充劑",
    "grade": "C",
-   "note": "inj_label_route_agnostic (Potassium Chloride Injection 34073-7 in FINAL)",
+   "note": "Potassium Chloride 34073-7 in FINAL — an ORAL solution label by the SPL key (seg1); the STEP-1 note called it an injection label, wrongly",
    "final_dailymed": [
     "DailyMed:14cd12ee-a4a3-465a-9550-58c9ef0e4f21#34073-7"
    ]
@@ -1800,7 +1800,7 @@
    "family": "potassium",
    "query": "降血壓藥和鉀離子補充劑",
    "grade": "C",
-   "note": "inj_label_route_agnostic (Potassium Chloride Injection 34073-7 in FINAL)",
+   "note": "Potassium Chloride 34073-7 in FINAL — an ORAL solution label by the SPL key (seg1); the STEP-1 note called it an injection label, wrongly",
    "final_dailymed": [
     "DailyMed:14cd12ee-a4a3-465a-9550-58c9ef0e4f21#34073-7"
    ]

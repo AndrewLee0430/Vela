@@ -36,8 +36,12 @@ def routes():
 
 
 def parse_sid(source_id):
-    m = re.match(r"DailyMed:([0-9a-f-]+)#([0-9-]+)", source_id or "")
-    return (m.group(1), m.group(2)) if m else (None, None)
+    """Key parse by .startswith / .split (the repo invariant, tests/test_source_id_pmid_guard.py — never regex a source_id)."""
+    sid = source_id or ""
+    if not sid.startswith("DailyMed:") or "#" not in sid:
+        return (None, None)
+    setid, rest = sid[len("DailyMed:"):].split("#", 1)
+    return (setid, rest.split("~", 1)[0])
 
 
 def main():

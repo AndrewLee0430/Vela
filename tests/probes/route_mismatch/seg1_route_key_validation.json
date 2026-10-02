@@ -1,0 +1,791 @@
+{
+ "_how": "ROUTE-MISMATCH car, Segment 1 STEP 3 — validate the route KEY sidecar (data/dailymed/label_routes.json). OFFLINE.",
+ "route_vocabulary": {
+  "ORAL": 574,
+  "INTRAVENOUS": 218,
+  "TOPICAL": 86,
+  "INTRAMUSCULAR": 58,
+  "SUBCUTANEOUS": 41,
+  "OPHTHALMIC": 40,
+  "RESPIRATORY (INHALATION)": 15,
+  "NASAL": 12,
+  "TRANSDERMAL": 8,
+  "VAGINAL": 7,
+  "INTRATHECAL": 6,
+  "RECTAL": 6,
+  "INFILTRATION": 4,
+  "INTRAVASCULAR": 3,
+  "DENTAL": 3,
+  "INTRAVITREAL": 3,
+  "PERINEURAL": 3,
+  "INTRA-ARTICULAR": 3,
+  "SUBLINGUAL": 2,
+  "INTRACAVITARY": 2,
+  "CUTANEOUS": 2,
+  "INTRA-ARTERIAL": 2,
+  "INTRAPLEURAL": 2,
+  "INTRALESIONAL": 2,
+  "SOFT TISSUE": 2,
+  "OROPHARYNGEAL": 1,
+  "PERCUTANEOUS": 1,
+  "Oral": 1,
+  "Parenteral": 1,
+  "INTRAVESICAL": 1,
+  "EXTRACORPOREAL": 1,
+  "PARENTERAL": 1,
+  "EPIDURAL": 1,
+  "INTRAUTERINE": 1,
+  "INTRACAVERNOUS": 1,
+  "SUBCONJUNCTIVAL": 1,
+  "INTRADERMAL": 1
+ },
+ "route_class_map_unmapped": [],
+ "a_coverage": {
+  "corpus_setids": 1038,
+  "with_route": 1017,
+  "coverage": 0.9798,
+  "fetch_failures": [
+   {
+    "setid": "0084786a-09a3-4612-9afc-6733cc0cc56a",
+    "reason": "HTTP 404"
+   },
+   {
+    "setid": "036ab68e-5085-4edc-bd83-784b43d64eab",
+    "reason": "HTTP 404"
+   },
+   {
+    "setid": "3631ee95-692a-4426-8edf-62c27f7c32cb",
+    "reason": "HTTP 404"
+   },
+   {
+    "setid": "404c858c-89ac-4c9d-8a96-8702a28e6e76",
+    "reason": "HTTP 404"
+   },
+   {
+    "setid": "59984249-e3ff-4f97-8d7a-c1a905d604a8",
+    "reason": "HTTP 404"
+   },
+   {
+    "setid": "5f9031a5-1a9d-49ee-bc57-13dcae7c35a5",
+    "reason": "HTTP 404"
+   },
+   {
+    "setid": "6b4c2885-eae0-4c88-ada3-62a699df1dbb",
+    "reason": "HTTP 404"
+   },
+   {
+    "setid": "6e5b104f-2b9e-416e-92fb-ef1bdaea867d",
+    "reason": "HTTP 404"
+   },
+   {
+    "setid": "746db603-a6e1-4dc3-c2d8-92314419098c",
+    "reason": "HTTP 404"
+   },
+   {
+    "setid": "835c13d6-c3af-498d-9011-325d34006daf",
+    "reason": "HTTP 404"
+   },
+   {
+    "setid": "8aefa477-ac2c-41c8-a807-d24522aed8f0",
+    "reason": "HTTP 404"
+   },
+   {
+    "setid": "8d806897-8a2a-4518-8c68-0ec3b778de50",
+    "reason": "HTTP 404"
+   },
+   {
+    "setid": "9463f004-79d6-443a-88ea-007ef515d821",
+    "reason": "HTTP 404"
+   },
+   {
+    "setid": "95cb19a0-4b71-4c66-92bd-901cfd223301",
+    "reason": "HTTP 404"
+   },
+   {
+    "setid": "9acee910-cdb2-4052-b8b3-c26aff1c8716",
+    "reason": "HTTP 404"
+   },
+   {
+    "setid": "a064c4a7-25ec-4a2c-afc2-703491a4a38b",
+    "reason": "HTTP 404"
+   },
+   {
+    "setid": "a0c72bff-20f3-4241-b966-34a95178d1a3",
+    "reason": "HTTP 404"
+   },
+   {
+    "setid": "af0159a8-dff5-449a-aa2b-a0c430081e21",
+    "reason": "HTTP 404"
+   },
+   {
+    "setid": "b7d605cf-bf84-461b-939b-1f773a4cba65",
+    "reason": "HTTP 404"
+   },
+   {
+    "setid": "d7274947-4f88-47ee-a39f-bd5ac46fcf8d",
+    "reason": "HTTP 404"
+   },
+   {
+    "setid": "f3ffd601-182f-4f04-b1cc-8175bc2e32fe",
+    "reason": "HTTP 404"
+   }
+  ],
+  "no_route": []
+ },
+ "b_confusion_safety_docs": {
+  "INJ_ONLY|KEY_INJ_AND_OTHER": 7,
+  "INJ_ONLY|KEY_INJ_ONLY": 532,
+  "INJ_ONLY|KEY_ORAL_ONLY": 9,
+  "INJ_ONLY|KEY_OTHER_ONLY": 16,
+  "INJ_ONLY|NO_KEY": 9,
+  "MIXED|KEY_INJ_AND_ORAL": 47,
+  "MIXED|KEY_INJ_ONLY": 9,
+  "MIXED|KEY_ORAL_ONLY": 87,
+  "MIXED|KEY_OTHER_ONLY": 13,
+  "MIXED|NO_KEY": 8,
+  "MIXED_INJ_DOMINANT|KEY_INJ_AND_ORAL": 7,
+  "MIXED_INJ_DOMINANT|KEY_INJ_ONLY": 177,
+  "MIXED_INJ_DOMINANT|KEY_ORAL_ONLY": 9,
+  "MIXED_INJ_DOMINANT|KEY_OTHER_ONLY": 4,
+  "MIXED_ORAL_DOMINANT|KEY_ORAL_ONLY": 97,
+  "MIXED_ORAL_DOMINANT|NO_KEY": 3,
+  "NONE|KEY_INJ_ONLY": 5,
+  "NONE|KEY_ORAL_ONLY": 125,
+  "NONE|KEY_OTHER_ONLY": 31,
+  "NONE|NO_KEY": 2,
+  "ORAL_ONLY|KEY_ORAL_AND_OTHER": 8,
+  "ORAL_ONLY|KEY_ORAL_ONLY": 1122,
+  "ORAL_ONLY|KEY_OTHER_ONLY": 59,
+  "ORAL_ONLY|NO_KEY": 28,
+  "OTHER_ROUTE|KEY_INJ_ONLY": 3,
+  "OTHER_ROUTE|KEY_ORAL_ONLY": 4,
+  "OTHER_ROUTE|KEY_OTHER_ONLY": 118,
+  "OTHER_ROUTE|NO_KEY": 5
+ },
+ "b_confusion_labels_with_safety": {
+  "INJ_ONLY|KEY_INJ_AND_OTHER": 2,
+  "INJ_ONLY|KEY_INJ_ONLY": 195,
+  "INJ_ONLY|KEY_ORAL_ONLY": 3,
+  "INJ_ONLY|KEY_OTHER_ONLY": 7,
+  "INJ_ONLY|NO_KEY": 3,
+  "MIXED|KEY_INJ_AND_ORAL": 15,
+  "MIXED|KEY_INJ_ONLY": 2,
+  "MIXED|KEY_ORAL_ONLY": 30,
+  "MIXED|KEY_OTHER_ONLY": 4,
+  "MIXED|NO_KEY": 3,
+  "MIXED_INJ_DOMINANT|KEY_INJ_AND_ORAL": 2,
+  "MIXED_INJ_DOMINANT|KEY_INJ_ONLY": 64,
+  "MIXED_INJ_DOMINANT|KEY_ORAL_ONLY": 3,
+  "MIXED_INJ_DOMINANT|KEY_OTHER_ONLY": 1,
+  "MIXED_ORAL_DOMINANT|KEY_ORAL_ONLY": 33,
+  "MIXED_ORAL_DOMINANT|NO_KEY": 1,
+  "NONE|KEY_INJ_ONLY": 2,
+  "NONE|KEY_ORAL_ONLY": 48,
+  "NONE|KEY_OTHER_ONLY": 18,
+  "NONE|NO_KEY": 1,
+  "ORAL_ONLY|KEY_ORAL_AND_OTHER": 3,
+  "ORAL_ONLY|KEY_ORAL_ONLY": 378,
+  "ORAL_ONLY|KEY_OTHER_ONLY": 23,
+  "ORAL_ONLY|NO_KEY": 9,
+  "OTHER_ROUTE|KEY_INJ_ONLY": 1,
+  "OTHER_ROUTE|KEY_ORAL_ONLY": 1,
+  "OTHER_ROUTE|KEY_OTHER_ONLY": 54,
+  "OTHER_ROUTE|NO_KEY": 4
+ },
+ "b_agreement": {
+  "injection_axis": "classifier INJ_ONLY|MIXED_INJ_DOMINANT vs KEY_INJ_ONLY",
+  "safety_docs_agree": 2466,
+  "safety_docs": 2544,
+  "safety_docs_rate": 0.9693,
+  "labels_with_safety": 910,
+  "labels_disagree": 26,
+  "labels_rate": 0.9714
+ },
+ "b_disagreements": [
+  {
+   "setid": "00623958-a8fe-47d1-a0d2-0aa4e2f7966e",
+   "title": "Gastrocrom (cromolyn sodium)",
+   "moiety": "CROMOLYN SODIUM",
+   "classifier": "INJ_ONLY",
+   "key": "KEY_ORAL_ONLY",
+   "key_routes": [
+    "ORAL"
+   ],
+   "key_forms": [
+    "LIQUID"
+   ],
+   "n_safety_docs": 2
+  },
+  {
+   "setid": "15a80e60-5d8b-4085-ba4c-7616af1ac96b",
+   "title": "LEVAQUIN (levofloxacin)",
+   "moiety": "LEVOFLOXACIN",
+   "classifier": "MIXED_INJ_DOMINANT",
+   "key": "KEY_ORAL_ONLY",
+   "key_routes": [
+    "ORAL"
+   ],
+   "key_forms": [
+    "TABLET, FILM COATED"
+   ],
+   "n_safety_docs": 4
+  },
+  {
+   "setid": "1af14e42-951d-414d-8564-5d5fce138554",
+   "title": "INVEGA SUSTENNA (paliperidone palmitate)",
+   "moiety": "PALIPERIDONE PALMITATE",
+   "classifier": "MIXED",
+   "key": "KEY_INJ_ONLY",
+   "key_routes": [
+    "INTRAMUSCULAR"
+   ],
+   "key_forms": [
+    "INJECTION"
+   ],
+   "n_safety_docs": 5
+  },
+  {
+   "setid": "3631ee95-692a-4426-8edf-62c27f7c32cb",
+   "title": "Ribavirin (Ribavirin)",
+   "moiety": "RIBAVIRIN",
+   "classifier": "INJ_ONLY",
+   "key": "NO_KEY",
+   "key_routes": null,
+   "key_forms": null,
+   "n_safety_docs": 3
+  },
+  {
+   "setid": "38962a55-a514-4c48-bea5-f99a8da4beec",
+   "title": "Gliadel (carmustine)",
+   "moiety": "CARMUSTINE",
+   "classifier": "NONE",
+   "key": "KEY_INJ_ONLY",
+   "key_routes": [
+    "INTRACAVITARY"
+   ],
+   "key_forms": [
+    "WAFER"
+   ],
+   "n_safety_docs": 2
+  },
+  {
+   "setid": "3fe3d468-d283-4dd0-a1a7-29291a9b2d0b",
+   "title": "SUPRANE (desflurane)",
+   "moiety": "DESFLURANE",
+   "classifier": "INJ_ONLY",
+   "key": "KEY_OTHER_ONLY",
+   "key_routes": [
+    "RESPIRATORY (INHALATION)"
+   ],
+   "key_forms": [
+    "LIQUID"
+   ],
+   "n_safety_docs": 3
+  },
+  {
+   "setid": "412499ce-db93-4943-ae1a-564c27b1fb16",
+   "title": "Butorphanol Tartrate (Butorphanol Tartrate)",
+   "moiety": "BUTORPHANOL TARTRATE",
+   "classifier": "INJ_ONLY",
+   "key": "KEY_OTHER_ONLY",
+   "key_routes": [
+    "NASAL"
+   ],
+   "key_forms": [
+    "SPRAY"
+   ],
+   "n_safety_docs": 2
+  },
+  {
+   "setid": "46da5733-c892-43a5-b826-1898a753f1c3",
+   "title": "XARACOLL (Bupivacaine HCl Collagen-matrix)",
+   "moiety": "BUPIVACAINE HCL MONOHYDRATE",
+   "classifier": "OTHER_ROUTE",
+   "key": "KEY_INJ_ONLY",
+   "key_routes": [
+    "Parenteral"
+   ],
+   "key_forms": [
+    "IMPLANT"
+   ],
+   "n_safety_docs": 3
+  },
+  {
+   "setid": "487f8a62-e142-457c-97cc-2e398fde7594",
+   "title": "Nexplanon (etonogestrel)",
+   "moiety": "ETONOGESTREL",
+   "classifier": "MIXED",
+   "key": "KEY_INJ_ONLY",
+   "key_routes": [
+    "SUBCUTANEOUS"
+   ],
+   "key_forms": [
+    "IMPLANT"
+   ],
+   "n_safety_docs": 4
+  },
+  {
+   "setid": "559e353c-2dc0-16ba-e054-00144ff8d46c",
+   "title": "TEPADINA (THIOTEPA)",
+   "moiety": "THIOTEPA",
+   "classifier": "INJ_ONLY",
+   "key": "KEY_INJ_AND_OTHER",
+   "key_routes": [
+    "INTRACAVITARY",
+    "INTRAVENOUS",
+    "INTRAVESICAL"
+   ],
+   "key_forms": [
+    "INJECTION, POWDER, FOR SOLUTION",
+    "INJECTION, POWDER, LYOPHILIZED, FOR SOLUTION"
+   ],
+   "n_safety_docs": 4
+  },
+  {
+   "setid": "5ad333bd-845f-43f8-9ecf-43491f26c7c7",
+   "title": "UVADEX (Methoxsalen)",
+   "moiety": "METHOXSALEN",
+   "classifier": "INJ_ONLY",
+   "key": "KEY_OTHER_ONLY",
+   "key_routes": [
+    "EXTRACORPOREAL"
+   ],
+   "key_forms": [
+    "INJECTION, SOLUTION"
+   ],
+   "n_safety_docs": 3
+  },
+  {
+   "setid": "697e0e52-c01b-4b53-9994-f79c46eb6b4f",
+   "title": "Nascobal (cyanocobalamin)",
+   "moiety": "CYANOCOBALAMIN",
+   "classifier": "INJ_ONLY",
+   "key": "KEY_OTHER_ONLY",
+   "key_routes": [
+    "NASAL"
+   ],
+   "key_forms": [
+    "SPRAY"
+   ],
+   "n_safety_docs": 3
+  },
+  {
+   "setid": "6e5b104f-2b9e-416e-92fb-ef1bdaea867d",
+   "title": "ZEMBRACE SYMTOUCH (Sumatriptan Succinate)",
+   "moiety": "SUMATRIPTAN SUCCINATE",
+   "classifier": "INJ_ONLY",
+   "key": "NO_KEY",
+   "key_routes": null,
+   "key_forms": null,
+   "n_safety_docs": 3
+  },
+  {
+   "setid": "7a108fa0-c230-475f-be93-6f864b98a410",
+   "title": "Theo-24 (theophylline anhydrous)",
+   "moiety": "THEOPHYLLINE ANHYDROUS",
+   "classifier": "INJ_ONLY",
+   "key": "KEY_ORAL_ONLY",
+   "key_routes": [
+    "ORAL"
+   ],
+   "key_forms": [
+    "CAPSULE, EXTENDED RELEASE"
+   ],
+   "n_safety_docs": 2
+  },
+  {
+   "setid": "8ae62aaf-f8c5-417f-baac-0098369ca322",
+   "title": "SEROQUEL (quetiapine)",
+   "moiety": "QUETIAPINE",
+   "classifier": "INJ_ONLY",
+   "key": "KEY_ORAL_ONLY",
+   "key_routes": [
+    "ORAL"
+   ],
+   "key_forms": [
+    "TABLET, FILM COATED"
+   ],
+   "n_safety_docs": 5
+  },
+  {
+   "setid": "91fa852c-b43d-4a55-983b-74aa6827125d",
+   "title": "COUMADIN (warfarin sodium)",
+   "moiety": "WARFARIN SODIUM",
+   "classifier": "MIXED_INJ_DOMINANT",
+   "key": "KEY_ORAL_ONLY",
+   "key_routes": [
+    "ORAL"
+   ],
+   "key_forms": [
+    "TABLET"
+   ],
+   "n_safety_docs": 4
+  },
+  {
+   "setid": "a064c4a7-25ec-4a2c-afc2-703491a4a38b",
+   "title": "Mycamine (Micafungin sodium)",
+   "moiety": "MICAFUNGIN SODIUM",
+   "classifier": "INJ_ONLY",
+   "key": "NO_KEY",
+   "key_routes": null,
+   "key_forms": null,
+   "n_safety_docs": 3
+  },
+  {
+   "setid": "ab03de5b-782c-4f81-a8dc-7ef9969dd0cf",
+   "title": "Prepidil (dinoprostone)",
+   "moiety": "DINOPROST",
+   "classifier": "INJ_ONLY",
+   "key": "KEY_OTHER_ONLY",
+   "key_routes": [
+    "VAGINAL"
+   ],
+   "key_forms": [
+    "GEL"
+   ],
+   "n_safety_docs": 2
+  },
+  {
+   "setid": "aed29594-211d-49ef-813f-131975a8d0e3",
+   "title": "Chloramphenicol Sodium Succinate (CHLORAMPHENICOL SODIUM SUCCINATE)",
+   "moiety": "CHLORAMPHENICOL",
+   "classifier": "NONE",
+   "key": "KEY_INJ_ONLY",
+   "key_routes": [
+    "INTRAVENOUS"
+   ],
+   "key_forms": [
+    "INJECTION, POWDER, LYOPHILIZED, FOR SOLUTION"
+   ],
+   "n_safety_docs": 3
+  },
+  {
+   "setid": "cbc8f94e-7330-4465-05ad-16d64493a5dd",
+   "title": "Lupron Depot (leuprolide acetate)",
+   "moiety": "LEUPROLIDE ACETATE",
+   "classifier": "INJ_ONLY",
+   "key": "KEY_INJ_AND_OTHER",
+   "key_routes": [
+    "INTRAMUSCULAR",
+    "TOPICAL"
+   ],
+   "key_forms": [
+    "KIT"
+   ],
+   "n_safety_docs": 3
+  },
+  {
+   "setid": "e8983096-65e6-41f2-8b6f-bbf0a7227307",
+   "title": "Provocholine (methacholine chloride)",
+   "moiety": "METHACHOLINE CHLORIDE",
+   "classifier": "MIXED_INJ_DOMINANT",
+   "key": "KEY_OTHER_ONLY",
+   "key_routes": [
+    "RESPIRATORY (INHALATION)"
+   ],
+   "key_forms": [
+    "KIT",
+    "POWDER, FOR SOLUTION",
+    "SOLUTION"
+   ],
+   "n_safety_docs": 4
+  },
+  {
+   "setid": "ebb3883c-71f6-4fd0-a7e6-0ba8e1136dd9",
+   "title": "FLUORESCITE (fluorescein sodium)",
+   "moiety": "FLUORESCEIN",
+   "classifier": "INJ_ONLY",
+   "key": "KEY_OTHER_ONLY",
+   "key_routes": [
+    "OPHTHALMIC"
+   ],
+   "key_forms": [
+    "INJECTION, SOLUTION"
+   ],
+   "n_safety_docs": 2
+  },
+  {
+   "setid": "eeaf70fd-46bd-4fec-ba9d-2366fdf07888",
+   "title": "Kit for the Prepartion of Technetium Tc99m Sulfur Colloid (Technetium Tc 99m Sulfur Colloid)",
+   "moiety": "SULFUR",
+   "classifier": "MIXED_INJ_DOMINANT",
+   "key": "KEY_INJ_AND_ORAL",
+   "key_routes": [
+    "INTRAVENOUS",
+    "ORAL",
+    "SUBCUTANEOUS"
+   ],
+   "key_forms": [
+    "KIT"
+   ],
+   "n_safety_docs": 3
+  },
+  {
+   "setid": "eee15ebe-d349-4497-acef-6abe7a8247fb",
+   "title": "OMNIPAQUE (Iohexol)",
+   "moiety": "IOHEXOL",
+   "classifier": "MIXED_INJ_DOMINANT",
+   "key": "KEY_INJ_AND_ORAL",
+   "key_routes": [
+    "INTRA-ARTICULAR",
+    "INTRATHECAL",
+    "INTRAVASCULAR",
+    "INTRAVENOUS",
+    "ORAL",
+    "RECTAL"
+   ],
+   "key_forms": [
+    "INJECTION, SOLUTION",
+    "SOLUTION"
+   ],
+   "n_safety_docs": 4
+  },
+  {
+   "setid": "f1d97cb1-8072-4503-84c6-fe7f2fd3fd48",
+   "title": "Pyrazinamide (Pyrazinamide)",
+   "moiety": "PYRAZINAMIDE",
+   "classifier": "MIXED_INJ_DOMINANT",
+   "key": "KEY_ORAL_ONLY",
+   "key_routes": [
+    "ORAL"
+   ],
+   "key_forms": [
+    "TABLET"
+   ],
+   "n_safety_docs": 1
+  },
+  {
+   "setid": "f28d7a56-e079-4a8b-ad81-9a97c780de67",
+   "title": "MIOSTAT (carbachol)",
+   "moiety": "CARBACHOL",
+   "classifier": "INJ_ONLY",
+   "key": "KEY_OTHER_ONLY",
+   "key_routes": [
+    "OPHTHALMIC"
+   ],
+   "key_forms": [
+    "SOLUTION"
+   ],
+   "n_safety_docs": 1
+  }
+ ],
+ "c_injection_route_safety_docs_on_key": {
+  "KEY_INJ_ONLY": 726,
+  "any_parenteral_route": 787,
+  "classifier_inj_like_was": 770,
+  "of": 2544
+ },
+ "c_moieties_raw_on_key": [
+  "ACETAMINOPHEN",
+  "ACETYLCYSTEINE",
+  "AMINOPHYLLINE",
+  "AMISULPRIDE",
+  "ASCORBIC ACID",
+  "ATROPINE SULFATE",
+  "AZACITIDINE",
+  "BACLOFEN",
+  "BUPRENORPHINE HYDROCHLORIDE",
+  "CAFFEINE CITRATE",
+  "CALCIUM",
+  "CEFUROXIME",
+  "CHLORPROMAZINE HCL",
+  "CLINDAMYCIN",
+  "DANTROLENE SODIUM",
+  "DEXAMETHASONE",
+  "DIMENHYDRINATE",
+  "DIMERCAPTOSUCCINIC ACID",
+  "DISODIUM CLODRONATE",
+  "EPHEDRINE HCL",
+  "EPHEDRINE SULFATE",
+  "ERYTHROMYCIN",
+  "ESTRADIOL VALERATE",
+  "ETOPOSIDE",
+  "FLUORIDE",
+  "FUROSEMIDE",
+  "GRANISETRON",
+  "GRANISETRON HYDROCHLORIDE",
+  "IBUPROFEN LYSINE",
+  "IRON",
+  "LABETALOL HCL",
+  "LINCOMYCIN",
+  "MEDROXYPROGESTERONE ACETATE",
+  "MELPHALAN",
+  "METHOCARBAMOL",
+  "METHOTREXATE",
+  "METHYLPREDNISOLONE",
+  "METRONIDAZOLE",
+  "MIDAZOLAM",
+  "MORPHINE SULFATE",
+  "MOXIFLOXACIN HYDROCHLORIDE",
+  "NALBUPHINE HYDROCHLORIDE",
+  "NALTREXONE HYDROCHLORIDE",
+  "NICARDIPINE HCL",
+  "OLANZAPINE",
+  "ONDANSETRON HYDROCHLORIDE DIHYDRATE",
+  "OXACILLIN",
+  "PAPAVERINE HCL",
+  "PHENOBARBITAL",
+  "PYRIDOXINE HCL",
+  "RANITIDINE",
+  "SODIUM BICARBONATE",
+  "SODIUM CHLORIDE",
+  "SODIUM VALPROATE",
+  "THIAMINE HYDROCHLORIDE",
+  "TRANEXAMIC ACID",
+  "VINORELBINE TARTRATE",
+  "ZINC"
+ ],
+ "c_moieties_raw_on_key_n": 58,
+ "classifier_raw_was": 67,
+ "c_moieties_reduced_on_key": [
+  "ACETAMINOPHEN",
+  "ACETYLCYSTEINE",
+  "AMINOPHYLLINE",
+  "AMISULPRIDE",
+  "ASCORBIC ACID",
+  "ATROPINE SULFATE",
+  "AZACITIDINE",
+  "BACLOFEN",
+  "BUPRENORPHINE HYDROCHLORIDE",
+  "CAFFEINE CITRATE",
+  "CALCIUM",
+  "DANTROLENE SODIUM",
+  "DEXAMETHASONE",
+  "DIMENHYDRINATE",
+  "DIMERCAPTOSUCCINIC ACID",
+  "DISODIUM CLODRONATE",
+  "EPHEDRINE HCL",
+  "EPHEDRINE SULFATE",
+  "ESTRADIOL VALERATE",
+  "ETOPOSIDE",
+  "FLUORIDE",
+  "FUROSEMIDE",
+  "GRANISETRON",
+  "GRANISETRON HYDROCHLORIDE",
+  "IBUPROFEN LYSINE",
+  "LABETALOL HCL",
+  "LINCOMYCIN",
+  "MEDROXYPROGESTERONE ACETATE",
+  "MELPHALAN",
+  "METHOCARBAMOL",
+  "METHOTREXATE",
+  "METHYLPREDNISOLONE",
+  "METRONIDAZOLE",
+  "MIDAZOLAM",
+  "MOXIFLOXACIN HYDROCHLORIDE",
+  "NALBUPHINE HYDROCHLORIDE",
+  "NALTREXONE HYDROCHLORIDE",
+  "NICARDIPINE HCL",
+  "OLANZAPINE",
+  "OXACILLIN",
+  "PAPAVERINE HCL",
+  "PHENOBARBITAL",
+  "PYRIDOXINE HCL",
+  "RANITIDINE",
+  "SODIUM BICARBONATE",
+  "SODIUM CHLORIDE",
+  "SODIUM VALPROATE",
+  "THIAMINE HYDROCHLORIDE",
+  "TRANEXAMIC ACID",
+  "VINORELBINE TARTRATE"
+ ],
+ "c_moieties_reduced_on_key_n": 50,
+ "probe_reduced_was": 49,
+ "c_reductions": {
+  "CEFUROXIME": "sibling key with an ORAL-route safety label (by KEY): CEFUROXIME AXETIL",
+  "CHLORPROMAZINE HCL": "sibling key with an ORAL-route safety label (by KEY): CHLORPROMAZINE",
+  "CLINDAMYCIN": "sibling key with an ORAL-route safety label (by KEY): CLINDAMYCIN HCL",
+  "ERYTHROMYCIN": "sibling key with an ORAL-route safety label (by KEY): ERYTHROMYCIN BASE",
+  "IRON": "entity has oral safety text under another key (probe hand-verification)",
+  "MORPHINE SULFATE": "sibling key with an ORAL-route safety label (by KEY): MORPHINE HCL",
+  "ONDANSETRON HYDROCHLORIDE DIHYDRATE": "sibling key with an ORAL-route safety label (by KEY): ONDANSETRON",
+  "ZINC": "entity has oral safety text under another key (probe hand-verification)"
+ },
+ "c_vs_probe49": {
+  "added_on_key": [
+   "CAFFEINE CITRATE",
+   "MOXIFLOXACIN HYDROCHLORIDE",
+   "RANITIDINE"
+  ],
+  "dropped_on_key": [
+   "METHOXSALEN",
+   "SUMATRIPTAN SUCCINATE"
+  ]
+ },
+ "d_spl_version_mismatch": 115,
+ "d_document_types": {
+  "HUMAN PRESCRIPTION DRUG LABEL": 858,
+  "HUMAN OTC DRUG LABEL": 113,
+  "HUMAN PRESCRIPTION DRUG LABELING": 7,
+  "Human Prescription Drug Label": 23,
+  "PRESCRIPTION ANIMAL DRUG LABEL": 4,
+  "Human prescription drug label": 1,
+  "OTC ANIMAL DRUG LABEL": 4,
+  "DIETARY SUPPLEMENT": 4,
+  "Dietary Supplement": 1,
+  "PLASMA DERIVATIVE": 1,
+  "VFD TYPE A MEDICATED ARTICLE ANIMAL DRUG LABEL": 1
+ },
+ "d_non_human_document_type": [
+  [
+   "CHLORTETRACYCLINE HCL",
+   "VFD TYPE A MEDICATED ARTICLE ANIMAL DRUG LABEL"
+  ],
+  [
+   "CHOLECALCIFEROL",
+   "DIETARY SUPPLEMENT"
+  ],
+  [
+   "DISODIUM CLODRONATE",
+   "PRESCRIPTION ANIMAL DRUG LABEL"
+  ],
+  [
+   "ESTRIOL",
+   "PRESCRIPTION ANIMAL DRUG LABEL"
+  ],
+  [
+   "FERROUS GLUCONATE",
+   "DIETARY SUPPLEMENT"
+  ],
+  [
+   "GLOBULIN",
+   "PLASMA DERIVATIVE"
+  ],
+  [
+   "HYDROGEN PEROXIDE SOLUTION",
+   "OTC ANIMAL DRUG LABEL"
+  ],
+  [
+   "ISPAGHULA HUSK",
+   "DIETARY SUPPLEMENT"
+  ],
+  [
+   "LACTIC ACID",
+   "OTC ANIMAL DRUG LABEL"
+  ],
+  [
+   "LACTOBACILLUS RHAMNOSUS",
+   "DIETARY SUPPLEMENT"
+  ],
+  [
+   "LEVAMISOLE",
+   "OTC ANIMAL DRUG LABEL"
+  ],
+  [
+   "OXYTETRACYCLINE",
+   "PRESCRIPTION ANIMAL DRUG LABEL"
+  ],
+  [
+   "POLYSACCHARIDE IRON COMPLEX",
+   "Dietary Supplement"
+  ],
+  [
+   "POTASSIUM GLUCONATE",
+   "PRESCRIPTION ANIMAL DRUG LABEL"
+  ],
+  [
+   "TRIPTORELIN ACETATE",
+   "OTC ANIMAL DRUG LABEL"
+  ]
+ ]
+}
