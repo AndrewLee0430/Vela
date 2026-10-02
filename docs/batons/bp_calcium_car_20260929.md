@@ -797,3 +797,22 @@ arms at the $0.0086 mean + the 9 raw-rewrite 0a calls) ≈ **$0.56 of the US$3 b
 - **NEXT CAR = Verify grounded-tag entries (2)+(3); then the rewriter-contract car** (its own bars: 0 silent fallbacks; golden / canary / danger / straddle non-regression — NOT tied to the zh thiazide-naming bar). Candidates (founder to sequence): Segment 2 generator branch · IV-calcium-chloride framing on oral-supplement questions · the narrower bare-pair rule (two-INN questions excluded).
 
 **Car verdict:** heroChip2 = **FIX PARTIAL** — EN chip: fly 261 rewrite + fly 262 generator (anon 8/8 local, prod smoke veto (i) FALSE); zh chip: veto (i) FALSE on both models, but no thiazide-naming query is ever issued (silent fallback — the rewriter-contract car); bare pair: the pool door stays open. TECH_DEBT entry (1) stays [HONESTY][P1] OPEN.
+
+### §12.1 — PROD EYE fly 262: 4/4 PASS (2026-10-02); car CLOSED
+
+Provenance: founder's four pasted answers in the strategy conversation, 2026-10-02 13:20 +08:00 (zh-TW transcription precedent); Claude Code did not run the UI.
+
+| # | row | result | evidence (founder) |
+|---|---|---|---|
+| 1 | anon window, EN UI, hero chip 2 | **PASS** | DailyMed Calcium Chloride 34073-7 + HCTZ 34073-7; supplement/substance reading; thiazide → hypercalcemia named; states it does not address chronic oral supplementation |
+| 2 | anon window, zh-TW UI, hero chip 2 (bar: 鈣片 as a supplement; thiazide not expected) | **PASS** | 3 PubMed — rat-model Ca + CCB synergy 1992; melatonin+nifedipine 2000 (uncited in the text); ACEI PK 1993 |
+| 3 | signed-in EN hero chip 2 | **PASS** | HCTZ 34073-7 + calcium citrate tolerability study (PMID 38345765); supplement reading; thiazide NOT named |
+| 4 | CONTROL signed-in 冠脂妥+warfarin | **PASS** | CRESTOR 34073-7 + Simonson 2005 + Danish cohort 2021 + fostamatinib (known filter keep) |
+
+**Rollback rule NOT triggered.** heroChip2 stays [HONESTY][P1] **FIX PARTIAL, OPEN**; the car is CLOSED.
+
+**RECORDED, NOT FILED (founder to class / sequence):**
+- (a) row 3 states "no serious adverse reactions or clinically significant interactions between calcium citrate and antihypertensive therapy" from a single tolerability study that did not study interactions — a false-reassurance overgeneralisation (generator side; Segment 2 candidate; L1 path, unchanged by fly 262).
+- (b) row 2 cites [3] (ACEI pharmacokinetics) for a hypercalcemia-risk sentence it does not support; the answers lean on an animal-only synergy claim.
+- (c) the anon-cap undercount — the Research rewrite / relevance-filter / rerank sub-calls are logged as user "system" (`api/rag/retriever.py:379`, `:516`, `api/rag/reranker.py:217`), outside the `user_id IS NULL` cap — Rule 27 grep NOT yet run.
+- (d) `tests/probes/deploy_parser/fly262_deploy_transcript.txt` carries 12 ESC bytes (fly 261's: 0).
