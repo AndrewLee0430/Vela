@@ -1,0 +1,1550 @@
+{
+ "arm": "trt8_1e",
+ "n_per_query": 8,
+ "db_branch": "ep-spring-voice-a127ye10",
+ "started_utc": "2026-10-02T02:10:15Z",
+ "finished_utc": "2026-10-02T02:22:46Z",
+ "config": {
+  "enable_local": false,
+  "enable_pubmed": true,
+  "enable_fda": true,
+  "enable_tfda": true,
+  "enable_dailymed": true,
+  "local_threshold": 0.6,
+  "max_results": 5,
+  "source_weight_active": true,
+  "annotate_research_question": true,
+  "arm": "rewrite (full pipeline — real retrieve())",
+  "n_runs": 8,
+  "min_usable_runs": 6
+ },
+ "metric": "count of runs (of N) whose FINAL top_k contains >=1 whitelisted DailyMed safety section",
+ "rows": [
+  {
+   "id": "warfarin_aspirin",
+   "query": "warfarin aspirin bleeding risk interaction",
+   "runs": [
+    {
+     "run": 1,
+     "status": "ok",
+     "seconds": 22.4,
+     "final": [
+      "PMID:10767121",
+      "PMID:20837828",
+      "PMID:17635734"
+     ],
+     "dm_safety_in_final": [],
+     "rewrite_calls": [
+      [
+       "warfarin aspirin pharmacodynamic interaction bleeding",
+       "warfarin aspirin combined therapy bleeding management",
+       "warfarin aspirin drug interaction hemorrhage risk"
+      ],
+      [
+       "warfarin aspirin pharmacodynamic interaction bleeding",
+       "management bleeding risk warfarin aspirin combination",
+       "warfarin aspirin drug interaction hemorrhage risk"
+      ],
+      [
+       "warfarin aspirin pharmacodynamic interaction bleeding",
+       "warfarin aspirin combined therapy bleeding management",
+       "warfarin aspirin drug interaction hemorrhage risk"
+      ],
+      [
+       "warfarin aspirin pharmacodynamic interaction bleeding",
+       "management bleeding risk warfarin aspirin combination",
+       "warfarin aspirin drug interaction hemorrhage risk"
+      ]
+     ]
+    },
+    {
+     "run": 2,
+     "status": "ok",
+     "seconds": 21.8,
+     "final": [
+      "PMID:35612866",
+      "PMID:16729401",
+      "PMID:37037980",
+      "DailyMed:a18b2af5-7c4a-4b7f-92c7-8a76e34da373#34068-7",
+      "PMID:24496251"
+     ],
+     "dm_safety_in_final": [],
+     "rewrite_calls": [
+      [
+       "warfarin aspirin pharmacodynamic interaction bleeding",
+       "management bleeding risk warfarin aspirin combination",
+       "warfarin aspirin drug interaction hemorrhage risk"
+      ],
+      [
+       "warfarin aspirin pharmacodynamic interaction bleeding",
+       "management bleeding risk warfarin aspirin combination",
+       "warfarin aspirin drug interaction hemorrhage risk"
+      ],
+      [
+       "warfarin aspirin pharmacodynamic interaction bleeding",
+       "management bleeding risk warfarin aspirin combination",
+       "warfarin aspirin drug interaction hemorrhage risk"
+      ],
+      [
+       "warfarin aspirin pharmacodynamic interaction bleeding",
+       "warfarin aspirin combined therapy bleeding management",
+       "warfarin aspirin drug interaction hemorrhage risk"
+      ]
+     ]
+    },
+    {
+     "run": 3,
+     "status": "ok",
+     "seconds": 17.8,
+     "final": [
+      "PMID:33769581",
+      "PMID:16729401",
+      "PMID:39197978",
+      "PMID:24496251",
+      "DailyMed:a18b2af5-7c4a-4b7f-92c7-8a76e34da373#34068-7"
+     ],
+     "dm_safety_in_final": [],
+     "rewrite_calls": [
+      [
+       "warfarin aspirin pharmacodynamic interaction bleeding",
+       "management bleeding risk warfarin aspirin combination",
+       "warfarin antiplatelet drug interaction hemorrhage"
+      ],
+      [
+       "warfarin aspirin pharmacodynamic interaction bleeding",
+       "warfarin aspirin combined therapy bleeding management",
+       "warfarin aspirin drug interaction hemorrhage risk"
+      ],
+      [
+       "warfarin aspirin pharmacodynamic interaction bleeding",
+       "warfarin aspirin combined therapy bleeding management",
+       "warfarin aspirin drug interaction hemorrhage risk"
+      ],
+      [
+       "warfarin aspirin pharmacodynamic interaction bleeding",
+       "warfarin aspirin combined therapy bleeding management",
+       "warfarin aspirin drug interaction hemorrhage risk"
+      ]
+     ]
+    },
+    {
+     "run": 4,
+     "status": "ok",
+     "seconds": 17.8,
+     "final": [
+      "PMID:10393408",
+      "PMID:10767121",
+      "PMID:20837828",
+      "PMID:17635734"
+     ],
+     "dm_safety_in_final": [],
+     "rewrite_calls": [
+      [
+       "warfarin aspirin pharmacodynamic interaction bleeding",
+       "warfarin aspirin combined therapy bleeding management",
+       "warfarin antiplatelet drug interaction hemorrhage risk"
+      ],
+      [
+       "warfarin aspirin pharmacodynamic interaction bleeding",
+       "management bleeding risk warfarin aspirin combination",
+       "warfarin aspirin drug interaction hemorrhage risk"
+      ],
+      [
+       "warfarin aspirin pharmacodynamic interaction bleeding",
+       "management bleeding risk warfarin aspirin combination",
+       "warfarin aspirin drug interaction hemorrhage risk"
+      ],
+      [
+       "warfarin aspirin pharmacodynamic interaction bleeding",
+       "warfarin aspirin combined therapy bleeding management",
+       "warfarin aspirin drug interaction hemorrhage risk"
+      ]
+     ]
+    },
+    {
+     "run": 5,
+     "status": "ok",
+     "seconds": 18.1,
+     "final": [
+      "DailyMed:a18b2af5-7c4a-4b7f-92c7-8a76e34da373#34068-7",
+      "PMID:22112683",
+      "PMID:15733010",
+      "PMID:37037980",
+      "PMID:39197978"
+     ],
+     "dm_safety_in_final": [],
+     "rewrite_calls": [
+      [
+       "warfarin aspirin pharmacodynamic interaction bleeding",
+       "management bleeding risk warfarin aspirin combination",
+       "warfarin aspirin drug interaction hemorrhage risk"
+      ],
+      [
+       "warfarin aspirin pharmacodynamic interaction bleeding",
+       "warfarin aspirin combined therapy bleeding management",
+       "warfarin aspirin drug interaction hemorrhage risk"
+      ],
+      [
+       "warfarin aspirin pharmacodynamic interaction bleeding",
+       "management bleeding risk warfarin aspirin combination",
+       "warfarin aspirin drug interaction hemorrhage risk"
+      ],
+      [
+       "warfarin aspirin pharmacodynamic interaction bleeding",
+       "warfarin aspirin combined therapy bleeding management",
+       "warfarin aspirin drug interaction hemorrhage risk"
+      ]
+     ]
+    },
+    {
+     "run": 6,
+     "status": "ok",
+     "seconds": 17.8,
+     "final": [
+      "PMID:22039594",
+      "PMID:22112683",
+      "PMID:24496251",
+      "PMID:37037980"
+     ],
+     "dm_safety_in_final": [],
+     "rewrite_calls": [
+      [
+       "warfarin aspirin pharmacodynamic interaction bleeding",
+       "management bleeding risk warfarin aspirin combination",
+       "warfarin aspirin drug interaction hemorrhage risk"
+      ],
+      [
+       "warfarin aspirin pharmacodynamic interaction bleeding",
+       "management bleeding risk warfarin aspirin combination",
+       "warfarin aspirin drug interaction hemorrhage risk"
+      ],
+      [
+       "warfarin aspirin pharmacodynamic interaction bleeding",
+       "management bleeding risk warfarin aspirin combination",
+       "warfarin aspirin drug interaction hemorrhage risk"
+      ],
+      [
+       "warfarin aspirin pharmacodynamic interaction bleeding",
+       "management bleeding risk warfarin aspirin combination",
+       "warfarin aspirin drug interaction hemorrhage risk"
+      ]
+     ]
+    },
+    {
+     "run": 7,
+     "status": "ok",
+     "seconds": 18.3,
+     "final": [
+      "PMID:38263263",
+      "PMID:35612866",
+      "PMID:22112683",
+      "DailyMed:a18b2af5-7c4a-4b7f-92c7-8a76e34da373#34068-7",
+      "PMID:39197978"
+     ],
+     "dm_safety_in_final": [],
+     "rewrite_calls": [
+      [
+       "warfarin aspirin pharmacodynamic interaction bleeding",
+       "management bleeding risk warfarin aspirin combination",
+       "warfarin aspirin drug interaction hemorrhage risk"
+      ],
+      [
+       "warfarin aspirin pharmacodynamic interaction bleeding",
+       "warfarin aspirin combined therapy bleeding management",
+       "warfarin aspirin drug interaction hemorrhage risk"
+      ],
+      [
+       "warfarin aspirin pharmacodynamic interaction bleeding",
+       "management bleeding risk warfarin aspirin combination",
+       "warfarin aspirin drug interaction hemorrhage risk"
+      ],
+      [
+       "warfarin aspirin pharmacodynamic interaction bleeding",
+       "warfarin aspirin combined therapy bleeding management",
+       "warfarin aspirin drug interaction hemorrhage risk"
+      ]
+     ]
+    },
+    {
+     "run": 8,
+     "status": "ok",
+     "seconds": 20.3,
+     "final": [
+      "DailyMed:91fa852c-b43d-4a55-983b-74aa6827125d#34073-7",
+      "PMID:22039594",
+      "PMID:24496251",
+      "PMID:22112683",
+      "PMID:37037980"
+     ],
+     "dm_safety_in_final": [
+      "DailyMed:91fa852c-b43d-4a55-983b-74aa6827125d#34073-7"
+     ],
+     "rewrite_calls": [
+      [
+       "warfarin aspirin pharmacodynamic interaction bleeding",
+       "management bleeding risk warfarin aspirin combination",
+       "warfarin aspirin drug interaction hemorrhage risk"
+      ],
+      [
+       "warfarin aspirin pharmacodynamic interaction bleeding",
+       "management bleeding risk warfarin aspirin combination",
+       "warfarin aspirin drug interaction hemorrhage risk"
+      ],
+      [
+       "warfarin aspirin pharmacodynamic interaction bleeding",
+       "warfarin aspirin combined therapy bleeding management",
+       "warfarin aspirin drug interaction hemorrhage risk"
+      ],
+      [
+       "warfarin aspirin pharmacodynamic interaction bleeding risk",
+       "management bleeding risk warfarin aspirin combination",
+       "warfarin anticoagulants aspirin antiplatelet drug interaction"
+      ]
+     ]
+    }
+   ],
+   "runs_with_safety_in_final": 1
+  },
+  {
+   "id": "spironolactone",
+   "query": "spironolactone potassium hyperkalemia contraindication",
+   "runs": [
+    {
+     "run": 1,
+     "status": "ok",
+     "seconds": 17.8,
+     "final": [
+      "DailyMed:8123cce8-42e3-49e4-a488-3bb836ecccd0#34070-3",
+      "DailyMed:1a52bedc-8e2c-4116-a296-a87770676b4a#43685-7"
+     ],
+     "dm_safety_in_final": [
+      "DailyMed:8123cce8-42e3-49e4-a488-3bb836ecccd0#34070-3",
+      "DailyMed:1a52bedc-8e2c-4116-a296-a87770676b4a#43685-7"
+     ],
+     "rewrite_calls": [
+      [
+       "spironolactone potassium supplement hyperkalemia mechanism",
+       "spironolactone potassium supplement hyperkalemia clinical management",
+       "spironolactone potassium supplement hyperkalemia contraindications"
+      ],
+      [
+       "spironolactone potassium supplement hyperkalemia mechanism",
+       "spironolactone potassium supplement hyperkalemia management",
+       "spironolactone potassium supplement hyperkalemia contraindications"
+      ],
+      [
+       "spironolactone potassium supplement hyperkalemia mechanism",
+       "spironolactone hyperkalemia risk management guidelines",
+       "spironolactone potassium hyperkalemia contraindications"
+      ],
+      [
+       "spironolactone potassium supplement hyperkalemia mechanism",
+       "spironolactone potassium supplement hyperkalemia clinical management",
+       "spironolactone potassium supplement hyperkalemia contraindications"
+      ]
+     ]
+    },
+    {
+     "run": 2,
+     "status": "ok",
+     "seconds": 19.8,
+     "final": [
+      "DailyMed:14cd12ee-a4a3-465a-9550-58c9ef0e4f21#34073-7",
+      "DailyMed:1a52bedc-8e2c-4116-a296-a87770676b4a#43685-7",
+      "DailyMed:8123cce8-42e3-49e4-a488-3bb836ecccd0#34070-3"
+     ],
+     "dm_safety_in_final": [
+      "DailyMed:14cd12ee-a4a3-465a-9550-58c9ef0e4f21#34073-7",
+      "DailyMed:1a52bedc-8e2c-4116-a296-a87770676b4a#43685-7",
+      "DailyMed:8123cce8-42e3-49e4-a488-3bb836ecccd0#34070-3"
+     ],
+     "rewrite_calls": [
+      [
+       "spironolactone potassium supplement hyperkalemia mechanism",
+       "spironolactone potassium supplement hyperkalemia clinical management",
+       "spironolactone potassium supplement hyperkalemia contraindications"
+      ],
+      [
+       "spironolactone potassium supplement hyperkalemia mechanism",
+       "spironolactone hyperkalemia risk management contraindications",
+       "spironolactone potassium hyperkalemia drug interaction"
+      ],
+      [
+       "spironolactone potassium supplement hyperkalemia mechanism",
+       "spironolactone potassium supplement hyperkalemia clinical management",
+       "spironolactone potassium supplement hyperkalemia contraindications"
+      ],
+      [
+       "spironolactone potassium supplement hyperkalemia mechanism",
+       "spironolactone potassium supplement hyperkalemia clinical management",
+       "spironolactone potassium supplement hyperkalemia contraindications"
+      ]
+     ]
+    },
+    {
+     "run": 3,
+     "status": "ok",
+     "seconds": 18.0,
+     "final": [
+      "DailyMed:14cd12ee-a4a3-465a-9550-58c9ef0e4f21#34073-7",
+      "DailyMed:1a52bedc-8e2c-4116-a296-a87770676b4a#43685-7",
+      "DailyMed:8123cce8-42e3-49e4-a488-3bb836ecccd0#34070-3"
+     ],
+     "dm_safety_in_final": [
+      "DailyMed:14cd12ee-a4a3-465a-9550-58c9ef0e4f21#34073-7",
+      "DailyMed:1a52bedc-8e2c-4116-a296-a87770676b4a#43685-7",
+      "DailyMed:8123cce8-42e3-49e4-a488-3bb836ecccd0#34070-3"
+     ],
+     "rewrite_calls": [
+      [
+       "spironolactone potassium supplement hyperkalemia mechanism",
+       "spironolactone potassium supplement hyperkalemia clinical management",
+       "spironolactone potassium supplement hyperkalemia contraindications"
+      ],
+      [
+       "spironolactone potassium supplement hyperkalemia mechanism",
+       "spironolactone hyperkalemia risk clinical management",
+       "spironolactone potassium hyperkalemia contraindications"
+      ],
+      [
+       "spironolactone potassium supplement hyperkalemia mechanism",
+       "spironolactone hyperkalemia risk management contraindications",
+       "spironolactone potassium hyperkalemia drug interaction"
+      ],
+      [
+       "spironolactone potassium supplement hyperkalemia mechanism",
+       "spironolactone potassium supplement hyperkalemia management",
+       "spironolactone potassium supplement hyperkalemia contraindications"
+      ]
+     ]
+    },
+    {
+     "run": 4,
+     "status": "ok",
+     "seconds": 20.0,
+     "final": [
+      "DailyMed:14cd12ee-a4a3-465a-9550-58c9ef0e4f21#34073-7",
+      "DailyMed:1a52bedc-8e2c-4116-a296-a87770676b4a#43685-7",
+      "DailyMed:8123cce8-42e3-49e4-a488-3bb836ecccd0#34070-3",
+      "PMID:16624686"
+     ],
+     "dm_safety_in_final": [
+      "DailyMed:14cd12ee-a4a3-465a-9550-58c9ef0e4f21#34073-7",
+      "DailyMed:1a52bedc-8e2c-4116-a296-a87770676b4a#43685-7",
+      "DailyMed:8123cce8-42e3-49e4-a488-3bb836ecccd0#34070-3"
+     ],
+     "rewrite_calls": [
+      [
+       "spironolactone potassium supplement hyperkalemia mechanism",
+       "spironolactone potassium supplement hyperkalemia management",
+       "spironolactone potassium supplement hyperkalemia contraindications"
+      ],
+      [
+       "spironolactone potassium supplement hyperkalemia mechanism",
+       "spironolactone potassium supplement hyperkalemia clinical management",
+       "spironolactone potassium supplement hyperkalemia contraindications"
+      ],
+      [
+       "spironolactone potassium supplement hyperkalemia mechanism",
+       "spironolactone hyperkalemia risk management contraindications",
+       "spironolactone potassium hyperkalemia drug interaction"
+      ],
+      [
+       "spironolactone potassium supplement hyperkalemia mechanism",
+       "spironolactone potassium supplement hyperkalemia clinical management",
+       "spironolactone potassium supplement hyperkalemia contraindications"
+      ]
+     ]
+    },
+    {
+     "run": 5,
+     "status": "ok",
+     "seconds": 18.8,
+     "final": [
+      "DailyMed:14cd12ee-a4a3-465a-9550-58c9ef0e4f21#34073-7",
+      "DailyMed:8123cce8-42e3-49e4-a488-3bb836ecccd0#34070-3",
+      "DailyMed:1a52bedc-8e2c-4116-a296-a87770676b4a#43685-7"
+     ],
+     "dm_safety_in_final": [
+      "DailyMed:14cd12ee-a4a3-465a-9550-58c9ef0e4f21#34073-7",
+      "DailyMed:8123cce8-42e3-49e4-a488-3bb836ecccd0#34070-3",
+      "DailyMed:1a52bedc-8e2c-4116-a296-a87770676b4a#43685-7"
+     ],
+     "rewrite_calls": [
+      [
+       "spironolactone potassium supplement hyperkalemia mechanism",
+       "spironolactone potassium supplement hyperkalemia clinical management",
+       "spironolactone potassium supplement hyperkalemia contraindications"
+      ],
+      [
+       "spironolactone potassium supplement hyperkalemia mechanism",
+       "spironolactone hyperkalemia risk management guidelines",
+       "spironolactone potassium hyperkalemia contraindications"
+      ],
+      [
+       "spironolactone potassium supplement hyperkalemia mechanism",
+       "spironolactone hyperkalemia risk management contraindications",
+       "spironolactone potassium hyperkalemia drug interaction"
+      ],
+      [
+       "spironolactone potassium supplement hyperkalemia mechanism",
+       "spironolactone potassium supplement hyperkalemia clinical management",
+       "spironolactone potassium supplement hyperkalemia contraindications"
+      ]
+     ]
+    },
+    {
+     "run": 6,
+     "status": "ok",
+     "seconds": 17.4,
+     "final": [
+      "DailyMed:8123cce8-42e3-49e4-a488-3bb836ecccd0#34070-3",
+      "DailyMed:1a52bedc-8e2c-4116-a296-a87770676b4a#43685-7"
+     ],
+     "dm_safety_in_final": [
+      "DailyMed:8123cce8-42e3-49e4-a488-3bb836ecccd0#34070-3",
+      "DailyMed:1a52bedc-8e2c-4116-a296-a87770676b4a#43685-7"
+     ],
+     "rewrite_calls": [
+      [
+       "spironolactone potassium supplement hyperkalemia mechanism",
+       "spironolactone potassium supplement hyperkalemia clinical management",
+       "spironolactone potassium supplement hyperkalemia contraindications"
+      ],
+      [
+       "spironolactone potassium supplement hyperkalemia mechanism",
+       "spironolactone potassium supplement hyperkalemia clinical management",
+       "spironolactone potassium supplement hyperkalemia contraindications"
+      ],
+      [
+       "spironolactone potassium supplement hyperkalemia mechanism",
+       "spironolactone potassium supplement hyperkalemia clinical management",
+       "spironolactone potassium supplement hyperkalemia contraindications"
+      ],
+      [
+       "spironolactone potassium supplement hyperkalemia mechanism",
+       "spironolactone hyperkalemia risk management guidelines",
+       "spironolactone potassium hyperkalemia contraindications"
+      ]
+     ]
+    },
+    {
+     "run": 7,
+     "status": "ok",
+     "seconds": 19.9,
+     "final": [
+      "DailyMed:1a52bedc-8e2c-4116-a296-a87770676b4a#43685-7",
+      "DailyMed:8123cce8-42e3-49e4-a488-3bb836ecccd0#34070-3",
+      "PMID:42196253",
+      "PMID:26404748"
+     ],
+     "dm_safety_in_final": [
+      "DailyMed:1a52bedc-8e2c-4116-a296-a87770676b4a#43685-7",
+      "DailyMed:8123cce8-42e3-49e4-a488-3bb836ecccd0#34070-3"
+     ],
+     "rewrite_calls": [
+      [
+       "spironolactone potassium supplement hyperkalemia mechanism",
+       "spironolactone hyperkalemia risk management contraindications",
+       "spironolactone potassium hyperkalemia drug interaction"
+      ],
+      [
+       "spironolactone potassium supplement hyperkalemia mechanism",
+       "spironolactone potassium supplement hyperkalemia clinical management",
+       "spironolactone potassium supplement hyperkalemia contraindications"
+      ],
+      [
+       "spironolactone potassium supplement hyperkalemia mechanism",
+       "spironolactone potassium supplement hyperkalemia management",
+       "spironolactone potassium supplement hyperkalemia contraindications"
+      ],
+      [
+       "spironolactone potassium supplement hyperkalemia mechanism",
+       "spironolactone potassium supplement hyperkalemia clinical management",
+       "spironolactone potassium supplement hyperkalemia contraindications"
+      ]
+     ]
+    },
+    {
+     "run": 8,
+     "status": "ok",
+     "seconds": 19.1,
+     "final": [
+      "DailyMed:1a52bedc-8e2c-4116-a296-a87770676b4a#43685-7",
+      "DailyMed:8123cce8-42e3-49e4-a488-3bb836ecccd0#34070-3",
+      "PMID:42196253",
+      "DailyMed:14cd12ee-a4a3-465a-9550-58c9ef0e4f21#34073-7",
+      "PMID:26404748"
+     ],
+     "dm_safety_in_final": [
+      "DailyMed:1a52bedc-8e2c-4116-a296-a87770676b4a#43685-7",
+      "DailyMed:8123cce8-42e3-49e4-a488-3bb836ecccd0#34070-3",
+      "DailyMed:14cd12ee-a4a3-465a-9550-58c9ef0e4f21#34073-7"
+     ],
+     "rewrite_calls": [
+      [
+       "spironolactone potassium supplement hyperkalemia mechanism",
+       "spironolactone hyperkalemia risk management contraindications",
+       "spironolactone potassium hyperkalemia drug interaction"
+      ],
+      [
+       "spironolactone potassium supplement hyperkalemia mechanism",
+       "spironolactone potassium supplement hyperkalemia clinical management",
+       "spironolactone potassium supplement hyperkalemia contraindications"
+      ],
+      [
+       "spironolactone potassium supplement hyperkalemia mechanism",
+       "spironolactone hyperkalemia risk management guidelines",
+       "spironolactone potassium hyperkalemia contraindications"
+      ],
+      [
+       "spironolactone potassium supplement hyperkalemia mechanism",
+       "spironolactone hyperkalemia risk management contraindications",
+       "spironolactone potassium hyperkalemia drug interaction"
+      ]
+     ]
+    }
+   ],
+   "runs_with_safety_in_final": 8
+  },
+  {
+   "id": "warfarin_nsaid",
+   "query": "warfarin NSAID bleeding interaction",
+   "runs": [
+    {
+     "run": 1,
+     "status": "ok",
+     "seconds": 20.1,
+     "final": [
+      "PMID:32455439",
+      "PMID:40833918",
+      "PMID:16164494",
+      "PMID:20191029",
+      "PMID:22039594"
+     ],
+     "dm_safety_in_final": [],
+     "rewrite_calls": [
+      [
+       "warfarin nsaid pharmacodynamic bleeding risk",
+       "warfarin and nsaid induced hemorrhage management",
+       "warfarin nsaid drug interaction bleeding complications"
+      ],
+      [
+       "warfarin nsaid pharmacodynamic bleeding risk",
+       "warfarin nsaid coadministration bleeding management",
+       "warfarin nsaid drug interaction hemorrhage"
+      ],
+      [
+       "warfarin nsaid pharmacodynamic bleeding risk",
+       "warfarin and nsaid induced bleeding management",
+       "warfarin nsaid drug interaction hemorrhage"
+      ],
+      [
+       "warfarin nsaid pharmacodynamic bleeding risk",
+       "warfarin nsaid coadministration bleeding management",
+       "warfarin nsaid drug interaction hemorrhage"
+      ]
+     ]
+    },
+    {
+     "run": 2,
+     "status": "ok",
+     "seconds": 20.5,
+     "final": [
+      "PMID:32455439",
+      "DailyMed:91fa852c-b43d-4a55-983b-74aa6827125d#34073-7",
+      "DailyMed:198a4140-f4c0-4478-9157-ee1d68d0bb96#34073-7",
+      "PMID:33769581",
+      "PMID:42194417"
+     ],
+     "dm_safety_in_final": [
+      "DailyMed:91fa852c-b43d-4a55-983b-74aa6827125d#34073-7",
+      "DailyMed:198a4140-f4c0-4478-9157-ee1d68d0bb96#34073-7"
+     ],
+     "rewrite_calls": [
+      [
+       "warfarin nsaid pharmacodynamic bleeding risk",
+       "warfarin nsaid coadministration bleeding management",
+       "warfarin nonsteroidal anti inflammatory drugs hemorrhage interaction"
+      ],
+      [
+       "warfarin nsaid pharmacodynamic bleeding risk",
+       "warfarin nsaid coadministration bleeding management",
+       "warfarin nsaid drug interaction hemorrhage"
+      ],
+      [
+       "warfarin nsaid pharmacodynamic bleeding risk",
+       "warfarin nsaid coadministration bleeding management",
+       "warfarin nsaid drug interaction hemorrhage"
+      ],
+      [
+       "warfarin nsaid pharmacodynamic bleeding risk",
+       "warfarin nsaid coadministration bleeding management",
+       "warfarin nsaid drug interaction hemorrhage"
+      ]
+     ]
+    },
+    {
+     "run": 3,
+     "status": "ok",
+     "seconds": 18.1,
+     "final": [
+      "PMID:33769581",
+      "DailyMed:91fa852c-b43d-4a55-983b-74aa6827125d#34073-7",
+      "DailyMed:198a4140-f4c0-4478-9157-ee1d68d0bb96#34073-7",
+      "PMID:22039594",
+      "DailyMed:d3b30c68-cf45-4b46-8ba6-72090f7ba01a#34073-7"
+     ],
+     "dm_safety_in_final": [
+      "DailyMed:91fa852c-b43d-4a55-983b-74aa6827125d#34073-7",
+      "DailyMed:198a4140-f4c0-4478-9157-ee1d68d0bb96#34073-7",
+      "DailyMed:d3b30c68-cf45-4b46-8ba6-72090f7ba01a#34073-7"
+     ],
+     "rewrite_calls": [
+      [
+       "warfarin nsaid pharmacodynamic bleeding risk",
+       "warfarin and nsaid induced bleeding management",
+       "warfarin nsaid drug interaction hemorrhage"
+      ],
+      [
+       "warfarin nsaid pharmacodynamic bleeding risk",
+       "warfarin and nsaid induced bleeding management",
+       "warfarin nsaid drug interaction hemorrhage"
+      ],
+      [
+       "warfarin nsaid pharmacodynamic bleeding risk",
+       "management warfarin nsaid induced bleeding",
+       "warfarin nsaid drug interaction hemorrhage"
+      ],
+      [
+       "warfarin nsaid pharmacokinetic bleeding risk",
+       "warfarin nsaid coadministration bleeding management",
+       "warfarin nsaid drug interaction hemorrhage"
+      ]
+     ]
+    },
+    {
+     "run": 4,
+     "status": "ok",
+     "seconds": 21.4,
+     "final": [
+      "PMID:32455439",
+      "DailyMed:91fa852c-b43d-4a55-983b-74aa6827125d#34073-7",
+      "PMID:33769581",
+      "PMID:40833918",
+      "DailyMed:198a4140-f4c0-4478-9157-ee1d68d0bb96#34073-7"
+     ],
+     "dm_safety_in_final": [
+      "DailyMed:91fa852c-b43d-4a55-983b-74aa6827125d#34073-7",
+      "DailyMed:198a4140-f4c0-4478-9157-ee1d68d0bb96#34073-7"
+     ],
+     "rewrite_calls": [
+      [
+       "warfarin nsaid pharmacodynamic bleeding risk",
+       "warfarin and nsaid induced hemorrhage management",
+       "warfarin nsaid drug interaction bleeding complications"
+      ],
+      [
+       "warfarin nsaid pharmacodynamic bleeding risk",
+       "warfarin nsaid coadministration bleeding management",
+       "warfarin nsaid drug interaction hemorrhage"
+      ],
+      [
+       "warfarin nsaid pharmacodynamic bleeding risk",
+       "warfarin and nsaid induced bleeding management",
+       "warfarin nsaid drug interaction hemorrhage"
+      ],
+      [
+       "warfarin nsaid pharmacodynamic bleeding risk",
+       "warfarin nsaid coadministration bleeding management",
+       "warfarin nsaid drug interaction hemorrhage"
+      ]
+     ]
+    },
+    {
+     "run": 5,
+     "status": "ok",
+     "seconds": 22.4,
+     "final": [
+      "DailyMed:91fa852c-b43d-4a55-983b-74aa6827125d#34073-7",
+      "PMID:40833918",
+      "PMID:33769581",
+      "DailyMed:198a4140-f4c0-4478-9157-ee1d68d0bb96#34073-7",
+      "DailyMed:d3b30c68-cf45-4b46-8ba6-72090f7ba01a#34073-7"
+     ],
+     "dm_safety_in_final": [
+      "DailyMed:91fa852c-b43d-4a55-983b-74aa6827125d#34073-7",
+      "DailyMed:198a4140-f4c0-4478-9157-ee1d68d0bb96#34073-7",
+      "DailyMed:d3b30c68-cf45-4b46-8ba6-72090f7ba01a#34073-7"
+     ],
+     "rewrite_calls": [
+      [
+       "warfarin nsaid pharmacodynamic bleeding risk",
+       "warfarin and nsaid induced bleeding management",
+       "warfarin nsaid drug interaction hemorrhage"
+      ],
+      [
+       "warfarin nsaid pharmacodynamic bleeding risk",
+       "warfarin nsaid coadministration bleeding management",
+       "warfarin nsaid drug interaction hemorrhage"
+      ],
+      [
+       "warfarin nsaid pharmacodynamic bleeding risk",
+       "warfarin nsaid coadministration bleeding management",
+       "warfarin nsaid drug interaction hemorrhage"
+      ],
+      [
+       "warfarin nsaid pharmacodynamic bleeding risk",
+       "warfarin nsaid coadministration bleeding management",
+       "warfarin nsaid drug interaction hemorrhage"
+      ]
+     ]
+    },
+    {
+     "run": 6,
+     "status": "ok",
+     "seconds": 19.0,
+     "final": [
+      "PMID:32455439",
+      "PMID:29736825",
+      "DailyMed:91fa852c-b43d-4a55-983b-74aa6827125d#34073-7",
+      "DailyMed:198a4140-f4c0-4478-9157-ee1d68d0bb96#34073-7",
+      "PMID:33769581"
+     ],
+     "dm_safety_in_final": [
+      "DailyMed:91fa852c-b43d-4a55-983b-74aa6827125d#34073-7",
+      "DailyMed:198a4140-f4c0-4478-9157-ee1d68d0bb96#34073-7"
+     ],
+     "rewrite_calls": [
+      [
+       "warfarin nsaid pharmacodynamic bleeding risk",
+       "warfarin nsaid coadministration bleeding management",
+       "warfarin nsaid drug interaction hemorrhage"
+      ],
+      [
+       "warfarin nsaid pharmacodynamic bleeding risk",
+       "warfarin nsaid coadministration bleeding management",
+       "warfarin nsaid drug interaction hemorrhage"
+      ],
+      [
+       "warfarin nsaid pharmacodynamic bleeding risk",
+       "warfarin nsaid coadministration bleeding management",
+       "warfarin nsaid drug interaction hemorrhage"
+      ],
+      [
+       "warfarin nsaid pharmacodynamic bleeding risk",
+       "warfarin nsaid coadministration bleeding management",
+       "warfarin nsaid drug interaction hemorrhage"
+      ]
+     ]
+    },
+    {
+     "run": 7,
+     "status": "ok",
+     "seconds": 18.8,
+     "final": [
+      "PMID:32455439",
+      "DailyMed:91fa852c-b43d-4a55-983b-74aa6827125d#34073-7",
+      "PMID:29736825",
+      "DailyMed:198a4140-f4c0-4478-9157-ee1d68d0bb96#34073-7",
+      "PMID:33769581"
+     ],
+     "dm_safety_in_final": [
+      "DailyMed:91fa852c-b43d-4a55-983b-74aa6827125d#34073-7",
+      "DailyMed:198a4140-f4c0-4478-9157-ee1d68d0bb96#34073-7"
+     ],
+     "rewrite_calls": [
+      [
+       "warfarin nsaid pharmacodynamic bleeding risk",
+       "warfarin nsaid coadministration bleeding management",
+       "warfarin nsaid drug interaction hemorrhage"
+      ],
+      [
+       "warfarin nsaid pharmacodynamic bleeding risk",
+       "warfarin nsaid coadministration bleeding management",
+       "warfarin nsaid drug interaction hemorrhage"
+      ],
+      [
+       "warfarin nsaid pharmacodynamic bleeding risk",
+       "management warfarin nsaid induced bleeding",
+       "warfarin nsaid drug interaction hemorrhage"
+      ],
+      [
+       "warfarin nsaid pharmacodynamic bleeding risk",
+       "warfarin and nsaid induced bleeding management",
+       "warfarin nsaid drug interaction hemorrhage"
+      ]
+     ]
+    },
+    {
+     "run": 8,
+     "status": "ok",
+     "seconds": 20.0,
+     "final": [
+      "DailyMed:91fa852c-b43d-4a55-983b-74aa6827125d#34073-7",
+      "DailyMed:198a4140-f4c0-4478-9157-ee1d68d0bb96#34073-7",
+      "DailyMed:d3b30c68-cf45-4b46-8ba6-72090f7ba01a#34073-7",
+      "PMID:20191029",
+      "PMID:33769581"
+     ],
+     "dm_safety_in_final": [
+      "DailyMed:91fa852c-b43d-4a55-983b-74aa6827125d#34073-7",
+      "DailyMed:198a4140-f4c0-4478-9157-ee1d68d0bb96#34073-7",
+      "DailyMed:d3b30c68-cf45-4b46-8ba6-72090f7ba01a#34073-7"
+     ],
+     "rewrite_calls": [
+      [
+       "warfarin nsaid pharmacodynamic bleeding risk",
+       "warfarin and nsaid coadministration bleeding management",
+       "warfarin nsaid drug interaction hemorrhage risk"
+      ],
+      [
+       "warfarin nsaid pharmacodynamic bleeding risk",
+       "management warfarin nsaid induced bleeding",
+       "warfarin nsaid drug interaction hemorrhage"
+      ],
+      [
+       "warfarin nsaid pharmacodynamic bleeding risk",
+       "warfarin nsaid coadministration bleeding management",
+       "warfarin nsaid drug interaction hemorrhage"
+      ],
+      [
+       "warfarin nsaid pharmacodynamic bleeding risk",
+       "management warfarin nsaid induced bleeding",
+       "warfarin nsaid drug interaction hemorrhage"
+      ]
+     ]
+    }
+   ],
+   "runs_with_safety_in_final": 7
+  },
+  {
+   "id": "lithium_ibuprofen",
+   "query": "lithium ibuprofen interaction toxicity",
+   "runs": [
+    {
+     "run": 1,
+     "status": "ok",
+     "seconds": 19.0,
+     "final": [
+      "DailyMed:6f5ede6f-b0b7-4fc8-969e-652f60ead047#34073-7",
+      "PMID:3311710",
+      "PMID:7273598"
+     ],
+     "dm_safety_in_final": [
+      "DailyMed:6f5ede6f-b0b7-4fc8-969e-652f60ead047#34073-7"
+     ],
+     "rewrite_calls": [
+      [
+       "lithium nonsteroidal anti inflammatory drug interaction mechanism",
+       "lithium ibuprofen toxicity management guidelines",
+       "lithium ibuprofen drug interaction nephrotoxicity"
+      ],
+      [
+       "lithium nonsteroidal anti inflammatory drug interaction mechanism",
+       "lithium ibuprofen toxicity clinical management",
+       "lithium ibuprofen drug interaction nephrotoxicity"
+      ],
+      [
+       "lithium nsaid pharmacokinetic interaction toxicity",
+       "lithium nsaid coadministration renal toxicity management",
+       "lithium ibuprofen drug interaction nephrotoxicity"
+      ],
+      [
+       "lithium nsaid pharmacokinetic interaction toxicity",
+       "lithium nsaid coadministration renal toxicity management",
+       "lithium ibuprofen drug interaction nephrotoxicity"
+      ]
+     ]
+    },
+    {
+     "run": 2,
+     "status": "ok",
+     "seconds": 17.2,
+     "final": [
+      "DailyMed:6f5ede6f-b0b7-4fc8-969e-652f60ead047#34073-7",
+      "PMID:3311710",
+      "PMID:7273598"
+     ],
+     "dm_safety_in_final": [
+      "DailyMed:6f5ede6f-b0b7-4fc8-969e-652f60ead047#34073-7"
+     ],
+     "rewrite_calls": [
+      [
+       "lithium nonsteroidal anti inflammatory drug interaction mechanism",
+       "lithium ibuprofen toxicity management monitoring",
+       "lithium ibuprofen drug interaction nephrotoxicity"
+      ],
+      [
+       "lithium nsaid pharmacokinetic interaction toxicity",
+       "lithium nsaid coadministration renal function monitoring",
+       "lithium ibuprofen drug interaction nephrotoxicity"
+      ],
+      [
+       "lithium nsaid interaction renal toxicity mechanism",
+       "lithium nsaid coadministration toxicity management",
+       "lithium ibuprofen drug interaction nephrotoxicity"
+      ],
+      [
+       "lithium nonsteroidal anti inflammatory drug interaction mechanism",
+       "lithium ibuprofen toxicity clinical management",
+       "lithium ibuprofen drug interaction nephrotoxicity"
+      ]
+     ]
+    },
+    {
+     "run": 3,
+     "status": "ok",
+     "seconds": 14.8,
+     "final": [
+      "DailyMed:6f5ede6f-b0b7-4fc8-969e-652f60ead047#34073-7",
+      "PMID:2258452"
+     ],
+     "dm_safety_in_final": [
+      "DailyMed:6f5ede6f-b0b7-4fc8-969e-652f60ead047#34073-7"
+     ],
+     "rewrite_calls": [
+      [
+       "lithium nsaid pharmacokinetic interaction toxicity",
+       "lithium nsaid coadministration renal toxicity management",
+       "lithium ibuprofen drug interaction nephrotoxicity"
+      ],
+      [
+       "lithium nsaid pharmacokinetic interaction toxicity",
+       "lithium nsaid coadministration renal toxicity management",
+       "lithium ibuprofen drug interaction nephrotoxicity"
+      ],
+      [
+       "lithium nsaid pharmacokinetic interaction toxicity",
+       "lithium nsaid coadministration renal toxicity management",
+       "lithium ibuprofen drug interaction nephrotoxicity"
+      ],
+      [
+       "lithium nonsteroidal anti inflammatory drug interaction mechanism",
+       "lithium ibuprofen toxicity clinical management",
+       "lithium ibuprofen drug interaction nephrotoxicity"
+      ]
+     ]
+    },
+    {
+     "run": 4,
+     "status": "ok",
+     "seconds": 17.7,
+     "final": [
+      "DailyMed:16ebe1f9-501d-468b-a37d-f6a46f8f32d1#34066-1",
+      "DailyMed:6f5ede6f-b0b7-4fc8-969e-652f60ead047#34073-7",
+      "PMID:26936045",
+      "PMID:8452660"
+     ],
+     "dm_safety_in_final": [
+      "DailyMed:16ebe1f9-501d-468b-a37d-f6a46f8f32d1#34066-1",
+      "DailyMed:6f5ede6f-b0b7-4fc8-969e-652f60ead047#34073-7"
+     ],
+     "rewrite_calls": [
+      [
+       "lithium ibuprofen pharmacokinetic interaction toxicity",
+       "lithium nonsteroidal anti inflammatory drugs toxicity management",
+       "lithium ibuprofen nephrotoxicity drug interaction"
+      ],
+      [
+       "lithium ibuprofen pharmacokinetic interaction toxicity",
+       "lithium nonsteroidal anti inflammatory drugs toxicity management",
+       "lithium ibuprofen drug interaction nephrotoxicity"
+      ],
+      [
+       "lithium nonsteroidal anti inflammatory drug interaction mechanism",
+       "lithium ibuprofen toxicity clinical management",
+       "lithium ibuprofen drug interaction nephrotoxicity"
+      ],
+      [
+       "lithium nsaid interaction renal toxicity mechanism",
+       "lithium ibuprofen coadministration toxicity management",
+       "lithium nsaid nephrotoxicity pharmacokinetics"
+      ]
+     ]
+    },
+    {
+     "run": 5,
+     "status": "ok",
+     "seconds": 14.5,
+     "final": [
+      "DailyMed:6f5ede6f-b0b7-4fc8-969e-652f60ead047#34073-7",
+      "PMID:2258452"
+     ],
+     "dm_safety_in_final": [
+      "DailyMed:6f5ede6f-b0b7-4fc8-969e-652f60ead047#34073-7"
+     ],
+     "rewrite_calls": [
+      [
+       "lithium nsaid pharmacokinetic interaction toxicity",
+       "lithium nsaid coadministration renal toxicity management",
+       "lithium ibuprofen drug interaction nephrotoxicity"
+      ],
+      [
+       "lithium nsaid pharmacokinetic interaction toxicity",
+       "lithium nsaid coadministration renal toxicity management",
+       "lithium ibuprofen drug interaction adverse effects"
+      ],
+      [
+       "lithium nsaid pharmacokinetic interaction toxicity",
+       "lithium nsaid coadministration renal toxicity management",
+       "lithium ibuprofen drug interaction nephrotoxicity"
+      ],
+      [
+       "lithium nsaid pharmacokinetic interaction toxicity",
+       "lithium nsaid coadministration renal toxicity management",
+       "lithium ibuprofen drug interaction nephrotoxicity"
+      ]
+     ]
+    },
+    {
+     "run": 6,
+     "status": "ok",
+     "seconds": 19.2,
+     "final": [
+      "DailyMed:6f5ede6f-b0b7-4fc8-969e-652f60ead047#34073-7",
+      "PMID:2258452",
+      "PMID:14658947",
+      "PMID:6881008"
+     ],
+     "dm_safety_in_final": [
+      "DailyMed:6f5ede6f-b0b7-4fc8-969e-652f60ead047#34073-7"
+     ],
+     "rewrite_calls": [
+      [
+       "lithium nsaid interaction renal toxicity",
+       "lithium ibuprofen coadministration adverse effects",
+       "lithium nonsteroidal anti inflammatory drug toxicity"
+      ],
+      [
+       "lithium NSAID interaction renal toxicity mechanism",
+       "lithium ibuprofen coadministration toxicity management",
+       "lithium nonsteroidal anti inflammatory drugs adverse effects"
+      ],
+      [
+       "lithium nsaid interaction renal toxicity mechanism",
+       "lithium nsaid coadministration toxicity management",
+       "lithium ibuprofen pharmacokinetic interaction adverse effects"
+      ],
+      [
+       "lithium nsaid interaction renal toxicity mechanism",
+       "lithium nsaid coadministration toxicity management",
+       "lithium ibuprofen drug interaction nephrotoxicity"
+      ]
+     ]
+    },
+    {
+     "run": 7,
+     "status": "ok",
+     "seconds": 17.0,
+     "final": [
+      "PMID:3311710",
+      "PMID:7273598",
+      "PMID:3066502"
+     ],
+     "dm_safety_in_final": [],
+     "rewrite_calls": [
+      [
+       "lithium nonsteroidal anti inflammatory drug interaction mechanism",
+       "lithium ibuprofen toxicity clinical management",
+       "lithium ibuprofen drug interaction nephrotoxicity"
+      ],
+      [
+       "lithium nsaid pharmacokinetic interaction toxicity",
+       "lithium ibuprofen toxicity clinical management",
+       "lithium nonsteroidal anti inflammatory drug adverse effects"
+      ],
+      [
+       "lithium nsaid pharmacokinetic interaction toxicity",
+       "lithium toxicity risk nsaid coadministration",
+       "lithium ibuprofen drug interaction adverse effects"
+      ],
+      [
+       "lithium nsaid pharmacokinetic interaction toxicity",
+       "lithium toxicity risk with ibuprofen management",
+       "lithium ibuprofen drug interaction adverse effects"
+      ]
+     ]
+    },
+    {
+     "run": 8,
+     "status": "ok",
+     "seconds": 17.1,
+     "final": [
+      "DailyMed:6f5ede6f-b0b7-4fc8-969e-652f60ead047#34073-7",
+      "PMID:2258452",
+      "PMID:26936045"
+     ],
+     "dm_safety_in_final": [
+      "DailyMed:6f5ede6f-b0b7-4fc8-969e-652f60ead047#34073-7"
+     ],
+     "rewrite_calls": [
+      [
+       "lithium ibuprofen pharmacokinetic interaction toxicity",
+       "lithium nonsteroidal anti inflammatory drugs toxicity management",
+       "lithium ibuprofen drug interaction nephrotoxicity"
+      ],
+      [
+       "lithium nsaid pharmacokinetic interaction toxicity",
+       "lithium nsaid coadministration renal toxicity management",
+       "lithium ibuprofen drug interaction nephrotoxicity"
+      ],
+      [
+       "lithium nonsteroidal anti inflammatory drug interaction mechanism",
+       "lithium ibuprofen toxicity clinical management",
+       "lithium ibuprofen drug interaction nephrotoxicity"
+      ],
+      [
+       "lithium ibuprofen pharmacokinetic interaction toxicity",
+       "management lithium toxicity nonsteroidal anti inflammatory drugs",
+       "lithium ibuprofen drug interaction nephrotoxicity"
+      ]
+     ]
+    }
+   ],
+   "runs_with_safety_in_final": 7
+  },
+  {
+   "id": "r07_betablocker",
+   "query": "What are the contraindications for using beta-blockers?",
+   "runs": [
+    {
+     "run": 1,
+     "status": "ok",
+     "seconds": 19.8,
+     "final": [
+      "DailyMed:4ef5d75f-ca30-cd4a-e063-6394a90a8a43#34070-3",
+      "DailyMed:0283bc9d-6998-493a-824a-d4c85f704111#43685-7",
+      "DailyMed:595cc3d5-1306-4828-aefa-5595219ffd62#43685-7",
+      "DailyMed:8b8ad213-1dc8-454e-a524-075685c0e1a8#43685-7",
+      "DailyMed:df9bed83-6c82-4294-9442-5e7464c3aab1#34070-3"
+     ],
+     "dm_safety_in_final": [
+      "DailyMed:4ef5d75f-ca30-cd4a-e063-6394a90a8a43#34070-3",
+      "DailyMed:0283bc9d-6998-493a-824a-d4c85f704111#43685-7",
+      "DailyMed:595cc3d5-1306-4828-aefa-5595219ffd62#43685-7",
+      "DailyMed:8b8ad213-1dc8-454e-a524-075685c0e1a8#43685-7",
+      "DailyMed:df9bed83-6c82-4294-9442-5e7464c3aab1#34070-3"
+     ],
+     "rewrite_calls": [
+      [
+       "beta blocker contraindications clinical guidelines",
+       "beta blocker adverse effects contraindications",
+       "beta adrenergic antagonist contraindications conditions"
+      ],
+      [
+       "beta blocker contraindications clinical guidelines",
+       "beta blocker adverse effects contraindications",
+       "beta adrenergic antagonist contraindications conditions"
+      ],
+      [
+       "beta blockers contraindications clinical guidelines",
+       "beta adrenergic antagonists adverse effects contraindications",
+       "beta blockers cardiovascular respiratory contraindications"
+      ],
+      [
+       "beta blockers contraindications clinical guidelines",
+       "beta blocker adverse effects contraindications",
+       "beta adrenergic antagonists contraindications conditions"
+      ]
+     ]
+    },
+    {
+     "run": 2,
+     "status": "ok",
+     "seconds": 15.7,
+     "final": [
+      "DailyMed:4ef5d75f-ca30-cd4a-e063-6394a90a8a43#34070-3",
+      "DailyMed:0283bc9d-6998-493a-824a-d4c85f704111#43685-7",
+      "DailyMed:595cc3d5-1306-4828-aefa-5595219ffd62#43685-7",
+      "DailyMed:8b8ad213-1dc8-454e-a524-075685c0e1a8#43685-7",
+      "DailyMed:746db603-a6e1-4dc3-c2d8-92314419098c#34073-7"
+     ],
+     "dm_safety_in_final": [
+      "DailyMed:4ef5d75f-ca30-cd4a-e063-6394a90a8a43#34070-3",
+      "DailyMed:0283bc9d-6998-493a-824a-d4c85f704111#43685-7",
+      "DailyMed:595cc3d5-1306-4828-aefa-5595219ffd62#43685-7",
+      "DailyMed:8b8ad213-1dc8-454e-a524-075685c0e1a8#43685-7",
+      "DailyMed:746db603-a6e1-4dc3-c2d8-92314419098c#34073-7"
+     ],
+     "rewrite_calls": [
+      [
+       "beta blockers contraindications clinical guidelines",
+       "beta blockers adverse effects contraindications",
+       "beta adrenergic antagonists contraindications conditions"
+      ],
+      [
+       "beta blockers contraindications clinical guidelines",
+       "beta adrenergic antagonists adverse effects contraindications",
+       "beta blockers cardiovascular respiratory contraindications"
+      ],
+      [
+       "beta blocker contraindications clinical guidelines",
+       "beta adrenergic antagonist adverse effects contraindications",
+       "beta blocker use contraindications cardiovascular respiratory"
+      ],
+      [
+       "beta blocker contraindications clinical guidelines",
+       "beta adrenergic antagonist adverse effects contraindications",
+       "beta blocker use contraindications cardiovascular respiratory"
+      ]
+     ]
+    },
+    {
+     "run": 3,
+     "status": "ok",
+     "seconds": 17.8,
+     "final": [
+      "DailyMed:4ef5d75f-ca30-cd4a-e063-6394a90a8a43#34070-3",
+      "DailyMed:0283bc9d-6998-493a-824a-d4c85f704111#43685-7",
+      "DailyMed:595cc3d5-1306-4828-aefa-5595219ffd62#43685-7",
+      "DailyMed:8b8ad213-1dc8-454e-a524-075685c0e1a8#43685-7",
+      "DailyMed:df9bed83-6c82-4294-9442-5e7464c3aab1#34070-3"
+     ],
+     "dm_safety_in_final": [
+      "DailyMed:4ef5d75f-ca30-cd4a-e063-6394a90a8a43#34070-3",
+      "DailyMed:0283bc9d-6998-493a-824a-d4c85f704111#43685-7",
+      "DailyMed:595cc3d5-1306-4828-aefa-5595219ffd62#43685-7",
+      "DailyMed:8b8ad213-1dc8-454e-a524-075685c0e1a8#43685-7",
+      "DailyMed:df9bed83-6c82-4294-9442-5e7464c3aab1#34070-3"
+     ],
+     "rewrite_calls": [
+      [
+       "beta blockers contraindications clinical guidelines",
+       "beta adrenergic antagonists adverse effects contraindications",
+       "beta blockers heart failure asthma contraindications"
+      ],
+      [
+       "beta blockers contraindications clinical guidelines",
+       "beta adrenergic antagonists adverse effects contraindications",
+       "beta blockers heart failure asthma contraindication review"
+      ],
+      [
+       "beta blockers contraindications clinical guidelines",
+       "beta adrenergic antagonists adverse effects contraindications",
+       "beta blockers cardiovascular respiratory contraindications"
+      ],
+      [
+       "beta blocker contraindications clinical guidelines",
+       "beta blocker adverse effects contraindications",
+       "beta adrenergic antagonist contraindications conditions"
+      ]
+     ]
+    },
+    {
+     "run": 4,
+     "status": "ok",
+     "seconds": 19.9,
+     "final": [
+      "DailyMed:4ef5d75f-ca30-cd4a-e063-6394a90a8a43#34070-3",
+      "DailyMed:0283bc9d-6998-493a-824a-d4c85f704111#43685-7",
+      "DailyMed:595cc3d5-1306-4828-aefa-5595219ffd62#43685-7",
+      "DailyMed:8b8ad213-1dc8-454e-a524-075685c0e1a8#43685-7",
+      "DailyMed:df9bed83-6c82-4294-9442-5e7464c3aab1#34070-3"
+     ],
+     "dm_safety_in_final": [
+      "DailyMed:4ef5d75f-ca30-cd4a-e063-6394a90a8a43#34070-3",
+      "DailyMed:0283bc9d-6998-493a-824a-d4c85f704111#43685-7",
+      "DailyMed:595cc3d5-1306-4828-aefa-5595219ffd62#43685-7",
+      "DailyMed:8b8ad213-1dc8-454e-a524-075685c0e1a8#43685-7",
+      "DailyMed:df9bed83-6c82-4294-9442-5e7464c3aab1#34070-3"
+     ],
+     "rewrite_calls": [
+      [
+       "beta blockers contraindications clinical guidelines",
+       "beta blockers adverse effects contraindications",
+       "beta adrenergic antagonists contraindications conditions"
+      ],
+      [
+       "beta blockers contraindications clinical guidelines",
+       "beta adrenergic antagonists adverse effects contraindications",
+       "beta blockers cardiovascular respiratory contraindications"
+      ],
+      [
+       "beta blocker contraindications clinical guidelines",
+       "beta blocker adverse effects contraindications",
+       "beta adrenergic antagonist contraindications conditions"
+      ],
+      [
+       "beta blockers contraindications clinical guidelines",
+       "beta adrenergic antagonists adverse effects contraindications",
+       "beta blocker use contraindications cardiovascular respiratory"
+      ]
+     ]
+    },
+    {
+     "run": 5,
+     "status": "ok",
+     "seconds": 20.5,
+     "final": [
+      "DailyMed:4ef5d75f-ca30-cd4a-e063-6394a90a8a43#34070-3",
+      "DailyMed:595cc3d5-1306-4828-aefa-5595219ffd62#43685-7",
+      "DailyMed:0283bc9d-6998-493a-824a-d4c85f704111#43685-7",
+      "DailyMed:8b8ad213-1dc8-454e-a524-075685c0e1a8#43685-7",
+      "DailyMed:fb2fe258-fe2e-47f6-8adf-ca75bf6f90af#34073-7"
+     ],
+     "dm_safety_in_final": [
+      "DailyMed:4ef5d75f-ca30-cd4a-e063-6394a90a8a43#34070-3",
+      "DailyMed:595cc3d5-1306-4828-aefa-5595219ffd62#43685-7",
+      "DailyMed:0283bc9d-6998-493a-824a-d4c85f704111#43685-7",
+      "DailyMed:8b8ad213-1dc8-454e-a524-075685c0e1a8#43685-7",
+      "DailyMed:fb2fe258-fe2e-47f6-8adf-ca75bf6f90af#34073-7"
+     ],
+     "rewrite_calls": [
+      [
+       "beta blockers contraindications clinical guidelines",
+       "beta blocker adverse effects contraindications",
+       "beta adrenergic antagonists contraindications conditions"
+      ],
+      [
+       "beta blockers contraindications clinical guidelines",
+       "beta blockers adverse effects contraindications",
+       "beta adrenergic antagonists contraindications conditions"
+      ],
+      [
+       "beta blockers contraindications clinical guidelines",
+       "beta adrenergic antagonists adverse effects contraindications",
+       "beta blockers cardiovascular respiratory contraindications"
+      ],
+      [
+       "beta blockers contraindications clinical guidelines",
+       "beta adrenergic antagonists adverse effects contraindications",
+       "beta blocker use contraindications cardiovascular respiratory conditions"
+      ]
+     ]
+    },
+    {
+     "run": 6,
+     "status": "ok",
+     "seconds": 18.2,
+     "final": [
+      "DailyMed:4ef5d75f-ca30-cd4a-e063-6394a90a8a43#34070-3",
+      "DailyMed:0283bc9d-6998-493a-824a-d4c85f704111#43685-7",
+      "DailyMed:595cc3d5-1306-4828-aefa-5595219ffd62#43685-7",
+      "DailyMed:8b8ad213-1dc8-454e-a524-075685c0e1a8#43685-7",
+      "DailyMed:df9bed83-6c82-4294-9442-5e7464c3aab1#34070-3"
+     ],
+     "dm_safety_in_final": [
+      "DailyMed:4ef5d75f-ca30-cd4a-e063-6394a90a8a43#34070-3",
+      "DailyMed:0283bc9d-6998-493a-824a-d4c85f704111#43685-7",
+      "DailyMed:595cc3d5-1306-4828-aefa-5595219ffd62#43685-7",
+      "DailyMed:8b8ad213-1dc8-454e-a524-075685c0e1a8#43685-7",
+      "DailyMed:df9bed83-6c82-4294-9442-5e7464c3aab1#34070-3"
+     ],
+     "rewrite_calls": [
+      [
+       "beta blockers contraindications clinical guidelines",
+       "beta adrenergic antagonists adverse effects contraindications",
+       "beta blockers cardiovascular respiratory contraindications"
+      ],
+      [
+       "beta blocker contraindications clinical guidelines",
+       "beta blocker adverse effects contraindications",
+       "beta adrenergic antagonist contraindications conditions"
+      ],
+      [
+       "beta blockers contraindications clinical guidelines",
+       "beta adrenergic antagonists adverse effects contraindications",
+       "beta blockers cardiovascular respiratory contraindications"
+      ],
+      [
+       "beta blockers contraindications clinical guidelines",
+       "beta adrenergic antagonists adverse effects contraindications",
+       "beta blockers cardiovascular respiratory contraindications"
+      ]
+     ]
+    },
+    {
+     "run": 7,
+     "status": "ok",
+     "seconds": 18.2,
+     "final": [
+      "DailyMed:4ef5d75f-ca30-cd4a-e063-6394a90a8a43#34070-3",
+      "DailyMed:22b95e96-ead9-4149-badb-7d33077e82ec#34070-3",
+      "DailyMed:595cc3d5-1306-4828-aefa-5595219ffd62#43685-7",
+      "DailyMed:0283bc9d-6998-493a-824a-d4c85f704111#43685-7",
+      "DailyMed:8b8ad213-1dc8-454e-a524-075685c0e1a8#43685-7"
+     ],
+     "dm_safety_in_final": [
+      "DailyMed:4ef5d75f-ca30-cd4a-e063-6394a90a8a43#34070-3",
+      "DailyMed:22b95e96-ead9-4149-badb-7d33077e82ec#34070-3",
+      "DailyMed:595cc3d5-1306-4828-aefa-5595219ffd62#43685-7",
+      "DailyMed:0283bc9d-6998-493a-824a-d4c85f704111#43685-7",
+      "DailyMed:8b8ad213-1dc8-454e-a524-075685c0e1a8#43685-7"
+     ],
+     "rewrite_calls": [
+      [
+       "beta blockers contraindications clinical guidelines",
+       "beta adrenergic antagonists adverse effects contraindications",
+       "beta blockers cardiovascular respiratory contraindications"
+      ],
+      [
+       "beta blocker contraindications clinical guidelines",
+       "beta blocker adverse effects contraindications",
+       "beta adrenergic antagonist contraindications conditions"
+      ],
+      [
+       "beta blockers contraindications clinical guidelines",
+       "beta adrenergic antagonists adverse effects contraindications",
+       "beta blockers cardiovascular respiratory contraindications"
+      ],
+      [
+       "beta blockers contraindications clinical guidelines",
+       "beta adrenergic antagonists adverse effects contraindications",
+       "beta blocker use contraindications heart failure asthma"
+      ]
+     ]
+    },
+    {
+     "run": 8,
+     "status": "ok",
+     "seconds": 17.8,
+     "final": [
+      "DailyMed:4ef5d75f-ca30-cd4a-e063-6394a90a8a43#34070-3",
+      "DailyMed:0283bc9d-6998-493a-824a-d4c85f704111#43685-7",
+      "DailyMed:595cc3d5-1306-4828-aefa-5595219ffd62#43685-7",
+      "DailyMed:8b8ad213-1dc8-454e-a524-075685c0e1a8#43685-7",
+      "DailyMed:df9bed83-6c82-4294-9442-5e7464c3aab1#34070-3"
+     ],
+     "dm_safety_in_final": [
+      "DailyMed:4ef5d75f-ca30-cd4a-e063-6394a90a8a43#34070-3",
+      "DailyMed:0283bc9d-6998-493a-824a-d4c85f704111#43685-7",
+      "DailyMed:595cc3d5-1306-4828-aefa-5595219ffd62#43685-7",
+      "DailyMed:8b8ad213-1dc8-454e-a524-075685c0e1a8#43685-7",
+      "DailyMed:df9bed83-6c82-4294-9442-5e7464c3aab1#34070-3"
+     ],
+     "rewrite_calls": [
+      [
+       "beta blockers contraindications clinical guidelines",
+       "beta adrenergic antagonists adverse effects contraindications",
+       "beta blockers heart failure asthma contraindications"
+      ],
+      [
+       "beta blockers contraindications clinical guidelines",
+       "beta adrenergic antagonists adverse effects contraindications",
+       "beta blockers cardiovascular respiratory contraindications"
+      ],
+      [
+       "beta blockers contraindications clinical guidelines",
+       "beta blockers adverse effects contraindications",
+       "beta adrenergic antagonists contraindications conditions"
+      ],
+      [
+       "beta blocker contraindications clinical guidelines",
+       "beta blocker adverse effects contraindications",
+       "beta adrenergic antagonist contraindications conditions"
+      ]
+     ]
+    }
+   ],
+   "runs_with_safety_in_final": 8
+  }
+ ],
+ "summary": {
+  "warfarin_aspirin": "1/8",
+  "spironolactone": "8/8",
+  "warfarin_nsaid": "7/8",
+  "lithium_ibuprofen": "7/8",
+  "r07_betablocker": "8/8"
+ }
+}

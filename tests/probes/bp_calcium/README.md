@@ -301,3 +301,18 @@ pre-registered rule; kept as `step10_option_a.patch`. Full tables, rules and tim
 
 **Not evidence:** the first treatment chain's unattended outputs (reaped-but-alive, 2× slower, EN L1 4h38m) are QUARANTINED in
 the session scratch, never committed (founder ruling (a), baton §10.3).
+
+## Segment 1e — rewrite iteration 3 (2a, **REVERTED**) and the model variable (2b, **BUILT LOCAL `5d574ab`**) (2026-10-02)
+
+Two variables, two commits (founder R2). **2a** = Option A + the founder's R1 lines (zh example, bare-pair rule): 0a/canary/danger
+held, straddle N=8 fell to 31/40 vs 36/40 → reverted, chain stopped at the miss. **2b** = anon Research generation → gpt-4.1: EN chip
+L0 8/8, zh chip L0 4/4 → committed. Full tables, rules and timings: baton §11.
+
+| artifact | what it is | what it does NOT support |
+|---|---|---|
+| `step11_golden_control.json` | today's fresh `--filter R` control (20/0/0) at `f85bb66` code | a treatment comparison — 2a's golden never ran |
+| `step10_0a_raw_rewrite_{zh,pair,en}_1e.json` | the 2a rewriter's raw output, 3 calls each (zh thiazide strings 7/9; bare pair "supplement" 9/9; 0 fallbacks) | the downstream pool or answer; a rate |
+| `step11_canary_treatment.json` · `step11_danger_treatment.json` · `step6_straddle_trt8_1e.json` | 2a gates — canary PASS, danger 0/0, straddle 31/40 (the miss) | per-string cosines (the straddle harness does not record them), so the INN-collapse mechanism is consistent, not proven |
+| `step11_2a.patch` | the reverted 2a edit, applies onto `f85bb66` | a decision to re-apply it |
+| `step11_2b_{en,zh}_l0_*` · `step11_2b_grades.json` | 2b L0 arms on gpt-4.1 (traces, answers, HAND grades, `api_cost_log` cost delta) | L1 (unchanged path, not re-run); prod behaviour (not deployed) |
+| `step6_spend_seg1e.json` | `api_cost_log` since 2026-10-02 01:36:14Z ($0.4497) | in-process generations (≈ $0.11, unlogged, estimated) |

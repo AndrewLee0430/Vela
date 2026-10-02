@@ -1,0 +1,42 @@
+{
+ "query": "老人血壓藥可以跟鈣片一起吃嗎？",
+ "db_branch": "ep-spring-voice-a127ye10",
+ "model": "gpt-4.1-mini",
+ "calls": [
+  {
+   "call": 1,
+   "raw_content": "{\"queries\": [\"thiazide diuretic calcium supplement hypercalcemia mechanism\",\"calcium supplement interaction with antihypertensive drugs management\",\"thiazide diuretics calcium supplement drug interaction\"]}",
+   "parsed": [
+    "thiazide diuretic calcium supplement hypercalcemia mechanism",
+    "calcium supplement interaction with antihypertensive drugs management",
+    "thiazide diuretics calcium supplement drug interaction"
+   ],
+   "fallback_fired": false,
+   "verdict": "returns 3 string(s)"
+  },
+  {
+   "call": 2,
+   "raw_content": "{\"queries\": [\"thiazide diuretic calcium supplement hypercalcemia mechanism\",\"calcium supplement thiazide diuretic co administration safety\",\"thiazide diuretics calcium supplements drug interaction\"]}",
+   "parsed": [
+    "thiazide diuretic calcium supplement hypercalcemia mechanism",
+    "calcium supplement thiazide diuretic co administration safety",
+    "thiazide diuretics calcium supplements drug interaction"
+   ],
+   "fallback_fired": false,
+   "verdict": "returns 3 string(s)"
+  },
+  {
+   "call": 3,
+   "raw_content": "{\"queries\": [\"thiazide diuretic calcium supplement hypercalcemia mechanism\",\"calcium supplement interaction with antihypertensive drugs management\",\"thiazide diuretic calcium supplement drug interaction\"]}",
+   "parsed": [
+    "thiazide diuretic calcium supplement hypercalcemia mechanism",
+    "calcium supplement interaction with antihypertensive drugs management",
+    "thiazide diuretic calcium supplement drug interaction"
+   ],
+   "fallback_fired": false,
+   "verdict": "returns 3 string(s)"
+  }
+ ],
+ "n_provider_calls": 3,
+ "n_fallbacks": 0
+}

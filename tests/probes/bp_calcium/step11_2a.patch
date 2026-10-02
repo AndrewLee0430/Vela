@@ -1,0 +1,70 @@
+diff --git a/api/rag/retriever.py b/api/rag/retriever.py
+index b0daed3..339d47d 100644
+--- a/api/rag/retriever.py
++++ b/api/rag/retriever.py
+@@ -348,20 +348,26 @@ class HybridRetriever:
+                             "- CLASS-LEVEL INTERACTION QUESTIONS (one side is a drug CLASS or a lay term such as "
+                             "\"BP meds\", or a supplement/food): at least ONE query must name the specific known "
+                             "interaction as CLASS + MECHANISM + OUTCOME "
+-                            "(e.g. \"thiazide diuretic calcium supplement hypercalcemia\"), not a single drug pair.\n\n"
++                            "(e.g. \"thiazide diuretic calcium supplement hypercalcemia\"), not a single drug pair.\n"
++                            "- These rules apply to questions in ANY language. Example: "
++                            "「老人血壓藥可以跟鈣片一起吃嗎」 → \"thiazide diuretic calcium supplement hypercalcemia\".\n"
++                            "- BARE PAIRS: an input that is only \"X and Y\" / \"X with Y\" / \"X + Y\" (no verb) is a "
++                            "co-administration interaction question — apply both rules above, never echo the input as a "
++                            "query, and when one side is a supplement or mineral EVERY one of the 3 queries keeps the "
++                            "supplement term (e.g. \"calcium supplement\").\n\n"
+                             "STEP 2 — Generate 3 queries from different angles:\n"
+                             "1. Mechanism/pharmacology angle (how/why)\n"
+                             "2. Clinical management angle (symptoms/treatment/dosing)\n"
+                             "3. Precise medical terminology angle (INN names for the drugs the user NAMED, MeSH terms; "
+                             "never collapse a drug class into one drug pair)\n\n"
+                             "Rules:\n"
+-                            "- Output ONLY valid JSON array with exactly 3 strings\n"
++                            "- Output ONLY a JSON object {\"queries\": [\"q1\",\"q2\",\"q3\"]} — exactly 3 strings, no other keys\n"
+                             "- Each query: 4-8 words, English only, no punctuation\n"
+                             "- Use standard medical terminology and drug names\n"
+                             "- NO explanations, NO extra text\n\n"
+-                            'Example output: ["warfarin aspirin bleeding risk mechanism", '
++                            'Example output: {"queries": ["warfarin aspirin bleeding risk mechanism", '
+                             '"anticoagulant antiplatelet combination INR monitoring", '
+-                            '"warfarin aspirin hemorrhage pharmacodynamic interaction"]'
++                            '"warfarin aspirin hemorrhage pharmacodynamic interaction"]}'
+                         )
+                     },
+                     {"role": "user", "content": query}
+@@ -387,8 +393,16 @@ class HybridRetriever:
+             parsed = json.loads(raw)
+ 
+             # 支援 {"queries": [...]} 或直接 [...]
++            # bp_calcium car Segment 1d (2026-10-01, tests/probes/bp_calcium/step10_0a_raw_rewrite*.json): under
++            # response_format=json_object the model wrapped correct rewrites under "result" (bare pair) or emitted a
++            # keyed object with no array (zh chip); only queries/query were read, so both fell to the SILENT fallback
++            # below and bypassed every prompt clause. Accept queries/query/result, else the first list-of-strings value.
+             if isinstance(parsed, dict):
+-                queries = parsed.get("queries", parsed.get("query", []))
++                queries = next((parsed[k] for k in ("queries", "query", "result")
++                                if isinstance(parsed.get(k), list)), None)
++                if queries is None:
++                    queries = next((v for v in parsed.values()
++                                    if isinstance(v, list) and any(isinstance(x, str) for x in v)), [])
+             elif isinstance(parsed, list):
+                 queries = parsed
+             else:
+@@ -398,7 +412,16 @@ class HybridRetriever:
+             queries = [q for q in queries if isinstance(q, str) and q.strip()][:3]
+ 
+             if len(queries) >= 1:
++                # Observability only (no behaviour change): a short return is visible in prod logs. Logs the
++                # count + query LENGTH, never the query text or the response content (api/server.py's Research
++                # convention: length only — see the E5 privacy entry in TECH_DEBT.md).
++                if len(queries) < 3:
++                    logger.warning("[REWRITE_SHORT] rewrite returned %d of 3 queries (query_length=%d)",
++                                   len(queries), len(query))
+                 return queries
++            # Previously silent: parsed JSON held zero usable strings → translation fallback below.
++            logger.warning("[REWRITE_FALLBACK] rewrite returned 0 usable queries (query_length=%d); "
++                           "falling back to translation", len(query))
+ 
+         except Exception as e:
+             logger.warning("Query rewriting failed: %s, falling back to translation", e)

@@ -1,0 +1,907 @@
+{
+ "generated": "2026-10-02 02:08:20Z",
+ "started": "2026-10-02 01:52:53Z",
+ "git_head": "",
+ "config": {
+  "enable_local": false,
+  "enable_pubmed": true,
+  "enable_fda": true,
+  "enable_tfda": true,
+  "enable_dailymed": true,
+  "local_threshold": 0.6,
+  "max_results": 5,
+  "source_weight_active": true,
+  "annotate_research_question": true,
+  "arm": "rewrite (full pipeline — real retrieve())",
+  "n_runs": 8,
+  "min_usable_runs": 6,
+  "provenance": {
+   "enable_local": "api/server.py HybridRetriever(...) construction",
+   "enable_pubmed": "api/server.py HybridRetriever(...) construction",
+   "enable_fda": "api/server.py HybridRetriever(...) construction",
+   "enable_tfda": "api/server.py HybridRetriever(...) construction",
+   "enable_dailymed": "NOT passed by api/server.py; constructor default in api/rag/retriever.py",
+   "local_threshold": "api/server.py construction, cross-checked against the api/rag/retriever.py constructor default",
+   "max_results": "api/server.py retrieve(max_results=body.max_results or N), cross-checked against the retrieve() signature default",
+   "source_weight_active": "env flag read at api/server.py (shape asserted here). Deployed value ON per docs/kunion_cut_exemption_build.md:72 and docs/local_corpus_deprecation_c1_build.md:20 (secret digest d8c5ac2e11c8e492, Deployed). Mirrors the predecessor probe.",
+   "annotate_research_question": "api/server.py applies it before retrieve()"
+  }
+ },
+ "string_provenance": {
+  "metformin_moa": {
+   "source": "tests/results/_pairaware_m1.py",
+   "id_in_source": "metformin_moa",
+   "status": "BYTE-IDENTICAL"
+  },
+  "statin_moa": {
+   "source": "tests/results/_pairaware_m1.py",
+   "id_in_source": "statin_moa",
+   "status": "BYTE-IDENTICAL"
+  },
+  "glp1_weight": {
+   "source": "tests/results/_pairaware_m1.py",
+   "id_in_source": "glp1_weight",
+   "status": "BYTE-IDENTICAL"
+  },
+  "statin_efficacy": {
+   "source": "tests/results/_pairaware_m1.py",
+   "id_in_source": "statin_efficacy",
+   "status": "BYTE-IDENTICAL"
+  },
+  "sglt2_cv": {
+   "source": "tests/results/_pairaware_m1.py",
+   "id_in_source": "sglt2_cv",
+   "status": "BYTE-IDENTICAL"
+  },
+  "statin_moa_tracked": {
+   "source": "tests/results/_c1_freedslot_probe.py",
+   "id_in_source": "canary_statin_moa",
+   "status": "BYTE-IDENTICAL"
+  }
+ },
+ "queries": [
+  {
+   "id": "metformin_moa",
+   "query": "metformin mechanism of action",
+   "resolved_key_set": [
+    "METFORMIN",
+    "METFORMIN HCL"
+   ],
+   "resolver_matched": [
+    "METFORMIN"
+   ],
+   "resolver_via": "exact",
+   "runs": [
+    {
+     "run": 0,
+     "status": "ok",
+     "latency_s": 22.0,
+     "cited_ids": [
+      "PMID:37130947",
+      "PMID:32897388",
+      "PMID:24847880",
+      "PMID:28776086",
+      "PMID:31439934"
+     ],
+     "safety_cited_ids": [],
+     "wrong_object_cited_ids": []
+    },
+    {
+     "run": 1,
+     "status": "ok",
+     "latency_s": 18.5,
+     "cited_ids": [
+      "PMID:24847880",
+      "PMID:32897388",
+      "PMID:37130947",
+      "PMID:28776086",
+      "PMID:31439934"
+     ],
+     "safety_cited_ids": [],
+     "wrong_object_cited_ids": []
+    },
+    {
+     "run": 2,
+     "status": "ok",
+     "latency_s": 19.5,
+     "cited_ids": [
+      "PMID:28776086",
+      "PMID:32897388",
+      "PMID:37130947",
+      "PMID:24393785",
+      "PMID:11602624"
+     ],
+     "safety_cited_ids": [],
+     "wrong_object_cited_ids": []
+    },
+    {
+     "run": 3,
+     "status": "ok",
+     "latency_s": 19.7,
+     "cited_ids": [
+      "PMID:37130947",
+      "PMID:32897388",
+      "PMID:28776086",
+      "PMID:25456737",
+      "DailyMed:1f8833f9-1232-4aa7-a0d4-04a9f87dc2f0#34073-7"
+     ],
+     "safety_cited_ids": [
+      "DailyMed:1f8833f9-1232-4aa7-a0d4-04a9f87dc2f0#34073-7"
+     ],
+     "wrong_object_cited_ids": []
+    },
+    {
+     "run": 4,
+     "status": "ok",
+     "latency_s": 18.1,
+     "cited_ids": [
+      "PMID:24847880",
+      "PMID:32897388",
+      "PMID:37130947",
+      "PMID:11602624",
+      "PMID:28776086"
+     ],
+     "safety_cited_ids": [],
+     "wrong_object_cited_ids": []
+    },
+    {
+     "run": 5,
+     "status": "ok",
+     "latency_s": 18.6,
+     "cited_ids": [
+      "PMID:37130947",
+      "PMID:32897388",
+      "PMID:24847880",
+      "PMID:24393785",
+      "PMID:31439934"
+     ],
+     "safety_cited_ids": [],
+     "wrong_object_cited_ids": []
+    },
+    {
+     "run": 6,
+     "status": "ok",
+     "latency_s": 18.5,
+     "cited_ids": [
+      "PMID:32897388",
+      "PMID:24393785",
+      "PMID:37130947",
+      "PMID:11602624",
+      "PMID:28776086"
+     ],
+     "safety_cited_ids": [],
+     "wrong_object_cited_ids": []
+    },
+    {
+     "run": 7,
+     "status": "ok",
+     "latency_s": 18.1,
+     "cited_ids": [
+      "PMID:35640743",
+      "PMID:32897388",
+      "PMID:24847880",
+      "PMID:24393785",
+      "PMID:37397787"
+     ],
+     "safety_cited_ids": [],
+     "wrong_object_cited_ids": []
+    }
+   ],
+   "usable_runs": 8,
+   "network_excluded": 0,
+   "errored": 0,
+   "safety_cited": 1,
+   "wrong_object_cited": 0,
+   "class_query_equivalence": {
+    "empty_key_set": false
+   }
+  },
+  {
+   "id": "statin_moa",
+   "query": "statin mechanism of action pharmacology",
+   "resolved_key_set": [],
+   "resolver_matched": [],
+   "resolver_via": null,
+   "runs": [
+    {
+     "run": 0,
+     "status": "ok",
+     "latency_s": 18.1,
+     "cited_ids": [
+      "PMID:24657242",
+      "PMID:12067471",
+      "PMID:28057795",
+      "PMID:15559032"
+     ],
+     "safety_cited_ids": [],
+     "wrong_object_cited_ids": []
+    },
+    {
+     "run": 1,
+     "status": "ok",
+     "latency_s": 17.2,
+     "cited_ids": [
+      "PMID:24657242",
+      "PMID:12067471",
+      "PMID:28057795",
+      "PMID:15559032"
+     ],
+     "safety_cited_ids": [],
+     "wrong_object_cited_ids": []
+    },
+    {
+     "run": 2,
+     "status": "ok",
+     "latency_s": 18.0,
+     "cited_ids": [
+      "PMID:24657242",
+      "PMID:12067471",
+      "PMID:28057795",
+      "PMID:15559032"
+     ],
+     "safety_cited_ids": [],
+     "wrong_object_cited_ids": []
+    },
+    {
+     "run": 3,
+     "status": "ok",
+     "latency_s": 18.0,
+     "cited_ids": [
+      "PMID:24657242",
+      "PMID:12067471",
+      "PMID:28057795",
+      "PMID:15559032"
+     ],
+     "safety_cited_ids": [],
+     "wrong_object_cited_ids": []
+    },
+    {
+     "run": 4,
+     "status": "ok",
+     "latency_s": 18.5,
+     "cited_ids": [
+      "PMID:11349148",
+      "PMID:12067471",
+      "PMID:28057795",
+      "PMID:32729746",
+      "PMID:22391257"
+     ],
+     "safety_cited_ids": [],
+     "wrong_object_cited_ids": []
+    },
+    {
+     "run": 5,
+     "status": "ok",
+     "latency_s": 18.1,
+     "cited_ids": [
+      "PMID:11349148",
+      "PMID:12067471",
+      "PMID:28057795"
+     ],
+     "safety_cited_ids": [],
+     "wrong_object_cited_ids": []
+    },
+    {
+     "run": 6,
+     "status": "ok",
+     "latency_s": 17.9,
+     "cited_ids": [
+      "PMID:24657242",
+      "PMID:12067471",
+      "PMID:28057795",
+      "PMID:15559032"
+     ],
+     "safety_cited_ids": [],
+     "wrong_object_cited_ids": []
+    },
+    {
+     "run": 7,
+     "status": "ok",
+     "latency_s": 18.4,
+     "cited_ids": [
+      "PMID:24657242",
+      "PMID:12067471",
+      "PMID:28057795",
+      "PMID:15559032"
+     ],
+     "safety_cited_ids": [],
+     "wrong_object_cited_ids": []
+    }
+   ],
+   "usable_runs": 8,
+   "network_excluded": 0,
+   "errored": 0,
+   "safety_cited": 0,
+   "wrong_object_cited": 0,
+   "class_query_equivalence": {
+    "empty_key_set": true,
+    "safety_cited": 0,
+    "wrong_object_cited": 0,
+    "equivalent": true,
+    "note": "empty key set => every safety section is wrong-object => the amended criterion is EXACTLY as strict as the old one for this query"
+   }
+  },
+  {
+   "id": "glp1_weight",
+   "query": "GLP-1 減重機轉",
+   "resolved_key_set": [],
+   "resolver_matched": [],
+   "resolver_via": null,
+   "runs": [
+    {
+     "run": 0,
+     "status": "ok",
+     "latency_s": 19.2,
+     "cited_ids": [
+      "PMID:39892489",
+      "PMID:36843578",
+      "PMID:33977495"
+     ],
+     "safety_cited_ids": [],
+     "wrong_object_cited_ids": []
+    },
+    {
+     "run": 1,
+     "status": "ok",
+     "latency_s": 18.5,
+     "cited_ids": [
+      "PMID:39892489",
+      "PMID:40466247",
+      "PMID:36843578",
+      "PMID:33977495"
+     ],
+     "safety_cited_ids": [],
+     "wrong_object_cited_ids": []
+    },
+    {
+     "run": 2,
+     "status": "ok",
+     "latency_s": 17.9,
+     "cited_ids": [
+      "PMID:39892489",
+      "PMID:36843578",
+      "PMID:33977495"
+     ],
+     "safety_cited_ids": [],
+     "wrong_object_cited_ids": []
+    },
+    {
+     "run": 3,
+     "status": "ok",
+     "latency_s": 18.4,
+     "cited_ids": [
+      "PMID:39892489",
+      "PMID:33977495",
+      "PMID:40466247",
+      "PMID:36843578",
+      "PMID:34497589"
+     ],
+     "safety_cited_ids": [],
+     "wrong_object_cited_ids": []
+    },
+    {
+     "run": 4,
+     "status": "ok",
+     "latency_s": 18.4,
+     "cited_ids": [
+      "PMID:39892489",
+      "PMID:40466247",
+      "PMID:33977495",
+      "PMID:36843578"
+     ],
+     "safety_cited_ids": [],
+     "wrong_object_cited_ids": []
+    },
+    {
+     "run": 5,
+     "status": "ok",
+     "latency_s": 18.3,
+     "cited_ids": [
+      "PMID:28266779",
+      "PMID:39892489",
+      "PMID:40466247",
+      "PMID:33977495",
+      "PMID:36843578"
+     ],
+     "safety_cited_ids": [],
+     "wrong_object_cited_ids": []
+    },
+    {
+     "run": 6,
+     "status": "ok",
+     "latency_s": 18.2,
+     "cited_ids": [
+      "PMID:39892489",
+      "PMID:36566341",
+      "PMID:33977495",
+      "PMID:36843578"
+     ],
+     "safety_cited_ids": [],
+     "wrong_object_cited_ids": []
+    },
+    {
+     "run": 7,
+     "status": "ok",
+     "latency_s": 23.0,
+     "cited_ids": [
+      "PMID:39892489",
+      "PMID:40466247",
+      "PMID:33977495",
+      "PMID:36843578"
+     ],
+     "safety_cited_ids": [],
+     "wrong_object_cited_ids": []
+    }
+   ],
+   "usable_runs": 8,
+   "network_excluded": 0,
+   "errored": 0,
+   "safety_cited": 0,
+   "wrong_object_cited": 0,
+   "class_query_equivalence": {
+    "empty_key_set": true,
+    "safety_cited": 0,
+    "wrong_object_cited": 0,
+    "equivalent": true,
+    "note": "empty key set => every safety section is wrong-object => the amended criterion is EXACTLY as strict as the old one for this query"
+   }
+  },
+  {
+   "id": "statin_efficacy",
+   "query": "statin primary prevention efficacy",
+   "resolved_key_set": [],
+   "resolver_matched": [],
+   "resolver_via": null,
+   "runs": [
+    {
+     "run": 0,
+     "status": "ok",
+     "latency_s": 27.6,
+     "cited_ids": [
+      "PMID:25579834",
+      "PMID:15325833",
+      "PMID:37486464",
+      "PMID:30375494"
+     ],
+     "safety_cited_ids": [],
+     "wrong_object_cited_ids": []
+    },
+    {
+     "run": 1,
+     "status": "ok",
+     "latency_s": 22.7,
+     "cited_ids": [
+      "PMID:23440795",
+      "PMID:35997724",
+      "PMID:34261627",
+      "PMID:15325833"
+     ],
+     "safety_cited_ids": [],
+     "wrong_object_cited_ids": []
+    },
+    {
+     "run": 2,
+     "status": "ok",
+     "latency_s": 20.6,
+     "cited_ids": [
+      "PMID:23440795",
+      "PMID:21249663",
+      "PMID:34261627",
+      "PMID:34698889",
+      "PMID:37486464"
+     ],
+     "safety_cited_ids": [],
+     "wrong_object_cited_ids": []
+    },
+    {
+     "run": 3,
+     "status": "ok",
+     "latency_s": 19.5,
+     "cited_ids": [
+      "PMID:35997724",
+      "PMID:23440795",
+      "PMID:15325833",
+      "PMID:27616593"
+     ],
+     "safety_cited_ids": [],
+     "wrong_object_cited_ids": []
+    },
+    {
+     "run": 4,
+     "status": "ok",
+     "latency_s": 19.7,
+     "cited_ids": [
+      "PMID:23440795",
+      "PMID:34261627",
+      "PMID:34698889",
+      "PMID:37486464"
+     ],
+     "safety_cited_ids": [],
+     "wrong_object_cited_ids": []
+    },
+    {
+     "run": 5,
+     "status": "ok",
+     "latency_s": 20.6,
+     "cited_ids": [
+      "PMID:30870705",
+      "PMID:36593174",
+      "PMID:35614000",
+      "PMID:29038899",
+      "PMID:39585440"
+     ],
+     "safety_cited_ids": [],
+     "wrong_object_cited_ids": []
+    },
+    {
+     "run": 6,
+     "status": "ok",
+     "latency_s": 18.8,
+     "cited_ids": [
+      "PMID:35997724",
+      "PMID:23440795",
+      "PMID:21249663",
+      "PMID:34261627",
+      "PMID:15325833"
+     ],
+     "safety_cited_ids": [],
+     "wrong_object_cited_ids": []
+    },
+    {
+     "run": 7,
+     "status": "ok",
+     "latency_s": 19.6,
+     "cited_ids": [
+      "PMID:25579834",
+      "PMID:15325833",
+      "PMID:30879339",
+      "PMID:37486464",
+      "PMID:30375494"
+     ],
+     "safety_cited_ids": [],
+     "wrong_object_cited_ids": []
+    }
+   ],
+   "usable_runs": 8,
+   "network_excluded": 0,
+   "errored": 0,
+   "safety_cited": 0,
+   "wrong_object_cited": 0,
+   "class_query_equivalence": {
+    "empty_key_set": true,
+    "safety_cited": 0,
+    "wrong_object_cited": 0,
+    "equivalent": true,
+    "note": "empty key set => every safety section is wrong-object => the amended criterion is EXACTLY as strict as the old one for this query"
+   }
+  },
+  {
+   "id": "sglt2_cv",
+   "query": "SGLT2 inhibitor cardiovascular outcomes",
+   "resolved_key_set": [],
+   "resolver_matched": [],
+   "resolver_via": null,
+   "runs": [
+    {
+     "run": 0,
+     "status": "ok",
+     "latency_s": 18.7,
+     "cited_ids": [
+      "PMID:36592186",
+      "PMID:38587237",
+      "PMID:30132036",
+      "PMID:38456601",
+      "PMID:29547706"
+     ],
+     "safety_cited_ids": [],
+     "wrong_object_cited_ids": []
+    },
+    {
+     "run": 1,
+     "status": "ok",
+     "latency_s": 19.4,
+     "cited_ids": [
+      "PMID:38179304",
+      "PMID:38587237",
+      "PMID:38696170",
+      "PMID:39206550",
+      "PMID:30132036"
+     ],
+     "safety_cited_ids": [],
+     "wrong_object_cited_ids": []
+    },
+    {
+     "run": 2,
+     "status": "ok",
+     "latency_s": 20.2,
+     "cited_ids": [
+      "PMID:40884036",
+      "PMID:38179304",
+      "PMID:38696170",
+      "PMID:40832702",
+      "PMID:30132036"
+     ],
+     "safety_cited_ids": [],
+     "wrong_object_cited_ids": []
+    },
+    {
+     "run": 3,
+     "status": "ok",
+     "latency_s": 18.9,
+     "cited_ids": [
+      "PMID:36914068",
+      "PMID:40884036",
+      "PMID:38587237",
+      "PMID:38696170",
+      "PMID:39206550"
+     ],
+     "safety_cited_ids": [],
+     "wrong_object_cited_ids": []
+    },
+    {
+     "run": 4,
+     "status": "ok",
+     "latency_s": 19.3,
+     "cited_ids": [
+      "PMID:36914068",
+      "PMID:40884036",
+      "PMID:40832702",
+      "PMID:39206550",
+      "PMID:38918063"
+     ],
+     "safety_cited_ids": [],
+     "wrong_object_cited_ids": []
+    },
+    {
+     "run": 5,
+     "status": "ok",
+     "latency_s": 19.4,
+     "cited_ids": [
+      "PMID:40884036",
+      "PMID:36914068",
+      "PMID:38179304",
+      "PMID:38918063",
+      "PMID:38696170"
+     ],
+     "safety_cited_ids": [],
+     "wrong_object_cited_ids": []
+    },
+    {
+     "run": 6,
+     "status": "ok",
+     "latency_s": 18.9,
+     "cited_ids": [
+      "PMID:40884036",
+      "PMID:39210781",
+      "PMID:40832702",
+      "PMID:30132036",
+      "PMID:32665641"
+     ],
+     "safety_cited_ids": [],
+     "wrong_object_cited_ids": []
+    },
+    {
+     "run": 7,
+     "status": "ok",
+     "latency_s": 18.5,
+     "cited_ids": [
+      "PMID:36914068",
+      "PMID:40884036",
+      "PMID:38179304",
+      "PMID:40832702",
+      "PMID:30132036"
+     ],
+     "safety_cited_ids": [],
+     "wrong_object_cited_ids": []
+    }
+   ],
+   "usable_runs": 8,
+   "network_excluded": 0,
+   "errored": 0,
+   "safety_cited": 0,
+   "wrong_object_cited": 0,
+   "class_query_equivalence": {
+    "empty_key_set": true,
+    "safety_cited": 0,
+    "wrong_object_cited": 0,
+    "equivalent": true,
+    "note": "empty key set => every safety section is wrong-object => the amended criterion is EXACTLY as strict as the old one for this query"
+   }
+  },
+  {
+   "id": "statin_moa_tracked",
+   "query": "What is the mechanism of action of statins?",
+   "resolved_key_set": [],
+   "resolver_matched": [],
+   "resolver_via": null,
+   "runs": [
+    {
+     "run": 0,
+     "status": "ok",
+     "latency_s": 17.8,
+     "cited_ids": [
+      "PMID:11349148",
+      "PMID:12067471",
+      "PMID:12137559",
+      "PMID:28132458",
+      "PMID:22159045"
+     ],
+     "safety_cited_ids": [],
+     "wrong_object_cited_ids": []
+    },
+    {
+     "run": 1,
+     "status": "ok",
+     "latency_s": 17.8,
+     "cited_ids": [
+      "PMID:12067471",
+      "PMID:24657242",
+      "PMID:15559032"
+     ],
+     "safety_cited_ids": [],
+     "wrong_object_cited_ids": []
+    },
+    {
+     "run": 2,
+     "status": "ok",
+     "latency_s": 20.7,
+     "cited_ids": [
+      "PMID:12067471",
+      "PMID:24657242",
+      "PMID:15559032"
+     ],
+     "safety_cited_ids": [],
+     "wrong_object_cited_ids": []
+    },
+    {
+     "run": 3,
+     "status": "ok",
+     "latency_s": 20.8,
+     "cited_ids": [
+      "PMID:11349148",
+      "PMID:12067471",
+      "PMID:12137559",
+      "PMID:32729746",
+      "PMID:22159045"
+     ],
+     "safety_cited_ids": [],
+     "wrong_object_cited_ids": []
+    },
+    {
+     "run": 4,
+     "status": "ok",
+     "latency_s": 21.6,
+     "cited_ids": [
+      "PMID:12067471",
+      "PMID:24657242",
+      "PMID:15559032"
+     ],
+     "safety_cited_ids": [],
+     "wrong_object_cited_ids": []
+    },
+    {
+     "run": 5,
+     "status": "ok",
+     "latency_s": 18.2,
+     "cited_ids": [
+      "PMID:11349148",
+      "PMID:12067471",
+      "PMID:12137559",
+      "PMID:22159045"
+     ],
+     "safety_cited_ids": [],
+     "wrong_object_cited_ids": []
+    },
+    {
+     "run": 6,
+     "status": "ok",
+     "latency_s": 18.7,
+     "cited_ids": [
+      "PMID:11349148",
+      "PMID:12067471",
+      "PMID:12137559",
+      "PMID:22159045"
+     ],
+     "safety_cited_ids": [],
+     "wrong_object_cited_ids": []
+    },
+    {
+     "run": 7,
+     "status": "ok",
+     "latency_s": 18.3,
+     "cited_ids": [
+      "PMID:11349148",
+      "PMID:12067471",
+      "PMID:12137559"
+     ],
+     "safety_cited_ids": [],
+     "wrong_object_cited_ids": []
+    }
+   ],
+   "usable_runs": 8,
+   "network_excluded": 0,
+   "errored": 0,
+   "safety_cited": 0,
+   "wrong_object_cited": 0,
+   "class_query_equivalence": {
+    "empty_key_set": true,
+    "safety_cited": 0,
+    "wrong_object_cited": 0,
+    "equivalent": true,
+    "note": "empty key set => every safety section is wrong-object => the amended criterion is EXACTLY as strict as the old one for this query"
+   }
+  }
+ ],
+ "aggregate": {
+  "queries": 6,
+  "passed": 6,
+  "failed": 0,
+  "failed_on_wrong_object_citation": [],
+  "failed_on_insufficient_runs": [],
+  "verdict": "PASS",
+  "criterion": "wrong-object safety LOINC in the final top-N (AMENDED 2026-08-21; the old criterion was ANY safety LOINC and is still recorded per query as safety_cited)",
+  "old_criterion_would_have_failed": [
+   "metformin_moa"
+  ],
+  "exit_code": 0,
+  "reasons": []
+ },
+ "self_test": {
+  "outcome": "PASS — the gate fails on wrong-object and passes on owned",
+  "basis": "real result set (6 queries)",
+  "injected_source_id": "DailyMed:00000000-0000-0000-0000-000000000000#34073-7",
+  "detected_loinc": "34073-7",
+  "a_wrong_object_injection": {
+   "expect": "non-zero",
+   "exit_code": 1,
+   "ok": true,
+   "reasons_seen": [
+    "metformin_moa: 1/8 usable runs cited a WRONG-OBJECT whitelisted DailyMed safety section (want 0)"
+   ]
+  },
+  "b_owned_injection_into_metformin_moa": {
+   "expect": "zero (the amendment)",
+   "exit_code": 0,
+   "ok": true,
+   "safety_cited": 1,
+   "wrong_object_cited": 0,
+   "counters_independent": true,
+   "old_criterion_would_have_failed": [
+    "metformin_moa"
+   ],
+   "note": "THIS is the control that proves the 2026-08-21 loosening landed: an owned safety section is cited (safety_cited=1, the OLD criterion would have failed) yet the gate exits 0 because it is not wrong-object."
+  },
+  "clean_control": {
+   "expect": "zero",
+   "exit_code": 0,
+   "ok": true
+  },
+  "note": "A gate that has never failed has not been shown to work. Both controls drive the SAME evaluate() the real gate uses."
+ },
+ "exclusions": {
+  "network_zero_doc_runs": 0,
+  "errored_runs": 0,
+  "rule": "status in (\"no_results\",\"error\") is network noise — retrieve() short-circuits before any filter/rerank stage, so those runs cannot distinguish a miss from an outage. status==\"irrelevant\" is USABLE."
+ },
+ "wall_clock": {
+  "seconds": 926.8,
+  "retrieve_calls": 48,
+  "note": "6 queries x 8 runs, each a real retrieve() with an LLM rewrite and live PubMed/FDA"
+ },
+ "criterion_amendment": {
+  "date": "2026-08-21",
+  "type": "DELIBERATE LOOSENING of an existing gate — not a refinement",
+  "old": "zero whitelisted DailyMed safety LOINC in the final top-N",
+  "new": "zero WRONG-OBJECT safety LOINC in the final top-N (moiety outside the query's key set); an OWNED safety section no longer fails",
+  "reason_verbatim": "The canary was born on the wrong-drug line; what it exists to catch is wrong-DRUG intrusion. The reserved-seat mechanism (主線 A) injects a queried drug's OWN safety sections by key, so under the old criterion the seat fails `metformin mechanism of action` — measured in seat_v2.json: METFORMIN owns four whitelisted safety sections (Warnings 0.5263, Boxed Warning 0.5139, Contraindications 0.4945, Drug Interactions 0.4711), all below the 0.6 floor and therefore all seatable. Blocking the seat on that basis would use a proxy metric to veto the fix the metric exists to enable. The other five canaries are unaffected: statin / SGLT2 / GLP-1 are class terms with no corpus key.",
+  "known_uncovered_case": "The old criterion ALSO caught an OWNED safety section appearing in a mechanism-of-action question — topical mismatch. That is now UNGUARDED. Accepted on the founder ruling that an owned section is at worst noise, whereas a wrong-drug section is a safety claim about the wrong substance.",
+  "what_would_reopen_it": "User-visible evidence that owned-but-off-topic sections degrade answers.",
+  "resolver": "tests/probes/ownership_eval/resolver.py (SHARED module, loaded by path; it imports strip_salt_suffixes from seat_measurement.py — no logic is copied)"
+ },
+ "reproducibility_note": "PubMed drift makes exact reproduction impossible — the baseline is a dated snapshot. Every run queries live PubMed/FDA and calls a non-deterministic LLM rewrite (temperature=0 but no seed and no cache), so pool composition varies between runs and between days. Re-running this gate re-measures; it does not reproduce. The PASS criterion (zero safety citations) is stable under that drift by design — it asserts an absence, not a pool identity.",
+ "historical": {
+  "five_source_baseline": "0/8 each, 2026-07-27, enable_local=True, NOT reproducible at HEAD",
+  "head_old_criterion_baseline": "0/8 each on the OLD criterion (any whitelisted safety LOINC), 2026-08-21, HEAD four-source config, 6 queries, 48/48 usable runs, zero exclusions — canary_baseline_20260821.json, the pre-amendment baseline",
+  "detail": "tests/results/pairaware_m1_20260727_161811.json (untracked): 5 canaries, 0/8 each, 8 usable runs, 0 exclusions, measured with enable_local=True before the 2026-07-29 c1 default flip (c9d36cf). Retained as a dated historical figure for the FIVE-SOURCE ERA; it is not a HEAD baseline and must not be compared as one."
+ }
+}

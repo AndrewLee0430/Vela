@@ -618,3 +618,169 @@ were reverted). Founder ruling 13:49: the pasted 2a lines become **Segment 1e**.
 **Spend, Segment 1d:** logged **$1.17** in `api_cost_log` since 2026-10-01 03:35Z (`step6_spend_seg1d.json`; includes the
 quarantined unattended runs, ≈ $0.18) + ≈ $0.6 of in-process gpt-4.1 generations the generator does not log ≈ **$1.8 of the
 US$4 cap**.
+
+## §11 Segment 1e — rewrite iteration 3 (Option A + the R1 lines) and the model variable (2c) as SEPARATE commits (2026-10-02, base `438a19c`)
+
+**Founder rulings 2026-10-02 09:29 (condensed from the paste):**
+- **R1** re-apply Option A (`git apply --check step10_option_a.patch` first; core.autocrlf noted) + add the two 2a lines on top:
+  zh-TW example 「老人血壓藥可以跟鈣片一起吃嗎」→ "thiazide diuretic calcium supplement hypercalcemia"; BARE PAIRS ("X and Y" / "X with Y" /
+  "X + Y") are co-administration interaction questions — apply both rules, never echo the input, and EVERY one of the 3 queries keeps
+  the supplement term.
+- **R2** 2c (anon Research → gpt-4.1) is a SEPARATE variable with its own bar and its own commit; its revert does not depend on the
+  rewrite bars.
+- **R3** ratify the rewriter-contract entry as [OTHER][P1]; multi-run golden floor NOT adopted — the 13:49 attribution rule is recorded
+  as a STANDING rule bullet on the research-golden-floor entry.
+
+**STEP 0 check:** baton §10.4's table — the Segment-1d revert was caused ONLY by the zh thiazide-naming rewrite bar (every (b)–(e)
+gate PASS, every L1 veto (i) MET, over-trigger 0) → the rulings' premise holds.
+
+**STEP 1 — control:** the step10 control arm at `f85bb66` (2026-10-01) is REUSED for canary / danger / straddle / chips / E6 — `api/`
+at `438a19c` is byte-identical to `f85bb66` (`git diff --quiet f85bb66 438a19c -- api/`), so the code those arms measured is the code
+now. Golden: ONE fresh same-day control (`step11_golden_control.json`, 2026-10-02), because the gate is noisy (20/0/0 → 17/3/0 on
+the same code).
+
+**STEP 2a — the edit:** `git apply --include=api/rag/retriever.py step10_option_a.patch` (the Option-A retriever.py hunks only — the
+server.py 2c hunk and the PRD/ADR amendments belong to STEP 2b) + two lines appended INSIDE the STEP 1b block (diff: §11.2).
+One wording choice flagged: R1's "EVERY one of the 3 queries keeps the supplement term" is written "when one side is a supplement or
+mineral" — a bare pair with no supplement side (e.g. two INNs) has no supplement term to keep.
+
+**PRE-REGISTERED readings for STEP 2a (written before the 2a treatment run; read back from disk before launch):**
+- **zh rewrite bar:** runs with ≥ 1 thiazide-naming rewrite string, POOLED over the 8 zh runs (L1 N=4 + L0 N=4) ≥ 3/4 (≥ 6/8);
+  per-path counts reported. (The paste attaches one fraction to the combined arm; the rewrite is path-independent.)
+- **veto (i) FALSE on every L1 run:** EN chip L1 4/4 · zh chip L1 4/4 · bare pair L1 2/2 (hand-read).
+- **bare pair "every query keeps supplement":** EVERY rewrite string of all 6 bare-pair runs (K=1 + union calls) contains
+  "supplement" (case-insensitive) — 100%; a fallback-raw string counts as a miss.
+- **E6 over-trigger 0** on Q3 / Q9 / Q11 (hand-read).
+- **Golden:** standing attribution rule (founder 2026-10-01 13:49) vs TODAY's fresh control — attributable iff a FAIL on an
+  IDENTICAL pool or a control-PASS case becoming FAIL on a different pool; WARN moves by the pool rule; otherwise one re-run.
+- **Straddle N=8:** vs `ctl8_1d` 36/40 — treatment ≥ 34 AND no query drops > 2.
+- **Canary:** 0 wrong-object; **danger-path:** 0 violations / 0 rechecks.
+- **Any miss → revert 2a ONLY (`git checkout -- api/rag/retriever.py`), record, STOP 2a; STEP 2b proceeds on `f85bb66` code.**
+- The 2a L0 arms generate on gpt-4.1-mini — the harness READS the anon binding from `api/server.py`, unchanged until STEP 2b.
+
+**PRE-REGISTERED for STEP 2b (model variable, applied after Commit A or on `f85bb66` if 2a reverts):** EN chip L0 N=8 veto (i)
+FALSE ≥ 7/8 AND zh chip L0 N=4 veto (i) FALSE ≥ 3/4 (hand-read); cost delta derived from `api_cost_log`; miss → revert 2b only.
+
+### §11.2 — The STEP 2a diff vs `f85bb66` (applied 2026-10-02 ~01:49Z; `ast` OK; written before the 2a treatment run)
+
+```diff
+--- api/rag/retriever.py
++++ api/rag/retriever.py
+@@ -351 +351,7 @@ class HybridRetriever:
+-                            "(e.g. \"thiazide diuretic calcium supplement hypercalcemia\"), not a single drug pair.\n\n"
++                            "(e.g. \"thiazide diuretic calcium supplement hypercalcemia\"), not a single drug pair.\n"
++                            "- These rules apply to questions in ANY language. Example: "
++                            "「老人血壓藥可以跟鈣片一起吃嗎」 → \"thiazide diuretic calcium supplement hypercalcemia\".\n"
++                            "- BARE PAIRS: an input that is only \"X and Y\" / \"X with Y\" / \"X + Y\" (no verb) is a "
++                            "co-administration interaction question — apply both rules above, never echo the input as a "
++                            "query, and when one side is a supplement or mineral EVERY one of the 3 queries keeps the "
++                            "supplement term (e.g. \"calcium supplement\").\n\n"
+@@ -358 +364 @@ class HybridRetriever:
+-                            "- Output ONLY valid JSON array with exactly 3 strings\n"
++                            "- Output ONLY a JSON object {\"queries\": [\"q1\",\"q2\",\"q3\"]} — exactly 3 strings, no other keys\n"
+@@ -362 +368 @@ class HybridRetriever:
+-                            'Example output: ["warfarin aspirin bleeding risk mechanism", '
++                            'Example output: {"queries": ["warfarin aspirin bleeding risk mechanism", '
+@@ -364 +370 @@ class HybridRetriever:
+-                            '"warfarin aspirin hemorrhage pharmacodynamic interaction"]'
++                            '"warfarin aspirin hemorrhage pharmacodynamic interaction"]}'
+@@ -389,0 +396,4 @@ class HybridRetriever:
++            # bp_calcium car Segment 1d (2026-10-01, tests/probes/bp_calcium/step10_0a_raw_rewrite*.json): under
++            # response_format=json_object the model wrapped correct rewrites under "result" (bare pair) or emitted a
++            # keyed object with no array (zh chip); only queries/query were read, so both fell to the SILENT fallback
++            # below and bypassed every prompt clause. Accept queries/query/result, else the first list-of-strings value.
+@@ -391 +401,5 @@ class HybridRetriever:
+-                queries = parsed.get("queries", parsed.get("query", []))
++                queries = next((parsed[k] for k in ("queries", "query", "result")
++                                if isinstance(parsed.get(k), list)), None)
++                if queries is None:
++                    queries = next((v for v in parsed.values()
++                                    if isinstance(v, list) and any(isinstance(x, str) for x in v)), [])
+@@ -400,0 +415,6 @@ class HybridRetriever:
++                # Observability only (no behaviour change): a short return is visible in prod logs. Logs the
++                # count + query LENGTH, never the query text or the response content (api/server.py's Research
++                # convention: length only — see the E5 privacy entry in TECH_DEBT.md).
++                if len(queries) < 3:
++                    logger.warning("[REWRITE_SHORT] rewrite returned %d of 3 queries (query_length=%d)",
++                                   len(queries), len(query))
+@@ -401,0 +422,3 @@ class HybridRetriever:
++            # Previously silent: parsed JSON held zero usable strings → translation fallback below.
++            logger.warning("[REWRITE_FALLBACK] rewrite returned 0 usable queries (query_length=%d); "
++                           "falling back to translation", len(query))
+```
+
+**§11 run-validity rule (written 2026-10-02 02:07Z, while canary was still running and BEFORE any 2a gate result existed):** the
+2a chain's wrapper shell was reaped by Claude Code at ~02:06Z (memory pressure); the chain itself kept running (the known Windows
+behaviour). Applying the founder's own 2026-10-01 discard reason ("ran 2× slower than control … the counters cannot see
+timeout-shrunk pools"): **a 2a step whose wall-clock is ≥ 2× its control counterpart is NOT used as evidence and is re-run** (on the
+founder's go) before its gate is read; durations are taken from the chain log's step-start stamps. Control durations
+(2026-10-01, `f85bb66`): canary 9m42s · danger ~1m · straddle 7m45s · EN L1 N=4 1m09s · zh L1 N=4 1m12s · zh L0 N=4 1m16s ·
+E6 subset (5 Q × 2) 2m30s · golden 9m46s (2026-10-02 fresh control).
+
+### §11.3 — STEP 2a result: REVERTED on gate (e) straddle (2026-10-02 02:23Z)
+
+| step (2a code = Option A retriever.py + the two R1 lines) | result | duration vs control (validity: < 2×) |
+|---|---|---|
+| 0a zh chip (3 calls) | `{"queries": [...]}` 3/3, 0 fallbacks; thiazide-naming strings **7/9** (e.g. `thiazide diuretic calcium supplement hypercalcemia mechanism`) | — |
+| 0a bare pair (3 calls) | 0 fallbacks; "supplement" in **9/9** strings (incl. the third string that dropped it in 1d) | — |
+| 0a EN chip (3 calls) | 0 fallbacks; thiazide in 2/9 strings (1 of 3 calls) | — |
+| (c) canary | **PASS** — wrong-object 0/8 ×6, 48/48 usable (old criterion metformin_moa 1/8, owned) | 15m59s vs 9m42s = 1.65× ✓ |
+| (d) danger-path | **0 / 0** | 1m35s vs ~59s = 1.6× ✓ |
+| (e) straddle N=8 | **31/40 vs control 36/40 → FAIL** (rule: ≥ 34 AND no drop > 2): warfarin+aspirin **1/8** vs 4/8 (drop 3) · warfarin+NSAID 7/8 · lithium+ibuprofen 7/8 · spironolactone 8/8 · R07 8/8; 0 unusable | 12m50s vs 7m45s = 1.66× ✓ |
+| EN L1 · zh L1/L0 · bare pair L1/L0 · E6 · golden | **NOT RUN** — the chain was stopped at the miss per the rule ("any miss → revert 2a only, record, STOP") | — |
+
+**Mechanism, consistent with the captured rewrites (not proven — the straddle harness does not record per-string cosines):** on
+warfarin+aspirin the 2a rewrites collapse toward INN-pair strings — 12 → 8 distinct strings; the class-term strings (`warfarin vitamin K
+antagonists aspirin antiplatelet …`, `warfarin antiplatelet drug interaction hemorrhage risk`) fell from ~24 occurrences to 3. Option A
+ALONE (Segment 1d) scored this query **8/8**; A + the R1 lines **1/8** — the regression tracks the two new lines, most likely the
+BARE-PAIRS rule firing on a two-INN query (it has no verb). Recorded, NOT filed.
+
+**Action:** `git checkout -- api/rag/retriever.py` (byte-identical to `f85bb66`); the 2a edit kept as
+`tests/probes/bp_calcium/step11_2a.patch` (applies cleanly onto `f85bb66`). Kept as evidence (valid by the duration rule):
+`step10_0a_raw_rewrite_{zh,pair,en}_1e.json`, `step11_canary_treatment.json`, `step11_danger_treatment.json`,
+`step6_straddle_trt8_1e.json`. No Commit A. **STEP 2b proceeds on `f85bb66` code (R2: its revert does not depend on the rewrite bars).**
+
+### §11.4 — STEP 2b result: the model variable (anon Research → gpt-4.1) — BAR MET → Commit B `5d574ab` (2026-10-02)
+
+Applied on `f85bb66` rewrite code (2a reverted; `api/rag/retriever.py` byte-identical to `f85bb66`, verified at the commit). The edit
+is the `model_override` binding in the anon branch of `research_query` (`api/server.py`) — `None` → the L1 generator (gpt-4.1). The
+harness reads that binding from the code line (`_harness.l0_generation_override`), so the L0 arms below generated on gpt-4.1.
+
+| arm | bar (pre-registered §11) | result (HAND-read) | evidence |
+|---|---|---|---|
+| EN chip L0 N=8 | veto (i) FALSE ≥ 7/8 | **8/8** — supplement reading every run; 34073-7 in the FINAL pool 8/8 | `step11_2b_en_l0_*` |
+| zh chip L0 N=4 | veto (i) FALSE ≥ 3/4 | **4/4** — 鈣片 read as a supplement every run (the answers drew on rat-model synergy content) | `step11_2b_zh_l0_*` |
+| cost delta | derived from `api_cost_log` | **+$0.0074/query** — gpt-4.1 $0.0086 (n=1200) vs gpt-4.1-mini $0.0011 (n=73); the $2/day aggregate cap now binds at ≈ 233 anonymous generations/day (was ≈ 1746) | `step11_2b_grades.json` |
+
+**Verdict: BAR MET → Commit B** `5d574ab` `feat(research): [PRD 2.8] anonymous Research generation on gpt-4.1 (founder ruling 0b)`
+— `api/server.py` + PRD §2.8 (table note + item-9 sub-bullet) + ADR 001 (`:22` sub-bullet + post-§2.4-table note), all append-only.
+Decision 001 **A7 UNCHANGED** (the $2/day aggregate cap still gates L0); **A8 CHANGED for Research only** (ruling 0b). pytest at
+`5d574ab`: **480 passed, 28 skipped**. NOT pushed, NOT deployed.
+
+**What 2b does NOT fix:** the zh chip's rewrite still falls back silently (the rewriter-contract entry, unshipped), so no thiazide-naming
+query is issued for it; the 4/4 is a generator-side improvement on the pool the fallback produces. The bare pair's harm path
+("calcium and lisinopril" → the pool door) is untouched.
+
+### §11.5 — R3 recorded
+
+- Rewriter-contract entry → `[OTHER][P1]`, "RATIFIED 2026-10-02 (founder)" appended inside its bracket + a Segment-1e STATUS bullet
+  (still unshipped; both patches retained).
+- Golden floor: multi-run floor **NOT adopted**; the 13:49 attribution rule recorded as a **STANDING** bullet under the
+  research-golden-floor DEFECT-1 tombstone in `TECH_DEBT.md`. Same code, three days: 20/0/0 → 17/3/0 → 20/0/0
+  (`step11_golden_control.json`, today's fresh control).
+- NAV: 197 → 197, delta 0 (no new entry).
+
+### §11.6 — Local eye gate for `5d574ab` — BLANK (founder fills; rows 1/3 are the variable under test)
+
+| # | step | expected | PASS/FAIL | note |
+|---|---|---|---|---|
+| 1 | EN hero chip, **anonymous window** (L0 → gpt-4.1 now) | calcium read as a SUPPLEMENT (not a CCB); thiazide → hypercalcemia named where the pool carries it | | |
+| 2 | EN hero chip, signed in (L1) | same — unchanged path (control for row 1) | | |
+| 3 | zh hero chip, **anonymous window** (L0 → gpt-4.1 now) | 鈣片 read as a supplement, not 鈣離子阻斷劑; 噻嗪類 → 高血鈣 NOT expected (rewrite still falls back) | | |
+| 4 | zh hero chip, signed in (L1) | same as row 3 — unchanged path | | |
+| 5 | CONTROL 冠脂妥+warfarin | DailyMed safety section cited | | |
+| 6 | CONTROL metformin renal dosing | unchanged | | |
+
+**Spend, Segment 1e:** logged **$0.4497** in `api_cost_log` since 2026-10-02 01:36:14Z (`step6_spend_seg1e.json`; includes the
+fresh golden control, 20 gpt-4.1 generations) + an ESTIMATE of ≈ $0.11 not logged (12 in-process gpt-4.1 generations in the 2b
+arms at the $0.0086 mean + the 9 raw-rewrite 0a calls) ≈ **$0.56 of the US$3 budget** (STOP was US$4).

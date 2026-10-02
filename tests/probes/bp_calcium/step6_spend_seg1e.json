@@ -1,0 +1,48 @@
+{
+ "since_utc": "2026-10-02T01:36:14",
+ "label": "seg1e",
+ "rows": [
+  {
+   "feature": "research",
+   "model": "gpt-4.1",
+   "calls": 20,
+   "prompt_tokens": 48068,
+   "completion_tokens": 11527,
+   "usd": 0.1884
+  },
+  {
+   "feature": "research/rewrite_query",
+   "model": "gpt-4.1-mini",
+   "calls": 509,
+   "prompt_tokens": 317856,
+   "completion_tokens": 17685,
+   "usd": 0.1554
+  },
+  {
+   "feature": "research/relevance_filter",
+   "model": "gpt-4.1-mini",
+   "calls": 124,
+   "prompt_tokens": 171165,
+   "completion_tokens": 1598,
+   "usd": 0.071
+  },
+  {
+   "feature": "research/rerank",
+   "model": "gpt-4o-mini",
+   "calls": 113,
+   "prompt_tokens": 100847,
+   "completion_tokens": 5621,
+   "usd": 0.0185
+  },
+  {
+   "feature": "research/llm_judge",
+   "model": "gpt-4.1-mini",
+   "calls": 20,
+   "prompt_tokens": 23643,
+   "completion_tokens": 4327,
+   "usd": 0.0164
+  }
+ ],
+ "logged_usd_total": 0.4497,
+ "at_utc": "2026-10-02T02:40:19.374023"
+}

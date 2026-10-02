@@ -1,0 +1,42 @@
+{
+ "query": "Can elderly patients take BP meds with calcium?",
+ "db_branch": "ep-spring-voice-a127ye10",
+ "model": "gpt-4.1-mini",
+ "calls": [
+  {
+   "call": 1,
+   "raw_content": "{\"queries\": [\"calcium supplement thiazide diuretic hypercalcemia mechanism\",\"blood pressure medication calcium supplement elderly management\",\"thiazide diuretic calcium supplement drug interaction\"]}",
+   "parsed": [
+    "calcium supplement thiazide diuretic hypercalcemia mechanism",
+    "blood pressure medication calcium supplement elderly management",
+    "thiazide diuretic calcium supplement drug interaction"
+   ],
+   "fallback_fired": false,
+   "verdict": "returns 3 string(s)"
+  },
+  {
+   "call": 2,
+   "raw_content": "{\"queries\": [\"calcium supplement antihypertensive drug interaction mechanism\",\"blood pressure medication calcium supplement co administration safety\",\"antihypertensive agents calcium supplement hypercalcemia risk\"]}",
+   "parsed": [
+    "calcium supplement antihypertensive drug interaction mechanism",
+    "blood pressure medication calcium supplement co administration safety",
+    "antihypertensive agents calcium supplement hypercalcemia risk"
+   ],
+   "fallback_fired": false,
+   "verdict": "returns 3 string(s)"
+  },
+  {
+   "call": 3,
+   "raw_content": "{\"queries\": [\"calcium supplement antihypertensive drug interaction mechanism\",\"blood pressure medication calcium supplement co administration safety\",\"antihypertensive agents calcium supplement hypercalcemia risk\"]}",
+   "parsed": [
+    "calcium supplement antihypertensive drug interaction mechanism",
+    "blood pressure medication calcium supplement co administration safety",
+    "antihypertensive agents calcium supplement hypercalcemia risk"
+   ],
+   "fallback_fired": false,
+   "verdict": "returns 3 string(s)"
+  }
+ ],
+ "n_provider_calls": 3,
+ "n_fallbacks": 0
+}
