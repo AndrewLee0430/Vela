@@ -6,7 +6,9 @@ the stream, and records: whether a DailyMed 34073-7 section is among the citatio
 names thiazide/hypercalcemia (regex + the answer text saved for hand-read). Pure HTTP client; imports
 nothing from api/. The fingerprint is a fixed probe string that passes validate_fingerprint's shape rule.
 
-Usage: python step8_prod_smoke.py https://vela.an-tho.com <fingerprint>
+Usage: python step8_prod_smoke.py https://vela.an-tho.com <fingerprint> [suffix]
+(suffix, added 2026-10-02 for the 2b ship smoke: writes step8_prod_smoke<suffix>.json / _answer<suffix>.md so an
+earlier readback is never overwritten; no suffix = the original fly-261 filenames.)
 """
 import json
 import re
@@ -21,6 +23,7 @@ QUERY = "Can elderly patients take BP meds with calcium?"
 
 def main():
     base, fp = sys.argv[1].rstrip("/"), sys.argv[2]
+    sfx = sys.argv[3] if len(sys.argv) > 3 else ""
     req = urllib.request.Request(
         base + "/api/research",
         data=json.dumps({"question": QUERY, "response_language": "en"}).encode(),
@@ -55,8 +58,8 @@ def main():
            "any_dailymed_cited": any(s and s.startswith("DailyMed:") for s in cited),
            "answer_names_thiazide_or_hypercalcemia": bool(re.search(r"thiazide|hydrochlorothiazide|hypercalc", answer, re.I)),
            "answer_chars": len(answer), "answer": answer}
-    json.dump(res, open(HERE / "step8_prod_smoke.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
-    (HERE / "step8_prod_smoke_answer.md").write_text(answer, encoding="utf-8")
+    json.dump(res, open(HERE / f"step8_prod_smoke{sfx}.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    (HERE / f"step8_prod_smoke_answer{sfx}.md").write_text(answer, encoding="utf-8")
     print(json.dumps({k: res[k] for k in ("http", "seconds", "events", "fallback", "citations",
                                           "dailymed_34073_7_cited", "answer_names_thiazide_or_hypercalcemia")},
                      ensure_ascii=False, indent=1))

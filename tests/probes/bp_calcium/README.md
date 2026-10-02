@@ -316,3 +316,10 @@ L0 8/8, zh chip L0 4/4 → committed. Full tables, rules and timings: baton §11
 | `step11_2a.patch` | the reverted 2a edit, applies onto `f85bb66` | a decision to re-apply it |
 | `step11_2b_{en,zh}_l0_*` · `step11_2b_grades.json` | 2b L0 arms on gpt-4.1 (traces, answers, HAND grades, `api_cost_log` cost delta) | L1 (unchanged path, not re-run); prod behaviour (not deployed) |
 | `step6_spend_seg1e.json` | `api_cost_log` since 2026-10-02 01:36:14Z ($0.4497) | in-process generations (≈ $0.11, unlogged, estimated) |
+
+## Closeout — fly 262 prod readback (2026-10-02)
+
+| artifact | what it is | what it does NOT support |
+|---|---|---|
+| `step8_prod_smoke.py` (now takes an optional output suffix) → `step8_prod_smoke_fly262.json` / `step8_prod_smoke_answer_fly262.md` | ONE anonymous prod Research call on the EN hero chip after fly 262 (HTTP 200, `tier=L0`, DailyMed 34073-7 cited, veto (i) FALSE by hand-read) | a rate (N=1); which model generated it (not logged — inferred from `/health`) |
+| `../deploy_parser/fly262_deploy_transcript.txt` | the `.\deploy.ps1` output, verbatim (12 ESC bytes) | — |

@@ -1,0 +1,34 @@
+{
+ "base": "https://vela.an-tho.com",
+ "http": 200,
+ "seconds": 13.6,
+ "events": [
+  "answer",
+  "citations",
+  "done",
+  "language",
+  "query_id",
+  "status"
+ ],
+ "status_msgs": [
+  "Searching the literature",
+  "Checking & ranking sources",
+  "Generating answer"
+ ],
+ "fallback": null,
+ "citations": [
+  {
+   "source_id": "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7",
+   "title": "Calcium Chloride (CALCIUM CHLORIDE) — Drug Interactions"
+  },
+  {
+   "source_id": "PMID:16199918",
+   "title": "[Clinically significant drug-drug and drug-food interactions associated with calcium channel blocker"
+  }
+ ],
+ "dailymed_34073_7_cited": true,
+ "any_dailymed_cited": true,
+ "answer_names_thiazide_or_hypercalcemia": true,
+ "answer_chars": 2082,
+ "answer": "## Summary\n\nElderly patients can take blood pressure (BP) medications with calcium, but caution is required due to potential drug interactions. Concomitant use of calcium (such as calcium chloride) with calcium channel blockers may reduce the effectiveness of the BP medication, and combining calcium with digoxin increases the risk of arrhythmias and digoxin toxicity [1].\n\n---\n\n## Clinical Notes\n\n- **Calcium Channel Blockers:** Avoid using calcium chloride injection together with calcium channel blockers if possible, as calcium may reduce the antihypertensive effect of these medications [1]. If co-administration is unavoidable, monitor blood pressure closely during administration [1].\n- **Digoxin:** Avoid concomitant use of calcium chloride and digoxin due to the risk of synergistic arrhythmias and increased digoxin toxicity from hypercalcemia [1]. If unavoidable, monitor ECG closely during administration [1].\n- **Other Drugs Increasing Hypercalcemia Risk:** If calcium is used with drugs that increase serum calcium (e.g., calcipotriene, estrogen, lithium, parathyroid hormone, teriparatide, thiazide diuretics, Vitamin A, Vitamin D), increase the frequency of serum calcium monitoring [1].\n- **Monitoring Parameters:** \n  - Monitor blood pressure closely if calcium is given with calcium channel blockers.\n  - Monitor ECG if given with digoxin.\n  - Monitor serum calcium levels more frequently if other hypercalcemia-risk drugs are used concurrently [1].\n- **Elderly Considerations:** The provided context does not specify age-related pharmacokinetic changes or additional risks in elderly patients, so clinical judgment and individualized monitoring are advised.\n- **Missing Information:** The context does not specify which BP medications (other than calcium channel blockers and digoxin) are being considered, nor does it address oral calcium supplements versus intravenous calcium chloride.\n\nIn summary, while co-administration is sometimes necessary, it requires careful monitoring and should generally be avoided when possible due to interaction risks [1], [2]."
+}
