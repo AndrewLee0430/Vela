@@ -1,0 +1,69 @@
+{
+ "_how": "HAND verification of step1_corpus_route_census.json (route-mismatch car STEP 1), 2026-10-02, Claude Code. Each verdict read from the label's Dosage & Administration text (opening lines + marker hits) and the title; no network, no LLM. The census route is a TEXT classifier because the corpus carries no route key (Rule 21).",
+ "random_sample": {
+  "seed": 20261002,
+  "INJ_ONLY": {"n": 20, "correct": 19, "false_positive": ["Gastrocrom (cromolyn sodium) — oral concentrate; the only hit is the negation 'NOT FOR INHALATION OR INJECTION'"]},
+  "MIXED_INJ_DOMINANT": {"n": 12, "correct": 12, "note": "ROBAXIN reference label = 'For Intravenous and Intramuscular Use Only'"},
+  "negatives": {"n": 68, "buckets": "ORAL_ONLY 15 · NONE 15 · MIXED 10 · OTHER_ROUTE 8 · MIXED_ORAL_DOMINANT 8 (+12 resolved above)", "injection_labels_missed": ["INVEGA SUSTENNA (paliperidone palmitate) — IM injection, bucketed MIXED (mentions oral paliperidone switching)"], "note": "NONE holds topicals/OTC plus oral labels with no route words in D&A (Cardura, GALZIN, hydralazine) — misses in the ORAL direction, not the injection direction"}
+ },
+ "targeted_reads_errors": [
+  {"label": "Nascobal (cyanocobalamin)", "census": "INJ_ONLY", "hand": "NASAL spray (mentions IM/SC B12 as comparison)"},
+  {"label": "Potassium Chloride (Potassium Chloride)", "census": "MIXED", "hand": "INJECTION concentrate ('Dilute prior to administration' · intravenous)"},
+  {"label": "Vectical (calcitriol)", "census": "ORAL_ONLY", "hand": "TOPICAL ointment ('Apply VECTICAL Ointment')"},
+  {"label": "SEROQUEL (quetiapine)", "census": "INJ_ONLY", "hand": "ORAL"},
+  {"label": "Theo-24 (theophylline anhydrous)", "census": "INJ_ONLY", "hand": "ORAL extended-release capsules"},
+  {"label": "Pyrazinamide", "census": "MIXED_INJ_DOMINANT", "hand": "ORAL ('orally, 15 to 30 mg/kg')"},
+  {"label": "COUMADIN (warfarin sodium)", "census": "MIXED_INJ_DOMINANT", "hand": "ORAL tablets (label text also discusses parenteral)"},
+  {"label": "Ribavirin (Bausch SPAG aerosol)", "census": "INJ_ONLY", "hand": "INHALATION solution"}
+ ],
+ "route_overrides_by_setid_title": {
+  "Gastrocrom": "ORAL", "Nascobal": "NASAL", "Potassium Chloride (Potassium Chloride)": "INJECTION", "Vectical": "TOPICAL",
+  "SEROQUEL (quetiapine)": "ORAL", "Theo-24": "ORAL", "Pyrazinamide (Pyrazinamide)": "ORAL", "COUMADIN": "ORAL",
+  "Ribavirin (Ribavirin)": "INHALATION", "INVEGA SUSTENNA": "INJECTION"
+ },
+ "substances": {
+  "_rule23": "Key sets assembled by substring candidates THEN hand-filtered; rejected keys listed so they are not re-added. 'Oral' availability = TFDA-licensed MONO product with an oral 劑型 (data/tfda/brand_ingredient.json) — a KEY, not a measure of how commonly it is taken.",
+  "calcium": {
+   "keys": {"CALCIUM": "Calcium Gluconate — INJECTION (IV) · 34070/34073/43685", "CALCIUM CHLORIDE DIHYDRATE": "Calcium Chloride — INJECTION (IV) · 34070/34073/43685", "CALCIUM GLUCONATE": "Calcium Gluconate in NaCl — INJECTION (IV) · 34070/34073/43685", "CALCIUM ACETATE": "PhosLo — ORAL gelcaps (dialysis phosphate binder) · 34070 only", "CALCIUM CARBONATE": "TUMS — ORAL OTC · no safety section"},
+   "rejected_keys": ["ACAMPROSATE CALCIUM", "PITAVASTATIN CALCIUM", "ROSUVASTATIN CALCIUM", "LEUCOVORIN CALCIUM", "EDETATE CALCIUM DISODIUM", "CALCIUM SENNOSIDES", "POLYCARBOPHIL CALCIUM", "CALCITONIN SALMON"],
+   "verdict": "Interaction (34073-7) and Warnings (43685-7) text = INJECTION-ONLY (3 IV labels). The only oral safety text = PhosLo Contraindications (34070-3)."
+  },
+  "magnesium": {
+   "keys": {"MAGNESIUM SULFATE HEPTAHYDRATE": "INJECTION · 34070 only", "MAGNESIUM OXIDE": "ORAL OTC antacid · no safety", "MAGNESIUM HYDROXIDE": "Milk of Magnesia ORAL · no safety"},
+   "rejected_keys": ["ESOMEPRAZOLE MAGNESIUM DIHYDRATE", "ESOMEPRAZOLE MAGNESIUM TRIHYDRATE"],
+   "verdict": "ONLY safety text = injection (MgSO4 Contraindications)."
+  },
+  "potassium": {
+   "keys": {"POTASSIUM CHLORIDE": "INJECTION concentrate (census said MIXED — hand override) · 34070/34073/43685", "POTASSIUM ACETATE": "INJECTION · 34070", "POTASSIUM GLUCONATE": "RenaKare — VETERINARY oral (cats and dogs) · no safety"},
+   "rejected_keys": ["LOSARTAN POTASSIUM", "DICLOFENAC POTASSIUM", "PENICILLIN G POTASSIUM", "PENICILLIN V POTASSIUM", "TAK-491 (AZILSARTAN MEDOXOMIL (AS POTASSIUM))", "POTASSIUM IODIDE (thyroid blocker, a different entity)"],
+   "verdict": "ONLY safety text = injection; the only oral potassium key is a VETERINARY label."
+  },
+  "iron": {
+   "keys": {"IRON": "Venofer (iron sucrose) — INJECTION · 34070/34073/43685", "IRON DEXTRAN": "INFeD — INJECTION · 34066/34070/34073/43685", "FERRIC CITRATE": "Auryxia — ORAL (CKD phosphate binder / iron-deficiency) · 34070/34073/43685", "FERROUS GLUCONATE": "ORAL · no safety", "POLYSACCHARIDE IRON COMPLEX": "ORAL · no safety"},
+   "verdict": "NOT injection-only — Auryxia (oral ferric citrate) carries oral safety text; two IV iron labels also carry full safety sets."
+  },
+  "vitamin_d": {
+   "keys": {"CALCITRIOL": "Vectical — TOPICAL ointment (census said ORAL_ONLY — hand override) · 34070/43685", "PARICALCITOL": "Zemplar — ORAL capsules · 34070/34073/43685", "CHOLECALCIFEROL": "D-Vite oral liquid · no safety"},
+   "absent_keys": ["ERGOCALCIFEROL", "CALCIFEDIOL", "DOXERCALCIFEROL", "ALFACALCIDOL"],
+   "verdict": "Not injection — but calcitriol's ONLY safety text is a TOPICAL label (a second route-mismatch class: topical-for-oral)."
+  },
+  "sodium_bicarbonate": {"keys": {"SODIUM BICARBONATE": "INJECTION · 34070/34073"}, "verdict": "ONLY safety text = injection; TFDA licenses 8 oral mono products (蘇打錠)."},
+  "phosphate": {"keys": {}, "verdict": "No phosphate-supplement key (no POTASSIUM/SODIUM PHOSPHATE moiety). Phosphate BINDERS present: CALCIUM ACETATE, FERRIC CITRATE, LANTHANUM CARBONATE DIHYDRATE (all oral)."},
+  "zinc": {
+   "keys": {"ZINC": "Zinc Chloride — INJECTION · 34070", "ZINC ACETATE DIHYDRATE": "GALZIN — ORAL capsules (census NONE) · 34070/34073", "ZINC SULFATE HEPTAHYDRATE": "homeopathic · no safety"},
+   "rejected_keys": ["ZINC OXIDE (topical)", "ZINC PYRITHIONE (shampoo)"],
+   "verdict": "NOT injection-only — GALZIN (oral) carries oral safety text."
+  }
+ },
+ "others_surfaced": {
+  "_how": "The 67 census moieties whose every safety-bearing label is injection-like AND that TFDA licenses as an oral mono product, each hand-read; then a same-first-token cross-key check (Rule 23, partial: it does not catch INN synonyms).",
+  "not_injection_route": ["QUETIAPINE (oral)", "THEOPHYLLINE ANHYDROUS (oral)", "PYRAZINAMIDE (oral)", "WARFARIN SODIUM (oral)", "RIBAVIRIN (inhalation)", "CYANOCOBALAMIN (nasal)"],
+  "label_covers_both_routes": ["CAFFEINE CITRATE", "CHLORPROMAZINE HCL", "RANITIDINE", "LEVOFLOXACIN", "MOXIFLOXACIN HYDROCHLORIDE"],
+  "oral_label_under_sibling_key": {"CEFUROXIME": "CEFUROXIME AXETIL", "CLINDAMYCIN": "CLINDAMYCIN HCL", "ERYTHROMYCIN": "ERYTHROMYCIN BASE", "MORPHINE SULFATE": "MORPHINE HCL", "ONDANSETRON HYDROCHLORIDE DIHYDRATE": "ONDANSETRON"},
+  "entity_has_oral_safety_elsewhere": {"IRON": "FERRIC CITRATE", "ZINC": "ZINC ACETATE DIHYDRATE"},
+  "injection_only_with_tfda_oral": ["ACETAMINOPHEN", "ACETYLCYSTEINE", "AMINOPHYLLINE", "AMISULPRIDE", "ASCORBIC ACID", "ATROPINE SULFATE", "AZACITIDINE", "BACLOFEN (intrathecal)", "BUPRENORPHINE HYDROCHLORIDE", "CALCIUM", "DANTROLENE SODIUM", "DEXAMETHASONE (intravitreal implant)", "DIMENHYDRINATE", "DIMERCAPTOSUCCINIC ACID", "DISODIUM CLODRONATE (VETERINARY — OSPHOS, dosed per horse)", "EPHEDRINE HCL", "EPHEDRINE SULFATE", "ESTRADIOL VALERATE", "ETOPOSIDE", "FLUORIDE (WRONG OBJECT — Sodium Fluoride F-18 PET tracer)", "FUROSEMIDE", "GRANISETRON", "GRANISETRON HYDROCHLORIDE", "IBUPROFEN LYSINE", "LABETALOL HCL", "LINCOMYCIN", "MEDROXYPROGESTERONE ACETATE", "MELPHALAN", "METHOCARBAMOL", "METHOTREXATE", "METHOXSALEN (extracorporeal)", "METHYLPREDNISOLONE", "METRONIDAZOLE", "MIDAZOLAM", "NALBUPHINE HYDROCHLORIDE", "NALTREXONE HYDROCHLORIDE", "NICARDIPINE HCL", "OLANZAPINE (pamoate LAI)", "OXACILLIN", "PAPAVERINE HCL", "PHENOBARBITAL", "PYRIDOXINE HCL", "SODIUM BICARBONATE", "SODIUM CHLORIDE (WRONG OBJECT — Adrenalin / epinephrine in NaCl)", "SODIUM VALPROATE", "SUMATRIPTAN SUCCINATE", "THIAMINE HYDROCHLORIDE", "TRANEXAMIC ACID", "VINORELBINE TARTRATE"],
+  "injection_only_with_tfda_oral_n_moiety_keys": 49,
+  "injection_only_with_tfda_oral_n_entities": 47,
+  "entity_note": "47 = 49 keys minus the two duplicated entities (EPHEDRINE x2, GRANISETRON x2). The magnesium and potassium injection keys are not in this list because their exact key has no TFDA oral MONO product; they are covered in 'substances'."
+ }
+}

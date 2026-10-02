@@ -1,0 +1,286 @@
+{
+ "_how": "ROUTE-MISMATCH car, STEP 3 — the FilterExempt / CutExempt door, from SAVED traces (OFFLINE, zero LLM).",
+ "totals_runs_format": {
+  "final_safety": 57,
+  "FILTER_EXEMPT": 7,
+  "LLM_KEPT": 50,
+  "final_safety_injection_route": 42,
+  "inj_LLM_KEPT": 41,
+  "runs": 86,
+  "inj_FILTER_EXEMPT": 1
+ },
+ "per_file": {
+  "step10_ctl_en_l1_trace.json": {
+   "final_safety": 4,
+   "FILTER_EXEMPT": 1,
+   "LLM_KEPT": 3,
+   "final_safety_injection_route": 3,
+   "inj_LLM_KEPT": 3,
+   "runs": 4
+  },
+  "step10_ctl_zh_l0_trace.json": {
+   "final_safety": 1,
+   "LLM_KEPT": 1,
+   "final_safety_injection_route": 1,
+   "inj_LLM_KEPT": 1,
+   "runs": 4
+  },
+  "step10_ctl_zh_l1_trace.json": {
+   "runs": 4
+  },
+  "step10_trt_en_l0_trace.json": {
+   "final_safety": 7,
+   "LLM_KEPT": 7,
+   "final_safety_injection_route": 7,
+   "inj_LLM_KEPT": 7,
+   "runs": 8
+  },
+  "step10_trt_en_l1_trace.json": {
+   "final_safety": 4,
+   "LLM_KEPT": 4,
+   "final_safety_injection_route": 4,
+   "inj_LLM_KEPT": 4,
+   "runs": 4
+  },
+  "step10_trt_pair_l0_trace.json": {
+   "runs": 4,
+   "final_safety": 2,
+   "LLM_KEPT": 1,
+   "FILTER_EXEMPT": 1
+  },
+  "step10_trt_pair_l1_trace.json": {
+   "final_safety": 1,
+   "FILTER_EXEMPT": 1,
+   "runs": 2
+  },
+  "step10_trt_zh_l0_trace.json": {
+   "runs": 8
+  },
+  "step10_trt_zh_l1_trace.json": {
+   "runs": 4
+  },
+  "step11_2b_en_l0_trace.json": {
+   "final_safety": 10,
+   "LLM_KEPT": 10,
+   "final_safety_injection_route": 7,
+   "inj_LLM_KEPT": 7,
+   "runs": 8
+  },
+  "step11_2b_zh_l0_trace.json": {
+   "final_safety": 3,
+   "LLM_KEPT": 3,
+   "final_safety_injection_route": 3,
+   "inj_LLM_KEPT": 3,
+   "runs": 4
+  },
+  "step3_trace.json": {
+   "runs": 5
+  },
+  "step6_treatment_trace.json": {
+   "final_safety": 3,
+   "LLM_KEPT": 3,
+   "final_safety_injection_route": 2,
+   "inj_LLM_KEPT": 2,
+   "runs": 2
+  },
+  "step7_trace.json": {
+   "runs": 1
+  },
+  "step7b_trace.json": {
+   "final_safety": 10,
+   "FILTER_EXEMPT": 3,
+   "final_safety_injection_route": 6,
+   "inj_FILTER_EXEMPT": 1,
+   "runs": 8,
+   "LLM_KEPT": 7,
+   "inj_LLM_KEPT": 5
+  },
+  "step8_l0_trace.json": {
+   "runs": 8,
+   "final_safety": 7,
+   "LLM_KEPT": 6,
+   "final_safety_injection_route": 4,
+   "inj_LLM_KEPT": 4,
+   "FILTER_EXEMPT": 1
+  },
+  "step8_zh_l0_trace.json": {
+   "runs": 4,
+   "final_safety": 1,
+   "LLM_KEPT": 1,
+   "final_safety_injection_route": 1,
+   "inj_LLM_KEPT": 1
+  },
+  "step8_zh_l1_trace.json": {
+   "final_safety": 4,
+   "LLM_KEPT": 4,
+   "final_safety_injection_route": 4,
+   "inj_LLM_KEPT": 4,
+   "runs": 4
+  }
+ },
+ "per_section": [
+  {
+   "source_id": "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7",
+   "title": "Calcium Chloride (CALCIUM CHLORIDE)",
+   "loinc": "34073-7",
+   "route": "INJ_ONLY",
+   "final": 42,
+   "LLM_KEPT": 41,
+   "FILTER_EXEMPT": 1
+  },
+  {
+   "source_id": "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34073-7",
+   "title": "Hydrochlorothiazide (Hydrochlorothiazide)",
+   "loinc": "34073-7",
+   "route": "ORAL_ONLY",
+   "final": 12,
+   "FILTER_EXEMPT": 4,
+   "LLM_KEPT": 8
+  },
+  {
+   "source_id": "DailyMed:39631f1f-5d19-43c1-b504-bf56d991ed97#34073-7",
+   "title": "Vasotec (Enalapril Maleate)",
+   "loinc": "34073-7",
+   "route": "ORAL_ONLY",
+   "final": 2,
+   "LLM_KEPT": 1,
+   "FILTER_EXEMPT": 1
+  },
+  {
+   "source_id": "DailyMed:afd2d1ba-e7af-4e4e-8b7e-a9f72612fc97#34073-7",
+   "title": "ARBLI (losartan potassium)",
+   "loinc": "34073-7",
+   "route": "ORAL_ONLY",
+   "final": 1,
+   "FILTER_EXEMPT": 1
+  }
+ ],
+ "e6_final_safety": [
+  {
+   "q": "Q11",
+   "source_id": "DailyMed:39631f1f-5d19-43c1-b504-bf56d991ed97#34073-7",
+   "route": "ORAL_ONLY",
+   "title": "Vasotec (Enalapril Maleate)",
+   "n_runs": 3
+  },
+  {
+   "q": "Q12",
+   "source_id": "DailyMed:0fed2822-3a03-4b64-9857-c682fcd462bc#34073-7",
+   "route": "NONE",
+   "title": "Aldactone (spironolactone)",
+   "n_runs": 1
+  },
+  {
+   "q": "Q12",
+   "source_id": "DailyMed:0fed2822-3a03-4b64-9857-c682fcd462bc#43685-7",
+   "route": "NONE",
+   "title": "Aldactone (spironolactone)",
+   "n_runs": 1
+  },
+  {
+   "q": "Q12",
+   "source_id": "DailyMed:14cd12ee-a4a3-465a-9550-58c9ef0e4f21#34073-7",
+   "route": "HAND:INJECTION",
+   "title": "Potassium Chloride (Potassium Chloride)",
+   "n_runs": 4
+  },
+  {
+   "q": "Q12",
+   "source_id": "DailyMed:1a52bedc-8e2c-4116-a296-a87770676b4a#43685-7",
+   "route": "NONE",
+   "title": "Inspra (eplerenone)",
+   "n_runs": 3
+  },
+  {
+   "q": "Q12",
+   "source_id": "DailyMed:1cf090a2-b6c0-42cd-857e-60a9cd85fe19#34073-7",
+   "route": "ORAL_ONLY",
+   "title": "AMILORIDE HYDROCHLORIDE (amiloride hydrochloride)",
+   "n_runs": 1
+  },
+  {
+   "q": "Q2",
+   "source_id": "DailyMed:14cd12ee-a4a3-465a-9550-58c9ef0e4f21#34073-7",
+   "route": "HAND:INJECTION",
+   "title": "Potassium Chloride (Potassium Chloride)",
+   "n_runs": 6
+  },
+  {
+   "q": "Q2",
+   "source_id": "DailyMed:1cf090a2-b6c0-42cd-857e-60a9cd85fe19#34073-7",
+   "route": "ORAL_ONLY",
+   "title": "AMILORIDE HYDROCHLORIDE (amiloride hydrochloride)",
+   "n_runs": 6
+  },
+  {
+   "q": "Q2",
+   "source_id": "DailyMed:5ddba454-f3e6-43c2-a7a6-58365d297213#34073-7",
+   "route": "ORAL_ONLY",
+   "title": "Diovan (valsartan)",
+   "n_runs": 6
+  },
+  {
+   "q": "Q2",
+   "source_id": "DailyMed:afd2d1ba-e7af-4e4e-8b7e-a9f72612fc97#34073-7",
+   "route": "ORAL_ONLY",
+   "title": "ARBLI (losartan potassium)",
+   "n_runs": 6
+  },
+  {
+   "q": "Q3",
+   "source_id": "DailyMed:abd6a2ca-40c2-485c-bc53-db1c652505ed#34073-7",
+   "route": "ORAL_ONLY",
+   "title": "Norvasc (amlodipine besylate)",
+   "n_runs": 6
+  },
+  {
+   "q": "Q6",
+   "source_id": "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34073-7",
+   "route": "ORAL_ONLY",
+   "title": "Hydrochlorothiazide (Hydrochlorothiazide)",
+   "n_runs": 3
+  },
+  {
+   "q": "Q7",
+   "source_id": "DailyMed:14cd12ee-a4a3-465a-9550-58c9ef0e4f21#34073-7",
+   "route": "HAND:INJECTION",
+   "title": "Potassium Chloride (Potassium Chloride)",
+   "n_runs": 4
+  },
+  {
+   "q": "Q7",
+   "source_id": "DailyMed:1cf090a2-b6c0-42cd-857e-60a9cd85fe19#34073-7",
+   "route": "ORAL_ONLY",
+   "title": "AMILORIDE HYDROCHLORIDE (amiloride hydrochloride)",
+   "n_runs": 2
+  },
+  {
+   "q": "Q7",
+   "source_id": "DailyMed:5ddba454-f3e6-43c2-a7a6-58365d297213#34073-7",
+   "route": "ORAL_ONLY",
+   "title": "Diovan (valsartan)",
+   "n_runs": 2
+  },
+  {
+   "q": "Q7",
+   "source_id": "DailyMed:94a59260-d2b6-464a-b5b9-bbc599e57e10#34073-7",
+   "route": "ORAL_ONLY",
+   "title": "ATACAND (Candesartan Cilexetil)",
+   "n_runs": 1
+  },
+  {
+   "q": "Q7",
+   "source_id": "DailyMed:97a9e8bf-91ed-4256-97d4-f9504bb01373#34073-7",
+   "route": "NONE",
+   "title": "Aceon (perindopril erbumine)",
+   "n_runs": 1
+  },
+  {
+   "q": "Q7",
+   "source_id": "DailyMed:afd2d1ba-e7af-4e4e-8b7e-a9f72612fc97#34073-7",
+   "route": "ORAL_ONLY",
+   "title": "ARBLI (losartan potassium)",
+   "n_runs": 1
+  }
+ ]
+}

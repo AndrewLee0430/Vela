@@ -1,0 +1,1845 @@
+{
+ "_how": "ROUTE-MISMATCH car, STEP 2 — HAND grades for every saved answer under tests/probes/bp_calcium/, tabulated (OFFLINE).",
+ "n_answers": 149,
+ "by_grade": {
+  "C": 102,
+  "A": 42,
+  "B": 5
+ },
+ "by_family": {
+  "calcium": {
+   "C": 62,
+   "A": 42,
+   "B": 5
+  },
+  "potassium": {
+   "C": 14
+  },
+  "other": {
+   "C": 14
+  },
+  "iron": {
+   "C": 4
+  },
+  "magnesium": {
+   "C": 4
+  },
+  "vitamin D": {
+   "C": 4
+  }
+ },
+ "by_query_arm": [
+  {
+   "query": "BP meds with grapefruit",
+   "arm": "step10_e6_trt",
+   "C": 2
+  },
+  {
+   "query": "BP meds with grapefruit",
+   "arm": "step9",
+   "C": 2
+  },
+  {
+   "query": "Calcium with amlodipine?",
+   "arm": "step10_e6_ctl",
+   "C": 2
+  },
+  {
+   "query": "Calcium with amlodipine?",
+   "arm": "step10_e6_trt",
+   "C": 2
+  },
+  {
+   "query": "Calcium with amlodipine?",
+   "arm": "step9",
+   "C": 2
+  },
+  {
+   "query": "Can I take potassium with my BP pills?",
+   "arm": "step10_e6_ctl",
+   "C": 2
+  },
+  {
+   "query": "Can I take potassium with my BP pills?",
+   "arm": "step10_e6_trt",
+   "C": 2
+  },
+  {
+   "query": "Can I take potassium with my BP pills?",
+   "arm": "step9",
+   "C": 2
+  },
+  {
+   "query": "Can elderly patients take BP meds with calcium?",
+   "arm": "prod_smoke_fly261",
+   "A": 1
+  },
+  {
+   "query": "Can elderly patients take BP meds with calcium?",
+   "arm": "prod_smoke_fly262",
+   "A": 1
+  },
+  {
+   "query": "Can elderly patients take BP meds with calcium?",
+   "arm": "step10_0b",
+   "C": 4,
+   "A": 4
+  },
+  {
+   "query": "Can elderly patients take BP meds with calcium?",
+   "arm": "step10_ctl_en_l1",
+   "A": 3,
+   "C": 1
+  },
+  {
+   "query": "Can elderly patients take BP meds with calcium?",
+   "arm": "step10_trt_en_l0",
+   "A": 7,
+   "C": 1
+  },
+  {
+   "query": "Can elderly patients take BP meds with calcium?",
+   "arm": "step10_trt_en_l1",
+   "A": 4
+  },
+  {
+   "query": "Can elderly patients take BP meds with calcium?",
+   "arm": "step11_2b_en_l0",
+   "A": 7,
+   "C": 1
+  },
+  {
+   "query": "Can elderly patients take BP meds with calcium?",
+   "arm": "step3",
+   "C": 1
+  },
+  {
+   "query": "Can elderly patients take BP meds with calcium?",
+   "arm": "step6_treatment",
+   "B": 1
+  },
+  {
+   "query": "Can elderly patients take BP meds with calcium?",
+   "arm": "step7",
+   "C": 1
+  },
+  {
+   "query": "Can elderly patients take BP meds with calcium?",
+   "arm": "step7b",
+   "A": 5,
+   "C": 2,
+   "B": 1
+  },
+  {
+   "query": "Can elderly patients take BP meds with calcium?",
+   "arm": "step8_l0",
+   "C": 4,
+   "B": 1,
+   "A": 3
+  },
+  {
+   "query": "Can elderly take vitamin D with water pills?",
+   "arm": "step10_e6_trt",
+   "C": 2
+  },
+  {
+   "query": "Can elderly take vitamin D with water pills?",
+   "arm": "step9",
+   "C": 2
+  },
+  {
+   "query": "aspirin with BP medication elderly",
+   "arm": "step10_e6_ctl",
+   "C": 2
+  },
+  {
+   "query": "aspirin with BP medication elderly",
+   "arm": "step10_e6_trt",
+   "C": 2
+  },
+  {
+   "query": "aspirin with BP medication elderly",
+   "arm": "step9",
+   "C": 2
+  },
+  {
+   "query": "calcium and lisinopril",
+   "arm": "step10_e6_ctl",
+   "C": 2
+  },
+  {
+   "query": "calcium and lisinopril",
+   "arm": "step10_e6_trt",
+   "C": 2
+  },
+  {
+   "query": "calcium and lisinopril",
+   "arm": "step10_trt_pair_l0",
+   "C": 4
+  },
+  {
+   "query": "calcium and lisinopril",
+   "arm": "step10_trt_pair_l1",
+   "C": 2
+  },
+  {
+   "query": "calcium and lisinopril",
+   "arm": "step9",
+   "C": 2
+  },
+  {
+   "query": "iron supplements with blood pressure medication",
+   "arm": "step10_e6_trt",
+   "C": 2
+  },
+  {
+   "query": "iron supplements with blood pressure medication",
+   "arm": "step9",
+   "C": 2
+  },
+  {
+   "query": "magnesium and diuretics elderly",
+   "arm": "step10_e6_trt",
+   "C": 2
+  },
+  {
+   "query": "magnesium and diuretics elderly",
+   "arm": "step9",
+   "C": 2
+  },
+  {
+   "query": "potassium with spironolactone",
+   "arm": "step10_e6_trt",
+   "C": 2
+  },
+  {
+   "query": "potassium with spironolactone",
+   "arm": "step9",
+   "C": 2
+  },
+  {
+   "query": "sugar pills with BP meds",
+   "arm": "step10_e6_trt",
+   "C": 2
+  },
+  {
+   "query": "sugar pills with BP meds",
+   "arm": "step9",
+   "C": 2
+  },
+  {
+   "query": "老人血壓藥可以跟鈣片一起吃嗎？",
+   "arm": "step10_ctl_zh_l0",
+   "A": 1,
+   "C": 3
+  },
+  {
+   "query": "老人血壓藥可以跟鈣片一起吃嗎？",
+   "arm": "step10_ctl_zh_l1",
+   "C": 4
+  },
+  {
+   "query": "老人血壓藥可以跟鈣片一起吃嗎？",
+   "arm": "step10_trt_zh_l0",
+   "C": 8
+  },
+  {
+   "query": "老人血壓藥可以跟鈣片一起吃嗎？",
+   "arm": "step10_trt_zh_l1",
+   "C": 4
+  },
+  {
+   "query": "老人血壓藥可以跟鈣片一起吃嗎？",
+   "arm": "step11_2b_zh_l0",
+   "B": 2,
+   "C": 1,
+   "A": 1
+  },
+  {
+   "query": "老人血壓藥可以跟鈣片一起吃嗎？",
+   "arm": "step8_zh_l0",
+   "C": 3,
+   "A": 1
+  },
+  {
+   "query": "老人血壓藥可以跟鈣片一起吃嗎？",
+   "arm": "step8_zh_l1",
+   "A": 4
+  },
+  {
+   "query": "鈣片和降血壓藥可以一起吃嗎",
+   "arm": "step10_e6_ctl",
+   "C": 2
+  },
+  {
+   "query": "鈣片和降血壓藥可以一起吃嗎",
+   "arm": "step10_e6_trt",
+   "C": 2
+  },
+  {
+   "query": "鈣片和降血壓藥可以一起吃嗎",
+   "arm": "step9",
+   "C": 2
+  },
+  {
+   "query": "降血壓藥和鉀離子補充劑",
+   "arm": "step10_e6_trt",
+   "C": 2
+  },
+  {
+   "query": "降血壓藥和鉀離子補充劑",
+   "arm": "step9",
+   "C": 2
+  }
+ ],
+ "dailymed_in_final_of_A_answers": {
+  "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7": 42,
+  "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34073-7": 8
+ },
+ "rows": [
+  {
+   "file": "step10_0b_answer_run1_gpt41.md",
+   "arm": "step10_0b",
+   "family": "calcium",
+   "query": "Can elderly patients take BP meds with calcium?",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step10_0b_answer_run2_gpt41.md",
+   "arm": "step10_0b",
+   "family": "calcium",
+   "query": "Can elderly patients take BP meds with calcium?",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": [
+    "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34073-7"
+   ]
+  },
+  {
+   "file": "step10_0b_answer_run3_gpt41.md",
+   "arm": "step10_0b",
+   "family": "calcium",
+   "query": "Can elderly patients take BP meds with calcium?",
+   "grade": "A",
+   "note": "caveat",
+   "final_dailymed": [
+    "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7"
+   ]
+  },
+  {
+   "file": "step10_0b_answer_run4_gpt41.md",
+   "arm": "step10_0b",
+   "family": "calcium",
+   "query": "Can elderly patients take BP meds with calcium?",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": [
+    "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34073-7"
+   ]
+  },
+  {
+   "file": "step10_0b_answer_run5_gpt41.md",
+   "arm": "step10_0b",
+   "family": "calcium",
+   "query": "Can elderly patients take BP meds with calcium?",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step10_0b_answer_run6_gpt41.md",
+   "arm": "step10_0b",
+   "family": "calcium",
+   "query": "Can elderly patients take BP meds with calcium?",
+   "grade": "A",
+   "note": "",
+   "final_dailymed": [
+    "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7",
+    "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34073-7"
+   ]
+  },
+  {
+   "file": "step10_0b_answer_run7_gpt41.md",
+   "arm": "step10_0b",
+   "family": "calcium",
+   "query": "Can elderly patients take BP meds with calcium?",
+   "grade": "A",
+   "note": "caveat",
+   "final_dailymed": [
+    "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7"
+   ]
+  },
+  {
+   "file": "step10_0b_answer_run8_gpt41.md",
+   "arm": "step10_0b",
+   "family": "calcium",
+   "query": "Can elderly patients take BP meds with calcium?",
+   "grade": "A",
+   "note": "",
+   "final_dailymed": [
+    "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7"
+   ]
+  },
+  {
+   "file": "step10_ctl_en_l1_answer_run1.md",
+   "arm": "step10_ctl_en_l1",
+   "family": "calcium",
+   "query": "Can elderly patients take BP meds with calcium?",
+   "grade": "A",
+   "note": "",
+   "final_dailymed": [
+    "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34073-7",
+    "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7"
+   ]
+  },
+  {
+   "file": "step10_ctl_en_l1_answer_run2.md",
+   "arm": "step10_ctl_en_l1",
+   "family": "calcium",
+   "query": "Can elderly patients take BP meds with calcium?",
+   "grade": "A",
+   "note": "caveat",
+   "final_dailymed": [
+    "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7"
+   ]
+  },
+  {
+   "file": "step10_ctl_en_l1_answer_run3.md",
+   "arm": "step10_ctl_en_l1",
+   "family": "calcium",
+   "query": "Can elderly patients take BP meds with calcium?",
+   "grade": "C",
+   "note": "[1] = PMID:16199918 (CCB review), not the injection label — CCB-antagonism claim for supplements is NOT route-sourced",
+   "final_dailymed": []
+  },
+  {
+   "file": "step10_ctl_en_l1_answer_run4.md",
+   "arm": "step10_ctl_en_l1",
+   "family": "calcium",
+   "query": "Can elderly patients take BP meds with calcium?",
+   "grade": "A",
+   "note": "",
+   "final_dailymed": [
+    "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7"
+   ]
+  },
+  {
+   "file": "step10_ctl_zh_l0_answer_run1.md",
+   "arm": "step10_ctl_zh_l0",
+   "family": "calcium",
+   "query": "老人血壓藥可以跟鈣片一起吃嗎？",
+   "grade": "A",
+   "note": "",
+   "final_dailymed": [
+    "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7"
+   ]
+  },
+  {
+   "file": "step10_ctl_zh_l0_answer_run2.md",
+   "arm": "step10_ctl_zh_l0",
+   "family": "calcium",
+   "query": "老人血壓藥可以跟鈣片一起吃嗎？",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step10_ctl_zh_l0_answer_run3.md",
+   "arm": "step10_ctl_zh_l0",
+   "family": "calcium",
+   "query": "老人血壓藥可以跟鈣片一起吃嗎？",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step10_ctl_zh_l0_answer_run4.md",
+   "arm": "step10_ctl_zh_l0",
+   "family": "calcium",
+   "query": "老人血壓藥可以跟鈣片一起吃嗎？",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step10_ctl_zh_l1_answer_run1.md",
+   "arm": "step10_ctl_zh_l1",
+   "family": "calcium",
+   "query": "老人血壓藥可以跟鈣片一起吃嗎？",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step10_ctl_zh_l1_answer_run2.md",
+   "arm": "step10_ctl_zh_l1",
+   "family": "calcium",
+   "query": "老人血壓藥可以跟鈣片一起吃嗎？",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step10_ctl_zh_l1_answer_run3.md",
+   "arm": "step10_ctl_zh_l1",
+   "family": "calcium",
+   "query": "老人血壓藥可以跟鈣片一起吃嗎？",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step10_ctl_zh_l1_answer_run4.md",
+   "arm": "step10_ctl_zh_l1",
+   "family": "calcium",
+   "query": "老人血壓藥可以跟鈣片一起吃嗎？",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step10_e6_ctl_answer_Q11_r1.md",
+   "arm": "step10_e6_ctl",
+   "family": "calcium",
+   "query": "calcium and lisinopril",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step10_e6_ctl_answer_Q11_r2.md",
+   "arm": "step10_e6_ctl",
+   "family": "calcium",
+   "query": "calcium and lisinopril",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": [
+    "DailyMed:39631f1f-5d19-43c1-b504-bf56d991ed97#34073-7"
+   ]
+  },
+  {
+   "file": "step10_e6_ctl_answer_Q1_r1.md",
+   "arm": "step10_e6_ctl",
+   "family": "calcium",
+   "query": "鈣片和降血壓藥可以一起吃嗎",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step10_e6_ctl_answer_Q1_r2.md",
+   "arm": "step10_e6_ctl",
+   "family": "calcium",
+   "query": "鈣片和降血壓藥可以一起吃嗎",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step10_e6_ctl_answer_Q2_r1.md",
+   "arm": "step10_e6_ctl",
+   "family": "potassium",
+   "query": "Can I take potassium with my BP pills?",
+   "grade": "C",
+   "note": "inj_label_route_agnostic (Potassium Chloride Injection 34073-7 in FINAL)",
+   "final_dailymed": [
+    "DailyMed:14cd12ee-a4a3-465a-9550-58c9ef0e4f21#34073-7",
+    "DailyMed:5ddba454-f3e6-43c2-a7a6-58365d297213#34073-7",
+    "DailyMed:afd2d1ba-e7af-4e4e-8b7e-a9f72612fc97#34073-7",
+    "DailyMed:1cf090a2-b6c0-42cd-857e-60a9cd85fe19#34073-7"
+   ]
+  },
+  {
+   "file": "step10_e6_ctl_answer_Q2_r2.md",
+   "arm": "step10_e6_ctl",
+   "family": "potassium",
+   "query": "Can I take potassium with my BP pills?",
+   "grade": "C",
+   "note": "inj_label_route_agnostic (Potassium Chloride Injection 34073-7 in FINAL)",
+   "final_dailymed": [
+    "DailyMed:14cd12ee-a4a3-465a-9550-58c9ef0e4f21#34073-7",
+    "DailyMed:5ddba454-f3e6-43c2-a7a6-58365d297213#34073-7",
+    "DailyMed:1cf090a2-b6c0-42cd-857e-60a9cd85fe19#34073-7",
+    "DailyMed:afd2d1ba-e7af-4e4e-8b7e-a9f72612fc97#34073-7"
+   ]
+  },
+  {
+   "file": "step10_e6_ctl_answer_Q3_r1.md",
+   "arm": "step10_e6_ctl",
+   "family": "calcium",
+   "query": "Calcium with amlodipine?",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": [
+    "DailyMed:abd6a2ca-40c2-485c-bc53-db1c652505ed#34073-7"
+   ]
+  },
+  {
+   "file": "step10_e6_ctl_answer_Q3_r2.md",
+   "arm": "step10_e6_ctl",
+   "family": "calcium",
+   "query": "Calcium with amlodipine?",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": [
+    "DailyMed:abd6a2ca-40c2-485c-bc53-db1c652505ed#34073-7"
+   ]
+  },
+  {
+   "file": "step10_e6_ctl_answer_Q9_r1.md",
+   "arm": "step10_e6_ctl",
+   "family": "other",
+   "query": "aspirin with BP medication elderly",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step10_e6_ctl_answer_Q9_r2.md",
+   "arm": "step10_e6_ctl",
+   "family": "other",
+   "query": "aspirin with BP medication elderly",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step10_e6_trt_answer_Q10_r1.md",
+   "arm": "step10_e6_trt",
+   "family": "other",
+   "query": "BP meds with grapefruit",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step10_e6_trt_answer_Q10_r2.md",
+   "arm": "step10_e6_trt",
+   "family": "other",
+   "query": "BP meds with grapefruit",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step10_e6_trt_answer_Q11_r1.md",
+   "arm": "step10_e6_trt",
+   "family": "calcium",
+   "query": "calcium and lisinopril",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": [
+    "DailyMed:39631f1f-5d19-43c1-b504-bf56d991ed97#34073-7"
+   ]
+  },
+  {
+   "file": "step10_e6_trt_answer_Q11_r2.md",
+   "arm": "step10_e6_trt",
+   "family": "calcium",
+   "query": "calcium and lisinopril",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": [
+    "DailyMed:39631f1f-5d19-43c1-b504-bf56d991ed97#34073-7"
+   ]
+  },
+  {
+   "file": "step10_e6_trt_answer_Q12_r1.md",
+   "arm": "step10_e6_trt",
+   "family": "potassium",
+   "query": "potassium with spironolactone",
+   "grade": "C",
+   "note": "inj_label_route_agnostic (Potassium Chloride Injection 34073-7 in FINAL)",
+   "final_dailymed": [
+    "DailyMed:0fed2822-3a03-4b64-9857-c682fcd462bc#34073-7",
+    "DailyMed:14cd12ee-a4a3-465a-9550-58c9ef0e4f21#34073-7",
+    "DailyMed:1cf090a2-b6c0-42cd-857e-60a9cd85fe19#34073-7"
+   ]
+  },
+  {
+   "file": "step10_e6_trt_answer_Q12_r2.md",
+   "arm": "step10_e6_trt",
+   "family": "potassium",
+   "query": "potassium with spironolactone",
+   "grade": "C",
+   "note": "inj_label_route_agnostic (Potassium Chloride Injection 34073-7 in FINAL)",
+   "final_dailymed": [
+    "DailyMed:0fed2822-3a03-4b64-9857-c682fcd462bc#43685-7",
+    "DailyMed:1a52bedc-8e2c-4116-a296-a87770676b4a#43685-7",
+    "DailyMed:14cd12ee-a4a3-465a-9550-58c9ef0e4f21#34073-7"
+   ]
+  },
+  {
+   "file": "step10_e6_trt_answer_Q1_r1.md",
+   "arm": "step10_e6_trt",
+   "family": "calcium",
+   "query": "鈣片和降血壓藥可以一起吃嗎",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step10_e6_trt_answer_Q1_r2.md",
+   "arm": "step10_e6_trt",
+   "family": "calcium",
+   "query": "鈣片和降血壓藥可以一起吃嗎",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step10_e6_trt_answer_Q2_r1.md",
+   "arm": "step10_e6_trt",
+   "family": "potassium",
+   "query": "Can I take potassium with my BP pills?",
+   "grade": "C",
+   "note": "inj_label_route_agnostic (Potassium Chloride Injection 34073-7 in FINAL)",
+   "final_dailymed": [
+    "DailyMed:14cd12ee-a4a3-465a-9550-58c9ef0e4f21#34073-7",
+    "DailyMed:5ddba454-f3e6-43c2-a7a6-58365d297213#34073-7",
+    "DailyMed:1cf090a2-b6c0-42cd-857e-60a9cd85fe19#34073-7",
+    "DailyMed:afd2d1ba-e7af-4e4e-8b7e-a9f72612fc97#34073-7"
+   ]
+  },
+  {
+   "file": "step10_e6_trt_answer_Q2_r2.md",
+   "arm": "step10_e6_trt",
+   "family": "potassium",
+   "query": "Can I take potassium with my BP pills?",
+   "grade": "C",
+   "note": "inj_label_route_agnostic (Potassium Chloride Injection 34073-7 in FINAL)",
+   "final_dailymed": [
+    "DailyMed:14cd12ee-a4a3-465a-9550-58c9ef0e4f21#34073-7",
+    "DailyMed:5ddba454-f3e6-43c2-a7a6-58365d297213#34073-7",
+    "DailyMed:1cf090a2-b6c0-42cd-857e-60a9cd85fe19#34073-7",
+    "DailyMed:afd2d1ba-e7af-4e4e-8b7e-a9f72612fc97#34073-7"
+   ]
+  },
+  {
+   "file": "step10_e6_trt_answer_Q3_r1.md",
+   "arm": "step10_e6_trt",
+   "family": "calcium",
+   "query": "Calcium with amlodipine?",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": [
+    "DailyMed:abd6a2ca-40c2-485c-bc53-db1c652505ed#34073-7"
+   ]
+  },
+  {
+   "file": "step10_e6_trt_answer_Q3_r2.md",
+   "arm": "step10_e6_trt",
+   "family": "calcium",
+   "query": "Calcium with amlodipine?",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": [
+    "DailyMed:abd6a2ca-40c2-485c-bc53-db1c652505ed#34073-7"
+   ]
+  },
+  {
+   "file": "step10_e6_trt_answer_Q4_r1.md",
+   "arm": "step10_e6_trt",
+   "family": "iron",
+   "query": "iron supplements with blood pressure medication",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step10_e6_trt_answer_Q4_r2.md",
+   "arm": "step10_e6_trt",
+   "family": "iron",
+   "query": "iron supplements with blood pressure medication",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step10_e6_trt_answer_Q5_r1.md",
+   "arm": "step10_e6_trt",
+   "family": "magnesium",
+   "query": "magnesium and diuretics elderly",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step10_e6_trt_answer_Q5_r2.md",
+   "arm": "step10_e6_trt",
+   "family": "magnesium",
+   "query": "magnesium and diuretics elderly",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step10_e6_trt_answer_Q6_r1.md",
+   "arm": "step10_e6_trt",
+   "family": "vitamin D",
+   "query": "Can elderly take vitamin D with water pills?",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": [
+    "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34073-7"
+   ]
+  },
+  {
+   "file": "step10_e6_trt_answer_Q6_r2.md",
+   "arm": "step10_e6_trt",
+   "family": "vitamin D",
+   "query": "Can elderly take vitamin D with water pills?",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step10_e6_trt_answer_Q7_r1.md",
+   "arm": "step10_e6_trt",
+   "family": "potassium",
+   "query": "降血壓藥和鉀離子補充劑",
+   "grade": "C",
+   "note": "inj_label_route_agnostic (Potassium Chloride Injection 34073-7 in FINAL)",
+   "final_dailymed": [
+    "DailyMed:5ddba454-f3e6-43c2-a7a6-58365d297213#34073-7",
+    "DailyMed:1cf090a2-b6c0-42cd-857e-60a9cd85fe19#34073-7",
+    "DailyMed:97a9e8bf-91ed-4256-97d4-f9504bb01373#34073-7",
+    "DailyMed:14cd12ee-a4a3-465a-9550-58c9ef0e4f21#34073-7"
+   ]
+  },
+  {
+   "file": "step10_e6_trt_answer_Q7_r2.md",
+   "arm": "step10_e6_trt",
+   "family": "potassium",
+   "query": "降血壓藥和鉀離子補充劑",
+   "grade": "C",
+   "note": "inj_label_route_agnostic (Potassium Chloride Injection 34073-7 in FINAL)",
+   "final_dailymed": [
+    "DailyMed:1cf090a2-b6c0-42cd-857e-60a9cd85fe19#34073-7",
+    "DailyMed:5ddba454-f3e6-43c2-a7a6-58365d297213#34073-7",
+    "DailyMed:14cd12ee-a4a3-465a-9550-58c9ef0e4f21#34073-7",
+    "DailyMed:94a59260-d2b6-464a-b5b9-bbc599e57e10#34073-7",
+    "DailyMed:afd2d1ba-e7af-4e4e-8b7e-a9f72612fc97#34073-7"
+   ]
+  },
+  {
+   "file": "step10_e6_trt_answer_Q8_r1.md",
+   "arm": "step10_e6_trt",
+   "family": "other",
+   "query": "sugar pills with BP meds",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step10_e6_trt_answer_Q8_r2.md",
+   "arm": "step10_e6_trt",
+   "family": "other",
+   "query": "sugar pills with BP meds",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step10_e6_trt_answer_Q9_r1.md",
+   "arm": "step10_e6_trt",
+   "family": "other",
+   "query": "aspirin with BP medication elderly",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step10_e6_trt_answer_Q9_r2.md",
+   "arm": "step10_e6_trt",
+   "family": "other",
+   "query": "aspirin with BP medication elderly",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step10_trt_en_l0_answer_run1.md",
+   "arm": "step10_trt_en_l0",
+   "family": "calcium",
+   "query": "Can elderly patients take BP meds with calcium?",
+   "grade": "A",
+   "note": "caveat",
+   "final_dailymed": [
+    "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7"
+   ]
+  },
+  {
+   "file": "step10_trt_en_l0_answer_run2.md",
+   "arm": "step10_trt_en_l0",
+   "family": "calcium",
+   "query": "Can elderly patients take BP meds with calcium?",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step10_trt_en_l0_answer_run3.md",
+   "arm": "step10_trt_en_l0",
+   "family": "calcium",
+   "query": "Can elderly patients take BP meds with calcium?",
+   "grade": "A",
+   "note": "",
+   "final_dailymed": [
+    "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7"
+   ]
+  },
+  {
+   "file": "step10_trt_en_l0_answer_run4.md",
+   "arm": "step10_trt_en_l0",
+   "family": "calcium",
+   "query": "Can elderly patients take BP meds with calcium?",
+   "grade": "A",
+   "note": "caveat",
+   "final_dailymed": [
+    "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7"
+   ]
+  },
+  {
+   "file": "step10_trt_en_l0_answer_run5.md",
+   "arm": "step10_trt_en_l0",
+   "family": "calcium",
+   "query": "Can elderly patients take BP meds with calcium?",
+   "grade": "A",
+   "note": "caveat",
+   "final_dailymed": [
+    "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7"
+   ]
+  },
+  {
+   "file": "step10_trt_en_l0_answer_run6.md",
+   "arm": "step10_trt_en_l0",
+   "family": "calcium",
+   "query": "Can elderly patients take BP meds with calcium?",
+   "grade": "A",
+   "note": "",
+   "final_dailymed": [
+    "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7"
+   ]
+  },
+  {
+   "file": "step10_trt_en_l0_answer_run7.md",
+   "arm": "step10_trt_en_l0",
+   "family": "calcium",
+   "query": "Can elderly patients take BP meds with calcium?",
+   "grade": "A",
+   "note": "",
+   "final_dailymed": [
+    "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7"
+   ]
+  },
+  {
+   "file": "step10_trt_en_l0_answer_run8.md",
+   "arm": "step10_trt_en_l0",
+   "family": "calcium",
+   "query": "Can elderly patients take BP meds with calcium?",
+   "grade": "A",
+   "note": "",
+   "final_dailymed": [
+    "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7"
+   ]
+  },
+  {
+   "file": "step10_trt_en_l1_answer_run1.md",
+   "arm": "step10_trt_en_l1",
+   "family": "calcium",
+   "query": "Can elderly patients take BP meds with calcium?",
+   "grade": "A",
+   "note": "",
+   "final_dailymed": [
+    "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7"
+   ]
+  },
+  {
+   "file": "step10_trt_en_l1_answer_run2.md",
+   "arm": "step10_trt_en_l1",
+   "family": "calcium",
+   "query": "Can elderly patients take BP meds with calcium?",
+   "grade": "A",
+   "note": "caveat",
+   "final_dailymed": [
+    "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7"
+   ]
+  },
+  {
+   "file": "step10_trt_en_l1_answer_run3.md",
+   "arm": "step10_trt_en_l1",
+   "family": "calcium",
+   "query": "Can elderly patients take BP meds with calcium?",
+   "grade": "A",
+   "note": "",
+   "final_dailymed": [
+    "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7"
+   ]
+  },
+  {
+   "file": "step10_trt_en_l1_answer_run4.md",
+   "arm": "step10_trt_en_l1",
+   "family": "calcium",
+   "query": "Can elderly patients take BP meds with calcium?",
+   "grade": "A",
+   "note": "caveat",
+   "final_dailymed": [
+    "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7"
+   ]
+  },
+  {
+   "file": "step10_trt_pair_l0_answer_run1.md",
+   "arm": "step10_trt_pair_l0",
+   "family": "calcium",
+   "query": "calcium and lisinopril",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step10_trt_pair_l0_answer_run2.md",
+   "arm": "step10_trt_pair_l0",
+   "family": "calcium",
+   "query": "calcium and lisinopril",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": [
+    "DailyMed:39631f1f-5d19-43c1-b504-bf56d991ed97#34073-7"
+   ]
+  },
+  {
+   "file": "step10_trt_pair_l0_answer_run3.md",
+   "arm": "step10_trt_pair_l0",
+   "family": "calcium",
+   "query": "calcium and lisinopril",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step10_trt_pair_l0_answer_run4.md",
+   "arm": "step10_trt_pair_l0",
+   "family": "calcium",
+   "query": "calcium and lisinopril",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": [
+    "DailyMed:afd2d1ba-e7af-4e4e-8b7e-a9f72612fc97#34073-7"
+   ]
+  },
+  {
+   "file": "step10_trt_pair_l1_answer_run1.md",
+   "arm": "step10_trt_pair_l1",
+   "family": "calcium",
+   "query": "calcium and lisinopril",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": [
+    "DailyMed:39631f1f-5d19-43c1-b504-bf56d991ed97#34073-7"
+   ]
+  },
+  {
+   "file": "step10_trt_pair_l1_answer_run2.md",
+   "arm": "step10_trt_pair_l1",
+   "family": "calcium",
+   "query": "calcium and lisinopril",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step10_trt_zh_l0_answer_run1.md",
+   "arm": "step10_trt_zh_l0",
+   "family": "calcium",
+   "query": "老人血壓藥可以跟鈣片一起吃嗎？",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step10_trt_zh_l0_answer_run2.md",
+   "arm": "step10_trt_zh_l0",
+   "family": "calcium",
+   "query": "老人血壓藥可以跟鈣片一起吃嗎？",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step10_trt_zh_l0_answer_run3.md",
+   "arm": "step10_trt_zh_l0",
+   "family": "calcium",
+   "query": "老人血壓藥可以跟鈣片一起吃嗎？",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step10_trt_zh_l0_answer_run4.md",
+   "arm": "step10_trt_zh_l0",
+   "family": "calcium",
+   "query": "老人血壓藥可以跟鈣片一起吃嗎？",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step10_trt_zh_l0_answer_run5.md",
+   "arm": "step10_trt_zh_l0",
+   "family": "calcium",
+   "query": "老人血壓藥可以跟鈣片一起吃嗎？",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step10_trt_zh_l0_answer_run6.md",
+   "arm": "step10_trt_zh_l0",
+   "family": "calcium",
+   "query": "老人血壓藥可以跟鈣片一起吃嗎？",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step10_trt_zh_l0_answer_run7.md",
+   "arm": "step10_trt_zh_l0",
+   "family": "calcium",
+   "query": "老人血壓藥可以跟鈣片一起吃嗎？",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step10_trt_zh_l0_answer_run8.md",
+   "arm": "step10_trt_zh_l0",
+   "family": "calcium",
+   "query": "老人血壓藥可以跟鈣片一起吃嗎？",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step10_trt_zh_l1_answer_run1.md",
+   "arm": "step10_trt_zh_l1",
+   "family": "calcium",
+   "query": "老人血壓藥可以跟鈣片一起吃嗎？",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step10_trt_zh_l1_answer_run2.md",
+   "arm": "step10_trt_zh_l1",
+   "family": "calcium",
+   "query": "老人血壓藥可以跟鈣片一起吃嗎？",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step10_trt_zh_l1_answer_run3.md",
+   "arm": "step10_trt_zh_l1",
+   "family": "calcium",
+   "query": "老人血壓藥可以跟鈣片一起吃嗎？",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step10_trt_zh_l1_answer_run4.md",
+   "arm": "step10_trt_zh_l1",
+   "family": "calcium",
+   "query": "老人血壓藥可以跟鈣片一起吃嗎？",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step11_2b_en_l0_answer_run1.md",
+   "arm": "step11_2b_en_l0",
+   "family": "calcium",
+   "query": "Can elderly patients take BP meds with calcium?",
+   "grade": "A",
+   "note": "caveat",
+   "final_dailymed": [
+    "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7"
+   ]
+  },
+  {
+   "file": "step11_2b_en_l0_answer_run2.md",
+   "arm": "step11_2b_en_l0",
+   "family": "calcium",
+   "query": "Can elderly patients take BP meds with calcium?",
+   "grade": "A",
+   "note": "",
+   "final_dailymed": [
+    "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7"
+   ]
+  },
+  {
+   "file": "step11_2b_en_l0_answer_run3.md",
+   "arm": "step11_2b_en_l0",
+   "family": "calcium",
+   "query": "Can elderly patients take BP meds with calcium?",
+   "grade": "A",
+   "note": "",
+   "final_dailymed": [
+    "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34073-7",
+    "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7"
+   ]
+  },
+  {
+   "file": "step11_2b_en_l0_answer_run4.md",
+   "arm": "step11_2b_en_l0",
+   "family": "calcium",
+   "query": "Can elderly patients take BP meds with calcium?",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": [
+    "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34073-7"
+   ]
+  },
+  {
+   "file": "step11_2b_en_l0_answer_run5.md",
+   "arm": "step11_2b_en_l0",
+   "family": "calcium",
+   "query": "Can elderly patients take BP meds with calcium?",
+   "grade": "A",
+   "note": "",
+   "final_dailymed": [
+    "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7"
+   ]
+  },
+  {
+   "file": "step11_2b_en_l0_answer_run6.md",
+   "arm": "step11_2b_en_l0",
+   "family": "calcium",
+   "query": "Can elderly patients take BP meds with calcium?",
+   "grade": "A",
+   "note": "caveat",
+   "final_dailymed": [
+    "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7"
+   ]
+  },
+  {
+   "file": "step11_2b_en_l0_answer_run7.md",
+   "arm": "step11_2b_en_l0",
+   "family": "calcium",
+   "query": "Can elderly patients take BP meds with calcium?",
+   "grade": "A",
+   "note": "",
+   "final_dailymed": [
+    "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34073-7",
+    "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7"
+   ]
+  },
+  {
+   "file": "step11_2b_en_l0_answer_run8.md",
+   "arm": "step11_2b_en_l0",
+   "family": "calcium",
+   "query": "Can elderly patients take BP meds with calcium?",
+   "grade": "A",
+   "note": "",
+   "final_dailymed": [
+    "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7"
+   ]
+  },
+  {
+   "file": "step11_2b_zh_l0_answer_run1.md",
+   "arm": "step11_2b_zh_l0",
+   "family": "calcium",
+   "query": "老人血壓藥可以跟鈣片一起吃嗎？",
+   "grade": "B",
+   "note": "靜脈注射鈣劑 fenced; oral answer = can combine",
+   "final_dailymed": [
+    "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7"
+   ]
+  },
+  {
+   "file": "step11_2b_zh_l0_answer_run2.md",
+   "arm": "step11_2b_zh_l0",
+   "family": "calcium",
+   "query": "老人血壓藥可以跟鈣片一起吃嗎？",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step11_2b_zh_l0_answer_run3.md",
+   "arm": "step11_2b_zh_l0",
+   "family": "calcium",
+   "query": "老人血壓藥可以跟鈣片一起吃嗎？",
+   "grade": "A",
+   "note": "",
+   "final_dailymed": [
+    "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7"
+   ]
+  },
+  {
+   "file": "step11_2b_zh_l0_answer_run4.md",
+   "arm": "step11_2b_zh_l0",
+   "family": "calcium",
+   "query": "老人血壓藥可以跟鈣片一起吃嗎？",
+   "grade": "B",
+   "note": "鈣注射劑 fenced; 'oral calcium + oral CCB interaction not stated'",
+   "final_dailymed": [
+    "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7"
+   ]
+  },
+  {
+   "file": "step3_answer_run1.md",
+   "arm": "step3",
+   "family": "calcium",
+   "query": "Can elderly patients take BP meds with calcium?",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step6_treatment_answer_run1.md",
+   "arm": "step6_treatment",
+   "family": "calcium",
+   "query": "Can elderly patients take BP meds with calcium?",
+   "grade": "B",
+   "note": "'caution is needed if the calcium is administered intravenously'",
+   "final_dailymed": [
+    "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7"
+   ]
+  },
+  {
+   "file": "step7_answer_run1.md",
+   "arm": "step7",
+   "family": "calcium",
+   "query": "Can elderly patients take BP meds with calcium?",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step7b_answer_run1.md",
+   "arm": "step7b",
+   "family": "calcium",
+   "query": "Can elderly patients take BP meds with calcium?",
+   "grade": "A",
+   "note": "",
+   "final_dailymed": [
+    "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7"
+   ]
+  },
+  {
+   "file": "step7b_answer_run2.md",
+   "arm": "step7b",
+   "family": "calcium",
+   "query": "Can elderly patients take BP meds with calcium?",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step7b_answer_run3.md",
+   "arm": "step7b",
+   "family": "calcium",
+   "query": "Can elderly patients take BP meds with calcium?",
+   "grade": "B",
+   "note": "'intravenous calcium chloride should be avoided with CCBs' — fenced",
+   "final_dailymed": [
+    "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7"
+   ]
+  },
+  {
+   "file": "step7b_answer_run4.md",
+   "arm": "step7b",
+   "family": "calcium",
+   "query": "Can elderly patients take BP meds with calcium?",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": [
+    "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34073-7"
+   ]
+  },
+  {
+   "file": "step7b_answer_run5.md",
+   "arm": "step7b",
+   "family": "calcium",
+   "query": "Can elderly patients take BP meds with calcium?",
+   "grade": "A",
+   "note": "caveat",
+   "final_dailymed": [
+    "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7"
+   ]
+  },
+  {
+   "file": "step7b_answer_run6.md",
+   "arm": "step7b",
+   "family": "calcium",
+   "query": "Can elderly patients take BP meds with calcium?",
+   "grade": "A",
+   "note": "",
+   "final_dailymed": [
+    "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34073-7",
+    "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7"
+   ]
+  },
+  {
+   "file": "step7b_answer_run7.md",
+   "arm": "step7b",
+   "family": "calcium",
+   "query": "Can elderly patients take BP meds with calcium?",
+   "grade": "A",
+   "note": "",
+   "final_dailymed": [
+    "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7",
+    "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34073-7"
+   ]
+  },
+  {
+   "file": "step7b_answer_run8.md",
+   "arm": "step7b",
+   "family": "calcium",
+   "query": "Can elderly patients take BP meds with calcium?",
+   "grade": "A",
+   "note": "",
+   "final_dailymed": [
+    "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7",
+    "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34073-7"
+   ]
+  },
+  {
+   "file": "step8_l0_answer_run1.md",
+   "arm": "step8_l0",
+   "family": "calcium",
+   "query": "Can elderly patients take BP meds with calcium?",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step8_l0_answer_run2.md",
+   "arm": "step8_l0",
+   "family": "calcium",
+   "query": "Can elderly patients take BP meds with calcium?",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": [
+    "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34073-7"
+   ]
+  },
+  {
+   "file": "step8_l0_answer_run3.md",
+   "arm": "step8_l0",
+   "family": "calcium",
+   "query": "Can elderly patients take BP meds with calcium?",
+   "grade": "B",
+   "note": "borderline: 'no direct contraindication ... calcium supplements in general, but ... calcium chloride require caution'",
+   "final_dailymed": [
+    "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7"
+   ]
+  },
+  {
+   "file": "step8_l0_answer_run4.md",
+   "arm": "step8_l0",
+   "family": "calcium",
+   "query": "Can elderly patients take BP meds with calcium?",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": [
+    "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34073-7"
+   ]
+  },
+  {
+   "file": "step8_l0_answer_run5.md",
+   "arm": "step8_l0",
+   "family": "calcium",
+   "query": "Can elderly patients take BP meds with calcium?",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step8_l0_answer_run6.md",
+   "arm": "step8_l0",
+   "family": "calcium",
+   "query": "Can elderly patients take BP meds with calcium?",
+   "grade": "A",
+   "note": "",
+   "final_dailymed": [
+    "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7",
+    "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34073-7"
+   ]
+  },
+  {
+   "file": "step8_l0_answer_run7.md",
+   "arm": "step8_l0",
+   "family": "calcium",
+   "query": "Can elderly patients take BP meds with calcium?",
+   "grade": "A",
+   "note": "",
+   "final_dailymed": [
+    "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7"
+   ]
+  },
+  {
+   "file": "step8_l0_answer_run8.md",
+   "arm": "step8_l0",
+   "family": "calcium",
+   "query": "Can elderly patients take BP meds with calcium?",
+   "grade": "A",
+   "note": "",
+   "final_dailymed": [
+    "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7"
+   ]
+  },
+  {
+   "file": "step8_prod_smoke_answer.md",
+   "arm": "prod_smoke_fly261",
+   "family": "calcium",
+   "query": "Can elderly patients take BP meds with calcium?",
+   "grade": "A",
+   "note": "borderline (no oral fence; 'no direct contraindication to BP medications themselves')",
+   "final_dailymed": [
+    "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7"
+   ]
+  },
+  {
+   "file": "step8_prod_smoke_answer_fly262.md",
+   "arm": "prod_smoke_fly262",
+   "family": "calcium",
+   "query": "Can elderly patients take BP meds with calcium?",
+   "grade": "A",
+   "note": "caveat",
+   "final_dailymed": [
+    "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7"
+   ]
+  },
+  {
+   "file": "step8_zh_l0_answer_run1.md",
+   "arm": "step8_zh_l0",
+   "family": "calcium",
+   "query": "老人血壓藥可以跟鈣片一起吃嗎？",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step8_zh_l0_answer_run2.md",
+   "arm": "step8_zh_l0",
+   "family": "calcium",
+   "query": "老人血壓藥可以跟鈣片一起吃嗎？",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step8_zh_l0_answer_run3.md",
+   "arm": "step8_zh_l0",
+   "family": "calcium",
+   "query": "老人血壓藥可以跟鈣片一起吃嗎？",
+   "grade": "A",
+   "note": "",
+   "final_dailymed": [
+    "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7"
+   ]
+  },
+  {
+   "file": "step8_zh_l0_answer_run4.md",
+   "arm": "step8_zh_l0",
+   "family": "calcium",
+   "query": "老人血壓藥可以跟鈣片一起吃嗎？",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step8_zh_l1_answer_run1.md",
+   "arm": "step8_zh_l1",
+   "family": "calcium",
+   "query": "老人血壓藥可以跟鈣片一起吃嗎？",
+   "grade": "A",
+   "note": "caveat",
+   "final_dailymed": [
+    "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7"
+   ]
+  },
+  {
+   "file": "step8_zh_l1_answer_run2.md",
+   "arm": "step8_zh_l1",
+   "family": "calcium",
+   "query": "老人血壓藥可以跟鈣片一起吃嗎？",
+   "grade": "A",
+   "note": "",
+   "final_dailymed": [
+    "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7"
+   ]
+  },
+  {
+   "file": "step8_zh_l1_answer_run3.md",
+   "arm": "step8_zh_l1",
+   "family": "calcium",
+   "query": "老人血壓藥可以跟鈣片一起吃嗎？",
+   "grade": "A",
+   "note": "caveat",
+   "final_dailymed": [
+    "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7"
+   ]
+  },
+  {
+   "file": "step8_zh_l1_answer_run4.md",
+   "arm": "step8_zh_l1",
+   "family": "calcium",
+   "query": "老人血壓藥可以跟鈣片一起吃嗎？",
+   "grade": "A",
+   "note": "",
+   "final_dailymed": [
+    "DailyMed:c4c65e48-85f8-4dcf-6281-06e40959cc79#34073-7"
+   ]
+  },
+  {
+   "file": "step9_answer_Q10_r1.md",
+   "arm": "step9",
+   "family": "other",
+   "query": "BP meds with grapefruit",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step9_answer_Q10_r2.md",
+   "arm": "step9",
+   "family": "other",
+   "query": "BP meds with grapefruit",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step9_answer_Q11_r1.md",
+   "arm": "step9",
+   "family": "calcium",
+   "query": "calcium and lisinopril",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step9_answer_Q11_r2.md",
+   "arm": "step9",
+   "family": "calcium",
+   "query": "calcium and lisinopril",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step9_answer_Q12_r1.md",
+   "arm": "step9",
+   "family": "potassium",
+   "query": "potassium with spironolactone",
+   "grade": "C",
+   "note": "inj_label_route_agnostic (Potassium Chloride Injection 34073-7 in FINAL)",
+   "final_dailymed": [
+    "DailyMed:14cd12ee-a4a3-465a-9550-58c9ef0e4f21#34073-7",
+    "DailyMed:1a52bedc-8e2c-4116-a296-a87770676b4a#43685-7"
+   ]
+  },
+  {
+   "file": "step9_answer_Q12_r2.md",
+   "arm": "step9",
+   "family": "potassium",
+   "query": "potassium with spironolactone",
+   "grade": "C",
+   "note": "inj_label_route_agnostic (Potassium Chloride Injection 34073-7 in FINAL)",
+   "final_dailymed": [
+    "DailyMed:14cd12ee-a4a3-465a-9550-58c9ef0e4f21#34073-7",
+    "DailyMed:1a52bedc-8e2c-4116-a296-a87770676b4a#43685-7"
+   ]
+  },
+  {
+   "file": "step9_answer_Q1_r1.md",
+   "arm": "step9",
+   "family": "calcium",
+   "query": "鈣片和降血壓藥可以一起吃嗎",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step9_answer_Q1_r2.md",
+   "arm": "step9",
+   "family": "calcium",
+   "query": "鈣片和降血壓藥可以一起吃嗎",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step9_answer_Q2_r1.md",
+   "arm": "step9",
+   "family": "potassium",
+   "query": "Can I take potassium with my BP pills?",
+   "grade": "C",
+   "note": "inj_label_route_agnostic (Potassium Chloride Injection 34073-7 in FINAL)",
+   "final_dailymed": [
+    "DailyMed:14cd12ee-a4a3-465a-9550-58c9ef0e4f21#34073-7",
+    "DailyMed:5ddba454-f3e6-43c2-a7a6-58365d297213#34073-7",
+    "DailyMed:1cf090a2-b6c0-42cd-857e-60a9cd85fe19#34073-7",
+    "DailyMed:afd2d1ba-e7af-4e4e-8b7e-a9f72612fc97#34073-7"
+   ]
+  },
+  {
+   "file": "step9_answer_Q2_r2.md",
+   "arm": "step9",
+   "family": "potassium",
+   "query": "Can I take potassium with my BP pills?",
+   "grade": "C",
+   "note": "inj_label_route_agnostic (Potassium Chloride Injection 34073-7 in FINAL)",
+   "final_dailymed": [
+    "DailyMed:14cd12ee-a4a3-465a-9550-58c9ef0e4f21#34073-7",
+    "DailyMed:5ddba454-f3e6-43c2-a7a6-58365d297213#34073-7",
+    "DailyMed:1cf090a2-b6c0-42cd-857e-60a9cd85fe19#34073-7",
+    "DailyMed:afd2d1ba-e7af-4e4e-8b7e-a9f72612fc97#34073-7"
+   ]
+  },
+  {
+   "file": "step9_answer_Q3_r1.md",
+   "arm": "step9",
+   "family": "calcium",
+   "query": "Calcium with amlodipine?",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": [
+    "DailyMed:abd6a2ca-40c2-485c-bc53-db1c652505ed#34073-7"
+   ]
+  },
+  {
+   "file": "step9_answer_Q3_r2.md",
+   "arm": "step9",
+   "family": "calcium",
+   "query": "Calcium with amlodipine?",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": [
+    "DailyMed:abd6a2ca-40c2-485c-bc53-db1c652505ed#34073-7"
+   ]
+  },
+  {
+   "file": "step9_answer_Q4_r1.md",
+   "arm": "step9",
+   "family": "iron",
+   "query": "iron supplements with blood pressure medication",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step9_answer_Q4_r2.md",
+   "arm": "step9",
+   "family": "iron",
+   "query": "iron supplements with blood pressure medication",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step9_answer_Q5_r1.md",
+   "arm": "step9",
+   "family": "magnesium",
+   "query": "magnesium and diuretics elderly",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step9_answer_Q5_r2.md",
+   "arm": "step9",
+   "family": "magnesium",
+   "query": "magnesium and diuretics elderly",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step9_answer_Q6_r1.md",
+   "arm": "step9",
+   "family": "vitamin D",
+   "query": "Can elderly take vitamin D with water pills?",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": [
+    "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34073-7"
+   ]
+  },
+  {
+   "file": "step9_answer_Q6_r2.md",
+   "arm": "step9",
+   "family": "vitamin D",
+   "query": "Can elderly take vitamin D with water pills?",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": [
+    "DailyMed:2b21f3fc-4164-401a-803e-b982dea97e19#34073-7"
+   ]
+  },
+  {
+   "file": "step9_answer_Q7_r1.md",
+   "arm": "step9",
+   "family": "potassium",
+   "query": "降血壓藥和鉀離子補充劑",
+   "grade": "C",
+   "note": "inj_label_route_agnostic (Potassium Chloride Injection 34073-7 in FINAL)",
+   "final_dailymed": [
+    "DailyMed:14cd12ee-a4a3-465a-9550-58c9ef0e4f21#34073-7"
+   ]
+  },
+  {
+   "file": "step9_answer_Q7_r2.md",
+   "arm": "step9",
+   "family": "potassium",
+   "query": "降血壓藥和鉀離子補充劑",
+   "grade": "C",
+   "note": "inj_label_route_agnostic (Potassium Chloride Injection 34073-7 in FINAL)",
+   "final_dailymed": [
+    "DailyMed:14cd12ee-a4a3-465a-9550-58c9ef0e4f21#34073-7"
+   ]
+  },
+  {
+   "file": "step9_answer_Q8_r1.md",
+   "arm": "step9",
+   "family": "other",
+   "query": "sugar pills with BP meds",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step9_answer_Q8_r2.md",
+   "arm": "step9",
+   "family": "other",
+   "query": "sugar pills with BP meds",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step9_answer_Q9_r1.md",
+   "arm": "step9",
+   "family": "other",
+   "query": "aspirin with BP medication elderly",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  },
+  {
+   "file": "step9_answer_Q9_r2.md",
+   "arm": "step9",
+   "family": "other",
+   "query": "aspirin with BP medication elderly",
+   "grade": "C",
+   "note": "",
+   "final_dailymed": []
+  }
+ ]
+}
