@@ -716,6 +716,8 @@ Landing Page 承諾 "No account required to try"(§ 0.3),但實際上點 "Try it
 | L1 "Vela for Work" | 2/day | 2/day | 1/day | GPT-4.1 | **10 credits** ✅ |
 | L2 Pro | ~30/day | ~100/day | ~50/day | GPT-4.1 | 100 credits cap |
 
+> **2026-10-02 AMENDMENT (append-only; the L0 row above is the 2026-04 record):** per founder ruling 0b (2026-10-01, bp_calcium car Segment 1d — `tests/probes/bp_calcium/step10_0b_*`), **anonymous (L0) Research generation uses GPT-4.1**, the same generator binding as L1 (`api/server.py` research_query `is_anonymous` → `model_override = None`). Measured on IDENTICAL retrieval pools: answered the question asked (veto (i) FALSE) GPT-4.1 8/8 vs GPT-4.1-mini 6/8; cost +$0.0054–0.0074 per query; the $2/day aggregate cap (Decision 001 A7) is UNCHANGED and now binds at ≈235 anonymous Research generations/day. Derived from the code at the same commit: **Verify** has no L0-specific model — both tiers use the verify binding (`VERIFY_MODEL`, default GPT-4.1-mini); **Explain** stays closed to L0; Research's **no-documents fallback** answers on `GENERATOR_FALLBACK_MODEL` (GPT-4.1-mini) for L0 and L1 alike. Status: BUILT LOCAL 2026-10-02, effective on deploy — see STATE.md.
+
 **L1 升級感來源(不靠量,靠解鎖 + 品質)**:
 1. ⭐ Explain 從 L0 完全不開放 → L1 1/day(新功能解鎖)
 2. ⭐ 持久 history(stateless → persistent;Free UI 顯示最近 7 天,Pro 顯示全部 + 搜尋)
@@ -748,6 +750,7 @@ Landing Page 承諾 "No account required to try"(§ 0.3),但實際上點 "Try it
 7. 已註冊 L1/L2 使用者不受 anonymous cap 影響
 8. L1 使用者的 Research / Verify / Explain 走 GPT-4.1(非 mini),延遲 / 品質符合既有 L2 行為
 9. L0 使用者的 Research / Verify 走 GPT-4.1-mini
+   - **2026-10-02 amendment (append-only):** the **Research** half of item 9 is superseded — L0 Research generation = GPT-4.1 (founder ruling 0b, 2026-10-01; full text under the §2.8 credit table). The Verify half holds, but it is not L0-specific: Verify uses `VERIFY_MODEL` (GPT-4.1-mini) on every tier.
 10. PostHog 可追蹤 L0 → L1 轉換 funnel(event: `anonymous_to_registered`)
 11. 新 event `explain_locked_viewed` 可追蹤多少 L0 使用者試圖進入 Explain(重要:Phase 1A Week 4 review 的核心指標)
 

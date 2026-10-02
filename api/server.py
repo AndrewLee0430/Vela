@@ -841,6 +841,7 @@ async def research_query(
 
     # Credit / quota / budget 檢查（在 streaming 開始前）
     # Decision 001 v0.3 A7 / A8: L0 走 $2/day aggregate cap + per-anon ANONYMOUS_DAILY_LIMIT + gpt-4.1-mini
+    # (2026-10-01: the gpt-4.1-mini half of A8 no longer holds for Research — see model_override below.)
     if is_anonymous:
         logger.info("[Research] tier=L0 anon_id=%s query_length=%d", anon_id[:8], len(body.question))
         budget_ok, _spent = await check_anonymous_budget(db)
@@ -852,9 +853,13 @@ async def research_query(
                 used=ANONYMOUS_DAILY_LIMIT - remaining,
                 limit=ANONYMOUS_DAILY_LIMIT,
             )
-        # §2.1 PHASE D: anon path uses GENERATOR_FALLBACK_MODEL (default gpt-4.1-mini)
-        # so the literal stays env-var-driven. Preserves Decision 001 v0.3 A8 intent.
-        model_override: Optional[str] = generator._fallback_model
+        # bp_calcium car Segment 1d, founder ruling 0b (2026-10-01): anon Research generation uses the SAME
+        # generator binding as L1 (gpt-4.1). Measured on identical pools: gpt-4.1-mini answered a CCB question
+        # instead of the calcium-supplement question 2/8, gpt-4.1 0/8 (tests/probes/bp_calcium/step10_0b_*).
+        # Decision 001 v0.3 A7 UNCHANGED — the $2/day aggregate cap above (check_anonymous_budget) still
+        # gates L0; A8 (L0 = gpt-4.1-mini) is CHANGED for Research by that ruling. Was:
+        # `model_override = generator._fallback_model` (§2.1 PHASE D, GENERATOR_FALLBACK_MODEL).
+        model_override: Optional[str] = None
     else:
         logger.info("[Research] user=%s query_length=%d", user_id, len(body.question))
         if not TEST_MODE:

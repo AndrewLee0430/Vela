@@ -20,6 +20,7 @@ Vela 的 Landing Page 承諾 "No account required to try",但實際上點 "Try i
 - L1 同 L0 次數,升級感來自四個**解鎖新功能**:Explain / History / 跨裝置 / 個人化 + 品質升級
 - L1 brand name:"Vela for Work"
 - L0 使用 GPT-4.1-mini,L1 升級到 GPT-4.1
+  - **2026-10-02 amendment (append-only; A8 changed for Research):** per founder ruling 0b (2026-10-01, bp_calcium car Segment 1d — `tests/probes/bp_calcium/step10_0b_*`), **anonymous (L0) Research generation uses GPT-4.1**, the same generator binding as L1 (`api/server.py` research_query `is_anonymous` → `model_override = None`). Measured on IDENTICAL retrieval pools: answered the question asked (veto (i) FALSE) GPT-4.1 8/8 vs GPT-4.1-mini 6/8; cost +$0.0054–0.0074 per query; the $2/day aggregate cap (Decision 001 A7) is UNCHANGED and now binds at ≈235 anonymous Research generations/day. Derived from the code at the same commit: **Verify** has no L0-specific model — both tiers use the verify binding (`VERIFY_MODEL`, default GPT-4.1-mini); **Explain** stays closed to L0; Research's **no-documents fallback** answers on `GENERATOR_FALLBACK_MODEL` (GPT-4.1-mini) for L0 and L1 alike. Status: BUILT LOCAL 2026-10-02, effective on deploy — see STATE.md. The same superseded statement also stands in §2.3's credit table (L0 row) and in the v0.2 spec lines ("L0 anonymous users 用 GPT-4.1-mini" and its example) — NOT amended there (the ruling named this line and the §2.4 comparison table only).
 - Daily budget cap: $2 USD/day ($60/month hard ceiling)
 - 排入 Phase 0,位於 § 2.4 之後、§ 2.7 之前,工期 1.5-2 天
 
@@ -133,6 +134,8 @@ L1 不是為了給使用者多一點 quota,而是為了 **Vela 自己的資料�
 | **跨裝置同步** | ❌ | ✅ | ⭐ **解鎖新功能** |
 | **個人化範例** | 通用池 | role-based | ⭐ **解鎖新功能** |
 | FeedbackBar 送出 | 顯示但提示登入 | 可送出 | 小加值 |
+
+> **2026-10-02 amendment (append-only; the "Model 品質" row above is the v0.x record):** for **Research** the row no longer holds — L0 Research generation = GPT-4.1 since founder ruling 0b (2026-10-01; see the A8 amendment at the top). Research's L0→L1 upgrade is now Explain / History / 跨裝置 / 個人化 only. Derived from the code: Verify's model is the same on both tiers (`VERIFY_MODEL`, GPT-4.1-mini), so the Verify row's "品質更深" has no model behind it either (pre-existing, not caused by this ruling).
 
 **三個「解鎖新功能」(Explain / History / 跨裝置)+ 一個「品質升級」**。比純量升級有感 10 倍。
 
