@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vela — an archived medical search project</title>
+<meta name="description" content="Vela was a multilingual, citation-first medical search tool for healthcare professionals who work beyond English. Active February to October 2026, now archived.">
+<meta name="color-scheme" content="light dark">
+<meta name="robots" content="index, follow">
+<link rel="alternate" hreflang="en" href="index.html">
+<link rel="alternate" hreflang="zh-Hant-TW" href="zh-TW.html">
+<style>
+  :root {
+    --paper: #F6F8F7;
+    --ink: #22303C;
+    --muted: #5B6770;
+    --rule: #D3DADE;
+    --wash: #E9EEEC;
+    --cite: #B23A25;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", "URW Palladio L", P052, Georgia, serif;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", "Helvetica Neue", Arial, sans-serif;
+    --mono: ui-monospace, "SF Mono", "Cascadia Mono", Consolas, "Liberation Mono", monospace;
+    color-scheme: light dark;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #11181E;
+      --ink: #E3E9ED;
+      --muted: #9AA8B2;
+      --rule: #2A3640;
+      --wash: #18222A;
+      --cite: #FF8A70;
+    }
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    overflow-wrap: break-word;
+  }
+  .page { max-width: 60rem; margin: 0 auto; padding: 0 16px; }
+  .measure { max-width: 42rem; }
+  a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  a:hover { text-decoration-thickness: 2px; }
+  a:focus-visible { outline: 2px solid var(--cite); outline-offset: 3px; border-radius: 2px; }
+
+  .masthead { padding: 2.5rem 0 3rem; }
+  .topline { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; margin-bottom: 3.5rem; }
+  .wordmark { margin: 0; font-family: var(--serif); font-size: 1.375rem; font-weight: 700; letter-spacing: 0.01em; }
+  .lang { font-size: 0.9375rem; color: var(--muted); }
+  h1 {
+    margin: 0 0 1.5rem;
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: clamp(1.75rem, 1.15rem + 2.6vw, 2.75rem);
+    line-height: 1.18;
+    letter-spacing: -0.005em;
+  }
+  .status { margin: 0; color: var(--muted); font-size: 1.0625rem; }
+
+  section { border-top: 1px solid var(--rule); padding: 2.75rem 0 1rem; }
+  h2 { margin: 0 0 1.25rem; font-family: var(--serif); font-weight: 600; font-size: 1.625rem; line-height: 1.25; }
+  h3 { margin: 2rem 0 0.5rem; font-size: 1.0625rem; font-weight: 650; line-height: 1.4; }
+  p { margin: 0 0 1rem; }
+
+  figure { margin: 1.25rem 0 2.25rem; }
+  figure img, figure video {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    background: var(--wash);
+  }
+  figcaption { margin-top: 0.625rem; color: var(--muted); font-size: 0.9375rem; line-height: 1.5; max-width: 42rem; }
+  .pair { display: grid; grid-template-columns: 1fr; gap: 1rem; align-items: start; }
+  @media (min-width: 48rem) { .pair { grid-template-columns: 1fr 1fr; } }
+
+  dl { margin: 0; }
+  dt { font-weight: 650; margin-top: 1.25rem; }
+  dd { margin: 0.25rem 0 0; }
+  dd ul { margin: 0.25rem 0 0; padding-left: 1.25rem; }
+  dd li { margin-bottom: 0.375rem; }
+
+  .cite {
+    color: var(--cite);
+    text-decoration: none;
+    font-size: 0.8125rem;
+    font-variant-numeric: tabular-nums;
+    vertical-align: 0.35em;
+    line-height: 0;
+    padding: 0 0.0625rem;
+  }
+  .cite:hover { text-decoration: underline; }
+  .finding p { font-variant-numeric: tabular-nums; }
+  .sources {
+    margin: 2.5rem 0 0;
+    padding: 1.25rem 0 0 1.75rem;
+    border-top: 1px dashed var(--rule);
+    color: var(--muted);
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+  .sources li { margin-bottom: 0.625rem; padding-left: 0.25rem; }
+  .sources li::marker { color: var(--cite); font-variant-numeric: tabular-nums; }
+  .sources li:target { color: var(--ink); }
+  code { font-family: var(--mono); font-size: 0.875em; overflow-wrap: anywhere; }
+
+  .links li { margin-bottom: 0.625rem; }
+  footer { border-top: 1px solid var(--rule); margin-top: 2rem; padding: 1.5rem 0 3rem; color: var(--muted); font-size: 0.9375rem; }
+  @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+</style>
+</head>
+<body>
+<div class="page">
+
+<header class="masthead">
+  <div class="topline">
+    <p class="wordmark">Vela</p>
+    <a class="lang" href="zh-TW.html" lang="zh-Hant-TW" hreflang="zh-Hant-TW">繁體中文</a>
+  </div>
+  <h1 class="measure">Multilingual, citation-first medical search for healthcare professionals who work beyond English.</h1>
+  <!-- source: first commit dc929bc (2026-02-13); archive decision 2026-10-05 (docs/batons/archive_mode_car_20261005.md) -->
+  <p class="status measure">Built and run from February to October 2026. Vela is now archived: no new accounts, no payments, no new features. A small Research-only demo stays online.</p>
+</header>
+
+<main>
+
+<section id="what" aria-labelledby="what-h">
+  <h2 id="what-h">What Vela was</h2>
+  <div class="measure">
+    <p>Most clinical evidence is published in English. Vela let a clinician ask a question in their own language, in any of 16, and answered in that language, with each claim tied to a numbered source they could open: a PubMed abstract or an official drug label.</p>
+    <p>It was a reference tool for professionals, not a symptom checker. It refused questions containing personal identifiers, and it never asked anyone to prove who they were.</p>
+  </div>
+</section>
+
+<section id="tools" aria-labelledby="tools-h">
+  <h2 id="tools-h">Three tools</h2>
+
+  <h3 class="measure">Research</h3>
+  <p class="measure">Ask a clinical question in any of the 16 languages. Vela searched the literature and drug labels, ranked what it found, and wrote a short answer in your language with numbered citations.</p>
+  <figure>
+    <video src="media/research-demo.mp4" width="1441" height="828" controls muted playsinline preload="metadata" aria-label="Screen recording of a Research question being answered with numbered citations">
+      <a href="media/research-demo.mp4">Download the Research screen recording (MP4)</a>
+    </video>
+    <figcaption>Research, recorded from the live product.</figcaption>
+  </figure>
+
+  <h3 class="measure">Verify</h3>
+  <p class="measure">Enter a list of drugs and check them for interactions against the official US drug labels. When the label did not state a severity and the model judged it, the badge said so.</p>
+  <figure>
+    <img src="media/Verify_Landing_Demo.webp" width="2020" height="1225" loading="lazy" alt="Verify checking aspirin with metformin: one moderate interaction, explained from the glyburide and metformin label, with the severity badge marked Vela AI-assessed, not label-stated.">
+    <figcaption>Verify: the interaction text is cited from a DailyMed label; the severity is marked as the model's assessment.</figcaption>
+  </figure>
+
+  <h3 class="measure">Explain</h3>
+  <p class="measure">Paste a lab report. Vela matched each value to its LOINC, RxNorm or MedlinePlus entry and explained it in plain language.</p>
+  <figure>
+    <div class="pair">
+      <img src="media/Explain_Landing_Demo_1.webp" width="1174" height="685" loading="lazy" alt="Explain input: a lab line reading eGFR 45 mL/min (reference above 60), HbA1c 7.8%, metformin 1000 mg twice daily.">
+      <img src="media/Explain_Landing_Demo_2.webp" width="1188" height="841" loading="lazy" alt="Explain result: LOINC and RxNorm sources listed first, then eGFR and HbA1c each explained and marked as needing attention.">
+    </div>
+    <figcaption>Explain: the input, and the result with its sources listed first.</figcaption>
+  </figure>
+</section>
+
+<section id="how" aria-labelledby="how-h">
+  <h2 id="how-h">How it worked</h2>
+  <dl class="measure">
+    <dt>Sources</dt>
+    <dd>
+      <ul>
+        <li>PubMed for the literature.</li>
+        <!-- source: tests/probes/route_mismatch/step1_corpus_route_census.json @ 3a6448b (corpus: docs 4608, labels 1038, safety_section_docs 2544) -->
+        <li>US drug labels from DailyMed, indexed by their structured label sections: 4,608 indexed sections from 1,038 labels.<a class="cite" href="#s8" aria-label="source 8">[8]</a> openFDA was queried as well, and Verify fell back to it when a label had no interactions section.</li>
+        <li>Taiwan FDA open data, for approved indications and to resolve local brand names to their active ingredients.</li>
+        <li>LOINC, RxNorm and MedlinePlus for Explain.</li>
+      </ul>
+    </dd>
+    <dt>Stack</dt>
+    <dd>A Next.js static export served by a FastAPI backend on Fly.io, with Postgres. Every language-model call went through one provider interface, so models could be swapped and compared on identical inputs.</dd>
+    <dt>Honesty guardrails</dt>
+    <dd>
+      <ul>
+        <li>Disclaimers were rendered by the interface; the model was told never to write them.</li>
+        <li>Every answer cited its sources by number. An answer written without any retrieved literature was labelled as such.</li>
+        <li>A severity the model judged, rather than one the label stated, was marked as AI-assessed.</li>
+        <!-- source: commit 3ad3ddc (2026-06-10) removed the model-assigned evidence markers; CLAUDE.md rule 12 @ c51f36e -->
+        <li>An evidence colour the model assigned to its own answers was removed: it was the model grading itself.</li>
+        <li>Questions with personal identifiers were refused before any model saw them. If that check or the safety guards failed, the request was blocked, not let through.</li>
+      </ul>
+    </dd>
+  </dl>
+</section>
+
+<section id="findings" aria-labelledby="findings-h">
+  <h2 id="findings-h">What I measured and learned</h2>
+  <p class="measure">Each figure below comes from a file committed to the source repository. The bracketed number points to it.</p>
+
+  <div class="finding measure">
+    <h3>A cheaper model answered a different question</h3>
+    <!-- source: tests/probes/bp_calcium/step10_0b_grades.json @ 438a19c (pairs: l0 veto_i true on 2 of 8; gpt41 veto_i true on 0 of 8; tally gpt41_veto_i_false 8/8, l0_veto_i_false 6/8) -->
+    <p>Asked whether older patients can take blood-pressure medicine with calcium, the smaller model (gpt-4.1-mini) answered about calcium-channel-blocker drugs instead of calcium supplements in 2 of 8 runs. The larger one (gpt-4.1), given the same retrieved documents, did so in 0 of 8. The demo's anonymous Research moved to the larger model.<a class="cite" href="#s1" aria-label="source 1">[1]</a></p>
+  </div>
+
+  <div class="finding measure">
+    <h3>The right label for the wrong route</h3>
+    <!-- source: tests/probes/route_mismatch/step2_grades.json @ 4f5176f (n_answers 149; by_grade A 42, B 5, C 102; all 42 A rows on the calcium question: 35 English + 7 Chinese of its 85 answers; 0 A among the other 64; 14 distinct questions) -->
+    <p>All 149 saved answers to 14 questions about supplements and blood-pressure medicines were read and graded. Of those, 42 built advice about an oral supplement from an injection-only label (calcium chloride injection). Every one of the 42 answered the calcium question, in English or Chinese: 42 of its 85 answers, and none of the other 64. The grading was done by reading, not by a clinician. That example question is withheld from the demo.<a class="cite" href="#s2" aria-label="source 2">[2]</a></p>
+  </div>
+
+  <div class="finding measure">
+    <h3>One drug, two names, two conclusions</h3>
+    <!-- source: CLAUDE.md rule 23 (line 162) @ c51f36e (ASPIRIN key: VAZALORE, no whitelisted safety sections; ACETYLSALICYLIC ACID key: DURLAZA, 34070-3 / 34073-7 / 43685-7; "6 of 6" claim stood across five c2 batons) -->
+    <p>Drug labels were indexed under the drug name as written. Aspirin's reference label under ASPIRIN had none of the safety sections the index used; under ACETYLSALICYLIC ACID it had three: contraindications, drug interactions, and warnings and precautions. A conclusion drawn from the first name alone, that in 6 of 6 cases the drug's own label had no safety section, was wrong, and it survived five successive rounds of working notes.<a class="cite" href="#s3" aria-label="source 3">[3]</a></p>
+  </div>
+
+  <div class="finding measure">
+    <h3>A ranking test that could not see its own documents</h3>
+    <!-- source: CLAUDE.md rule 22 (line 160) @ c51f36e (690 empty stubs, null result read as reassurance); api/rag/retriever.py lines 96-106 @ cf6b78b (local tier default off, "Vector store loaded: 690 documents"); tests/probes/retrieval_attrition/poolsize_postc1_comparison_20260823.json @ f9c318d ("TB02 pre-c1 pool was 11 of 13 docs local (the 690 empty-stub corpus)") -->
+    <p>A sweep that reweighted retrieval sources showed no change, which read as reassurance. The local tier it reweighted held 690 empty stub documents; in one test query, 11 of the 13 retrieved documents came from it. The local tier was switched off, and ranking changes since then were checked by reading the documents, not only their positions.<a class="cite" href="#s4" aria-label="source 4">[4]</a><a class="cite" href="#s5" aria-label="source 5">[5]</a></p>
+  </div>
+
+  <div class="finding measure">
+    <h3>Text heuristics over drug labels overcount</h3>
+    <!-- source: CLAUDE.md rule 21 (line 158) @ c51f36e (non-human sweep flagged 69, collapsed to 3; route/form classifier reported 22%, was 13%); tests/probes/c2/nonhuman_scope.json @ 3d38d3e (pinned 1036, flagged 3) -->
+    <p>A text search for veterinary labels flagged 69; checking each label's document-type code left 3 of 1,036. A route-and-form classifier reported 22%; the measured share was 13%. Where a label carries an exact key, Vela used the key, not the words.<a class="cite" href="#s6" aria-label="source 6">[6]</a><a class="cite" href="#s7" aria-label="source 7">[7]</a></p>
+  </div>
+
+  <ol class="sources measure" aria-label="Sources">
+    <li id="s1"><code>tests/probes/bp_calcium/step10_0b_grades.json</code> at commit <code>438a19c</code>: eight paired runs, same documents per pair.</li>
+    <li id="s2"><code>tests/probes/route_mismatch/step2_grades.json</code> at commit <code>4f5176f</code>: hand grades A / B / C for 149 answers.</li>
+    <li id="s3"><code>CLAUDE.md</code>, rule 23, at commit <code>c51f36e</code>.</li>
+    <li id="s4"><code>CLAUDE.md</code>, rule 22, at commit <code>c51f36e</code>; <code>api/rag/retriever.py</code> at commit <code>cf6b78b</code>.</li>
+    <li id="s5"><code>tests/probes/retrieval_attrition/poolsize_postc1_comparison_20260823.json</code> at commit <code>f9c318d</code>.</li>
+    <li id="s6"><code>CLAUDE.md</code>, rule 21, at commit <code>c51f36e</code>.</li>
+    <li id="s7"><code>tests/probes/c2/nonhuman_scope.json</code> at commit <code>3d38d3e</code>.</li>
+    <li id="s8"><code>tests/probes/route_mismatch/step1_corpus_route_census.json</code> at commit <code>3a6448b</code>.</li>
+  </ol>
+</section>
+
+<section id="why" aria-labelledby="why-h">
+  <h2 id="why-h">Why it is archived</h2>
+  <!-- FOUNDER REVIEW: draft paragraph, written for the founder to edit or replace before this page is published. -->
+  <p class="measure">Vela answered medical questions with a language model. Offering that to the public runs into a regulatory gate for software that gives medical answers, and clearing it responsibly is not something one person can do on the side. Keeping the answers honest also took constant maintenance: every model change, data source and safety check had to be measured again by hand, as the findings above show. Meanwhile, well-resourced teams now offer capable medical search for free. Rather than let Vela decay while still charging for it, I stopped development, ended subscriptions, and left a small, cost-capped Research demo online as a record of what it did.</p>
+  <!-- /FOUNDER REVIEW -->
+</section>
+
+<section id="links" aria-labelledby="links-h">
+  <h2 id="links-h">Links</h2>
+  <ul class="links measure">
+    <li><a href="{{DEMO_URL}}">Try the live demo</a>. It offers Research only, has a small daily budget, and is no longer maintained.</li>
+    <li><a href="{{REPO_URL}}">Read the source code</a>, including the probes cited above.</li>
+    <li><a href="https://an-tho.com">an-tho.com</a>, the author's site.</li>
+  </ul>
+</section>
+
+</main>
+
+<footer>
+  <p class="measure">Vela is a research tool, not a medical device. It does not provide medical advice.</p>
+</footer>
+
+</div>
+</body>
+</html>

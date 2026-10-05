@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vela — 已封存的醫學搜尋專案</title>
+<meta name="description" content="Vela 是為跨語言工作的醫療專業人員打造、以出處為先的多語言醫學搜尋工具。2026 年 2 月至 10 月間運作，現已封存。">
+<meta name="color-scheme" content="light dark">
+<meta name="robots" content="index, follow">
+<link rel="alternate" hreflang="en" href="index.html">
+<link rel="alternate" hreflang="zh-Hant-TW" href="zh-TW.html">
+<style>
+  :root {
+    --paper: #F6F8F7;
+    --ink: #22303C;
+    --muted: #5B6770;
+    --rule: #D3DADE;
+    --wash: #E9EEEC;
+    --cite: #B23A25;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", "Songti TC", "Noto Serif TC", "Source Han Serif TC", PMingLiU, Georgia, serif;
+    --sans: system-ui, -apple-system, "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", "Segoe UI", Roboto, "Noto Sans", "Helvetica Neue", Arial, sans-serif;
+    --mono: ui-monospace, "SF Mono", "Cascadia Mono", Consolas, "Liberation Mono", monospace;
+    color-scheme: light dark;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #11181E;
+      --ink: #E3E9ED;
+      --muted: #9AA8B2;
+      --rule: #2A3640;
+      --wash: #18222A;
+      --cite: #FF8A70;
+    }
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 1.0625rem;
+    line-height: 1.75;
+    overflow-wrap: break-word;
+  }
+  .page { max-width: 60rem; margin: 0 auto; padding: 0 16px; }
+  .measure { max-width: 40rem; }
+  a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 4px; }
+  a:hover { text-decoration-thickness: 2px; }
+  a:focus-visible { outline: 2px solid var(--cite); outline-offset: 3px; border-radius: 2px; }
+
+  .masthead { padding: 2.5rem 0 3rem; }
+  .topline { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; margin-bottom: 3.5rem; }
+  .wordmark { margin: 0; font-family: var(--serif); font-size: 1.375rem; font-weight: 700; letter-spacing: 0.01em; }
+  .lang { font-size: 0.9375rem; color: var(--muted); }
+  h1 {
+    margin: 0 0 1.5rem;
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: clamp(1.625rem, 1.1rem + 2.3vw, 2.5rem);
+    line-height: 1.35;
+    letter-spacing: 0.01em;
+  }
+  .status { margin: 0; color: var(--muted); font-size: 1.0625rem; }
+
+  section { border-top: 1px solid var(--rule); padding: 2.75rem 0 1rem; }
+  h2 { margin: 0 0 1.25rem; font-family: var(--serif); font-weight: 600; font-size: 1.625rem; line-height: 1.35; }
+  h3 { margin: 2rem 0 0.5rem; font-size: 1.0625rem; font-weight: 650; line-height: 1.5; }
+  p { margin: 0 0 1rem; }
+
+  figure { margin: 1.25rem 0 2.25rem; }
+  figure img, figure video {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    background: var(--wash);
+  }
+  figcaption { margin-top: 0.625rem; color: var(--muted); font-size: 0.9375rem; line-height: 1.6; max-width: 40rem; }
+  .pair { display: grid; grid-template-columns: 1fr; gap: 1rem; align-items: start; }
+  @media (min-width: 48rem) { .pair { grid-template-columns: 1fr 1fr; } }
+
+  dl { margin: 0; }
+  dt { font-weight: 650; margin-top: 1.25rem; }
+  dd { margin: 0.25rem 0 0; }
+  dd ul { margin: 0.25rem 0 0; padding-left: 1.25rem; }
+  dd li { margin-bottom: 0.375rem; }
+
+  .cite {
+    color: var(--cite);
+    text-decoration: none;
+    font-size: 0.8125rem;
+    font-variant-numeric: tabular-nums;
+    vertical-align: 0.35em;
+    line-height: 0;
+    padding: 0 0.0625rem;
+  }
+  .cite:hover { text-decoration: underline; }
+  .finding p { font-variant-numeric: tabular-nums; }
+  .sources {
+    margin: 2.5rem 0 0;
+    padding: 1.25rem 0 0 1.75rem;
+    border-top: 1px dashed var(--rule);
+    color: var(--muted);
+    font-size: 0.875rem;
+    line-height: 1.6;
+  }
+  .sources li { margin-bottom: 0.625rem; padding-left: 0.25rem; }
+  .sources li::marker { color: var(--cite); font-variant-numeric: tabular-nums; }
+  .sources li:target { color: var(--ink); }
+  code { font-family: var(--mono); font-size: 0.875em; overflow-wrap: anywhere; }
+
+  .links li { margin-bottom: 0.625rem; }
+  footer { border-top: 1px solid var(--rule); margin-top: 2rem; padding: 1.5rem 0 3rem; color: var(--muted); font-size: 0.9375rem; }
+  @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+</style>
+</head>
+<body>
+<div class="page">
+
+<header class="masthead">
+  <div class="topline">
+    <p class="wordmark">Vela</p>
+    <a class="lang" href="index.html" lang="en" hreflang="en">English</a>
+  </div>
+  <h1 class="measure">為跨語言工作的醫療專業人員打造、以出處為先的多語言醫學搜尋。</h1>
+  <!-- source: first commit dc929bc (2026-02-13); archive decision 2026-10-05 (docs/batons/archive_mode_car_20261005.md) -->
+  <p class="status measure">2026 年 2 月至 10 月間開發與營運。Vela 現已封存：不再開放註冊、不再收費，也不再新增功能。線上保留一個只提供「研究」功能的小型展示。</p>
+</header>
+
+<main>
+
+<section id="what" aria-labelledby="what-h">
+  <h2 id="what-h">Vela 是什麼</h2>
+  <div class="measure">
+    <p>大部分的臨床證據以英文發表。Vela 讓臨床人員用自己的語言提問（共支援 16 種語言），並以同一種語言回答；每一項陳述都對應一個編號出處，可以直接點開查證：PubMed 摘要，或官方藥品仿單。</p>
+    <p>它是給專業人員使用的參考工具，不是症狀自我檢查器。含有個人識別資料的提問會被拒絕，也從不要求使用者證明自己的身分。</p>
+  </div>
+</section>
+
+<section id="tools" aria-labelledby="tools-h">
+  <h2 id="tools-h">三個工具</h2>
+
+  <h3 class="measure">研究</h3>
+  <p class="measure">用 16 種語言中的任何一種提出臨床問題。Vela 會搜尋文獻與藥品仿單、替找到的資料排序，再以你的語言寫出簡短的回答，並附上編號引用。</p>
+  <figure>
+    <video src="media/research-demo.mp4" width="1441" height="828" controls muted playsinline preload="metadata" aria-label="「研究」功能回答一個問題並附上編號引用的螢幕錄影">
+      <a href="media/research-demo.mp4">下載「研究」功能的螢幕錄影（MP4）</a>
+    </video>
+    <figcaption>「研究」功能，錄自實際上線的產品。</figcaption>
+  </figure>
+
+  <h3 class="measure">驗證</h3>
+  <p class="measure">輸入一份藥物清單，對照美國官方藥品仿單檢查交互作用。如果仿單沒有寫明嚴重程度、而是由模型判斷，標籤上會明白註記。</p>
+  <figure>
+    <img src="media/Verify_Landing_Demo.webp" width="2020" height="1225" loading="lazy" alt="「驗證」檢查 aspirin 與 metformin：找到一項中度交互作用，說明引自 glyburide 與 metformin 的仿單，嚴重程度標籤註明為 Vela AI-assessed（not label-stated）。">
+    <figcaption>「驗證」：交互作用的說明引自 DailyMed 仿單；嚴重程度則標明為模型的研判。</figcaption>
+  </figure>
+
+  <h3 class="measure">解讀</h3>
+  <p class="measure">貼上一份檢驗報告。Vela 會把每個數值對應到 LOINC、RxNorm 或 MedlinePlus 的條目，再用白話說明。</p>
+  <figure>
+    <div class="pair">
+      <img src="media/Explain_Landing_Demo_1.webp" width="1174" height="685" loading="lazy" alt="「解讀」的輸入：一行檢驗數值，eGFR 45 mL/min（參考值高於 60）、HbA1c 7.8%、Metformin 1000 mg 每日兩次。">
+      <img src="media/Explain_Landing_Demo_2.webp" width="1188" height="841" loading="lazy" alt="「解讀」的結果：先列出 LOINC 與 RxNorm 出處，再分別說明 eGFR 與 HbA1c，並標示為需要注意。">
+    </div>
+    <figcaption>「解讀」：輸入，以及先列出處、再作說明的結果。</figcaption>
+  </figure>
+</section>
+
+<section id="how" aria-labelledby="how-h">
+  <h2 id="how-h">運作方式</h2>
+  <dl class="measure">
+    <dt>資料來源</dt>
+    <dd>
+      <ul>
+        <li>PubMed：醫學文獻。</li>
+        <!-- source: tests/probes/route_mismatch/step1_corpus_route_census.json @ 3a6448b (corpus: docs 4608, labels 1038, safety_section_docs 2544) -->
+        <li>DailyMed 的美國藥品仿單，依結構化的仿單章節建立索引：共 1,038 份仿單、4,608 個索引章節。<a class="cite" href="#s8" aria-label="出處 8">[8]</a>同時也查詢 openFDA；當仿單缺少交互作用章節時，「驗證」會改用 openFDA 的資料。</li>
+        <li>台灣食藥署（TFDA）開放資料：用於核准適應症，以及把國內商品名對應到有效成分。</li>
+        <li>「解讀」使用 LOINC、RxNorm 與 MedlinePlus。</li>
+      </ul>
+    </dd>
+    <dt>技術架構</dt>
+    <dd>前端是 Next.js 的靜態匯出，由部署在 Fly.io 的 FastAPI 後端提供服務，資料庫為 Postgres。所有語言模型呼叫都經過同一個供應商介面，因此可以替換模型，並用完全相同的輸入比較結果。</dd>
+    <dt>誠實原則</dt>
+    <dd>
+      <ul>
+        <li>免責聲明由介面呈現；模型被明確要求不得自行撰寫。</li>
+        <li>每個答案都以編號標註出處。沒有檢索到任何文獻、單憑模型知識寫成的答案，會清楚標示。</li>
+        <li>嚴重程度若是模型判斷、而非仿單所載，會標示為 AI 研判。</li>
+        <!-- source: commit 3ad3ddc (2026-06-10) removed the model-assigned evidence markers; CLAUDE.md rule 12 @ c51f36e -->
+        <li>模型替自己答案標上的證據等級顏色已經移除：那等於模型替自己打分數。</li>
+        <li>含個人識別資料的提問，在任何模型看到之前就會被拒絕。如果這道檢查或安全防護本身出錯，請求會被擋下，而不是放行。</li>
+      </ul>
+    </dd>
+  </dl>
+</section>
+
+<section id="findings" aria-labelledby="findings-h">
+  <h2 id="findings-h">我量到了什麼、學到了什麼</h2>
+  <p class="measure">以下每個數字都來自原始碼儲存庫中已提交的檔案，方括號裡的編號指向它的出處。</p>
+
+  <div class="finding measure">
+    <h3>較便宜的模型，回答了另一個問題</h3>
+    <!-- source: tests/probes/bp_calcium/step10_0b_grades.json @ 438a19c (pairs: l0 veto_i true on 2 of 8; gpt41 veto_i true on 0 of 8; tally gpt41_veto_i_false 8/8, l0_veto_i_false 6/8) -->
+    <p>被問到「老人的血壓藥可以和鈣片一起吃嗎」時，較小的模型（gpt-4.1-mini）在 8 次中有 2 次把問題當成鈣離子阻斷劑這類藥物來回答，而不是鈣補充劑；較大的模型（gpt-4.1）拿到同樣的檢索文件，8 次中 0 次。展示版的匿名「研究」因此改用較大的模型。<a class="cite" href="#s1" aria-label="出處 1">[1]</a></p>
+  </div>
+
+  <div class="finding measure">
+    <h3>對的仿單，錯的給藥途徑</h3>
+    <!-- source: tests/probes/route_mismatch/step2_grades.json @ 4f5176f (n_answers 149; by_grade A 42, B 5, C 102; all 42 A rows on the calcium question: 35 English + 7 Chinese of its 85 answers; 0 A among the other 64; 14 distinct questions) -->
+    <p>149 個已保存的答案逐一經過閱讀與評分，涵蓋 14 個關於補充品與血壓藥的問題。其中 42 個以只適用於注射劑的仿單（氯化鈣注射液）為依據，對口服補充品給出建議。這 42 個全都出自同一個鈣片問題（英文或中文），佔該問題 85 個答案中的 42 個；其餘 64 個答案一個也沒有。評分靠的是閱讀判斷，並非由臨床人員評定。這個範例問題已從展示版中移除。<a class="cite" href="#s2" aria-label="出處 2">[2]</a></p>
+  </div>
+
+  <div class="finding measure">
+    <h3>同一個藥，兩個名字，兩種結論</h3>
+    <!-- source: CLAUDE.md rule 23 (line 162) @ c51f36e (ASPIRIN key: VAZALORE, no whitelisted safety sections; ACETYLSALICYLIC ACID key: DURLAZA, 34070-3 / 34073-7 / 43685-7; "6 of 6" claim stood across five c2 batons) -->
+    <p>藥品仿單是依照藥名的原始寫法建立索引。阿斯匹靈在「ASPIRIN」這個名稱下的參考仿單，沒有任何一個索引所用的安全性章節；在「ACETYLSALICYLIC ACID」名下卻有三個：禁忌症、藥物交互作用，以及警語與注意事項。只根據第一個名稱得出的結論是「6 個案例中，6 個藥物自己的仿單都沒有安全性章節」。這個結論是錯的，卻在連續五輪的工作筆記中都沒有被發現。<a class="cite" href="#s3" aria-label="出處 3">[3]</a></p>
+  </div>
+
+  <div class="finding measure">
+    <h3>看不見自己文件的排序測試</h3>
+    <!-- source: CLAUDE.md rule 22 (line 160) @ c51f36e (690 empty stubs, null result read as reassurance); api/rag/retriever.py lines 96-106 @ cf6b78b (local tier default off, "Vector store loaded: 690 documents"); tests/probes/retrieval_attrition/poolsize_postc1_comparison_20260823.json @ f9c318d ("TB02 pre-c1 pool was 11 of 13 docs local (the 690 empty-stub corpus)") -->
+    <p>一次調整檢索來源權重的測試顯示「沒有變化」，這個結果一度被當成好消息。但它調整的本地資料層，是 690 份空白的佔位文件；在其中一個測試問題裡，檢索到的 13 份文件有 11 份來自這一層。本地資料層隨後被關閉，之後任何排序上的調整，都要實際閱讀文件內容來檢查，而不只看排名位置。<a class="cite" href="#s4" aria-label="出處 4">[4]</a><a class="cite" href="#s5" aria-label="出處 5">[5]</a></p>
+  </div>
+
+  <div class="finding measure">
+    <h3>用文字規則判讀仿單，會高估</h3>
+    <!-- source: CLAUDE.md rule 21 (line 158) @ c51f36e (non-human sweep flagged 69, collapsed to 3; route/form classifier reported 22%, was 13%); tests/probes/c2/nonhuman_scope.json @ 3d38d3e (pinned 1036, flagged 3) -->
+    <p>用文字搜尋找出的獸醫用仿單有 69 份；改看每份仿單的文件類型代碼之後，1,036 份中只剩 3 份。一個判斷給藥途徑與劑型的分類器回報 22%，實際量測是 13%。只要仿單帶有精確的代碼，Vela 就用代碼判斷，而不是用文字。<a class="cite" href="#s6" aria-label="出處 6">[6]</a><a class="cite" href="#s7" aria-label="出處 7">[7]</a></p>
+  </div>
+
+  <ol class="sources measure" aria-label="出處">
+    <li id="s1"><code>tests/probes/bp_calcium/step10_0b_grades.json</code>，commit <code>438a19c</code>：8 組配對執行，每組使用相同文件。</li>
+    <li id="s2"><code>tests/probes/route_mismatch/step2_grades.json</code>，commit <code>4f5176f</code>：149 個答案的人工評分（A / B / C）。</li>
+    <li id="s3"><code>CLAUDE.md</code> 第 23 條規則，commit <code>c51f36e</code>。</li>
+    <li id="s4"><code>CLAUDE.md</code> 第 22 條規則，commit <code>c51f36e</code>；<code>api/rag/retriever.py</code>，commit <code>cf6b78b</code>。</li>
+    <li id="s5"><code>tests/probes/retrieval_attrition/poolsize_postc1_comparison_20260823.json</code>，commit <code>f9c318d</code>。</li>
+    <li id="s6"><code>CLAUDE.md</code> 第 21 條規則，commit <code>c51f36e</code>。</li>
+    <li id="s7"><code>tests/probes/c2/nonhuman_scope.json</code>，commit <code>3d38d3e</code>。</li>
+    <li id="s8"><code>tests/probes/route_mismatch/step1_corpus_route_census.json</code>，commit <code>3a6448b</code>。</li>
+  </ol>
+</section>
+
+<section id="why" aria-labelledby="why-h">
+  <h2 id="why-h">為什麼封存</h2>
+  <!-- FOUNDER REVIEW: draft paragraph, written for the founder to edit or replace before this page is published. -->
+  <p class="measure">Vela 用語言模型回答醫療問題。要把這件事開放給一般大眾，會碰上醫療軟體的法規門檻；要負責任地跨過這道門檻，不是一個人利用餘暇就能做到的。要讓答案保持誠實，也需要持續不斷的維護：每一次換模型、每一個資料來源、每一道安全檢查，都得重新用人工量測，就像上面那些發現所呈現的。同時，資源充足的團隊已經免費提供相當好用的醫學搜尋。與其讓 Vela 在持續收費的同時慢慢失修，我選擇停止開發、結束所有訂閱，只在線上保留一個有成本上限、只提供「研究」功能的展示，作為它曾經做過什麼的紀錄。</p>
+  <!-- /FOUNDER REVIEW -->
+</section>
+
+<section id="links" aria-labelledby="links-h">
+  <h2 id="links-h">連結</h2>
+  <ul class="links measure">
+    <li><a href="{{DEMO_URL}}">試用線上展示</a>。只提供「研究」功能，每日預算有限，且已不再維護。</li>
+    <li><a href="{{REPO_URL}}">閱讀原始碼</a>，包含上面引用的量測腳本與結果。</li>
+    <li><a href="https://an-tho.com">an-tho.com</a>，作者的網站。</li>
+  </ul>
+</section>
+
+</main>
+
+<footer>
+  <p class="measure">Vela 為研究工具，非醫療器材，不提供醫療建議。</p>
+</footer>
+
+</div>
+</body>
+</html>
