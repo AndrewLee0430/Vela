@@ -313,6 +313,11 @@ export interface UITranslations {
   statusAnalyzingReport: string;
   statusLookingUp: string;
   statusGenerating: string;
+
+  // ── Archive mode (archive car 2026-10-05; rendered only when NEXT_PUBLIC_ARCHIVE_MODE=true) ──
+  archiveBanner: string;          // slim banner on every page
+  archivedFeatureNotice: string;  // retired routes: /verify /explain /pricing /sign-in /sign-up
+  archiveShowcaseLink: string;    // link label → the static showcase (SHOWCASE_URL)
 }
 
 const en: UITranslations = {
@@ -582,6 +587,9 @@ const en: UITranslations = {
   statusAnalyzingReport: 'Analyzing your report...',
   statusLookingUp: 'Looking up verified sources...',
   statusGenerating: 'Generating explanation...',
+  archiveBanner: 'Vela is an archived project. This live demo offers Research only and is no longer maintained.',
+  archivedFeatureNotice: 'Vela is archived, and this page is no longer available. The live demo offers Research only.',
+  archiveShowcaseLink: 'About the project',
 };
 
 export const uiTranslations: Record<LangCode, UITranslations> = {
@@ -844,6 +852,9 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     statusAnalyzingReport: '正在分析您的報告⋯',
     statusLookingUp: '正在查詢已驗證來源⋯',
     statusGenerating: '正在生成解讀⋯',
+    archiveBanner: 'Vela 是已封存的專案。此線上展示僅提供「研究」功能，且已不再維護。', // MACHINE-TRANSLATED 2026-10-05 — archive car
+    archivedFeatureNotice: 'Vela 已封存，此頁面已停止提供。線上展示僅提供「研究」功能。', // MACHINE-TRANSLATED 2026-10-05 — archive car
+    archiveShowcaseLink: '關於這個專案', // MACHINE-TRANSLATED 2026-10-05 — archive car
   },
   'zh-CN': {
     newBtn: '+ 新查询',
@@ -1104,6 +1115,9 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     statusAnalyzingReport: '正在分析您的报告…',
     statusLookingUp: '正在查询已验证来源…',
     statusGenerating: '正在生成解读…',
+    archiveBanner: 'Vela 是已归档的项目。此在线演示仅提供“研究”功能，且已不再维护。', // MACHINE-TRANSLATED 2026-10-05 — archive car
+    archivedFeatureNotice: 'Vela 已归档，此页面已停止提供。在线演示仅提供“研究”功能。', // MACHINE-TRANSLATED 2026-10-05 — archive car
+    archiveShowcaseLink: '关于这个项目', // MACHINE-TRANSLATED 2026-10-05 — archive car
   },
   ja: {
     newBtn: '+ 新規',
@@ -1362,6 +1376,9 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     statusAnalyzingReport: 'レポートを分析中…',
     statusLookingUp: '検証済みソースを照会中…',
     statusGenerating: '解説を生成中…',
+    archiveBanner: 'Vela はアーカイブされたプロジェクトです。このライブデモは「研究」機能のみを提供しており、今後の保守は行われません。', // MACHINE-TRANSLATED 2026-10-05 — archive car
+    archivedFeatureNotice: 'Vela はアーカイブされたため、このページは利用できなくなりました。ライブデモでは「研究」機能のみ利用できます。', // MACHINE-TRANSLATED 2026-10-05 — archive car
+    archiveShowcaseLink: 'プロジェクトについて', // MACHINE-TRANSLATED 2026-10-05 — archive car
   },
   ko: {
     newBtn: '+ 새로 시작',
@@ -1620,6 +1637,9 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     statusAnalyzingReport: '보고서 분석 중…',
     statusLookingUp: '검증된 출처 조회 중…',
     statusGenerating: '설명 생성 중…',
+    archiveBanner: 'Vela는 보관된 프로젝트입니다. 이 라이브 데모는 연구 기능만 제공하며 더 이상 유지 관리되지 않습니다.', // MACHINE-TRANSLATED 2026-10-05 — archive car
+    archivedFeatureNotice: 'Vela가 보관되어 이 페이지는 더 이상 제공되지 않습니다. 라이브 데모에서는 연구 기능만 이용할 수 있습니다.', // MACHINE-TRANSLATED 2026-10-05 — archive car
+    archiveShowcaseLink: '프로젝트 소개', // MACHINE-TRANSLATED 2026-10-05 — archive car
   },
   es: {
     newBtn: '+ Nuevo',
@@ -1880,6 +1900,9 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     statusAnalyzingReport: 'Analizando su informe…',
     statusLookingUp: 'Consultando fuentes verificadas…',
     statusGenerating: 'Generando explicación…',
+    archiveBanner: 'Vela es un proyecto archivado. Esta demo en vivo solo ofrece la función Investigar y ya no se mantiene.', // MACHINE-TRANSLATED 2026-10-05 — archive car
+    archivedFeatureNotice: 'Vela está archivado y esta página ya no está disponible. La demo en vivo solo ofrece la función Investigar.', // MACHINE-TRANSLATED 2026-10-05 — archive car
+    archiveShowcaseLink: 'Sobre el proyecto', // MACHINE-TRANSLATED 2026-10-05 — archive car
   },
   fr: {
     newBtn: '+ Nouveau',
@@ -2140,6 +2163,9 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     statusAnalyzingReport: 'Analyse de votre rapport…',
     statusLookingUp: 'Consultation des sources vérifiées…',
     statusGenerating: 'Génération de l\u2019explication…',
+    archiveBanner: 'Vela est un projet archivé. Cette démo en ligne ne propose que la fonction Recherche et n\'est plus maintenue.', // MACHINE-TRANSLATED 2026-10-05 — archive car
+    archivedFeatureNotice: 'Vela est archivé et cette page n\'est plus disponible. La démo en ligne ne propose que la fonction Recherche.', // MACHINE-TRANSLATED 2026-10-05 — archive car
+    archiveShowcaseLink: 'À propos du projet', // MACHINE-TRANSLATED 2026-10-05 — archive car
   },
   de: {
     newBtn: '+ Neu',
@@ -2400,6 +2426,9 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     statusAnalyzingReport: 'Ihr Bericht wird analysiert…',
     statusLookingUp: 'Verifizierte Quellen werden abgerufen…',
     statusGenerating: 'Erklärung wird erstellt…',
+    archiveBanner: 'Vela ist ein archiviertes Projekt. Diese Live-Demo bietet nur die Funktion Recherche und wird nicht mehr gepflegt.', // MACHINE-TRANSLATED 2026-10-05 — archive car
+    archivedFeatureNotice: 'Vela ist archiviert, diese Seite ist nicht mehr verfügbar. Die Live-Demo bietet nur die Funktion Recherche.', // MACHINE-TRANSLATED 2026-10-05 — archive car
+    archiveShowcaseLink: 'Über das Projekt', // MACHINE-TRANSLATED 2026-10-05 — archive car
   },
   it: {
     newBtn: '+ Nuovo',
@@ -2660,6 +2689,9 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     statusAnalyzingReport: 'Analisi del tuo referto…',
     statusLookingUp: 'Consultazione delle fonti verificate…',
     statusGenerating: 'Generazione della spiegazione…',
+    archiveBanner: 'Vela è un progetto archiviato. Questa demo dal vivo offre solo la funzione Ricerca e non è più mantenuta.', // MACHINE-TRANSLATED 2026-10-05 — archive car
+    archivedFeatureNotice: 'Vela è archiviato e questa pagina non è più disponibile. La demo dal vivo offre solo la funzione Ricerca.', // MACHINE-TRANSLATED 2026-10-05 — archive car
+    archiveShowcaseLink: 'Informazioni sul progetto', // MACHINE-TRANSLATED 2026-10-05 — archive car
   },
   pt: {
     newBtn: '+ Novo',
@@ -2920,6 +2952,9 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     statusAnalyzingReport: 'Analisando seu relatório…',
     statusLookingUp: 'Consultando fontes verificadas…',
     statusGenerating: 'Gerando explicação…',
+    archiveBanner: 'O Vela é um projeto arquivado. Esta demonstração ao vivo oferece apenas a função Pesquisa e não recebe mais manutenção.', // MACHINE-TRANSLATED 2026-10-05 — archive car
+    archivedFeatureNotice: 'O Vela foi arquivado e esta página não está mais disponível. A demonstração ao vivo oferece apenas a função Pesquisa.', // MACHINE-TRANSLATED 2026-10-05 — archive car
+    archiveShowcaseLink: 'Sobre o projeto', // MACHINE-TRANSLATED 2026-10-05 — archive car
   },
   th: {
     newBtn: '+ ใหม่',
@@ -3180,6 +3215,9 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     statusAnalyzingReport: 'กำลังวิเคราะห์รายงานของคุณ…',
     statusLookingUp: 'กำลังค้นหาแหล่งข้อมูลที่ตรวจสอบแล้ว…',
     statusGenerating: 'กำลังสร้างคำอธิบาย…',
+    archiveBanner: 'Vela เป็นโปรเจกต์ที่เก็บถาวรแล้ว เดโมนี้มีเฉพาะฟังก์ชันวิจัยและไม่มีการดูแลรักษาอีกต่อไป', // MACHINE-TRANSLATED 2026-10-05 — archive car
+    archivedFeatureNotice: 'Vela ถูกเก็บถาวรแล้ว และหน้านี้ไม่พร้อมให้บริการอีกต่อไป เดโมมีเฉพาะฟังก์ชันวิจัยเท่านั้น', // MACHINE-TRANSLATED 2026-10-05 — archive car
+    archiveShowcaseLink: 'เกี่ยวกับโปรเจกต์', // MACHINE-TRANSLATED 2026-10-05 — archive car
   },
   ar: {
     newBtn: '+ جديد',
@@ -3440,6 +3478,9 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     statusAnalyzingReport: 'جارٍ تحليل تقريرك…',
     statusLookingUp: 'جارٍ البحث في المصادر الموثوقة…',
     statusGenerating: 'جارٍ إنشاء الشرح…',
+    archiveBanner: 'Vela مشروع مؤرشف. يقدّم هذا العرض التجريبي المباشر ميزة البحث فقط ولم يعد يخضع للصيانة.', // MACHINE-TRANSLATED 2026-10-05 — archive car
+    archivedFeatureNotice: 'تمت أرشفة Vela ولم تعد هذه الصفحة متاحة. يقدّم العرض التجريبي المباشر ميزة البحث فقط.', // MACHINE-TRANSLATED 2026-10-05 — archive car
+    archiveShowcaseLink: 'حول المشروع', // MACHINE-TRANSLATED 2026-10-05 — archive car
   },
   hi: {
     newBtn: '+ नया',
@@ -3700,6 +3741,9 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     statusAnalyzingReport: 'आपकी रिपोर्ट का विश्लेषण कर रहा है…',
     statusLookingUp: 'सत्यापित स्रोतों की खोज कर रहा है…',
     statusGenerating: 'व्याख्या उत्पन्न कर रहा है…',
+    archiveBanner: 'Vela एक संग्रहीत परियोजना है। यह लाइव डेमो केवल अनुसंधान सुविधा प्रदान करता है और अब इसका रखरखाव नहीं किया जाता।', // MACHINE-TRANSLATED 2026-10-05 — archive car
+    archivedFeatureNotice: 'Vela संग्रहीत कर दिया गया है और यह पृष्ठ अब उपलब्ध नहीं है। लाइव डेमो केवल अनुसंधान सुविधा प्रदान करता है।', // MACHINE-TRANSLATED 2026-10-05 — archive car
+    archiveShowcaseLink: 'परियोजना के बारे में', // MACHINE-TRANSLATED 2026-10-05 — archive car
   },
   bn: {
     newBtn: '+ নতুন',
@@ -3960,6 +4004,9 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     statusAnalyzingReport: 'আপনার রিপোর্ট বিশ্লেষণ করা হচ্ছে…',
     statusLookingUp: 'যাচাইকৃত উৎস খোঁজা হচ্ছে…',
     statusGenerating: 'ব্যাখ্যা তৈরি করা হচ্ছে…',
+    archiveBanner: 'Vela একটি আর্কাইভ করা প্রকল্প। এই লাইভ ডেমোতে শুধু গবেষণা ফিচার রয়েছে এবং এটি আর রক্ষণাবেক্ষণ করা হয় না।', // MACHINE-TRANSLATED 2026-10-05 — archive car
+    archivedFeatureNotice: 'Vela আর্কাইভ করা হয়েছে এবং এই পৃষ্ঠাটি আর উপলব্ধ নয়। লাইভ ডেমোতে শুধু গবেষণা ফিচার রয়েছে।', // MACHINE-TRANSLATED 2026-10-05 — archive car
+    archiveShowcaseLink: 'প্রকল্প সম্পর্কে', // MACHINE-TRANSLATED 2026-10-05 — archive car
   },
   he: {
     newBtn: '+ חדש',
@@ -4220,6 +4267,9 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     statusAnalyzingReport: 'מנתח את הדוח שלך…',
     statusLookingUp: 'מחפש מקורות מאומתים…',
     statusGenerating: 'יוצר הסבר…',
+    archiveBanner: 'Vela הוא פרויקט בארכיון. הדגמה חיה זו מציעה את תכונת המחקר בלבד ואינה מתוחזקת עוד.', // MACHINE-TRANSLATED 2026-10-05 — archive car
+    archivedFeatureNotice: 'Vela הועבר לארכיון ודף זה אינו זמין עוד. ההדגמה החיה מציעה את תכונת המחקר בלבד.', // MACHINE-TRANSLATED 2026-10-05 — archive car
+    archiveShowcaseLink: 'אודות הפרויקט', // MACHINE-TRANSLATED 2026-10-05 — archive car
   },
   vi: {
     newBtn: '+ Mới',
@@ -4480,6 +4530,9 @@ export const uiTranslations: Record<LangCode, UITranslations> = {
     statusAnalyzingReport: 'Đang phân tích báo cáo của bạn…',
     statusLookingUp: 'Đang tra cứu nguồn đã xác minh…',
     statusGenerating: 'Đang tạo giải thích…',
+    archiveBanner: 'Vela là một dự án đã được lưu trữ. Bản demo trực tiếp này chỉ cung cấp tính năng Nghiên cứu và không còn được bảo trì.', // MACHINE-TRANSLATED 2026-10-05 — archive car
+    archivedFeatureNotice: 'Vela đã được lưu trữ và trang này không còn khả dụng. Bản demo trực tiếp chỉ cung cấp tính năng Nghiên cứu.', // MACHINE-TRANSLATED 2026-10-05 — archive car
+    archiveShowcaseLink: 'Về dự án', // MACHINE-TRANSLATED 2026-10-05 — archive car
   },
 };
 

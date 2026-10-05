@@ -18,6 +18,10 @@ ARG NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 ARG NEXT_PUBLIC_LOCALE_HINT_ENABLED
 ENV NEXT_PUBLIC_LOCALE_HINT_ENABLED=$NEXT_PUBLIC_LOCALE_HINT_ENABLED
+# Archive car 2026-10-05 — without this pair the fly.toml [build.args] value never
+# reaches `npm run build` (tests/test_archive_mode.py pins the plumbing).
+ARG NEXT_PUBLIC_ARCHIVE_MODE
+ENV NEXT_PUBLIC_ARCHIVE_MODE=$NEXT_PUBLIC_ARCHIVE_MODE
 
 RUN npm run build
 

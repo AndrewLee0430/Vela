@@ -3,6 +3,8 @@ import Image from 'next/image';
 import Head from 'next/head';
 import { useLang } from '../utils/LangContext';
 import { getUI } from '../utils/i18n-ui';
+import ArchivedFeatureNotice from '../components/ArchivedFeatureNotice';
+import { ARCHIVE_MODE } from '../utils/archiveMode';
 
 const ACCENT = 'rgb(var(--color-brand))';
 
@@ -14,7 +16,13 @@ function CheckIcon() {
     );
 }
 
+// Archive car (2026-10-05): nothing is sold in an archive-mode build (checkout API answers 410).
+// A wrapper rather than an early return inside PricingPage, which calls hooks first.
 export default function Pricing() {
+    return ARCHIVE_MODE ? <ArchivedFeatureNotice /> : <PricingPage />;
+}
+
+function PricingPage() {
     const { lang } = useLang();
     const ui = getUI(lang);
 

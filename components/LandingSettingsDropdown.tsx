@@ -7,6 +7,7 @@ import { SignedOut } from '@clerk/nextjs';
 import { useLang } from '../utils/LangContext';
 import { translations } from '../utils/i18n';
 import SettingsControls from './SettingsControls';
+import { ARCHIVE_MODE } from '../utils/archiveMode';
 
 /**
  * Anon-trimmed settings dropdown for the landing top-right gear.
@@ -55,8 +56,8 @@ export default function LandingSettingsDropdown() {
                 >
                     <SettingsControls hideTheme /> {/* B4 D-B4-1: landing is light-only */}
 
-                    {/* Sign In — anon entry point (matches the nav sign-in pill → /sign-in) */}
-                    <SignedOut>
+                    {/* Sign In — anon entry point (matches the nav sign-in pill → /sign-in); none in an archive build */}
+                    {!ARCHIVE_MODE && <SignedOut>
                         <Link
                             href="/sign-in"
                             onClick={() => setOpen(false)}
@@ -65,7 +66,7 @@ export default function LandingSettingsDropdown() {
                         >
                             {t.signIn}
                         </Link>
-                    </SignedOut>
+                    </SignedOut>}
 
                     {/* Privacy Policy */}
                     <Link

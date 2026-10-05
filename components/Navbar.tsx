@@ -13,9 +13,14 @@ import { useLang } from '../utils/LangContext';
 import { getUI } from '../utils/i18n-ui';
 import { getExtra } from '../utils/i18n-extra';
 import { getShare } from '../utils/i18n-share';
+import { ARCHIVE_MODE } from '../utils/archiveMode';
 
 type ActivePage = 'research' | 'verify' | 'explain' | 'history' | 'settings';
 type NavLinkPage = 'research' | 'verify' | 'explain' | 'history';
+// Archive car (2026-10-05): an archive-mode build links only the live surface.
+const NAV_LINK_PAGES: readonly NavLinkPage[] = ARCHIVE_MODE
+    ? ['research', 'history']
+    : ['research', 'verify', 'explain', 'history'];
 
 interface NavbarProps {
     activePage?: ActivePage;
@@ -165,7 +170,7 @@ export default function Navbar({ activePage }: NavbarProps) {
                                 </span>
                             </Link>
                             <div className="hidden md:flex items-center gap-6 text-sm">
-                                {(['research', 'verify', 'explain', 'history'] as const).map(page => (
+                                {NAV_LINK_PAGES.map(page => (
                                     <Link
                                         key={page}
                                         href={`/${page}`}
@@ -210,8 +215,8 @@ export default function Navbar({ activePage }: NavbarProps) {
                                 </div>
                             )}
                             <SignedIn>
-                                {/* 1. Upgrade button — free users only (Pro badge moved to left) */}
-                                {plan !== 'pro' && (
+                                {/* 1. Upgrade button — free users only (Pro badge moved to left); none in an archive build */}
+                                {plan !== 'pro' && !ARCHIVE_MODE && (
                                     <button
                                         onClick={() => setShowUpgradeModal(true)}
                                         className="text-sm font-semibold px-3 py-1 rounded-lg cursor-pointer transition-all"
@@ -254,8 +259,8 @@ export default function Navbar({ activePage }: NavbarProps) {
                                         >
                                             <SettingsControls />
 
-                                            {/* Anon entry point — mirrors LandingSettingsDropdown */}
-                                            <SignedOut>
+                                            {/* Anon entry point — mirrors LandingSettingsDropdown; none in an archive build */}
+                                            {!ARCHIVE_MODE && <SignedOut>
                                                 <Link
                                                     href="/sign-in"
                                                     onClick={() => setSettingsOpen(false)}
@@ -264,7 +269,7 @@ export default function Navbar({ activePage }: NavbarProps) {
                                                 >
                                                     {ui.signIn}
                                                 </Link>
-                                            </SignedOut>
+                                            </SignedOut>}
 
                                             {/* Account-specific rows — signed-in only (anon never sees plan/credits/shares/subscription) */}
                                             <SignedIn>
@@ -318,15 +323,15 @@ export default function Navbar({ activePage }: NavbarProps) {
                                                     >
                                                         {ui.manageSubscription}
                                                     </button>
-                                                    <button
+                                                    {!ARCHIVE_MODE && <button
                                                         onClick={() => { setSettingsOpen(false); setShowCancelConfirm(true); }}
                                                         className="w-full text-left px-4 py-2 text-sm transition-colors hover:bg-text/5"
                                                         style={{ color: 'rgb(var(--color-danger))' }}
                                                     >
                                                         {ui.cancelSubscription}
-                                                    </button>
+                                                    </button>}
                                                 </>
-                                            ) : (
+                                            ) : !ARCHIVE_MODE && (
                                                 <button
                                                     onClick={() => { setSettingsOpen(false); setShowUpgradeModal(true); }}
                                                     className="w-full text-left px-4 py-2 text-sm font-medium transition-colors hover:bg-text/5"
@@ -344,7 +349,7 @@ export default function Navbar({ activePage }: NavbarProps) {
                                 <SignedIn>
                                     <UserButton />
                                 </SignedIn>
-                            <SignedOut>
+                            {!ARCHIVE_MODE && <SignedOut>
                                 <Link href="/sign-in">
                                     <button
                                         className="px-4 py-1.5 text-sm font-medium text-text rounded-lg transition-all duration-200 border border-text/20"
@@ -354,15 +359,15 @@ export default function Navbar({ activePage }: NavbarProps) {
                                         {ui.signIn}
                                     </button>
                                 </Link>
-                            </SignedOut>
+                            </SignedOut>}
                         </div>
                     </div>
                 </div>
             </nav>
             <UpgradeModal isOpen={showUpgradeModal} onClose={() => setShowUpgradeModal(false)} />
 
-            {/* Cancel Subscription Confirmation Dialog */}
-            {showCancelConfirm && (
+            {/* Cancel Subscription Confirmation Dialog — none in an archive build (cancel API answers 410) */}
+            {showCancelConfirm && !ARCHIVE_MODE && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }}>
                     <div className="w-full max-w-md mx-4 rounded-xl p-6 border border-text/10" style={{ background: 'rgb(var(--color-bg-1) / 0.98)' }}>
                         {cancelMessage === 'success' ? (

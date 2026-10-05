@@ -28,6 +28,8 @@ import {
   type UITranslations,
 } from '../utils/i18n-ui';
 import { getExtra } from '../utils/i18n-extra';
+import ArchivedFeatureNotice from '../components/ArchivedFeatureNotice';
+import { ARCHIVE_MODE } from '../utils/archiveMode';
 
 interface ExplainSource {
     source_type: string;
@@ -818,6 +820,8 @@ function ExplainForm() {
 }
 
 export default function Explain() {
+    // Archive car (2026-10-05): Explain is retired in an archive-mode build (API answers 410).
+    if (ARCHIVE_MODE) return <ArchivedFeatureNotice />;
     return (
         <PageShell
             activePage="explain"

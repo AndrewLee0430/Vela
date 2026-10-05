@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useLang } from '../utils/LangContext';
 import { getExtra } from '../utils/i18n-extra';
+import { ARCHIVE_MODE } from '../utils/archiveMode';
 
 const TABS = [
   {
@@ -49,6 +50,11 @@ const TABS = [
   },
 ];
 
+// Archive car (2026-10-05): an archive-mode build shows only the live surface.
+const VISIBLE_TABS = ARCHIVE_MODE
+  ? TABS.filter((tab) => tab.labelKey !== 'verify' && tab.labelKey !== 'explain')
+  : TABS;
+
 export default function MobileNav() {
   const { pathname } = useRouter();
   const { lang } = useLang();
@@ -70,7 +76,7 @@ export default function MobileNav() {
         paddingBottom: 'env(safe-area-inset-bottom, 0px)',
       }}
     >
-      {TABS.map((tab) => {
+      {VISIBLE_TABS.map((tab) => {
         const isActive = pathname === tab.href;
         return (
           <Link

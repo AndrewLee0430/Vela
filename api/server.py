@@ -518,6 +518,33 @@ def get_user_id(creds: Optional[HTTPAuthorizationCredentials]) -> str:
 
 
 # ============================================================
+# ARCHIVE MODE (founder decision 2026-10-05) — Vela is an archived open work;
+# the live demo serves anonymous Research only. Default OFF in code (the suite
+# runs unchanged); ON in fly.toml [env]. Read per request, like the other
+# feature flags in this file.
+# ============================================================
+ARCHIVED_DETAIL = "Vela is archived. This feature is no longer available."
+
+
+def _archive_mode_on() -> bool:
+    return os.getenv("ARCHIVE_MODE", "").lower() == "true"
+
+
+async def archive_gate() -> None:
+    """Route-level dependency for the retired surface. FastAPI runs a route's
+    `dependencies=[...]` BEFORE the endpoint's own parameter dependencies, so
+    the 410 lands before auth, get_db, body validation, PHI/guards, LLM, credit
+    and vendor work. One generic body (Rule 5). Retired: Verify, Explain (+ image
+    extract), share create, context-hash POST, Dodo checkout + cancel, Lemon
+    Squeezy checkout + webhook. NOT gated: Research, the Dodo + Clerk webhooks
+    (cancellation events must still land), /health, history read/delete, and
+    the public /q/* + /explore/* pages (tests/test_archive_mode.py)."""
+    if _archive_mode_on():
+        from fastapi import HTTPException
+        raise HTTPException(status_code=410, detail=ARCHIVED_DETAIL)
+
+
+# ============================================================
 # 初始化元件
 # ============================================================
 retriever = HybridRetriever(
@@ -1042,12 +1069,18 @@ async def research_query(
                         # Half B (segment 3): markdown + the streamed citation list in ONE
                         # JSON; the judge/direction tasks below keep receiving the raw
                         # `full_answer` markdown, never the payload.
-                        _safe_db_write(db, ChatHistory(
-                                user_id=user_id,
-                                session_type="research",
-                                question=PHIDetector.sanitize_for_log(body.question),
-                                answer=_research_history_payload(full_answer, citations_data, is_fallback)
-                            ), label="History Save")
+                        # ARCHIVE MODE (2026-10-05): archive mode stops collecting — no
+                        # history row for ANY tier (anon never wrote one). Credit, cost and
+                        # AuditLog behaviour below/above are unchanged.
+                        if _archive_mode_on():
+                            logger.info("[Research] ARCHIVE_MODE — history write skipped (audit_id=%s)", audit_id)
+                        else:
+                            _safe_db_write(db, ChatHistory(
+                                    user_id=user_id,
+                                    session_type="research",
+                                    question=PHIDetector.sanitize_for_log(body.question),
+                                    answer=_research_history_payload(full_answer, citations_data, is_fallback)
+                                ), label="History Save")
                         # 成功後扣減 credits
                         await deduct_credits(db, user_id, "research")
                         # Cost logging
@@ -1226,7 +1259,7 @@ def _verify_history_payload(
     }, ensure_ascii=False)
 
 
-@app.post("/api/verify")
+@app.post("/api/verify", dependencies=[Depends(archive_gate)])
 async def verify_drug_interaction(
     body: VerifyRequest,
     request: Request,
@@ -1733,7 +1766,7 @@ async def verify_drug_interaction(
 # ============================================================
 # 功能 4：Explain — 醫療報告解讀 (新功能)
 # ============================================================
-@app.post("/api/explain")
+@app.post("/api/explain", dependencies=[Depends(archive_gate)])
 async def explain_report(
     body: ExplainRequest,
     request: Request,
@@ -1867,7 +1900,7 @@ async def explain_identify_feedback(
 # ============================================================
 from fastapi import File, UploadFile
 
-@app.post("/api/explain/extract-image")
+@app.post("/api/explain/extract-image", dependencies=[Depends(archive_gate)])
 async def explain_extract_image(
     file: UploadFile = File(...),
     creds: Optional[HTTPAuthorizationCredentials] = Depends(require_auth),
@@ -2185,7 +2218,7 @@ import hashlib
 class CheckoutRequest(BaseModel):
     variant_id: str
 
-@app.post("/api/checkout")
+@app.post("/api/checkout", dependencies=[Depends(archive_gate)])
 async def create_checkout(
     body: CheckoutRequest,
     creds: Optional[HTTPAuthorizationCredentials] = Depends(require_auth),
@@ -2207,7 +2240,7 @@ async def create_checkout(
 class DodoCheckoutRequest(BaseModel):
     product_id: str
 
-@app.post("/api/checkout/dodo")
+@app.post("/api/checkout/dodo", dependencies=[Depends(archive_gate)])
 async def create_dodo_checkout(
     body: DodoCheckoutRequest,
     creds: Optional[HTTPAuthorizationCredentials] = Depends(require_auth),
@@ -2282,7 +2315,7 @@ async def create_dodo_checkout(
         return JSONResponse(status_code=500, content={"detail": "Checkout failed"})
 
 
-@app.post("/api/webhooks/lemonsqueezy")
+@app.post("/api/webhooks/lemonsqueezy", dependencies=[Depends(archive_gate)])
 async def lemonsqueezy_webhook(request: Request, db: Session = Depends(get_db)):
     # 驗證 webhook signature
     signing_secret = os.getenv("LEMON_SQUEEZY_SIGNING_SECRET", "")
@@ -2704,7 +2737,7 @@ async def user_portal(
     return {"url": "https://customer.dodopayments.com"}
 
 
-@app.post("/api/subscription/cancel")
+@app.post("/api/subscription/cancel", dependencies=[Depends(archive_gate)])
 async def cancel_subscription(
     creds: Optional[HTTPAuthorizationCredentials] = Depends(require_auth),
     db: Session = Depends(get_db)
@@ -2783,7 +2816,7 @@ def _require_pro(db: Session, user_id: str) -> Optional[JSONResponse]:
     return None
 
 
-@app.post("/api/user/context/hash")
+@app.post("/api/user/context/hash", dependencies=[Depends(archive_gate)])
 async def user_context_hash_upsert(
     body: UserContextHashRequest,
     creds: Optional[HTTPAuthorizationCredentials] = Depends(require_auth),
@@ -3378,7 +3411,7 @@ class ShareCreateRequest(BaseModel):
     locale: Optional[str] = Field(default=None, max_length=16)
 
 
-@app.post("/api/share/create")
+@app.post("/api/share/create", dependencies=[Depends(archive_gate)])
 async def share_create(
     body: ShareCreateRequest,
     request: Request,

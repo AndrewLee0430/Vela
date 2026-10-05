@@ -24,6 +24,7 @@ import { translations, RTL_LANGS, landingContent } from '../utils/i18n';
 import { useLang } from '../utils/LangContext';
 import { getExtra } from '../utils/i18n-extra';
 import { track } from '../utils/analytics';
+import { ARCHIVE_MODE } from '../utils/archiveMode';
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
 
@@ -113,7 +114,11 @@ function LandingPage() {
         physician: [t.egPhysician1, t.egPhysician2, t.egPhysician3],
         student: [t.egStudent1, t.egStudent2, t.egStudent3],
       }[exampleGroup]
-    : [t.heroChip1, t.heroChip2, t.heroChip3];
+    : ARCHIVE_MODE
+      // Archive car (2026-10-05): chip 2 (BP meds + calcium) is withheld from the archived
+      // demo while the [HONESTY][P1] route-mismatch entry stays open.
+      ? [t.heroChip1, t.heroChip3]
+      : [t.heroChip1, t.heroChip2, t.heroChip3];
 
   // T3: the inline composer is Research-only. Picking Verify/Explain navigates to
   // their dedicated pages on SELECT (see handleModeChange) — their input shapes
@@ -322,9 +327,14 @@ function LandingPage() {
               </Link>
               <div className="hidden md:flex items-center gap-6 text-sm font-medium ml-8">
                 <Link href="/research" className="text-text/70 hover:text-text transition-colors duration-200">{t.research}</Link>
-                <Link href="/verify" className="text-text/70 hover:text-text transition-colors duration-200">{t.verify}</Link>
-                <Link href="/explain" className="text-text/70 hover:text-text transition-colors duration-200">{t.explain}</Link>
-                <Link href="/pricing" className="text-text/70 hover:text-text transition-colors duration-200">{ui.pricingTitle}</Link>
+                {/* Archive car (2026-10-05): an archive-mode build links only the live surface. */}
+                {!ARCHIVE_MODE && (
+                  <>
+                    <Link href="/verify" className="text-text/70 hover:text-text transition-colors duration-200">{t.verify}</Link>
+                    <Link href="/explain" className="text-text/70 hover:text-text transition-colors duration-200">{t.explain}</Link>
+                    <Link href="/pricing" className="text-text/70 hover:text-text transition-colors duration-200">{ui.pricingTitle}</Link>
+                  </>
+                )}
                 <Link href="/faq" className="text-text/70 hover:text-text transition-colors duration-200">FAQ</Link>
               </div>
             </div>
@@ -332,7 +342,7 @@ function LandingPage() {
               <LandingSettingsDropdown />
               <PlanBadge />
               <SignedIn><UserButton /></SignedIn>
-              <SignedOut>
+              {!ARCHIVE_MODE && <SignedOut>
                 <Link href="/sign-in">
                   <button
                     className="px-5 py-2 text-sm font-medium text-text rounded-lg transition-all duration-200"
@@ -343,7 +353,7 @@ function LandingPage() {
                     {t.signIn}
                   </button>
                 </Link>
-              </SignedOut>
+              </SignedOut>}
             </div>
           </nav>
 
@@ -442,7 +452,7 @@ function LandingPage() {
                   2026-08-28 ruling G: the #features anchor removed with the
                   cards section (featuresHeading retired); the nav now carries
                   the feature links. */}
-              <Link href="/pricing" className="hover:underline transition duration-200">{ui.pricingTitle}</Link>
+              {!ARCHIVE_MODE && <Link href="/pricing" className="hover:underline transition duration-200">{ui.pricingTitle}</Link>}
               <Link href="/faq" className="hover:underline transition duration-200">FAQ</Link>
             </div>
             <div className="flex flex-wrap justify-center gap-4 text-xs">

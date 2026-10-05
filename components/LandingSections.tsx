@@ -39,6 +39,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ChevronDown, ArrowRight } from 'lucide-react';
 import type { LandingContent, Translations } from '../utils/i18n';
+import { ARCHIVE_MODE, SHOWCASE_URL } from '../utils/archiveMode';
 
 // Layout effect on the client, plain effect during the static export — avoids
 // both the SSR warning and a one-frame flash of un-revealed words.
@@ -549,7 +550,9 @@ export default function LandingSections({ lc, t }: Props) {
           <p className="text-base md:text-lg max-w-2xl" style={{ color: 'rgb(var(--color-text) / 0.7)' }}>
             {lc.verifySub}
           </p>
-          <Pill href="/verify" label={lc.tryVerify} />
+          {/* Archive car (2026-10-05): the band stays as showcase content; in an archive-mode
+              build its CTA leads to the static showcase, not the retired /verify. */}
+          <Pill href={ARCHIVE_MODE ? SHOWCASE_URL : '/verify'} label={lc.tryVerify} />
           {/* Iteration 5 A2: 0.778 -> 0.85 of the band's inner width (was
               max-w-4xl = 896px against a 1152px container). Ceiling derived,
               not chosen by feel: 2020 natural / (0.85 * 1152 = 979.2) =
@@ -598,7 +601,7 @@ export default function LandingSections({ lc, t }: Props) {
           <p className="text-base md:text-lg max-w-2xl" style={{ color: 'rgb(var(--color-text) / 0.7)' }}>
             {lc.explainSub}
           </p>
-          <Pill href="/explain" label={lc.tryExplain} />
+          <Pill href={ARCHIVE_MODE ? SHOWCASE_URL : '/explain'} label={lc.tryExplain} />
           {/* Iteration 5 C2: tops-aligned -> items-center, so the two captures
               balance optically instead of leaving the shorter one hanging
               from the top edge.

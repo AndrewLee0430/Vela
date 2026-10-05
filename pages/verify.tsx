@@ -17,6 +17,8 @@ import { useLang } from '../utils/LangContext';
 import { getUI } from '../utils/i18n-ui';
 import { getRiskLevelLabel } from '../utils/i18n-verify';
 import VerifyInteractionCard, { type DrugInteraction, getRiskBadgeClass, getInteractionSummaryDisplay } from '../components/VerifyInteractionCard';
+import ArchivedFeatureNotice from '../components/ArchivedFeatureNotice';
+import { ARCHIVE_MODE } from '../utils/archiveMode';
 
 // ADR 003 — flag a drug line as non-English ONLY if it contains a non-Latin SCRIPT
 // (CJK / kana / Hangul / Cyrillic / Hebrew / Arabic / Thai / Devanagari / Bengali).
@@ -579,6 +581,8 @@ function VerifyForm() {
 }
 
 export default function Verify() {
+    // Archive car (2026-10-05): Verify is retired in an archive-mode build (API answers 410).
+    if (ARCHIVE_MODE) return <ArchivedFeatureNotice />;
     return (
         <PageShell
             activePage="verify"
