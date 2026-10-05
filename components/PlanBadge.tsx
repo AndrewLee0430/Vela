@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useAuth, useUser } from '@clerk/nextjs';
 import { useLang } from '../utils/LangContext';
 import { landingContent } from '../utils/i18n';
+import { ARCHIVE_MODE } from '../utils/archiveMode';
 
 const CACHE_KEY = 'vela_plan_cache';
 const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
@@ -53,7 +54,7 @@ export default function PlanBadge() {
     });
 
     useEffect(() => {
-        if (!isLoaded || !isSignedIn) return;
+        if (!isLoaded || !isSignedIn || ARCHIVE_MODE) return;  // archive UI car: no plan to read
 
         // If cache already provided a value, only background-refresh
         const cached = readCache();
@@ -85,7 +86,8 @@ export default function PlanBadge() {
 
     if (!isLoaded) return null;
 
-    if (!isSignedIn) return tryVelaCta;
+    // Archive UI car U1 (2026-10-05): no plans — everyone gets "Try Vela" → /research, never a PRO badge.
+    if (ARCHIVE_MODE || !isSignedIn) return tryVelaCta;
 
     // Still loading plan (no cache) — hide to prevent flash
     if (plan === null) return null;

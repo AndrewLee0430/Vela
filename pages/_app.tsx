@@ -12,7 +12,6 @@ import { reset as resetAnalytics, identify, track, type Tier } from '../utils/an
 import { clearPlanCache } from '../components/PlanBadge';
 import { ONBOARDING_SEEN_KEY } from '../components/OnboardingOverlay';
 import ContextRestoreBanner from '../components/ContextRestoreBanner';
-import ArchiveBanner from '../components/ArchiveBanner';
 import { readRaw } from '../utils/userContext';
 import { roleToCategory } from '../utils/contextOptions';
 import '../styles/globals.css';
@@ -178,7 +177,6 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         >
           <LangProvider>
             <AnalyticsAuthBridge />
-            <ArchiveBanner />
             <ContextRestoreBanner />
             <Component {...pageProps} />
           </LangProvider>

@@ -24,7 +24,7 @@ import { translations, RTL_LANGS, landingContent } from '../utils/i18n';
 import { useLang } from '../utils/LangContext';
 import { getExtra } from '../utils/i18n-extra';
 import { track } from '../utils/analytics';
-import { ARCHIVE_MODE } from '../utils/archiveMode';
+import { ARCHIVE_MODE, SHOWCASE_URL } from '../utils/archiveMode';
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
 
@@ -211,7 +211,8 @@ function LandingPage() {
               url: 'https://vela.an-tho.com/',
               description:
                 'AI medical search for healthcare professionals who work beyond English. Privacy-first, no identity verification required.',
-              offers: [
+              // Archive UI car U1: nothing is offered for sale in an archive build.
+              ...(ARCHIVE_MODE ? {} : { offers: [
                 {
                   '@type': 'Offer',
                   name: 'Free',
@@ -226,7 +227,7 @@ function LandingPage() {
                   priceCurrency: 'USD',
                   description: 'Unlimited queries, monthly subscription',
                 },
-              ],
+              ] }),
               featureList: [
                 'Multi-language support (16 languages)',
                 'PubMed citation verification',
@@ -397,7 +398,8 @@ function LandingPage() {
                 </div>
                 {/* Control row — mode selector (bottom-left) + submit (bottom-right) */}
                 <div className="flex items-center justify-end gap-2 px-3 pb-3 pt-1">
-                  <HeroComposerModeSelector mode={mode} onChange={handleModeChange} t={t} />
+                  {/* Archive UI car U1: Research is the only mode — no Verify/Explain selector. */}
+                  {!ARCHIVE_MODE && <HeroComposerModeSelector mode={mode} onChange={handleModeChange} t={t} />}
                   <button
                     type="submit"
                     aria-label="Send"
@@ -458,7 +460,10 @@ function LandingPage() {
             <div className="flex flex-wrap justify-center gap-4 text-xs">
               <Link href="/terms" className="hover:underline transition duration-200">{extra.termsLabel}</Link>
               <Link href="/privacy" className="hover:underline transition duration-200">{extra.privacyLabel}</Link>
-              <Link href="/refund" className="hover:underline transition duration-200">{extra.refundLabel}</Link>
+              {/* Archive UI car U1/U3: no Refund link; ONE footer link to /about/ instead. */}
+              {ARCHIVE_MODE
+                ? <a href={SHOWCASE_URL} data-archive-link="about" className="hover:underline transition duration-200">{ui.archiveShowcaseLink}</a>
+                : <Link href="/refund" className="hover:underline transition duration-200">{extra.refundLabel}</Link>}
               <a href="mailto:support@an-tho.com" className="hover:underline transition duration-200">support@an-tho.com</a>
             </div>
           </div>
@@ -474,10 +479,11 @@ function Dashboard() {
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const { lang } = useLang();
   const extra = getExtra(lang);
+  const ui = getUI(lang);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    if (params.get('upgrade') === 'true') {
+    if (params.get('upgrade') === 'true' && !ARCHIVE_MODE) {  // archive UI car U1: no upgrade flow
       // Remove ?upgrade=true from URL without adding to history
       window.history.replaceState({}, '', '/');
       // Only show modal for free users; pro users just clear the param
@@ -530,7 +536,7 @@ function Dashboard() {
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-          {DASHBOARD_CARDS.map((f) => (
+          {DASHBOARD_CARDS.filter(f => !ARCHIVE_MODE || (f.key !== 'verify' && f.key !== 'explain')).map((f) => (
             <Link key={f.key} href={f.href}>
               <div
                 data-onboarding={f.key}
@@ -576,14 +582,17 @@ function Dashboard() {
         <div className="flex flex-wrap justify-center gap-4 text-xs">
           <Link href="/terms" className="hover:text-text transition-colors">{extra.termsLabel}</Link>
           <Link href="/privacy" className="hover:text-text transition-colors">{extra.privacyLabel}</Link>
-          <Link href="/refund" className="hover:text-text transition-colors">{extra.refundLabel}</Link>
+          {ARCHIVE_MODE
+            ? <a href={SHOWCASE_URL} data-archive-link="about" className="hover:text-text transition-colors">{ui.archiveShowcaseLink}</a>
+            : <Link href="/refund" className="hover:text-text transition-colors">{extra.refundLabel}</Link>}
           <Link href="/faq" className="hover:text-text transition-colors">{extra.faqLabel}</Link>
           <a href="mailto:support@an-tho.com" className="hover:text-text transition-colors">support@an-tho.com</a>
         </div>
       </div>
 
-      <UpgradeModal isOpen={showUpgradeModal} onClose={() => setShowUpgradeModal(false)} />
-      <OnboardingOverlay />
+      {/* Archive UI car U1: no upgrade modal, no "15 free credits" onboarding in an archive build. */}
+      {!ARCHIVE_MODE && <UpgradeModal isOpen={showUpgradeModal} onClose={() => setShowUpgradeModal(false)} />}
+      {!ARCHIVE_MODE && <OnboardingOverlay />}
       <MobileNav />
     </main>
   );

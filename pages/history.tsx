@@ -26,6 +26,7 @@ import { getShare } from '../utils/i18n-share';
 import { getRiskLevelLabel } from '../utils/i18n-verify';
 import { parseResearchSections, stripLlmDisclaimer } from '../utils/researchSections';
 import { getResearchDisclaimer } from '../utils/researchDisclaimer';
+import { ARCHIVE_MODE } from '../utils/archiveMode';
 
 // ─── Design System ────────────────────────────────────────────────────────────
 // C3: feature accents collapsed — features distinguished by label only, not color.
@@ -267,8 +268,8 @@ function HistoryList() {
     return (
         <>
         <div className="space-y-3">
-            {/* Free plan banner */}
-            {plan === 'free' && (
+            {/* Free plan banner — no plans in an archive build (archive UI car U1) */}
+            {plan === 'free' && !ARCHIVE_MODE && (
                 <div className="rounded-xl p-4 text-sm mb-2" style={{ background: 'rgb(var(--color-text) / 0.05)', border: '1px solid rgb(var(--color-text) / 0.15)' }}>
                     <p style={{ color: 'rgb(var(--color-text) / 0.7)' }}>
                         {ui.freeHistoryMsg}
@@ -277,7 +278,9 @@ function HistoryList() {
             )}
 
             {/* Search box */}
-            <ProFeatureOverlay isLocked={plan !== 'pro'} featureName={extra.proFeatSearchHistory}>
+            {/* Archive UI car U1: no "Pro" in an archive build — the client-side search over the
+                user's own rows is simply available. */}
+            <ProFeatureOverlay isLocked={!ARCHIVE_MODE && plan !== 'pro'} featureName={extra.proFeatSearchHistory}>
                 <div className="relative">
                     <input
                         type="text"
@@ -560,7 +563,8 @@ function HistoryList() {
                                     EVERY session type (legacy/unknown rows included — any id works);
                                     Share stays gated to the three shareable features. */}
                                 <div className="mt-3 flex items-center justify-between gap-3">
-                                    {(item.session_type === 'verify' || item.session_type === 'research' || item.session_type === 'explain') ? (
+                                    {/* Archive UI car: share create answers 410 in an archive build — no Share button. */}
+                                    {!ARCHIVE_MODE && (item.session_type === 'verify' || item.session_type === 'research' || item.session_type === 'explain') ? (
                                         <ShareButton
                                             feature={item.session_type as ShareFeature}
                                             queryId={String(item.id)}

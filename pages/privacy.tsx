@@ -1,6 +1,7 @@
 // pages/privacy.tsx
 import Link from 'next/link';
 import Image from 'next/image';
+import { ARCHIVE_MODE } from '../utils/archiveMode';
 
 export default function Privacy() {
     return (
@@ -97,7 +98,8 @@ export default function Privacy() {
 
                 <div className="mt-12 pt-6 flex gap-6 text-xs border-t border-t-text/7 text-text/30">
                     <Link href="/terms" className="hover:text-text transition-colors">Terms of Service</Link>
-                    <Link href="/refund" className="hover:text-text transition-colors">Refund Policy</Link>
+                    {/* Archive UI car U1: footer navigation only — no Refund link in an archive build. The legal text above is unchanged (U4). */}
+                    {!ARCHIVE_MODE && <Link href="/refund" className="hover:text-text transition-colors">Refund Policy</Link>}
                     <Link href="/" className="hover:text-text transition-colors">Back to Vela</Link>
                 </div>
             </div>

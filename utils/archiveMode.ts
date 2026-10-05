@@ -12,3 +12,8 @@ export const ARCHIVE_MODE = process.env.NEXT_PUBLIC_ARCHIVE_MODE === 'true';
 // vela.an-tho.com — NOT a Next.js route, so link to it with a plain <a>, never
 // next/link (the client router does not know the page).
 export const SHOWCASE_URL = '/about/';
+
+// The public repository (closeout v2, `git remote get-url origin`, `.git` dropped). Linked
+// from the archive FAQ (Q7) and /about/. Until the founder makes the repo public (ruling R3)
+// the link answers 404 to visitors.
+export const REPO_URL = 'https://github.com/AndrewLee0430/Vela';

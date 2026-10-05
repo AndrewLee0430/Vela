@@ -50,9 +50,23 @@ const TABS = [
   },
 ];
 
+// Archive UI car (2026-10-05): the FAQ tab exists only in an archive build (Research + FAQ,
+// matching the desktop nav); the flag-off build keeps its four tabs unchanged.
+const FAQ_TAB = {
+  href: '/faq',
+  labelKey: 'faq' as const,
+  icon: (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10" />
+      <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+      <line x1="12" y1="17" x2="12.01" y2="17" />
+    </svg>
+  ),
+};
+
 // Archive car (2026-10-05): an archive-mode build shows only the live surface.
 const VISIBLE_TABS = ARCHIVE_MODE
-  ? TABS.filter((tab) => tab.labelKey !== 'verify' && tab.labelKey !== 'explain')
+  ? [...TABS.filter((tab) => tab.labelKey === 'research'), FAQ_TAB]
   : TABS;
 
 export default function MobileNav() {
@@ -64,6 +78,7 @@ export default function MobileNav() {
     verify: extra.navVerify,
     explain: extra.navExplain,
     history: extra.navHistory,
+    faq: extra.faqLabel,
   } as const;
 
   return (

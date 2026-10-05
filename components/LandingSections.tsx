@@ -39,7 +39,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ChevronDown, ArrowRight } from 'lucide-react';
 import type { LandingContent, Translations } from '../utils/i18n';
-import { ARCHIVE_MODE, SHOWCASE_URL } from '../utils/archiveMode';
+import { ARCHIVE_MODE } from '../utils/archiveMode';
 
 // Layout effect on the client, plain effect during the static export — avoids
 // both the SSR warning and a one-frame flash of un-revealed words.
@@ -85,21 +85,18 @@ function Pill({
   href,
   label,
   tone = 'ink',
-  plain = false,
 }: {
   href: string;
   label: string;
   tone?: 'ink' | 'paper';
-  // Archive car closeout (2026-10-05): a target outside the Next.js router (the
-  // static /about/ page) gets a plain <a> — next/link would try a client-side
-  // route the export does not have.
-  plain?: boolean;
 }) {
-  const className = `group inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium transition-opacity duration-200 hover:opacity-90 ${
-    tone === 'paper' ? 'bg-paper text-panel' : 'bg-text text-paper'
-  }`;
-  const content = (
-    <>
+  return (
+    <Link
+      href={href}
+      className={`group inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium transition-opacity duration-200 hover:opacity-90 ${
+        tone === 'paper' ? 'bg-paper text-panel' : 'bg-text text-paper'
+      }`}
+    >
       <span>{label}</span>
       <ArrowRight
         size={16}
@@ -107,12 +104,7 @@ function Pill({
         aria-hidden="true"
         className="transition-transform duration-200 group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1"
       />
-    </>
-  );
-  return plain ? (
-    <a href={href} className={className}>{content}</a>
-  ) : (
-    <Link href={href} className={className}>{content}</Link>
+    </Link>
   );
 }
 
@@ -541,7 +533,10 @@ export default function LandingSections({ lc, t }: Props) {
           the CLS reservation (house rule: dims re-derived per encode, never
           carried over — iteration 1 re-derived 2020x1225 from the founder's
           new wider capture). Fade-in reuses the cards' useFadeIn. */}
-      <section ref={bandRef} className="px-4 md:px-10 pb-16 md:pb-20">
+      {/* Archive UI car U2 (2026-10-05): the Verify and Explain bands are REMOVED in an archive
+          build (supersedes "keep as showcase, CTA → /about/"). `data-band` is the readback marker. */}
+      {!ARCHIVE_MODE && (
+      <section ref={bandRef} data-band="verify" className="px-4 md:px-10 pb-16 md:pb-20">
         {/* Iteration 1: the band matches the panel's WIDENED width, not its
             resting 64rem — usePanelScroll interpolates the panel's max-width
             to `Math.min(1280, window.innerWidth * 0.94)`, and p is clamped at
@@ -560,7 +555,7 @@ export default function LandingSections({ lc, t }: Props) {
           </p>
           {/* Archive car (2026-10-05): the band stays as showcase content; in an archive-mode
               build its CTA leads to the static showcase, not the retired /verify. */}
-          <Pill href={ARCHIVE_MODE ? SHOWCASE_URL : '/verify'} label={lc.tryVerify} plain={ARCHIVE_MODE} />
+          <Pill href="/verify" label={lc.tryVerify} />
           {/* Iteration 5 A2: 0.778 -> 0.85 of the band's inner width (was
               max-w-4xl = 896px against a 1152px container). Ceiling derived,
               not chosen by feel: 2020 natural / (0.85 * 1152 = 979.2) =
@@ -577,6 +572,7 @@ export default function LandingSections({ lc, t }: Props) {
           />
         </div>
       </section>
+      )}
 
       {/* §3 — EXPLAIN SHOWCASE (iteration 2, 2026-08-28). Same container
           geometry as the Verify band; background = paper-band-2 (one step
@@ -601,7 +597,8 @@ export default function LandingSections({ lc, t }: Props) {
           Both images carry the Verify band's image treatment (rounded-xl +
           card-border, NO shadow); the stagger's z-10 and shadow-card are gone
           with the composition that needed them. */}
-      <section className="px-4 md:px-10 pb-16 md:pb-20">
+      {!ARCHIVE_MODE && (
+      <section data-band="explain" className="px-4 md:px-10 pb-16 md:pb-20">
         <div className="w-full max-w-[min(80rem,94vw)] mx-auto rounded-3xl bg-paper-band-2 px-6 py-10 md:py-14 flex flex-col items-center text-center gap-5">
           <h2 className="font-serif font-bold text-3xl sm:text-4xl leading-tight max-w-3xl text-text">
             {lc.explainHeadline}
@@ -609,7 +606,7 @@ export default function LandingSections({ lc, t }: Props) {
           <p className="text-base md:text-lg max-w-2xl" style={{ color: 'rgb(var(--color-text) / 0.7)' }}>
             {lc.explainSub}
           </p>
-          <Pill href={ARCHIVE_MODE ? SHOWCASE_URL : '/explain'} label={lc.tryExplain} plain={ARCHIVE_MODE} />
+          <Pill href="/explain" label={lc.tryExplain} />
           {/* Iteration 5 C2: tops-aligned -> items-center, so the two captures
               balance optically instead of leaving the shorter one hanging
               from the top edge.
@@ -650,6 +647,7 @@ export default function LandingSections({ lc, t }: Props) {
           </div>
         </div>
       </section>
+      )}
     </>
   );
 }

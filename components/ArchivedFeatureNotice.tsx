@@ -23,6 +23,7 @@ export default function ArchivedFeatureNotice() {
                 <meta name="robots" content="noindex, nofollow" />
             </Head>
             <main
+                data-archived-notice=""
                 dir={RTL_LANGS.includes(lang) ? 'rtl' : undefined}
                 className="min-h-screen flex flex-col items-center justify-center px-4 text-center bg-app-bg"
             >

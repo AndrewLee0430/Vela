@@ -33,6 +33,7 @@ import { getUI } from '../utils/i18n-ui';
 import { getExtra } from '../utils/i18n-extra';
 import { parseResearchSections, stripLlmDisclaimer } from '../utils/researchSections';
 import { getResearchDisclaimer } from '../utils/researchDisclaimer';
+import { ARCHIVE_MODE } from '../utils/archiveMode';
 
 // Section parsing + LLM-disclaimer strip moved to utils/researchSections.ts
 // (HISTORY car segment 1) — shared with the /history renderer. Behavior unchanged.
@@ -331,12 +332,16 @@ function ResearchForm() {
 
                 onopen: makeOnOpen({
                     onPhiBlocked: () => setPhiError({ detail: ui.phiDetail, suggestion: ui.phiSuggestion }),
-                    onLimitReached: () => setShowUpgradeModal(true),
+                    // Archive UI car U1: no upgrade path — a limit is just today's limit.
+                    onLimitReached: () => (ARCHIVE_MODE ? setShowDailyCapToast(true) : setShowUpgradeModal(true)),
                     onSignupRequired: () => setError('Sign up required to continue. Please create a free account.'),
                     onAnonymousQuotaExceeded: (_msg, details) => {
                         const used = details?.used ?? 0;
                         const limit = details?.limit ?? 0;
                         track('anonymous_quota_hit', { feature: 'research', attempts: used });
+                        // Archive UI car U1: the quota modal offers sign-up / Pro — show the plain
+                        // daily-limit toast (existing key, 16 locales) instead.
+                        if (ARCHIVE_MODE) { setShowDailyCapToast(true); return; }
                         setAnonQuotaCta({ used, limit });
                     },
                     onBudgetExceeded: () => setAnonNoticeMsg('Service temporarily at capacity. Please try again later.'),
@@ -386,7 +391,7 @@ function ResearchForm() {
                             // Phase 1A polish will harmonize backend error response shape.
                             const code = data.error ?? data.code;
                             if (code === 'limit_reached') {
-                                setShowUpgradeModal(true);
+                                if (ARCHIVE_MODE) setShowDailyCapToast(true); else setShowUpgradeModal(true);
                             } else if (code === 'daily_cap_reached') {
                                 setShowDailyCapToast(true);
                             } else {
@@ -614,6 +619,8 @@ function ResearchForm() {
                                     {!loading && answer && !error && (
                                         <>
                                             <FeedbackBar query={question} response={answer} category="research" />
+                                            {/* Archive UI car U1: the Pro-locked export disappears in an archive build. */}
+                                            {!ARCHIVE_MODE && (
                                             <div className="mt-3 inline-block">
                                                 <ProFeatureOverlay isLocked={plan !== 'pro'} featureName={extra.proFeatExport}>
                                                     <button
@@ -628,7 +635,8 @@ function ResearchForm() {
                                                     </button>
                                                 </ProFeatureOverlay>
                                             </div>
-                                            {showThirdQueryCta && !isSignedIn && (
+                                            )}
+                                            {showThirdQueryCta && !isSignedIn && !ARCHIVE_MODE && (
                                                 <AnonymousUpgradeCTA
                                                     trigger="third_query"
                                                     onDismiss={() => setShowThirdQueryCta(false)}
@@ -713,7 +721,7 @@ function ResearchForm() {
                 <p dangerouslySetInnerHTML={{ __html: ui.researchAttr4 }} />
             </div>
 
-        <UpgradeModal isOpen={showUpgradeModal} onClose={() => setShowUpgradeModal(false)} />
+        {!ARCHIVE_MODE && <UpgradeModal isOpen={showUpgradeModal} onClose={() => setShowUpgradeModal(false)} />}
             {showDailyCapToast && (
                 <Toast
                     message={ui.dailyCapToast}

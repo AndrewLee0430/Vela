@@ -16,10 +16,11 @@ import { getShare } from '../utils/i18n-share';
 import { ARCHIVE_MODE } from '../utils/archiveMode';
 
 type ActivePage = 'research' | 'verify' | 'explain' | 'history' | 'settings';
-type NavLinkPage = 'research' | 'verify' | 'explain' | 'history';
+type NavLinkPage = 'research' | 'verify' | 'explain' | 'history' | 'faq';
 // Archive car (2026-10-05): an archive-mode build links only the live surface.
+// Archive UI car (2026-10-05): Research + FAQ — History is no longer written and sign-in is gone.
 const NAV_LINK_PAGES: readonly NavLinkPage[] = ARCHIVE_MODE
-    ? ['research', 'history']
+    ? ['research', 'faq']
     : ['research', 'verify', 'explain', 'history'];
 
 interface NavbarProps {
@@ -62,6 +63,7 @@ export default function Navbar({ activePage }: NavbarProps) {
         verify: extra.navVerify,
         explain: extra.navExplain,
         history: extra.navHistory,
+        faq: extra.faqLabel,
     };
     const [showUpgradeModal, setShowUpgradeModal] = useState(false);
     const [settingsOpen, setSettingsOpen] = useState(false);
@@ -182,7 +184,7 @@ export default function Navbar({ activePage }: NavbarProps) {
                                 ))}
                                 {/* PRO badge — shown next to nav links for Pro users (display only) */}
                                 <SignedIn>
-                                    {plan === 'pro' && (
+                                    {plan === 'pro' && !ARCHIVE_MODE && (
                                         <span
                                             className="text-base font-bold px-2.5 py-1"
                                             style={{ letterSpacing: '0.12em' }}
@@ -201,7 +203,8 @@ export default function Navbar({ activePage }: NavbarProps) {
                                 links) and only when the active answer page has populated
                                 shareData via ShareContext. Anonymous users still see the
                                 disabled-style pill (sign-up redirect on click). */}
-                            {shareData && (
+                            {/* Archive UI car: share create answers 410 in an archive build — no Share button. */}
+                            {shareData && !ARCHIVE_MODE && (
                                 <div className="hidden md:flex">
                                     <ShareButton
                                         feature={shareData.feature}
@@ -273,6 +276,8 @@ export default function Navbar({ activePage }: NavbarProps) {
 
                                             {/* Account-specific rows — signed-in only (anon never sees plan/credits/shares/subscription) */}
                                             <SignedIn>
+                                            {/* Plan label + usage — none in an archive build (archive UI car U1: no plan/credit copy) */}
+                                            {!ARCHIVE_MODE && (<>
                                             {/* Plan label */}
                                             <div className="px-4 py-2 border-b border-text/7">
                                                 <p className="text-xs font-semibold" style={{ color: plan === 'pro' ? '#fbbf24' : 'rgb(var(--color-text) / 0.5)' }}>
@@ -304,6 +309,8 @@ export default function Navbar({ activePage }: NavbarProps) {
                                                 </div>
                                             </div>
 
+                                            </>)}
+
                                             {/* Settings link — opens /settings (PRD §4.5 PHASE C) */}
                                             <Link
                                                 href="/settings"
@@ -314,8 +321,8 @@ export default function Navbar({ activePage }: NavbarProps) {
                                             </Link>
                                             <div className="border-b border-text/7" />
 
-                                            {/* Actions */}
-                                            {plan === 'pro' ? (
+                                            {/* Actions — none in an archive build (no subscription to manage, nothing to upgrade to) */}
+                                            {ARCHIVE_MODE ? null : plan === 'pro' ? (
                                                 <>
                                                     <button
                                                         onClick={handleManageSubscription}

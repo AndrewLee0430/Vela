@@ -1,8 +1,13 @@
 // pages/refund.tsx
 import Link from 'next/link';
 import Image from 'next/image';
+import ArchivedFeatureNotice from '../components/ArchivedFeatureNotice';
+import { ARCHIVE_MODE } from '../utils/archiveMode';
 
 export default function Refund() {
+    // Archive UI car U1 (2026-10-05): the refund route renders the archived notice in an
+    // archive build. The policy TEXT below is untouched (U4) — flag-off build unchanged.
+    if (ARCHIVE_MODE) return <ArchivedFeatureNotice />;
     return (
         <main className="min-h-screen bg-app-bg">
             <nav className="border-b bg-app-bg border-text/7">
