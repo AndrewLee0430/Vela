@@ -234,3 +234,141 @@ all three ledgers before the commit.
 - [ ] **DNS:** decide which hostname carries the showcase and which the live demo.
 - [ ] **Flags §4:** rule on AuditLog / feedback / PostHog collection and the history-deletion reachability.
 - [ ] **Closeout prompt:** push (this car + the 3 route-mismatch commits) and `.\deploy.ps1`.
+
+## §7 CLOSEOUT v2 — 2026-10-05 (/about page + publish prep + push + deploy)
+
+**Founder rulings 2026-10-05, recorded verbatim** (they supersede the earlier closeout draft, which was NOT run):
+
+> R1 No separate static host. The showcase becomes /about/ on vela.an-tho.com, served by the existing app. showcase/ is removed from the repo.
+> R2 Live demo = vela.an-tho.com, Research only (already gated by ARCHIVE_MODE). Verify/Explain code is KEPT (gated), not deleted.
+> R3 The GitHub repo WILL be made public — by the founder, manually, AFTER reviewing your scan report. You do NOT change repo visibility.
+> R4 Fly cost: keep the current 1 GB machine (measured mem_used avg 595 MB of 962 MB, founder dashboard 2026-10-05) — no infra change this car.
+
+R1 supersedes §3's Cloudflare Pages plan and the §6 items "Cloudflare Pages deploy", "fill {{DEMO_URL}} / {{REPO_URL}} / {{SHOWCASE_URL}}" and "DNS decision" (all three are now done or moot).
+
+### §7.1 Phase 1 — secret scan + sensitive inventory (read-only; NO value printed or written)
+
+**Tools.** gitleaks 8.30.1 (official Windows x64 release, SHA-256 verified against the release's published checksums,
+binary kept outside the tree) run with `--redact=100` over `git log --all` (909 commits, 7 local refs; origin has `main`
+only) and over a `git archive HEAD` export of the tracked tree (967 files — `.env`, untracked and ignored files are
+never in it). Plus a custom sweep over every ADDED line of `git log -p --all` and over the same export, with the car's
+pattern list + one added rule (`sk-proj-` / `sk-svcacct-` / `sk-admin-`, which `sk-[A-Za-z0-9]{20,}` cannot match) and a
+count-only pass for Google client secrets, Google API keys, JWTs, literal Bearer tokens, Fly tokens, GitHub tokens and
+Google OAuth client ids (**0 each**).
+
+| class (unit: distinct values) | TREE (HEAD) | HISTORY (all refs) | reasoning |
+|---|---|---|---|
+| **REAL SECRET** | **0** | **0** | — no STOP |
+| INFO — publishable | 2 | 3 | Clerk `pk_live_` + PostHog `phc_` in `fly.toml:8-9` (shipped in client JS by design); history adds the old Clerk `pk_test_` (`3e4471e`) |
+| TEST FIXTURE | 4 | 4 | test-only literals in `tests/test_httpx_log_level.py`, `tests/test_payment_webhooks.py` (incl. a deliberately WRONG secret in a bad-signature test) and `scripts/smoke_webhook_cancel.py` |
+| FALSE POSITIVE | 10 | 10 | `.env.example` placeholders; bare prefixes in code/docs (`whsec_` strip logic, `sk_live_` / `sk_test_` mentioned as text); a `user:password@ep-xxx` README URL; prose in a theme-token test |
+| gitleaks findings (unit: findings) | 2 | 3 | all `generic-api-key` on `fly.toml:8-9` → the INFO row |
+
+One FALSE POSITIVE is worth the founder's eye: `docs/archive/tech_debt_done.md:566` quotes the prod Clerk secret key as
+`sk_live_` + **3 characters** + `...` — a truncated prefix (non-functional; a real key is ~40+ characters), present in
+history since `a8877e9`. Not a secret; flagged because it is a real key's first characters.
+
+**Sensitive-but-not-secret inventory (report only).**
+
+| item | count | where |
+|---|---|---|
+| Clerk user ids | 2 distinct, 3 files | `docs/retrospectives/phase-0-2026-05.md` + `scripts/smoke_webhook_cancel.py` (labelled in-file as the founder's own account); `TECH_DEBT.md:2938` (a user deleted in Clerk) |
+| Dodo customer / subscription ids | 0 / 0 | — |
+| email addresses | 10 distinct domains, 41 files | public support address (an-tho.com), placeholders (example.com, acme.com, email.com, ep-xxx…neon, oxxx…sentry), drug-label manufacturer contacts in `data/drug_database/` (public label text), one vendor contact domain in `BACKLOG.md` (tradevan.com.tw), and 2 gmail.com addresses — NOT the founder's — a test-user email at `scripts/smoke_webhook_cancel.py:6` and a synthetic PHI test input at `tests/golden_dataset.json:1403` |
+| prod DB hostnames | 0 prod | `README.md:162` is a placeholder; `tests/probes/research_error_path/result*.json` carry a real Neon host that the probe's README states is the **dev** DB |
+| probe files carrying prod readings | 8 | `tests/probes/bp_calcium/step8_prod_smoke*` (prod Research answers to the hero-chip question, fly 262), `step6_spend.py`, two `.patch` files — no user data |
+| legal-counsel references | 25 files match the term set; outside drug-label data the hits are references to "lawyer-confirmed" designs (`docs/manual-deletion-sop.md`, `BACKLOG.md:1555`, `:1593`, `scripts/deletion_dryrun.py`, `api/services/deletion_service.py:20`, `tests/test_phi_taiwan_phone.py:2`) and one medical-advisor gate (`STATE.md:330`); **no verbatim counsel opinion was found by this grep** — read before publishing |
+| `docs/legal-versions/` | 19 files | 11 privacy + 7 terms versions + README (the published policy history) |
+| License claim | 1 conflict | `README.md:17` badge says **Business Source License 1.1**; the car adds an MIT `LICENSE` (R3 prep). Left unchanged per "rest of README unchanged" — **founder decision before the repo goes public** |
+
+**REPO_URL** (`git remote get-url origin`, no credential part): `https://github.com/AndrewLee0430/Vela` (`.git` dropped
+for the link). The repo is still PRIVATE until the founder acts (R3) — the /about/ "Read the source code" link 404s
+for visitors until then.
+
+**Fly inventory (read-only, nothing changed — R4).**
+
+| item | value |
+|---|---|
+| app | `vela-ai-medical`, owner personal, hostname `vela-ai-medical.fly.dev` |
+| scale | group `app`: 2 machines, shared, 1 CPU, 1024 MB, region nrt(2) |
+| machines (before deploy) | `683d447c2e5428` (young-river-7305) started · `2879720c66d478` (withered-field-6397) stopped — both v262, `shared-cpu-1x:1024MB`, nrt, no volume |
+| IPs | v6 `2a09:8280:1::e5:e2f5:0` public ingress (dedicated) · v4 `66.241.125.32` public ingress (shared) |
+| volumes | none |
+| machines (after the deploy, read from `fly status`) | both v263, started — no scale / size / region / IP change (R4) |
+
+### §7.2 Phase 2 — /about page (`655f2d1`)
+
+`showcase/index.html` → `public/about/index.html`, `showcase/zh-TW.html` → `public/about/zh-TW.html` (`git mv`); media
+point at the existing `/media/*`; duplicated media + `showcase/README.md` removed. `{{DEMO_URL}}` → `/research`,
+`{{REPO_URL}}` → REPO_URL, `SHOWCASE_URL = "/about/"`; 0 `{{` left. Landing band CTAs become plain `<a>` in an archive
+build (the static page is outside the Next.js router). MIT `LICENSE` (2026, AndrewLee0430). README: 8-line archived
+status block prepended; rest unchanged.
+
+**Serving check (Rule 18 — measured, not assumed).** Local backend from a scratch dir whose `static/` is the archive
+export, `TEST_MODE`, `SENTRY_DSN` blank, **`DATABASE_URL=sqlite:///:memory:` — deliberately NOT the dev branch**: this
+closeout does not authorize DB access, and the app's lifespan runs `create_all` and the retention cleanup pass (which
+deletes) on startup — it logged "deleted 0 … older than 180 days" against the in-memory DB. Results:
+
+| GET | status · bytes | page |
+|---|---|---|
+| `/about/` | 200 · 16793 | about (en title) |
+| `/about` | 200 · 16793 | about (en title) |
+| `/about/index.html` | 200 · 16793 | about (en title) |
+| `/about/zh-TW.html` | 200 · 17222 | about (zh-TW title) |
+| `/no-such-page-xyz` (control) | 200 · 21781 | SPA index — the fallback is distinct |
+
+No serving change was needed: the catch-all's directory-index branch (`api/server.py:3727-3729`) already serves it.
+html.parser 0 errors on both pages, every link resolves, 0 control bytes; no horizontal scroll at 360 px (Chrome) on
+`/about/`, `/about/zh-TW.html`, `/` and `/verify`; the three images decode at native size. Aside: `.webp` is served as
+`text/plain` on the local Windows run (mimetypes) — images still render (no `nosniff`).
+
+Readbacks: pytest 504 passed / 28 skipped; tsc 0; lint problem set identical (22 = 22, baseline regenerated at
+`90f5b6d`); `npm run build` exit 0 with `NEXT_PUBLIC_ARCHIVE_MODE=true`.
+
+### §7.3 Phase 3 — push + deploy
+
+**Push.** `git push origin main` → `69b4992..655f2d1`, **7 commits** (`git rev-list --count origin/main..HEAD` before the
+push; unit: commits) = 3 route-mismatch (`3a6448b` · `48416bb` · `4f5176f`) + 3 archive car (`68657f5` · `73ea59d` ·
+`90f5b6d`) + `655f2d1`. `git ls-remote origin main` = `655f2d13c66c79205014e88f3c1fb4e94a0d449f` = HEAD (40 chars).
+
+**Deploy.** `.\deploy.ps1` run plain (no redirect), **attempt 1 of max 3, exit 0**. Build context 152 MB uploaded on
+the first try; image `deployment-01M45D8166J8M0CJFNNVXWXZY8`. **Release READ from `fly releases`: v263 complete**
+(top was v262 before the deploy) → **fly 263**. The script's Step 3 found `2879720c66d478` stopped and Step 4 started
+it; final `fly status`: both machines **v263, started**. Transcript copied verbatim to
+`tests/probes/deploy_parser/fly263_deploy_transcript.txt` (903 lines; 0 hits for sk- / sk_live_ / whsec_ /
+credentialed postgres URLs / api_key= / Bearer tokens; 12 ESC bytes, same as the fly262 precedent).
+
+| readback (prod, 2026-10-05) | result |
+|---|---|
+| `/health` revision | `655f2d13c66c79205014e88f3c1fb4e94a0d449f` — 40-char MATCH with the pushed SHA |
+| unauth POST /api/verify | **410** `{"detail": "Vela is archived. This feature is no longer available."}` |
+| unauth POST /api/checkout/dodo | **410**, same body |
+| unauth POST /api/checkout · /api/webhooks/lemonsqueezy (extra, for the TECH_DEBT LEMON status) | **410** · **410** |
+| GET / | 200 · the en `archiveBanner` string present |
+| GET /research | 200 · banner present |
+| GET /about/ · /about · /about/zh-TW.html | 200 · about en title · about en title · about zh-TW title |
+| GET /verify | 200 · archived notice present |
+| `fly logs --no-tail` | 100 lines: 53 backfill (05:28:16Z → before the boundary) + **47 post-boundary** (06:52:54Z → 06:54:12Z, 78 s); post: Traceback 0 · httpx 0 · api_key= 0; every level-tagged line INFO (39) |
+
+No live Research query was sent. Aside (pre-existing, not changed): prod serves `/media/*.webp` as `text/plain`
+(the image's mimetypes table lacks `.webp`); images still render (no `nosniff` header).
+
+### §7.4 PROD EYE — founder (BLANK)
+
+| # | row | founder result |
+|---|---|---|
+| 1 | landing shows the archive banner | |
+| 2 | nav shows no Verify / Explain / Pricing / sign-in | |
+| 3 | /verify and /explain show the archived notice | |
+| 4 | anonymous Research answers a question | |
+| 5 | the banner link opens /about/ (en + zh-TW) | |
+| 6 | /about/ demo + repo links work | |
+
+### §7.5 FOUNDER CHECKLIST (updated — supersedes §6 where they differ)
+
+- [ ] Review §7.1 → resolve the README BSL-vs-MIT license conflict → then make the GitHub repo public (R3).
+- [ ] Delete the Dodo webhook endpoint (the archive deploy is live).
+- [ ] OpenAI: set a monthly hard budget.
+- [ ] Dodo payout: reply pending (an account can be archived only after 180 days without payment activity).
+- [ ] Still open from §6: cancel remaining Dodo subscriptions (incl. own) + archive products; Clerk sign-up restriction; review the FOUNDER REVIEW paragraph on /about/ (both languages) and remove the markers; rule on the §4 flags.
+- [ ] PROD EYE §7.4.
