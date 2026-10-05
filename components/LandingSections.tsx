@@ -85,18 +85,21 @@ function Pill({
   href,
   label,
   tone = 'ink',
+  plain = false,
 }: {
   href: string;
   label: string;
   tone?: 'ink' | 'paper';
+  // Archive car closeout (2026-10-05): a target outside the Next.js router (the
+  // static /about/ page) gets a plain <a> — next/link would try a client-side
+  // route the export does not have.
+  plain?: boolean;
 }) {
-  return (
-    <Link
-      href={href}
-      className={`group inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium transition-opacity duration-200 hover:opacity-90 ${
-        tone === 'paper' ? 'bg-paper text-panel' : 'bg-text text-paper'
-      }`}
-    >
+  const className = `group inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium transition-opacity duration-200 hover:opacity-90 ${
+    tone === 'paper' ? 'bg-paper text-panel' : 'bg-text text-paper'
+  }`;
+  const content = (
+    <>
       <span>{label}</span>
       <ArrowRight
         size={16}
@@ -104,7 +107,12 @@ function Pill({
         aria-hidden="true"
         className="transition-transform duration-200 group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1"
       />
-    </Link>
+    </>
+  );
+  return plain ? (
+    <a href={href} className={className}>{content}</a>
+  ) : (
+    <Link href={href} className={className}>{content}</Link>
   );
 }
 
@@ -552,7 +560,7 @@ export default function LandingSections({ lc, t }: Props) {
           </p>
           {/* Archive car (2026-10-05): the band stays as showcase content; in an archive-mode
               build its CTA leads to the static showcase, not the retired /verify. */}
-          <Pill href={ARCHIVE_MODE ? SHOWCASE_URL : '/verify'} label={lc.tryVerify} />
+          <Pill href={ARCHIVE_MODE ? SHOWCASE_URL : '/verify'} label={lc.tryVerify} plain={ARCHIVE_MODE} />
           {/* Iteration 5 A2: 0.778 -> 0.85 of the band's inner width (was
               max-w-4xl = 896px against a 1152px container). Ceiling derived,
               not chosen by feel: 2020 natural / (0.85 * 1152 = 979.2) =
@@ -601,7 +609,7 @@ export default function LandingSections({ lc, t }: Props) {
           <p className="text-base md:text-lg max-w-2xl" style={{ color: 'rgb(var(--color-text) / 0.7)' }}>
             {lc.explainSub}
           </p>
-          <Pill href={ARCHIVE_MODE ? SHOWCASE_URL : '/explain'} label={lc.tryExplain} />
+          <Pill href={ARCHIVE_MODE ? SHOWCASE_URL : '/explain'} label={lc.tryExplain} plain={ARCHIVE_MODE} />
           {/* Iteration 5 C2: tops-aligned -> items-center, so the two captures
               balance optically instead of leaving the shorter one hanging
               from the top edge.

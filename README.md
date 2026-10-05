@@ -1,3 +1,11 @@
+> **Status: archived (Oct 2026).** Vela is no longer developed. Read what it was, how it worked and what was
+> measured at **[vela.an-tho.com/about](https://vela.an-tho.com/about/)**. A Research-only live demo stays at
+> **[vela.an-tho.com/research](https://vela.an-tho.com/research)**, capped by a small daily budget.
+>
+> Vela is a research tool, **not a medical device**, and gives **no medical advice**. This code is provided
+> **as-is, without warranty** of any kind (see [LICENSE](LICENSE)). **Secrets are not included** — the
+> repository carries `.env.example` only; every key the app reads must be supplied by you.
+
 # 🪸 Vela — Medical Research, Simplified.
 
 > Evidence-based clinical answers from PubMed 36M+ literature and official FDA drug data.  

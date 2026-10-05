@@ -7,7 +7,8 @@
 // The backend twin is the ARCHIVE_MODE env flag in api/server.py (410 gate).
 export const ARCHIVE_MODE = process.env.NEXT_PUBLIC_ARCHIVE_MODE === 'true';
 
-// The static showcase (showcase/ at the repo root, deployed separately to
-// Cloudflare Pages). PLACEHOLDER until the founder picks the hostname — the
-// ONE place to fill it (archive-car baton, founder checklist).
-export const SHOWCASE_URL = '{{SHOWCASE_URL}}';
+// The archive page (closeout ruling R1, 2026-10-05): plain static HTML at
+// public/about/ (exported to out/about/), served by the same FastAPI app on
+// vela.an-tho.com — NOT a Next.js route, so link to it with a plain <a>, never
+// next/link (the client router does not know the page).
+export const SHOWCASE_URL = '/about/';
