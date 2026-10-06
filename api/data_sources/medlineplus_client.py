@@ -69,7 +69,7 @@ class MedlinePlusClient:
             return result
 
         except Exception as e:
-            logger.warning(f"MedlinePlus fetch failed for '{query}': {e}")
+            logger.warning("MedlinePlus fetch failed (query len=%d): %s", len(query or ""), type(e).__name__)
             _cache.set(cache_key, "__none__")
             return None
 

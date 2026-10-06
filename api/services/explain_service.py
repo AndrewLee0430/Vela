@@ -113,7 +113,7 @@ async def _lookup_loinc(entities: ExtractedEntities) -> tuple[list[ExplainSource
                     ctx += f" (reference: {ref_range})"
                 context_parts.append(ctx)
         except Exception as e:
-            logger.warning(f"LOINC lookup failed for {name}: {e}")
+            logger.warning("LOINC lookup failed (term len=%d): %s", len(name or ""), type(e).__name__)
 
     return sources, "\n".join(context_parts)
 
@@ -155,7 +155,7 @@ async def _lookup_rxnorm_and_medlineplus(entities: ExtractedEntities) -> tuple[l
                 context_parts.append(ctx)
 
         except Exception as e:
-            logger.warning(f"RxNorm/MedlinePlus lookup failed for {med.english}: {e}")
+            logger.warning("RxNorm/MedlinePlus lookup failed (term len=%d): %s", len(med.english or ""), type(e).__name__)
 
     return sources, "\n".join(context_parts)
 
@@ -183,7 +183,7 @@ async def _lookup_diagnoses(entities: ExtractedEntities) -> tuple[list[ExplainSo
                 ctx = f"[MedlinePlus] {dx.english}: {summary[:300]}" if summary else f"[MedlinePlus] {dx.english}: {title}"
                 context_parts.append(ctx)
         except Exception as e:
-            logger.warning(f"MedlinePlus lookup failed for {dx.english}: {e}")
+            logger.warning("MedlinePlus lookup failed (term len=%d): %s", len(dx.english or ""), type(e).__name__)
 
     return sources, "\n".join(context_parts)
 
@@ -429,8 +429,8 @@ Input language (for entity-to-source matching only, NOT for output): {entities.i
             if _is_code_lookup_only(item.citations):
                 logger.info(
                     "[Explain] Step 3 limited-citation note appended: kind=item "
-                    "term=%s tier=%s citations_source_types=%s",
-                    item.term,
+                    "term_len=%d tier=%s citations_source_types=%s",
+                    len(item.term or ""),
                     item.risk_tier.value,
                     [c.source_type.value if hasattr(c.source_type, "value") else c.source_type for c in item.citations],
                 )
@@ -554,10 +554,10 @@ async def run_explain_pipeline(
         return
 
     # Stage 2: Parallel API lookups
-    logger.info(f"[Explain] Entities extracted — meds: {[m.english for m in entities.medications]}, labs: {[l.english for l in entities.lab_tests]}, vitals: {[v.english for v in entities.vital_signs]}")
+    logger.info("[Explain] Entities extracted — meds: %d, labs: %d, vitals: %d", len(entities.medications), len(entities.lab_tests), len(entities.vital_signs))
     yield {"type": "status", "content": "Looking up verified sources..."}
     sources, context = await retrieve_context(entities)
-    logger.info(f"[Explain] Sources found: {len(sources)} — {[s.label for s in sources]}")
+    logger.info("[Explain] Sources found: %d", len(sources))
 
     # Emit sources for frontend badge rendering
     yield {

@@ -19,20 +19,36 @@ logging.getLogger("httpx").setLevel(logging.WARNING)
 
 import sentry_sdk
 from sentry_sdk.integrations.fastapi import FastApiIntegration
+from sentry_sdk.integrations.httpx import HttpxIntegration
 from sentry_sdk.integrations.starlette import StarletteIntegration
 
-_SENTRY_DSN = os.getenv("SENTRY_DSN")
-if _SENTRY_DSN:
-    sentry_sdk.init(
-        dsn=_SENTRY_DSN,
+
+def _sentry_init_kwargs(dsn: str) -> dict:
+    """Sentry options — founder ruling P1 (2026-10-05): question text never reaches Sentry.
+    include_local_variables=False: a stack frame's locals hold the question.
+    max_request_body_size="never": the /api/research request body IS the question.
+    HttpxIntegration disabled: it records outgoing request URLs WITH their query string as
+    breadcrumbs and as span data on traced requests — the PubMed / openFDA query strings carry
+    the search terms derived from the question. The logging integration stays on: after P1 no log
+    line carries question text (tests/test_no_question_text_in_logs.py)."""
+    return dict(
+        dsn=dsn,
         integrations=[
             StarletteIntegration(transaction_style="endpoint"),
             FastApiIntegration(transaction_style="endpoint"),
         ],
+        disabled_integrations=[HttpxIntegration()],
         traces_sample_rate=0.2,
         environment=os.getenv("FLY_APP_NAME", "development"),
         send_default_pii=False,
+        include_local_variables=False,
+        max_request_body_size="never",
     )
+
+
+_SENTRY_DSN = os.getenv("SENTRY_DSN")
+if _SENTRY_DSN:
+    sentry_sdk.init(**_sentry_init_kwargs(_SENTRY_DSN))
     logging.getLogger("vela").info("Sentry initialized")
 else:
     logging.getLogger("vela").warning("SENTRY_DSN not set, Sentry disabled")
@@ -1282,7 +1298,7 @@ async def verify_drug_interaction(
     # Credit / quota / budget 檢查
     # Decision 001 v0.3 A7 / A8: L0 走 $2/day aggregate cap + per-anon ANONYMOUS_DAILY_LIMIT (Verify 已是 gpt-4.1-mini)
     if is_anonymous:
-        logger.info("[Verify] tier=L0 anon_id=%s drugs=%s", anon_id[:8], body.drugs)
+        logger.info("[Verify] tier=L0 anon_id=%s drug_count=%d", anon_id[:8], len(body.drugs))
         budget_ok, _spent = await check_anonymous_budget(db)
         if not budget_ok:
             raise AnonymousBudgetExceeded()
@@ -1293,7 +1309,7 @@ async def verify_drug_interaction(
                 limit=ANONYMOUS_DAILY_LIMIT,
             )
     else:
-        logger.info("[Verify] user=%s drugs=%s", user_id, body.drugs)
+        logger.info("[Verify] user=%s drug_count=%d", user_id, len(body.drugs))
         if not TEST_MODE:
             allowed, reason = await check_credits(db, user_id, "verify")
             if not allowed:
@@ -1489,7 +1505,7 @@ async def verify_drug_interaction(
                 label_provenance.append({"drug": orig_drug, "label": lbl, "setid": None, "tier": "openfda"})
 
     if not drug_labels:
-        logger.warning("No FDA labels found for %s, falling back to LLM", body.drugs)
+        logger.warning("No FDA labels found for %d drugs, falling back to LLM", len(body.drugs))
         if not is_anonymous:
             _safe_db_write(db, AuditLog(id=audit_id, user_id=user_id,
                     action="verify_fallback", query_content=PHIDetector.sanitize_for_log(f"LLM fallback: {body.drugs}"), ip_address="0.0.0.0"),

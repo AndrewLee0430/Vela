@@ -44,7 +44,7 @@ class RxNormClient:
             rxcui = data.get("idGroup", {}).get("rxnormId", [None])[0]
             return rxcui
         except Exception as e:
-            logger.warning(f"RxNorm exact match failed for '{drug_name}': {e}")
+            logger.warning("RxNorm exact match failed (term len=%d): %s", len(drug_name or ""), type(e).__name__)
             return None
 
     async def _approx_match(self, drug_name: str) -> str | None:
@@ -61,7 +61,7 @@ class RxNormClient:
                 return candidates[0].get("rxcui")
             return None
         except Exception as e:
-            logger.warning(f"RxNorm approx match failed for '{drug_name}': {e}")
+            logger.warning("RxNorm approx match failed (term len=%d): %s", len(drug_name or ""), type(e).__name__)
             return None
 
 

@@ -120,7 +120,7 @@ class PubMedClient:
                 sort=sort
             )
             
-            logger.debug("Searching PubMed for: %s", query)
+            logger.debug("Searching PubMed (query len=%d)", len(query))
             
             async with httpx.AsyncClient() as client:
                 response = await client.get(
@@ -139,7 +139,7 @@ class PubMedClient:
             return pmids
         
         except httpx.TimeoutException as e:
-            logger.warning("PubMed timeout: %s", e)
+            logger.warning("PubMed timeout: %s", type(e).__name__)
             return []
 
         except httpx.HTTPStatusError as e:
@@ -151,7 +151,7 @@ class PubMedClient:
             return []
 
         except Exception as e:
-            logger.error("PubMed unexpected error: %s: %s", type(e).__name__, e)
+            logger.error("PubMed unexpected error: %s", type(e).__name__)
             return []
     
     async def fetch_details(self, pmids: List[str]) -> List[PubMedArticle]:
@@ -346,14 +346,14 @@ class PubMedClient:
         try:
             pmids = await self.search(query, max_results)
             if not pmids:
-                logger.warning("PubMed: No results found for '%s'", query)
+                logger.warning("PubMed: No results found (query len=%d)", len(query))
                 return []
             
             articles = await self.fetch_details(pmids)
             return articles
         
         except Exception as e:
-            logger.error("PubMed search_and_fetch error: %s: %s", type(e).__name__, e)
+            logger.error("PubMed search_and_fetch error: %s", type(e).__name__)
             return []
 
 
@@ -373,7 +373,7 @@ def search_pubmed_sync(query: str, max_results: int = 10) -> List[PubMedArticle]
         client = PubMedClient()
         return asyncio.run(client.search_and_fetch(query, max_results))
     except Exception as e:
-        logger.error("PubMed sync search error: %s: %s", type(e).__name__, e)
+        logger.error("PubMed sync search error: %s", type(e).__name__)
         return []
 
 

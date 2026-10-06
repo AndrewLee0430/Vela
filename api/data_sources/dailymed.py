@@ -124,8 +124,8 @@ class DailyMedClient:
                     labels.append(label)
             return labels
         except Exception as e:
-            logger.warning("[DailyMed] search_drug_labels error for '%s': %s: %s",
-                           query, type(e).__name__, e)
+            logger.warning("[DailyMed] search_drug_labels error (query len=%d): %s",
+                           len(query), type(e).__name__)
             return []
 
     async def search_by_interaction(self, drug_name: str, limit: int = 1) -> list[DailyMedLabel]:
@@ -145,8 +145,8 @@ class DailyMedClient:
                 resp.raise_for_status()
                 data = resp.json()
         except Exception as e:
-            logger.warning("[DailyMed] resolve error for '%s': %s: %s",
-                           query, type(e).__name__, e)
+            logger.warning("[DailyMed] resolve error (query len=%d): %s",
+                           len(query), type(e).__name__)
             return []
 
         rows = data.get("data", []) if isinstance(data, dict) else []

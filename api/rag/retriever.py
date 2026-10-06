@@ -175,9 +175,9 @@ class HybridRetriever:
 
         # Step 1：Query Rewriting（生成 3 個標準化查詢；non-DailyMed 用這 3 個）
         rewritten_queries = await self._rewrite_query(query)
-        logger.info("Query rewritten: '%s'", query)
+        logger.info("Query rewritten: len=%d -> %d variants", len(query), len(rewritten_queries))
         for i, q in enumerate(rewritten_queries, 1):
-            logger.debug("  [%d] %s", i, q)
+            logger.debug("  [%d] len=%d", i, len(q))
 
         # Step 1b: DailyMed-ONLY K-union rewrite set (lever 1) — recovers the straddling safety
         # section; isolated to DailyMed so PubMed/FDA/local/TFDA pools are NOT inflated.
@@ -207,7 +207,7 @@ class HybridRetriever:
             if isinstance(result, list):
                 all_documents.extend(result)
             elif isinstance(result, Exception):
-                logger.warning("Retrieval error: %s", result)
+                logger.warning("Retrieval error: %s", type(result).__name__)
                 has_api_error = True
 
         if not all_documents:
@@ -244,7 +244,7 @@ class HybridRetriever:
         relevant_docs = await self._filter_by_relevance(query, candidates)
 
         if not relevant_docs:
-            logger.warning("Relevance check: all documents filtered out for query '%s'", query)
+            logger.warning("Relevance check: all documents filtered out for query (len=%d)", len(query))
             return [], "irrelevant"
 
         # Step 7：Rerank
@@ -257,7 +257,7 @@ class HybridRetriever:
         try:
             documents = await self.reranker.rerank(query, relevant_docs, score_sink=_score_sink)
         except Exception as e:
-            logger.warning("Rerank failed: %s, using relevance order", e)
+            logger.warning("Rerank failed: %s, using relevance order", type(e).__name__)
             documents = relevant_docs
         if shadow_sink is not None and _score_sink:
             shadow_sink.extend(_score_sink)
@@ -401,7 +401,7 @@ class HybridRetriever:
                 return queries
 
         except Exception as e:
-            logger.warning("Query rewriting failed: %s, falling back to translation", e)
+            logger.warning("Query rewriting failed: %s, falling back to translation", type(e).__name__)
 
         # Fallback：退回原本的翻譯邏輯
         fallback = await self._translate_to_medical_english(query)
@@ -456,7 +456,7 @@ class HybridRetriever:
             return translated if translated else query
 
         except Exception as e:
-            logger.warning("Translation failed: %s, using original query", e)
+            logger.warning("Translation failed: %s, using original query", type(e).__name__)
             return query
 
     # ─────────────────────────────────────────────
@@ -546,7 +546,7 @@ class HybridRetriever:
             return filtered
 
         except Exception as e:
-            logger.warning("Relevance filter failed: %s, returning all documents", e)
+            logger.warning("Relevance filter failed: %s, returning all documents", type(e).__name__)
             return [doc for doc in documents if doc.relevance_score >= RELEVANCE_THRESHOLD]
 
     # ─────────────────────────────────────────────
@@ -612,7 +612,7 @@ class HybridRetriever:
             )
             return documents
         except Exception as e:
-            logger.warning("Local search error: %s", e)
+            logger.warning("Local search error: %s", type(e).__name__)
             return []
 
     async def _search_tfda(self, query: str, max_results: int) -> list[RetrievedDocument]:
@@ -628,7 +628,7 @@ class HybridRetriever:
                 min_score=self.local_threshold,
             )
         except Exception as e:
-            logger.warning("TFDA search error: %s", e)
+            logger.warning("TFDA search error: %s", type(e).__name__)
             return []
 
     async def _search_dailymed(self, query: str, max_results: int) -> list[RetrievedDocument]:
@@ -645,7 +645,7 @@ class HybridRetriever:
                 min_score=self.local_threshold,
             )
         except Exception as e:
-            logger.warning("DailyMed search error: %s", e)
+            logger.warning("DailyMed search error: %s", type(e).__name__)
             return []
 
     async def _search_pubmed(self, query: str, max_results: int) -> list[RetrievedDocument]:
@@ -675,7 +675,7 @@ class HybridRetriever:
             return documents
 
         except Exception as e:
-            logger.warning("PubMed search error: %s", e)
+            logger.warning("PubMed search error: %s", type(e).__name__)
             return []
 
     async def _search_fda(self, query: str, max_results: int) -> list[RetrievedDocument]:
@@ -699,5 +699,5 @@ class HybridRetriever:
             return documents
 
         except Exception as e:
-            logger.warning("FDA search error: %s", e)
+            logger.warning("FDA search error: %s", type(e).__name__)
             return []

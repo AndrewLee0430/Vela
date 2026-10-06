@@ -84,7 +84,7 @@ class LOINCClient:
             return result
 
         except Exception as e:
-            logger.warning(f"LOINC search failed for '{term}': {e}")
+            logger.warning("LOINC search failed (term len=%d): %s", len(term or ""), type(e).__name__)
             return None
 
 

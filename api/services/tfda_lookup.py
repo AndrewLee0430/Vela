@@ -291,7 +291,7 @@ def detect_brands_in_text(text: str, max_matches: int = MAX_TEXT_MATCHES) -> lis
             i = end  # consumed span never re-matches
         return results
     except Exception as e:  # defense in depth — detection must never break Research
-        logger.warning("[TFDA] detect_brands_in_text failed: %s", e)
+        logger.warning("[TFDA] detect_brands_in_text failed: %s", type(e).__name__)
         return []
 
 
@@ -394,5 +394,5 @@ def resolve_brand(name: str) -> Resolution:
 
         return miss
     except Exception as e:  # defense in depth — resolution must never break Verify
-        logger.warning("[TFDA] resolve_brand(%r) failed: %s", name, e)
+        logger.warning("[TFDA] resolve_brand(len=%d) failed: %s", len(name or ""), type(e).__name__)
         return miss

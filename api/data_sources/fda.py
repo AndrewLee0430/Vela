@@ -152,10 +152,10 @@ class FDAClient:
             return self._parse_labels(data.get("results", []))
             
         except httpx.HTTPStatusError as e:
-            print(f"⚠️ FDA API HTTP error for '{query}': {e.response.status_code}")
+            logger.warning("FDA API HTTP error (query len=%d): %d", len(query), e.response.status_code)
             return []
         except Exception as e:
-            print(f"⚠️ FDA API error for '{query}': {type(e).__name__}: {e}")
+            logger.warning("FDA API error (query len=%d): %s", len(query), type(e).__name__)
             return []
     
     # ✅ 新增：同步版本的 get_drug_label
@@ -180,7 +180,7 @@ class FDAClient:
                 return None
                 
         except Exception as e:
-            print(f"Error in get_drug_label: {e}")
+            logger.warning("Error in get_drug_label: %s", type(e).__name__)
             return None
     
     # ✅ 新增：同步包裝方法
@@ -260,7 +260,7 @@ class FDAClient:
             return data.get("results", [])
             
         except Exception as e:
-            logger.error("[FDA] API error for search_drug_labels: %s: %s", type(e).__name__, e)
+            logger.error("[FDA] API error for search_drug_labels: %s", type(e).__name__)
             return []
 
     def _parse_labels(self, results: list[dict]) -> list[FDADrugLabel]:
