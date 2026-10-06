@@ -652,7 +652,7 @@ async def _run_judge_background(audit_id: str, query: str, answer: str, document
         finally:
             db.close()
     except Exception as e:
-        logger.error("[LLMJudge] background task failed: %s", e)
+        logger.error("[LLMJudge] background task failed: %s", type(e).__name__)  # P1: type only
 
 
 async def _run_direction_check_background(audit_id: str, query: str, answer: str, documents: list):
@@ -683,7 +683,7 @@ async def _run_direction_check_background(audit_id: str, query: str, answer: str
         finally:
             db.close()
     except Exception as e:
-        logger.error("[DirectionCheck] background task failed: %s", e)
+        logger.error("[DirectionCheck] background task failed: %s", type(e).__name__)  # P1: type only
 
 
 async def _run_retrieval_refusal_background(audit_id: str, query: str, documents: list):
@@ -700,9 +700,10 @@ async def _run_retrieval_refusal_background(audit_id: str, query: str, documents
         if len(sources) < 2:
             return  # need a pool to assess one-sidedness
         decision = await rr.assess(rr.make_strong_llm(), question=query, pool_sources=sources)
-        logger.info("[RetrievalRefusal] audit_id=%s refuse=%s one_sided=%s counter=%s factor=%s",
+        # P1 (2026-10-05): `factor` is extracted FROM the question — log its length, not the text.
+        logger.info("[RetrievalRefusal] audit_id=%s refuse=%s one_sided=%s counter=%s factor_len=%d",
                     audit_id, decision.refuse, decision.one_sided, decision.counter_plausible,
-                    decision.factor)
+                    len(decision.factor or ""))
         db = SessionLocal()
         try:
             log = db.query(AuditLog).filter(AuditLog.id == audit_id).first()
@@ -714,7 +715,7 @@ async def _run_retrieval_refusal_background(audit_id: str, query: str, documents
         finally:
             db.close()
     except Exception as e:
-        logger.error("[RetrievalRefusal] background task failed: %s", e)
+        logger.error("[RetrievalRefusal] background task failed: %s", type(e).__name__)  # P1: type only
 
 
 def _run_source_weight_shadow(audit_id: str, shadow_pool: list, top_k: int):

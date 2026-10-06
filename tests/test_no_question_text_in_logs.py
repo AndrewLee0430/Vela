@@ -240,3 +240,24 @@ def test_generator_and_guard_failures_log_no_exception_text(monkeypatch, caplog,
     assert intent_ok is False and injected is True, "fail-CLOSED behaviour must be preserved (Rule 1)"
     assert sum("failed (blocking request)" in r.getMessage() for r in caplog.records) == 2
     assert _leaks(caplog, capsys) == []
+
+
+def test_retrieval_refusal_shadow_logs_no_question_derived_factor(monkeypatch, caplog, capsys):
+    """RETRIEVAL_REFUSAL_SHADOW (a Fly secret — its value is not visible in the repo): the decision's
+    `factor` is extracted FROM the question and used to be logged verbatim. Missed by the first P1 scan
+    (the variable name was not in its set); caught by the shadow-flag report."""
+    from types import SimpleNamespace
+    import api.server as server
+    import api.services.retrieval_refusal as rr
+
+    async def _assess(llm, *, question, pool_sources, factor_outcome=None):
+        return SimpleNamespace(refuse=False, one_sided=False, counter_plausible=False,
+                               factor=question, to_sink_dict=lambda: {})
+
+    monkeypatch.setattr(rr, "pool_sources_from_documents", lambda docs: [("1", "a"), ("2", "b")])
+    monkeypatch.setattr(rr, "make_strong_llm", lambda: None)
+    monkeypatch.setattr(rr, "assess", _assess)
+    caplog.set_level(logging.DEBUG)
+    asyncio.run(server._run_retrieval_refusal_background("res_sentinel", SENTINEL, []))
+    assert any("[RetrievalRefusal]" in r.getMessage() for r in caplog.records), "harness: the decision line must log"
+    assert _leaks(caplog, capsys) == []
