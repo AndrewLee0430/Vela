@@ -248,3 +248,135 @@ length only (a backend change, outside this UI car), or revise the policy text.
    held push + `.\deploy.ps1` + the Phase-3 readbacks with the §0 markers.
 2. Founder / counsel: §3 contradiction; §1d legal text; flags §4.
 3. Then: PROD EYE §5 · make the repo public (R3) · delete the Dodo webhook endpoint · OpenAI monthly hard budget.
+
+
+## §7 CONTINUATION — privacy log fix + gates + push (2026-10-06)
+
+**State: PUSHED `2f09f83..83fdaf9` (9 commits), NOT DEPLOYED.** The `.\deploy.ps1` run was stopped by Claude Code under
+system memory pressure during Step 1's build-context upload ("load build context") — no image was built, no release
+was cut. Verified read-only afterwards: `fly releases` top = **v263**, both machines v263, image unchanged
+(`deployment-01M45D8166J8M0CJFNNVXWXZY8`), `/health` revision = `655f2d13c66c79205014e88f3c1fb4e94a0d449f`; no `flyctl` /
+`deploy.ps1` process survived. Per the reap notice the deploy was NOT restarted. The ONE authorized live Research
+query (the log check) was NOT sent — it only means something against the new code.
+
+**Founder rulings 2026-10-05, verbatim:**
+
+> P1 Make /privacy TRUE in code rather than edit legal text: question text must not be written to server logs or sent to Sentry. Log length (and the existing 8-char hashed-id prefix) only. Applies to ALL users, not only anonymous.
+> P2 FAQ Q5 (all 16 locales) is rewritten to match the code AFTER P1 — claim nothing the code does not guarantee.
+> P3 The two production-build tests move out of the default pytest run (opt-in), so the full suite fits in memory.
+> P4 Strategy-side correction recorded: the earlier claim "the banner readback could not fail" was WRONG (you measured 0/1 on HTML). Note it in the baton.
+
+**P4 — recorded.** The closeout-v2 banner readback grepped the prerendered HTML document; `ArchiveBanner` returned
+`null` with the flag off, so the readback could fail — measured banner = 0 in the flag-off `out/index.html` and 1 in the
+archive build (§0 0b above). The strategy-side claim that it "could not fail" was wrong.
+
+### §7.1 Commits
+
+| commit | what |
+|---|---|
+| `4679ffb` | P3 — `tests/test_archive_ui_build.py` opt-in via `RUN_BUILD_TESTS=1` (module-level skipif) |
+| `b23b729` | P1 — 40 log call sites + DB `hide_parameters` + Sentry options |
+| `0cee36a` | P1 follow-up — reranker skip logs (2 sites) |
+| `5b787c1` | P1 follow-up — generator (4) + guard (2) failure logs |
+| `33266c5` | P2 — FAQ Q5 rewritten, 16 locales |
+| `a62234a` | P1 follow-up — retrieval-refusal shadow `factor` (+ 3 background-task failure logs) |
+| `83fdaf9` | end-to-end Research-route sentinel test (catch-all) |
+
+### §7.2 P1 — derived log-site set vs the 3 cited (Rule 25; unit: logger / print call sites)
+
+**Method.** An AST scan of every `logger.*` / `logging.*` / `print` call under `api/` whose arguments reference a
+user-text-like name (47 candidates on the anchored name set, +6 on a substring set — all 6 prompt file paths), a
+grep for log calls echoing an exception in the modules on the question path, and a read of each hit. **The 3 sites
+cited by the previous car (`api/rag/retriever.py:178`, `:247`, `api/data_sources/pubmed.py:349`) are a SUBSET of the
+derived set — they do NOT match it.** Changed: **52 call sites** + **2 non-log channels**:
+
+| class | sites | where |
+|---|---|---|
+| A — question text (or text derived from it) interpolated directly | 24 | retriever 178 / 180 / 247 · pubmed 123 / 349 · fda 155 / 158 (`print`) · tfda_lookup 397 · server Verify drug lists ×3 · dailymed ×2 · explain_service ×6 · loinc / medlineplus / rxnorm ×4 · retrieval-refusal `factor` (server, `a62234a`) |
+| B — exception text that can carry it (httpx `ConnectError` / `HTTPStatusError` text = the request URL with `term=` / `search=` — the openFDA URL also carries `api_key`; OpenAI error text; parser errors) | 28 | retriever ×10 · pubmed 142 / 154 / 356 / 376 · fda 183 / 263 · tfda_lookup 294 · reranker ×2 · generator ×4 · guards ×2 · background-task failures ×3 |
+| non-log — DB error text | 1 | `api/database/sql_db.py`: `create_engine(hide_parameters=True)` — SQLAlchemy's error text carried the row values (an AuditLog's `query_content`) into `_safe_db_write`'s log and Sentry |
+| non-log — Sentry | 1 | `api/server.py` `_sentry_init_kwargs()`: `include_local_variables=False`, `max_request_body_size="never"` (the `/api/research` body IS the question), `HttpxIntegration` disabled (it recorded outgoing URLs with their query strings as breadcrumbs and as span data on traced requests); `send_default_pii` stays `False` |
+
+Every replaced site now logs a length, a count or `type(e).__name__`; levels and messages are otherwise unchanged.
+Reachable in prod today: the Research-path sites; the Verify / Explain sites sit behind the 410 gate and were fixed so
+the guarantee holds if ARCHIVE_MODE is ever lifted. **Cost, recorded:** the generator's 4 error logs lost their
+traceback (`exc_info`) — a traceback's last line is the exception text. **Honest miss:** the first scan did not include
+the name `factor`; the retrieval-refusal log was caught only by the Step-4 shadow-flag read — hence the end-to-end
+catch-all test. Left as-is (not question text): `__main__` demo prints in `fda.py` / `pubmed.py` / `phi_handler.py`,
+language codes, share ids, the Dodo cancel response body.
+
+**Sentry logging integration:** left on — after P1 no log line on the question path carries question text, so its
+INFO breadcrumbs carry none (proved by the end-to-end test, which runs with every shadow flag on).
+
+**Tests** (`tests/test_no_question_text_in_logs.py`, 8): the retrieval path with the REAL PubMed + openFDA clients over
+an httpx MockTransport whose errors carry the request URL; the filtered-out branch; a failing DB write; the Sentry
+options; the reranker skip paths; generator + guard failures (guards still fail CLOSED); the retrieval-refusal shadow;
+and the end-to-end `/api/research` route (signed-in + anonymous, ARCHIVE_MODE + all three shadow flags on, model
+echoing the question) followed by the three background tasks. Each was seen RED first (4 failed → GREEN; then 1 failed
+each for the reranker, generator/guard and refusal additions); mutation (old `retriever.py:178` restored) → 2 failed in
+the retrieval tests and 1 in the catch-all; reverted byte-identical each time.
+
+### §7.3 Client side (2d — read-only)
+
+- **Sentry (client):** `sentry.client.config.ts:3-8` initialises with `dsn: process.env.NEXT_PUBLIC_SENTRY_DSN`; that
+  value is `""` in `fly.toml:13` and the Dockerfile never passes it, so client Sentry has no DSN and sends nothing; no
+  Replay integration is configured.
+- **PostHog:** `pages/_app.tsx:41-44` sets only `capture_pageview: false` — posthog-js defaults apply: autocapture on
+  (element metadata and text of clicks; input VALUES are not captured). `track()` events carry no question text.
+  The Research `<input>` (`pages/research.tsx:658`) has no `ph-no-capture` class.
+- **FOUNDER CHECK:** whether PostHog **session recording** is enabled is a PostHog project setting, not visible in the
+  repo (its default masks inputs). Not guessed.
+
+### §7.4 P2 — FAQ Q5 (`33266c5`), verbatim
+
+- **en:** Questions asked in the demo are not saved to a database, and Vela no longer has accounts. To answer a question, Vela sends it to OpenAI's language model and sends search terms derived from it to PubMed and openFDA. Vela's server logs record a question's length, not its text. To enforce the daily budget, Vela keeps a usage count under a one-way hashed identifier made from your IP address and browser session; the count holds no question text. Usage analytics record events, such as how many sources were cited, not the text you type.
+- **zh-TW:** 在展示版中提出的問題不會存進資料庫，Vela 也已不再提供帳號。為了回答問題，Vela 會把問題傳送給 OpenAI 的語言模型，並把依據問題產生的搜尋詞傳送給 PubMed 與 openFDA。Vela 的伺服器記錄檔只記下問題的長度，不記下問題的文字。為了控管每日預算，Vela 會用一個由你的 IP 位址與瀏覽器工作階段經單向雜湊產生的識別碼來記錄使用次數，這個計數不含任何問題文字。使用分析只記錄事件（例如引用了幾個來源），不記錄你輸入的文字。
+
+The other 14 locales are MACHINE-TRANSLATED (marked). No claim about third-party retention or error reports.
+**Not yet live** — it ships with the deploy that did not complete; until then prod still serves the pre-fix Q5 and
+the pre-fix logging.
+
+### §7.5 Step 4 — shadow flags (read-only report; both are Fly SECRETS — values not read)
+
+| flag | when ON | extra calls per Research query | logs question text? |
+|---|---|---|---|
+| `SOURCE_WEIGHT_SHADOW` | `api/server.py` reads it per request; `retriever.retrieve()` captures the full reranked pool into a sink; after DONE, signed-in only, `_run_source_weight_shadow` (`api/server.py:721-756`) computes tier / composite would-be rankings locally (`api/services/source_weight_shadow.py`) and writes `AuditLog.extra_data['source_weight_shadow']` | **none** — local arithmetic, no LLM, no network | no — counts and tier distribution only |
+| `RETRIEVAL_REFUSAL_SHADOW` | signed-in only: schedules `_run_retrieval_refusal_background` (`api/server.py:689-718`) → `retrieval_refusal.assess` (`api/services/retrieval_refusal.py:146-180`) on `gpt-4.1` (`:37`); writes the decision (incl. the question-derived factor / outcome) to `AuditLog.extra_data['retrieval_refusal']` | **N + 2 `gpt-4.1` calls** — 1 factor/outcome extraction, 1 per pool source (N ≥ 2), 1 counter-prior | it DID — `decision.factor` was logged verbatim; fixed in `a62234a` (length only) |
+
+The anonymous demo runs neither observer (both sit in the signed-in branch); only `SOURCE_WEIGHT_SHADOW`'s pool capture
+happens for everyone. **Recommendation (founder decides):** in an archived product neither shadow measures anything
+that will be acted on, and `RETRIEVAL_REFUSAL_SHADOW` costs N + 2 `gpt-4.1` calls per signed-in query and stores
+question-derived text in the AuditLog — unset both (`fly secrets unset RETRIEVAL_REFUSAL_SHADOW SOURCE_WEIGHT_SHADOW`,
+which is itself a release). Their values were not read.
+
+### §7.6 Gates and readbacks
+
+| gate | result |
+|---|---|
+| full pytest (default) | Step 1: 504 passed / 38 skipped (baseline 504 / 28: +10 skipped = the opt-in module's 10 items, not +2 — all 10 share the build fixture). Step 5: **512 passed / 38 skipped** (+8 = the new privacy tests) |
+| build tests (opt-in, `RUN_BUILD_TESTS=1`) | 10 passed (Step 1, 454 s); **10 passed** (Step 5, 609 s) — both `npm run build` variants exit 0 |
+| `npx tsc --noEmit` | exit 0 |
+| lint | problem set identical to the `2f09f83` baseline (22 = 22) |
+| push | `2f09f83..83fdaf9`; `git ls-remote origin main` = `83fdaf9d44274731f7cd9f7806c4ad8a047a9544` = HEAD (40 chars) |
+| deploy | attempt 1 reaped at the build-context upload — no release; prod unchanged (above) |
+| prod readbacks + live log check | **NOT RUN** — they follow the deploy |
+
+### §7.7 PROD EYE (BLANK — after the deploy)
+
+| # | row | founder result |
+|---|---|---|
+| 1 | no banner; nav = Research + FAQ only | |
+| 2 | landing has no Verify / Explain bands | |
+| 3 | footer has the About link, no Pricing / Refund | |
+| 4 | the archive FAQ shows | |
+| 5 | anonymous Research answers a question | |
+| 6 | /about/ en + zh-TW open | |
+| 7 | FAQ Q5 reads correctly | |
+
+### §7.8 Next
+
+1. **Deploy** — `.\deploy.ps1` (run it from a terminal, or re-authorize a run here when the machine has memory headroom;
+   background runs on this machine have now been reaped twice). Then the readbacks with the §0 markers + the ONE live
+   Research query and the `fly logs` sentinel count ("side effects of metformin" → expected 0).
+2. Founder: PROD EYE §7.7 · make the repo public (after the BSL-vs-MIT README decision) · delete the Dodo webhook ·
+   OpenAI monthly hard budget · PostHog session-recording check (§7.3) · shadow-flag decision (§7.5).
