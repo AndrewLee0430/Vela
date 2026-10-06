@@ -226,8 +226,8 @@ each with its 0-100 score. Do not omit, duplicate, or invent an index."""
             # so the v200 composite is bypassed (relevance order), NOT run on stale pre-rerank
             # scores (slice-2 fix — consistent with the parse-skip path below).
             _RERANK_STATS["skip_exception"] += 1
-            logger.warning("[RERANK_SKIP reason=exception] %s: %s model=%s",
-                           type(e).__name__, e, self.model)
+            logger.warning("[RERANK_SKIP reason=exception] %s model=%s",  # P1: type only, never the text
+                           type(e).__name__, self.model)
             logger.warning(_rerank_summary())
             return documents[:self.top_k]
 
@@ -237,9 +237,10 @@ each with its 0-100 score. Do not omit, duplicate, or invent an index."""
         if aligned is None:
             _RERANK_STATS[f"skip_{reason}"] += 1
             # FAIL LOUD (CLAUDE.md Rule 18): composite silently bypassed for this query.
-            # Marker RERANK_SKIP + reason; raw payload truncated to 500 chars to keep logs sane.
-            logger.warning("[RERANK_SKIP reason=%s] expected=%d model=%s raw=%.500s",
-                           reason, n, self.model, response.content)
+            # Marker RERANK_SKIP + reason. P1 (2026-10-05): the raw model output is NOT logged — the
+            # model saw the question and may echo it; log its length only.
+            logger.warning("[RERANK_SKIP reason=%s] expected=%d model=%s raw_len=%d",
+                           reason, n, self.model, len(response.content or ""))
             logger.warning(_rerank_summary())
             return documents[:self.top_k]
 

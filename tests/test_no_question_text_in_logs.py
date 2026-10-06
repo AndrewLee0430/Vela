@@ -164,3 +164,35 @@ def test_sentry_options_send_no_question_text():
     assert opts["max_request_body_size"] == "never"
     disabled = {type(i).__name__ for i in opts.get("disabled_integrations", [])}
     assert "HttpxIntegration" in disabled
+
+
+def _docs():
+    from api.models.schemas import CredibilityLevel, RetrievedDocument, SourceType
+    return [RetrievedDocument(content=f"doc {i}", source_type=SourceType.PUBMED, source_id=f"PMID:{i}",
+                              title="t", url="https://example.org", credibility=CredibilityLevel.PEER_REVIEWED,
+                              relevance_score=0.5) for i in range(4)]   # > 2: past the small-pool guard
+
+
+def test_reranker_skip_paths_log_no_model_or_exception_text(monkeypatch, caplog, capsys):
+    """The reranker model is SHOWN the question; on an unparseable reply the raw reply used to be logged
+    (it can echo the question), and on a provider error the exception text was logged."""
+    from types import SimpleNamespace
+    from api.rag.reranker import Reranker
+
+    rr = Reranker(top_k=8)
+    caplog.set_level(logging.DEBUG)
+
+    async def _echo(req):
+        return SimpleNamespace(content=f"I cannot score this: {SENTINEL}", input_tokens=0, output_tokens=0)
+
+    monkeypatch.setattr(rr._provider, "complete", _echo)
+    asyncio.run(rr.rerank(SENTINEL, _docs()))
+    assert any("RERANK_SKIP" in r.getMessage() for r in caplog.records), "harness: the parse-skip path must log"
+
+    async def _boom(req):
+        raise RuntimeError(f"provider rejected prompt containing {SENTINEL}")
+
+    monkeypatch.setattr(rr._provider, "complete", _boom)
+    asyncio.run(rr.rerank(SENTINEL, _docs()))
+    assert any("reason=exception" in r.getMessage() for r in caplog.records), "harness: the exception path must log"
+    assert _leaks(caplog, capsys) == []
