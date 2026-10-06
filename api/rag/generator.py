@@ -207,7 +207,7 @@ class AnswerGenerator:
             # Broad Exception catches VelaError (provider errors) + anything
             # else. Preserves fail-CLOSED behavior: stream emits error event.
             yield StreamEvent(type=StreamEventType.ERROR, content=ERROR_MESSAGES["error"])
-            logger.error("Generation error: %s", e, exc_info=True)
+            logger.error("Generation error: %s", type(e).__name__)  # P1: type only — no exception text / traceback (it can carry prompt content)
             yield StreamEvent(type=StreamEventType.DONE)
 
     # ─── Public: non-streaming ───────────────────────────────────────────────
@@ -245,7 +245,7 @@ class AnswerGenerator:
                 completion = await self._provider.complete(req)
                 return completion.content, []
             except Exception as e:
-                logger.error("Fallback generation error (non-stream): %s", e, exc_info=True)
+                logger.error("Fallback generation error (non-stream): %s", type(e).__name__)  # P1: type only — no exception text / traceback (it can carry prompt content)
                 return ERROR_MESSAGES["error"], []
 
         effective_model = model_override or self.model
@@ -268,7 +268,7 @@ class AnswerGenerator:
             completion = await self._provider.complete(req)
             return completion.content, citations
         except Exception as e:
-            logger.error("Generation error (non-stream): %s", e, exc_info=True)
+            logger.error("Generation error (non-stream): %s", type(e).__name__)  # P1: type only — no exception text / traceback (it can carry prompt content)
             return ERROR_MESSAGES["error"], citations
 
     # ─── Private helpers ─────────────────────────────────────────────────────
@@ -314,7 +314,7 @@ class AnswerGenerator:
 
         except Exception as e:
             yield StreamEvent(type=StreamEventType.ERROR, content=ERROR_MESSAGES["error"])
-            logger.error("Fallback generation error: %s", e, exc_info=True)
+            logger.error("Fallback generation error: %s", type(e).__name__)  # P1: type only — no exception text / traceback (it can carry prompt content)
             yield StreamEvent(type=StreamEventType.DONE)
 
     # Updated 2026-04-20: added Chinese variant handling per 2.9 learnings (see PRD § 2.9 post-release)

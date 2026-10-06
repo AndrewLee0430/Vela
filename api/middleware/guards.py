@@ -180,7 +180,7 @@ async def check_indirect_injection(text: str) -> tuple[bool, str]:
     except Exception as e:
         # Preserved fail-CLOSED behavior: any error blocks the request.
         # VelaError (from provider layer) is caught by this broad Exception.
-        logger.error("Indirect injection check failed (blocking request): %s", e)
+        logger.error("Indirect injection check failed (blocking request): %s", type(e).__name__)  # P1: type only
         return True, "Security check temporarily unavailable. Please try again."
 
 
@@ -271,7 +271,7 @@ async def check_medical_intent(text: str) -> tuple[bool, str]:
     except Exception as e:
         # Preserved fail-CLOSED behavior: any error rejects the request.
         # VelaError (from provider layer) is caught by this broad Exception.
-        logger.error("Intent check failed (blocking request): %s", e)
+        logger.error("Intent check failed (blocking request): %s", type(e).__name__)  # P1: type only
         return False, "Security check temporarily unavailable. Please try again."
 
 

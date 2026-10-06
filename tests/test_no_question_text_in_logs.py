@@ -196,3 +196,47 @@ def test_reranker_skip_paths_log_no_model_or_exception_text(monkeypatch, caplog,
     asyncio.run(rr.rerank(SENTINEL, _docs()))
     assert any("reason=exception" in r.getMessage() for r in caplog.records), "harness: the exception path must log"
     assert _leaks(caplog, capsys) == []
+
+
+def test_generator_and_guard_failures_log_no_exception_text(monkeypatch, caplog, capsys):
+    """OpenAI / provider errors on the question path: the generator (main + no-literature fallback stream)
+    and both LLM guards used to log the exception text (with a traceback); a provider message is not the
+    code's to guarantee, so only the exception TYPE is logged. Fail-closed behaviour is unchanged."""
+    from types import SimpleNamespace
+    import api.middleware.guards as guards
+    from api.models.schemas import StreamEventType
+    from api.rag.generator import AnswerGenerator
+
+    class _Boom:
+        async def complete(self, req):
+            raise RuntimeError(f"provider rejected prompt containing {SENTINEL}")
+
+        async def stream(self, req):
+            raise RuntimeError(f"provider rejected prompt containing {SENTINEL}")
+            yield  # pragma: no cover — makes this an async generator
+
+    caplog.set_level(logging.DEBUG)
+    gen = AnswerGenerator()
+    monkeypatch.setattr(gen, "_provider", _Boom())
+
+    async def _drain(status, docs):
+        return [e async for e in gen.generate_stream(question=SENTINEL, documents=docs,
+                                                     retrieval_status=status, lang="en")]
+
+    for status, docs in (("ok", _docs()), ("no_results", [])):
+        events = asyncio.run(_drain(status, docs))
+        assert any(e.type == StreamEventType.ERROR for e in events), f"harness: {status} path must error"
+
+    monkeypatch.setattr(guards, "_get_guard_binding",
+                        lambda: SimpleNamespace(provider=_Boom(), model="test-model"))
+    # A NON-medical sentinel: the intent guard short-circuits on medical keywords (guards.py
+    # _has_medical_keywords) before any LLM call, which would leave the failure path unexercised.
+    guard_text = f"{SENTINEL_KEY} weekend travel plans 7731"
+    assert not guards._has_medical_keywords(guard_text), "harness: must reach the LLM call"
+    intent_ok, _ = asyncio.run(guards.check_medical_intent(guard_text))
+    long_text = guard_text + " and a long walk by the river on a quiet sunny afternoon" * 2  # >= 100 chars:
+    assert len(long_text) >= 100     # the injection guard skips the LLM below 100 (guards.py check_indirect_injection)
+    injected, _ = asyncio.run(guards.check_indirect_injection(long_text))
+    assert intent_ok is False and injected is True, "fail-CLOSED behaviour must be preserved (Rule 1)"
+    assert sum("failed (blocking request)" in r.getMessage() for r in caplog.records) == 2
+    assert _leaks(caplog, capsys) == []
