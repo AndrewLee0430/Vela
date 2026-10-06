@@ -198,6 +198,8 @@ it as a separate step.
 
 ## §3 Q5 derivation — what the anonymous `/api/research` path stores or sends (lines at `45204fa`)
 
+*2026-10-06: the 'server logs record the question TEXT' row describes `45204fa`; superseded by §7.2 (fix deployed fly 264).*
+
 | store / flow | what | where |
 |---|---|---|
 | `chat_history` | **none** for anonymous users; none for anyone under ARCHIVE_MODE | `api/server.py:1061-1083` |
@@ -380,3 +382,50 @@ which is itself a release). Their values were not read.
    Research query and the `fly logs` sentinel count ("side effects of metformin" → expected 0).
 2. Founder: PROD EYE §7.7 · make the repo public (after the BSL-vs-MIT README decision) · delete the Dodo webhook ·
    OpenAI monthly hard budget · PostHog session-recording check (§7.3) · shadow-flag decision (§7.5).
+
+### §7.9 CLOSEOUT — prod verified, fly 264 (2026-10-06)
+
+The founder ran `.\deploy.ps1` in their own terminal (Claude Code background runs were being reaped under memory
+pressure). Everything below was read by Claude Code, read-only and in the foreground, plus the ONE authorized
+anonymous Research query.
+
+| check | command | result |
+|---|---|---|
+| release | `fly releases -a vela-ai-medical` | **v264** complete (v263 before it) |
+| machines | `fly status -a vela-ai-medical` | `2879720c66d478` + `683d447c2e5428` on v264, both started; image `deployment-01M47WM35VAADSEXFXZPWZD54Z` |
+| /health | GET `/health` | revision `858d20ff2a51508b6fd2c731281f61e1900a1818` = the deployed HEAD (40 chars) |
+| shadow secrets | `fly secrets list` (NAMES only, 19) | `RETRIEVAL_REFUSAL_SHADOW` **present**, `SOURCE_WEIGHT_SHADOW` **present** — not unset; `DIRECTION_CHECK_SHADOW` absent |
+| retired API | unauth `POST /api/verify` | **410** `{"detail": "Vela is archived. This feature is no longer available."}` |
+
+**Discriminating markers on prod (GET, prerendered HTML; unit = occurrences) — 23 / 23 as expected:**
+
+| page | marker | expected | prod |
+|---|---|---|---|
+| / | `href="/verify"` · `href="/explain"` · `href="/pricing"` · `href="/refund"` | 0 · 0 · 0 · 0 | 0 · 0 · 0 · 0 |
+| / | `data-band="verify"` · `data-band="explain"` · hero chip 2 text | 0 · 0 · 0 | 0 · 0 · 0 |
+| / | `data-archive-link="about"` · `role="note"` | 1 · 0 | 1 · 0 |
+| /research | `href="/verify"` · `href="/faq"` · `role="note"` | 0 · 2 · 0 | 0 · 2 · 0 |
+| /faq | `data-archive-faq` · `href="/sign-up"` · `href="/refund"` · `data-archive-link="about"` | 1 · 0 · 0 · 1 | 1 · 0 · 0 · 1 |
+| /faq | post-fix Q5 "length, not its text" (en) | 1 | 1 |
+| /refund · /verify · /explain · /pricing | `data-archived-notice` | 1 each | 1 each |
+| /about/ · /about/zh-TW.html | page title | 1 · 1 | 1 · 1 |
+
+All nine pages answered 200.
+
+**Live log check.** ONE anonymous query, "What are the common side effects of metformin?", sent with `curl -N` at
+06:06:21Z: HTTP 200 in 17.2 s, a 2,209-character answer (471 answer events), 5 citations, a `done` event, no error
+event. Then `fly logs -a vela-ai-medical --no-tail` (100 lines, 06:01:00Z → 06:06:36Z), ANSI-stripped and cut to the
+window 06:06:21Z → 06:06:53Z (stream end + 15 s; 15 lines):
+
+| term | window | whole output |
+|---|---|---|
+| "side effects of metformin" | **0** | 0 |
+| "metformin" (any case) | **0** | 0 |
+| Traceback | **0** | 0 |
+| `api_key=` | **0** | 0 |
+
+The fix is visible in the window: `vela INFO [Research] tier=L0 anon_id=6341dc58 query_length=46` (the question is 46
+characters) and `api.rag.retriever INFO Query rewritten: len=46 -> 3 variants`. No line names the drug at all, so there
+was no retrieval-term line to separate from question text.
+
+E5 (`TECH_DEBT.md`, the 2026-10-06 bullet) stays OPEN — founder ratification pending to close.
