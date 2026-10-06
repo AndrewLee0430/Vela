@@ -261,3 +261,115 @@ def test_retrieval_refusal_shadow_logs_no_question_derived_factor(monkeypatch, c
     asyncio.run(server._run_retrieval_refusal_background("res_sentinel", SENTINEL, []))
     assert any("[RetrievalRefusal]" in r.getMessage() for r in caplog.records), "harness: the decision line must log"
     assert _leaks(caplog, capsys) == []
+
+
+def _route_db(server_module):
+    """Per-test in-memory DB wired into the app (same pattern as tests/test_archive_mode.py)."""
+    from sqlalchemy import create_engine
+    from sqlalchemy.orm import sessionmaker
+    from sqlalchemy.pool import StaticPool
+    from api.database.sql_db import Base, get_db
+
+    eng = create_engine("sqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool)
+    Base.metadata.create_all(eng)
+    TS = sessionmaker(bind=eng)
+
+    def _override():
+        db = TS()
+        try:
+            yield db
+        finally:
+            db.close()
+    server_module.app.dependency_overrides[get_db] = _override
+    return eng, get_db
+
+
+def test_research_route_end_to_end_logs_no_question_text(monkeypatch, caplog, capsys):
+    """CATCH-ALL for the Research path (added after the first P1 scan missed a site): the sentinel goes
+    through the REAL /api/research route — guards, PHI check, TFDA annotation, retriever, reranker,
+    generator, source-weight shadow — signed-in AND anonymous, with ARCHIVE_MODE and all three shadow
+    flags ON; then the three background tasks run with their captured arguments. Only LLM / network
+    edges are stubbed, and the fake model ECHOES the question in its answer and in the shadow factor
+    (worst case). Not one log record or stdout byte may contain the sentinel."""
+    import json
+    from types import SimpleNamespace
+    import api.server as server
+    import api.services.retrieval_refusal as rr
+    import api.services.direction_checker as dc
+    from fastapi.testclient import TestClient
+
+    for flag in ("ARCHIVE_MODE", "SOURCE_WEIGHT_SHADOW", "RETRIEVAL_REFUSAL_SHADOW", "DIRECTION_CHECK_SHADOW"):
+        monkeypatch.setenv(flag, "true")
+    R = server.retriever
+
+    async def _rewrite(q):
+        return [q, q + " clinical"]
+
+    async def _none(*a, **k):
+        return []
+
+    async def _docs_for(q, n):
+        return _docs()[:3]
+
+    async def _keep(q, docs):
+        return docs
+
+    async def _rerank_ok(req):
+        return SimpleNamespace(content=json.dumps({"scores": [{"index": i, "score": 90 - i} for i in range(3)]}),
+                               input_tokens=0, output_tokens=0)
+
+    class _EchoGen:
+        async def stream(self, req):
+            yield SimpleNamespace(delta=f"Answer about {SENTINEL} [1].", usage=None)
+            yield SimpleNamespace(delta="", usage={"prompt_tokens": 1, "completion_tokens": 1})
+
+    monkeypatch.setattr(R, "_rewrite_query", _rewrite)
+    monkeypatch.setattr(R, "_dailymed_union_queries", lambda q, k=3: _none())
+    monkeypatch.setattr(R, "_search_pubmed", _docs_for)
+    for m in ("_search_fda", "_search_tfda", "_search_dailymed", "_search_local"):
+        monkeypatch.setattr(R, m, _none)
+    monkeypatch.setattr(R, "_filter_by_relevance", _keep)
+    monkeypatch.setattr(R.reranker._provider, "complete", _rerank_ok)
+    monkeypatch.setattr(server.generator, "_provider", _EchoGen())
+
+    captured = []
+
+    for name in ("_run_judge_background", "_run_direction_check_background", "_run_retrieval_refusal_background"):
+        real = getattr(server, name)
+
+        def _mk(n, fn):
+            async def _f(*args):
+                captured.append((n, fn, args))
+            return _f
+        monkeypatch.setattr(server, name, _mk(name, real))
+
+    eng, get_db = _route_db(server)
+    caplog.set_level(logging.DEBUG)
+    try:
+        client = TestClient(server.app)
+        for headers in ({}, {"X-Anon-Fingerprint": "e2e-sentinel-fingerprint-0001"}):
+            resp = client.post("/api/research", json={"question": SENTINEL, "response_language": "en"},
+                               headers=headers)
+            assert resp.status_code == 200 and '"type": "answer"' in resp.text, resp.text[:200]
+    finally:
+        server.app.dependency_overrides.pop(get_db, None)
+        eng.dispose()
+    assert any("[Research]" in r.getMessage() for r in caplog.records), "harness: the route must have logged"
+    assert any("[SourceWeightShadow]" in r.getMessage() for r in caplog.records), "harness: shadow must have run"
+
+    async def _llm_echo(prompt):
+        return json.dumps({"factor": SENTINEL, "outcome": SENTINEL, "stance": "harmful",
+                           "counter_plausible": False, "verdict": "consistent"})
+
+    async def _judge_eval(q, a, s):
+        return {"scores": {}, "weighted_score": 9.0, "quality_level": "high"}
+
+    monkeypatch.setattr(rr, "make_strong_llm", lambda *a, **k: _llm_echo)
+    monkeypatch.setattr(dc, "make_lightweight_llm", lambda *a, **k: _llm_echo)
+    monkeypatch.setattr(server._judge, "evaluate", _judge_eval)
+    ran = set()
+    for name, fn, args in captured:
+        asyncio.run(fn(*args))
+        ran.add(name)
+    assert ran == {"_run_judge_background", "_run_direction_check_background", "_run_retrieval_refusal_background"}, ran
+    assert _leaks(caplog, capsys) == []
