@@ -17,8 +17,11 @@ markup the flag-gated components emit: hrefs, `data-band`, `data-archive-link`,
 `data-archive-faq`, `data-archived-notice`, and the banner's `role="note"`. The same markers are
 the prod readback (archive UI car baton).
 
-COST: two `next build` runs (~2–4 min). Skipped only when node_modules is absent.
-Run: python -m pytest tests/test_archive_ui_build.py -q
+COST: two `next build` runs (~4–5 min) and their memory. OPT-IN (founder ruling P3, 2026-10-05):
+the whole module is skipped unless RUN_BUILD_TESTS=1 — a default full-suite run that included the
+builds was reaped under memory pressure (archive UI car baton §2). Also skipped when node_modules
+is absent.
+Run: RUN_BUILD_TESTS=1 python -m pytest tests/test_archive_ui_build.py -q
 """
 import os
 import re
@@ -29,6 +32,11 @@ from pathlib import Path
 import pytest
 
 ROOT = Path(__file__).resolve().parent.parent
+
+pytestmark = pytest.mark.skipif(
+    os.environ.get("RUN_BUILD_TESTS") != "1",
+    reason="production-build tests are opt-in: set RUN_BUILD_TESTS=1 (two `next build` runs, ~4-5 min)",
+)
 HERO_CHIP2_EN = "Can elderly patients take BP meds with calcium?"
 
 
