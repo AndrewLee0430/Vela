@@ -429,3 +429,63 @@ characters) and `api.rag.retriever INFO Query rewritten: len=46 -> 3 variants`. 
 was no retrieval-term line to separate from question text.
 
 E5 (`TECH_DEBT.md`, the 2026-10-06 bullet) stays OPEN — founder ratification pending to close.
+
+### §7.10 LEDGER CORRECTIONS — E5 mislabel, shadow secrets unset, repo public (2026-10-06)
+
+**The L2 mislabel.** The LICENSE FIX + E5 CLOSE car (2026-10-06, commit `75c34ee`) carried strategy-side ruling L2,
+verbatim:
+
+> L2 E5 (question text in logs) is RATIFIED CLOSED if step 2 returns YES: fix deployed fly 264, live sentinel log check = 0, regression guarded by tests/test_no_question_text_in_logs.py.
+
+Step 2 returned YES, but E5 is not the logging issue. E5's heading and its Status bullet cover the SIGNED-IN wording
+"de-identified (via PHI masking as a primary safeguard)" against the mask's actual coverage, which is waiting on
+counsel. The logging problem was only E5's "Adjacent (a)" note. That car therefore held the close: nothing was
+re-classed and E5 was left untouched. **Where the mislabel came from:** this car's own TECH_DEBT bullet
+(2026-10-06, CODE FIX) ended "Founder ratification pending to close", and the last line of §7.9 above repeats it.
+Both sentences meant Adjacent (a) only but read as if the log fix could close E5. They are kept verbatim
+(mark-never-delete) and corrected here and in the E5 entry.
+
+**Founder rulings 2026-10-06, verbatim:**
+
+> R1 E5 stays OPEN (option B). Strategy-side ruling L2 mislabelled E5 as "question text in logs"; E5 is the privacy.tsx:30 signed-in "de-identified (via PHI masking)" wording vs the mask's coverage, awaiting counsel. Record the mislabel.
+> R2 Shadow secrets RETRIEVAL_REFUSAL_SHADOW + SOURCE_WEIGHT_SHADOW were unset by the founder 2026-10-06 (fly v265, same code revision 858d20f).
+> R3 The GitHub repo was made public by the founder 2026-10-06.
+
+**Readbacks (read-only, 2026-10-06):**
+- **R2:** `fly releases -a vela-ai-medical` top = **v265**, directly above v264. `/health` revision =
+  `858d20ff2a51508b6fd2c731281f61e1900a1818`, unchanged, so v265 is a secrets-only release. `fly secrets list`, NAME
+  column only (values and digests not read): neither `RETRIEVAL_REFUSAL_SHADOW` nor `SOURCE_WEIGHT_SHADOW` is present
+  (0 of 2).
+- **R3:** an unauthenticated request to GitHub's REST repo endpoint for this repository answered 200 with
+  `"private": false` and `"visibility": "public"`.
+
+**Line pin (Rule 25):** `45204fa` (2026-10-05) moved both privacy sentences down one line. At `2a5d98c`, where E5 was
+measured, the anonymous claim was `pages/privacy.tsx:29` and the signed-in wording `:30`. At `75c34ee` they are `:30`
+and `:31`. So E5's heading ":30" and the anonymous ":30" below are different sentences.
+
+**The anonymous privacy claim at `75c34ee`** ("not stored or logged", `pages/privacy.tsx:30`): verified TRUE for
+anonymous Research. This basis is copied from the previous car's reply; each line was re-read at HEAD `75c34ee`
+before this commit. `git diff 858d20f 75c34ee -- api` is empty, so the API code is the fly 264 revision.
+- **Database:**
+  - the audit log is written only for signed-in users (`api/server.py:1051`, `if not is_anonymous:`);
+  - chat history is written only on the signed-in branch and is skipped under ARCHIVE_MODE (`api/server.py:1092-1095`);
+  - the anonymous DONE branch writes only a usage counter under the hashed id (`api/services/usage_service.py:213-218`)
+    and a cost row of model and token counts (`api/services/cost_tracker.py:45-52`). Neither holds question or answer
+    text.
+- **Logs (lengths only):** `api/server.py:890`, `api/rag/retriever.py:178` and `:247`, `api/data_sources/pubmed.py:123`
+  and `:349`.
+- **Sentry and the database driver:** Sentry starts with `_sentry_init_kwargs` (`api/server.py:26`), and the database
+  engine hides bound parameters (`hide_parameters=True`, `api/database/sql_db.py:25` and `:32`).
+- **Regression guard:** `tests/test_no_question_text_in_logs.py` (8 tests). The live sentinel log check at fly 264
+  returned 0 (§7.9).
+- **Residuals (flagged, not fixed — no code change was authorized):**
+  - `api/server.py:1029` logs an LLM exception's text, but only when `QUESTION_NEUTRALIZATION_SHADOW` is set. That
+    name is in neither `fly.toml [env]` nor the Fly secret names, so the line cannot run in prod.
+  - `api/server.py:865` and `:789` log exception text, but the code that raises there never puts the question into
+    its errors: a regex check, a lookup that logs only the exception type (`api/services/tfda_lookup.py:294`), and
+    the PHI regex detector.
+
+**Status after this commit:**
+- **E5:** OPEN. Its Adjacent (a) is resolved; the signed-in wording waits on counsel.
+- **Founder checklist:** PROD EYE (§7.7, 7 rows) · delete the Dodo webhook and revoke the API key · OpenAI monthly hard
+  budget · turn PostHog session recording off · E5 counsel wording.
