@@ -1,6 +1,8 @@
-> **Status: archived (Oct 2026).** Vela is no longer developed. Read what it was, how it worked and what was
-> measured at **[vela.an-tho.com/about](https://vela.an-tho.com/about/)**. A Research-only live demo stays at
-> **[vela.an-tho.com/research](https://vela.an-tho.com/research)**, capped by a small daily budget.
+> **Status: archived (Oct 2026).** Vela is no longer developed. The hosted demo was shut down on
+> **2026-11-04** — the Fly app was deleted to end hosting cost — and `vela.an-tho.com` now redirects to
+> this repository. To see what Vela was, go to [See it](#-see-it); to try it, go to
+> [Run it locally](#-run-it-locally). The project write-up is kept as
+> [public/about/index.html](public/about/index.html) (HTML source).
 >
 > Vela is a research tool, **not a medical device**, and gives **no medical advice**. This code is provided
 > **as-is, without warranty** of any kind (see [LICENSE](LICENSE)). **Secrets are not included** — the
@@ -16,7 +18,29 @@
 [![OpenAI](https://img.shields.io/badge/OpenAI-GPT--4.1-412991?logo=openai)](https://openai.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-🌐 **Live:** [https://vela.an-tho.com](https://vela.an-tho.com)
+🌐 **Live demo:** retired 2026-11-04 — see [See it](#-see-it) below, or [run it locally](#-run-it-locally).
+
+---
+
+## 👀 See it
+
+The hosted demo is gone. These are the product's own landing-page assets, kept in the repository.
+
+**Research** — ask a clinical question, get a cited answer streamed back in your language:
+[▶ public/media/research-demo.mp4](public/media/research-demo.mp4) (2.3 MB)
+
+**Verify** — a drug-interaction check against FDA label data:
+
+![Verify — drug interaction result](public/media/Verify_Landing_Demo.webp)
+
+**Explain** — a lab report explained entity by entity, with source badges:
+
+![Explain — identified entities](public/media/Explain_Landing_Demo_1.webp)
+
+![Explain — plain-language explanation](public/media/Explain_Landing_Demo_2.webp)
+
+**Project write-up** — what Vela was, how it worked and what was measured:
+[public/about/index.html](public/about/index.html) (HTML source; Traditional Chinese: [public/about/zh-TW.html](public/about/zh-TW.html)).
 
 ---
 
@@ -134,79 +158,74 @@ Vela/
 
 ---
 
-## 🚀 Getting Started
+## 🚀 Run it locally
 
-### Prerequisites
+Vela is demoed by running it on your own machine. There is no Vela service left to call; every answer is
+generated with **your** OpenAI key, at your cost. Line references are at the commit that retired the demo.
 
-- Python 3.11+
-- Node.js 18+
-- PostgreSQL (or Neon cloud)
-- OpenAI API key
-- Clerk account
+### What you need
 
-### 1. Clone
+| | Required? | Notes |
+|---|---|---|
+| Python 3.11+ · Node.js 18+ | yes | The hosted build ran on Python 3.12 / Node 22 (`Dockerfile`). |
+| `OPENAI_API_KEY` | yes, for any answer | Not checked at startup — `api/providers/openai_provider.py:87-92` substitutes a placeholder and the first model call fails instead. Research, Verify and Explain all call OpenAI; **you pay for your own usage**. Model and provider names default in code (`api/providers/factory.py`), so the `*_MODEL` / `*_PROVIDER` rows in `.env.example` are optional overrides. |
+| `SHARE_CREATED_BY_SALT` | yes, unless `TEST_MODE=true` | The only variable whose absence stops the backend: `api/server.py:398-407` raises `RuntimeError`. `TEST_MODE=true` supplies a built-in default. Generate one with `python -c "import secrets; print(secrets.token_urlsafe(32))"`. |
+| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | yes, for the frontend | `pages/_app.tsx:158-160` mounts `ClerkProvider` unconditionally and Clerk throws `Missing publishableKey` without one — also in the archive build, which shows no sign-in. A free Clerk development-instance key (`pk_test_…`) is enough; no Clerk secret is needed for anonymous Research. |
+| `DATABASE_URL` | no | Unset → SQLite at `data/medinotes.db` (`api/database/sql_db.py:8`). Postgres is not required. Do **not** copy the Postgres placeholder from `.env.example`. |
+| `ALLOWED_ORIGINS` | no | Unset → `http://localhost:3000` (`api/server.py:374-375`). Do **not** copy the placeholder from `.env.example`, it names the retired host. |
+| `CLERK_SECRET_KEY` · `CLERK_JWKS_URL` | no, for anonymous use | Read only when a request carries a `Bearer` token (`api/server.py:421`). Signed-in flows also pin the token issuer and authorized party to the retired production host (`api/server.py:430-431`), so signed-in mode cannot run outside the original deployment without a code change. |
+| `SENTRY_DSN` · `NEXT_PUBLIC_POSTHOG_KEY` · `DODO_*` · `ADMIN_USER_ID` · `FDA_API_KEY` · `PUBMED_API_KEY` | no | Sentry is disabled when unset (`api/server.py:49-54`); `posthog-js` logs a console error and stays inert without a key; payment and admin keys only serve routes a demo never hits; FDA and PubMed work keyless at lower rate limits. |
+| `ANON_DAILY_BUDGET_USD` | no | Daily cap on aggregate anonymous spend; code default 2.00 USD (`api/services/cost_guard.py:12-31`). |
 
-```bash
-git clone https://github.com/AndrewLee0430/Vela.git
-cd Vela
-```
+### What the backend does on start
 
-### 2. Environment Variables
+- `Base.metadata.create_all` creates the tables in whatever `DATABASE_URL` points to (`api/server.py:272`). There is no migration framework.
+- A retention sweep runs **immediately**, then daily: it **deletes** `audit_logs` and `chat_history` rows older than 180 days (`api/server.py:207-275`). Point a local run at a throwaway database, never at one you care about.
 
-```bash
-cp .env.example .env
-```
+### Data files
+
+- **Committed, loaded as-is:** `data/tfda/` (TFDA indication corpus + embeddings) and `data/dailymed/` (DailyMed label corpus) — Research's local sources (`api/database/vector_store.py:156-157`, `:211-212`). `data/drug_database/` (190 label JSONs) is also committed.
+- **Not needed:** `data/drug_vectordb/index.json` is gitignored, and the local drug corpus it feeds is switched off (`enable_local=False`, `api/server.py:566-582`); a missing index is tolerated (`api/database/vector_store.py:42-45`). Do not run `scripts/build_drug_vectordb.py` — it would send 690 documents to the OpenAI embeddings API (7 requests of 100) for a corpus the app never reads.
+- **Not useful:** `scripts/build_explain_cache.py` warms an in-memory cache (`api/cache/simple_cache.py:11-22`) inside its own process, so it warms nothing for the server. It makes no OpenAI call (247 requests to the free NLM LOINC / RxNorm / MedlinePlus APIs). Skip it; Explain looks terms up live on first use.
+- **Per query:** each Research question also embeds the query once per local corpus (OpenAI embeddings) before the generation call.
+
+### Auth modes
+
+- **Anonymous Research** needs no Clerk key on the backend: the `X-Anon-Fingerprint` header stands in for a token (`api/server.py:510-517`), and the Research page sends it (`pages/research.tsx:322`).
+- **`TEST_MODE=true`** skips Clerk JWT verification and rate limiting and treats token-less requests as `TEST_USER_ID` (default `test_user`) — `api/server.py:339`, `:389-392`, `:466-467`, `:522-523`. Guard: the process refuses to start when `FLY_APP_NAME` is also set (`:390-391`). Local use only.
+
+### Archive build vs full build
+
+- **Backend:** `ARCHIVE_MODE=true` → HTTP 410 on Verify, Explain, share and checkout routes; Research stays up and writes no history (`api/server.py:546-560`, `:1092`). Unset → the full product.
+- **Frontend:** `NEXT_PUBLIC_ARCHIVE_MODE=true` at `next dev` / `next build` time → archive nav (Research + FAQ only, no sign-in or billing surfaces) via `utils/archiveMode.ts:8`. Unset → the full UI. The hosted demo ran the archive build (`fly.toml:14`, `:18`).
+
+### Commands (Windows PowerShell)
+
+Create a minimal `.env` in the repo root (both the backend, via `python-dotenv`, and Next.js read it):
 
 ```env
-# OpenAI
-OPENAI_API_KEY=sk-...
-
-# Clerk (Production)
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_...
-CLERK_SECRET_KEY=sk_live_...
-CLERK_JWKS_URL=https://clerk.vela.an-tho.com/.well-known/jwks.json
-
-# Database (Neon PostgreSQL)
-DATABASE_URL=postgresql://user:password@ep-xxx.ap-southeast-1.aws.neon.tech/vela?sslmode=require
-
-# CORS
-ALLOWED_ORIGINS=https://vela.an-tho.com
-
-# Lemon Squeezy
-LEMON_SQUEEZY_API_KEY=...
-LEMON_SQUEEZY_SIGNING_SECRET=...
-LEMON_SQUEEZY_STORE_ID=318315
-
-# PostHog Analytics
-NEXT_PUBLIC_POSTHOG_KEY=phc_...
-NEXT_PUBLIC_POSTHOG_HOST=https://app.posthog.com
-
-# PubMed / FDA
-PUBMED_API_KEY=...
-FDA_API_KEY=...
-NCBI_EMAIL=your@email.com
+OPENAI_API_KEY=<your OpenAI key>
+SHARE_CREATED_BY_SALT=<output of the python one-liner above>
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=<pk_test_ key from a free Clerk development instance>
+NEXT_PUBLIC_API_URL=http://localhost:8000
 ```
 
-### 3. Backend
-
-```bash
+```powershell
+# terminal 1 — backend, archive build (anonymous Research only)
 pip install -r requirements.txt
+$env:PYTHONIOENCODING="utf-8"; $env:ARCHIVE_MODE="true"
+uvicorn api.server:app --port 8000
 
-# Pre-warm explain cache (recommended)
-python scripts/build_explain_cache.py
-
-# Start server
-uvicorn api.server:app --reload
-```
-
-### 4. Frontend
-
-```bash
+# terminal 2 — frontend, archive build
 npm install
+$env:NEXT_PUBLIC_ARCHIVE_MODE="true"
 npm run dev
+# open http://localhost:3000/research
 ```
 
-Open [http://localhost:3000](http://localhost:3000)
+For the full product (Verify, Explain, sign-in surfaces), omit both `ARCHIVE_MODE` variables. Verify then answers
+anonymously too. Explain is gated to signed-in users (`api/server.py:1801-1803`), and sign-in cannot complete outside
+the original deployment (see the Clerk rows above), so Explain is not reachable from this setup.
 
 ---
 
@@ -276,6 +295,9 @@ Results saved to `tests/results/golden_results_YYYYMMDD_HHMMSS.json` + HTML repo
 
 ## 🚢 Deployment
 
+> Historical. The Fly app was deleted on 2026-11-04; `fly.toml` and `deploy.ps1` stay in the repo as the
+> record of how it ran. `<your-domain>` below stood for the retired host.
+
 ### Deploy to Fly.io
 
 ```powershell
@@ -295,7 +317,7 @@ fly deploy
   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = "pk_live_..."
   NEXT_PUBLIC_POSTHOG_KEY = "phc_..."
   NEXT_PUBLIC_POSTHOG_HOST = "https://app.posthog.com"
-  NEXT_PUBLIC_API_URL = "https://vela.an-tho.com"
+  NEXT_PUBLIC_API_URL = "https://<your-domain>"
 ```
 
 All other secrets via `fly secrets set`:
@@ -305,8 +327,8 @@ fly secrets set \
   DATABASE_URL="postgresql://..." \
   OPENAI_API_KEY="sk-..." \
   CLERK_SECRET_KEY="sk_live_..." \
-  CLERK_JWKS_URL="https://clerk.vela.an-tho.com/.well-known/jwks.json" \
-  ALLOWED_ORIGINS="https://vela.an-tho.com" \
+  CLERK_JWKS_URL="https://<your-clerk-frontend-api>/.well-known/jwks.json" \
+  ALLOWED_ORIGINS="https://<your-domain>" \
   LEMON_SQUEEZY_API_KEY="..." \
   LEMON_SQUEEZY_SIGNING_SECRET="..." \
   LEMON_SQUEEZY_STORE_ID="318315"
@@ -320,7 +342,7 @@ fly secrets set \
 3. Run smoke test (optional but recommended)
 4. git add . && git commit -m "..." && git push origin main
 5. fly deploy
-6. Verify: curl https://vela.an-tho.com/health
+6. Verify: curl https://<your-domain>/health
 ```
 
 ---
@@ -332,7 +354,7 @@ fly secrets set \
 | Free | $0 | 10 credits/day | Research (3 credits), Explain (2), Verify (1) |
 | Pro | $9.99/mo or $89.99/yr (save 25%) | 100 credits/day | All features |
 
-*Subject to fair use policy. Daily limit of 100 credits applies to prevent automated abuse. Credit costs: Research (3), Verify (1), Explain (2). See [Terms of Service](https://vela.an-tho.com/terms).
+*Subject to fair use policy. Daily limit of 100 credits applies to prevent automated abuse. Credit costs: Research (3), Verify (1), Explain (2). See [Terms of Service](pages/terms.tsx).
 
 ---
 
